@@ -46,18 +46,11 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
     }
 
     @Override
-    protected boolean getStatusFromDevice() {
-        try {
-            logger.debug("SP3 getting status...");
-            byte[] statusBytes = getStatusBytesFromDevice();
-            updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
-            updateState(COMMAND_NIGHTLIGHT, deriveNightLightStateFromStatusBytes(statusBytes));
-            return true;
-        } catch (Exception ex) {
-            logger.warn("Unexpected exception while getting status from device: {}, please check device address.",
-                    ex.getMessage());
-            return false;
-        }
+    protected void getStatusFromDevice() throws IOException {
+        logger.debug("SP3 getting status...");
+        byte[] statusBytes = getStatusBytesFromDevice();
+        updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
+        updateState(COMMAND_NIGHTLIGHT, deriveNightLightStateFromStatusBytes(statusBytes));
     }
 
     @Override

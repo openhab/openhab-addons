@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.handler;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.ModelMapper;
@@ -30,37 +32,25 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
     }
 
     @Override
-    protected boolean getStatusFromDevice() {
+    protected void getStatusFromDevice() throws IOException, BroadlinkException {
         byte payload[];
         payload = new byte[16];
         payload[0] = 1;
 
-        try {
-            byte message[] = buildMessage((byte) 0x6a, payload);
+        byte message[] = buildMessage((byte) 0x6a, payload);
 
-            byte[] response = sendAndReceiveDatagram(message, "A1 device status");
-            if (response == null) {
-                logger.warn("Got nothing back while getting device status");
-                return false;
-            }
-            byte decryptResponse[] = decodeDevicePacket(response);
-            double temperature = ((decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
-            logger.trace("A1 getStatusFromDevice got temperature {}", temperature);
-
-            updateTemperature(temperature);
-            updateHumidity((decryptResponse[6] * 10 + decryptResponse[7]) / 10D);
-            updateState(BroadlinkBindingConstants.LIGHT_CHANNEL, ModelMapper.getLightValue(decryptResponse[8]));
-            updateState(BroadlinkBindingConstants.AIR_CHANNEL, ModelMapper.getAirValue(decryptResponse[10]));
-            updateState(BroadlinkBindingConstants.NOISE_CHANNEL, ModelMapper.getNoiseValue(decryptResponse[12]));
-            return true;
-        } catch (Exception ex) {
-            logger.warn("Failed while getting device status: {}", ex.getMessage());
-            return false;
+        byte[] response = sendAndReceiveDatagram(message, "A1 device status");
+        if (response == null) {
+            throw new BroadlinkStatusException("No status response received.");
         }
-    }
+        byte decryptResponse[] = decodeDevicePacket(response);
+        double temperature = ((decryptResponse[4] * 10 + decryptResponse[5]) / 10D);
+        logger.trace("A1 getStatusFromDevice got temperature {}", temperature);
 
-    @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
+        updateTemperature(temperature);
+        updateHumidity((decryptResponse[6] * 10 + decryptResponse[7]) / 10D);
+        updateState(BroadlinkBindingConstants.LIGHT_CHANNEL, ModelMapper.getLightValue(decryptResponse[8]));
+        updateState(BroadlinkBindingConstants.AIR_CHANNEL, ModelMapper.getAirValue(decryptResponse[10]));
+        updateState(BroadlinkBindingConstants.NOISE_CHANNEL, ModelMapper.getNoiseValue(decryptResponse[12]));
     }
 }

@@ -19,7 +19,7 @@ import org.openhab.core.thing.Thing;
 
 /**
  * Supports quirks in V44057 firmware.
- * 
+ *
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
@@ -29,9 +29,5 @@ public class BroadlinkRemoteModel3V44057Handler extends BroadlinkRemoteModel4Min
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
             StorageService storageService) {
         super(thing, commandDescriptionProvider, storageService);
-    }
-
-    protected boolean getStatusFromDevice() {
-        return true;
     }
 }

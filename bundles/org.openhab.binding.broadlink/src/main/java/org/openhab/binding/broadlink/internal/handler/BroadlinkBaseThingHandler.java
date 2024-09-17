@@ -92,10 +92,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         this.networkTrafficObserver = networkTrafficObserver;
     }
 
-    private boolean hasAuthenticated() {
-        return authenticated;
-    }
-
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Status unknown, starting initialization");
@@ -213,15 +209,15 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     // Can be implemented by devices that should do something on being found; e.g. perform a first status query
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return true;
-    }
+    // protected void onBroadlinkDeviceBecomingReachable() {
+    // updateItemStatus();
+    // }
 
     // Implemented by devices that can update the openHAB state
     // model. Return false if something went wrong that requires
     // a change in the device's online state
-    protected boolean getStatusFromDevice() {
-        return true;
+    protected void getStatusFromDevice() throws IOException, BroadlinkException {
+        NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger);
     }
 
     public void updateItemStatus() {
@@ -229,52 +225,36 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Neither a host or static IP has been defined.");
         } else {
-            try {
-                if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
-                    if (!Utils.isOnline(getThing())) {
-                        logger.trace("updateItemStatus; device not currently online, resolving");
-                        if (!hasAuthenticated()) {
-                            logger.debug(
-                                    "We've never actually successfully authenticated with this device in this session. Doing so now");
-                            authenticate();
-                            logger.debug("Authenticated with newly-detected device, will now get its status");
-                        }
-                        if (onBroadlinkDeviceBecomingReachable()) {
-                            updateStatus(ThingStatus.ONLINE);
-                        } else {
-                            forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Trouble getting status");
-                        }
-                    } else {
-                        // Normal operation ...
-                        boolean gotStatusOk = getStatusFromDevice();
-                        if (!gotStatusOk) {
-                            if (thingConfig.isIgnoreFailedUpdates()) {
-                                logger.warn(
-                                        "Problem getting status. Not marking offline because configured to ignore failed updates ...");
-                            } else {
-                                forceOffline(ThingStatusDetail.GONE, "Problem getting status");
-                            }
-                        }
+            int tries = 0;
+            while (tries < 4) {
+                try {
+                    // Check if we need to authenticate
+                    if (!authenticated) {
+                        authenticate();
                     }
-                } else {
-                    if (thingConfig.isStaticIp()) {
-                        if (!Utils.isOffline(getThing())) {
-                            forceOffline(ThingStatusDetail.NONE, "Couldn't find statically-IP-addressed device");
-                        }
-                    } else {
+                    // Normal operation ...
+                    getStatusFromDevice();
+                    updateStatus(ThingStatus.ONLINE);
+                    return;
+                } catch (BroadlinkHostNotReachableException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    if (!thingConfig.isStaticIp()) {
                         logger.debug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
                         DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
                         dra.attemptRediscovery();
                         logger.debug("Asynchronous dynamic IP device search initiated...");
                     }
+                } catch (IOException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Cannot establish a communication channel with the device: " + e.getMessage());
+                } catch (BroadlinkAuthenticationException e) {
+                    logger.debug("Authentication exception: {}", e.getMessage());
+                    forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate: " + e.getMessage());
+                } catch (BroadlinkException e) {
+                    logger.warn("Received unexpected exception: {}", e.getClass().getCanonicalName());
                 }
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Cannot establish a communication channel with the device: " + e.getMessage());
-
-            } catch (BroadlinkAuthenticationException e) {
-                logger.debug("Authentication exception: {}", e.getMessage());
-                forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate: " + e.getMessage());
+                authenticated = false;
+                tries += 1;
             }
         }
     }

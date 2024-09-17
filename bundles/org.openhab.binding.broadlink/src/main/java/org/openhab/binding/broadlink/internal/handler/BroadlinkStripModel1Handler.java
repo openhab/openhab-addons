@@ -98,7 +98,7 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
     }
 
     @Override
-    protected boolean getStatusFromDevice() {
+    protected void getStatusFromDevice() throws IOException, BroadlinkStatusException {
         byte payload[] = new byte[16];
         payload[0] = 10;
         payload[2] = -91;
@@ -108,33 +108,23 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         payload[6] = -82;
         payload[7] = -64;
         payload[8] = 1;
-        try {
-            byte message[] = buildMessage((byte) 106, payload);
-            byte response[] = sendAndReceiveDatagram(message, "status for strip");
-            if (response == null) {
-                logger.warn("response from strip device was null, did you setup the address of the device correctly?");
-                return false;
-            }
-            byte decodedPayload[] = decodeDevicePacket(response);
-            final int status = decodedPayload[14];
 
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S1,
-                    (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S2,
-                    (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S3,
-                    (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S4,
-                    (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
-        } catch (Exception ex) {
-            logger.warn("Exception while getting status from device: {}", ex.getMessage());
-            return false;
+        byte message[] = buildMessage((byte) 106, payload);
+        byte response[] = sendAndReceiveDatagram(message, "status for strip");
+        if (response == null) {
+            throw new BroadlinkStatusException(
+                    "response from strip device was null, did you setup the address of the device correctly?");
         }
-        return true;
-    }
+        byte decodedPayload[] = decodeDevicePacket(response);
+        final int status = decodedPayload[14];
 
-    @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S1,
+                (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S2,
+                (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S3,
+                (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S4,
+                (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
     }
 }

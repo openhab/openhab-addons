@@ -98,7 +98,7 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
     }
 
     @Override
-    protected boolean getStatusFromDevice() {
+    protected void getStatusFromDevice() throws IOException, BroadlinkStatusException {
         byte payload[] = new byte[16];
         payload[0] = 10;
         payload[2] = -91;
@@ -108,34 +108,22 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         payload[6] = -82;
         payload[7] = -64;
         payload[8] = 1;
-        try {
-            byte message[] = buildMessage((byte) 106, payload);
-            byte response[] = sendAndReceiveDatagram(message, "status for MP13K2U strip");
-            if (response == null) {
-                logger.warn(
-                        "response from MP13K2U strip device was null, did you define the address of the device correctly?");
-                return false;
-            }
-            byte decodedPayload[] = decodeDevicePacket(response);
-            final int status = decodedPayload[14];
-
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S1,
-                    (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S2,
-                    (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S3,
-                    (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_USB,
-                    (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
-        } catch (Exception ex) {
-            logger.warn("Exception while getting status from device: {}", ex.getMessage());
-            return false;
+        byte message[] = buildMessage((byte) 106, payload);
+        byte response[] = sendAndReceiveDatagram(message, "status for MP13K2U strip");
+        if (response == null) {
+            throw new BroadlinkStatusException(
+                    "response from MP13K2U strip device was null, did you define the address of the device correctly?");
         }
-        return true;
-    }
+        byte decodedPayload[] = decodeDevicePacket(response);
+        final int status = decodedPayload[14];
 
-    @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S1,
+                (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S2,
+                (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S3,
+                (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_USB,
+                (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
     }
 }

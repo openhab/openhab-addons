@@ -44,33 +44,22 @@ public class BroadlinkRemoteModel4MiniHandler extends BroadlinkRemoteHandler {
     }
 
     @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
-    }
-
-    @Override
-    protected boolean getStatusFromDevice() {
-        try {
-            // These devices use a 2-byte preamble to the normal protocol;
-            // https://github.com/mjg59/python-broadlink/blob/0bd58c6f598fe7239246ad9d61508febea625423/broadlink/__init__.py#L666
-            byte[] response = sendCommand((byte) 0x24, "RM4 device status"); // Status check is now Ox24, not 0x01 as in
-                                                                             // earlier devices
-            if (response == null) {
-                logger.warn("response from RM4 device was null, did you configure the right address for the device?");
-                return false;
-            }
-            byte decodedPayload[] = extractResponsePayload(response);
-
-            // Temps and humidity get divided by 100 now, not 10
-            double temperature = ((decodedPayload[0] * 100 + decodedPayload[1]) / 100D);
-            updateTemperature(temperature);
-            double humidity = ((decodedPayload[2] * 100 + decodedPayload[3]) / 100D);
-            updateHumidity(humidity);
-            return true;
-        } catch (Exception e) {
-            logger.warn("Could not get status: {}", e.getMessage());
-            return false;
+    protected void getStatusFromDevice() throws BroadlinkStatusException, IOException {
+        // These devices use a 2-byte preamble to the normal protocol;
+        // https://github.com/mjg59/python-broadlink/blob/0bd58c6f598fe7239246ad9d61508febea625423/broadlink/__init__.py#L666
+        byte[] response = sendCommand((byte) 0x24, "RM4 device status"); // Status check is now Ox24, not 0x01 as in
+        // earlier devices
+        if (response == null) {
+            throw new BroadlinkStatusException(
+                    "response from RM4 device was null, did you configure the right address for the device?");
         }
+        byte decodedPayload[] = extractResponsePayload(response);
+
+        // Temps and humidity get divided by 100 now, not 10
+        double temperature = ((decodedPayload[0] * 100 + decodedPayload[1]) / 100D);
+        updateTemperature(temperature);
+        double humidity = ((decodedPayload[2] * 100 + decodedPayload[3]) / 100D);
+        updateHumidity(humidity);
     }
 
     // These devices use a 6-byte sendCode preamble instead of the previous 4:

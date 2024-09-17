@@ -15,18 +15,14 @@ package org.openhab.binding.broadlink.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception to handle authentication issues.
+ * Exception thrown when the broadlink device is not reachable.
  *
  * @author Anton Jansen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkAuthenticationException extends BroadlinkException {
+public class BroadlinkHostNotReachableException extends BroadlinkException {
 
-    public BroadlinkAuthenticationException(String message) {
+    public BroadlinkHostNotReachableException(String message) {
         super(message);
-    }
-
-    public BroadlinkAuthenticationException(String message, Exception e) {
-        super(message, e);
     }
 }

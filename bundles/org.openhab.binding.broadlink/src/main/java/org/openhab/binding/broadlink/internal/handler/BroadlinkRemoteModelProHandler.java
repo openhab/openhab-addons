@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.broadlink.internal.handler;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.core.storage.StorageService;
@@ -32,29 +34,17 @@ public class BroadlinkRemoteModelProHandler extends BroadlinkRemoteHandler {
     }
 
     @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
-    }
-
-    @Override
-    protected boolean getStatusFromDevice() {
-        try {
-            byte payload[] = new byte[16];
-            payload[0] = 1;
-            byte message[] = buildMessage((byte) 0x6a, payload);
-            byte response[] = sendAndReceiveDatagram(message, "RM Pro device status");
-            if (response == null) {
-                logger.warn(
-                        "response from RM Pro device was null, did you configure the right address for the device?");
-                return false;
-            }
-            byte decodedPayload[] = decodeDevicePacket(response);
-            double temperature = ((decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
-            updateTemperature(temperature);
-            return true;
-        } catch (Exception e) {
-            logger.warn("Could not get status: {}", e.getMessage());
-            return false;
+    protected void getStatusFromDevice() throws IOException, BroadlinkStatusException {
+        byte payload[] = new byte[16];
+        payload[0] = 1;
+        byte message[] = buildMessage((byte) 0x6a, payload);
+        byte response[] = sendAndReceiveDatagram(message, "RM Pro device status");
+        if (response == null) {
+            throw new BroadlinkStatusException(
+                    "response from RM Pro device was null, did you configure the right address for the device?");
         }
+        byte decodedPayload[] = decodeDevicePacket(response);
+        double temperature = ((decodedPayload[4] * 10 + decodedPayload[5]) / 10D);
+        updateTemperature(temperature);
     }
 }

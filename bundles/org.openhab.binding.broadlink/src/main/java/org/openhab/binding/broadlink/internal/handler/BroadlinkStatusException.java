@@ -15,18 +15,12 @@ package org.openhab.binding.broadlink.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception to handle authentication issues.
- *
  * @author Anton Jansen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkAuthenticationException extends BroadlinkException {
+public class BroadlinkStatusException extends BroadlinkException {
 
-    public BroadlinkAuthenticationException(String message) {
+    public BroadlinkStatusException(String message) {
         super(message);
-    }
-
-    public BroadlinkAuthenticationException(String message, Exception e) {
-        super(message, e);
     }
 }

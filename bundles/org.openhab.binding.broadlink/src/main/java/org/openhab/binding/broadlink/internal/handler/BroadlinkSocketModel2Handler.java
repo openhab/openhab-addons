@@ -95,19 +95,11 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     }
 
     @Override
-    protected boolean getStatusFromDevice() {
-        try {
-            byte[] statusBytes = getStatusBytesFromDevice();
-            updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
-            if (supportsPowerConsumptionMeasurement) {
-                updatePowerConsumption(derivePowerConsumption(statusBytes));
-            }
-            return true;
-        } catch (Exception ex) {
-            logger.warn(
-                    "Unexpected exception while getting status from device: {}, did you configure the devic address correctly?",
-                    ex.getMessage());
-            return false;
+    protected void getStatusFromDevice() throws IOException {
+        byte[] statusBytes = getStatusBytesFromDevice();
+        updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
+        if (supportsPowerConsumptionMeasurement) {
+            updatePowerConsumption(derivePowerConsumption(statusBytes));
         }
     }
 
@@ -120,10 +112,5 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
             throw new IOException("No response while fetching status byte from SP2/SP2s device");
         }
         return decodeDevicePacket(response);
-    }
-
-    @Override
-    protected boolean onBroadlinkDeviceBecomingReachable() {
-        return getStatusFromDevice();
     }
 }

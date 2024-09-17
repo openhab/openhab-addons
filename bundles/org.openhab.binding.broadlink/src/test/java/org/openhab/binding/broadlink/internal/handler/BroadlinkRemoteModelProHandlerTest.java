@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.broadlink.internal.handler;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -61,7 +62,11 @@ public class BroadlinkRemoteModelProHandlerTest extends AbstractBroadlinkThingHa
                 storageService);
         setMocksForTesting(model2);
         reset(trafficObserver);
-        model2.getStatusFromDevice();
+        try {
+            model2.getStatusFromDevice();
+        } catch (IOException | BroadlinkException e) {
+            fail("Unexpected exception: " + e.getClass().getCanonicalName());
+        }
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
         assertEquals(0x6a, commandCaptor.getValue().byteValue());

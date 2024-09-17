@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.broadlink.internal.handler.BroadlinkHostNotReachableException;
 import org.slf4j.Logger;
 
 /**
@@ -39,21 +40,15 @@ public class NetworkUtils {
      * @param host hostname or ip address of the host to check for availability
      * @param timeout time in milliseconds for the check to timeout
      * @param logger the logger to use for logging any issues
-     * @return true when host is available otherwhise false
      * @throws IOException if there is an unexpected error
+     * @throws BroadlinkHostNotReachableException when the device is not responding
      */
 
-    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) throws IOException {
-        if (host == null) {
-            logger.debug("Can't check availability of a null host");
-            return false;
-        }
-        try {
-            InetAddress address = InetAddress.getByName(host);
-            return address.isReachable(timeout);
-        } catch (IOException e) {
-            logger.warn("Exception while trying to determine reachability of {}: {}", host, e.getMessage());
-            throw e;
+    public static void hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger)
+            throws IOException, BroadlinkHostNotReachableException {
+        InetAddress address = InetAddress.getByName(host);
+        if (!address.isReachable(timeout)) {
+            throw new BroadlinkHostNotReachableException("Cannot reach " + host);
         }
     }
 

@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.broadlink.internal.handler;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.measure.quantity.Power;
@@ -96,7 +98,11 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
 
         reset(mockCallback);
 
-        model3s.getStatusFromDevice();
+        try {
+            model3s.getStatusFromDevice();
+        } catch (IOException e) {
+            fail("Unexpected exception: " + e.getClass().getCanonicalName());
+        }
 
         ArgumentCaptor<ChannelUID> channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
