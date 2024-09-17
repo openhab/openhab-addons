@@ -769,7 +769,7 @@ public class Back2BackTest {
         helper("18.001", new byte[] { 42 }, new DecimalType(42));
         helper("18.001", new byte[] { 63 }, new DecimalType(63));
         // scene, learn += 0x80
-        helper("18.001", new byte[] { (byte) (0x80 + 0) }, new DecimalType(0x80));
+        helper("18.001", new byte[] { (byte) (0x80) }, new DecimalType(0x80));
         helper("18.001", new byte[] { (byte) (0x80 + 42) }, new DecimalType(0x80 + 42));
         helper("18.001", new byte[] { (byte) (0x80 + 63) }, new DecimalType(0x80 + 63));
     }
@@ -786,7 +786,7 @@ public class Back2BackTest {
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
         helper("19.001", new byte[] { (byte) (2019 - 1900), 7, 15, 17, 30, 0, (byte) 0x24, (byte) 0x00 },
                 new DateTimeType("2019-07-15T17:30:00"), new byte[0], new byte[] { 0, 0, 0, 0, 0, 0, 0, 1 });
-        // TODO add tests for incompletly filled frames (e.g. containing only date or time)
+        // TODO add tests for incompletely filled frames (e.g. containing only date or time)
     }
 
     @Test
