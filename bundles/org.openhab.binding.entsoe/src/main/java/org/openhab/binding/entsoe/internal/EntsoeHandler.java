@@ -121,6 +121,8 @@ public class EntsoeHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
+
+        refreshJob = scheduler.schedule(this::refreshPrices, 5, TimeUnit.SECONDS);
     }
 
     private ZonedDateTime currentUtcTime() {
@@ -148,7 +150,7 @@ public class EntsoeHandler extends BaseThingHandler {
         }
 
         double eurMwhPrice = result.get().getValue();
-        BigDecimal kwhPrice = BigDecimal.valueOf(eurMwhPrice).divide(new BigDecimal(1000), 20, RoundingMode.HALF_UP);
+        BigDecimal kwhPrice = BigDecimal.valueOf(eurMwhPrice).divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
         return kwhPrice;
     }
 
@@ -186,7 +188,7 @@ public class EntsoeHandler extends BaseThingHandler {
         ZonedDateTime endUtc = currentUtcTimeWholeHours().plusDays(1).withHour(22);
 
         boolean needsUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("UTC")))
-                || responseMap == null || needToFetchHistoricDays(true);
+                || responseMap.isEmpty() || needToFetchHistoricDays(true);
 
         boolean hasNextDayValue = needsUpdate ? false
                 : responseMap.entrySet().stream()
@@ -205,14 +207,14 @@ public class EntsoeHandler extends BaseThingHandler {
                 responseMap = client.doGetRequest(request, 30000);
                 TimeSeries baseTimeSeries = new TimeSeries(EntsoeBindingConstants.TIMESERIES_POLICY);
                 for (Map.Entry<ZonedDateTime, Double> entry : responseMap.entrySet()) {
-                    BigDecimal kwhPrice = BigDecimal.valueOf(entry.getValue()).divide(new BigDecimal(1000), 20,
+                    BigDecimal kwhPrice = BigDecimal.valueOf(entry.getValue()).divide(new BigDecimal(1000), 10,
                             RoundingMode.HALF_UP);
                     baseTimeSeries.add(entry.getKey().toInstant(), getPriceState(kwhPrice));
                 }
                 lastDayAheadReceived = currentUtcTime();
                 sendTimeSeries(EntsoeBindingConstants.CHANNEL_SPOT_PRICES, baseTimeSeries);
                 updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
-                scheduler.schedule(this::triggerChannelSpotPricesReceived, 30, TimeUnit.SECONDS);
+                scheduler.schedule(this::triggerChannelSpotPricesReceived, 0, TimeUnit.SECONDS);
                 success = true;
             } catch (EntsoeResponseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
