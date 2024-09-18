@@ -475,7 +475,7 @@ public class JdbcBaseDAO {
         String itemName = item.getName();
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem numberItem ? numberItem.getUnit() : null;
         return m.stream()
-                .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0])))
+                .map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsInstant(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
     }
 
@@ -684,7 +684,7 @@ public class JdbcBaseDAO {
             }
             return unit == null ? DecimalType.valueOf(objectAsString(v)) : QuantityType.valueOf(objectAsString(v));
         } else if (item instanceof DateTimeItem) {
-            return new DateTimeType(objectAsZonedDateTime(v));
+            return new DateTimeType(objectAsInstant(v).atZone(ZoneId.systemDefault()));
         } else if (item instanceof ColorItem) {
             return HSBType.valueOf(objectAsString(v));
         } else if (item instanceof DimmerItem || item instanceof RollershutterItem) {
@@ -710,20 +710,19 @@ public class JdbcBaseDAO {
         }
     }
 
-    protected ZonedDateTime objectAsZonedDateTime(Object v) {
+    protected Instant objectAsInstant(Object v) {
         if (v instanceof Long) {
-            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(((Number) v).longValue()), ZoneId.systemDefault());
+            return Instant.ofEpochMilli(((Number) v).longValue());
         } else if (v instanceof java.sql.Date objectAsDate) {
-            return ZonedDateTime.ofInstant(Instant.ofEpochMilli(objectAsDate.getTime()), ZoneId.systemDefault());
+            return Instant.ofEpochMilli(objectAsDate.getTime());
         } else if (v instanceof LocalDateTime objectAsLocalDateTime) {
-            return objectAsLocalDateTime.atZone(ZoneId.systemDefault());
+            return objectAsLocalDateTime.atZone(ZoneId.systemDefault()).toInstant();
         } else if (v instanceof Instant objectAsInstant) {
-            return objectAsInstant.atZone(ZoneId.systemDefault());
+            return objectAsInstant;
         } else if (v instanceof java.sql.Timestamp objectAsTimestamp) {
-            return objectAsTimestamp.toInstant().atZone(ZoneId.systemDefault());
+            return objectAsTimestamp.toInstant();
         } else if (v instanceof java.lang.String objectAsString) {
-            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(objectAsString).toInstant(),
-                    ZoneId.systemDefault());
+            return java.sql.Timestamp.valueOf(objectAsString).toInstant();
         }
         throw new UnsupportedOperationException("Date of type '" + v.getClass().getName() + "' is not supported");
     }
