@@ -18,9 +18,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gce.internal.model.M2MMessageParser;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -35,19 +35,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Ipx800DeviceConnector extends Thread {
-    private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
     private static final int DEFAULT_SOCKET_TIMEOUT_MS = 5000;
     private static final int DEFAULT_RECONNECT_TIMEOUT_MS = 5000;
     private static final int MAX_KEEPALIVE_FAILURE = 3;
     private static final String ENDL = "\r\n";
 
+    private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+
     private final String hostname;
     private final int portNumber;
-    private @Nullable M2MMessageParser parser;
 
-    private @NonNullByDefault({}) Socket client;
-    private @NonNullByDefault({}) BufferedReader in;
-    private @NonNullByDefault({}) PrintWriter out;
+    private Optional<M2MMessageParser> messageParser = Optional.empty();
+    private Optional<Socket> socket = Optional.empty();
+    private Optional<BufferedReader> input = Optional.empty();
+    private Optional<PrintWriter> output = Optional.empty();
 
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
@@ -60,9 +61,11 @@ public class Ipx800DeviceConnector extends Thread {
     }
 
     public synchronized void send(String message) {
-        logger.debug("Sending '{}' to Ipx800", message);
-        out.write(message + ENDL);
-        out.flush();
+        output.ifPresentOrElse(out -> {
+            logger.debug("Sending '{}' to Ipx800", message);
+            out.write(message + ENDL);
+            out.flush();
+        }, () -> logger.warn("Trying to send '{}' while the output stream is closed.", message));
     }
 
     /**
@@ -72,12 +75,15 @@ public class Ipx800DeviceConnector extends Thread {
      */
     private void connect() throws IOException {
         disconnect();
-        logger.debug("Connecting {}:{}...", hostname, portNumber);
-        client = new Socket(hostname, portNumber);
-        client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
-        client.getInputStream().skip(client.getInputStream().available());
-        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-        out = new PrintWriter(client.getOutputStream(), true);
+
+        logger.debug("Connecting to {}:{}...", hostname, portNumber);
+        Socket socket = new Socket(hostname, portNumber);
+        socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
+        socket.getInputStream().skip(socket.getInputStream().available());
+        this.socket = Optional.of(socket);
+
+        input = Optional.of(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+        output = Optional.of(new PrintWriter(socket.getOutputStream(), true));
     }
 
     /**
@@ -86,24 +92,25 @@ public class Ipx800DeviceConnector extends Thread {
     private void disconnect() {
         logger.debug("Disconnecting");
 
-        if (in != null) {
+        input.ifPresent(in -> {
             try {
                 in.close();
             } catch (IOException ignore) {
             }
-            this.in = null;
-        }
-        if (out != null) {
-            out.close();
-            this.out = null;
-        }
-        if (client != null) {
+            input = Optional.empty();
+        });
+
+        output.ifPresent(PrintWriter::close);
+        output = Optional.empty();
+
+        socket.ifPresent(client -> {
             try {
                 client.close();
             } catch (IOException ignore) {
             }
-            this.client = null;
-        }
+            socket = Optional.empty();
+        });
+
         logger.debug("Disconnected");
     }
 
@@ -120,7 +127,7 @@ public class Ipx800DeviceConnector extends Thread {
      * If we don't receive the update maxKeepAliveFailure time, the connection is closed and reopened
      */
     private void sendKeepalive() {
-        if (out != null) {
+        output.ifPresent(out -> {
             if (waitingKeepaliveResponse) {
                 failedKeepalive++;
                 logger.debug("Sending keepalive, attempt {}", failedKeepalive);
@@ -131,7 +138,7 @@ public class Ipx800DeviceConnector extends Thread {
             out.println("GetIn01");
             out.flush();
             waitingKeepaliveResponse = true;
-        }
+        });
     }
 
     @Override
@@ -144,15 +151,15 @@ public class Ipx800DeviceConnector extends Thread {
                 if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
                     throw new IOException("Max keep alive attempts has been reached");
                 }
-                try {
-                    String command = in.readLine();
-                    waitingKeepaliveResponse = false;
-                    if (parser != null) {
-                        parser.unsolicitedUpdate(command);
+                input.ifPresent(in -> {
+                    try {
+                        String command = in.readLine();
+                        waitingKeepaliveResponse = false;
+                        messageParser.ifPresent(parser -> parser.unsolicitedUpdate(command));
+                    } catch (IOException e) {
+                        handleException(e);
                     }
-                } catch (SocketTimeoutException e) {
-                    handleException(e);
-                }
+                });
             }
             disconnect();
         } catch (IOException e) {
@@ -171,15 +178,13 @@ public class Ipx800DeviceConnector extends Thread {
                 sendKeepalive();
                 return;
             } else if (e instanceof IOException) {
-                logger.warn("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
+                logger.warn("Communication error: '{}'. Will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
             }
-            if (parser != null) {
-                parser.errorOccurred(e);
-            }
+            messageParser.ifPresent(parser -> parser.errorOccurred(e));
         }
     }
 
     public void setParser(M2MMessageParser parser) {
-        this.parser = parser;
+        this.messageParser = Optional.of(parser);
     }
 }
