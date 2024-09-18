@@ -64,7 +64,9 @@ public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
                 logger.warn("Multicast socket {} failed to terminate", entry.getKey(), e);
             }
         }
-        scheduler.shutdownNow();
+        if (!scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
     }
 
     public ScheduledFuture<?> addTask(ReceivingTask runnable) {

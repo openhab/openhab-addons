@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -55,7 +56,7 @@ public class PacketListener {
         this.port = port;
     }
 
-    public void addPayloadHandler(PayloadHandler handler) {
+    public void addPayloadHandler(PayloadHandler handler) throws IOException {
         if (handlers.isEmpty()) {
             open();
         }
@@ -75,22 +76,19 @@ public class PacketListener {
         return socket != null && socket.isConnected();
     }
 
-    private void open() {
+    private void open() throws IOException {
         if (isOpen()) {
             // no need to bind socket second time
             return;
         }
-        try {
-            MulticastSocket socket = new MulticastSocket(port);
-            socket.setSoTimeout(5000);
-            InetAddress address = InetAddress.getByName(multicastGroup);
-            socket.joinGroup(address);
+        MulticastSocket socket = new MulticastSocket(port);
+        socket.setSoTimeout(5000);
+        InetAddress mcastGroupAddress = InetAddress.getByName(multicastGroup);
+        InetSocketAddress socketAddress = new InetSocketAddress(mcastGroupAddress, port);
+        socket.joinGroup(socketAddress, null);
 
-            future = registry.addTask(new ReceivingTask(socket, multicastGroup + ":" + port, handlers));
-            this.socket = socket;
-        } catch (IOException e) {
-            throw new RuntimeException("Could not open socket", e);
-        }
+        future = registry.addTask(new ReceivingTask(socket, multicastGroup + ":" + port, handlers));
+        this.socket = socket;
     }
 
     void close() throws IOException {
@@ -100,10 +98,11 @@ public class PacketListener {
             this.future = null;
         }
 
-        InetAddress address = InetAddress.getByName(multicastGroup);
+        InetAddress mcastGroupAddress = InetAddress.getByName(multicastGroup);
+        InetSocketAddress socketAddress = new InetSocketAddress(mcastGroupAddress, port);
         MulticastSocket socket = this.socket;
         if (socket != null) {
-            socket.leaveGroup(address);
+            socket.leaveGroup(socketAddress, null);
             socket.close();
             this.socket = null;
         }
