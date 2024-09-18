@@ -364,10 +364,10 @@
 		<description>LED Blink on Traffic</description>
 	</channel-type>
 
-	<channel-type id="light-sensitivity">
+	<channel-type id="light-level">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Light Sensitivity</label>
-		<description>Light Sensitivity</description>
+		<label>Light Level</label>
+		<description>Light Level</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 

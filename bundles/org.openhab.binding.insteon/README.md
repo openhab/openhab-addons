@@ -268,7 +268,7 @@ In order to determine which channels a device supports, check the device in the 
 | led-brightness        | Dimmer               |     R/W     | LED Brightness                    |
 | led-on-off            | Switch               |     R/W     | LED Enabled                       |
 | led-traffic           | Switch               |     R/W     | LED Blink on Traffic              |
-| light-sensitivity     | Number:Dimensionless |      R      | Light Sensitivity                 |
+| light-level           | Number:Dimensionless |      R      | Light Level                       |
 | load                  | Switch               |      R      | Load State                        |
 | load-sense            | Switch               |     R/W     | Load Sense                        |
 | load-sense-bottom     | Switch               |     R/W     | Load Sense Bottom                 |
@@ -885,9 +885,9 @@ Link such that the modem is a responder to the motion sensor.
 ##### Items
 
 ```java
-Switch               motionSensor                 "motion sensor [MAP(motion.map):%s]"  { channel="insteon:device:home:aabbcc:motion"}
-Number:Dimensionless motionSensorBatteryLevel     "battery level [%.1f %%]"             { channel="insteon:device:home:aabbcc:battery-level" }
-Number:Dimensionless motionSensorLightSensitivity "light sensitivity [%.1f %%]"         { channel="insteon:device:home:aabbcc:light-sensitivity" }
+Switch               motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:aabbcc:motion"}
+Number:Dimensionless motionSensorBatteryLevel "battery level [%.1f %%]"            { channel="insteon:device:home:aabbcc:battery-level" }
+Number:Dimensionless motionSensorLightLevel   "light level [%.1f %%]"              { channel="insteon:device:home:aabbcc:light-level" }
 ```
 
 <details>
@@ -895,8 +895,8 @@ Number:Dimensionless motionSensorLightSensitivity "light sensitivity [%.1f %%]" 
 
   ```java
   Contact motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
-  Number  motionSensorBatteryLevel "motion sensor battery level"         { channel="insteon:device:home:AABBCC:batteryLevel" }
-  Number  motionSensorLightLevel   "motion sensor light level"           { channel="insteon:device:home:AABBCC:lightLevel" }
+  Number  motionSensorBatteryLevel "motion sensor battery level"        { channel="insteon:device:home:AABBCC:batteryLevel" }
+  Number  motionSensorLightLevel   "motion sensor light level"          { channel="insteon:device:home:AABBCC:lightLevel" }
   ```
 
 </details>
@@ -929,7 +929,7 @@ Number:Temperature motionSensorTemperature  "temperature [%.1f °F]"            
 The temperature is automatically calculated in Fahrenheit based on the motion sensor II powered source.
 Since that sensor might not be calibrated correctly, the output temperature may need to be offset on the openHAB side.
 
-The battery and light sensitivity are only updated when either there is motion, light sensitivity above/below threshold, tamper switch activated, or the sensor battery runs low.
+The battery and light level are only updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
 
 <details>
   <summary>Legacy</summary>

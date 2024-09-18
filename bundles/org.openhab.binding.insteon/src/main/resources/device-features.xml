@@ -387,7 +387,7 @@
 	</feature-type>
 	<feature-type name="MotionSensorLightLevel">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
-		<!-- light Level range 0x00 => 0xFF -->
+		<!-- light level range 0x00 => 0xFF -->
 		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData11"
 			min="0x00" max="0xFF">CustomDimensionlessMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
@@ -424,7 +424,7 @@
 	</feature-type>
 	<feature-type name="MotionSensor2LightLevel">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
-		<!-- light Level range 0x00 => 0xFF -->
+		<!-- light level range 0x00 => 0xFF -->
 		<!-- all-link broadcast alternate heartbeat event -->
 		<message-handler command="0x11" group="11" field="addressMiddleByte" min="0x00" max="0xFF">CustomDimensionlessMsgHandler</message-handler>
 		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x03" d2="0x01" field="userData7" min="0x00"

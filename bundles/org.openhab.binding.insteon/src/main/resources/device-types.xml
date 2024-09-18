@@ -881,7 +881,7 @@
 		<feature name="heartbeat" group="4">HeartbeatMonitor</feature>
 		<feature-group name="extDataGroup" type="extDataGroup">
 			<feature name="batteryLevel">MotionSensorBatteryLevel</feature>
-			<feature name="lightSensitivity">MotionSensorLightLevel</feature>
+			<feature name="lightLevel">MotionSensorLightLevel</feature>
 		</feature-group>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="7" on="0x00" off="0x01">OpFlags</feature>
@@ -902,7 +902,7 @@
 		<feature name="tamperSwitch" group="16">WirelessSensorContact</feature>
 		<feature-group name="motionSensor2Data3Group" type="MotionSensor2Data3Group">
 			<feature name="batteryLevel">MotionSensor2BatteryLevel</feature>
-			<feature name="lightSensitivity">MotionSensor2LightLevel</feature>
+			<feature name="lightLevel">MotionSensor2LightLevel</feature>
 			<feature name="temperature">MotionSensor2Temperature</feature>
 		</feature-group>
 		<feature-group name="motionSensor2Data1Group" type="MotionSensor2Data1Group">
