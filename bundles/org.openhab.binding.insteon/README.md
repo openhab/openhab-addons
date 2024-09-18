@@ -1221,7 +1221,7 @@ Setpoint item=thermostatCoolPoint icon="temperature" minValue=63 maxValue=90 ste
 Setpoint item=thermostatHeatPoint icon="temperature" minValue=50 maxValue=80 step=1
 Switch   item=thermostatSystemMode mappings=[ OFF="OFF", HEAT="HEAT", COOL="COOL", AUTO="AUTO", PROGRAM="PROGRAM" ]
 Text     item=thermostatSystemState
-Switch   item=thermostatFanMode mappings=[ AUTO="AUTO", ON="ALWAYS ON" ]
+Switch   item=thermostatFanMode mappings=[ AUTO="AUTO", ALWAYS_ON="ALWAYS ON" ]
 Setpoint item=thermostatACDelay minValue=2 maxValue=20 step=1
 Setpoint item=thermostatBacklight minValue=0 maxValue=100 step=1
 Setpoint item=thermostatHumidityHigh minValue=0 maxValue=100 step=1

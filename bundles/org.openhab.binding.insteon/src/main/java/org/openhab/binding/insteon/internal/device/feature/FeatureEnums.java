@@ -76,7 +76,7 @@ public class FeatureEnums {
         }
     }
 
-    public static enum FanLincFanMode {
+    public static enum FanLincFanSpeed {
         OFF(0x00),
         LOW(0x55),
         MEDIUM(0xAA),
@@ -84,7 +84,7 @@ public class FeatureEnums {
 
         private int value;
 
-        private FanLincFanMode(int value) {
+        private FanLincFanSpeed(int value) {
             this.value = value;
         }
 
@@ -92,17 +92,17 @@ public class FeatureEnums {
             return value;
         }
 
-        public static FanLincFanMode valueOf(int value) throws IllegalArgumentException {
+        public static FanLincFanSpeed valueOf(int value) throws IllegalArgumentException {
             if (value == 0x00) {
-                return FanLincFanMode.OFF;
+                return FanLincFanSpeed.OFF;
             } else if (value >= 0x01 && value <= 0x7F) {
-                return FanLincFanMode.LOW;
+                return FanLincFanSpeed.LOW;
             } else if (value >= 0x80 && value <= 0xFE) {
-                return FanLincFanMode.MEDIUM;
+                return FanLincFanSpeed.MEDIUM;
             } else if (value == 0xFF) {
-                return FanLincFanMode.HIGH;
+                return FanLincFanSpeed.HIGH;
             } else {
-                throw new IllegalArgumentException("unexpected fanlinc fan mode");
+                throw new IllegalArgumentException("unexpected fanlinc fan speed");
             }
         }
 
@@ -222,7 +222,7 @@ public class FeatureEnums {
 
     public static enum ThermostatFanMode {
         AUTO(0x08, 0x00),
-        ON(0x07, 0x01);
+        ALWAYS_ON(0x07, 0x01);
 
         private static final Map<Integer, ThermostatFanMode> VALUE_MAP = Arrays.stream(values())
                 .collect(Collectors.toUnmodifiableMap(mode -> mode.value, Function.identity()));

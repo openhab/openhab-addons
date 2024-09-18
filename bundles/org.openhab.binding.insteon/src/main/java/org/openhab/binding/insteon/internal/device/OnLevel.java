@@ -19,7 +19,7 @@ import java.util.List;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanSpeed;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatFanMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.VenstarSystemMode;
@@ -56,7 +56,7 @@ public class OnLevel {
                 case FEATURE_TYPE_KEYPAD_BUTTON:
                     return "OFF".equals(string) ? 0x00 : "ON".equals(string) ? 0xFF : -1;
                 case FEATURE_TYPE_FANLINC_FAN:
-                    return FanLincFanMode.valueOf(string).getValue();
+                    return FanLincFanSpeed.valueOf(string).getValue();
                 case FEATURE_TYPE_THERMOSTAT_COOL_SETPOINT:
                 case FEATURE_TYPE_THERMOSTAT_HEAT_SETPOINT:
                 case FEATURE_TYPE_VENSTAR_COOL_SETPOINT:
@@ -93,7 +93,7 @@ public class OnLevel {
                 case FEATURE_TYPE_KEYPAD_BUTTON:
                     return OnOffType.from(value != 0x00);
                 case FEATURE_TYPE_FANLINC_FAN:
-                    return new StringType(FanLincFanMode.valueOf(value).toString());
+                    return new StringType(FanLincFanSpeed.valueOf(value).toString());
                 case FEATURE_TYPE_THERMOSTAT_COOL_SETPOINT:
                 case FEATURE_TYPE_THERMOSTAT_HEAT_SETPOINT:
                 case FEATURE_TYPE_VENSTAR_COOL_SETPOINT:
@@ -127,7 +127,7 @@ public class OnLevel {
             case FEATURE_TYPE_KEYPAD_BUTTON:
                 return List.of("ON", "OFF");
             case FEATURE_TYPE_FANLINC_FAN:
-                return FanLincFanMode.names();
+                return FanLincFanSpeed.names();
             case FEATURE_TYPE_THERMOSTAT_FAN_MODE:
             case FEATURE_TYPE_VENSTAR_FAN_MODE:
                 return ThermostatFanMode.names();

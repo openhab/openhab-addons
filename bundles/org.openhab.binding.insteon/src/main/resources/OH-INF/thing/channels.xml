@@ -231,7 +231,7 @@
 		<state>
 			<options>
 				<option value="AUTO">Auto</option>
-				<option value="ON">On</option>
+				<option value="ALWAYS_ON">Always On</option>
 			</options>
 		</state>
 	</channel-type>

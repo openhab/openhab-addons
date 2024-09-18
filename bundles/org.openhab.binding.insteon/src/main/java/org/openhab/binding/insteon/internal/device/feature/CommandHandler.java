@@ -35,7 +35,7 @@ import org.openhab.binding.insteon.internal.device.ProductData;
 import org.openhab.binding.insteon.internal.device.RampRate;
 import org.openhab.binding.insteon.internal.device.X10Address;
 import org.openhab.binding.insteon.internal.device.X10Command;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanSpeed;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRelayMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
@@ -1635,10 +1635,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * FanLinc fan mode command handler
+     * FanLinc fan speed command handler
      */
-    public static class FanLincFanModeCommandHandler extends OnOffCommandHandler {
-        FanLincFanModeCommandHandler(DeviceFeature feature) {
+    public static class FanLincFanSpeedCommandHandler extends OnOffCommandHandler {
+        FanLincFanSpeedCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1650,10 +1650,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
         @Override
         protected int getCommandCode(InsteonChannelConfiguration config, Command cmd) {
             try {
-                String mode = ((StringType) cmd).toString();
-                return FanLincFanMode.valueOf(mode) == FanLincFanMode.OFF ? 0x13 : 0x11;
+                String speed = ((StringType) cmd).toString();
+                return FanLincFanSpeed.valueOf(speed) == FanLincFanSpeed.OFF ? 0x13 : 0x11;
             } catch (IllegalArgumentException e) {
-                logger.warn("{}: got unexpected fan mode command: {}, ignoring request", nm(), cmd);
+                logger.warn("{}: got unexpected fan speed command: {}, ignoring request", nm(), cmd);
                 return -1;
             }
         }
@@ -1661,8 +1661,8 @@ public abstract class CommandHandler extends FeatureBaseHandler {
         @Override
         protected int getLevel(InsteonChannelConfiguration config, Command cmd) {
             try {
-                String mode = ((StringType) cmd).toString();
-                return FanLincFanMode.valueOf(mode).getValue();
+                String speed = ((StringType) cmd).toString();
+                return FanLincFanSpeed.valueOf(speed).getValue();
             } catch (IllegalArgumentException e) {
                 return -1;
             }

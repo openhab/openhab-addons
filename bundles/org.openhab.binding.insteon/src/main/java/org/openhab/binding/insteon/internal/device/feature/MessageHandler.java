@@ -38,7 +38,7 @@ import org.openhab.binding.insteon.internal.device.DeviceTypeRegistry;
 import org.openhab.binding.insteon.internal.device.InsteonEngine;
 import org.openhab.binding.insteon.internal.device.RampRate;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ButtonEvent;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.FanLincFanSpeed;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IMButtonEvent;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRelayMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
@@ -1303,10 +1303,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
         @Override
         protected @Nullable State getState(byte cmd1, double value) {
             try {
-                FanLincFanMode mode = FanLincFanMode.valueOf((int) value);
-                return new StringType(mode.toString());
+                FanLincFanSpeed speed = FanLincFanSpeed.valueOf((int) value);
+                return new StringType(speed.toString());
             } catch (IllegalArgumentException e) {
-                logger.warn("{}: got unexpected fan mode reply value: {}", nm(), HexUtils.getHexString((int) value));
+                logger.warn("{}: got unexpected fan speed reply value: {}", nm(), HexUtils.getHexString((int) value));
                 return UnDefType.UNDEF;
             }
         }
