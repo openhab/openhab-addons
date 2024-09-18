@@ -106,7 +106,8 @@
 		<label>Change Menu Screen</label>
 		<description>Change(TELEPORT) to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My
 			Shows), SEARCH, NETFLIX. Type: String</description>
-		<state readOnly="false">
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state>
 			<options>
 				<option value="TIVO">TIVO</option>
 				<option value="LIVETV">LIVETV</option>
@@ -122,7 +123,8 @@
 		<label>Remote Control Button</label>
 		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See README.md for supported
 			codes. Type: String</description>
-		<state readOnly="false">
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<state>
 			<options>
 				<option value="UP">UP</option>
 				<option value="DOWN">DOWN</option>
@@ -187,7 +189,7 @@
 		<label>Keyboard Command</label>
 		<description>Sends a code (KEYBOARD) corresponding to a keyboard key press to the TiVo e.g. A-Z. See Appendix A in
 			document TCP Remote Protocol 1.1 for supported characters and special character codes. Type: String</description>
-		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="dvrStatus">
 		<item-type>String</item-type>

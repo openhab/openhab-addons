@@ -46,6 +46,7 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="POWERON">Power On</option>

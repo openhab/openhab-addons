@@ -274,6 +274,7 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>Simulate Pressing a Button on the Remote Control</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="EJT">Eject</option>

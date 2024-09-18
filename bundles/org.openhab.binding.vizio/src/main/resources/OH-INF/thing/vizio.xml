@@ -78,6 +78,7 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button press to send to the TV</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="PowerOn">Power On</option>

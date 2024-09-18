@@ -147,6 +147,7 @@
 		<item-type>String</item-type>
 		<label>Direct Command</label>
 		<description>Send a Command Directly to the Projector</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="mute=on">Mute On</option>

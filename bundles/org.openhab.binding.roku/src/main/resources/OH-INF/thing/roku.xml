@@ -81,6 +81,7 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="Home">Home</option>
@@ -107,6 +108,7 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku TV</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="Home">Home</option>
