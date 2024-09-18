@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -51,6 +54,8 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler implements TokenUpdateListener {
 
+    private final Logger logger = LoggerFactory.getLogger(ElectroluxAppliancesBridgeHandler.class);
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private int refreshTimeInSeconds = 300;
@@ -62,6 +67,7 @@ public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler impleme
 
     private @Nullable ElectroluxGroupAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> instantUpdate;
 
     public ElectroluxAppliancesBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson) {
         super(bridge);
@@ -159,12 +165,27 @@ public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler impleme
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+        refreshJob = this.instantUpdate;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            this.refreshJob = null;
+        }
+    }
+
+    private synchronized void updateNow() {
+        Future<?> localRef = instantUpdate;
+        if (localRef == null || localRef.isDone()) {
+            instantUpdate = scheduler.schedule(this::refreshAndUpdateStatus, 5, TimeUnit.SECONDS);
+        } else {
+            logger.debug("Already waiting for scheduled refresh");
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_STATUS.equals(channelUID.getId()) && command instanceof RefreshType) {
-            scheduler.schedule(this::refreshAndUpdateStatus, 1, TimeUnit.SECONDS);
+        logger.debug("Command received: {} on channelID: {}", command, channelUID);
+        if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
+            updateNow();
         }
     }
 }

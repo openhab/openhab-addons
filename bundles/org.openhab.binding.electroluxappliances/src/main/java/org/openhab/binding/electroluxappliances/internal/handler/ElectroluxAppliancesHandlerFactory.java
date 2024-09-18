@@ -78,9 +78,9 @@ public class ElectroluxAppliancesHandlerFactory extends BaseThingHandlerFactory 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ELECTROLUX_AIR_PURIFIER.equals(thingTypeUID)) {
-            return new ElectroluxAppliancesHandler(thing);
+            return new ElectroluxAirPurifierHandler(thing);
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
-            return new ElectroluxAppliancesHandler(thing);
+            return new ElectroluxWashingMachineHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new ElectroluxAppliancesBridgeHandler((Bridge) thing, httpClient, gson);
         }
