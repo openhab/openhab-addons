@@ -65,7 +65,7 @@ public class Ipx800DeviceConnector extends Thread {
             logger.debug("Sending '{}' to Ipx800", message);
             out.write(message + ENDL);
             out.flush();
-        }, () -> logger.warn("Tentative to send '{}' while the output stream is closed.", message));
+        }, () -> logger.warn("Trying to send '{}' while the output stream is closed.", message));
     }
 
     /**
@@ -76,14 +76,14 @@ public class Ipx800DeviceConnector extends Thread {
     private void connect() throws IOException {
         disconnect();
 
-        logger.debug("Connecting {}:{}...", hostname, portNumber);
-        Socket client = new Socket(hostname, portNumber);
-        client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
-        client.getInputStream().skip(client.getInputStream().available());
-        socket = Optional.of(client);
+        logger.debug("Connecting to {}:{}...", hostname, portNumber);
+        Socket socket = new Socket(hostname, portNumber);
+        socket.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
+        socket.getInputStream().skip(socket.getInputStream().available());
+        this.socket = Optional.of(socket);
 
-        input = Optional.of(new BufferedReader(new InputStreamReader(client.getInputStream())));
-        output = Optional.of(new PrintWriter(client.getOutputStream(), true));
+        input = Optional.of(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+        output = Optional.of(new PrintWriter(socket.getOutputStream(), true));
     }
 
     /**
@@ -178,7 +178,7 @@ public class Ipx800DeviceConnector extends Thread {
                 sendKeepalive();
                 return;
             } else if (e instanceof IOException) {
-                logger.warn("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
+                logger.warn("Communication error: '{}'. Will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
             }
             messageParser.ifPresent(parser -> parser.errorOccurred(e));
         }
