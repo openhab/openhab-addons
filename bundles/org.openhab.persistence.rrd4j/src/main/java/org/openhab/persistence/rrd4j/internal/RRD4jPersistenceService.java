@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -474,8 +473,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
                             HistoricItem rrd4jItem = new RRD4jItem(itemName, toState.apply(lastValue),
-                                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(db.getLastArchiveUpdateTime()),
-                                            ZoneId.systemDefault()));
+                                    Instant.ofEpochSecond(db.getLastArchiveUpdateTime()));
                             return List.of(rrd4jItem);
                         } else {
                             return List.of();
@@ -504,7 +502,6 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
             List<HistoricItem> items = new ArrayList<>();
             long ts = result.getFirstTimestamp();
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault());
             long step = result.getRowCount() > 1 ? result.getStep() : 0;
 
             double prevValue = Double.NaN;
@@ -520,10 +517,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         prevValue = value;
                     }
 
-                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, zdt);
+                    RRD4jItem rrd4jItem = new RRD4jItem(itemName, state, Instant.ofEpochSecond(ts));
                     items.add(rrd4jItem);
                 }
-                zdt = zdt.plusSeconds(step);
                 ts += step;
             }
             return items;
