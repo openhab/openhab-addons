@@ -52,5 +52,17 @@
       <version>2.3.2</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.hubspot.immutables.immutables-exceptions</artifactId>
+      <version>1.9</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
