@@ -14,6 +14,8 @@ package org.openhab.binding.smaenergymeter.internal;
 
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.handler.SMAEnergyMeterHandler;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
 import org.openhab.core.thing.Thing;
@@ -31,6 +33,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.smaenergymeter")
 public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
@@ -47,7 +50,7 @@ public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ENERGY_METER)) {
