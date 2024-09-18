@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.Device;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
+import org.openhab.binding.insteon.internal.device.InsteonEngine;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
 import org.openhab.binding.insteon.internal.device.InsteonScene;
 import org.openhab.binding.insteon.internal.device.X10Address;
@@ -164,5 +165,10 @@ public abstract class InsteonCommand implements ConsoleCommandCompleter {
             return getInsteonSceneHandlers().filter(handler -> handler.getThingId().equals(thingId))
                     .map(InsteonSceneHandler::getScene).findFirst().orElse(null);
         }
+    }
+
+    protected InsteonEngine getInsteonEngine(String thingId) {
+        InsteonDevice device = getInsteonDevice(thingId);
+        return device != null ? device.getInsteonEngine() : InsteonEngine.UNKNOWN;
     }
 }

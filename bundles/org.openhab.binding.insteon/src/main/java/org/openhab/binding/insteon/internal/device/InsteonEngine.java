@@ -29,7 +29,7 @@ public enum InsteonEngine {
     I1(0x00, false),
     I2(0x01, false),
     I2CS(0x02, true),
-    UNKNOWN(0xFF, false);
+    UNKNOWN(0xFF, true);
 
     private static final Map<Integer, InsteonEngine> VERSION_MAP = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(engine -> engine.version, Function.identity()));

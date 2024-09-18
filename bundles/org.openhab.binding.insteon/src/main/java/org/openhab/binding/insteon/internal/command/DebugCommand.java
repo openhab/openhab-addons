@@ -407,8 +407,9 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                     msg = Msg.makeStandardMessage(address, cmd1, cmd2);
                 } else {
                     byte[] data = HexUtils.toByteArray(args, 4, args.length);
+                    boolean setCRC = getInsteonEngine(args[1]).supportsChecksum();
                     if (messageType == MessageType.EXTENDED) {
-                        msg = Msg.makeExtendedMessage(address, cmd1, cmd2, data, true);
+                        msg = Msg.makeExtendedMessage(address, cmd1, cmd2, data, setCRC);
                     } else {
                         msg = Msg.makeExtendedMessageCRC2(address, cmd1, cmd2, data);
                     }
