@@ -373,7 +373,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (timestamp - 1 > db.getLastUpdateTime()) {
                     // only do it if there is not already a value
                     double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                    if (!Double.isNaN(lastValue)) {
+                    if (!Double.isNaN(lastValue) && lastValue != value) {
                         Sample sample = db.createSample();
                         sample.setTime(timestamp - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
