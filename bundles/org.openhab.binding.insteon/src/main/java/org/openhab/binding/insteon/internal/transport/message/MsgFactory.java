@@ -151,7 +151,8 @@ public class MsgFactory {
         if (end == 0 || msg == null) {
             logger.trace("done processing current buffer data");
             done = true;
-        } else if (logger.isTraceEnabled()) {
+        }
+        if (logger.isTraceEnabled()) {
             logger.trace("keeping buffer len {} data: {}", end, HexUtils.getHexString(buf, end, false));
         }
         return msg;
