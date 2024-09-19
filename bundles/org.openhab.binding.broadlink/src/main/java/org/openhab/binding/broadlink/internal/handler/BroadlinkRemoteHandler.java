@@ -168,7 +168,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                             new StringType("IR command " + irCommand + " " + message));
                 } else {
                     if (replacement) {
-                        logger.info("Command label not previously stored. Skipping");
+                        logger.debug("Command label not previously stored. Skipping");
                         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                                 new StringType("IR command " + irCommand + " does not exist"));
                     } else {
