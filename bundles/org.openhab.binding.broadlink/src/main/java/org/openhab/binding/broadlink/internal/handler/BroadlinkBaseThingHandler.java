@@ -197,6 +197,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         byte[] rxBytes = BroadlinkProtocol.decodePacket(responseBytes, this.deviceKey,
                 BroadlinkBindingConstants.BROADLINK_IV);
 
+        NetworkTrafficObserver networkTrafficObserver = this.networkTrafficObserver;
         if (networkTrafficObserver != null) {
             networkTrafficObserver.onBytesReceived(rxBytes);
         }
