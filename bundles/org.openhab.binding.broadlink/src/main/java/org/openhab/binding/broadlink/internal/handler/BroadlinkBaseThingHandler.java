@@ -127,9 +127,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             logger.debug("Cancellation successful: {}", cancelled);
 
         }
+        Socket socket = this.socket;
         if (socket != null) {
             socket.close();
-            socket = null;
+            this.socket = null;
         }
         super.dispose();
     }
