@@ -1170,6 +1170,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
             // resource data
+            properties.put(PROPERTY_RESOURCE_ID, resourceId);
             properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
             properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
 
@@ -1196,7 +1197,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 String modelId = productData.getModelId();
 
                 // standard properties
-                properties.put(PROPERTY_RESOURCE_ID, resourceId);
                 properties.put(Thing.PROPERTY_MODEL_ID, modelId);
                 properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());
