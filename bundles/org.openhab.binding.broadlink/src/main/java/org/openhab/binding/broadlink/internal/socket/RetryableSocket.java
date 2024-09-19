@@ -109,9 +109,10 @@ public class RetryableSocket {
     }
 
     public void close() {
+    Socket socket = this.socket;
         if (socket != null) {
             socket.close();
-            socket = null;
+            this.socket = null;
         }
     }
 }
