@@ -340,8 +340,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             this.scheduler.execute(() -> {
                 for (Thing el : getThing().getThings()) {
                     final ThingHandler th = el.getHandler();
-                    if (th instanceof IBridgeData) {
-                        ((IBridgeData) th).handleBridgeDataUpdated();
+                    if (th instanceof IBridgeData bridgeData) {
+                        bridgeData.handleBridgeDataUpdated();
                     }
                 }
             });

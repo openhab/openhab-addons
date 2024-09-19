@@ -133,22 +133,22 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        final Map<String, Object> x = new HashMap<>(4);
+        final Map<String, Object> bridgeProperties = new HashMap<>(4);
         final String gatewayId = getGwId(service.getName());
-        x.put(BRIDGE_PROP_GW_ID, gatewayId);
+        bridgeProperties.put(BRIDGE_PROP_GW_ID, gatewayId);
         final String macId = (String) rawDataProps.get(RAW_MAC);
         if (macId != null) {
-            x.put(BRIDGE_PROP_MAC_ADDR, macId);
+            bridgeProperties.put(BRIDGE_PROP_MAC_ADDR, macId);
         }
         final String version = (String) rawDataProps.get(RAW_VERSION);
         if (version != null) {
-            x.put(BRIDGE_PROP_GW_VER, version);
+            bridgeProperties.put(BRIDGE_PROP_GW_VER, version);
         }
         final String hostname = getHostName(service);
         if (hostname.isEmpty()) {
             return null;
         }
-        x.put(BRIDGE_CONFIG_HOSTNAME, qualifiedName);
+        bridgeProperties.put(BRIDGE_CONFIG_HOSTNAME, qualifiedName);
 
         if (gatewayId.isEmpty()) {
             return null;
@@ -164,23 +164,24 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
                     .filter(thing -> THING_TYPE_GATEWAY.equals(thing.getThingTypeUID())).toList();
             for (final Thing thing : things) {
                 final ThingHandler handler = thing.getHandler();
-                if (handler instanceof LinkTapBridgeHandler) {
-                    ((LinkTapBridgeHandler) handler).attemptReconnectIfNeeded();
+                if (handler instanceof LinkTapBridgeHandler bridgeHandler) {
+                    bridgeHandler.attemptReconnectIfNeeded();
                     logger.trace("[{}] Bridge handler {} notified", itemId, handler.getThing().getLabel());
                 }
             }
         });
 
-        return DiscoveryResultBuilder.create((new ThingUID(THING_TYPE_GATEWAY, gatewayId))).withProperties(x)
-                .withLabel("LinkTap Gateway (" + gatewayId + ")").withRepresentationProperty(BRIDGE_PROP_GW_ID).build();
+        return DiscoveryResultBuilder.create((new ThingUID(THING_TYPE_GATEWAY, gatewayId)))
+                .withProperties(bridgeProperties).withLabel("LinkTap Gateway (" + gatewayId + ")")
+                .withRepresentationProperty(BRIDGE_PROP_GW_ID).build();
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        final Map<String, Object> x = new HashMap<>(4);
+        final Map<String, Object> bridgeProperties = new HashMap<>(4);
         final String gatewayId = getGwId(service.getName());
-        x.put(BRIDGE_PROP_GW_ID, gatewayId);
-        if (x.get(BRIDGE_PROP_GW_ID) == null) {
+        bridgeProperties.put(BRIDGE_PROP_GW_ID, gatewayId);
+        if (bridgeProperties.get(BRIDGE_PROP_GW_ID) == null) {
             return null;
         }
         return (new ThingUID(THING_TYPE_GATEWAY,

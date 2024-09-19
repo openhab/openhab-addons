@@ -226,7 +226,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         scheduler.submit(() -> {
             try {
-                if (command instanceof RefreshType rt) {
+                if (command instanceof RefreshType) {
                     switch (channelUID.getId()) {
                         case DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES: {
                             final String savedVal = strStore.get(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES);

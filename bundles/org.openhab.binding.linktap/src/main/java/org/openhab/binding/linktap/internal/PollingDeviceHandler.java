@@ -191,14 +191,14 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
     }
 
     public String sendRequest(TLGatewayFrame frame) throws InvalidParameterException {
-        if (frame instanceof DeviceCmdReq) {
+        if (frame instanceof DeviceCmdReq devCmdReq) {
             final String deviceAddr = getValidatedIdString();
             if (deviceAddr.equals(MARKER_INVALID_DEVICE_KEY)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Check device setup - device is unknown");
                 return EMPTY_STRING;
             }
-            ((DeviceCmdReq) frame).deviceId = deviceAddr;
+            devCmdReq.deviceId = deviceAddr;
         }
 
         final Bridge parentBridge = getBridge();
