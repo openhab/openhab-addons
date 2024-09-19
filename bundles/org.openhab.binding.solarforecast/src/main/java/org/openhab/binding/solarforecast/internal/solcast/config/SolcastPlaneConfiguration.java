@@ -24,11 +24,9 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 public class SolcastPlaneConfiguration {
     public String resourceId = SolarForecastBindingConstants.EMPTY;
     public long refreshInterval = 150;
-    public boolean forecastOnly = false;
 
     @Override
     public String toString() {
-        return "SolcastPlaneConfiguration [resourceId=" + resourceId + ", refreshInterval=" + refreshInterval
-                + ", forecastOnly=" + forecastOnly + "]";
+        return "SolcastPlaneConfiguration [resourceId=" + resourceId + ", refreshInterval=" + refreshInterval + "]";
     }
 }
