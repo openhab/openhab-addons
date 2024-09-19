@@ -371,7 +371,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         try {
             while ((System.currentTimeMillis() < timeout) && (freqFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
-                logger.trace("Check");
+                logger.trace("Checking rf frequency");
                 byte[] resp = (sendCommand(COMMAND_BYTE_CHECK_RF_FREQ_LEARNING, "check rf frequency"));
                 if (resp != null) {
                     resp = extractResponsePayload(resp);
