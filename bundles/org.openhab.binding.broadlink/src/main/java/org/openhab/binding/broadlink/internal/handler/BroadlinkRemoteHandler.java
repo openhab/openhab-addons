@@ -435,7 +435,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                         }
 
                         if (cmdLabel != null) {
-                            logger.info("Learnt code '{}' ", hexSTring);
+                            logger.info("Learnt code '{}' ", hexString);
                             dataFound = true;
                         }
                     } catch (ProtocolException ex) {

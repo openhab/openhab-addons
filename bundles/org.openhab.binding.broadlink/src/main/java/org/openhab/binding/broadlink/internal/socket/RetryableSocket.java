@@ -71,7 +71,7 @@ public class RetryableSocket {
     @SuppressWarnings("null")
     private boolean sendDatagram(byte message[], String purpose) {
         try {
-            Socket socket = this.socket;
+            DatagramSocket socket = this.socket;
             if (socket == null || socket.isClosed()) {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
@@ -109,7 +109,7 @@ public class RetryableSocket {
     }
 
     public void close() {
-    Socket socket = this.socket;
+        DatagramSocket socket = this.socket;
         if (socket != null) {
             socket.close();
             this.socket = null;
