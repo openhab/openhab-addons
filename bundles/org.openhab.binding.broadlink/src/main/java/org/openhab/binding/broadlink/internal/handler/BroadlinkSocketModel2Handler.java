@@ -51,10 +51,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
 
     protected OnOffType deriveOnOffBitFromStatusPayload(byte[] statusPayload, byte mask) {
         byte statusByte = statusPayload[4];
-        if ((statusByte & mask) == mask) {
-            return OnOffType.ON;
-        }
-        return OnOffType.OFF;
+        return OnOffType.from((statusByte & mask) == mask);
     }
 
     OnOffType derivePowerStateFromStatusBytes(byte[] statusPayload) {
