@@ -412,8 +412,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
         sendCommand(COMMAND_BYTE_FIND_RF_PACKET, "find the rf packet data");
 
-        long start = System.currentTimeMillis();
-        long timeout = start + 30 * 1000;
+        long timeout = System.currentTimeMillis() + 30 * 1000;
 
         boolean dataFound = false;
 
