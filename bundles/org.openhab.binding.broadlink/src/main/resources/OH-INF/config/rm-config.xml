@@ -9,7 +9,7 @@
 		<parameter name="ipAddress" type="text">
 			<context>network-address</context>
 			<label>Network Address</label>
-			<description>Network address of the device.</description>
+			<description>IP address or hostname of the device.</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="staticIp" type="boolean">
