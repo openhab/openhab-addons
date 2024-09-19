@@ -58,12 +58,12 @@ See [DateTime](#date-time) section for more information.
 | Name            | Type    | Description                                                              | Default         | Required | Advanced |
 |-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
 | resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
-| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 120             | yes      | no       |
+| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 150             | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
-`refreshInterval` of forecast data needs to respect the throttling of the Solcast service.
-If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
+`refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
+If you have 10 free calls per day, each plane needs 1 call per update a refresh interval of 150 minutes will result in 10 calls per day.
 
 With `refreshInterval = 0` the forecast data will not be updated by binding.
 This gives the user the possibility to define an own update strategy in rules.

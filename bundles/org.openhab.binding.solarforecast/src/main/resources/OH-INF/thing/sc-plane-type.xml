@@ -19,6 +19,10 @@
 			<channel-group id="raw" typeId="raw-values"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -50,6 +50,7 @@ public class SolarForecastBindingConstants {
     public static final String CHANNEL_ENERGY_REMAIN = "energy-remain";
     public static final String CHANNEL_ENERGY_TODAY = "energy-today";
     public static final String CHANNEL_JSON = "json";
+    public static final String CHANNEL_COUNT = "count";
 
     // Other
     public static final int REFRESH_ACTUAL_INTERVAL = 1;

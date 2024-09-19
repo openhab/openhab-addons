@@ -45,4 +45,9 @@
 		<label>Raw JSON Response</label>
 		<description>Plain JSON response without conversions</description>
 	</channel-type>
+	<channel-type id="count" advanced="true">
+		<item-type>Number</item-type>
+		<label>API Request Count</label>
+		<description>Number of requests send to Solcast API today UTC</description>
+	</channel-type>
 </thing:thing-descriptions>

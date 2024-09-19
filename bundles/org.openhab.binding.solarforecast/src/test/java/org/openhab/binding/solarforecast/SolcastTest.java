@@ -13,8 +13,7 @@
 package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Clock;
@@ -77,8 +76,7 @@ class SolcastTest {
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
-    public static SolcastObject scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER,
-            (Storage<String>) mock(Storage.class));
+    public static SolcastObject scfo = new SolcastObject("sc-test", Instant.MIN, TIMEZONEPROVIDER, mock(Storage.class));
     public static ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
 
     @BeforeAll
@@ -120,8 +118,7 @@ class SolcastTest {
         try {
             when(actualsRequest.send()).thenReturn(actualsResponse);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail();
         }
         when(actualsResponse.getContentAsString()).thenReturn(FileReader.readFileInString(content));
         when(actualsResponse.getStatus()).thenReturn(status);
@@ -135,8 +132,7 @@ class SolcastTest {
         try {
             when(forecastRequest.send()).thenReturn(forecastResponse);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail();
         }
         when(forecastResponse.getContentAsString()).thenReturn(FileReader.readFileInString(content));
         when(forecastResponse.getStatus()).thenReturn(status);
@@ -843,13 +839,10 @@ class SolcastTest {
         planeConfigMap.put("resourceId", resourceId);
         Configuration planeConfig = new Configuration(planeConfigMap);
         scph1.updateConfig(planeConfig);
-        System.out.println("Update Config done");
         scph1.initialize();
-        System.out.println("Init done");
 
         // simulate trigger of refresh job
         scbh.getData();
-        System.out.println(scph1.getSolarForecasts().get(0).getForecastBegin());
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
         assertEquals(302, ts1.size(), "TimeSeries size");
@@ -904,54 +897,6 @@ class SolcastTest {
         assertFalse(scfo.isExpired());
     }
 
-    /**
-     * @Test
-     *       void testOnlyForeecast() {
-     *       BridgeImpl bi = new
-     *       BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE,
-     *       "sc-bridge-test");
-     *       SolcastBridgeMock scbh = new SolcastBridgeMock(bi, new TimeZP());
-     *       bi.setHandler(scbh);
-     *       CallbackMock cm = new CallbackMock();
-     *       scbh.setCallback(cm);
-     *       Map<String, Object> bridgeConfigMap = new HashMap<>();
-     *       bridgeConfigMap.put("apiKey", "abc");
-     *       Configuration bridgeConfig = new Configuration(bridgeConfigMap);
-     *       scbh.updateConfig(bridgeConfig);
-     *       scbh.initialize();
-     * 
-     *       Thing thing = new
-     *       ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE,
-     *       "sc-plane-1-test");
-     *       thing.setBridgeUID(bi.getUID());
-     *       Storage<String> store = new VolatileStorage<>();
-     * 
-     *       String resourceId = "plane-1";
-     *       HttpClient httpMock = mock(HttpClient.class);
-     *       httpForecastResponse(httpMock, 200,
-     *       "src/test/resources/solcast/forecasts.json", resourceId);
-     *       SolcastPlaneMock scph1 = new SolcastPlaneMock(thing, httpMock, store);
-     *       CallbackMock cm1 = new CallbackMock();
-     *       cm1.setBridge(bi);
-     *       scph1.setCallback(cm1);
-     * 
-     *       Map<String, Object> planeConfigMap = new HashMap<>();
-     *       planeConfigMap.put("resourceId", resourceId);
-     *       planeConfigMap.put("forecastOnly", true);
-     *       Configuration planeConfig = new Configuration(planeConfigMap);
-     *       scph1.updateConfig(planeConfig);
-     * 
-     *       scph1.initialize();
-     *       scbh.getData();
-     *       try {
-     *       Thread.sleep(5000);
-     *       } catch (InterruptedException e) {
-     *       // TODO Auto-generated catch block
-     *       e.printStackTrace();
-     *       }
-     *       System.out.println(cm1.getTimeSeries("solarforecast:sc-site:sc-bridge-test:average#energy-estimate").size());
-     *       }
-     */
     @Test
     void testTodayValues() {
         String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");

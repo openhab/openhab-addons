@@ -79,7 +79,6 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
-        System.out.println("Set time series for channel:" + channelUID.getAsString());
         seriesMap.put(channelUID.getAsString(), timeSeries);
     }
 
@@ -94,8 +93,6 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         currentInfo = thingStatus;
-        System.out.println(thing.getUID() + ": " + thingStatus.getStatus() + " " + thingStatus.getStatusDetail() + " "
-                + thingStatus.getDescription());
     }
 
     public ThingStatusInfo getStatus() {

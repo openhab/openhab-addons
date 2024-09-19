@@ -52,9 +52,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
+    public static final String FORECAST_APPENDIX = "-forecast";
+    public static final String EXPIRATION_APPENDIX = "-expiration";
+
     private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<>();
-    private static final String FORECAST_APPENDIX = "-forecast";
-    private static final String EXPIRATION_APPENDIX = "-expiration";
 
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private final TreeMap<ZonedDateTime, Double> estimationDataMap = new TreeMap<>();
@@ -96,7 +97,6 @@ public class SolcastObject implements SolarForecast {
         // try to recover data from storage during initialization in order to reduce
         // Solcast API calls
         if (storage.containsKey(id + FORECAST_APPENDIX)) {
-            System.out.println(id + " found storage values ");
             JSONObject forecast = new JSONObject(storage.get(id + FORECAST_APPENDIX));
             String expirationString = storage.get(id + EXPIRATION_APPENDIX);
             if (expirationString != null) {
@@ -130,11 +130,15 @@ public class SolcastObject implements SolarForecast {
                 resultJsonArray = forecast.getJSONArray(KEY_ACTUALS);
                 addJSONArray(resultJsonArray);
                 rawData.get().put(KEY_ACTUALS, resultJsonArray);
+            } else {
+                logger.trace("No actuals found");
             }
             if (forecast.has(KEY_FORECAST)) {
                 resultJsonArray = forecast.getJSONArray(KEY_FORECAST);
                 addJSONArray(resultJsonArray);
                 rawData.get().put(KEY_FORECAST, resultJsonArray);
+            } else {
+                logger.trace("No forecast found found");
             }
         }
     }
@@ -148,22 +152,21 @@ public class SolcastObject implements SolarForecast {
             if (periodEndZdt == null) {
                 return;
             }
-            if (estimationDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE)) != null) {
-                System.out.println("Previous value replaced");
-            }
 
+            double estimate = jo.getDouble(KEY_ESTIMATE);
+            estimationDataMap.put(periodEndZdt, estimate);
             // fill pessimistic values
             if (jo.has(KEY_ESTIMATE10)) {
                 pessimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE10));
             } else {
-                pessimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
+                pessimisticDataMap.put(periodEndZdt, estimate);
             }
 
             // fill optimistic values
             if (jo.has(KEY_ESTIMATE90)) {
                 optimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE90));
             } else {
-                optimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
+                optimisticDataMap.put(periodEndZdt, estimate);
             }
             if (jo.has("period")) {
                 period = Duration.parse(jo.getString("period")).toMinutes();
