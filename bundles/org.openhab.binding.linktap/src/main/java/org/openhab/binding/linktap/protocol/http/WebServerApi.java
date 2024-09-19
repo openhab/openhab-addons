@@ -12,13 +12,7 @@
  */
 package org.openhab.binding.linktap.protocol.http;
 
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_ID;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_VER;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HTTP_API_ENABLED;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HTTP_API_EP;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HW_MODEL;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_MAC_ADDR;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
 import static org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException.*;
 import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.*;
 
