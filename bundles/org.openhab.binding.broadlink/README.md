@@ -143,7 +143,7 @@ Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB
 As an advantage, the files are now backed up by openHAB, which is more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
 
 With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. 
-As an example, a file with the commands shown in the previous example would look like this:
+With the change of the storage mechanism, the files are also changing format, and codes are now stored in json.
 
 ```json
 {
