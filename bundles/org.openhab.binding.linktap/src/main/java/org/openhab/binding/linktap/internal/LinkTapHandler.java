@@ -12,45 +12,8 @@
  */
 package org.openhab.binding.linktap.internal;
 
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.ChildLockMode;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_ACTIVE_WATERING;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_BATTERY;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_CHILD_LOCK;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_CURRENT_VOLUME;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FAILSAFE_DURATION;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FAILSAFE_VOLUME;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FALL_STATUS;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FINAL_SEGMENT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FLM_LINKED;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_FLOW_RATE;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_HIGH_FLOW;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_IS_MANUAL_MODE;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_LOW_FLOW;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_DURATION_LIMIT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_VOLUME_LIMIT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_REMAIN_DURATION;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_RF_LINKED;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_SHUTDOWN_FAILURE;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_SIGNAL;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_TOTAL_DURATION;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATERING_MODE;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATER_CUT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATER_PLAN_ID;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.GSON;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.WateringMode;
-import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_DEVICE_FALL;
-import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_UNEXPECTED_HIGH_FLOW;
-import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_UNEXPECTED_LOW_FLOW;
-import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_VALVE_SHUTDOWN_FAIL;
-import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_WATER_CUTOFF;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_DATETIME_SYNC;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_IMMEDIATE_WATER_STOP;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_NOTIFICATION_WATERING_SKIPPED;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_RAINFALL_DATA;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_UPDATE_WATER_TIMER_STATUS;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
+import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

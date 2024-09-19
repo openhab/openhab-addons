@@ -25,21 +25,21 @@ Older GW_01 gateway devices have not been tested but should work with a static I
 
 The recommended minimum version of the firmware is:
 
-* **GW_01** is to start with **at least S609**
-* **GW_02** is to start with **at least G609**
+- **GW_01** is to start with **at least S609**
+- **GW_02** is to start with **at least G609**
 
 ## Connection Options
 
-LinkTap supports MQTT and a direct interaction via HTTP. 
+LinkTap supports MQTT and a direct interaction via HTTP.
 This binding directly interacts with LinkTap's gateway devices using the Local HTTP API (HTTP).
-The binding connects to the gateway's directly, and the Gateway is configured automatically to push updates to openHAB if it has a HTTP configured server. 
+The binding connects to the gateway's directly, and the Gateway is configured automatically to push updates to openHAB if it has a HTTP configured server.
 (Note HTTPS is not supported).
 
 Should the Gateway device's not be able to connect to the binding it automatically falls-back to a polling implementation (15 second cycle).
 The gateway supports 1 Local HTTP API, for an ideal behavior the Gateway should be able to connect to openHAB on a HTTP port by its IP, and only a single openHAB instance should be connected to a Gateway.
 It is recommended that you use **static IP's** for this binding, **for both openHAB and the Gateway device(s)** regardless of the gateway's model.
 
-If dynamic IPs are used for the gateway, the mDNS address is recommended to be used. 
+If dynamic IPs are used for the gateway, the mDNS address is recommended to be used.
 This can be found when running a manual scan, for LinkTap Gateways.
 This will remove any DNS caching related issues, depending on your setup.
 
@@ -220,7 +220,7 @@ Text item=Tap1WateringPlanId
 
 #### Other Models
 
-Please check the [Link-Tap](https://www.link-tap.com/) website. 
+Please check the [Link-Tap](https://www.link-tap.com/) website.
 Presently at this location [here](https://www.link-tap.com/#!/wireless-water-timer) is a chart that shows the features available for the products.
 If a product such as the G1S is used, it will not support flow based commands or readings.
 In this case exclude the volume based Items and Sitemap entries.

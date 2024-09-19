@@ -22,6 +22,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.linktap.protocol.servers.BindingServlet;
 import org.openhab.binding.linktap.protocol.servers.IHttpClientProvider;
 import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -51,14 +53,19 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
     private final StorageService storageService;
     private final DiscoveryServiceRegistry discSrvReg;
     private final HttpClientFactory httpClientFactory;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
     public LinkTapHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
-            @Reference DiscoveryServiceRegistry discoveryService, @Reference HttpClientFactory httpClientFactory) {
+            @Reference DiscoveryServiceRegistry discoveryService, @Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         this.storageService = storageService;
         this.discSrvReg = discoveryService;
         this.httpClientFactory = httpClientFactory;
         BindingServlet.getInstance().setHttpService(httpService);
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -75,7 +82,7 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
                     String.class.getClassLoader());
             return new LinkTapHandler(thing, storage);
         } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
-            return new LinkTapBridgeHandler((Bridge) thing, this, discSrvReg);
+            return new LinkTapBridgeHandler((Bridge) thing, this, discSrvReg, translationProvider, localeProvider);
         }
 
         return null;

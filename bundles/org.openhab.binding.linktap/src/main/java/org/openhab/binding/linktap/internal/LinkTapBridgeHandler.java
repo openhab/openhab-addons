@@ -12,18 +12,8 @@
  */
 package org.openhab.binding.linktap.internal;
 
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_ID;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_VER;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_UTC_OFFSET;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.THING_TYPE_GATEWAY;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_DATETIME_SYNC;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_GET_CONFIGURATION;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_HANDSHAKE;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_NOTIFICATION_WATERING_SKIPPED;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_RAINFALL_DATA;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.DEFAULT_INT;
-import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.EMPTY_STRING_ARRAY;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
+import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.*;
 import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.BUG;
 import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.USER;
 
@@ -36,6 +26,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -67,6 +58,8 @@ import org.openhab.binding.linktap.protocol.servers.BindingServlet;
 import org.openhab.binding.linktap.protocol.servers.IHttpClientProvider;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -77,6 +70,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -102,7 +97,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
     private volatile LinkTapBridgeConfiguration config = new LinkTapBridgeConfiguration();
 
-    private java.util.concurrent.@Nullable ScheduledFuture<?> connectRepair = null;
+    private @Nullable ScheduledFuture<?> connectRepair = null;
     private final Object reconnectFutureLock = new Object();
 
     private volatile long lastGwCommandRecvTs = 0L;
@@ -122,12 +117,25 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     private final DiscoveryServiceRegistry discoverySrvReg;
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
     @Activate
     public LinkTapBridgeHandler(final Bridge bridge, IHttpClientProvider httpClientProvider,
-            @Reference DiscoveryServiceRegistry discoveryService) {
+            @Reference DiscoveryServiceRegistry discoveryService, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
         super(bridge);
         this.httpClientProvider = httpClientProvider;
         this.discoverySrvReg = discoveryService;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     private void startGwPolling() {
@@ -349,7 +357,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         if (!registerBridge(this)) {
             requestMdnsScan();
             scheduleReconnect();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Hostname / IP cannot be found");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    getLocalizedText("bridge.error.host-not-found"));
             return;
         }
 
@@ -370,7 +379,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             } else {
                 if (!api.unlockWebInterface(bridgeKey, config.username, config.password)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Check credentials provided");
+                            getLocalizedText("bridge.check-credentials"));
                     return;
                 }
             }
@@ -422,14 +431,15 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         } catch (NotTapLinkGatewayException e) {
             deregisterBridge(this);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Target Host is not a LinkTap Gateway");
+                    getLocalizedText("bridge.target-is-not-gateway"));
         } catch (TransientCommunicationIssueException e) {
             scheduleReconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot connect to LinkTap Gateway");
+                    getLocalizedText("bridge.cannot-connect"));
         } catch (UnknownHostException e) {
             scheduleReconnect();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    getLocalizedText("bridge.unknown-host"));
         }
     }
 
@@ -459,7 +469,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelReconnect() {
-        final java.util.concurrent.@Nullable ScheduledFuture<?> ref = connectRepair;
+        final @Nullable ScheduledFuture<?> ref = connectRepair;
         synchronized (reconnectFutureLock) {
             if (ref != null) {
                 ref.cancel(true);
