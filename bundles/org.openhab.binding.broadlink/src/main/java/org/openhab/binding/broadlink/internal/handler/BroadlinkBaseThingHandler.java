@@ -218,7 +218,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     // model. Return false if something went wrong that requires
     // a change in the device's online state
     protected void getStatusFromDevice() throws IOException, BroadlinkException {
-        NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger);
+        InetAddress address = InetAddress.getByName(thingConfig.getIpAddress());
+        if (!address.isReachable(3000)) {
+            throw new BroadlinkHostNotReachableException("Cannot reach " + thingConfig.getIpAddress());
+        }
     }
 
     public void updateItemStatus() {

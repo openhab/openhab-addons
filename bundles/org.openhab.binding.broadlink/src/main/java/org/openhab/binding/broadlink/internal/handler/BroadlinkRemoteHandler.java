@@ -80,8 +80,10 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
     @Override
     public void dispose() {
-        if (this.mappingService != null) {
-            this.mappingService.dispose();
+        BroadlinkMappingService mappingService = this.mappingService;
+        if (mappingService != null) {
+            mappingService.dispose();
+            this.mappingSerivce = null;
         }
         super.dispose();
     }

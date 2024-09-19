@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BroadlinkException extends Exception {
 
+        private static final long serialVersionUID = 1L;
     public BroadlinkException(String message) {
         super(message);
     }
