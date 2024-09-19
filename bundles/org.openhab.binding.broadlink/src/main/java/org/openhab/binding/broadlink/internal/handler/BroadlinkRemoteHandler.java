@@ -371,7 +371,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         try {
             while ((System.currentTimeMillis() < timeout) && (freqFound)) {
                 TimeUnit.MILLISECONDS.sleep(500);
-                logger.trace("Check");
+                logger.trace("Checking rf frequency");
                 byte[] resp = (sendCommand(COMMAND_BYTE_CHECK_RF_FREQ_LEARNING, "check rf frequency"));
                 if (resp != null) {
                     resp = extractResponsePayload(resp);
@@ -400,12 +400,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private void handleFindRFCommand(boolean replacement) {
-        String statusInfo = "";
-        if (replacement) {
-            statusInfo = "Replacing";
-        } else {
-            statusInfo = "Adding";
-        }
+        String statusInfo = (replacement) ? "Replacing" : "Adding";
         statusInfo = statusInfo + " RF command " + thingConfig.getNameOfCommandToLearn() + "..";
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType(statusInfo));
 
@@ -417,8 +412,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
 
         sendCommand(COMMAND_BYTE_FIND_RF_PACKET, "find the rf packet data");
 
-        long start = System.currentTimeMillis();
-        long timeout = start + 30 * 1000;
+        long timeout = System.currentTimeMillis() + 30 * 1000;
 
         boolean dataFound = false;
 
@@ -441,9 +435,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                         }
 
                         if (cmdLabel != null) {
-                            logger.info("BEGIN LAST LEARNT CODE");
-                            logger.info("{}", hexString);
-                            logger.info("END LAST LEARNT CODE ({} characters)", hexString.length());
+                            logger.info("Learnt code '{}' ", hexSTring);
                             dataFound = true;
                         }
                     } catch (ProtocolException ex) {

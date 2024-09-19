@@ -224,7 +224,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void updateItemStatus() {
         if ((thingConfig.getIpAddress().length() == 0) && (thingConfig.getMacAddressAsString().length() == 0)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Neither a host or static IP has been defined.");
+                    "Neither an IP address or MAC address has been defined.");
         } else {
             int tries = 0;
             while (tries < 4) {

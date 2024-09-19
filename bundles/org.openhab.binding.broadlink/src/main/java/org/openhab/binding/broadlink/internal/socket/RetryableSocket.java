@@ -71,11 +71,13 @@ public class RetryableSocket {
     @SuppressWarnings("null")
     private boolean sendDatagram(byte message[], String purpose) {
         try {
+            Socket socket = this.socket;
             if (socket == null || socket.isClosed()) {
                 socket = new DatagramSocket();
                 socket.setBroadcast(true);
                 socket.setReuseAddress(true);
                 socket.setSoTimeout(5000);
+                this.socket = socket;
             }
             InetAddress host = InetAddress.getByName(thingConfig.getIpAddress());
             int port = thingConfig.getPort();
@@ -107,9 +109,10 @@ public class RetryableSocket {
     }
 
     public void close() {
+    Socket socket = this.socket;
         if (socket != null) {
             socket.close();
-            socket = null;
+            this.socket = null;
         }
     }
 }
