@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.xmppclient.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 public class XMPPClientBindingConstants {
     private static final String BINDING_ID = "xmppclient";
 

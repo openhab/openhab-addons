@@ -12,10 +12,24 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.PercentageValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -27,8 +41,12 @@ import com.google.gson.annotations.SerializedName;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
-    public static final String SWITCH_CHANNEL_ID = "fan"; // Randomly chosen channel "ID"
+public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
+    public static final String SWITCH_CHANNEL_ID = "fan";
+    public static final String SPEED_CHANNEL_ID = "speed";
+    public static final String PRESET_MODE_CHANNEL_ID = "preset_mode";
+    public static final String OSCILLATION_CHANNEL_ID = "oscillation";
+    public static final String DIRECTION_CHANNEL_ID = "direction";
 
     /**
      * Configuration class for MQTT component
@@ -44,20 +62,168 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         protected @Nullable String commandTemplate;
         @SerializedName("command_topic")
         protected String commandTopic = "";
-        @SerializedName("payload_on")
-        protected String payloadOn = "ON";
+        @SerializedName("direction_command_template")
+        protected @Nullable String directionCommandTemplate;
+        @SerializedName("direction_command_topic")
+        protected @Nullable String directionCommandTopic;
+        @SerializedName("direction_state_topic")
+        protected @Nullable String directionStateTopic;
+        @SerializedName("direction_value_template")
+        protected @Nullable String directionValueTemplate;
+        @SerializedName("oscillation_command_template")
+        protected @Nullable String oscillationCommandTemplate;
+        @SerializedName("oscillation_command_topic")
+        protected @Nullable String oscillationCommandTopic;
+        @SerializedName("oscillation_state_topic")
+        protected @Nullable String oscillationStateTopic;
+        @SerializedName("oscillation_value_template")
+        protected @Nullable String oscillationValueTemplate;
+        @SerializedName("payload_oscillation_off")
+        protected String payloadOscillationOff = "oscillate_off";
+        @SerializedName("payload_oscillation_on")
+        protected String payloadOscillationOn = "oscillate_on";
         @SerializedName("payload_off")
         protected String payloadOff = "OFF";
+        @SerializedName("payload_on")
+        protected String payloadOn = "ON";
+        @SerializedName("payload_reset_percentage")
+        protected String payloadResetPercentage = "None";
+        @SerializedName("payload_reset_preset_mode")
+        protected String payloadResetPresetMode = "None";
+        @SerializedName("percentage_command_template")
+        protected @Nullable String percentageCommandTemplate;
+        @SerializedName("percentage_command_topic")
+        protected @Nullable String percentageCommandTopic;
+        @SerializedName("percentage_state_topic")
+        protected @Nullable String percentageStateTopic;
+        @SerializedName("percentage_value_template")
+        protected @Nullable String percentageValueTemplate;
+        @SerializedName("preset_mode_command_template")
+        protected @Nullable String presetModeCommandTemplate;
+        @SerializedName("preset_mode_command_topic")
+        protected @Nullable String presetModeCommandTopic;
+        @SerializedName("preset_mode_state_topic")
+        protected @Nullable String presetModeStateTopic;
+        @SerializedName("preset_mode_value_template")
+        protected @Nullable String presetModeValueTemplate;
+        @SerializedName("preset_modes")
+        protected @Nullable List<String> presetModes;
+        @SerializedName("speed_range_max")
+        protected int speedRangeMax = 100;
+        @SerializedName("speed_range_min")
+        protected int speedRangeMin = 1;
     }
 
-    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    private final OnOffValue onOffValue;
+    private final PercentageValue speedValue;
+    private State rawSpeedState;
+    private final ComponentChannel onOffChannel;
+    private final ChannelStateUpdateListener channelStateUpdateListener;
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
-        buildChannel(SWITCH_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
+    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+        this.channelStateUpdateListener = componentConfiguration.getUpdateListener();
+
+        onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        ChannelStateUpdateListener onOffListener = channelConfiguration.percentageCommandTopic == null
+                ? componentConfiguration.getUpdateListener()
+                : this;
+        onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
+                onOffListener)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .build();
+                .build(channelConfiguration.percentageCommandTopic == null);
+
+        rawSpeedState = UnDefType.NULL;
+
+        int speeds = Math.min(channelConfiguration.speedRangeMax, 100) - Math.max(channelConfiguration.speedRangeMin, 1)
+                + 1;
+        speedValue = new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.valueOf(100.0d / speeds),
+                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+
+        if (channelConfiguration.percentageCommandTopic != null) {
+            hiddenChannels.add(onOffChannel);
+            buildChannel(SPEED_CHANNEL_ID, ComponentChannelType.DIMMER, speedValue, "Speed", this)
+                    .stateTopic(channelConfiguration.percentageStateTopic, channelConfiguration.percentageValueTemplate)
+                    .commandTopic(channelConfiguration.percentageCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos(), channelConfiguration.percentageCommandTemplate)
+                    .commandFilter(this::handlePercentageCommand).build();
+        }
+
+        List<String> presetModes = channelConfiguration.presetModes;
+        if (presetModes != null) {
+            TextValue presetModeValue = new TextValue(presetModes.toArray(new String[0]));
+            presetModeValue.setNullValue(channelConfiguration.payloadResetPresetMode);
+            buildChannel(PRESET_MODE_CHANNEL_ID, ComponentChannelType.STRING, presetModeValue, "Preset Mode",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.presetModeStateTopic, channelConfiguration.presetModeValueTemplate)
+                    .commandTopic(channelConfiguration.presetModeCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos(), channelConfiguration.presetModeCommandTemplate)
+                    .build();
+        }
+
+        if (channelConfiguration.oscillationCommandTopic != null) {
+            OnOffValue oscillationValue = new OnOffValue(channelConfiguration.payloadOscillationOn,
+                    channelConfiguration.payloadOscillationOff);
+            buildChannel(OSCILLATION_CHANNEL_ID, ComponentChannelType.SWITCH, oscillationValue, "Oscillation",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.oscillationStateTopic,
+                            channelConfiguration.oscillationValueTemplate)
+                    .commandTopic(channelConfiguration.oscillationCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos(), channelConfiguration.oscillationCommandTemplate)
+                    .build();
+        }
+
+        if (channelConfiguration.directionCommandTopic != null) {
+            TextValue directionValue = new TextValue(new String[] { "forward", "backward" });
+            buildChannel(DIRECTION_CHANNEL_ID, ComponentChannelType.STRING, directionValue, "Direction",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.directionStateTopic, channelConfiguration.directionValueTemplate)
+                    .commandTopic(channelConfiguration.directionCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
+                    .build();
+        }
+    }
+
+    private boolean handlePercentageCommand(Command command) {
+        // ON/OFF go to the regular command topic, not the percentage topic
+        if (command.equals(OnOffType.ON) || command.equals(OnOffType.OFF)) {
+            onOffChannel.getState().publishValue(command);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void updateChannelState(ChannelUID channel, State state) {
+        if (channel.getIdWithoutGroup().equals(SWITCH_CHANNEL_ID)) {
+            if (rawSpeedState instanceof UnDefType && state.equals(OnOffType.ON)) {
+                // Assume full on if we don't yet know the actual speed
+                state = PercentType.HUNDRED;
+            } else if (state.equals(OnOffType.OFF)) {
+                state = PercentType.ZERO;
+            } else {
+                state = rawSpeedState;
+            }
+        } else if (channel.getIdWithoutGroup().equals(SPEED_CHANNEL_ID)) {
+            rawSpeedState = state;
+            if (onOffValue.getChannelState().equals(OnOffType.OFF)) {
+                // Don't pass on percentage values while the fan is off
+                state = PercentType.ZERO;
+            }
+        }
+        speedValue.update(state);
+        channelStateUpdateListener.updateChannelState(buildChannelUID(SPEED_CHANNEL_ID), state);
+    }
+
+    @Override
+    public void postChannelCommand(ChannelUID channelUID, Command value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void triggerChannel(ChannelUID channelUID, String eventPayload) {
+        throw new UnsupportedOperationException();
     }
 }

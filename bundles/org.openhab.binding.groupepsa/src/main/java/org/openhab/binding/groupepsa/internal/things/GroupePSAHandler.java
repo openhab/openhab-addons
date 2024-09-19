@@ -154,7 +154,6 @@ public class GroupePSAHandler extends BaseThingHandler {
                 this.onlineIntervalM = onlineIntervalM != null ? onlineIntervalM : DEFAULT_ONLINE_INTERVAL_M;
                 startGroupePSAPolling(pollingIntervalM);
             }
-
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
@@ -359,7 +358,6 @@ public class GroupePSAHandler extends BaseThingHandler {
                             Charging::getRemainingTime, x -> new BigDecimal(x.getSeconds()), Units.SECOND);
                     updateState(CHANNEL_ELECTRIC_CHARGING_NEXTDELAYEDTIME, energy, Energy::getCharging,
                             Charging::getNextDelayedTime, x -> new BigDecimal(x.getSeconds()), Units.SECOND);
-
                 }
             }
         }

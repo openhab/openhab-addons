@@ -1,0 +1,1975 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="visualcrossing"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- ✅ basic-channel-group ✅ -->
+	<channel-group-type id="basic-channel-group">
+		<label>Basic Info</label>
+		<channels>
+			<channel id="cost" typeId="cost-channel"/>
+			<channel id="description" typeId="description-channel"/>
+		</channels>
+	</channel-group-type>
+	<!-- ❌ basic-channel-group ❌ -->
+
+	<!-- ✅ day-channel-group ✅ -->
+	<channel-group-type id="day-channel-group">
+		<label>Day</label>
+		<channels>
+			<channel id="datetime" typeId="time-channel"/>
+			<channel id="timestamp" typeId="timestamp-channel"/>
+			<channel id="temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="temperature-min" typeId="system.outdoor-temperature">
+				<label>Minimum Temperature</label>
+				<description>Minimum temperature at the location.</description>
+			</channel>
+			<channel id="temperature-max" typeId="system.outdoor-temperature">
+				<label>Maximum Temperature</label>
+				<description>Maximum temperature at the location.</description>
+			</channel>
+			<channel id="feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>
+					What the temperature feels like accounting for heat index or wind chill. Daily values are average
+					values (mean) for the day.
+				</description>
+			</channel>
+			<channel id="feels-like-min" typeId="temperature-channel">
+				<label>Feels Like (min)</label>
+				<description>Minimum feels like temperature at the location.</description>
+			</channel>
+			<channel id="feels-like-max" typeId="temperature-channel">
+				<label>Feels Like (max)</label>
+				<description>Maximum feels like temperature at the location.</description>
+			</channel>
+			<channel id="dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="precip" typeId="precip-channel"/>
+			<channel id="precip-prob" typeId="precip-prob-channel"/>
+			<channel id="precip-type" typeId="precip-type-channel"/>
+			<channel id="precip-cover" typeId="precip-cover-channel"/>
+			<channel id="snow" typeId="snow-channel"/>
+			<channel id="snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="wind-speed" typeId="system.wind-speed">
+				<description>
+					The sustained wind speed measured as the average windspeed that occurs during the preceding one to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="visibility" typeId="visibility-channel"/>
+			<channel id="solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="solar-energy" typeId="solar-energy-channel"/>
+			<channel id="uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="sunrise" typeId="sunrise-channel"/>
+			<channel id="sunrise-epoch" typeId="timestamp-channel">
+				<label>Sunrise Epoch</label>
+				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time</description>
+			</channel>
+			<channel id="sunset" typeId="sunset-channel"/>
+			<channel id="sunset-epoch" typeId="timestamp-channel">
+				<label>Sunset Epoch</label>
+				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
+			</channel>
+			<channel id="moon-phase" typeId="moon-phase-channel"/>
+			<channel id="conditions" typeId="conditions-channel"/>
+			<channel id="description" typeId="description-channel"/>
+			<channel id="icon" typeId="icon-channel"/>
+			<channel id="stations" typeId="stations-channel"/>
+			<channel id="source" typeId="source-channel"/>
+			<channel id="severe-risk" typeId="severe-risk-channel"/>
+
+			<!-- ✅ hour00 ✅ -->
+			<channel id="hour00-datetime" typeId="time-channel"/>
+			<channel id="hour00-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour00-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour00-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour00-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour00-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour00-precip" typeId="precip-channel"/>
+			<channel id="hour00-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour00-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour00-snow" typeId="snow-channel"/>
+			<channel id="hour00-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour00-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour00-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour00-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour00-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour00-visibility" typeId="visibility-channel"/>
+			<channel id="hour00-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour00-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour00-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour00-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour00-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour00-conditions" typeId="conditions-channel"/>
+			<channel id="hour00-icon" typeId="icon-channel"/>
+			<channel id="hour00-stations" typeId="stations-channel"/>
+			<channel id="hour00-source" typeId="source-channel"/>
+			<!-- ❌ hour00 ❌ -->
+
+			<!-- ✅ hour01 ✅ -->
+			<channel id="hour01-datetime" typeId="time-channel"/>
+			<channel id="hour01-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour01-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour01-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour01-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour01-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour01-precip" typeId="precip-channel"/>
+			<channel id="hour01-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour01-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour01-snow" typeId="snow-channel"/>
+			<channel id="hour01-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour01-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour01-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour01-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour01-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour01-visibility" typeId="visibility-channel"/>
+			<channel id="hour01-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour01-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour01-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour01-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour01-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour01-conditions" typeId="conditions-channel"/>
+			<channel id="hour01-icon" typeId="icon-channel"/>
+			<channel id="hour01-stations" typeId="stations-channel"/>
+			<channel id="hour01-source" typeId="source-channel"/>
+			<!-- ❌ hour01 ❌ -->
+
+			<!-- ✅ hour02 ✅ -->
+			<channel id="hour02-datetime" typeId="time-channel"/>
+			<channel id="hour02-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour02-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour02-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour02-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour02-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour02-precip" typeId="precip-channel"/>
+			<channel id="hour02-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour02-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour02-snow" typeId="snow-channel"/>
+			<channel id="hour02-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour02-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour02-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour02-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour02-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour02-visibility" typeId="visibility-channel"/>
+			<channel id="hour02-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour02-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour02-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour02-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour02-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour02-conditions" typeId="conditions-channel"/>
+			<channel id="hour02-icon" typeId="icon-channel"/>
+			<channel id="hour02-stations" typeId="stations-channel"/>
+			<channel id="hour02-source" typeId="source-channel"/>
+			<!-- ❌ hour02 ❌ -->
+
+			<!-- ✅ hour03 ✅ -->
+			<channel id="hour03-datetime" typeId="time-channel"/>
+			<channel id="hour03-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour03-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour03-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour03-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour03-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour03-precip" typeId="precip-channel"/>
+			<channel id="hour03-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour03-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour03-snow" typeId="snow-channel"/>
+			<channel id="hour03-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour03-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour03-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour03-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour03-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour03-visibility" typeId="visibility-channel"/>
+			<channel id="hour03-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour03-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour03-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour03-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour03-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour03-conditions" typeId="conditions-channel"/>
+			<channel id="hour03-icon" typeId="icon-channel"/>
+			<channel id="hour03-stations" typeId="stations-channel"/>
+			<channel id="hour03-source" typeId="source-channel"/>
+			<!-- ❌ hour03 ❌ -->
+
+			<!-- ✅ hour04 ✅ -->
+			<channel id="hour04-datetime" typeId="time-channel"/>
+			<channel id="hour04-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour04-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour04-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour04-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour04-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour04-precip" typeId="precip-channel"/>
+			<channel id="hour04-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour04-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour04-snow" typeId="snow-channel"/>
+			<channel id="hour04-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour04-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour04-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour04-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour04-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour04-visibility" typeId="visibility-channel"/>
+			<channel id="hour04-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour04-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour04-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour04-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour04-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour04-conditions" typeId="conditions-channel"/>
+			<channel id="hour04-icon" typeId="icon-channel"/>
+			<channel id="hour04-stations" typeId="stations-channel"/>
+			<channel id="hour04-source" typeId="source-channel"/>
+			<!-- ❌ hour04 ❌ -->
+
+			<!-- ✅ hour05 ✅ -->
+			<channel id="hour05-datetime" typeId="time-channel"/>
+			<channel id="hour05-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour05-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour05-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour05-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour05-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour05-precip" typeId="precip-channel"/>
+			<channel id="hour05-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour05-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour05-snow" typeId="snow-channel"/>
+			<channel id="hour05-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour05-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour05-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour05-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour05-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour05-visibility" typeId="visibility-channel"/>
+			<channel id="hour05-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour05-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour05-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour05-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour05-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour05-conditions" typeId="conditions-channel"/>
+			<channel id="hour05-icon" typeId="icon-channel"/>
+			<channel id="hour05-stations" typeId="stations-channel"/>
+			<channel id="hour05-source" typeId="source-channel"/>
+			<!-- ❌ hour05 ❌ -->
+
+			<!-- ✅ hour06 ✅ -->
+			<channel id="hour06-datetime" typeId="time-channel"/>
+			<channel id="hour06-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour06-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour06-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour06-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour06-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour06-precip" typeId="precip-channel"/>
+			<channel id="hour06-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour06-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour06-snow" typeId="snow-channel"/>
+			<channel id="hour06-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour06-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour06-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour06-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour06-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour06-visibility" typeId="visibility-channel"/>
+			<channel id="hour06-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour06-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour06-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour06-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour06-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour06-conditions" typeId="conditions-channel"/>
+			<channel id="hour06-icon" typeId="icon-channel"/>
+			<channel id="hour06-stations" typeId="stations-channel"/>
+			<channel id="hour06-source" typeId="source-channel"/>
+			<!-- ❌ hour06 ❌ -->
+
+			<!-- ✅ hour07 ✅ -->
+			<channel id="hour07-datetime" typeId="time-channel"/>
+			<channel id="hour07-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour07-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour07-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour07-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour07-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour07-precip" typeId="precip-channel"/>
+			<channel id="hour07-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour07-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour07-snow" typeId="snow-channel"/>
+			<channel id="hour07-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour07-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour07-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour07-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour07-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour07-visibility" typeId="visibility-channel"/>
+			<channel id="hour07-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour07-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour07-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour07-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour07-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour07-conditions" typeId="conditions-channel"/>
+			<channel id="hour07-icon" typeId="icon-channel"/>
+			<channel id="hour07-stations" typeId="stations-channel"/>
+			<channel id="hour07-source" typeId="source-channel"/>
+			<!-- ❌ hour07 ❌ -->
+
+			<!-- ✅ hour08 ✅ -->
+			<channel id="hour08-datetime" typeId="time-channel"/>
+			<channel id="hour08-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour08-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour08-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour08-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour08-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour08-precip" typeId="precip-channel"/>
+			<channel id="hour08-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour08-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour08-snow" typeId="snow-channel"/>
+			<channel id="hour08-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour08-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour08-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour08-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour08-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour08-visibility" typeId="visibility-channel"/>
+			<channel id="hour08-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour08-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour08-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour08-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour08-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour08-conditions" typeId="conditions-channel"/>
+			<channel id="hour08-icon" typeId="icon-channel"/>
+			<channel id="hour08-stations" typeId="stations-channel"/>
+			<channel id="hour08-source" typeId="source-channel"/>
+			<!-- ❌ hour08 ❌ -->
+
+			<!-- ✅ hour09 ✅ -->
+			<channel id="hour09-datetime" typeId="time-channel"/>
+			<channel id="hour09-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour09-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour09-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour09-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour09-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour09-precip" typeId="precip-channel"/>
+			<channel id="hour09-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour09-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour09-snow" typeId="snow-channel"/>
+			<channel id="hour09-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour09-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour09-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour09-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour09-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour09-visibility" typeId="visibility-channel"/>
+			<channel id="hour09-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour09-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour09-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour09-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour09-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour09-conditions" typeId="conditions-channel"/>
+			<channel id="hour09-icon" typeId="icon-channel"/>
+			<channel id="hour09-stations" typeId="stations-channel"/>
+			<channel id="hour09-source" typeId="source-channel"/>
+			<!-- ❌ hour09 ❌ -->
+
+			<!-- ✅ hour10 ✅ -->
+			<channel id="hour10-datetime" typeId="time-channel"/>
+			<channel id="hour10-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour10-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour10-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour10-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour10-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour10-precip" typeId="precip-channel"/>
+			<channel id="hour10-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour10-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour10-snow" typeId="snow-channel"/>
+			<channel id="hour10-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour10-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour10-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour10-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour10-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour10-visibility" typeId="visibility-channel"/>
+			<channel id="hour10-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour10-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour10-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour10-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour10-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour10-conditions" typeId="conditions-channel"/>
+			<channel id="hour10-icon" typeId="icon-channel"/>
+			<channel id="hour10-stations" typeId="stations-channel"/>
+			<channel id="hour10-source" typeId="source-channel"/>
+			<!-- ❌ hour10 ❌ -->
+
+			<!-- ✅ hour11 ✅ -->
+			<channel id="hour11-datetime" typeId="time-channel"/>
+			<channel id="hour11-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour11-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour11-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour11-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour11-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour11-precip" typeId="precip-channel"/>
+			<channel id="hour11-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour11-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour11-snow" typeId="snow-channel"/>
+			<channel id="hour11-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour11-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour11-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour11-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour11-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour11-visibility" typeId="visibility-channel"/>
+			<channel id="hour11-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour11-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour11-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour11-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour11-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour11-conditions" typeId="conditions-channel"/>
+			<channel id="hour11-icon" typeId="icon-channel"/>
+			<channel id="hour11-stations" typeId="stations-channel"/>
+			<channel id="hour11-source" typeId="source-channel"/>
+			<!-- ❌ hour11 ❌ -->
+
+			<!-- ✅ hour12 ✅ -->
+			<channel id="hour12-datetime" typeId="time-channel"/>
+			<channel id="hour12-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour12-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour12-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour12-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour12-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour12-precip" typeId="precip-channel"/>
+			<channel id="hour12-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour12-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour12-snow" typeId="snow-channel"/>
+			<channel id="hour12-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour12-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour12-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour12-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour12-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour12-visibility" typeId="visibility-channel"/>
+			<channel id="hour12-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour12-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour12-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour12-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour12-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour12-conditions" typeId="conditions-channel"/>
+			<channel id="hour12-icon" typeId="icon-channel"/>
+			<channel id="hour12-stations" typeId="stations-channel"/>
+			<channel id="hour12-source" typeId="source-channel"/>
+			<!-- ❌ hour12 ❌ -->
+
+			<!-- ✅ hour13 ✅ -->
+			<channel id="hour13-datetime" typeId="time-channel"/>
+			<channel id="hour13-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour13-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour13-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour13-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour13-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour13-precip" typeId="precip-channel"/>
+			<channel id="hour13-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour13-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour13-snow" typeId="snow-channel"/>
+			<channel id="hour13-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour13-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour13-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour13-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour13-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour13-visibility" typeId="visibility-channel"/>
+			<channel id="hour13-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour13-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour13-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour13-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour13-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour13-conditions" typeId="conditions-channel"/>
+			<channel id="hour13-icon" typeId="icon-channel"/>
+			<channel id="hour13-stations" typeId="stations-channel"/>
+			<channel id="hour13-source" typeId="source-channel"/>
+			<!-- ❌ hour13 ❌ -->
+
+			<!-- ✅ hour14 ✅ -->
+			<channel id="hour14-datetime" typeId="time-channel"/>
+			<channel id="hour14-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour14-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour14-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour14-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour14-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour14-precip" typeId="precip-channel"/>
+			<channel id="hour14-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour14-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour14-snow" typeId="snow-channel"/>
+			<channel id="hour14-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour14-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour14-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour14-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour14-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour14-visibility" typeId="visibility-channel"/>
+			<channel id="hour14-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour14-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour14-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour14-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour14-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour14-conditions" typeId="conditions-channel"/>
+			<channel id="hour14-icon" typeId="icon-channel"/>
+			<channel id="hour14-stations" typeId="stations-channel"/>
+			<channel id="hour14-source" typeId="source-channel"/>
+			<!-- ❌ hour14 ❌ -->
+
+			<!-- ✅ hour15 ✅ -->
+			<channel id="hour15-datetime" typeId="time-channel"/>
+			<channel id="hour15-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour15-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour15-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour15-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour15-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour15-precip" typeId="precip-channel"/>
+			<channel id="hour15-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour15-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour15-snow" typeId="snow-channel"/>
+			<channel id="hour15-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour15-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour15-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour15-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour15-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour15-visibility" typeId="visibility-channel"/>
+			<channel id="hour15-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour15-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour15-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour15-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour15-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour15-conditions" typeId="conditions-channel"/>
+			<channel id="hour15-icon" typeId="icon-channel"/>
+			<channel id="hour15-stations" typeId="stations-channel"/>
+			<channel id="hour15-source" typeId="source-channel"/>
+			<!-- ❌ hour15 ❌ -->
+
+			<!-- ✅ hour16 ✅ -->
+			<channel id="hour16-datetime" typeId="time-channel"/>
+			<channel id="hour16-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour16-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour16-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour16-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour16-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour16-precip" typeId="precip-channel"/>
+			<channel id="hour16-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour16-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour16-snow" typeId="snow-channel"/>
+			<channel id="hour16-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour16-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour16-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour16-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour16-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour16-visibility" typeId="visibility-channel"/>
+			<channel id="hour16-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour16-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour16-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour16-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour16-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour16-conditions" typeId="conditions-channel"/>
+			<channel id="hour16-icon" typeId="icon-channel"/>
+			<channel id="hour16-stations" typeId="stations-channel"/>
+			<channel id="hour16-source" typeId="source-channel"/>
+			<!-- ❌ hour16 ❌ -->
+
+			<!-- ✅ hour17 ✅ -->
+			<channel id="hour17-datetime" typeId="time-channel"/>
+			<channel id="hour17-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour17-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour17-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour17-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour17-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour17-precip" typeId="precip-channel"/>
+			<channel id="hour17-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour17-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour17-snow" typeId="snow-channel"/>
+			<channel id="hour17-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour17-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour17-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour17-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour17-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour17-visibility" typeId="visibility-channel"/>
+			<channel id="hour17-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour17-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour17-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour17-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour17-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour17-conditions" typeId="conditions-channel"/>
+			<channel id="hour17-icon" typeId="icon-channel"/>
+			<channel id="hour17-stations" typeId="stations-channel"/>
+			<channel id="hour17-source" typeId="source-channel"/>
+			<!-- ❌ hour17 ❌ -->
+
+			<!-- ✅ hour18 ✅ -->
+			<channel id="hour18-datetime" typeId="time-channel"/>
+			<channel id="hour18-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour18-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour18-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour18-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour18-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour18-precip" typeId="precip-channel"/>
+			<channel id="hour18-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour18-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour18-snow" typeId="snow-channel"/>
+			<channel id="hour18-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour18-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour18-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour18-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour18-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour18-visibility" typeId="visibility-channel"/>
+			<channel id="hour18-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour18-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour18-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour18-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour18-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour18-conditions" typeId="conditions-channel"/>
+			<channel id="hour18-icon" typeId="icon-channel"/>
+			<channel id="hour18-stations" typeId="stations-channel"/>
+			<channel id="hour18-source" typeId="source-channel"/>
+			<!-- ❌ hour18 ❌ -->
+
+			<!-- ✅ hour19 ✅ -->
+			<channel id="hour19-datetime" typeId="time-channel"/>
+			<channel id="hour19-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour19-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour19-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour19-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour19-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour19-precip" typeId="precip-channel"/>
+			<channel id="hour19-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour19-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour19-snow" typeId="snow-channel"/>
+			<channel id="hour19-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour19-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour19-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour19-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour19-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour19-visibility" typeId="visibility-channel"/>
+			<channel id="hour19-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour19-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour19-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour19-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour19-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour19-conditions" typeId="conditions-channel"/>
+			<channel id="hour19-icon" typeId="icon-channel"/>
+			<channel id="hour19-stations" typeId="stations-channel"/>
+			<channel id="hour19-source" typeId="source-channel"/>
+			<!-- ❌ hour19 ❌ -->
+
+			<!-- ✅ hour20 ✅ -->
+			<channel id="hour20-datetime" typeId="time-channel"/>
+			<channel id="hour20-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour20-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour20-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour20-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour20-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour20-precip" typeId="precip-channel"/>
+			<channel id="hour20-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour20-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour20-snow" typeId="snow-channel"/>
+			<channel id="hour20-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour20-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour20-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour20-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour20-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour20-visibility" typeId="visibility-channel"/>
+			<channel id="hour20-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour20-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour20-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour20-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour20-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour20-conditions" typeId="conditions-channel"/>
+			<channel id="hour20-icon" typeId="icon-channel"/>
+			<channel id="hour20-stations" typeId="stations-channel"/>
+			<channel id="hour20-source" typeId="source-channel"/>
+			<!-- ❌ hour20 ❌ -->
+
+			<!-- ✅ hour21 ✅ -->
+			<channel id="hour21-datetime" typeId="time-channel"/>
+			<channel id="hour21-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour21-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour21-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour21-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour21-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour21-precip" typeId="precip-channel"/>
+			<channel id="hour21-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour21-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour21-snow" typeId="snow-channel"/>
+			<channel id="hour21-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour21-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour21-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour21-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour21-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour21-visibility" typeId="visibility-channel"/>
+			<channel id="hour21-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour21-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour21-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour21-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour21-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour21-conditions" typeId="conditions-channel"/>
+			<channel id="hour21-icon" typeId="icon-channel"/>
+			<channel id="hour21-stations" typeId="stations-channel"/>
+			<channel id="hour21-source" typeId="source-channel"/>
+			<!-- ❌ hour21 ❌ -->
+
+			<!-- ✅ hour22 ✅ -->
+			<channel id="hour22-datetime" typeId="time-channel"/>
+			<channel id="hour22-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour22-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour22-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour22-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour22-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour22-precip" typeId="precip-channel"/>
+			<channel id="hour22-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour22-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour22-snow" typeId="snow-channel"/>
+			<channel id="hour22-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour22-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour22-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour22-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour22-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour22-visibility" typeId="visibility-channel"/>
+			<channel id="hour22-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour22-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour22-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour22-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour22-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour22-conditions" typeId="conditions-channel"/>
+			<channel id="hour22-icon" typeId="icon-channel"/>
+			<channel id="hour22-stations" typeId="stations-channel"/>
+			<channel id="hour22-source" typeId="source-channel"/>
+			<!-- ❌ hour22 ❌ -->
+
+			<!-- ✅ hour23 ✅ -->
+			<channel id="hour23-datetime" typeId="time-channel"/>
+			<channel id="hour23-timestamp" typeId="timestamp-channel"/>
+			<channel id="hour23-temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
+			</channel>
+			<channel id="hour23-feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="hour23-humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="hour23-dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="hour23-precip" typeId="precip-channel"/>
+			<channel id="hour23-precip-prob" typeId="precip-prob-channel"/>
+			<channel id="hour23-precip-type" typeId="precip-type-channel"/>
+			<channel id="hour23-snow" typeId="snow-channel"/>
+			<channel id="hour23-snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="hour23-wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher than
+					the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour23-wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
+					to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="hour23-wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="hour23-pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)</description>
+			</channel>
+			<channel id="hour23-visibility" typeId="visibility-channel"/>
+			<channel id="hour23-cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="hour23-solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="hour23-solar-energy" typeId="solar-energy-channel"/>
+			<channel id="hour23-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="hour23-severe-risk" typeId="severe-risk-channel"/>
+			<channel id="hour23-conditions" typeId="conditions-channel"/>
+			<channel id="hour23-icon" typeId="icon-channel"/>
+			<channel id="hour23-stations" typeId="stations-channel"/>
+			<channel id="hour23-source" typeId="source-channel"/>
+			<!-- ❌ hour23 ❌ -->
+
+		</channels>
+	</channel-group-type>
+	<!-- ❌ day-channel-group ❌ -->
+
+	<!-- ✅ current-conditions-channel-group ✅ -->
+	<channel-group-type id="current-conditions-channel-group">
+		<label>Current Conditions</label>
+		<channels>
+			<channel id="datetime" typeId="time-channel"/>
+			<channel id="timestamp" typeId="timestamp-channel"/>
+			<channel id="temperature" typeId="system.outdoor-temperature">
+				<description>Temperature at the location. Daily values are average values (mean) for the day.
+				</description>
+			</channel>
+			<channel id="feels-like" typeId="temperature-channel">
+				<label>Feels Like</label>
+				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
+					average values
+					(mean) for the day.
+				</description>
+			</channel>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew" typeId="temperature-channel">
+				<label>Dew</label>
+				<description>Dew point temperature</description>
+			</channel>
+			<channel id="precip" typeId="precip-channel"/>
+			<channel id="precip-prob" typeId="precip-prob-channel"/>
+			<channel id="precip-type" typeId="precip-type-channel"/>
+			<channel id="snow" typeId="snow-channel"/>
+			<channel id="snow-depth" typeId="snow-channel">
+				<label>Snow Depth</label>
+				<description>The depth of snow on the ground</description>
+			</channel>
+			<channel id="wind-gust" typeId="system.wind-speed">
+				<label>Wind Gust</label>
+				<description>Instantaneous wind speed at a location – May be empty if it is not significantly higher
+					than the wind
+					speed. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="wind-speed" typeId="system.wind-speed">
+				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding
+					one to two
+					minutes. Daily values are the maximum hourly value for the day.
+				</description>
+			</channel>
+			<channel id="wind-dir" typeId="system.wind-direction">
+				<description>Direction from which the wind is blowing</description>
+			</channel>
+			<channel id="pressure" typeId="system.barometric-pressure">
+				<description>The sea level atmospheric or barometric pressure in millibars (or hectopascals)
+				</description>
+			</channel>
+			<channel id="visibility" typeId="visibility-channel"/>
+			<channel id="cloud-cover" typeId="cloud-cover-channel"/>
+			<channel id="solar-radiation" typeId="solar-radiation-channel"/>
+			<channel id="solar-energy" typeId="solar-energy-channel"/>
+			<channel id="uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
+			<channel id="conditions" typeId="conditions-channel"/>
+			<channel id="icon" typeId="icon-channel"/>
+			<channel id="stations" typeId="stations-channel"/>
+			<channel id="source" typeId="source-channel"/>
+			<channel id="sunrise" typeId="sunrise-channel"/>
+			<channel id="sunrise-epoch" typeId="timestamp-channel">
+				<label>Sunrise Epoch</label>
+				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time
+				</description>
+			</channel>
+			<channel id="sunset" typeId="sunset-channel"/>
+			<channel id="sunset-epoch" typeId="timestamp-channel">
+				<label>Sunset Epoch</label>
+				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
+			</channel>
+			<channel id="moon-phase" typeId="moon-phase-channel"/>
+		</channels>
+	</channel-group-type>
+	<!-- ❌ current-conditions-channel-group ❌ -->
+
+	<!-- ✅ Channels ✅ -->
+	<channel-type id="cost-channel">
+		<item-type>Number</item-type>
+		<label>Current Cost</label>
+		<description>How much API tokens thing used since start</description>
+	</channel-type>
+	<channel-type id="description-channel">
+		<item-type>String</item-type>
+		<label>Description</label>
+		<description>Longer text descriptions suitable for displaying in weather displays. The descriptions combine the
+			main
+			features of the weather for the day such as precipitation or amount of cloud cover. Daily descriptions
+			are provided
+			for historical and forecast days. When the timeline request includes the model forecast period,
+			a seven day outlook
+			description is provided at the root response level.
+		</description>
+	</channel-type>
+
+	<channel-type id="time-channel">
+		<item-type>String</item-type>
+		<label>Time</label>
+		<description>In format HH:mm:ss</description>
+		<category>time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="timestamp-channel">
+		<item-type>DateTime</item-type>
+		<label>Time Stamp</label>
+		<category>time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="precip-channel">
+		<item-type>Number:Length</item-type>
+		<label>Precip</label>
+		<description>
+			The amount of liquid precipitation that fell or is predicted to fall in the period. This includes the
+			liquid-equivalent amount of any frozen precipitation such as snow or ice.
+		</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="precip-prob-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Precip Prob</label>
+		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+	<channel-type id="precip-type-channel">
+		<item-type>String</item-type>
+		<label>Precip Type</label>
+		<description>
+			An comma separated array indicating the type(s) of precipitation expected or that occurred. Possible
+			values include `rain`, `snow`, `freezingrain` and `ice`.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="precip-cover-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Precip Cover</label>
+		<description>The proportion of hours where there was non-zero precipitation</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+	<channel-type id="snow-channel">
+		<item-type>Number:Length</item-type>
+		<label>Snow</label>
+		<description>The amount of snow that fell or is predicted to fall</description>
+		<category>Snow</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="snow-depth-channel">
+		<item-type>Number:Length</item-type>
+		<label>Snow</label>
+		<category>Snow</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="visibility-channel">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Distance at which distant objects are visible</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="cloud-cover-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cloud Cover</label>
+		<description>How much of the sky is covered in cloud ranging from 0–100%</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+	<channel-type id="solar-radiation-channel">
+		<item-type>Number:Intensity</item-type>
+		<label>Solar Radiation</label>
+		<description>The solar radiation power at the instantaneous moment of the observation (or forecast prediction).
+			See the
+			full solar radiation data documentation
+			(https://www.visualcrossing.com/resources/documentation/weather-data/how-to-obtain-solar-radiation-data/)
+			and Wind and
+			Solar Energy
+			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
+			pages.
+		</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="solar-energy-channel">
+		<item-type>Number</item-type>
+		<label>Solar Energy</label>
+		<description>(MJ /m^2) Indicates the total energy from the sun that builds up over an hour or day. See the full
+			solar
+			radiation data documentation
+			(https://www.visualcrossing.com/resources/documentation/weather-data/how-to-obtain-solar-radiation-data/)
+			and Wind and
+			Solar Energy
+			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
+			pages.
+		</description>
+		<state readOnly="true" pattern="%.2f MJ/m²"/>
+	</channel-type>
+	<channel-type id="conditions-channel">
+		<item-type>String</item-type>
+		<label>Conditions</label>
+		<description>Textual representation of the weather conditions. See Weather Data Conditions
+			(https://www.visualcrossing.com/resources/documentation/weather-api/weather-condition-fields/).
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="icon-channel">
+		<item-type>String</item-type>
+		<label>Icon</label>
+		<description>A fixed, machine readable summary that can be used to display an icon</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="stations-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Stations</label>
+		<description>The weather stations (comma separated) used when collecting an historical observation record
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="source-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Source</label>
+		<description>
+			The type of weather data used for this weather object. – Values include historical observation (“obs”),
+			forecast (“fcst”), historical forecast (“histfcst”) or statistical forecast (“stats”). If multiple types are used in
+			the same day, “comb” is used. Today a combination of historical observations and forecast data.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sunrise-channel">
+		<item-type>String</item-type>
+		<label>Sunrise</label>
+		<description>The formatted time of the sunrise (For example “2022-05-23T05:50:40”). See How to include sunrise,
+			sunset, moon phase, moonrise and moonset data into your API requests
+			(https://www.visualcrossing.com/resources/documentation/weather-api/how-to-include-sunrise-sunset-and-moon-phase-data-into-your-api-requests/)
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sunset-channel">
+		<item-type>String</item-type>
+		<label>Sunset</label>
+		<description>The formatted time of the sunset (For example “2022-05-23T20:22:29”).
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="moon-phase-channel">
+		<item-type>Number</item-type>
+		<label>Moon Phase</label>
+		<description>
+			Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon)
+			to 0.5 (the full moon) and back to 1 (the next new moon).
+		</description>
+		<state readOnly="true" min="0" max="1" pattern="%.1f"/>
+	</channel-type>
+	<channel-type id="severe-risk-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Severe Risk</label>
+		<description>
+			A value between 0 and 100 representing the risk of convective storms (e.g. thunderstorms, hail and
+			tornadoes). Severe risk is a scaled measure that combines a variety of other fields such as the convective availabel
+			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a severe risk value less
+			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
+		</description>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+	</channel-type>
+	<!-- ❌ Channels ❌ -->
+</thing:thing-descriptions>

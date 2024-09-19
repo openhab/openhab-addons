@@ -82,16 +82,17 @@ See section [Discovery](#discovery) for details.
 
 | thing-type           | Model                                                    | Vendor ID                    |
 | -------------------- | -------------------------------------------------------- | ---------------------------- |
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU                |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU                |
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
 | shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
 | shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                 |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
+| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW    |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
@@ -99,7 +100,7 @@ See section [Discovery](#discovery) for details.
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 | shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
 
-### Generation 2 Plus Mini series (incl. Gen 3)
+### Shelly Plus Mini series (Generation 2+3)
 
  | thing-type           | Model                                                    | Vendor ID                      |
  | -------------------- | -------------------------------------------------------- | ------------------------------ |
@@ -107,7 +108,7 @@ See section [Discovery](#discovery) for details.
  | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
  | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
-### Generation 2 Pro series
+### Shelly Pro Series (Generation 2+3)
 
 | thing-type          | Model                                                    | Vendor ID                                      |
 | ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
@@ -285,14 +286,19 @@ Values 1-4 are selecting the corresponding favorite id in the Shelly App, 0 mean
 
 The binding sets the following Thing status depending on the device status:
 
-| Status         | Description                                                                                                                                                                                                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| INITIALIZING   | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status UNKNOWN.                                                                                                                                                                          |
-| UNKNOWN        | Indicates that the status is currently unknown, which must not show a problem. Usually the Thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the Thing switches to status ONLINE.                                                                |
-| ONLINE         | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs. |
-| OFFLINE        | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the Thing. You could also post to the community thread if the problem persists.                                                    |
-| CONFIG PENDING | The thing has been initialized, but device initialization is in progress or pending (e.g. waiting for device wake-up)                                                                                                                                                                                        |
-| ERROR: COMM    | Communication with the device has reported an error, check detailed status.                                                                                                                                                                                                                                  |
+| Status                | Description                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| INITIALIZING          | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status ONLINE.CONFIGURATION_PENDING. |
+| UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem. Once the device is reachable and was initialized the Thing switches to status ONLINE. |
+| CONFIGURATION_PENDING | The Thing has been initialized, but device initialization is in progress or pending (e.g. waiting for device wake-up).       |
+| ONLINE                | ONLINE indicates that the device can be accessed and is responding properly. Once initialized battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs.        |
+| OFFLINE               | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error.     |
+| COMMUNICATION_ERROR   | Communication with the device has reported an error, check detailed status. If the problem persists make sure to have stable WiFi, set the correct password etc. Try restarting OH or deleting and re-discovering the Thing. |
+| FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                              |
+| DUTY_CYCLE            | The device is re-initializing and reported a restart event, e.g. after a firmware update or manual reboot.                   |
+
+`Note:`
+For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
 
 `Battery powered devices:`
 If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.

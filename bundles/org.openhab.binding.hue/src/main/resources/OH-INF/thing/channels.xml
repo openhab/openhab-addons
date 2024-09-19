@@ -207,6 +207,7 @@
 		<label>Scene</label>
 		<category>MediaControl</category>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="last-updated-v2" advanced="true">
@@ -221,12 +222,14 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="effect-v2" advanced="true">
 		<item-type>String</item-type>
 		<label>Effect</label>
 		<state pattern="%s"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="dynamics" advanced="true">
@@ -285,5 +288,15 @@
 		<label>Normal/Tamper</label>
 		<category>Siren</category>
 	</channel-type>
+
+	<channel-type id="automation-enable">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-group-type id="automation">
+		<label>Automations</label>
+	</channel-group-type>
 
 </thing:thing-descriptions>

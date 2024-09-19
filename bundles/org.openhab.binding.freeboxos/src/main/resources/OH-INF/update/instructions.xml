@@ -26,4 +26,93 @@
 
 	</thing-type>
 
+	<thing-type uid="freeboxos:delta">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="sfp-present" groupIds="ftth">
+				<type>freeboxos:sfp-present</type>
+			</add-channel>
+			<add-channel id="sfp-alim-ok" groupIds="ftth">
+				<type>freeboxos:sfp-alim-ok</type>
+			</add-channel>
+			<add-channel id="sfp-has-power" groupIds="ftth">
+				<type>freeboxos:sfp-has-power</type>
+			</add-channel>
+			<add-channel id="sfp-has-signal" groupIds="ftth">
+				<type>freeboxos:sfp-has-signal</type>
+			</add-channel>
+			<add-channel id="link" groupIds="ftth">
+				<type>freeboxos:link</type>
+			</add-channel>
+			<add-channel id="sfp-pwr-tx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>TX Power</label>
+				<description>SFP Power in transmission</description>
+			</add-channel>
+			<add-channel id="sfp-pwr-rx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>RX Power</label>
+				<description>SFP Power in reception</description>
+			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+	<thing-type uid="freeboxos:revolution">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="sfp-present" groupIds="ftth">
+				<type>freeboxos:sfp-present</type>
+			</add-channel>
+			<add-channel id="sfp-alim-ok" groupIds="ftth">
+				<type>freeboxos:sfp-alim-ok</type>
+			</add-channel>
+			<add-channel id="sfp-has-power" groupIds="ftth">
+				<type>freeboxos:sfp-has-power</type>
+			</add-channel>
+			<add-channel id="sfp-has-signal" groupIds="ftth">
+				<type>freeboxos:sfp-has-signal</type>
+			</add-channel>
+			<add-channel id="link" groupIds="ftth">
+				<type>freeboxos:link</type>
+			</add-channel>
+			<add-channel id="sfp-pwr-tx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>TX Power</label>
+				<description>SFP Power in transmission</description>
+			</add-channel>
+			<add-channel id="sfp-pwr-rx" groupIds="ftth">
+				<type>freeboxos:sfp-signal-level</type>
+				<label>RX Power</label>
+				<description>SFP Power in reception</description>
+			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
 </update:update-descriptions>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mail.internal.config;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,7 +27,7 @@ public class POP3IMAPContentChannelConfig {
     public @Nullable String folder;
     public String subject = "";
     public String sender = "";
-    public @Nullable String transformation;
+    public @Nullable List<String> transformation;
 
     public boolean markAsRead = false;
 }

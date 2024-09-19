@@ -442,7 +442,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     }
 
     private void setRestarted(ShellyManagerInterface th, String uid) {
-        th.setThingOffline(ThingStatusDetail.GONE, "offline.status-error-restarted");
+        th.setThingOfflineAndDisconnect(ThingStatusDetail.GONE, "offline.status-error-restarted");
         scheduleUpdate(th, uid + "_upgrade", 25); // wait 25s before refresh
     }
 }

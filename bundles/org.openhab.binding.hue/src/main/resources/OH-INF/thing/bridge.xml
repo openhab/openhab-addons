@@ -67,6 +67,10 @@
 		<label>Hue API v2 Bridge</label>
 		<description>The Hue Bridge represents a Philips Hue Bridge supporting API v2.</description>
 
+		<channel-groups>
+			<channel-group id="automation" typeId="automation"/>
+		</channel-groups>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="warmup:room">
+		<instruction-set targetVersion="1">
+			<add-channel id="fixedTemperature">
+				<type>warmup:fixedTemperature</type>
+				<label>Fixed Temperature</label>
+			</add-channel>
+			<add-channel id="energyToday">
+				<type>system.electric-energy</type>
+				<label>Energy Today</label>
+			</add-channel>
+			<add-channel id="airTemperature">
+				<type>system.indoor-temperature</type>
+				<label>Air Temperature</label>
+			</add-channel>
+			<add-channel id="floor1Temperature">
+				<type>system.indoor-temperature</type>
+				<label>Floor 1 Temperature</label>
+			</add-channel>
+			<add-channel id="floor2Temperature">
+				<type>system.indoor-temperature</type>
+				<label>Floor 2 Temperature</label>
+			</add-channel>
+			<update-channel id="currentTemperature">
+				<type>system.indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

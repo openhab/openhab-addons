@@ -28,7 +28,7 @@ import org.openhab.core.library.types.StringType;
  * It's used for sending color or program settings and also extracting the data out of the received telegrams.
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Improvements
  * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
 public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
@@ -70,7 +70,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Setting color to {}", color);
 
         LEDStateDTO ledState = getLEDStateDTO().withColor(color).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.COLORS);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Setting brightness to {}", brightness);
 
         LEDStateDTO ledState = getLEDStateDTO().withBrightness(brightness).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.COLORS);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Changing brightness by {}", step);
 
         LEDStateDTO ledState = getLEDStateDTO().withIncrementedBrightness(step).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.COLORS);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Setting (warm) white LED to {}", white);
 
         LEDStateDTO ledState = getLEDStateDTO().withWhite(white).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.WHITES);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Changing white by {}", step);
 
         LEDStateDTO ledState = getLEDStateDTO().withIncrementedWhite(step).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.WHITES);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Setting (warm) white 2 LED to {}", white2);
 
         LEDStateDTO ledState = getLEDStateDTO().withWhite2(white2).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.WHITES);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
         logger.debug("Changing white by {}", step);
 
         LEDStateDTO ledState = getLEDStateDTO().withIncrementedWhite2(step).withoutProgram();
-        sendLEDData(ledState);
+        sendLEDData(ledState, LevelWriteMode.WHITES);
     }
 
     @Override
@@ -156,6 +156,10 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
     }
 
     private synchronized void sendLEDData(final LEDStateDTO ledState) {
+        this.sendLEDData(ledState, LevelWriteMode.ALL);
+    }
+
+    private synchronized void sendLEDData(final LEDStateDTO ledState, LevelWriteMode writeMode) {
         cachedLedStatus = ledState;
         if (!ledUpdateFuture.isDone()) {
             ledUpdateFuture.cancel(true);
@@ -171,7 +175,7 @@ public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {
             byte w = (byte) (((int) (ledState.getWhite().doubleValue() * 255 / 100)) & 0xFF);
             byte w2 = (byte) (((int) (ledState.getWhite2().doubleValue() * 255 / 100)) & 0xFF);
 
-            bytes = getBytesForColor(r, g, b, w, w2);
+            bytes = getBytesForColor(r, g, b, w, w2, writeMode);
         } else {
             // program selected
             byte p = (byte) (program & 0xFF);

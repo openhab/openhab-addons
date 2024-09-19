@@ -131,7 +131,7 @@ public abstract class KNXChannel {
                 return new WriteSpecImpl(entry.getValue(), dpt, command);
             }
         }
-        // if we didn't find a match, check if we find a sub-type match
+        // if we didn't find a match, check if we find a subtype match
         for (Map.Entry<String, GroupAddressConfiguration> entry : groupAddressConfigurations.entrySet()) {
             String dpt = Objects.requireNonNullElse(entry.getValue().getDPT(), getDefaultDPT(entry.getKey()));
             Set<Class<? extends Type>> expectedTypeClasses = DPTUtil.getAllowedTypes(dpt);

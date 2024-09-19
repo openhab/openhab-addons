@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sunsynk"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>SunSynk Account</label>
+		<description>Access to SunSynk Account. Used to discover plants and inverters tied to account.</description>
+		<properties>
+			<property name="vendor">SunSynk</property>
+		</properties>
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<label>E-mail Address</label>
+				<description>E-mail address for your SunSynk Connect account.</description>
+				<context>email</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for your SunSynk Connect account.</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>SunSynk Inverter</label>
+		<description>Inverter thing for SunSynk Binding.</description>
+
+		<channels>
+			<channel id="interval-1-grid-charge" typeId="grid-charge">
+				<label>Interval 1 Grid Charge</label>
+			</channel>
+			<channel id="interval-1-grid-time" typeId="grid-time">
+				<label>Interval 1 Start Time</label>
+			</channel>
+			<channel id="interval-1-grid-capacity" typeId="battery-target">
+				<label>Interval 1 Charge Target</label>
+			</channel>
+			<channel id="interval-1-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 1 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-2-grid-charge" typeId="grid-charge">
+				<label>Interval 2 Grid Charge </label>
+			</channel>
+			<channel id="interval-2-grid-time" typeId="grid-time">
+				<label>Interval 2 Start Time</label>
+			</channel>
+			<channel id="interval-2-grid-capacity" typeId="battery-target">
+				<label>Interval 2 Charge Target</label>
+			</channel>
+			<channel id="interval-2-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 2 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-3-grid-charge" typeId="grid-charge">
+				<label>Interval 3 Grid Charge</label>
+			</channel>
+			<channel id="interval-3-grid-time" typeId="grid-time">
+				<label>Interval 3 Start Time</label>
+			</channel>
+			<channel id="interval-3-grid-capacity" typeId="battery-target">
+				<label>Interval 3 Charge Target</label>
+			</channel>
+			<channel id="interval-3-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 3 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-4-grid-charge" typeId="grid-charge">
+				<label>Interval 4 Grid Charge</label>
+			</channel>
+			<channel id="interval-4-grid-time" typeId="grid-time">
+				<label>Interval 4 Start Time</label>
+			</channel>
+			<channel id="interval-4-grid-capacity" typeId="battery-target">
+				<label>Interval 4 Charge Target</label>
+			</channel>
+			<channel id="interval-4-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 4 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-5-grid-charge" typeId="grid-charge">
+				<label>Interval 5 Grid Charge</label>
+			</channel>
+			<channel id="interval-5-grid-time" typeId="grid-time">
+				<label>Interval 5 Start Time</label>
+			</channel>
+			<channel id="interval-5-grid-capacity" typeId="battery-target">
+				<label>Interval 5 Charge Target</label>
+			</channel>
+			<channel id="interval-5-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 5 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-6-grid-charge" typeId="grid-charge">
+				<label>Interval 6 Grid Charge</label>
+			</channel>
+			<channel id="interval-6-grid-time" typeId="grid-time">
+				<label>Interval 6 Start Time</label>
+			</channel>
+			<channel id="interval-6-grid-capacity" typeId="battery-target">
+				<label>Interval 6 Charge Target</label>
+			</channel>
+			<channel id="interval-6-grid-power-limit" typeId="power-charge-limit">
+				<label>Interval 6 Maximum Charge Rate</label>
+			</channel>
+			<channel id="interval-1-gen-charge" typeId="gen-charge">
+				<label>Interval 1 Generator Charge</label>
+			</channel>
+			<channel id="interval-2-gen-charge" typeId="gen-charge">
+				<label>Interval 2 Generator Charge</label>
+			</channel>
+			<channel id="interval-3-gen-charge" typeId="gen-charge">
+				<label>Interval 3 Generator Charge</label>
+			</channel>
+			<channel id="interval-4-gen-charge" typeId="gen-charge">
+				<label>Interval 4 Generator Charge</label>
+			</channel>
+			<channel id="interval-5-gen-charge" typeId="gen-charge">
+				<label>Interval 5 Generator Charge</label>
+			</channel>
+			<channel id="interval-6-gen-charge" typeId="gen-charge">
+				<label>Interval 6 Generator Charge</label>
+			</channel>
+			<channel id="battery-soc" typeId="system.battery-level"/>
+			<channel id="battery-dc-voltage" typeId="system.electric-voltage">
+				<label>Battery Voltage</label>
+				<description>Measured voltage of the battery.</description>
+			</channel>
+			<channel id="battery-dc-current" typeId="system.electric-current">
+				<label>Battery Current</label>
+				<description>Measured current of the battery.</description>
+			</channel>
+			<channel id="battery-dc-power" typeId="system.electric-power">
+				<label>Battery Power</label>
+				<description>Measured power of the battery.</description>
+			</channel>
+			<channel id="battery-temperature" typeId="system.indoor-temperature">
+				<label>Battery Temperature</label>
+				<description>Temperature of the battery reported by the BMS.</description>
+			</channel>
+			<channel id="inverter-ac-temperature" typeId="system.indoor-temperature">
+				<label>Inverter AC Temperature</label>
+				<description>Temperature of the inverter ac side.</description>
+			</channel>
+			<channel id="inverter-dc-temperature" typeId="system.indoor-temperature">
+				<label>Inverter DC Temperature</label>
+				<description>Temperature of the inverter dc side.</description>
+			</channel>
+			<channel id="inverter-grid-power" typeId="system.electric-power">
+				<label>Grid Power</label>
+				<description>Grid power import/export.</description>
+			</channel>
+			<channel id="inverter-grid-voltage" typeId="system.electric-voltage">
+				<label>Grid Voltage</label>
+				<description>Measured voltage of the grid.</description>
+			</channel>
+			<channel id="inverter-grid-current" typeId="system.electric-current">
+				<label>Grid Current</label>
+				<description>Measured current of the grid.</description>
+			</channel>
+			<channel id="inverter-solar-energy-today" typeId="system.electric-energy">
+				<label>Solar Energy Today</label>
+				<description>Solar energy generted today.</description>
+			</channel>
+			<channel id="inverter-solar-energy-total" typeId="system.electric-energy">
+				<label>Solar Energy Total</label>
+				<description>Total solar energy generted.</description>
+			</channel>
+			<channel id="inverter-solar-power-now" typeId="system.electric-current">
+				<label>Solar Power</label>
+				<description>Solar power being generted.</description>
+			</channel>
+			<channel id="inverter-control-timer" typeId="control-timer"/>
+			<channel id="inverter-control-energy-pattern" typeId="control-pattern"/>
+			<channel id="inverter-control-work-mode" typeId="control-work-mode"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">SunSynk</property>
+		</properties>
+		<representation-property>serialnumber</representation-property>
+
+		<config-description>
+			<parameter name="serialnumber" type="text" required="true">
+				<label>Inverter Serial Number</label>
+				<description>Serial number of the inverter from Sun Synk Connect.</description>
+			</parameter>
+			<parameter name="alias" type="text" required="true">
+				<label>Inverter Name</label>
+				<description>Name of inverter from Sun Synk Connect.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="true">
+				<label>Refresh Interval</label>
+				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="grid-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Grid Charge Time</label>
+		<description>"Grid charging interval start time. Use 24hr time. 00:00 to 23:55 are valid in 5 min increments with
+			leading zero on the hour and minute. Interval times must be in ascending order."</description>
+		<state readOnly="false" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="grid-charge" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Grid Charge</label>
+		<description>Charge the inverter battery from the grid during this interval.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="gen-charge" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Generator (AUX) Charge</label>
+		<description>Charge the inverter battery from the generator (auxilary) during this interval.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="battery-target" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Target Charge Level</label>
+		<description>The desired charge level of the battery (%).</description>
+		<category>Battery</category>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="power-charge-limit" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Maximum Charge Rate</label>
+		<description>maximum charge power desired (limited by inverter capability).</description>
+		<category>Inverter</category>
+		<state pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="control-timer" advanced="true">
+		<item-type>Switch</item-type>
+		<label>System Timer</label>
+		<description>Use the system mode timer to control battery charge discharge.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="control-pattern" advanced="true">
+		<item-type>String</item-type>
+		<label>System Energy Pattern</label>
+		<description>Set the system mode energy pattern to '0' Priority Battery or '1' Priority Load.</description>
+		<command>
+			<options>
+				<option value="0">Priority Battery</option>
+				<option value="1">Priority Load</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="control-work-mode" advanced="true">
+		<item-type>String</item-type>
+		<label>System Work Mode</label>
+		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limted to Load or '2' Limited to Home.</description>
+		<command>
+			<options>
+				<option value="0">Selling First</option>
+				<option value="1">"Zero-Export + Limted to Load"</option>
+				<option value="2">Limited to Home</option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -15,11 +15,5 @@ package org.openhab.binding.warmup.internal.model.query;
 /**
  * @author James Melville - Initial contribution
  */
-public class QueryDataDTO {
-
-    private UserDTO user;
-
-    public UserDTO getUser() {
-        return user;
-    }
+public record QueryDataDTO(UserDTO user) {
 }

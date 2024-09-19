@@ -58,6 +58,8 @@ public class PiHoleBindingConstants {
         public static final String PRIVACY_LEVEL_CHANNEL = "privacy-level";
         public static final String ENABLED_CHANNEL = "enabled";
         public static final String DISABLE_ENABLE_CHANNEL = "disable-enable";
+        public static final String GRAVITY_FILE_EXISTS = "gravity-file-exists";
+        public static final String GRAVITY_LAST_UPDATE = "gravity-last-update";
 
         public static enum DisableEnable {
             DISABLE,
