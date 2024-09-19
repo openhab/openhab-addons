@@ -61,12 +61,8 @@
 		<label>VMB4LEDPWM-20</label>
 		<description>4 channel led PWM dimmer module</description>
 		<channel-groups>
-			<channel-group id="input" typeId="4channelInputModule"/>
-			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
-			<channel-group id="color" typeId="4channelColorModule"/>
 			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="4channelFadeModule"/>
-			<channel-group id="white" typeId="4channelWhiteColorModule"/>
 			<channel-group id="scene" typeId="4channelSceneModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
@@ -83,12 +79,8 @@
 		<label>VMB8DC-20</label>
 		<description>8 channel 0 to 10 V dimmer control module</description>
 		<channel-groups>
-			<channel-group id="input" typeId="8channelInputModule"/>
-			<channel-group id="feedback" typeId="8channelFeedbackModule"/>
-			<channel-group id="color" typeId="8channelColorModule"/>
 			<channel-group id="brightness" typeId="8channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="8channelFadeModule"/>
-			<channel-group id="white" typeId="8channelWhiteColorModule"/>
 			<channel-group id="scene" typeId="8channelSceneModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>

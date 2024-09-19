@@ -26,11 +26,9 @@ import org.openhab.binding.velbus.internal.VelbusColorChannel;
 import org.openhab.binding.velbus.internal.config.VelbusSensorConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusNewDimmerRequestPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
-import org.openhab.binding.velbus.internal.packets.VelbusSetColorPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDimPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetScenePacket;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -153,8 +151,7 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
         byte channel = Integer.valueOf(getModuleAddress().getChannelNumber(channelUID)).byteValue();
 
         if (command instanceof RefreshType) {
-            if (isColorGroupChannel(channelUID) || isBrightnessGroupChannel(channelUID)
-                    || isWhiteGroupChannel(channelUID)) {
+            if (isBrightnessGroupChannel(channelUID)) {
                 sendNewDimmerReadoutRequest(velbusBridgeHandler, channel);
             }
         } else if (isSceneGroupChannel(channelUID)) {
@@ -184,60 +181,25 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
                 throw new UnsupportedOperationException(
                         "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
             }
-        } else if (isColorGroupChannel(channelUID) || isBrightnessGroupChannel(channelUID)
-                || isWhiteGroupChannel(channelUID)) {
+        } else if (isBrightnessGroupChannel(channelUID)) {
             VelbusColorChannel colorChannel = colorChannels[Byte.toUnsignedInt(channel) - 1];
 
-            if (isBrightnessGroupChannel(channelUID)) {
-                if (command instanceof PercentType percentCommand) {
-                    colorChannel.setBrightness(percentCommand);
+            if (command instanceof PercentType percentCommand) {
+                colorChannel.setBrightness(percentCommand);
 
-                    VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
-                    packet.setDim(colorChannel.getBrightnessVelbus());
-                    packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
-                    velbusBridgeHandler.sendPacket(packet.getBytes());
-                } else {
-                    throw new UnsupportedOperationException(
-                            "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
-                }
-            } else if (isColorGroupChannel(channelUID)) {
-                if (command instanceof HSBType hsbCommand) {
-                    colorChannel.setBrightness(hsbCommand);
-                    colorChannel.setColor(hsbCommand);
-
-                    VelbusSetColorPacket packet = new VelbusSetColorPacket(address, channel);
-                    packet.setBrightness(colorChannel.getBrightnessVelbus());
-                    packet.setColor(colorChannel.getColorVelbus());
-                    velbusBridgeHandler.sendPacket(packet.getBytes());
-                } else {
-                    throw new UnsupportedOperationException(
-                            "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
-                }
-            } else if (isWhiteGroupChannel(channelUID)) {
-                if (command instanceof PercentType percentCommand) {
-                    colorChannel.setWhite(percentCommand);
-
-                    VelbusSetColorPacket packet = new VelbusSetColorPacket(address, channel);
-                    packet.setWhite(colorChannel.getWhiteVelbus());
-                    velbusBridgeHandler.sendPacket(packet.getBytes());
-                } else {
-                    throw new UnsupportedOperationException(
-                            "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
-                }
+                VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
+                packet.setDim(colorChannel.getBrightnessVelbus());
+                packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+            } else {
+                throw new UnsupportedOperationException(
+                        "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
             }
         }
     }
 
-    private boolean isColorGroupChannel(ChannelUID channelUID) {
-        return CHANNEL_GROUP_COLOR.equals(channelUID.getGroupId());
-    }
-
     private boolean isBrightnessGroupChannel(ChannelUID channelUID) {
         return CHANNEL_GROUP_BRIGHTNESS.equals(channelUID.getGroupId());
-    }
-
-    private boolean isWhiteGroupChannel(ChannelUID channelUID) {
-        return CHANNEL_GROUP_WHITE.equals(channelUID.getGroupId());
     }
 
     private boolean isSceneGroupChannel(ChannelUID channelUID) {
@@ -274,14 +236,6 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
                                 CHANNEL + channel);
                         colorChannel.setBrightness(packet[7]);
                         updateState(brightness, colorChannel.getBrightnessPercent());
-
-                        ChannelUID color = new ChannelUID(thing.getUID(), CHANNEL_GROUP_COLOR, CHANNEL + channel);
-                        colorChannel.setColor(new byte[] { packet[8], packet[9], packet[10] });
-                        updateState(color, colorChannel.getColorHSB());
-
-                        ChannelUID white = new ChannelUID(thing.getUID(), CHANNEL_GROUP_WHITE, CHANNEL + channel);
-                        colorChannel.setWhite(packet[11]);
-                        updateState(white, colorChannel.getWhitePercent());
                     }
                 }
             } else if (command == COMMAND_DIMVALUE_STATUS && packet.length >= 8) {
