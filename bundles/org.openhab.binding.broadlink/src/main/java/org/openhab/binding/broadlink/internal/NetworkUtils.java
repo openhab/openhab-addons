@@ -60,22 +60,11 @@ public class NetworkUtils {
      * @throws SocketException thrown when no socket can be opened.
      */
     public static @Nullable InetAddress findNonLoopbackAddress() throws SocketException {
-        Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
-        while (ifaces.hasMoreElements()) {
-            NetworkInterface iface = ifaces.nextElement();
-            Enumeration<InetAddress> inetAddrs = iface.getInetAddresses();
-            while (inetAddrs.hasMoreElements()) {
-                InetAddress inetAddr = inetAddrs.nextElement();
-                if (inetAddr.isLoopbackAddress()) {
-                    continue; /* Loop/switch isn't completed */
-                }
-
-                if (inetAddr.isSiteLocalAddress()) {
-                    return inetAddr;
-                }
+        for (InetAddress address : NetUtil.getAllInterfaceAddresses().stream().filter(a->a.getAddress() instanceof Inet4Address).map(a->a.getAddress()).toList()) {
+            if (address.isSiteLocalAddress()) {
+                return address;
             }
         }
-
         return null;
     }
 

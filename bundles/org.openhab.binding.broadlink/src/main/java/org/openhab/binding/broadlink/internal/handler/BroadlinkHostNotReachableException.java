@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BroadlinkHostNotReachableException extends BroadlinkException {
 
+        private static final long serialVersionUID = 1L;
     public BroadlinkHostNotReachableException(String message) {
         super(message);
     }
