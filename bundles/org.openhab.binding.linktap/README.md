@@ -79,7 +79,7 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 | enforceProtocolLimits | Switch | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                               | true               | No       | Yes      |
 | enableJSONComms       | Switch | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications   | true               | No       | Yes      |
 
-**NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on
+**NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on.
 
 ### Device Configuration
 
