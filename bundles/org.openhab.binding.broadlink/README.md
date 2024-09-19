@@ -126,7 +126,7 @@ IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the R
 
 Before openHAB version 4.3.0, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
 By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. 
-In similar fashion, the RM pro models stored the RF codes in the `broadlinkrf.map` file. 
+In similar fashion, the RM pro models stored the RF codes in the `broadlinkrf.map` file.
 
 Here is a map file example of the previous file format:
 
