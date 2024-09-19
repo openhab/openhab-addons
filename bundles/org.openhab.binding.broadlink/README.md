@@ -181,7 +181,6 @@ else:
     print(json.dumps(result,indent=2))
 ```
 
-
 ## Credits
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
