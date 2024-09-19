@@ -167,6 +167,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte @Nullable [] sendAndReceiveDatagram(byte message[], String purpose) {
+        Socket socket = this.socket;
         if (socket != null) {
             return socket.sendAndReceive(message, purpose);
         } else {
