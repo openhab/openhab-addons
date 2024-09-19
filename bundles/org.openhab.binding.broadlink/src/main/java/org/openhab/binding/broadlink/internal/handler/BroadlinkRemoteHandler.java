@@ -400,12 +400,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     private void handleFindRFCommand(boolean replacement) {
-        String statusInfo = "";
-        if (replacement) {
-            statusInfo = "Replacing";
-        } else {
-            statusInfo = "Adding";
-        }
+        String statusInfo = (replacement) ? "Replacing" : "Adding";
         statusInfo = statusInfo + " RF command " + thingConfig.getNameOfCommandToLearn() + "..";
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType(statusInfo));
 
