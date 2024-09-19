@@ -150,8 +150,18 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             // Already restored component?
             @Nullable
             AbstractComponent<?> component = haComponents.get(groupID);
-
+            if (component != null) {
+                continue;
+            }
             HaID haID = HaID.fromConfig(config.basetopic, channel.getConfiguration());
+
+            if (!config.topics.contains(haID.getTopic())) {
+                // don't add a component for this channel that isn't configured on the thing
+                // anymore
+                // It will disappear from the thing when the thing type is updated below
+                continue;
+            }
+
             discoveryHomeAssistantIDs.add(haID);
             ThingUID thingUID = channel.getUID().getThingUID();
             String channelConfigurationJSON = (String) channel.getConfiguration().get("config");
