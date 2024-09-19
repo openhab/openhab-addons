@@ -41,13 +41,5 @@
 			<default>30</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="ignoreFailedUpdates" type="boolean">
-			<context>ignore-failed-updates</context>
-			<label>Ignore Failed Updates</label>
-			<description>Should failed status requests force the device offline?</description>
-			<required>true</required>
-			<advanced>true</advanced>
-			<default>false</default>
-		</parameter>
 	</config-description>
 </config-description:config-descriptions>
