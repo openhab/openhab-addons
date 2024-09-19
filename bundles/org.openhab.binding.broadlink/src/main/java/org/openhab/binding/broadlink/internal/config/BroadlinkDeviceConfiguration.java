@@ -137,7 +137,7 @@ public class BroadlinkDeviceConfiguration {
             return "Polling interval cannot be 0";
         }
         if (nameOfCommandToLearn.length() == 0) {
-            return "Name of commanbd to learn needs to be defined";
+            return "Name of command to learn needs to be defined";
         }
         if (deviceType == 0) {
             return "Device type cannot be 0";
