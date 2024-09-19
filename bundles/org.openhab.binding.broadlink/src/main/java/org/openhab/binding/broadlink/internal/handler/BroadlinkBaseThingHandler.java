@@ -121,11 +121,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     @Override
     public void dispose() {
         ScheduledFuture<?> refreshHandle = this.refreshHandle;
-        if (refreshHandle != null && !refreshHandle.isDone()) {
-            boolean cancelled = refreshHandle.cancel(true);
+        if (refreshHandle != null) {
+            refreshHandle.cancel(true);
             this.refreshHandle = null;
-            logger.debug("Cancellation successful: {}", cancelled);
-
         }
         Socket socket = this.socket;
         if (socket != null) {
