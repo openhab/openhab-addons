@@ -94,7 +94,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Status unknown, starting initialization");
+        updateStatus(ThingStatus.UNKNOWN);
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         // Validate whether the configuration makes any sense
         if (thingConfig.isValidConfiguration().length() != 0) {
