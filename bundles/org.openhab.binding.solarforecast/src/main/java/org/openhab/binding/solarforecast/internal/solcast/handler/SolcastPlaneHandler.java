@@ -96,8 +96,8 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     bridgeHandler = Optional.of(sbh);
                     Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
                             : Instant.now(Utils.getClock()).minusSeconds(1);
-                    forecastOptional = Optional
-                            .of(new SolcastObject(thing.getUID().getAsString(), expiration, sbh, storage));
+                    SolcastObject forecast = new SolcastObject(thing.getUID().getAsString(), expiration, sbh, storage);
+                    forecastOptional = Optional.of(forecast);
                     sbh.addPlane(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -237,6 +237,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     }
                 } else {
                     updateChannels(forecastObject);
+                    updateStatus(ThingStatus.ONLINE);
                 }
             });
         });
@@ -250,6 +251,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void checkCount() {
         Instant now = Instant.now();
         if (lastReset.atZone(ZoneId.of("UTC")).getDayOfMonth() != now.atZone(ZoneId.of("UTC")).getDayOfMonth()) {
+            logger.trace("New day {}, reset counter", now);
             apiRequestCounter = 0;
             lastReset = now;
         }
