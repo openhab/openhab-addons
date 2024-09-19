@@ -365,8 +365,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         sendCommand(COMMAND_BYTE_ENTER_RF_FREQ_LEARNING, "Enter remote rf frequency learning mode");
         boolean freqFound = false;
 
-        long start = System.currentTimeMillis();
-        long timeout = start + 30 * 1000;
+        long timeout = System.currentTimeMillis() + 30 * 1000;
         HexFormat hex = HexFormat.of();
 
         try {
