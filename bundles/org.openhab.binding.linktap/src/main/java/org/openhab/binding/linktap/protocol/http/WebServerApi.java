@@ -53,7 +53,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openhab.binding.linktap.internal.LinkTapBridgeHandler;
+import org.openhab.binding.linktap.internal.Firmware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,8 +114,7 @@ public final class WebServerApi {
                     throw new NotTapLinkGatewayException(MISSING_SERVER_TITLE);
             }
             final Map<String, String> deviceProps = getMetadataProperties(doc);
-            LinkTapBridgeHandler.Firmware firmware = new LinkTapBridgeHandler.Firmware(
-                    deviceProps.get(BRIDGE_PROP_GW_VER));
+            Firmware firmware = new Firmware(deviceProps.get(BRIDGE_PROP_GW_VER));
             if (firmware.supportsMDNS()) {
                 getMdnsEnableArgs(doc);
             } else {

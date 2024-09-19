@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * @author David Godyear - Initial contribution
  */
 @NonNullByDefault
-@Component(scope = ServiceScope.PROTOTYPE, service = LinkTapDeviceDiscoveryService.class, configurationPid = "discovery.linkTap.devices")
+@Component(scope = ServiceScope.PROTOTYPE, service = LinkTapDeviceDiscoveryService.class, configurationPid = "discovery.linktap.devices")
 public class LinkTapDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<LinkTapBridgeHandler>
         implements DeviceMetaDataUpdatedHandler {
 
