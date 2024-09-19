@@ -281,6 +281,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time
         updateStatus(ThingStatus.OFFLINE, detail, reason);
+        Socket socket = this.socket;
         if (socket != null) {
             socket.close();
         }
