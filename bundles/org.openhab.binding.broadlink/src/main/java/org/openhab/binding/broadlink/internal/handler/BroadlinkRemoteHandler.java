@@ -95,8 +95,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             ByteArrayOutputStream outputStream = buildCommandMessage(commandByte, codeBytes);
             byte[] padded = Utils.padTo(outputStream.toByteArray(), 16);
             byte[] message = buildMessage((byte) 0x6a, padded);
-            byte[] response = sendAndReceiveDatagram(message, purpose);
-            return response;
+            return sendAndReceiveDatagram(message, purpose);
         } catch (IOException e) {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType("Error found during when entering IR learning mode"));
