@@ -52,13 +52,13 @@ This binding supports the follow thing types:
 | Bridge     | gateway        | Manual / Automatic | A connection to a LinkTap Gateway device                         |
 | Thing      | device         | Automatic          | A end device such as one of the four controlled values on the Q1 |
 
-**NOTE** This binding was developed and tested using a GW-02 gateway with a Q1 device. 
+**NOTE** This binding was developed and tested using a GW-02 gateway with a Q1 device.
 
 ## Discovery
 
 ### Gateways
 
-If mDNS has been enabled on the Gateway device via it's webpage, then the gateway(s) will be discovered, and appear in the inbox when a manual scan is run when adding a LinkTap Gateway. 
+If mDNS has been enabled on the Gateway device via it's webpage, then the gateway(s) will be discovered, and appear in the inbox when a manual scan is run when adding a LinkTap Gateway.
 It is however recommended to use **static IP addresses** and add the gateways directly using the IP address.
 
 ### Devices
@@ -79,7 +79,7 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 | enforceProtocolLimits | Switch | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                               | true               | No       | Yes      |
 | enableJSONComms       | Switch | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications   | true               | No       | Yes      |
 
-**NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on 
+**NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on
 
 ### Device Configuration
 
@@ -89,7 +89,7 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 | deviceName   | String  | The name allocated to the device by the app. (Must be unique if used) |                    | No (B)   | No       |
 | enableAlerts | boolean | On connection whether the device should be configured to send alerts  | true               | No       | Yes      |
 
-**NOTE**
+**NOTE:**
 
 (A) It is recommended to use the Device Id, for locating devices.
 This can be found in the LinkTap mobile application under Settings->TapLinker / ValveLinker, e.g.
@@ -128,8 +128,7 @@ This can be found in the LinkTap mobile application under Settings->TapLinker / 
 | plan-resume-time  | DateTime                  | Displays when the last pause issued will expiry, resuming the current watering plan | R              |                                                                                                                              |                                                                                                 |
 | watering-plan-id  | Text                      | Displays the current watering plan id                                               | R              |                                                                                                                              |                                                                                                 |
 
-** NOTE **
-
+**NOTE:**
 There are 4 different areas of channels:
 
 - R (Read Only Data)

@@ -415,7 +415,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
             final Firmware firmware = new Firmware(getThing().getProperties().get(BRIDGE_PROP_GW_VER));
             if (!firmware.supportsLocalConfig()) {
-                logger.info("{} -> Local configuration support requires newer firmware it should be >= {}",
+                logger.warn("{} -> Local configuration support requires newer firmware it should be >= {}",
                         getThing().getLabel(), firmware.getRecommendedMinVer());
             }
         } catch (InterruptedException ignored) {
@@ -483,8 +483,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         if (mdnsLookup != null) {
             hostname = mdnsLookup;
         }
-        final InetAddress address = InetAddress.getByName(hostname);
-        return address.getHostAddress();
+        return InetAddress.getByName(hostname).getHostAddress();
     }
 
     private final Object singleCommLock = new Object();

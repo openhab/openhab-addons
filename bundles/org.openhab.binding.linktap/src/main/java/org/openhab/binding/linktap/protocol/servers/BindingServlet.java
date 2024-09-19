@@ -47,7 +47,7 @@ public class BindingServlet extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
 
-    public static final String SERVLET_URL_WITHOUT_ROOT = "linkTap";
+    public static final String SERVLET_URL_WITHOUT_ROOT = "linktap";
     private static final String SERVLET_URL = "/" + SERVLET_URL_WITHOUT_ROOT;
     @Nullable
     HttpService httpService;

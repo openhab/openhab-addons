@@ -178,7 +178,6 @@ public final class WebServerApi {
                         macAddr = tdEntries.get(i + 1).text();
                         i++;
                         break;
-
                 }
             }
         }
