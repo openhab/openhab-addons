@@ -64,6 +64,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
+    public static final String CALL_COUNT_APPENDIX = "-count";
+    public static final String CALL_COUNT_DATE_APPENDIX = "-count-date";
+
+    protected Optional<SolcastObject> forecastOptional = Optional.empty();
+
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final HttpClient httpClient;
     private SolcastPlaneConfiguration configuration = new SolcastPlaneConfiguration();
@@ -71,7 +76,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private Storage<String> storage;
     private Instant lastReset = Instant.now();
     private int apiRequestCounter = 0;
-    protected Optional<SolcastObject> forecastOptional = Optional.empty();
 
     public SolcastPlaneHandler(Thing thing, HttpClient hc, Storage<String> storage) {
         super(thing);
@@ -87,6 +91,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void initialize() {
         configuration = getConfigAs(SolcastPlaneConfiguration.class);
+
+        String counterString = storage.get(thing.getUID() + CALL_COUNT_APPENDIX);
+        if (counterString != null) {
+            apiRequestCounter = Integer.valueOf(counterString);
+            logger.trace("Counter {} restored", apiRequestCounter);
+        }
+        String lastResetString = storage.get(thing.getUID() + CALL_COUNT_DATE_APPENDIX);
+        if (lastResetString != null) {
+            lastReset = Instant.parse(lastResetString);
+            logger.trace("Counter date {} restored", lastReset);
+        }
+
         // connect Bridge & Status
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -117,13 +133,15 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     public void dispose() {
         super.dispose();
         bridgeHandler.ifPresent(bridge -> bridge.removePlane(this));
+        storage.put(thing.getUID() + CALL_COUNT_DATE_APPENDIX, lastReset.toString());
+        storage.put(thing.getUID() + CALL_COUNT_APPENDIX, String.valueOf(apiRequestCounter));
     }
 
     @Override
     public void handleRemoval() {
         super.handleRemoval();
-        storage.remove(thing.getUID() + SolcastObject.FORECAST_APPENDIX);
-        storage.remove(thing.getUID() + SolcastObject.FORECAST_APPENDIX);
+        storage.remove(thing.getUID() + CALL_COUNT_APPENDIX);
+        storage.remove(thing.getUID() + CALL_COUNT_DATE_APPENDIX);
     }
 
     @Override
@@ -180,14 +198,15 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                             // we found a forecast with valid data
                             forecast = getTodaysValues(forecastObject.getRaw());
                             int valuesToday = forecast.getJSONArray(KEY_ACTUALS).length();
-                            if (valuesToday != 48) {
+                            if (valuesToday < 48) {
                                 // sorry, we didn't get all actuals, so we can't use this forecast
                                 forecast = null;
                                 logger.trace(
                                         "[REDUCE] Forecast valid but not for whole day. Only found {} values for today",
                                         valuesToday);
                             } else {
-                                logger.trace("[REDUCE] Guessing with forecast as new actuals {}", forecast.toString());
+                                logger.trace("[REDUCE] Guessing with {} forecasts as new actuals {}", forecast.length(),
+                                        forecast.toString());
                             }
                         }
                         if (forecast == null) {
@@ -245,13 +264,14 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     private void increaseCount() {
+        logger.trace("[REDUCE] Increase Counter");
         apiRequestCounter++;
     }
 
     private void checkCount() {
         Instant now = Instant.now();
         if (lastReset.atZone(ZoneId.of("UTC")).getDayOfMonth() != now.atZone(ZoneId.of("UTC")).getDayOfMonth()) {
-            logger.trace("New day {}, reset counter", now);
+            logger.trace("[REDUCE] New day {}, reset counter", now);
             apiRequestCounter = 0;
             lastReset = now;
         }
