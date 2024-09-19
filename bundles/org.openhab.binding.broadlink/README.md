@@ -158,7 +158,7 @@ As an example, a file with the commands shown in the previous example would look
 
 The code shown below is a Python script that can be used to convert from the old format to the new one:
 
-```
+```python
 import csv
 import json
 import sys
