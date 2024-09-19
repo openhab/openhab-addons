@@ -285,14 +285,14 @@ public class LinkTapHandler extends PollingDeviceHandler {
                     switch (channelUID.getId()) {
                         case DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE:
                             strStore.put(DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE, command.toString());
-                            if (command.equals(OnOffType.ON)) {
+                            if (OnOffType.ON.equals(command)) {
                                 scheduleRenewPlanPause();
                             } else {
                                 cancelPlanPauseRenew();
                             }
                             break;
                         case DEVICE_CHANNEL_ACTIVE_WATERING:
-                            if (command.equals(OnOffType.ON)) {
+                            if (OnOffType.ON.equals(command)) {
                                 String volLimit = strStore.get(DEVICE_CHANNEL_OH_VOLUME_LIMIT);
                                 if (volLimit == null) {
                                     volLimit = DEFAULT_INST_WATERING_VOL_LIMIT;
@@ -303,31 +303,31 @@ public class LinkTapHandler extends PollingDeviceHandler {
                                 }
                                 sendRequest(
                                         new StartWateringReq(Integer.parseInt(durLimit), Integer.parseInt(volLimit)));
-                            } else if (command.equals(OnOffType.OFF)) {
+                            } else if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DeviceCmdReq(CMD_IMMEDIATE_WATER_STOP));
                             }
                         case DEVICE_CHANNEL_FALL_STATUS: // 1
-                            if (command.equals(OnOffType.OFF)) {
+                            if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DismissAlertReq(ALERT_DEVICE_FALL));
                             }
                             break;
                         case DEVICE_CHANNEL_SHUTDOWN_FAILURE: // 2
-                            if (command.equals(OnOffType.OFF)) {
+                            if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DismissAlertReq(ALERT_VALVE_SHUTDOWN_FAIL));
                             }
                             break;
                         case DEVICE_CHANNEL_WATER_CUT: // 3
-                            if (command.equals(OnOffType.OFF)) {
+                            if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DismissAlertReq(ALERT_WATER_CUTOFF));
                             }
                             break;
                         case DEVICE_CHANNEL_HIGH_FLOW: // 4
-                            if (command.equals(OnOffType.OFF)) {
+                            if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DismissAlertReq(ALERT_UNEXPECTED_HIGH_FLOW));
                             }
                             break;
                         case DEVICE_CHANNEL_LOW_FLOW: // 5
-                            if (command.equals(OnOffType.OFF)) {
+                            if (OnOffType.OFF.equals(command)) {
                                 sendRequest(new DismissAlertReq(ALERT_UNEXPECTED_LOW_FLOW));
                             }
                             break;

@@ -108,17 +108,17 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
             logger.trace("[{}] Not a LinkTap Gateway - wrong name", itemId);
             return null;
         }
-        if (service.getPort() != 80) {
+        if (80 != service.getPort()) {
             logger.trace("[{}] Not a LinkTap Gateway - incorrect port", itemId);
             return null;
         }
 
-        if (!service.getProtocol().equals("tcp")) {
+        if (!"tcp".equals(service.getProtocol())) {
             logger.trace("[{}] Not a LinkTap Gateway - incorrect protocol", itemId);
             return null;
         }
 
-        if (!service.getApplication().equals("http")) {
+        if (!"http".equals(service.getApplication())) {
             logger.trace("[{}] Not a LinkTap Gateway - incorrect application", itemId);
             return null;
         }

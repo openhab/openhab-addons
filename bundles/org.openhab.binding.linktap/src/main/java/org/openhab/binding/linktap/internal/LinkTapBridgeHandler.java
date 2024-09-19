@@ -484,7 +484,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     public void attemptReconnectIfNeeded() {
-        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+        if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
             synchronized (reconnectFutureLock) {
                 if (connectRepair != null) {
                     scheduleReconnect(0);

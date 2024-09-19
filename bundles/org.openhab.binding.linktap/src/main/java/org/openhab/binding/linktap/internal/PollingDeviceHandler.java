@@ -128,13 +128,13 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not selected / set");
             return;
-        } else if (bridge.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+        } else if (ThingStatus.OFFLINE.equals(bridge.getThing().getStatus())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         scheduler.execute(() -> {
-            if (bridge.getThing().getStatus() == ThingStatus.ONLINE) {
+            if (ThingStatus.ONLINE.equals(bridge.getThing().getStatus())) {
                 initAfterBridge(bridge);
             }
         });
@@ -142,7 +142,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     protected void initAfterBridge(final LinkTapBridgeHandler bridge) {
         String deviceId = getValidatedIdString();
-        if (deviceId.equals(MARKER_INVALID_DEVICE_KEY)) {
+        if (MARKER_INVALID_DEVICE_KEY.equals(deviceId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Device not found in bridges known devices");
             if (!registeredDeviceId.isBlank()) {
