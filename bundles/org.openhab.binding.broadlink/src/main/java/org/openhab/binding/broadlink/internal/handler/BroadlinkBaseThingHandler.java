@@ -125,7 +125,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             refreshHandle.cancel(true);
             this.refreshHandle = null;
         }
-        Socket socket = this.socket;
+        RetryableSocket socket = this.socket;
         if (socket != null) {
             socket.close();
             this.socket = null;
@@ -165,7 +165,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected byte @Nullable [] sendAndReceiveDatagram(byte message[], String purpose) {
-        Socket socket = this.socket;
+        RetryableSocket socket = this.socket;
         if (socket != null) {
             return socket.sendAndReceive(message, purpose);
         } else {
@@ -279,7 +279,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time
         updateStatus(ThingStatus.OFFLINE, detail, reason);
-        Socket socket = this.socket;
+        RetryableSocket socket = this.socket;
         if (socket != null) {
             socket.close();
         }

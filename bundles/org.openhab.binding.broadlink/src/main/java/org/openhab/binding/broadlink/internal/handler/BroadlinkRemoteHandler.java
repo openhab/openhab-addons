@@ -163,7 +163,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                     message = "saved";
                 }
                 if (cmdLabel != null) {
-                    logger.info("Learnt code '{}' ", hexSTring);
+                    logger.info("Learnt code '{}' ", hexString);
                     updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                             new StringType("IR command " + irCommand + " " + message));
                 } else {
