@@ -81,7 +81,6 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="Home">Home</option>
@@ -102,13 +101,13 @@
 				<option value="FindRemote">Find Remote</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="buttonTv">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button Press to Send to the Roku TV</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="Home">Home</option>
@@ -142,6 +141,7 @@
 				<option value="POWERON">Power On</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">

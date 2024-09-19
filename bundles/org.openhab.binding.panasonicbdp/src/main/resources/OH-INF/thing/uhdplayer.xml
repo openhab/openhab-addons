@@ -47,7 +47,6 @@
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A remote button press to send to the player</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="POWERON">Power On</option>
@@ -108,6 +107,7 @@
 				<option value="SKIP_THE_TRAILER">Skip The Trailer</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">

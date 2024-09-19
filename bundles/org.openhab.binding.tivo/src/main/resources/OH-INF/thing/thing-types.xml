@@ -106,7 +106,6 @@
 		<label>Change Menu Screen</label>
 		<description>Change(TELEPORT) to one of the following TiVo menu screens: TIVO (Home), LIVE TV, GUIDE, NOW PLAYING (My
 			Shows), SEARCH, NETFLIX. Type: String</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="TIVO">TIVO</option>
@@ -117,13 +116,13 @@
 				<option value="NETFLIX">NETFLIX</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="irCommand">
 		<item-type>String</item-type>
 		<label>Remote Control Button</label>
 		<description>Send a simulated button push (IRCODE) from the remote control to the TiVo. See README.md for supported
 			codes. Type: String</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 		<state>
 			<options>
 				<option value="UP">UP</option>
@@ -183,6 +182,7 @@
 				<option value="VIDEO_MODE_NATIVE">VIDEO_MODE_NATIVE</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="kbdCommand">
 		<item-type>String</item-type>
