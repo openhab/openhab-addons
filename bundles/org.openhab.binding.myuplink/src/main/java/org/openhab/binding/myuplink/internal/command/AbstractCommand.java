@@ -134,8 +134,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     @Override
     public final void onSuccess(@Nullable Response response) {
-        super.onSuccess(response);
         if (response != null) {
+            super.onSuccess(response);
             communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
             logger.debug("[{}] HTTP response {}", getClass().getSimpleName(), response.getStatus());
         }
@@ -146,7 +146,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     @Override
     public final void onFailure(@Nullable Response response, @Nullable Throwable failure) {
-        super.onFailure(response, failure);
+        if (failure != null && response != null) {
+            super.onFailure(response, failure);
+        }
         if (failure != null) {
             logger.info("[{}] Request failed: {}", getClass().getSimpleName(), failure.toString());
             communicationStatus.setError((Exception) failure);
@@ -170,7 +172,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     @Override
     public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
-        super.onContent(response, content);
+        if (response != null && content != null) {
+            super.onContent(response, content);
+        }
         logger.debug("[{}] received content, length: {}, encoding: {}", getClass().getSimpleName(),
                 getContentAsString().length(), this.getEncoding());
     }
