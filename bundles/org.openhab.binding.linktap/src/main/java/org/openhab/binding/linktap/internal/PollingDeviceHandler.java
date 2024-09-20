@@ -234,7 +234,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         try {
             return parentBridgeHandler.sendRequest(frame);
         } catch (final DeviceIdException die) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, die.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, getLocalizedText(die.getI18Key()));
         }
         return EMPTY_STRING;
     }

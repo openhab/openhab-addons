@@ -80,66 +80,68 @@ public class GatewayDeviceResponse extends TLGatewayFrame {
         /**
          * RET_SUCCESS (Ordinal 0).
          */
-        RET_SUCCESS(0, "Success", false),
+        RET_SUCCESS(0, "Success", false, "protocol.ret.success"),
 
         /**
          * RET_MESSAGE_FORMAT_ERR (Ordinal 1).
          */
-        RET_MESSAGE_FORMAT_ERR(1, "Message format error", false),
+        RET_MESSAGE_FORMAT_ERR(1, "Message format error", false, "protocol.ret.format-error"),
 
         /**
          * RET_CMD_NOT_SUPPORTED (Ordinal 2).
          */
-        RET_CMD_NOT_SUPPORTED(2, "CMD message not supported", false),
+        RET_CMD_NOT_SUPPORTED(2, "CMD message not supported", false, "protocol.ret.cmd-unsupported"),
 
         /**
          * RET_GATEWAY_ID_NOT_MATCHED (Ordinal 3).
          */
-        RET_GATEWAY_ID_NOT_MATCHED(3, "Gateway ID not matched", false),
+        RET_GATEWAY_ID_NOT_MATCHED(3, "Gateway ID not matched", false, "protocol.ret.gw-id-unmatched"),
 
         /**
          * RET_DEVICE_ID_ERROR (Ordinal 4).
          */
-        RET_DEVICE_ID_ERROR(4, "End device ID error", false),
+        RET_DEVICE_ID_ERROR(4, "End device ID error", false, "protocol.ret.end-device-id-error"),
 
         /**
          * RET_DEVICE_NOT_FOUND (Ordinal 5).
          */
-        RET_DEVICE_NOT_FOUND(5, "End device ID not found", false),
+        RET_DEVICE_NOT_FOUND(5, "End device ID not found", false, "protocol.ret.end-device-id-not-found"),
 
         /**
          * RET_GW_INTERNAL_ERR (Ordinal 6).
          */
-        RET_GW_INTERNAL_ERR(6, "Gateway internal error", true),
+        RET_GW_INTERNAL_ERR(6, "Gateway internal error", true, "protocol.ret.gw-internal-error"),
 
         /**
          * RET_CONFLICT_WATER_PLAN (Ordinal 7).
          */
-        RET_CONFLICT_WATER_PLAN(7, "Conflict with watering plan", false),
+        RET_CONFLICT_WATER_PLAN(7, "Conflict with watering plan", false, "protocol.ret.conflict-watering-plan"),
 
         /**
          * RET_GATEWAY_BUSY (Ordinal 8).
          */
-        RET_GATEWAY_BUSY(8, "Gateway busy", true),
+        RET_GATEWAY_BUSY(8, "Gateway busy", true, "protocol.ret.gw-busy"),
 
         /**
          * RET_BAD_PARAMETER (Ordinal 9).
          */
-        RET_BAD_PARAMETER(9, "Bad parameter in message", false),
+        RET_BAD_PARAMETER(9, "Bad parameter in message", false, "protocol.ret.bad-parameter-in-msg"),
 
         /**
          * INVALID (Ordinal -1).
          */
-        INVALID(-1, "Not Provided", false);
+        INVALID(-1, "Not Provided", false, "protocol.ret.invalid");
 
         private final int value;
         private final String description;
         private final boolean retry;
+        private final String i18Key;
 
-        private ResultStatus(final int value, final String description, final boolean retry) {
+        private ResultStatus(final int value, final String description, final boolean retry, final String i18Key) {
             this.value = value;
             this.description = description;
             this.retry = retry;
+            this.i18Key = i18Key;
         }
 
         public int getValue() {
@@ -152,6 +154,10 @@ public class GatewayDeviceResponse extends TLGatewayFrame {
 
         public boolean getCanRetry() {
             return retry;
+        }
+
+        public String getI18Key() {
+            return i18Key;
         }
 
         @Override
