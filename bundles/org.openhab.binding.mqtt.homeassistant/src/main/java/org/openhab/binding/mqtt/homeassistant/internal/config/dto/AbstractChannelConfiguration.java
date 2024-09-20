@@ -226,7 +226,7 @@ public abstract class AbstractChannelConfiguration {
             }
             return config;
         } catch (JsonSyntaxException e) {
-            throw new ConfigurationException("Cannot parse channel configuration JSON", e);
+            throw new ConfigurationException("Cannot parse channel configuration JSON: " + e.getMessage(), e);
         }
     }
 }
