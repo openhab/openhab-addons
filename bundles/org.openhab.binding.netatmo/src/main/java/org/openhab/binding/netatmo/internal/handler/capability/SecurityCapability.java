@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,11 +50,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class SecurityCapability extends RestCapability<SecurityApi> {
+    private final static ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
+            ZoneId.systemDefault());
+
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
-
     private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
-    private @Nullable ZonedDateTime freshestEventTime;
 
+    private ZonedDateTime freshestEventTime = ZDT_REFERENCE;
     private NAObjectMap<HomeDataPerson> persons = new NAObjectMap<>();
     private NAObjectMap<HomeDataModule> modules = new NAObjectMap<>();
     private String securityId = "";
@@ -64,7 +68,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     @Override
     public void initialize() {
         super.initialize();
-        freshestEventTime = null;
+        freshestEventTime = ZDT_REFERENCE;
         securityId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
     }
 
@@ -132,7 +136,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
                         eventBuffer.put(personId, event);
                     }
                 }
-                if (freshestEventTime == null || event.getTime().isAfter(freshestEventTime)) {
+                if (event.getTime().isAfter(freshestEventTime)) {
                     freshestEventTime = event.getTime();
                 }
             }
