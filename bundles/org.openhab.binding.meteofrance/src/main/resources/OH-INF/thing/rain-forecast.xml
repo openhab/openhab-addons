@@ -5,8 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="rain-forecast">
-		<label>Prévisions Précipitations</label>
-		<description>Fournit les prévisions de précipitation pour l'heure à venir</description>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+		<label>Precipitation Forecast</label>
+		<description>Provides precipitation forecast for the next hour</description>
 
 		<channels>
 			<channel id="update-time" typeId="timestamp"/>

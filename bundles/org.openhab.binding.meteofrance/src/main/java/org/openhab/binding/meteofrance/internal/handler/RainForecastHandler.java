@@ -15,6 +15,7 @@ package org.openhab.binding.meteofrance.internal.handler;
 import static org.openhab.binding.meteofrance.internal.MeteoFranceBindingConstants.*;
 import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -56,13 +58,15 @@ import org.slf4j.LoggerFactory;
 public class RainForecastHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(RainForecastHandler.class);
     private final ChannelUID intensityChannelUID;
+    private final ZoneId systemZoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<PointType> location = Optional.empty();
 
-    public RainForecastHandler(Thing thing) {
+    public RainForecastHandler(Thing thing, ZoneId zoneId) {
         super(thing);
         this.intensityChannelUID = new ChannelUID(getThing().getUID(), INTENSITY);
+        this.systemZoneId = zoneId;
     }
 
     @Override
@@ -78,9 +82,14 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         updateStatus(ThingStatus.UNKNOWN);
 
         ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
-        location = Optional.of(new PointType(config.location));
+        try {
+            PointType point = new PointType(config.location);
 
-        refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, 2, TimeUnit.SECONDS));
+            this.location = Optional.of(point);
+            this.refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, 2, TimeUnit.SECONDS));
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect 'location' value.");
+        }
     }
 
     private void disposeJob() {
@@ -149,7 +158,9 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
 
     private void updateDate(String channelId, @Nullable ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId, zonedDateTime != null ? new DateTimeType(zonedDateTime) : UnDefType.NULL);
+            updateState(channelId,
+                    zonedDateTime != null ? new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId))
+                            : UnDefType.NULL);
         }
     }
 }

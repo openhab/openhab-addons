@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(VigilanceHandler.class);
     private final MeteoFranceIconProvider iconProvider;
-    private final ZoneId zoneId;
+    private final ZoneId systemZoneId;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
@@ -74,7 +74,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
     public VigilanceHandler(Thing thing, ZoneId zoneId, MeteoFranceIconProvider iconProvider) {
         super(thing);
         this.iconProvider = iconProvider;
-        this.zoneId = zoneId;
+        this.systemZoneId = zoneId;
     }
 
     @Override
@@ -128,7 +128,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
                 updateDate(END_TIME, period.endValidityTime());
             }
             DomainId domainId = handler.requestMapData(domain, Term.TODAY);
-            ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(zoneId);
+            ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(systemZoneId);
             if (domainId != null) {
                 Map<Hazard, Risk> channels = new HashMap<>(Hazard.values().length);
                 Hazard.AS_SET.stream().filter(Hazard::isChannel).forEach(hazard -> channels.put(hazard, Risk.VERT));
@@ -183,7 +183,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
 
     private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
-            updateState(channelId, new DateTimeType(zonedDateTime));
+            updateState(channelId, new DateTimeType(zonedDateTime.withZoneSameInstant(systemZoneId)));
         }
     }
 }

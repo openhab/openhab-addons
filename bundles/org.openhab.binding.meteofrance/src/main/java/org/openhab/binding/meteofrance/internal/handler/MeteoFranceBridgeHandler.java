@@ -49,8 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link MeteoFranceBridgeHandler} is the handler for OpenUV API and connects it
- * to the webservice.
+ * {@link MeteoFranceBridgeHandler} is the handler for Meteo France bridge and connects it
+ * to the Meteo France API Portal
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -121,7 +121,7 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception deserializing API answer: %s".formatted(e.getMessage()));
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -164,8 +164,11 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
         try {
             String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
             return deserializer.deserialize(RainForecast.class, answer);
-        } catch (IOException | MeteoFranceException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        } catch (MeteoFranceException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception deserializing API answer: %s".formatted(e.getMessage()));
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }

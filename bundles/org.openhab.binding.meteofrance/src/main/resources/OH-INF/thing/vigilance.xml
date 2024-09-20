@@ -9,8 +9,8 @@
 			<bridge-type-ref id="api"/>
 		</supported-bridge-type-refs>
 
-		<label>Vigilance Département</label>
-		<description>Fournit les niveaux de vigilance météo pour un département.</description>
+		<label>Department Awareness</label>
+		<description>Provides weather alert levels for a department.</description>
 
 		<channels>
 			<channel id="vague-submersion" typeId="vague-submersion"/>
@@ -23,38 +23,38 @@
 			<channel id="grand-froid" typeId="grand-froid"/>
 			<channel id="avalanches" typeId="avalanches"/>
 			<channel id="vague-submersion-icon" typeId="condition-icon">
-				<label>Icône Vague Submersion</label>
+				<label>Wave Submersion Icon</label>
 			</channel>
 			<channel id="vent-icon" typeId="condition-icon">
-				<label>Icône Vent</label>
+				<label>Wind Icon</label>
 			</channel>
 			<channel id="pluie-inondation-icon" typeId="condition-icon">
-				<label>Icône Pluie Inondation</label>
+				<label>Rain Flood Icon</label>
 			</channel>
 			<channel id="orage-icon" typeId="condition-icon">
-				<label>Icône Orage</label>
+				<label>Storm Icon</label>
 			</channel>
 			<channel id="inondation-icon" typeId="condition-icon">
-				<label>Icône Inondation</label>
+				<label>Flood Icon</label>
 			</channel>
 			<channel id="neige-icon" typeId="condition-icon">
-				<label>Icône Neige</label>
+				<label>Snow Icon</label>
 			</channel>
 			<channel id="canicule-icon" typeId="condition-icon">
-				<label>Icône Canicule</label>
+				<label>Heat Wave Icon</label>
 			</channel>
 			<channel id="grand-froid-icon" typeId="condition-icon">
-				<label>Icône Grand Froid</label>
+				<label>Extreme Cold Icon</label>
 			</channel>
 			<channel id="avalanches-icon" typeId="condition-icon">
-				<label>Icône Avalanches</label>
+				<label>Avalanche Icon</label>
 			</channel>
 			<channel id="comment" typeId="comment"/>
 			<channel id="observation-time" typeId="timestamp">
-				<label>Début de validité</label>
+				<label>Start of Validity</label>
 			</channel>
 			<channel id="end-time" typeId="timestamp">
-				<label>Fin de validité</label>
+				<label>End of Validity</label>
 			</channel>
 		</channels>
 
@@ -66,8 +66,8 @@
 
 		<config-description>
 			<parameter name="department" type="text" required="true">
-				<label>Département</label>
-				<description>Nom du département</description>
+				<label>Department</label>
+				<description>Name of the department</description>
 				<options>
 					<option value="01">Ain</option>
 					<option value="02">Aisne</option>
@@ -169,8 +169,8 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1" required="true" unit="min">
-				<label>Fréquence de rafraichissement</label>
-				<description>Période d'actualisation des données en minutes.</description>
+				<label>Refresh Rate</label>
+				<description>Data refresh period in minutes.</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
