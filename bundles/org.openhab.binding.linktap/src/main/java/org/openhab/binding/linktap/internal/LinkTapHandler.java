@@ -68,7 +68,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
     private static final List<String> READBACK_DISABLED_CHANNELS = List.of(DEVICE_CHANNEL_OH_VOLUME_LIMIT,
             DEVICE_CHANNEL_OH_DURATION_LIMIT);
 
-    private java.util.concurrent.@Nullable ScheduledFuture<?> pausePlanFuture = null;
+    private @Nullable ScheduledFuture<?> pausePlanFuture = null;
     private final Object pausePlanLock = new Object();
     private volatile boolean pausePlanActive = false;
 
