@@ -20,6 +20,7 @@ The modem and device link databases are only downloaded once unless the binding 
 
 The binding has been rewritten in openHAB 4.3 to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
 If switching from a previous release, you will need to reconfigure your Insteon environment with the new bridges, things and channels to take advantage of these enhancements.
+You can follow to the [migration guide](#migrate-guide).
 However, the new version is fully backward compatible by supporting the legacy things.
 On the first start, existing `device` things connected to a `network` bridge will be migrated to the `legacy-device` thing type while still keeping the same ids to prevent any breakage.
 It is important to note that once the migration has occurred, downgrading to an older version will not be possible.
@@ -561,7 +562,7 @@ The default group used for e.g. linking two light switches is usually group #1.
 The binding can now automatically determines the broadcast groups between the modem and linked devices, based on their all-link databases.
 
 By default, the binding only sends direct messages to the intended device to update its state, leaving the state of the related devices unchanged.
-Whenever the bridge parameter `deviceSyncEnabled` is set to `true`, broadcast messages for supported Insteon commands (e.g. on/off, bright/dim, manual change) are sent to all responders of a given group, updating all related devices in one request.
+Whenever the bridge related device synchronization parameter `deviceSyncEnabled` is set to `true`, broadcast messages for supported Insteon commands (e.g. on/off, bright/dim, manual change) are sent to all responders of a given group, updating all related devices in one request.
 If no broadcast group is determined or for Insteon commands that don't support broadcasting (e.g. percent), direct messages are sent to each related device instead, to adjust their level based on their all-link database.
 
 ## Insteon Binding Process
@@ -1479,10 +1480,54 @@ then
 end
 ```
 
+## Migration Guide
+
+Here are the recommended steps to follow when migrating from the legacy implementation:
+
+- Create a new bridge matching your modem type.
+This will automatically disable the legacy network bridge with the same configuration to prevent having two bridges connected to the same modem.
+
+- Once your devices are discovered, they will show in your inbox.
+    - Add the discovered things.
+    - Connect the new things to your existing semantic models.
+    - Link the new channels to your existing items.
+    - Update your relevant rules.
+
+- For battery powered devices, press on their SET button to speed up the discovery process.
+Otherwise you may have to wait until the next time these devices send a heartbeat message which can take up to 24 hours.
+
+- If you have rules in place to send commands to synchronize the state between related devices, you can retire these rules by enabling the device synchronization on the bridge.
+This will synchronize related devices automatically based on their all-link database.
+
+- If you need to re-enable the legacy bridge, simply disable the new bridge and enable the legacy one again.
+
+- Once you finished updating your environment, you can remove the legacy bridge and things.
+Legacy device things may need to be forced deleted since their bridge would be down.
+
 ## Troubleshooting
 
 Turn on DEBUG or TRACE logging for `org.openhab.binding.insteon`.
 See [logging in openHAB](https://www.openhab.org/docs/administration/logging.html) for more info.
+
+### Debug Console Commands
+
+To log message events between a device and the modem to a file:
+
+```shell
+# Single device monitor
+openhab> insteon debug startMonitoring AA.BB.CC
+# All devices monitor
+openhab> insteon debug startMonitoring --all
+```
+
+To send a message to a device or broadcast group:
+
+```shell
+# Standard message to a device
+openhab> insteon debug sendStandardMessage AA.BB.CC 11 FF
+# Broadcast message to a group
+openhab> insteon debug sendBroadcastMessage 42 13 00
+```
 
 ### Device Permissions / Linux Device Locks
 
