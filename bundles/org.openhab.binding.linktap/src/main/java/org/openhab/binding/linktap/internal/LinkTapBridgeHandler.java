@@ -536,7 +536,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (final GatewayIdException gide) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, gide.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, gide.getI18Key());
         }
         return "";
     }

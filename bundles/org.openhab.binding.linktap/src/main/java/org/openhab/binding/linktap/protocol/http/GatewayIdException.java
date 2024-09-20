@@ -13,6 +13,7 @@
 package org.openhab.binding.linktap.protocol.http;
 
 import java.io.Serial;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
@@ -27,6 +28,8 @@ import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
 public class GatewayIdException extends Exception {
     @Serial
     private static final long serialVersionUID = -7786449325604153947L;
+
+    private String i18Key = "";
 
     // case RET_DEVICE_ID_ERROR:
     // case RET_DEVICE_NOT_FOUND:
@@ -49,5 +52,13 @@ public class GatewayIdException extends Exception {
 
     public GatewayIdException(final GatewayDeviceResponse.ResultStatus rs) {
         super(rs.getDesc());
+        this.i18Key = rs.getI18Key();
+    }
+
+    public String getI18Key() {
+        if (!i18Key.isBlank()) {
+            return i18Key;
+        }
+        return Objects.requireNonNullElse(getMessage(), "Device ID Exception");
     }
 }
