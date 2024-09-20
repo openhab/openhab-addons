@@ -411,7 +411,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 logger.trace("Failed to connect to remote device due to exception", e);
             }
 
-            final String servletEp = BindingServlet.getServletAddress(localServerAddr);
+            final String servletEp = BindingServlet.getServletAddress(localServerAddr,
+                    getLocalizedText("warning.no-http-server-port"));
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
             api.configureBridge(hostname, Optional.of(config.enableMDNS), Optional.of(config.enableJSONComms),
                     servletEpOpt);

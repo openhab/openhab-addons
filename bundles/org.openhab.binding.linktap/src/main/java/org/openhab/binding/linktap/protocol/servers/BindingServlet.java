@@ -65,15 +65,11 @@ public class BindingServlet extends HttpServlet {
         this.httpService = httpService;
     }
 
-    public static String getServletAddress(final String hostname) {
+    public static String getServletAddress(final String hostname, final String localizedWarning) {
         final String httpPortStr = System.getProperty("org.osgi.service.http.port");
-        final String httpsPortStr = System.getProperty("org.osgi.service.https.port");
         final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
         if (httpPortStr == null || httpPortStr.isEmpty()) {
-            logger.warn("HTTP Server port is not running, cannot use for API callbacks");
-            if (httpsPortStr != null && !httpsPortStr.isEmpty()) {
-                logger.warn("It looks like HTTPS is enabled only - the device needs HTTP for efficient comm's");
-            }
+            logger.warn("{}", localizedWarning);
             return EMPTY_STRING;
         }
         return "http://" + hostname + ":" + httpPortStr + SERVLET_URL;
