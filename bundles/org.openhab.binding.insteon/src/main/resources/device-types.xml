@@ -684,9 +684,9 @@
 			<feature name="humidity">ThermostatHumidity</feature>
 		</feature-group>
 		<feature-group name="thermostatData1bGroup" type="ThermostatData1bGroup">
-			<feature name="humidityHigh">ThermostatHumidityHigh</feature>
-			<feature name="humidityLow">ThermostatHumidityLow</feature>
-			<feature name="humidityControl">ThermostatHumidityControl</feature>
+			<feature name="dehumidifySetpoint">ThermostatDehumidifySetpoint</feature>
+			<feature name="humidifySetpoint">ThermostatHumidifySetpoint</feature>
+			<feature name="humidifierState">ThermostatHumidifierState</feature>
 			<feature name="stage1Duration">ThermostatStage1Duration</feature>
 		</feature-group>
 		<feature name="syncTime">ThermostatSyncTime</feature>
@@ -698,14 +698,14 @@
 			<feature name="programLock" bit="0">ThermostatOpFlags</feature>
 			<feature name="buttonBeep" bit="1">ThermostatOpFlags</feature>
 			<feature name="buttonLock" bit="2">ThermostatOpFlags</feature>
-			<feature name="temperatureFormat">ThermostatTemperatureFormat</feature>
+			<feature name="temperatureScale">ThermostatTemperatureScale</feature>
 			<feature name="timeFormat">ThermostatTimeFormat</feature>
 			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
 		</feature-group>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
-		<default-link name="humidityHigh" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
-		<default-link name="humidityLow" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
+		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
+		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
 		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
 			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
 		</default-link>
@@ -723,9 +723,9 @@
 			<feature name="humidity">ThermostatHumidity</feature>
 		</feature-group>
 		<feature-group name="thermostatData1bGroup" type="ThermostatData1bGroup">
-			<feature name="humidityHigh">ThermostatHumidityHigh</feature>
-			<feature name="humidityLow">ThermostatHumidityLow</feature>
-			<feature name="humidityControl">ThermostatHumidityControl</feature>
+			<feature name="dehumidifySetpoint">ThermostatDehumidifySetpoint</feature>
+			<feature name="humidifySetpoint">ThermostatHumidifySetpoint</feature>
+			<feature name="humidifierState">ThermostatHumidifierState</feature>
 			<feature name="stage1Duration">ThermostatStage1Duration</feature>
 		</feature-group>
 		<feature name="syncTime">ThermostatSyncTime</feature>
@@ -737,7 +737,7 @@
 			<feature name="programLock" bit="0">ThermostatOpFlags</feature>
 			<feature name="buttonBeep" bit="1">ThermostatOpFlags</feature>
 			<feature name="buttonLock" bit="2">ThermostatOpFlags</feature>
-			<feature name="temperatureFormat">ThermostatTemperatureFormat</feature>
+			<feature name="temperatureScale">ThermostatTemperatureScale</feature>
 			<feature name="timeFormat">ThermostatTimeFormat</feature>
 			<feature name="ledOnOff" bit="6">ThermostatOpFlags</feature>
 		</feature-group>
@@ -746,8 +746,8 @@
 		</feature-group>
 		<default-link name="cooling" type="controller" group="1" data1="0x03" data2="0x00" data3="0x01"/>
 		<default-link name="heating" type="controller" group="2" data1="0x03" data2="0x00" data3="0x02"/>
-		<default-link name="humidityHigh" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
-		<default-link name="humidityLow" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
+		<default-link name="dehumidifying" type="controller" group="3" data1="0x03" data2="0x00" data3="0x03"/>
+		<default-link name="humidifying" type="controller" group="4" data1="0x03" data2="0x00" data3="0x04"/>
 		<default-link name="broadcast" type="controller" group="239" data1="0x03" data2="0x00" data3="0xEF">
 			<command name="enableStatusReporting" ext="1" cmd1="0x2E" cmd2="0x00" data2="0x08"/>
 		</default-link>
@@ -764,7 +764,7 @@
 			<feature name="temperature">VenstarTemperature</feature>
 			<feature name="humidity">VenstarHumidity</feature>
 		</feature-group>
-		<feature name="temperatureFormat">VenstarTemperatureFormat</feature>
+		<feature name="temperatureScale">VenstarTemperatureScale</feature>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="7" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="ledOnOff" bit="5" on="0x06" off="0x07" inverted="true">OpFlags</feature>
@@ -796,12 +796,12 @@
 	</device-type>
 
 	<device-type name="SensorsActuators_Siren">
-		<feature name="siren">SirenAlarm</feature>
-		<feature name="armed">SirenArmedState</feature>
+		<feature name="siren">SirenOnOff</feature>
+		<feature name="armed">SirenArmed</feature>
 		<feature-group name="extDataGroup" type="ExtDataGroup">
-			<feature name="alarmType">SirenAlarmType</feature>
-			<feature name="alarmDelay">SirenAlarmDelay</feature>
-			<feature name="alarmDuration">SirenAlarmDuration</feature>
+			<feature name="alertType">SirenAlertType</feature>
+			<feature name="alertDelay">SirenAlertDelay</feature>
+			<feature name="alertDuration">SirenAlertDuration</feature>
 		</feature-group>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
@@ -815,9 +815,9 @@
 
 	<device-type name="EnergyManagement_PowerMeter">
 		<feature-group name="powerMeterDataGroup" type="PowerMeterDataGroup">
-			<feature name="energyUsage">PowerMeterKWh</feature>
-			<feature name="powerUsage">PowerMeterWatts</feature>
-			<feature name="reset">PowerMeterReset</feature>
+			<feature name="energyUsage">PowerMeterEnergy</feature>
+			<feature name="powerUsage">PowerMeterPower</feature>
+			<feature name="energyReset">PowerMeterReset</feature>
 		</feature-group>
 	</device-type>
 
@@ -876,7 +876,7 @@
 
 	<device-type name="SecurityHealthSafety_MotionSensor" batteryPowered="true">
 		<feature name="motion">WirelessSensorState</feature>
-		<feature name="daylight" group="2">WirelessSensorState</feature>
+		<feature name="daytime" group="2">WirelessSensorState</feature>
 		<feature name="lowBattery" group="3">WirelessSensorState</feature>
 		<feature name="heartbeat" group="4">HeartbeatMonitor</feature>
 		<feature-group name="extDataGroup" type="extDataGroup">
@@ -889,14 +889,14 @@
 			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
 		</feature-group>
 		<default-link name="motion" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="daylight" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="daytime" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="lowBattery" type="controller" group="3" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="heartbeat" type="controller" group="4" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 
 	<device-type name="SecurityHealthSafety_MotionSensor2" batteryPowered="true">
 		<feature name="motion">WirelessSensorState</feature>
-		<feature name="daylight" group="2">WirelessSensorState</feature>
+		<feature name="daytime" group="2">WirelessSensorState</feature>
 		<feature name="lowBattery" group="3">WirelessSensorState</feature>
 		<feature name="heartbeat" group="4">HeartbeatMonitor</feature>
 		<feature name="tamperSwitch" group="16">WirelessSensorContact</feature>
@@ -920,7 +920,7 @@
 			<feature name="stayAwake" on="0x18" off="0x19">OpFlags</feature>
 		</feature-group>
 		<default-link name="motion" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="daylight" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="daytime" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="lowBattery" type="controller" group="3" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="heartbeat" type="controller" group="4" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="tamperSwitch" type="controller" group="16" data1="0x03" data2="0x00" data3="0x00"/>
@@ -988,7 +988,7 @@
 		<feature name="carbonMonoxideAlarm" group="2">SmokeSensorState</feature>
 		<feature name="testAlarm" group="3">SmokeSensorState</feature>
 		<feature name="lowBattery" group="6">SmokeSensorState</feature>
-		<feature name="error" group="7">SmokeSensorState</feature>
+		<feature name="malfunction" group="7">SmokeSensorState</feature>
 		<feature name="heartbeat" group="10">HeartbeatMonitor</feature>
 		<feature name="beep">Beep</feature>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
@@ -1002,7 +1002,7 @@
 		<default-link name="test" type="controller" group="3" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="clear" type="controller" group="5" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="lowBattery" type="controller" group="6" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="error" type="controller" group="7" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="malfunction" type="controller" group="7" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="heartbeat" type="controller" group="10" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 

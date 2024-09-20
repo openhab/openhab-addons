@@ -78,7 +78,7 @@ public class InsteonBindingConstants {
     public static final String FEATURE_SCENE_ON_OFF = "sceneOnOff";
     public static final String FEATURE_STAY_AWAKE = "stayAwake";
     public static final String FEATURE_SYSTEM_MODE = "systemMode";
-    public static final String FEATURE_TEMPERATURE_FORMAT = "temperatureFormat";
+    public static final String FEATURE_TEMPERATURE_SCALE = "temperatureScale";
     public static final String FEATURE_TWO_GROUPS = "2Groups";
 
     // List of specific device feature types

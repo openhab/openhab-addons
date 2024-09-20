@@ -40,10 +40,10 @@ import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRe
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.MicroModuleOpMode;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlarmType;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlertType;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatFanMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemMode;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTemperatureFormat;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTemperatureScale;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTimeFormat;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.VenstarSystemMode;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
@@ -1308,10 +1308,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Siren alarm trigger command handler
+     * Siren on/off command handler
      */
-    public static class SirenAlarmTriggerCommandHandler extends SwitchOnOffCommandHandler {
-        SirenAlarmTriggerCommandHandler(DeviceFeature feature) {
+    public static class SirenOnOffCommandHandler extends SwitchOnOffCommandHandler {
+        SirenOnOffCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1322,10 +1322,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Siren armed operation mode command handler
+     * Siren armed command handler
      */
-    public static class SirenArmedOpModeCommandHandler extends OpFlagsCommandHandler {
-        SirenArmedOpModeCommandHandler(DeviceFeature feature) {
+    public static class SirenArmedCommandHandler extends OpFlagsCommandHandler {
+        SirenArmedCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1341,10 +1341,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Siren alarm duration command handler
+     * Siren alert duration command handler
      */
-    public static class SirenAlarmDurationCommandHandler extends CustomCommandHandler {
-        SirenAlarmDurationCommandHandler(DeviceFeature feature) {
+    public static class SirenAlertDurationCommandHandler extends CustomCommandHandler {
+        SirenAlertDurationCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1360,7 +1360,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
             if (value == -1) {
                 logger.debug("{}: unable to determine last value for {}", nm(), feature.getName());
             } else if (duration == -1) {
-                logger.warn("{}: got unexpected siren alarm duration cmd {}, ignoring request", nm(), cmd);
+                logger.warn("{}: got unexpected siren alert duration cmd {}, ignoring request", nm(), cmd);
             } else {
                 return value & 0x80 | duration;
             }
@@ -1379,10 +1379,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Siren alarm type command handler
+     * Siren alert type command handler
      */
-    public static class SirenAlarmTypeCommandHandler extends CustomCommandHandler {
-        SirenAlarmTypeCommandHandler(DeviceFeature feature) {
+    public static class SirenAlertTypeCommandHandler extends CustomCommandHandler {
+        SirenAlertTypeCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1395,7 +1395,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
         protected double getValue(Command cmd) {
             try {
                 String type = ((StringType) cmd).toString();
-                return SirenAlarmType.valueOf(type).getValue();
+                return SirenAlertType.valueOf(type).getValue();
             } catch (IllegalArgumentException e) {
                 logger.warn("{}: got unexpected alert type command: {}, ignoring request", nm(), cmd);
                 return -1;
@@ -1987,10 +1987,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat temperature format command handler
+     * Thermostat temperature scale command handler
      */
-    public static class ThermostatTemperatureFormatCommandHandler extends CustomBitmaskCommandHandler {
-        ThermostatTemperatureFormatCommandHandler(DeviceFeature feature) {
+    public static class ThermostatTemperatureScaleCommandHandler extends CustomBitmaskCommandHandler {
+        ThermostatTemperatureScaleCommandHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -2002,10 +2002,10 @@ public abstract class CommandHandler extends FeatureBaseHandler {
         @Override
         protected @Nullable Boolean shouldSetBit(Command cmd) {
             try {
-                String format = ((StringType) cmd).toString();
-                return ThermostatTemperatureFormat.valueOf(format) == ThermostatTemperatureFormat.CELSIUS;
+                String scale = ((StringType) cmd).toString();
+                return ThermostatTemperatureScale.valueOf(scale) == ThermostatTemperatureScale.CELSIUS;
             } catch (IllegalArgumentException e) {
-                logger.warn("{}: got unexpected temperature format command: {}, ignoring request", nm(), cmd);
+                logger.warn("{}: got unexpected temperature scale command: {}, ignoring request", nm(), cmd);
                 return null;
             }
         }

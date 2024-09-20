@@ -44,11 +44,11 @@ import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRe
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.MicroModuleOpMode;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlarmType;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlertType;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatFanMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemState;
-import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTemperatureFormat;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTemperatureScale;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatTimeFormat;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.VenstarSystemMode;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
@@ -1162,10 +1162,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Wireless sensor contact open message handler
+     * Wireless sensor open message handler
      */
-    public static class WirelessSensorContactOpenMsgHandler extends SensorMsgHandler {
-        WirelessSensorContactOpenMsgHandler(DeviceFeature feature) {
+    public static class WirelessSensorOpenMsgHandler extends SensorMsgHandler {
+        WirelessSensorOpenMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1176,10 +1176,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Wireless sensor contact closed message handler
+     * Wireless sensor closed message handler
      */
-    public static class WirelessSensorContactClosedMsgHandler extends SensorMsgHandler {
-        WirelessSensorContactClosedMsgHandler(DeviceFeature feature) {
+    public static class WirelessSensorClosedMsgHandler extends SensorMsgHandler {
+        WirelessSensorClosedMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1190,10 +1190,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Wireless sensor state on message handler
+     * Wireless sensor on message handler
      */
-    public static class WirelessSensorStateOnMsgHandler extends SensorMsgHandler {
-        WirelessSensorStateOnMsgHandler(DeviceFeature feature) {
+    public static class WirelessSensorOnMsgHandler extends SensorMsgHandler {
+        WirelessSensorOnMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1204,10 +1204,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Wireless sensor state off message handler
+     * Wireless sensor off message handler
      */
-    public static class WirelessSensorStateOffMsgHandler extends SensorMsgHandler {
-        WirelessSensorStateOffMsgHandler(DeviceFeature feature) {
+    public static class WirelessSensorOffMsgHandler extends SensorMsgHandler {
+        WirelessSensorOffMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1406,56 +1406,50 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Power meter kWh message handler
+     * Power meter energy message handler
      */
-    public static class PowerMeterKWhMsgHandler extends CustomMsgHandler {
-        PowerMeterKWhMsgHandler(DeviceFeature feature) {
+    public static class PowerMeterEnergyMsgHandler extends CustomMsgHandler {
+        PowerMeterEnergyMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
         protected @Nullable State getState(byte cmd1, double value) {
-            BigDecimal kWh = getKWh((int) value);
-            return new QuantityType<Energy>(kWh, Units.KILOWATT_HOUR);
+            BigDecimal energy = getEnergy((int) value);
+            return new QuantityType<Energy>(energy, Units.KILOWATT_HOUR);
         }
 
-        private BigDecimal getKWh(int energy) {
-            BigDecimal kWh = BigDecimal.ZERO;
-            int highByte = energy >> 24;
-            if (highByte < 254) {
-                kWh = new BigDecimal(energy * 65535.0 / (1000 * 60 * 60 * 60)).setScale(4, RoundingMode.HALF_UP);
-            }
-            return kWh;
+        private BigDecimal getEnergy(int value) {
+            return (value >> 24) < 254
+                    ? new BigDecimal(value * 65535.0 / (1000 * 60 * 60 * 60)).setScale(4, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
         }
     }
 
     /**
-     * Power meter watts message handler
+     * Power meter power message handler
      */
-    public static class PowerMeterWattsMsgHandler extends CustomMsgHandler {
-        PowerMeterWattsMsgHandler(DeviceFeature feature) {
+    public static class PowerMeterPowerMsgHandler extends CustomMsgHandler {
+        PowerMeterPowerMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
         protected @Nullable State getState(byte cmd1, double value) {
-            int watts = getWatts((int) value);
-            return new QuantityType<Power>(watts, Units.WATT);
+            int power = getPower((int) value);
+            return new QuantityType<Power>(power, Units.WATT);
         }
 
-        private int getWatts(int watts) {
-            if (watts > 32767) {
-                watts -= 65535;
-            }
-            return watts;
+        private int getPower(int power) {
+            return power > 32767 ? power - 65535 : power;
         }
     }
 
     /**
-     * Siren alarm state reply message handler
+     * Siren request reply message handler
      */
-    public static class SirenAlarmStateReplyHandler extends StatusRequestReplyHandler {
-        SirenAlarmStateReplyHandler(DeviceFeature feature) {
+    public static class SirenRequesteplyHandler extends StatusRequestReplyHandler {
+        SirenRequesteplyHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1482,17 +1476,17 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Siren alarm type message handler
+     * Siren alert type message handler
      */
-    public static class SirenAlarmTypeMsgHandler extends CustomMsgHandler {
-        SirenAlarmTypeMsgHandler(DeviceFeature feature) {
+    public static class SirenAlertTypeMsgHandler extends CustomMsgHandler {
+        SirenAlertTypeMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
         protected @Nullable State getState(byte cmd1, double value) {
             try {
-                SirenAlarmType type = SirenAlarmType.valueOf((int) value);
+                SirenAlertType type = SirenAlertType.valueOf((int) value);
                 return new StringType(type.toString());
             } catch (IllegalArgumentException e) {
                 logger.warn("{}: got unexpected alert type value: {}", nm(), (int) value);
@@ -1583,10 +1577,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat humidity control dehumidifying message handler
+     * Thermostat humidifier dehumidifying message handler
      */
-    public static class ThermostatHumidityControlDehumidifyingMsgHandler extends CustomMsgHandler {
-        ThermostatHumidityControlDehumidifyingMsgHandler(DeviceFeature feature) {
+    public static class ThermostatHumidifierDehumidifyingMsgHandler extends CustomMsgHandler {
+        ThermostatHumidifierDehumidifyingMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1597,10 +1591,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat humidity control humidifying message handler
+     * Thermostat humidifier humidifying message handler
      */
-    public static class ThermostatHumidityControlHumidifyingMsgHandler extends CustomMsgHandler {
-        ThermostatHumidityControlHumidifyingMsgHandler(DeviceFeature feature) {
+    public static class ThermostatHumidifierHumidifyingMsgHandler extends CustomMsgHandler {
+        ThermostatHumidifierHumidifyingMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1611,10 +1605,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat humidity control off message handler
+     * Thermostat humidifier off message handler
      */
-    public static class ThermostatHumidityControlOffMsgHandler extends CustomMsgHandler {
-        ThermostatHumidityControlOffMsgHandler(DeviceFeature feature) {
+    public static class ThermostatHumidifierOffMsgHandler extends CustomMsgHandler {
+        ThermostatHumidifierOffMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1665,10 +1659,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat system state cooling message handler
+     * Thermostat system cooling message handler
      */
-    public static class ThermostatSystemStateCoolingMsgHandler extends CustomMsgHandler {
-        ThermostatSystemStateCoolingMsgHandler(DeviceFeature feature) {
+    public static class ThermostatSystemCoolingMsgHandler extends CustomMsgHandler {
+        ThermostatSystemCoolingMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1679,10 +1673,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat system state heating message handler
+     * Thermostat system heating message handler
      */
-    public static class ThermostatSystemStateHeatingMsgHandler extends CustomMsgHandler {
-        ThermostatSystemStateHeatingMsgHandler(DeviceFeature feature) {
+    public static class ThermostatSystemHeatingMsgHandler extends CustomMsgHandler {
+        ThermostatSystemHeatingMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1693,10 +1687,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat system state off message handler
+     * Thermostat system off message handler
      */
-    public static class ThermostatSystemStateOffMsgHandler extends CustomMsgHandler {
-        ThermostatSystemStateOffMsgHandler(DeviceFeature feature) {
+    public static class ThermostatSystemOffMsgHandler extends CustomMsgHandler {
+        ThermostatSystemOffMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1707,16 +1701,16 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     }
 
     /**
-     * Thermostat temperature format message handler
+     * Thermostat temperature scale message handler
      */
-    public static class ThermostatTemperatureFormatMsgHandler extends CustomBitmaskMsgHandler {
-        ThermostatTemperatureFormatMsgHandler(DeviceFeature feature) {
+    public static class ThermostatTemperatureScaleMsgHandler extends CustomBitmaskMsgHandler {
+        ThermostatTemperatureScaleMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
         protected State getBitState(boolean isCelsius) {
-            ThermostatTemperatureFormat format = ThermostatTemperatureFormat.from(isCelsius);
+            ThermostatTemperatureScale format = ThermostatTemperatureScale.from(isCelsius);
             return new StringType(format.toString());
         }
     }
@@ -1733,34 +1727,6 @@ public abstract class MessageHandler extends FeatureBaseHandler {
         protected State getBitState(boolean is24Hr) {
             ThermostatTimeFormat format = ThermostatTimeFormat.from(is24Hr);
             return new StringType(format.toString());
-        }
-    }
-
-    /**
-     * Venstar thermostat fan state on message handler
-     */
-    public static class VenstarFanStateOnMsgHandler extends CustomMsgHandler {
-        VenstarFanStateOnMsgHandler(DeviceFeature feature) {
-            super(feature);
-        }
-
-        @Override
-        protected @Nullable State getState(byte cmd1, double value) {
-            return OnOffType.ON;
-        }
-    }
-
-    /**
-     * Venstar thermostat fan state off message handler
-     */
-    public static class VenstarFanStateOffMsgHandler extends CustomMsgHandler {
-        VenstarFanStateOffMsgHandler(DeviceFeature feature) {
-            super(feature);
-        }
-
-        @Override
-        protected @Nullable State getState(byte cmd1, double value) {
-            return OnOffType.OFF;
         }
     }
 
@@ -1815,10 +1781,10 @@ public abstract class MessageHandler extends FeatureBaseHandler {
         @Override
         protected Unit<Temperature> getTemperatureUnit() {
             try {
-                // use temperature format current state to determine temperature unit, defaulting to fahrenheit
-                State state = getInsteonDevice().getFeatureState(FEATURE_TEMPERATURE_FORMAT);
-                if (state != null && ThermostatTemperatureFormat
-                        .valueOf(state.toString()) == ThermostatTemperatureFormat.CELSIUS) {
+                // use temperature scale current state to determine temperature unit, defaulting to fahrenheit
+                State state = getInsteonDevice().getFeatureState(FEATURE_TEMPERATURE_SCALE);
+                if (state != null
+                        && ThermostatTemperatureScale.valueOf(state.toString()) == ThermostatTemperatureScale.CELSIUS) {
                     return SIUnits.CELSIUS;
                 }
             } catch (IllegalArgumentException e) {

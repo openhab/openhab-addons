@@ -7,11 +7,11 @@
 	<config-description uri="channel-type:insteon:dimmer">
 		<parameter name="onLevel" type="integer" min="0" max="100">
 			<label>On Level</label>
-			<description>Override the dimmer on level local setting</description>
+			<description>Override the dimmer on level local setting.</description>
 		</parameter>
 		<parameter name="rampRate" type="decimal">
 			<label>Ramp Rate</label>
-			<description>Override the dimmer ramp rate local setting</description>
+			<description>Override the dimmer ramp rate local setting.</description>
 			<options>
 				<option value="0.1">0.1 Seconds (Instant)</option>
 				<option value="0.3">0.3 Seconds (Fast)</option>

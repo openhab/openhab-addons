@@ -220,113 +220,113 @@ In order to determine which channels a device supports, check the device in the 
 
 ### State Channels
 
-| Channel               | Type                 | Access Mode | Description                       |
-| --------------------- | -------------------- | :---------: | --------------------------------- |
-| 3-way-mode            | Switch               |     R/W     | 3-Way Toggle Mode                 |
-| ac-delay              | Number:Time          |     R/W     | AC Delay                          |
-| alarm-delay           | Switch               |     R/W     | Alarm Delay                       |
-| alarm-duration        | Number:Time          |     R/W     | Alarm Duration                    |
-| alarm-type            | String               |     R/W     | Alarm Type                        |
-| armed                 | Switch               |     R/W     | Armed State                       |
-| backlight-duration    | Number:Time          |     R/W     | Back Light Duration               |
-| battery-level         | Number:Dimensionless |      R      | Battery Level                     |
-| battery-powered       | Switch               |      R      | Battery Powered State             |
-| beep                  | Switch               |      W      | Beep                              |
-| button-a              | Switch               |     R/W     | Button A                          |
-| button-b              | Switch               |     R/W     | Button B                          |
-| button-c              | Switch               |     R/W     | Button C                          |
-| button-d              | Switch               |     R/W     | Button D                          |
-| button-e              | Switch               |     R/W     | Button E                          |
-| button-f              | Switch               |     R/W     | Button F                          |
-| button-g              | Switch               |     R/W     | Button G                          |
-| button-h              | Switch               |     R/W     | Button H                          |
-| button-beep           | Switch               |     R/W     | Beep on Button Press              |
-| button-config         | String               |     R/W     | Button Config                     |
-| button-lock           | Switch               |     R/W     | Button Lock                       |
-| carbon-monoxide-alarm | Switch               |      R      | Carbon Monoxide Alarm             |
-| contact               | Contact              |      R      | Contact State                     |
-| cool-setpoint         | Number:Temperature   |     R/W     | Cool Setpoint                     |
-| daylight              | Contact              |      R      | Daylight State                    |
-| dimmer                | Dimmer               |     R/W     | Dimmer                            |
-| energy-offset         | Number:Temperature   |     R/W     | Energy Setpoint Offset            |
-| energy-saving         | Switch               |      R      | Energy Saving                     |
-| energy-usage          | Number:Energy        |      R      | Energy Usage                      |
-| error                 | Switch               |      R      | Error                             |
-| fan-mode              | String               |     R/W     | Fan Mode                          |
-| fan-speed             | String               |     R/W     | Fan Speed                         |
-| fan-state             | Switch               |      R      | Fan State                         |
-| fast-on-off           | Switch               |      W      | Fast On/Off                       |
-| heartbeat-interval    | Number:Time          |     R/W     | Heartbeat Interval                |
-| heartbeat-on-off      | Switch               |     R/W     | Heartbeat Enabled                 |
-| heat-setpoint         | Number:Temperature   |     R/W     | Heat Setpoint                     |
-| humidity              | Number:Dimensionless |      R      | Current Humidity                  |
-| humidity-control      | String               |      R      | Humidity Control State            |
-| humidity-high         | Number:Dimensionless |     R/W     | Humidity High                     |
-| humidity-low          | Number:Dimensionless |     R/W     | Humidity Low                      |
-| last-heard-from       | DateTime             |      R      | Last Heard From                   |
-| leak                  | Switch               |      R      | Leak Detected                     |
-| led-brightness        | Dimmer               |     R/W     | LED Brightness                    |
-| led-on-off            | Switch               |     R/W     | LED Enabled                       |
-| led-traffic           | Switch               |     R/W     | LED Blink on Traffic              |
-| light-level           | Number:Dimensionless |      R      | Light Level                       |
-| load                  | Switch               |      R      | Load State                        |
-| load-sense            | Switch               |     R/W     | Load Sense                        |
-| load-sense-bottom     | Switch               |     R/W     | Load Sense Bottom                 |
-| load-sense-top        | Switch               |     R/W     | Load Sense Top                    |
-| lock                  | Switch               |     R/W     | Lock                              |
-| low-battery           | Switch               |      R      | Low Battery Alert                 |
-| manual-change         | Rollershutter        |      W      | Manual Change                     |
-| momentary-duration    | Number:Time          |     R/W     | Momentary Duration                |
-| monitor-mode          | Switch               |     R/W     | Monitor Mode                      |
-| motion                | Switch               |      R      | Motion Detected                   |
-| on-level              | Dimmer               |     R/W     | On Level                          |
-| operation-mode        | String               |     R/W     | Switch Operation Mode             |
-| outlet-bottom         | Switch               |     R/W     | Outlet Bottom                     |
-| outlet-top            | Switch               |     R/W     | Outlet Top                        |
-| power-usage           | Number:Power         |      R      | Power Usage                       |
-| program1              | Player               |     R/W     | Program 1                         |
-| program2              | Player               |     R/W     | Program 2                         |
-| program3              | Player               |     R/W     | Program 3                         |
-| program4              | Player               |     R/W     | Program 4                         |
-| program-lock          | Switch               |     R/W     | Local Programming Lock            |
-| pump                  | Switch               |     R/W     | Pump                              |
-| ramp-rate             | Number:Time          |     R/W     | Ramp Rate                         |
-| relay-mode            | String               |     R/W     | Output Relay Mode                 |
-| relay-sensor-follow   | Switch               |     R/W     | Output Relay Follows Input Sensor |
-| reset                 | Switch               |      W      | Reset                             |
-| resume-dim            | Switch               |     R/W     | Resume Dim                        |
-| reverse-direction     | Switch               |     R/W     | Reverse Direction                 |
-| rollershutter         | Rollershutter        |     R/W     | Rollershutter                     |
-| scene                 | Switch               |     R/W     | Scene                             |
-| siren                 | Switch               |     R/W     | Siren                             |
-| smoke-alarm           | Switch               |      R      | Smoke Alarm                       |
-| stage1-duration       | Number:Time          |     R/W     | Stage 1 Duration                  |
-| stay-awake            | Switch               |     R/W     | Stay Awake for Extended Time      |
-| switch                | Switch               |     R/W     | Switch                            |
-| sync-time             | Switch               |      W      | Sync Time                         |
-| system-mode           | String               |     R/W     | System Mode                       |
-| system-state          | String               |      R      | System State                      |
-| tamper-switch         | Contact              |      R      | Tamper Switch                     |
-| temperature           | Number:Temperature   |      R      | Current Temperature               |
-| temperature-format    | String               |     R/W     | Temperature Format                |
-| test-alarm            | Switch               |      R      | Test Alarm                        |
-| time-format           | String               |     R/W     | Time Format                       |
-| toggle-mode-button-a  | String               |     R/W     | Toggle Mode Button A              |
-| toggle-mode-button-b  | String               |     R/W     | Toggle Mode Button B              |
-| toggle-mode-button-c  | String               |     R/W     | Toggle Mode Button C              |
-| toggle-mode-button-d  | String               |     R/W     | Toggle Mode Button D              |
-| toggle-mode-button-e  | String               |     R/W     | Toggle Mode Button E              |
-| toggle-mode-button-f  | String               |     R/W     | Toggle Mode Button F              |
-| toggle-mode-button-g  | String               |     R/W     | Toggle Mode Button G              |
-| toggle-mode-button-h  | String               |     R/W     | Toggle Mode Button H              |
-| valve1                | Switch               |     R/W     | Valve 1                           |
-| valve2                | Switch               |     R/W     | Valve 2                           |
-| valve3                | Switch               |     R/W     | Valve 3                           |
-| valve4                | Switch               |     R/W     | Valve 4                           |
-| valve5                | Switch               |     R/W     | Valve 5                           |
-| valve6                | Switch               |     R/W     | Valve 6                           |
-| valve7                | Switch               |     R/W     | Valve 7                           |
-| valve8                | Switch               |     R/W     | Valve 8                           |
+| Channel               | Type                 | Access Mode | Description                  |
+| --------------------- | -------------------- | :---------: | ---------------------------- |
+| 3-way-mode            | Switch               |     R/W     | 3-Way Toggle Mode            |
+| ac-delay              | Number:Time          |     R/W     | AC Delay                     |
+| alert-delay           | Switch               |     R/W     | Alert Delay                  |
+| alert-duration        | Number:Time          |     R/W     | Alert Duration               |
+| alert-type            | String               |     R/W     | Alert Type                   |
+| armed                 | Switch               |     R/W     | Armed                        |
+| backlight-duration    | Number:Time          |     R/W     | Back Light Duration          |
+| battery-level         | Number:Dimensionless |      R      | Battery Level                |
+| battery-powered       | Switch               |      R      | Battery Powered              |
+| beep                  | Switch               |      W      | Beep                         |
+| button-a              | Switch               |     R/W     | Button A                     |
+| button-b              | Switch               |     R/W     | Button B                     |
+| button-c              | Switch               |     R/W     | Button C                     |
+| button-d              | Switch               |     R/W     | Button D                     |
+| button-e              | Switch               |     R/W     | Button E                     |
+| button-f              | Switch               |     R/W     | Button F                     |
+| button-g              | Switch               |     R/W     | Button G                     |
+| button-h              | Switch               |     R/W     | Button H                     |
+| button-beep           | Switch               |     R/W     | Beep on Button Press         |
+| button-config         | String               |     R/W     | Button Config                |
+| button-lock           | Switch               |     R/W     | Button Lock                  |
+| carbon-monoxide-alarm | Switch               |      R      | Carbon Monoxide Alarm        |
+| contact               | Contact              |      R      | Contact Sensor               |
+| cool-setpoint         | Number:Temperature   |     R/W     | Cool Setpoint                |
+| daytime               | Switch               |      R      | Daytime                      |
+| dehumidify-setpoint   | Number:Dimensionless |     R/W     | Dehumidify Setpoint          |
+| dimmer                | Dimmer               |     R/W     | Dimmer                       |
+| energy-offset         | Number:Temperature   |     R/W     | Energy Temperature Offset    |
+| energy-reset          | Switch               |      W      | Energy Usage Reset           |
+| energy-saving         | Switch               |      R      | Energy Saving Mode           |
+| energy-usage          | Number:Energy        |      R      | Energy Usage                 |
+| fan-mode              | String               |     R/W     | Fan Mode                     |
+| fan-speed             | String               |     R/W     | Fan Speed                    |
+| fan-state             | Switch               |      R      | Fan State                    |
+| fast-on-off           | Switch               |      W      | Fast On/Off                  |
+| heartbeat-interval    | Number:Time          |     R/W     | Heartbeat Interval           |
+| heartbeat-on-off      | Switch               |     R/W     | Heartbeat Enabled            |
+| heat-setpoint         | Number:Temperature   |     R/W     | Heat Setpoint                |
+| humidifier-state      | String               |      R      | Humidifier State             |
+| humidify-setpoint     | Number:Dimensionless |     R/W     | Humidify Setpoint            |
+| humidity              | Number:Dimensionless |      R      | Ambient Humidity             |
+| last-heard-from       | DateTime             |      R      | Last Heard From              |
+| leak                  | Switch               |      R      | Leak Sensor                  |
+| led-brightness        | Dimmer               |     R/W     | LED Brightness Level         |
+| led-on-off            | Switch               |     R/W     | LED Enabled                  |
+| led-traffic           | Switch               |     R/W     | LED Traffic Blinking         |
+| light-level           | Number:Dimensionless |      R      | Ambient Light Level          |
+| load                  | Switch               |      R      | Load Sensor                  |
+| load-sense            | Switch               |     R/W     | Load Sense                   |
+| load-sense-bottom     | Switch               |     R/W     | Load Sense Bottom Outlet     |
+| load-sense-top        | Switch               |     R/W     | Load Sense Top Outlet        |
+| lock                  | Switch               |     R/W     | Lock                         |
+| low-battery           | Switch               |      R      | Low Battery Alert            |
+| malfunction           | Switch               |      R      | Malfunction Alert            |
+| manual-change         | Rollershutter        |      W      | Manual Change                |
+| momentary-duration    | Number:Time          |     R/W     | Momentary Duration           |
+| monitor-mode          | Switch               |     R/W     | Monitor Mode                 |
+| motion                | Switch               |      R      | Motion Sensor                |
+| on-level              | Dimmer               |     R/W     | On Level                     |
+| operation-mode        | String               |     R/W     | Switch Operation Mode        |
+| outlet-bottom         | Switch               |     R/W     | Bottom Outlet                |
+| outlet-top            | Switch               |     R/W     | Top Outlet                   |
+| power-usage           | Number:Power         |      R      | Power Usage                  |
+| program1              | Player               |     R/W     | Program 1                    |
+| program2              | Player               |     R/W     | Program 2                    |
+| program3              | Player               |     R/W     | Program 3                    |
+| program4              | Player               |     R/W     | Program 4                    |
+| program-lock          | Switch               |     R/W     | Local Programming Lock       |
+| pump                  | Switch               |     R/W     | Pump Control                 |
+| ramp-rate             | Number:Time          |     R/W     | Ramp Rate                    |
+| relay-mode            | String               |     R/W     | Output Relay Mode            |
+| relay-sensor-follow   | Switch               |     R/W     | Output Relay Sensor Follow   |
+| resume-dim            | Switch               |     R/W     | Resume Dim Level             |
+| reverse-direction     | Switch               |     R/W     | Reverse Motor Direction      |
+| rollershutter         | Rollershutter        |     R/W     | Rollershutter                |
+| scene                 | Switch               |     R/W     | Scene                        |
+| siren                 | Switch               |     R/W     | Siren                        |
+| smoke-alarm           | Switch               |      R      | Smoke Alarm                  |
+| stage1-duration       | Number:Time          |     R/W     | Stage 1 Duration             |
+| stay-awake            | Switch               |     R/W     | Stay Awake for Extended Time |
+| switch                | Switch               |     R/W     | Switch                       |
+| sync-time             | Switch               |      W      | Time Synchronization         |
+| system-mode           | String               |     R/W     | System Mode                  |
+| system-state          | String               |      R      | System State                 |
+| tamper-switch         | Contact              |      R      | Tamper Switch                |
+| temperature           | Number:Temperature   |      R      | Ambient Temperature          |
+| temperature-scale     | String               |     R/W     | Temperature Scale            |
+| test-alarm            | Switch               |      R      | Test Alarm                   |
+| time-format           | String               |     R/W     | Time Format                  |
+| toggle-mode-button-a  | String               |     R/W     | Toggle Mode Button A         |
+| toggle-mode-button-b  | String               |     R/W     | Toggle Mode Button B         |
+| toggle-mode-button-c  | String               |     R/W     | Toggle Mode Button C         |
+| toggle-mode-button-d  | String               |     R/W     | Toggle Mode Button D         |
+| toggle-mode-button-e  | String               |     R/W     | Toggle Mode Button E         |
+| toggle-mode-button-f  | String               |     R/W     | Toggle Mode Button F         |
+| toggle-mode-button-g  | String               |     R/W     | Toggle Mode Button G         |
+| toggle-mode-button-h  | String               |     R/W     | Toggle Mode Button H         |
+| valve1                | Switch               |     R/W     | Valve 1                      |
+| valve2                | Switch               |     R/W     | Valve 2                      |
+| valve3                | Switch               |     R/W     | Valve 3                      |
+| valve4                | Switch               |     R/W     | Valve 4                      |
+| valve5                | Switch               |     R/W     | Valve 5                      |
+| valve6                | Switch               |     R/W     | Valve 6                      |
+| valve7                | Switch               |     R/W     | Valve 7                      |
+| valve8                | Switch               |     R/W     | Valve 8                      |
 
 ### Trigger Channels
 
@@ -1104,7 +1104,7 @@ Switch        iMeterReset   "reset"              { channel="insteon:device:home:
 ### Sirens
 
 When turning on the siren directly, the binding will trigger the siren with no delay and up to the maximum duration (~2 minutes).
-The channels to change the alarm delay and duration are only for the siren arming behavior.
+The channels to change the alert delay and duration are only used for the siren arming behavior.
 
 Here is an example configuration for a siren module:
 
@@ -1113,9 +1113,9 @@ Here is an example configuration for a siren module:
 ```java
 Switch siren                   "siren"                 { channel="insteon:device:home:aabbcc:siren" }
 Switch sirenArmed              "armed"                 { channel="insteon:device:home:aabbcc:armed" }
-Switch sirenAlarmDelay         "alarm delay"           { channel="insteon:device:home:aabbcc:alarm-delay" }
-Number:Time sirenAlarmDuration "alarm duration [%d s]" { channel="insteon:device:home:aabbcc:alarm-duration" }
-String sirenAlarmType          "alarm type [%s]"       { channel="insteon:device:home:aabbcc:alarm-type" }
+Switch sirenAlertDelay         "alert delay"           { channel="insteon:device:home:aabbcc:alert-delay" }
+Number:Time sirenAlertDuration "alert duration [%d s]" { channel="insteon:device:home:aabbcc:alert-duration" }
+String sirenAlertType          "alert type [%s]"       { channel="insteon:device:home:aabbcc:alert-type" }
 ```
 
 ##### Sitemap
@@ -1123,9 +1123,23 @@ String sirenAlarmType          "alarm type [%s]"       { channel="insteon:device
 ```perl
 Switch   item=siren
 Text     item=sirenArmed
-Switch   item=sirenAlarmDelay
-Setpoint item=sirenAlarmDuration minValue=0 maxValue=127 step=1
-Switch   item=sirenAlarmType mappings=[ CHIME="CHIME", LOUD_SIREN="LOUD SIREN" ]
+Switch   item=sirenAlertDelay
+Setpoint item=sirenAlertDuration minValue=0 maxValue=127 step=1
+Switch   item=sirenAlertType mappings=[ CHIME="CHIME", LOUD_SIREN="LOUD SIREN" ]
+```
+
+### Smoke Detectors
+
+The smoke bridge monitors First Alert ONELINK smoke and carbon monoxide detectors.
+
+Here is an example configuration for a smoke bridge:
+
+##### Items
+
+```java
+Switch smokeAlarm          "smoke alarm"           { channel="insteon:device:home:aabbcc:smoke-alarm" }
+Switch carbonMonoxideAlarm "carbon monoxide alarm" { channel="insteon:device:home:aabbcc:carbon-monoxide-alarm" }
+Switch lowBattery          "low battery"           { channel="insteon:device:home:aabbcc:low-battery" }
 ```
 
 ### Sprinklers
@@ -1175,27 +1189,27 @@ Number:Dimensionless thermostatHumidity     "humidity [%.0f %%]"      { channel=
 Add this as well for some more exotic features:
 
 ```java
-Number:Time          thermostatACDelay      "A/C delay [%d min]"        { channel="insteon:device:home:aabbcc:ac-delay" }
-Number:Time          thermostatBacklight    "backlight [%d sec]"        { channel="insteon:device:home:aabbcc:backlight-duration" }
-Number:Time          thermostatStage1       "A/C stage 1 time [%d min]" { channel="insteon:device:home:aabbcc:stage1-duration" }
-Number:Dimensionless thermostatHumidityHigh "humidity high [%d %%]"     { channel="insteon:device:home:aabbcc:humidity-high" }
-Number:Dimensionless thermostatHumidityLow  "humidity low [%d %%]"      { channel="insteon:device:home:aabbcc:humidity-low" }
-String               thermostatTempFormat   "temperature format [%s]"   { channel="insteon:device:home:aabbcc:temperature-format" }
-String               thermostatTimeFormat   "time format [%s]"          { channel="insteon:device:home:aabbcc:time=format" }
+Number:Time          thermostatACDelay            "A/C delay [%d min]"          { channel="insteon:device:home:aabbcc:ac-delay" }
+Number:Time          thermostatBacklight          "backlight [%d sec]"          { channel="insteon:device:home:aabbcc:backlight-duration" }
+Number:Time          thermostatStage1             "A/C stage 1 time [%d min]"   { channel="insteon:device:home:aabbcc:stage1-duration" }
+Number:Dimensionless thermostatDehumidifySetpoint "dehumidify setpoint [%d %%]" { channel="insteon:device:home:aabbcc:dehumidify-setpoint" }
+Number:Dimensionless thermostatHumidifySetpoint   "humidify setpoint [%d %%]"   { channel="insteon:device:home:aabbcc:humidify-setpoint" }
+String               thermostatTemperatureScale   "temperature scale [%s]"      { channel="insteon:device:home:aabbcc:temperature-scale" }
+String               thermostatTimeFormat         "time format [%s]"            { channel="insteon:device:home:aabbcc:time=format" }
 ```
 
 <details>
   <summary>Legacy</summary>
 
   ```java
-  Number              thermostatCoolPoint   "cool point [%.1f °F]"       { channel="insteon:device:home:AABBCC:coolSetPoint" }
-  Number              thermostatHeatPoint   "heat point [%.1f °F]"       { channel="insteon:device:home:AABBCC:heatSetPoint" }
-  Number              thermostatSystemMode  "system mode [%d]"           { channel="insteon:device:home:AABBCC:systemMode" }
-  Number              thermostatFanMode     "fan mode [%d]"              { channel="insteon:device:home:AABBCC:fanMode" }
-  Number              thermostatIsHeating   "is heating [%d]"            { channel="insteon:device:home:AABBCC:isHeating"}
-  Number              thermostatIsCooling   "is cooling [%d]"            { channel="insteon:device:home:AABBCC:isCooling" }
-  Number:Temperature  thermostatTemperature  "temperature [%.1f %unit%]" { channel="insteon:device:home:AABBCC:temperature" }
-  Number              thermostatHumidity    "humidity [%.0f %%]"         { channel="insteon:device:home:AABBCC:humidity" }
+  Number              thermostatCoolPoint   "cool point [%.1f °F]"      { channel="insteon:device:home:AABBCC:coolSetPoint" }
+  Number              thermostatHeatPoint   "heat point [%.1f °F]"      { channel="insteon:device:home:AABBCC:heatSetPoint" }
+  Number              thermostatSystemMode  "system mode [%d]"          { channel="insteon:device:home:AABBCC:systemMode" }
+  Number              thermostatFanMode     "fan mode [%d]"             { channel="insteon:device:home:AABBCC:fanMode" }
+  Number              thermostatIsHeating   "is heating [%d]"           { channel="insteon:device:home:AABBCC:isHeating"}
+  Number              thermostatIsCooling   "is cooling [%d]"           { channel="insteon:device:home:AABBCC:isCooling" }
+  Number:Temperature  thermostatTemperature "temperature [%.1f %unit%]" { channel="insteon:device:home:AABBCC:temperature" }
+  Number              thermostatHumidity    "humidity [%.0f %%]"        { channel="insteon:device:home:AABBCC:humidity" }
   ```
 
   Add this as well for some more exotic features:
@@ -1224,10 +1238,10 @@ Text     item=thermostatSystemState
 Switch   item=thermostatFanMode mappings=[ AUTO="AUTO", ALWAYS_ON="ALWAYS ON" ]
 Setpoint item=thermostatACDelay minValue=2 maxValue=20 step=1
 Setpoint item=thermostatBacklight minValue=0 maxValue=100 step=1
-Setpoint item=thermostatHumidityHigh minValue=0 maxValue=100 step=1
-Setpoint item=thermostatHumidityLow  minValue=0 maxValue=100 step=1
+Setpoint item=thermostatDehumidifySetpoint minValue=20 maxValue=90 step=1
+Setpoint item=thermostatHumidifySetpoint  minValue=0 maxValue=79 step=1
 Setpoint item=thermostatStage1 minValue=1 maxValue=60 step=1
-Switch   item=thermostatTempFormat mappings=[ CELSIUS="CELSIUS", FAHRENHEIT="FAHRENHEIT" ]
+Switch   item=thermostatTemperatureScale mappings=[ CELSIUS="CELSIUS", FAHRENHEIT="FAHRENHEIT" ]
 ```
 
 <details>

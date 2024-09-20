@@ -194,16 +194,16 @@ public class FeatureEnums {
         }
     }
 
-    public static enum SirenAlarmType {
+    public static enum SirenAlertType {
         CHIME(0x00),
         LOUD_SIREN(0x01);
 
-        private static final Map<Integer, SirenAlarmType> VALUE_MAP = Arrays.stream(values())
+        private static final Map<Integer, SirenAlertType> VALUE_MAP = Arrays.stream(values())
                 .collect(Collectors.toUnmodifiableMap(type -> type.value, Function.identity()));
 
         private int value;
 
-        private SirenAlarmType(int value) {
+        private SirenAlertType(int value) {
             this.value = value;
         }
 
@@ -211,10 +211,10 @@ public class FeatureEnums {
             return value;
         }
 
-        public static SirenAlarmType valueOf(int value) throws IllegalArgumentException {
-            SirenAlarmType type = VALUE_MAP.get(value);
+        public static SirenAlertType valueOf(int value) throws IllegalArgumentException {
+            SirenAlertType type = VALUE_MAP.get(value);
             if (type == null) {
-                throw new IllegalArgumentException("unexpected siren alarm type");
+                throw new IllegalArgumentException("unexpected siren alert type");
             }
             return type;
         }
@@ -362,12 +362,12 @@ public class FeatureEnums {
         DEHUMIDIFYING;
     }
 
-    public static enum ThermostatTemperatureFormat {
+    public static enum ThermostatTemperatureScale {
         CELSIUS,
         FAHRENHEIT;
 
-        public static ThermostatTemperatureFormat from(boolean isCelsius) {
-            return isCelsius ? ThermostatTemperatureFormat.CELSIUS : ThermostatTemperatureFormat.FAHRENHEIT;
+        public static ThermostatTemperatureScale from(boolean isCelsius) {
+            return isCelsius ? ThermostatTemperatureScale.CELSIUS : ThermostatTemperatureScale.FAHRENHEIT;
         }
     }
 
