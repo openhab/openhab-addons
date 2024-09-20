@@ -17,6 +17,7 @@ import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVIC
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.EMPTY_STRING;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,8 @@ import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -39,6 +42,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +74,10 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     protected volatile LinkTapDeviceConfiguration config = new LinkTapDeviceConfiguration();
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
     protected void requestReadbackPoll() {
         synchronized (readBackPollLock) {
             cancelReadbackPoll();
@@ -90,8 +99,17 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     private volatile long lastStatusCommandRecvTs = 0L;
 
-    public PollingDeviceHandler(final Thing thing) {
+    public PollingDeviceHandler(final Thing thing, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
         super(thing);
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     private void startStatusPolling() {
@@ -125,7 +143,8 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(LinkTapDeviceConfiguration.class);
         if (!(getBridgeHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not selected / set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    getLocalizedText("polling-device.error.bridge-unset"));
             return;
         } else if (ThingStatus.OFFLINE.equals(bridgeHandler.getThing().getStatus())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -143,7 +162,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         String deviceId = getValidatedIdString();
         if (MARKER_INVALID_DEVICE_KEY.equals(deviceId)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device not found in bridges known devices");
+                    getLocalizedText("polling-device.error.device-unknown-in-bridge"));
             if (!registeredDeviceId.isBlank()) {
                 deregisterDevice();
             }
@@ -162,7 +181,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             startStatusPolling();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Bridge does not recognise device id");
+                    getLocalizedText("polling-device.error.unknown-device-id"));
         }
     }
 
@@ -194,7 +213,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             final String deviceAddr = getValidatedIdString();
             if (deviceAddr.equals(MARKER_INVALID_DEVICE_KEY)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Check device setup - device is unknown");
+                        getLocalizedText("polling-device.error.unknown-device"));
                 return EMPTY_STRING;
             }
             devCmdReq.deviceId = deviceAddr;
@@ -202,12 +221,14 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
         final Bridge parentBridge = getBridge();
         if (parentBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    getLocalizedText("polling-device.error.bridge-unset"));
             return EMPTY_STRING;
         }
         final LinkTapBridgeHandler parentBridgeHandler = (LinkTapBridgeHandler) parentBridge.getHandler();
         if (parentBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    getLocalizedText("polling-device.error.bridge-unset"));
             return EMPTY_STRING;
         }
         try {

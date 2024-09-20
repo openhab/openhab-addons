@@ -379,7 +379,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             } else {
                 if (!api.unlockWebInterface(bridgeKey, config.username, config.password)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            getLocalizedText("bridge.check-credentials"));
+                            getLocalizedText("bridge.error.check-credentials"));
                     return;
                 }
             }
@@ -431,15 +431,15 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         } catch (NotTapLinkGatewayException e) {
             deregisterBridge(this);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getLocalizedText("bridge.target-is-not-gateway"));
+                    getLocalizedText("bridge.error.target-is-not-gateway"));
         } catch (TransientCommunicationIssueException e) {
             scheduleReconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getLocalizedText("bridge.cannot-connect"));
+                    getLocalizedText("bridge.error.cannot-connect"));
         } catch (UnknownHostException e) {
             scheduleReconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    getLocalizedText("bridge.unknown-host"));
+                    getLocalizedText("bridge.error.unknown-host"));
         }
     }
 

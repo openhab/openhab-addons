@@ -31,6 +31,8 @@ import org.openhab.binding.linktap.protocol.frames.PauseWateringPlanReq;
 import org.openhab.binding.linktap.protocol.frames.StartWateringReq;
 import org.openhab.binding.linktap.protocol.frames.WaterMeterStatus;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -72,8 +74,9 @@ public class LinkTapHandler extends PollingDeviceHandler {
     private final Object pausePlanLock = new Object();
     private volatile boolean pausePlanActive = false;
 
-    public LinkTapHandler(Thing thing, Storage<String> strStore) {
-        super(thing);
+    public LinkTapHandler(Thing thing, Storage<String> strStore, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
         this.strStore = strStore;
     }
 

@@ -80,7 +80,7 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
         if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new LinkTapHandler(thing, storage);
+            return new LinkTapHandler(thing, storage, translationProvider, localeProvider);
         } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new LinkTapBridgeHandler((Bridge) thing, this, discSrvReg, translationProvider, localeProvider);
         }
