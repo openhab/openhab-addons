@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.insteon.internal.device.feature;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,6 +24,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate.HandlerEntry;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.core.library.types.DecimalType;
@@ -31,6 +32,8 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,11 +47,53 @@ import org.xml.sax.SAXException;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyFeatureTemplateLoader {
-    public static List<LegacyFeatureTemplate> readTemplates(InputStream input) throws IOException, ParsingException {
-        List<LegacyFeatureTemplate> features = new ArrayList<>();
+    private static final LegacyFeatureTemplateLoader FEATURE_TEMPLATE_LOADER = new LegacyFeatureTemplateLoader();
+
+    private final Logger logger = LoggerFactory.getLogger(LegacyFeatureTemplateLoader.class);
+
+    private static Map<String, LegacyFeatureTemplate> features = new HashMap<>();
+
+    public @Nullable LegacyFeatureTemplate getTemplate(String name) {
+        return features.get(name);
+    }
+
+    public Map<String, LegacyFeatureTemplate> getTemplates() {
+        return features;
+    }
+
+    public void initialize() {
+        InputStream input = LegacyFeatureTemplateLoader.class.getResourceAsStream("/legacy-device-features.xml");
+        if (input != null) {
+            loadFeatureTemplates(input);
+        } else {
+            logger.warn("Resource stream is null, cannot read xml file.");
+        }
+    }
+
+    private void loadFeatureTemplates(InputStream input) {
+        try {
+            parseTemplates(input);
+        } catch (IOException e) {
+            logger.warn("IOException while reading device features", e);
+        } catch (ParsingException e) {
+            logger.warn("Parsing exception while reading device features", e);
+        }
+    }
+
+    public void loadFeatureTemplates(String file) {
+        try {
+            InputStream input = new FileInputStream(file);
+            loadFeatureTemplates(input);
+        } catch (FileNotFoundException e) {
+            logger.warn("cannot read feature templates from file {} ", file, e);
+        }
+    }
+
+    private void parseTemplates(InputStream input) throws IOException, ParsingException {
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
@@ -71,7 +116,7 @@ public class LegacyFeatureTemplateLoader {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element e = (Element) node;
                     if ("feature".equals(e.getTagName())) {
-                        features.add(parseFeature(e));
+                        parseFeature(e);
                     }
                 }
             }
@@ -80,10 +125,9 @@ public class LegacyFeatureTemplateLoader {
         } catch (ParserConfigurationException e) {
             throw new ParsingException("Got parser config exception! ", e);
         }
-        return features;
     }
 
-    private static LegacyFeatureTemplate parseFeature(Element e) throws ParsingException {
+    private void parseFeature(Element e) throws ParsingException {
         String name = e.getAttribute("name");
         boolean statusFeature = "true".equals(e.getAttribute("statusFeature"));
         LegacyFeatureTemplate feature = new LegacyFeatureTemplate(name, statusFeature, e.getAttribute("timeout"));
@@ -106,10 +150,10 @@ public class LegacyFeatureTemplateLoader {
             }
         }
 
-        return feature;
+        features.put(name, feature);
     }
 
-    private static HandlerEntry makeHandlerEntry(Element e) throws ParsingException {
+    private HandlerEntry makeHandlerEntry(Element e) throws ParsingException {
         String handler = e.getTextContent();
         if (handler == null) {
             throw new ParsingException("Could not find Handler for: " + e.getTextContent());
@@ -124,7 +168,7 @@ public class LegacyFeatureTemplateLoader {
         return new HandlerEntry(handler, params);
     }
 
-    private static void parseMessageHandler(Element e, LegacyFeatureTemplate f) throws DOMException, ParsingException {
+    private void parseMessageHandler(Element e, LegacyFeatureTemplate f) throws DOMException, ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
         if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultMessageHandler(he);
@@ -135,7 +179,7 @@ public class LegacyFeatureTemplateLoader {
         }
     }
 
-    private static void parseCommandHandler(Element e, LegacyFeatureTemplate f) throws ParsingException {
+    private void parseCommandHandler(Element e, LegacyFeatureTemplate f) throws ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
         if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultCommandHandler(he);
@@ -145,18 +189,17 @@ public class LegacyFeatureTemplateLoader {
         }
     }
 
-    private static void parseMessageDispatcher(Element e, LegacyFeatureTemplate f)
-            throws DOMException, ParsingException {
+    private void parseMessageDispatcher(Element e, LegacyFeatureTemplate f) throws DOMException, ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
         f.setMessageDispatcher(he);
     }
 
-    private static void parsePollHandler(Element e, LegacyFeatureTemplate f) throws ParsingException {
+    private void parsePollHandler(Element e, LegacyFeatureTemplate f) throws ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
         f.setPollHandler(he);
     }
 
-    private static Class<? extends Command> parseCommandClass(String c) throws ParsingException {
+    private Class<? extends Command> parseCommandClass(String c) throws ParsingException {
         if ("OnOffType".equals(c)) {
             return OnOffType.class;
         } else if ("PercentType".equals(c)) {
@@ -168,6 +211,13 @@ public class LegacyFeatureTemplateLoader {
         } else {
             throw new ParsingException("Unknown Command Type");
         }
+    }
+
+    public static synchronized LegacyFeatureTemplateLoader instance() {
+        if (FEATURE_TEMPLATE_LOADER.getTemplates().isEmpty()) {
+            FEATURE_TEMPLATE_LOADER.initialize();
+        }
+        return FEATURE_TEMPLATE_LOADER;
     }
 
     public static class ParsingException extends Exception {

@@ -20,7 +20,7 @@ The modem and device link databases are only downloaded once unless the binding 
 
 The binding has been rewritten in openHAB 4.3 to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
 If switching from a previous release, you will need to reconfigure your Insteon environment with the new bridges, things and channels to take advantage of these enhancements.
-You can follow to the [migration guide](#migrate-guide).
+You can follow the [migration guide](#migrate-guide).
 However, the new version is fully backward compatible by supporting the legacy things.
 On the first start, existing `device` things connected to a `network` bridge will be migrated to the `legacy-device` thing type while still keeping the same ids to prevent any breakage.
 It is important to note that once the migration has occurred, downgrading to an older version will not be possible.
@@ -1488,10 +1488,10 @@ Here are the recommended steps to follow when migrating from the legacy implemen
 This will automatically disable the legacy network bridge with the same configuration to prevent having two bridges connected to the same modem.
 
 - Once your devices are discovered, they will show in your inbox.
-    - Add the discovered things.
-    - Connect the new things to your existing semantic models.
-    - Link the new channels to your existing items.
-    - Update your relevant rules.
+  - Add the discovered things.
+  - Connect the new things to your existing semantic models.
+  - Link the new channels to your existing items.
+  - Update your relevant rules.
 
 - For battery powered devices, press on their SET button to speed up the discovery process.
 Otherwise you may have to wait until the next time these devices send a heartbeat message which can take up to 24 hours.
@@ -1501,8 +1501,7 @@ This will synchronize related devices automatically based on their all-link data
 
 - If you need to re-enable the legacy bridge, simply disable the new bridge and enable the legacy one again.
 
-- Once you finished updating your environment, you can remove the legacy bridge and things.
-Legacy device things may need to be forced deleted since their bridge would be down.
+- Once you finished updating your environment, you can remove the legacy bridge and things, which may need to be forced deleted since their bridge would be down.
 
 ## Troubleshooting
 

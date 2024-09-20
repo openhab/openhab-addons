@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -40,12 +40,15 @@ import org.xml.sax.SAXException;
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyDeviceTypeLoader {
-    private static final Logger logger = LoggerFactory.getLogger(LegacyDeviceTypeLoader.class);
+    private static final LegacyDeviceTypeLoader DEVICE_TYPE_LOADER = new LegacyDeviceTypeLoader();
+
+    private final Logger logger = LoggerFactory.getLogger(LegacyDeviceTypeLoader.class);
+
     private Map<String, LegacyDeviceType> deviceTypes = new HashMap<>();
-    private static LegacyDeviceTypeLoader deviceTypeLoader = new LegacyDeviceTypeLoader();
 
     private LegacyDeviceTypeLoader() {
     } // private so nobody can call it
@@ -61,7 +64,7 @@ public class LegacyDeviceTypeLoader {
     }
 
     /**
-     * Must call loadDeviceTypesXML() before calling this function!
+     * Must call loadDeviceTypes() before calling this function!
      *
      * @return currently known device types
      */
@@ -70,12 +73,59 @@ public class LegacyDeviceTypeLoader {
     }
 
     /**
-     * Reads the device types from input stream and stores them in memory for
+     * Initializes the device types loader
+     */
+    public void initialize() {
+        InputStream input = LegacyDeviceTypeLoader.class.getResourceAsStream("/legacy-device-types.xml");
+        if (input != null) {
+            loadDeviceTypes(input);
+        } else {
+            logger.warn("Resource stream is null, cannot read xml file.");
+        }
+    }
+
+    /**
+     * Loads the device types from input stream and stores them in memory for
      * later access.
      *
      * @param in the input stream from which to read
      */
-    public void loadDeviceTypesXML(InputStream in) throws ParserConfigurationException, SAXException, IOException {
+    private void loadDeviceTypes(InputStream in) {
+        try {
+            parseDeviceTypes(in);
+        } catch (ParserConfigurationException e) {
+            logger.warn("parser config error when reading device types xml file: ", e);
+        } catch (SAXException e) {
+            logger.warn("SAX exception when reading device types xml file: ", e);
+        } catch (IOException e) {
+            logger.warn("I/O exception when reading device types xml file: ", e);
+        }
+    }
+
+    /**
+     * Loads the device types from file and stores them in memory for later access.
+     *
+     * @param file The name of the file to read from
+     */
+    public void loadDeviceTypes(String file) {
+        try {
+            InputStream in = new FileInputStream(file);
+            loadDeviceTypes(in);
+        } catch (FileNotFoundException e) {
+            logger.warn("cannot read device types from file {} ", file, e);
+        }
+    }
+
+    /**
+     * Parses the device types from input stream and stores them in memory for
+     * later access.
+     *
+     * @param in the input stream from which to read
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     */
+    private void parseDeviceTypes(InputStream in) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
         dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
@@ -94,20 +144,6 @@ public class LegacyDeviceTypeLoader {
                 processDevice((Element) node);
             }
         }
-    }
-
-    /**
-     * Reads the device types from file and stores them in memory for later access.
-     *
-     * @param aFileName The name of the file to read from
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     */
-    public void loadDeviceTypesXML(String aFileName) throws ParserConfigurationException, SAXException, IOException {
-        File file = new File(aFileName);
-        InputStream in = new FileInputStream(file);
-        loadDeviceTypesXML(in);
     }
 
     /**
@@ -199,22 +235,9 @@ public class LegacyDeviceTypeLoader {
      */
     @Nullable
     public static synchronized LegacyDeviceTypeLoader instance() {
-        if (deviceTypeLoader.getDeviceTypes().isEmpty()) {
-            InputStream input = LegacyDeviceTypeLoader.class.getResourceAsStream("/legacy-device-types.xml");
-            try {
-                if (input != null) {
-                    deviceTypeLoader.loadDeviceTypesXML(input);
-                } else {
-                    logger.warn("Resource stream is null, cannot read xml file.");
-                }
-            } catch (ParserConfigurationException e) {
-                logger.warn("parser config error when reading device types xml file: ", e);
-            } catch (SAXException e) {
-                logger.warn("SAX exception when reading device types xml file: ", e);
-            } catch (IOException e) {
-                logger.warn("I/O exception when reading device types xml file: ", e);
-            }
+        if (DEVICE_TYPE_LOADER.getDeviceTypes().isEmpty()) {
+            DEVICE_TYPE_LOADER.initialize();
         }
-        return deviceTypeLoader;
+        return DEVICE_TYPE_LOADER;
     }
 }

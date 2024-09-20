@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class LegacyPollHandler {
-    private static final Logger logger = LoggerFactory.getLogger(LegacyPollHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(LegacyPollHandler.class);
+
     LegacyDeviceFeature feature;
     Map<String, String> parameters = new HashMap<>();
 
@@ -148,8 +149,7 @@ public abstract class LegacyPollHandler {
             return phc;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.warn("error trying to create message handler: {}", ph.getName(), e);
+            return null;
         }
-        return null;
     }
 }

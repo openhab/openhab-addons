@@ -52,7 +52,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class LegacyCommandHandler {
-    private static final Logger logger = LoggerFactory.getLogger(LegacyCommandHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(LegacyCommandHandler.class);
+
     LegacyDeviceFeature feature; // related DeviceFeature
     Map<String, String> parameters = new HashMap<>();
 
@@ -852,8 +853,7 @@ public abstract class LegacyCommandHandler {
             return ch;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.warn("error trying to create message handler: {}", name, e);
+            return null;
         }
-        return null;
     }
 }

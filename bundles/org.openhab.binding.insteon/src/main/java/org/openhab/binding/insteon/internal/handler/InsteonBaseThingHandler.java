@@ -56,8 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class InsteonBaseThingHandler extends BaseThingHandler implements InsteonThingHandler {
-    private final static Pattern CHANNEL_ID_PATTERN = Pattern.compile("-([a-z])");
-    private final static Pattern FEATURE_NAME_PATTERN = Pattern.compile("(?!^)(?=[A-Z])");
+    private static final Pattern CHANNEL_ID_PATTERN = Pattern.compile("-([a-z])");
+    private static final Pattern FEATURE_NAME_PATTERN = Pattern.compile("(?!^)(?=[A-Z])");
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

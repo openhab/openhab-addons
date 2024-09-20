@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class LegacyMessageDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(LegacyMessageDispatcher.class);
+    protected final Logger logger = LoggerFactory.getLogger(LegacyMessageDispatcher.class);
 
     LegacyDeviceFeature feature;
     @Nullable
@@ -399,8 +399,7 @@ public abstract class LegacyMessageDispatcher {
             return ch;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.warn("error trying to create dispatcher: {}", name, e);
+            return null;
         }
-        return null;
     }
 }

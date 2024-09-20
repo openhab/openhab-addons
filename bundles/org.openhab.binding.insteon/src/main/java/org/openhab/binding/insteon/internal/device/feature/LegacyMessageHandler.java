@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class LegacyMessageHandler {
-    private static final Logger logger = LoggerFactory.getLogger(LegacyMessageHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(LegacyMessageHandler.class);
 
     protected LegacyDeviceFeature feature;
     protected Map<String, String> parameters = new HashMap<>();
@@ -292,7 +292,7 @@ public abstract class LegacyMessageHandler {
      * @param f the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
-    protected static int getButtonInfo(Msg msg, LegacyDeviceFeature f) {
+    protected int getButtonInfo(Msg msg, LegacyDeviceFeature f) {
         // the cleanup messages have the button number in the command2 field
         // the broadcast messages have it as the lsb of the toAddress
         try {
@@ -1308,8 +1308,7 @@ public abstract class LegacyMessageHandler {
             return mh;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            logger.warn("error trying to create message handler: {}", name, e);
+            return null;
         }
-        return null;
     }
 }

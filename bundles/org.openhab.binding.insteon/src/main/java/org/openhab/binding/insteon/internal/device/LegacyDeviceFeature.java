@@ -12,16 +12,11 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +26,6 @@ import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplateLoader;
-import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplateLoader.ParsingException;
 import org.openhab.binding.insteon.internal.device.feature.LegacyMessageDispatcher;
 import org.openhab.binding.insteon.internal.device.feature.LegacyMessageHandler;
 import org.openhab.binding.insteon.internal.device.feature.LegacyPollHandler;
@@ -68,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyDeviceFeature {
@@ -77,9 +72,7 @@ public class LegacyDeviceFeature {
         QUERY_ANSWERED
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(LegacyDeviceFeature.class);
-
-    private static Map<String, LegacyFeatureTemplate> features = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(LegacyDeviceFeature.class);
 
     private LegacyDevice device = new LegacyDevice();
     private String name = "INVALID_FEATURE_NAME";
@@ -396,58 +389,10 @@ public class LegacyDeviceFeature {
     @Nullable
     public static LegacyDeviceFeature makeDeviceFeature(String s) {
         LegacyDeviceFeature f = null;
-        synchronized (features) {
-            LegacyFeatureTemplate ft = features.get(s);
-            if (ft != null) {
-                f = ft.build();
-            } else {
-                logger.warn("unimplemented feature requested: {}", s);
-            }
+        LegacyFeatureTemplate ft = LegacyFeatureTemplateLoader.instance().getTemplate(s);
+        if (ft != null) {
+            f = ft.build();
         }
         return f;
-    }
-
-    /**
-     * Reads the features templates from an input stream and puts them in global map
-     *
-     * @param input the input stream from which to read the feature templates
-     */
-    public static void readFeatureTemplates(InputStream input) {
-        try {
-            List<LegacyFeatureTemplate> featureTemplates = LegacyFeatureTemplateLoader.readTemplates(input);
-            synchronized (features) {
-                for (LegacyFeatureTemplate f : featureTemplates) {
-                    features.put(f.getName(), f);
-                }
-            }
-        } catch (IOException e) {
-            logger.warn("IOException while reading device features", e);
-        } catch (ParsingException e) {
-            logger.warn("Parsing exception while reading device features", e);
-        }
-    }
-
-    /**
-     * Reads the feature templates from a file and adds them to a global map
-     *
-     * @param file name of the file to read from
-     */
-    public static void readFeatureTemplates(String file) {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            readFeatureTemplates(fis);
-        } catch (FileNotFoundException e) {
-            logger.warn("cannot read feature templates from file {} ", file, e);
-        }
-    }
-
-    /**
-     * static initializer
-     */
-    static {
-        // read features from xml file and store them in a map
-        InputStream input = LegacyDeviceFeature.class.getResourceAsStream("/legacy-device-features.xml");
-        Objects.requireNonNull(input);
-        readFeatureTemplates(input);
     }
 }

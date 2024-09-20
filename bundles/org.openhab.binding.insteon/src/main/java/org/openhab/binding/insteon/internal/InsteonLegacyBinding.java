@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,8 +24,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +41,7 @@ import org.openhab.binding.insteon.internal.device.LegacyRequestManager;
 import org.openhab.binding.insteon.internal.device.X10Address;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBEntry;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener;
+import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplateLoader;
 import org.openhab.binding.insteon.internal.handler.InsteonLegacyNetworkHandler;
 import org.openhab.binding.insteon.internal.transport.LegacyDriver;
 import org.openhab.binding.insteon.internal.transport.LegacyDriverListener;
@@ -57,7 +55,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * A majority of the code in this file is from the openHAB 1 binding
@@ -141,23 +138,14 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
-            try {
-                LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
-                if (instance != null) {
-                    instance.loadDeviceTypesXML(additionalDevices);
-                    logger.debug("read additional device definitions from {}", additionalDevices);
-                } else {
-                    logger.warn("device type loader instance is null");
-                }
-            } catch (ParserConfigurationException | SAXException | IOException e) {
-                logger.warn("error reading additional devices from {}", additionalDevices, e);
-            }
+            logger.debug("loading additional device definitions from {}", additionalDevices);
+            LegacyDeviceTypeLoader.instance().loadDeviceTypes(additionalDevices);
         }
 
         String additionalFeatures = config.getAdditionalFeatures();
         if (additionalFeatures != null) {
-            logger.debug("reading additional feature templates from {}", additionalFeatures);
-            LegacyDeviceFeature.readFeatureTemplates(additionalFeatures);
+            logger.debug("loading additional feature templates from {}", additionalFeatures);
+            LegacyFeatureTemplateLoader.instance().loadFeatureTemplates(additionalFeatures);
         }
 
         deadDeviceTimeout = devicePollIntervalMilliseconds * DEAD_DEVICE_COUNT;
