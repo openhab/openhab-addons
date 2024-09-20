@@ -361,19 +361,19 @@
 	<channel-type id="load-sense" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Load Sense</label>
-		<description>Enable appliance load sensing.</description>
+		<description>Toggle appliance load sensing.</description>
 	</channel-type>
 
 	<channel-type id="load-sense-bottom" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Load Sense Bottom Outlet</label>
-		<description>Enable bottom outlet load sensing.</description>
+		<description>Toggle bottom outlet load sensing.</description>
 	</channel-type>
 
 	<channel-type id="load-sense-top" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Load Sense Top Outlet</label>
-		<description>Enable top outlet load sensing.</description>
+		<description>Toggle top outlet load sensing.</description>
 	</channel-type>
 
 	<channel-type id="lock">
@@ -412,7 +412,7 @@
 	<channel-type id="monitor-mode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Monitor Mode</label>
-		<description>Enable messages not specifically directed to the modem to be processed.</description>
+		<description>Process messages not specifically directed to the modem.</description>
 	</channel-type>
 
 	<channel-type id="motion">
@@ -601,7 +601,7 @@
 	<channel-type id="stay-awake" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stay Awake</label>
-		<description>Enable stay awake for extended time (write only on some products)</description>
+		<description>Stay awake for extended time (write only on some products)</description>
 	</channel-type>
 
 	<channel-type id="switch">
