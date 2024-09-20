@@ -19,8 +19,6 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.HexFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -31,9 +29,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.gree.internal.gson.GreeBaseDTO;
-import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The CryptoUtil class provides functionality for encrypting and decrypting
@@ -44,7 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class GreeCryptoUtil {
-    private static final Logger logger = LoggerFactory.getLogger(GreeCryptoUtil.class);
     private static final String AES_KEY = "a3K8Bx%2r8Y7#xDh";
     private static final String GCM_KEY = "{yxAHAY_Lm6pbC/<";
     private static final String GCM_IV = "5440784449675a516c5e6313";
@@ -81,26 +75,6 @@ public class GreeCryptoUtil {
 
     public static <T extends GreeBaseDTO> EncryptionTypes getEncryptionType(T response) {
         return response.tag != null ? EncryptionTypes.GCM : EncryptionTypes.ECB;
-    }
-
-    public static EncryptionTypes getEncryptionType(GreeScanResponseDTO response) {
-        if (response.tag != null) {
-            return EncryptionTypes.GCM;
-        }
-
-        // Devices with ver 2.0.0 or later use GCM encryption
-        logger.debug("Getting the encryption type from a scan response that doesn't have a tag property");
-        if (response.packJson != null) {
-            logger.debug("Scan responce already decrypted: {}", response.packJson);
-            Pattern patternVersion = Pattern.compile("V\\d+\\.");
-            Matcher matcherVersion = patternVersion.matcher(response.packJson.ver);
-            if (matcherVersion.find() && Integer.parseInt(matcherVersion.group()) >= 2) {
-                logger.debug("Device version detected greather than or equal to 2, set encryption to GCM");
-                return EncryptionTypes.GCM;
-            }
-        }
-
-        return EncryptionTypes.ECB;
     }
 
     public static <T extends GreeBaseDTO> String decrypt(T response) throws GreeException {

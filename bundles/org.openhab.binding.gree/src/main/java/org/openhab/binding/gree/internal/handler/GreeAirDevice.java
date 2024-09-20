@@ -173,7 +173,7 @@ public class GreeAirDevice {
                     sendPacket = createPackRequest(1, encryptedBindReqData);
                     clientSocket.send(sendPacket);
                 } else {
-                    throw new GreeException("Unable to bind to device", e);
+                    throw new GreeException("Unable to bind to device using GCM encryption", e);
                 }
             }
 
