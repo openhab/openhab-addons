@@ -168,6 +168,7 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_BATTERYLOW = "batteryLow";
 
+    public static final String CHANNEL_PILOT_WIRE = "pilotWire";
     public static final String CHANNEL_AUTOOFF = "autoOFF";
     public static final String CHANNEL_DELAYRADIOOFF = "delayRadioOFF";
     public static final String CHANNEL_EXTERNALINTERFACEMODE = "externalInterfaceMode";
@@ -425,6 +426,9 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_CUMULATIVEVALUE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CUMULATIVEVALUE),
                             CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Volume.class.getSimpleName())),
+            Map.entry(CHANNEL_PILOT_WIRE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_PILOT_WIRE),
+                            CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_AUTOOFF,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_AUTOOFF),
                             CoreItemFactory.NUMBER)),
