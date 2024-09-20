@@ -124,18 +124,17 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(LinkTapDeviceConfiguration.class);
-        final LinkTapBridgeHandler bridge = (LinkTapBridgeHandler) getBridgeHandler();
-        if (bridge == null) {
+        if (!(getBridgeHandler() instanceof LinkTapBridgeHandler bridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not selected / set");
             return;
-        } else if (ThingStatus.OFFLINE.equals(bridge.getThing().getStatus())) {
+        } else if (ThingStatus.OFFLINE.equals(bridgeHandler.getThing().getStatus())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         scheduler.execute(() -> {
-            if (ThingStatus.ONLINE.equals(bridge.getThing().getStatus())) {
-                initAfterBridge(bridge);
+            if (ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
+                initAfterBridge(bridgeHandler);
             }
         });
     }

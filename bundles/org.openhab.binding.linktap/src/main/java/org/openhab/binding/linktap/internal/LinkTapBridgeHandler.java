@@ -151,7 +151,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     private void cancelGwPolling() {
         synchronized (schedulerLock) {
-            ScheduledFuture<?> ref = backgroundGwPollingScheduler;
+            final ScheduledFuture<?> ref = backgroundGwPollingScheduler;
             if (ref != null) {
                 ref.cancel(true);
                 backgroundGwPollingScheduler = null;
@@ -469,8 +469,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     private void cancelReconnect() {
-        final @Nullable ScheduledFuture<?> ref = connectRepair;
         synchronized (reconnectFutureLock) {
+            final @Nullable ScheduledFuture<?> ref = connectRepair;
             if (ref != null) {
                 ref.cancel(true);
                 connectRepair = null;
