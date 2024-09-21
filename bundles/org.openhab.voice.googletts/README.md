@@ -73,7 +73,7 @@ You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```perl
+```
 org.openhab.voice:defaultTTS=googletts
 org.openhab.voice:defaultVoice=googletts:XXX
 ```
