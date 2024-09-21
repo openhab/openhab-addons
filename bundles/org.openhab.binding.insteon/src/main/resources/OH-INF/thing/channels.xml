@@ -612,7 +612,7 @@
 
 	<channel-type id="sync-time" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Time Synchronization</label>
+		<label>Synchronize Time</label>
 		<description>Synchronize the time with the openhab server (write only)</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- write only -->
 	</channel-type>
