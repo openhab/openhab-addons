@@ -250,8 +250,7 @@ public class SmartThingsApiService implements SamsungTvService {
         }
 
         public Number getTvChannel() {
-            return Optional.ofNullable(tvChannel).map(a -> a.tvChannel).map(a -> a.value).filter(i -> !i.isBlank())
-                    .map(j -> parseTVChannel(j)).orElse(-1f);
+            return Optional.ofNullable(tvChannel).map(a -> a.getChannelNum()).map(j -> parseTVChannel(j)).orElse(-1f);
         }
 
         public String getTvChannelName() {
