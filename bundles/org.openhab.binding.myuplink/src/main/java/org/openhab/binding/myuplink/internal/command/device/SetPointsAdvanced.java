@@ -30,8 +30,6 @@ import org.openhab.binding.myuplink.internal.model.ValidationException;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -44,7 +42,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class SetPointsAdvanced extends AbstractWriteCommand {
-    private final Logger logger = LoggerFactory.getLogger(SetPointsAdvanced.class);
     private final String url;
 
     public SetPointsAdvanced(MyUplinkThingHandler handler, Channel channel, Command command, String deviceId,
