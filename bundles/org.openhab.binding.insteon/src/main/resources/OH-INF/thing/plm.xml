@@ -40,14 +40,14 @@
 			</parameter>
 
 			<parameter name="deviceDiscoveryEnabled" type="boolean">
-				<label>Discover Missing Devices</label>
-				<description>Discover Insteon devices found in the hub database but not configured.</description>
+				<label>Discover Devices</label>
+				<description>Discover Insteon devices found in the modem database.</description>
 				<default>true</default>
 			</parameter>
 
 			<parameter name="sceneDiscoveryEnabled" type="boolean">
-				<label>Discover Missing Scenes</label>
-				<description>Discover Insteon scenes found in the hub database but not configured.</description>
+				<label>Discover Scenes</label>
+				<description>Discover Insteon scenes found in the modem database.</description>
 				<default>false</default>
 			</parameter>
 
