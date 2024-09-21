@@ -147,6 +147,10 @@ public class SmartThingsApiService implements SamsungTvService {
         class TvChannel {
             Values tvChannel;
             Values tvChannelName;
+
+            public String getChannelNum() {
+                return Optional.ofNullable(tvChannel).map(a -> a.value).orElse("");
+            }
         }
 
         class Values {
@@ -456,10 +460,9 @@ public class SmartThingsApiService implements SamsungTvService {
 
         public Number getTvChannel() {
             if (getCapabilityAttribute("tvChannel", "tvChannel")) {
-                return Optional.ofNullable(deviceEvent).map(a -> a.getValue()).filter(i -> !i.isBlank())
-                        .map(j -> parseTVChannel(j)).orElse(-1f);
+                return Optional.ofNullable(deviceEvent).map(a -> a.getValue()).map(j -> parseTVChannel(j)).orElse(-1f);
             }
-            return -1;
+            return -1f;
         }
 
         public String getTvChannelName() {
@@ -470,15 +473,14 @@ public class SmartThingsApiService implements SamsungTvService {
         }
     }
 
-    public Number parseTVChannel(@Nullable String channel) {
+    public static Number parseTVChannel(@Nullable String channel) {
         try {
-            return channel != null
-                    ? Float.parseFloat(
-                            channel.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"))
-                    : -1f;
+            return (channel == null || channel.isBlank()) ? -1f
+                    : Float.parseFloat(
+                            channel.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"));
         } catch (NumberFormatException ignore) {
         }
-        return -1;
+        return -1f;
     }
 
     public void updateTV() {
@@ -790,10 +792,12 @@ public class SmartThingsApiService implements SamsungTvService {
                             }
                             Number tvChannel = d.getTvChannel();
                             if (tvChannel.intValue() != -1) {
+                                logger.trace("{}: SSE Got TV Channel: {}", host, tvChannel);
                                 updateState(CHANNEL, tvChannel);
-                                String tvChannelName = d.getTvChannelName();
-                                logger.trace("{}: SSE Got TV Channel Name: {} Channel: {}", host, tvChannelName,
-                                        tvChannel);
+                            }
+                            String tvChannelName = d.getTvChannelName();
+                            if (!tvChannelName.isBlank()) {
+                                logger.trace("{}: SSE Got TV Channel Name: {}", host, tvChannelName);
                                 updateState(CHANNEL_NAME, tvChannelName);
                             }
                             String Power = d.getSwitch();
