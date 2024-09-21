@@ -20,7 +20,6 @@ import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.core.thing.ChannelUID;
 
 /**
- *
  * This file contains config information needed for each channel
  *
  * @author Rob Nielsen - Initial contribution

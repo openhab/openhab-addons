@@ -326,8 +326,8 @@ public abstract class MessageHandler extends BaseFeatureHandler {
                 feature.setLastMsgValue(value);
                 // update state if defined
                 if (state != null) {
-                    logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
-                            feature.getName(), state);
+                    logger.debug("{}: device {} {} is {}", nm(), getInsteonDevice().getAddress(), feature.getName(),
+                            state);
                     feature.updateState(state);
                 }
             } catch (FieldException e) {
@@ -707,7 +707,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
             String mode = getParameterAsString("mode", "REGULAR");
             State state = getState(mode);
             if (state != null) {
-                logger.debug("{}: device {} changed to {} {}", nm(), getInsteonDevice().getAddress(), state, mode);
+                logger.debug("{}: device {} is {} ({})", nm(), getInsteonDevice().getAddress(), state, mode);
                 feature.updateState(state);
             }
         }
@@ -970,8 +970,8 @@ public abstract class MessageHandler extends BaseFeatureHandler {
                 } else {
                     int value = msg.getByte("userData10") << 8 | msg.getByte("userData13");
                     KeypadButtonToggleMode mode = KeypadButtonToggleMode.valueOf(value, bit);
-                    logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
-                            feature.getName(), mode);
+                    logger.debug("{}: device {} {} is {}", nm(), getInsteonDevice().getAddress(), feature.getName(),
+                            mode);
                     feature.setLastMsgValue(value);
                     feature.updateState(new StringType(mode.toString()));
                 }
@@ -1838,7 +1838,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
                 }
                 boolean isSet = BinaryUtils.isBitSet(flags, bit);
                 State state = OnOffType.from(isSet ^ getParameterAsBoolean("inverted", false));
-                logger.debug("{}: IM {} changed to {}", nm(), feature.getName(), state);
+                logger.debug("{}: IM {} is {}", nm(), feature.getName(), state);
                 feature.setLastMsgValue(flags);
                 feature.updateState(state);
             } catch (FieldException e) {
@@ -1858,7 +1858,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            logger.debug("{}: device {} changed to ON", nm(), getX10Device().getAddress());
+            logger.debug("{}: device {} is ON", nm(), getX10Device().getAddress());
             feature.updateState(OnOffType.ON);
         }
     }
@@ -1870,7 +1870,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            logger.debug("{}: device {} changed to OFF", nm(), getX10Device().getAddress());
+            logger.debug("{}: device {} is OFF", nm(), getX10Device().getAddress());
             feature.updateState(OnOffType.OFF);
         }
     }
@@ -1904,7 +1904,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            logger.debug("{}: device {} changed to OPEN", nm(), getX10Device().getAddress());
+            logger.debug("{}: device {} is OPEN", nm(), getX10Device().getAddress());
             feature.updateState(OpenClosedType.OPEN);
         }
     }
@@ -1916,7 +1916,7 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            logger.debug("{}: device {} changed to CLOSED", nm(), getX10Device().getAddress());
+            logger.debug("{}: device {} is CLOSED", nm(), getX10Device().getAddress());
             feature.updateState(OpenClosedType.CLOSED);
         }
     }

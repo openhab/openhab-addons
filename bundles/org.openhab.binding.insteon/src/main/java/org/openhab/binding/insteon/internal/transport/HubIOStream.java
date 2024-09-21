@@ -281,7 +281,7 @@ public class HubIOStream extends IOStream {
             connection.setDoOutput(false);
             connection.setRequestProperty("Authorization", "Basic " + auth);
 
-            logger.debug("getting {}", url);
+            logger.trace("getting {}", url);
 
             int responseCode = connection.getResponseCode();
             if (responseCode != 200) {

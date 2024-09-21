@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 
 /**
- * The {@link DatabaseChange} holds a link database change for a device
+ * The {@link LinkDBChange} holds a link database change for a device
  *
  * @author Jeremy Setton - Initial contribution
  */

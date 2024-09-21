@@ -478,7 +478,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             lastRequestQueued = now;
             // set feature queried for non-broadcast request message
             if (!msg.isAllLinkBroadcast()) {
-                logger.debug("request taken off direct for {}: {}", feature.getName(), msg);
+                logger.trace("request taken off direct for {}: {}", feature.getName(), msg);
                 // mark requested feature query status as queued
                 feature.setQueryStatus(QueryStatus.QUERY_QUEUED);
                 // store requested feature query message
@@ -486,7 +486,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                 // set feature queried
                 setFeatureQueried(feature);
             } else {
-                logger.debug("request taken off bcast for {}: {}", feature.getName(), msg);
+                logger.trace("request taken off bcast for {}: {}", feature.getName(), msg);
             }
             // write message
             InsteonModem modem = getModem();
@@ -502,7 +502,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             long nextExpTime = Optional.ofNullable(requestQueue.peek()).map(DeviceRequest::getExpirationTime)
                     .orElse(0L);
             long nextTime = Math.max(now + quietTime, nextExpTime);
-            logger.debug("next request queue processed in {} msec, quiettime {} msec", nextTime - now, quietTime);
+            logger.trace("next request queue processed in {} msec, quiettime {} msec", nextTime - now, quietTime);
             return nextTime;
         }
     }
@@ -522,7 +522,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                     // wait for feature queried request to be sent
                     long maxQueueTime = lastRequestQueued + REQUEST_QUEUE_TIMEOUT;
                     if (maxQueueTime > now) {
-                        logger.debug("still waiting for {} query to be sent to {} for another {} msec",
+                        logger.trace("still waiting for {} query to be sent to {} for another {} msec",
                                 feature.getName(), address, maxQueueTime - now);
                         return now + 1000L; // retry in 1000 ms
                     }
@@ -536,7 +536,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                     // wait for the feature queried to be answered
                     long maxAckTime = lastRequestSent + DIRECT_ACK_TIMEOUT;
                     if (maxAckTime > now) {
-                        logger.debug("still waiting for {} query reply from {} for another {} msec", feature.getName(),
+                        logger.trace("still waiting for {} query reply from {} for another {} msec", feature.getName(),
                                 address, maxAckTime - now);
                         return now + 500L; // retry in 500 ms
                     }

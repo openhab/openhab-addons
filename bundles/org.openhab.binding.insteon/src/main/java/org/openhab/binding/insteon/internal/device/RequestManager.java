@@ -204,7 +204,7 @@ public class RequestManager {
                     logger.trace("device queue for {} rescheduled in {} msec", device.getAddress(), nextExp - now);
                 } else {
                     // remove from hash since queue is no longer scheduled
-                    logger.debug("device queue for {} is empty!", device.getAddress());
+                    logger.trace("device queue for {} is empty!", device.getAddress());
                 }
             }
         }

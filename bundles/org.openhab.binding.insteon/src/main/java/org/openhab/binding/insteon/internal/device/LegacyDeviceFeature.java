@@ -110,7 +110,6 @@ public class LegacyDeviceFeature {
         this.name = name;
     }
 
-    // various simple getters
     public String getName() {
         return name;
     }
@@ -147,7 +146,6 @@ public class LegacyDeviceFeature {
         return (connectedFeatures);
     }
 
-    // various simple setters
     public void setStatusFeature(boolean f) {
         isStatus = f;
     }
