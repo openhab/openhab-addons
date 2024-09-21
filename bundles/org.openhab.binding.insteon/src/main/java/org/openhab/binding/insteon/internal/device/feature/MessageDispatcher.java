@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public abstract class MessageDispatcher extends FeatureBaseHandler {
+public abstract class MessageDispatcher extends BaseFeatureHandler {
     protected final Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
     public MessageDispatcher(DeviceFeature feature) {

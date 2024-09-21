@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public abstract class CommandHandler extends FeatureBaseHandler {
+public abstract class CommandHandler extends BaseFeatureHandler {
     private static final Set<String> SUPPORTED_COMMAND_TYPES = Set.of("DecimalType", "IncreaseDecreaseType",
             "OnOffType", "NextPreviousType", "PercentType", "PlayPauseType", "QuantityType", "RefreshType",
             "RewindFastforwardType", "StopMoveType", "StringType", "UpDownType");

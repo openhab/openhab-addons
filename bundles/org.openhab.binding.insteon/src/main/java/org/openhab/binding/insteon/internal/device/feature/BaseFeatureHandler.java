@@ -24,17 +24,17 @@ import org.openhab.binding.insteon.internal.device.X10Device;
 import org.openhab.binding.insteon.internal.utils.ParameterParser;
 
 /**
- * Feature base handler abstract class
+ * The {@link BaseFeatureHandler} represents a base feature handler
  *
  * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
-public abstract class FeatureBaseHandler {
+public abstract class BaseFeatureHandler {
 
     protected DeviceFeature feature;
     protected Map<String, String> parameters = Map.of();
 
-    public FeatureBaseHandler(DeviceFeature feature) {
+    public BaseFeatureHandler(DeviceFeature feature) {
         this.feature = feature;
     }
 

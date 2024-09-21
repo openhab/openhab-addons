@@ -81,7 +81,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public abstract class MessageHandler extends FeatureBaseHandler {
+public abstract class MessageHandler extends BaseFeatureHandler {
     private static final Set<Integer> SUPPORTED_GROUP_COMMANDS = Set.of(0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
             0x2E);
 

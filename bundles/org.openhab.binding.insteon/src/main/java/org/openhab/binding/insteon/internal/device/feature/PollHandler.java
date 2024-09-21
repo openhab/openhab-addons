@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public abstract class PollHandler extends FeatureBaseHandler {
+public abstract class PollHandler extends BaseFeatureHandler {
     protected final Logger logger = LoggerFactory.getLogger(PollHandler.class);
 
     public PollHandler(DeviceFeature feature) {
