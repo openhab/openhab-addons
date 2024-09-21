@@ -86,7 +86,7 @@ At the very least, you cannot use repeating (111-11-111) or sequential (123-45-6
 
 Other settings, such as using Fahrenheit temperatures and specifying the interface to advertise the HomeKit bridge are also illustrated in the following sample:
 
-```perl
+```
 org.openhab.homekit:port=9123
 org.openhab.homekit:pin=031-45-154
 org.openhab.homekit:useFahrenheitTemperature=true

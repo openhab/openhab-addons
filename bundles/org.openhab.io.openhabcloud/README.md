@@ -57,7 +57,7 @@ This is also not required for remote access through the cloud service to functio
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
-```perl
+```
 ############################## openHAB Cloud Connector #############################
 
 # The URL of the openHAB Cloud service to connect to.
@@ -70,7 +70,7 @@ Alternatively, you can configure the settings in the file `conf/services/openhab
 # - notification: Only push notifications are enabled, no remote access is allowed.
 # - remote: Push notifications and remote access are enabled.
 # Optional, default is 'remote'.
-#mode=
+mode=
 
 # A comma-separated list of items to be exposed to external services like IFTTT. 
 # Events of those items are pushed to the openHAB Cloud and commands received for
