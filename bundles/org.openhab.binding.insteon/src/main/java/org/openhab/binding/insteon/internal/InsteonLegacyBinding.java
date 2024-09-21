@@ -138,14 +138,14 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
-            logger.debug("loading additional device definitions from {}", additionalDevices);
-            LegacyDeviceTypeLoader.instance().loadDeviceTypes(additionalDevices);
+            logger.debug("loading additional device types from {}", additionalDevices);
+            LegacyDeviceTypeLoader.instance().loadDocument(additionalDevices);
         }
 
         String additionalFeatures = config.getAdditionalFeatures();
         if (additionalFeatures != null) {
             logger.debug("loading additional feature templates from {}", additionalFeatures);
-            LegacyFeatureTemplateLoader.instance().loadFeatureTemplates(additionalFeatures);
+            LegacyFeatureTemplateLoader.instance().loadDocument(additionalFeatures);
         }
 
         deadDeviceTimeout = devicePollIntervalMilliseconds * DEAD_DEVICE_COUNT;
@@ -252,11 +252,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
 
     public @Nullable LegacyDevice makeNewDevice(DeviceAddress addr, String productKey,
             Map<String, Object> deviceConfigMap) {
-        LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
-        if (instance == null) {
-            return null;
-        }
-        LegacyDeviceType dt = instance.getDeviceType(productKey);
+        LegacyDeviceType dt = LegacyDeviceTypeLoader.instance().getDeviceType(productKey);
         if (dt == null) {
             return null;
         }

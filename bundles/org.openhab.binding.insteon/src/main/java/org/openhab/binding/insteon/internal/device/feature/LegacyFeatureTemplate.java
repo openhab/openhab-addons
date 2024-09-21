@@ -28,6 +28,7 @@ import org.openhab.core.types.Command;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyFeatureTemplate {
@@ -47,7 +48,6 @@ public class LegacyFeatureTemplate {
         this.timeout = timeout;
     }
 
-    // simple getters
     public String getName() {
         return name;
     }
@@ -96,8 +96,6 @@ public class LegacyFeatureTemplate {
         return commandHandlers;
     }
 
-    // simple setters
-
     public void setMessageDispatcher(HandlerEntry he) {
         dispatcher = he;
     }
@@ -145,7 +143,7 @@ public class LegacyFeatureTemplate {
         HandlerEntry dispatcher = this.dispatcher;
         if (dispatcher != null) {
             LegacyMessageDispatcher h = LegacyMessageDispatcher.makeHandler(dispatcher.getName(),
-                    dispatcher.getParams(), f);
+                    dispatcher.getParameters(), f);
             if (h != null) {
                 f.setMessageDispatcher(h);
             }
@@ -160,7 +158,7 @@ public class LegacyFeatureTemplate {
         HandlerEntry defaultCmdHandler = this.defaultCmdHandler;
         if (defaultCmdHandler != null) {
             LegacyCommandHandler h = LegacyCommandHandler.makeHandler(defaultCmdHandler.getName(),
-                    defaultCmdHandler.getParams(), f);
+                    defaultCmdHandler.getParameters(), f);
             if (h != null) {
                 f.setDefaultCommandHandler(h);
             }
@@ -168,21 +166,21 @@ public class LegacyFeatureTemplate {
         HandlerEntry defaultMsgHandler = this.defaultMsgHandler;
         if (defaultMsgHandler != null) {
             LegacyMessageHandler h = LegacyMessageHandler.makeHandler(defaultMsgHandler.getName(),
-                    defaultMsgHandler.getParams(), f);
+                    defaultMsgHandler.getParameters(), f);
             if (h != null) {
                 f.setDefaultMsgHandler(h);
             }
         }
         for (Entry<Integer, HandlerEntry> mH : messageHandlers.entrySet()) {
             LegacyMessageHandler h = LegacyMessageHandler.makeHandler(mH.getValue().getName(),
-                    mH.getValue().getParams(), f);
+                    mH.getValue().getParameters(), f);
             if (h != null) {
                 f.addMessageHandler(mH.getKey(), h);
             }
         }
         for (Entry<Class<? extends Command>, HandlerEntry> cH : commandHandlers.entrySet()) {
             LegacyCommandHandler h = LegacyCommandHandler.makeHandler(cH.getValue().getName(),
-                    cH.getValue().getParams(), f);
+                    cH.getValue().getParameters(), f);
             if (h != null) {
                 f.addCommandHandler(cH.getKey(), h);
             }
@@ -193,26 +191,5 @@ public class LegacyFeatureTemplate {
     @Override
     public String toString() {
         return getName() + "(" + isStatusFeature() + ")";
-    }
-
-    /**
-     * Ugly little helper class to facilitate late instantiation of handlers
-     */
-    public static class HandlerEntry {
-        Map<String, String> params;
-        String name;
-
-        HandlerEntry(String name, Map<String, String> params) {
-            this.name = name;
-            this.params = params;
-        }
-
-        Map<String, String> getParams() {
-            return params;
-        }
-
-        String getName() {
-            return name;
-        }
     }
 }

@@ -487,19 +487,15 @@ public class LegacyPort {
                 if (msg.getByte("Cmd") == 0x60) {
                     // add the modem to the device list
                     InsteonAddress a = msg.getInsteonAddress("IMAddress");
-                    LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
-                    if (instance != null) {
-                        LegacyDeviceType dt = instance.getDeviceType(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY);
-                        if (dt == null) {
-                            logger.warn("unknown modem product key: {} for modem: {}.",
-                                    InsteonLegacyBindingConstants.PLM_PRODUCT_KEY, a);
-                        } else {
-                            device = LegacyDevice.makeDevice(dt);
-                            initDevice(a, device);
-                            mdbb.updateModemDB(a, LegacyPort.this, null, true);
-                        }
+                    LegacyDeviceType dt = LegacyDeviceTypeLoader.instance()
+                            .getDeviceType(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY);
+                    if (dt == null) {
+                        logger.warn("unknown modem product key: {} for modem: {}.",
+                                InsteonLegacyBindingConstants.PLM_PRODUCT_KEY, a);
                     } else {
-                        logger.warn("device type loader instance is null");
+                        device = LegacyDevice.makeDevice(dt);
+                        initDevice(a, device);
+                        mdbb.updateModemDB(a, LegacyPort.this, null, true);
                     }
                     // can unsubscribe now
                     removeListener(this);

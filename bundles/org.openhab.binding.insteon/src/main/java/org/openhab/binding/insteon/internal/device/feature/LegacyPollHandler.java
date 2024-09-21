@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
-import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate.HandlerEntry;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
@@ -145,7 +144,7 @@ public abstract class LegacyPollHandler {
             Class<? extends T> dc = (Class<? extends T>) c;
             @Nullable
             T phc = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
-            phc.setParameters(ph.getParams());
+            phc.setParameters(ph.getParameters());
             return phc;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {

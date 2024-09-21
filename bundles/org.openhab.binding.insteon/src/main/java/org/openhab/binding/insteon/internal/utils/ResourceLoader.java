@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.utils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,6 +57,15 @@ public abstract class ResourceLoader {
         }
     }
 
+    public void loadDocument(String filename) {
+        try {
+            InputStream stream = new FileInputStream(filename);
+            loadDocument(stream);
+        } catch (FileNotFoundException e) {
+            logger.warn("xml document {} not found", filename);
+        }
+    }
+
     protected void loadDocument(InputStream stream) {
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -81,17 +89,7 @@ public abstract class ResourceLoader {
         }
     }
 
-    protected void loadDocument(String pathname) {
-        try {
-            File file = new File(pathname);
-            InputStream stream = new FileInputStream(file);
-            loadDocument(stream);
-        } catch (FileNotFoundException e) {
-            logger.warn("xml document {} not found", pathname);
-        }
-    }
-
-    protected abstract void parseDocument(Element element) throws SAXException, IOException;
+    protected abstract void parseDocument(Element element) throws SAXException;
 
     protected Map<String, Boolean> getFlags(Element element) {
         NamedNodeMap attributes = element.getAttributes();

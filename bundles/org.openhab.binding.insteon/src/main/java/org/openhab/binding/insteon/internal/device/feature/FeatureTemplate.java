@@ -177,34 +177,4 @@ public class FeatureTemplate {
         }
         return s;
     }
-
-    /**
-     * Class that reflects handler entry
-     */
-    public static class HandlerEntry {
-        private String name;
-        private Map<String, String> parameters;
-
-        public HandlerEntry(String name, Map<String, String> parameters) {
-            this.name = name;
-            this.parameters = parameters;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Map<String, String> getParameters() {
-            return parameters;
-        }
-
-        @Override
-        public String toString() {
-            String s = name;
-            if (!parameters.isEmpty()) {
-                s += parameters;
-            }
-            return s;
-        }
-    }
 }

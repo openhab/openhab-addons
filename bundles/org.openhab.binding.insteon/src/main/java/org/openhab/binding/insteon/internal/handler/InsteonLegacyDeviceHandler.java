@@ -111,17 +111,8 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 return;
             }
 
-            LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
-            if (instance == null) {
-                String msg = "Device type loader is null.";
-                logger.warn("{} {}", thing.getUID().getAsString(), msg);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-                return;
-            }
-
             String productKey = config.getProductKey();
-            if (instance.getDeviceType(productKey) == null) {
+            if (LegacyDeviceTypeLoader.instance().getDeviceType(productKey) == null) {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 

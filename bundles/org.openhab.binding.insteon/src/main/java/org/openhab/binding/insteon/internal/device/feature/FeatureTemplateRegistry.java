@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.insteon.internal.device.feature;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.device.feature.FeatureTemplate.HandlerEntry;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.binding.insteon.internal.utils.ResourceLoader;
 import org.w3c.dom.Element;
@@ -82,10 +80,9 @@ public class FeatureTemplateRegistry extends ResourceLoader {
      *
      * @param element element to parse
      * @throws SAXException
-     * @throws IOException
      */
     @Override
-    protected void parseDocument(Element element) throws SAXException, IOException {
+    protected void parseDocument(Element element) throws SAXException {
         NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);

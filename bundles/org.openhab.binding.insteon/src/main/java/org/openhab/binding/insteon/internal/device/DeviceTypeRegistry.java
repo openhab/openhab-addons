@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,10 +85,9 @@ public class DeviceTypeRegistry extends ResourceLoader {
      *
      * @param element element to parse
      * @throws SAXException
-     * @throws IOException
      */
     @Override
-    protected void parseDocument(Element element) throws SAXException, IOException {
+    protected void parseDocument(Element element) throws SAXException {
         NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
