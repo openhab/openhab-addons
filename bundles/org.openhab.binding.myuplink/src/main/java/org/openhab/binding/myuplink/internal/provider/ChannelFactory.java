@@ -103,7 +103,7 @@ public class ChannelFactory {
     String determineAcceptedType(ChannelTypeUID channelTypeUID, String unit) {
         if (channelTypeUID.getId().equals(CHANNEL_TYPE_RW_SWITCH)) {
             return CoreItemFactory.SWITCH;
-        } else if (unit == null || unit.isEmpty()) {
+        } else if (unit.isEmpty()) {
             return CoreItemFactory.NUMBER;
         } else {
             Unit<?> parsedUnit = UnitUtils.parseUnit(unit);
@@ -215,7 +215,7 @@ public class ChannelFactory {
         boolean containsOnAt1 = false;
 
         for (var element : enumValues) {
-            var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT).toLowerCase();
+            var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT, "").toLowerCase();
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
 
             switch (enumText) {

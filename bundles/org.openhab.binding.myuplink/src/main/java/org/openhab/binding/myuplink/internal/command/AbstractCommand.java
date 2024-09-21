@@ -175,8 +175,10 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         if (response != null && content != null) {
             super.onContent(response, content);
         }
-        logger.debug("[{}] received content, length: {}, encoding: {}", getClass().getSimpleName(),
-                getContentAsString().length(), this.getEncoding());
+        var contentAsString = getContentAsString();
+        var contentLength = contentAsString == null ? 0 : contentAsString.length();
+        logger.debug("[{}] received content, length: {}, encoding: {}", getClass().getSimpleName(), contentLength,
+                this.getEncoding());
     }
 
     /**
