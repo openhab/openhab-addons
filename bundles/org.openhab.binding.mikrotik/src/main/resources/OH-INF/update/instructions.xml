@@ -3,7 +3,7 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-	<thing-type uid="mikrotik:routeros">
+	<thing-type uid="mikrotik:interface">
 		<instruction-set targetVersion="1">
 			<add-channel id="poeOutState">
 				<type>interface:poeOutState</type>
