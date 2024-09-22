@@ -124,7 +124,15 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
             } else {
                 logger.debug(
                         "Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
-                isUp = currentClient.ping();
+                try {
+                    isUp = currentClient.ping();
+                } catch (Exception e) {
+                    // ping() doesn't declare a specific type of exception
+                    // but something deep in the call stack can throw a java.net.ConnectException
+                    // e.g. when the influxdb server has been updated
+                    // see: https://community.openhab.org/t/restart-of-influx-persistence/158499
+                    logger.debug("Ping failed: {}", e.getMessage());
+                }
             }
 
             if (isUp) {
