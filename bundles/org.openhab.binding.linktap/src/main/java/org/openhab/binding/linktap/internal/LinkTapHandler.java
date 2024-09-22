@@ -108,8 +108,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
             }
 
         } catch (final InvalidParameterException ipe) {
-            logger.warn("Raise Bug Report: {} - Failed to enable all alerts - invalid parameter exception",
-                    getThing().getLabel());
+            logger.warn("{}", getLocalizedText("bug-report.failed-alert-enable", getThing().getLabel()));
         }
     }
 
@@ -130,7 +129,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
         try {
             return sendRequest(new DeviceCmdReq(CMD_UPDATE_WATER_TIMER_STATUS));
         } catch (final InvalidParameterException ipe) {
-            logger.warn("Raise Bug Report: {} - Poll failure - invalid parameter exception", getThing().getLabel());
+            logger.warn("{}", getLocalizedText("bug-report.poll-failure", getThing().getLabel()));
             return "";
         }
     }
@@ -183,8 +182,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 updateState(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES, expiryTime);
             }
         } catch (final InvalidParameterException ignored) {
-            logger.warn("Raise Bug Report: {} - Pause plan failure - invalid parameter exception",
-                    getThing().getLabel());
+            logger.warn("{}", getLocalizedText("bug-report.pause-plan-failure", getThing().getLabel()));
         }
     }
 
