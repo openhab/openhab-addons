@@ -51,4 +51,11 @@ public class ModbusTransformationTest {
         assertFalse(transformation.isIdentityTransform());
         assertEquals("constant", transformation.transform("xx"));
     }
+
+    @Test
+    public void testTransformationFailed() {
+        ModbusTransformation transformation = new ModbusTransformation(List.of("NONEXISTENT(test)"));
+        assertFalse(transformation.isIdentityTransform());
+        assertEquals("", transformation.transform("xx"));
+    }
 }
