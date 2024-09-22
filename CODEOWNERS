@@ -253,7 +253,6 @@
 /bundles/org.openhab.binding.network/ @mettke
 /bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
-/bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.nobohub/ @espenaf
