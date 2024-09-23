@@ -87,7 +87,7 @@ panasonicbdp.items:
 ```java
 // BD Player
 Switch Player_Power            "Power"                     { channel="panasonicbdp:bd-player:mybdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button", autoupdate="false" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd-player:mybdplayer:player-status" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
@@ -97,7 +97,7 @@ Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicb
 
 // UHD Player
 Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd-player:myuhdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button", autoupdate="false" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd-player:myuhdplayer:player-status" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
