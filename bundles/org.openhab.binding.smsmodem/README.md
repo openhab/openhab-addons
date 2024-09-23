@@ -13,7 +13,7 @@ The following devices have been reported functional :
 - Huawei E1550
 - Huawei E272
 
-Those doesn't work:
+Devices that are reported to have issues:
 
 - Huawei E303C
 
