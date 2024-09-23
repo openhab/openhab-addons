@@ -88,7 +88,7 @@ String benqPictureMode  "Picture Mode [%s]"           { channel="benqprojector:p
 String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:projector-serial:hometheater:aspectratio" }
 Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
 Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
-String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd", autoupdate="false" }
+String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd" }
 Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 
