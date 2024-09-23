@@ -149,6 +149,7 @@
 		<item-type>String</item-type>
 		<label>KeyCode</label>
 		<description>Send a KEY Operation Command to the Projector</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="verticalkeystone" advanced="true">
 		<item-type>Number</item-type>
