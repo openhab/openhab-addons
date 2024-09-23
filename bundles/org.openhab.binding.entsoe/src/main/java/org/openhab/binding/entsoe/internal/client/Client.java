@@ -114,7 +114,7 @@ public class Client {
                         String price = pointElement.getElementsByTagName("price.amount").item(0).getTextContent();
                         Double priceAsDouble = Double.parseDouble(price);
                         responseMap.put(timeStamp, priceAsDouble);
-                        logger.debug("\"Point\" node: {}/{} with values: {} - {} €/MWh", (p + 1),
+                        logger.trace("\"Point\" node: {}/{} with values: {} - {} €/MWh", (p + 1),
                                 listOfPoints.getLength(), timeStamp, priceAsDouble);
                     }
                 }

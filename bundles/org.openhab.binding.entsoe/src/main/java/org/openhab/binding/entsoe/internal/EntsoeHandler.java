@@ -71,7 +71,8 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private Map<ZonedDateTime, Double> responseMap;
 
-    private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("UTC"));
+    // Use region-based ZoneId instead of CET to handle transition to CEST automatically
+    private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("Europe/Paris"));
 
     private int historicDaysInitially = 0;
 
@@ -86,19 +87,20 @@ public class EntsoeHandler extends BaseThingHandler {
         logger.trace("channelLinked(channelUID:{})", channelUID.getAsString());
         String channelID = channelUID.getId();
 
-        if (EntsoeBindingConstants.CHANNEL_SPOT_PRICES.equals(channelID)) {
+        if (EntsoeBindingConstants.CHANNEL_SPOT_PRICE.equals(channelID)) {
             if (responseMap.isEmpty()) {
                 refreshPrices();
             }
-            updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
+            updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
         }
     }
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
         super.dispose();
     }
@@ -119,27 +121,26 @@ public class EntsoeHandler extends BaseThingHandler {
         if (historicDaysInitially == 0) {
             historicDaysInitially = config.historicDays;
         }
-
-        updateStatus(ThingStatus.ONLINE);
-
-        refreshJob = scheduler.schedule(this::refreshPrices, 5, TimeUnit.SECONDS);
+        updateStatus(ThingStatus.UNKNOWN);
+        refreshJob = scheduler.schedule(this::refreshPrices, 0, TimeUnit.SECONDS);
     }
 
-    private ZonedDateTime currentUtcTime() {
-        return ZonedDateTime.now(ZoneId.of("UTC"));
+    private ZonedDateTime currentCetTime() {
+        // Use region-based ZoneId instead of CET to handle transition to CEST automatically
+        return ZonedDateTime.now(ZoneId.of("Europe/Paris"));
     }
 
-    private ZonedDateTime currentUtcTimeWholeHours() {
-        return ZonedDateTime.now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.HOURS);
+    private ZonedDateTime currentCetTimeWholeHours() {
+        return currentCetTime().truncatedTo(ChronoUnit.HOURS);
     }
 
     private BigDecimal getCurrentHourKwhPrice() throws EntsoeResponseMapException {
         if (responseMap.isEmpty()) {
             throw new EntsoeResponseMapException("responseMap is empty");
         }
-        var currentUtcTime = currentUtcTime();
-        Integer currentHour = currentUtcTime.getHour();
-        Integer currentDayInYear = currentUtcTime.getDayOfYear();
+        var currentCetTime = currentCetTime();
+        Integer currentHour = currentCetTime.getHour();
+        Integer currentDayInYear = currentCetTime.getDayOfYear();
         var result = responseMap.entrySet().stream()
                 .filter(x -> x.getKey().getHour() == currentHour && x.getKey().getDayOfYear() == currentDayInYear)
                 .findFirst();
@@ -159,10 +160,9 @@ public class EntsoeHandler extends BaseThingHandler {
     }
 
     private boolean needToFetchHistoricDays(boolean updateHistoricDaysInitially) {
-        logger.trace("needToFetchHistoricDays(updateHistoricDaysInitially:{})", updateHistoricDaysInitially);
         boolean needToFetch = false;
         if (historicDaysInitially < config.historicDays) {
-            logger.info("Need to fetch historic data. Historicdays was changed to a greater number: {}",
+            logger.debug("Need to fetch historic data. Historicdays was changed to a greater number: {}",
                     config.historicDays);
             needToFetch = true;
         }
@@ -175,31 +175,31 @@ public class EntsoeHandler extends BaseThingHandler {
     }
 
     private void refreshPrices() {
-        logger.trace("refreshPrices()");
-        if (!isLinked(EntsoeBindingConstants.CHANNEL_SPOT_PRICES)) {
-            logger.debug("Channel {} is not linked, cant update channel", EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
+        if (!isLinked(EntsoeBindingConstants.CHANNEL_SPOT_PRICE)) {
+            logger.debug("Channel {} is not linked, cant update channel", EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
             return;
         }
 
         config = getConfigAs(EntsoeConfiguration.class);
 
-        ZonedDateTime startUtc = currentUtcTimeWholeHours()
+        ZonedDateTime startCet = currentCetTimeWholeHours()
                 .minusDays(needToFetchHistoricDays() ? config.historicDays : 1).withHour(22);
-        ZonedDateTime endUtc = currentUtcTimeWholeHours().plusDays(1).withHour(22);
+        ZonedDateTime endCet = currentCetTimeWholeHours().plusDays(1).withHour(22);
 
-        boolean needsUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("UTC")))
-                || responseMap.isEmpty() || needToFetchHistoricDays(true);
+        boolean needsUpdate = lastDayAheadReceived
+                .equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("Europe/Paris"))) || responseMap.isEmpty()
+                || needToFetchHistoricDays(true);
 
         boolean hasNextDayValue = needsUpdate ? false
                 : responseMap.entrySet().stream()
-                        .anyMatch(x -> x.getKey().getDayOfYear() == currentUtcTime().plusDays(1).getDayOfYear());
+                        .anyMatch(x -> x.getKey().getDayOfYear() == currentCetTime().plusDays(1).getDayOfYear());
         boolean readyForNextDayValue = needsUpdate ? true
-                : currentUtcTime().isAfter(currentUtcTime().withHour(config.spotPricesAvailableUtcHour));
+                : currentCetTime().isAfter(currentCetTime().withHour(config.spotPricesAvailableCetHour));
 
         // Update whole time series
         if (needsUpdate || (!hasNextDayValue && readyForNextDayValue)) {
-            logger.debug("Updating timeseries");
-            Request request = new Request(config.securityToken, config.area, startUtc, endUtc);
+            logger.trace("Updating timeseries");
+            Request request = new Request(config.securityToken, config.area, startCet, endCet);
             Client client = new Client();
             boolean success = false;
 
@@ -211,35 +211,40 @@ public class EntsoeHandler extends BaseThingHandler {
                             RoundingMode.HALF_UP);
                     baseTimeSeries.add(entry.getKey().toInstant(), getPriceState(kwhPrice));
                 }
-                lastDayAheadReceived = currentUtcTime();
-                sendTimeSeries(EntsoeBindingConstants.CHANNEL_SPOT_PRICES, baseTimeSeries);
-                updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
+                updateStatus(ThingStatus.ONLINE);
+                lastDayAheadReceived = currentCetTime();
+                sendTimeSeries(EntsoeBindingConstants.CHANNEL_SPOT_PRICE, baseTimeSeries);
+                updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
                 scheduler.schedule(this::triggerChannelSpotPricesReceived, 0, TimeUnit.SECONDS);
                 success = true;
-            } catch (EntsoeResponseException e) {
+            } catch (EntsoeResponseException | EntsoeConfigurationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (EntsoeConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {
                 schedule(success);
             }
         } else {
-            logger.debug("Updating current hour");
-            updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
+            logger.trace("Updating current hour");
+            updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
             schedule(true);
         }
     }
 
     private State getPriceState(BigDecimal kwhPrice) {
         if (baseUnit == null || fromUnit == null) {
+            logger.trace("Currency is unknown. Falling back to DecimalType");
             return new DecimalType(kwhPrice);
         }
-        return new QuantityType<>(kwhPrice + " " + fromUnit.getName() + "/kWh");
+        try {
+            return new QuantityType<>(kwhPrice + " " + EntsoeBindingConstants.ENTSOE_CURRENCY + "/kWh");
+        } catch (IllegalArgumentException e) {
+            logger.trace("Unable to create QuantityType, falling back to DecimalType", e);
+            return new DecimalType(kwhPrice);
+        }
     }
 
     private void schedule(boolean success) {
-        logger.trace("schedule(success:{})", success);
         if (!success) {
+            logger.trace("schedule(success:{})", success);
             refreshJob = scheduler.schedule(this::refreshPrices, 5, TimeUnit.MINUTES);
         } else {
             Instant now = Instant.now();
@@ -254,11 +259,10 @@ public class EntsoeHandler extends BaseThingHandler {
     }
 
     private void updateCurrentHourState(String channelID) {
-        logger.trace("updateCurrentHourState(channelID:{})", channelID);
         try {
             BigDecimal kwhPrice = getCurrentHourKwhPrice();
             updateState(channelID, getPriceState(kwhPrice));
-        } catch (EntsoeResponseMapException e) {
+        } catch (EntsoeConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }

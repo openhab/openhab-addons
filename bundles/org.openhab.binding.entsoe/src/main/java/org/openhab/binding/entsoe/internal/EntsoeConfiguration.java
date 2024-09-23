@@ -23,6 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EntsoeConfiguration {
     public String securityToken = "";
     public String area = "";
-    public int spotPricesAvailableUtcHour = 11;
+    public int spotPricesAvailableCetHour = 13;
     public int historicDays = 1;
 }

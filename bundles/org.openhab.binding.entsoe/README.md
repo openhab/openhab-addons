@@ -4,7 +4,7 @@ This binding fetches day-ahead energy spot prices from ENTSO-E, the European Net
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
 Users can select a specific area to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
-It is recommended to use this binding together with a currency provider (g.e. Freecurrency binding) for UoM support and exchanging euro spot prices in to local valuta.
+It is recommended to use this binding together with a currency provider (g.e. Freecurrency binding) for exchanging euro spot prices to local currency.
 
 ## Supported Things
 
@@ -16,8 +16,8 @@ To access the ENTSO-E Transparency Platform API, users need a **security token**
 This token ensure secure access to the platform's data and services.
 For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation).
 
-Mandatory parameters of the Thing is security token and area.
-Optional parameter are historic days.
+Mandatory parameters of the Thing are security token and area.
+Optional parameter is historic days.
 
 Thing can be added in graphical user interface of openHAB or manually within a things file.
 
@@ -56,7 +56,7 @@ Number:EnergyPrice energySpotPrice "Current Spot Price" <price> { channel="entso
 #### Value-Added Tax
 
 VAT is not included in any of the prices.
-To include VAT for items linked to the `Number` channels, the [VAT profile](https://www.openhab.org/addons/transformations/vat/) can be used.
+To include VAT for items linked to the `Number:EnergyPrice` channel, the [VAT profile](https://www.openhab.org/addons/transformations/vat/) can be used.
 This must be installed separately.
 Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
@@ -64,11 +64,11 @@ Once installed, simply select "Value-Added Tax" as Profile when linking an item.
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
-Read more about how to in this similar binding [energidataservice](https://www.openhab.org/addons/bindings/energidataservice/#total-price)
+Read more about how to in this similar binding [Energi Data Service](https://www.openhab.org/addons/bindings/energidataservice/#total-price)
 
 ### Trigger Channels
 
-Channel `prices-received` is triggered when new prices are available
+Channel `prices-received` is triggered when new prices are available.
 
 ### Examples
 

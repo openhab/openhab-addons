@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class EntsoeResponseMapException extends Exception {
+public class EntsoeResponseMapException extends EntsoeConfigurationException {
 
     private static final long serialVersionUID = 1L;
 

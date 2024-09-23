@@ -11,7 +11,7 @@
 			(ENTSO-E)</description>
 		<category>WebService</category>
 		<channels>
-			<channel id="spot-price" typeId="spot-prices"/>
+			<channel id="spot-price" typeId="spot-price"/>
 			<channel id="prices-received" typeId="trigger-prices-received"/>
 		</channels>
 
@@ -153,20 +153,20 @@
 				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
 					rate of today)</description>
 			</parameter>
-			<parameter name="spotPricesAvailableUtcHour" type="integer" min="0" max="23" required="false">
+			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>
-				<default>11</default>
-				<description>UTC hour spot prices will get published on ENTSO-E. Usually at 11 UTC.</description>
+				<default>13</default>
+				<description>CET hour spot prices will get published on ENTSO-E. Usually at 13 CET.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<channel-type id="spot-prices">
+	<channel-type id="spot-price">
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Spot Price</label>
 		<category>Price</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="trigger-prices-received">
