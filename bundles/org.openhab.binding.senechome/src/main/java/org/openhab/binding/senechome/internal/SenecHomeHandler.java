@@ -58,6 +58,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Steven Schwarznau - Initial contribution
  * @author Erwin Guib - added more channels, added some convenience methods to reduce code duplication
+ * @author Lukas Pindl - Update for writing to safeChargeMode
  */
 @NonNullByDefault
 public class SenecHomeHandler extends BaseThingHandler {

@@ -40,6 +40,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Steven Schwarznau - Initial contribution
  * @author Robert Delbrück - Update for Senec API changes
+ * @author Lukas Pindl - Update for writing to safeChargeMode
  *
  */
 @NonNullByDefault
@@ -79,6 +80,11 @@ public class SenecHomeApi {
         return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
     }
 
+    /**
+     * POST json, to lala.cgi of Senec webinterface to set a given parameter
+     *
+     * @return boolean, wether or not the request was successful
+     */
     public boolean setValue(String section, String id, String value) {
         String dataToSend = "{\"" + section + "\":{\"" + id + "\":\"" + value + "\"}}";
         try {
@@ -89,6 +95,15 @@ public class SenecHomeApi {
         }
     }
 
+    /**
+     * helper function to handle the actual POST request to the webinterface
+     *
+     * @return object of type ContentResponse, the response received to the POST request
+     * @throws TimeoutException Communication failed (Timeout)
+     * @throws ExecutionException Communication failed
+     * @throws IOException Communication failed
+     * @throws InterruptedException Communication failed (Interrupted)
+     */
     private ContentResponse postRequest(String dataToSend)
             throws TimeoutException, ExecutionException, IOException, InterruptedException {
         String location = hostname + "/lala.cgi";

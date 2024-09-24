@@ -23,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * Section is "ENERGY"
  *
  * @author Steven Schwarznau - Initial Contribution
+ * @author Lukas Pindl - Update for writing to safeChargeMode
  */
 public class SenecHomeEnergy implements Serializable {
 
