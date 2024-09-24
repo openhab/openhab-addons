@@ -333,19 +333,20 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final TLGatewayFrame gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
                     TLGatewayFrame.class);
             if (confirmGateway && gwResponseFrame != null && !gwResponseFrame.gatewayId.equals(req.gatewayId)) {
-                logger.warn("{} = Response from incorrect Gateway \"{}\" != \"{}\"", uid, req.gatewayId,
-                        gwResponseFrame.gatewayId);
+                logger.warn("{}", getLocalizedText("warning.response-from-wrong-gw-id", uid, req.gatewayId,
+                        gwResponseFrame.gatewayId));
                 return "";
             }
             if (gwResponseFrame != null && req.command != gwResponseFrame.command) {
-                logger.warn("{} = Received incorrect CMD response {} != {}", uid, req.command, gwResponseFrame.command);
+                logger.warn("{}",
+                        getLocalizedText("warning.incorrect-cmd-resp", uid, req.command, gwResponseFrame.command));
                 return "";
             }
             return respData;
         } catch (NotTapLinkGatewayException e) {
-            logger.warn("{} = {} is not a Link Tap Gateway!", uid, host);
+            logger.warn("{}", getLocalizedText("warning.not-taplink-gw", uid, host));
         } catch (UnknownHostException | TransientCommunicationIssueException e) {
-            logger.warn("{} = Possible communications issue (auto retry): {}", uid, e.getMessage());
+            logger.warn("{}", getLocalizedText("warning.comms-issue-auto-retry", uid, e.getMessage()));
             scheduleReconnect();
         }
         return "";
@@ -520,7 +521,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final TransactionProcessor tp = TransactionProcessor.getInstance();
         final String gatewayId = getGatewayId();
         if (gatewayId == null) {
-            logger.warn("Error with gateway ID");
+            logger.warn("{}", getLocalizedText("warning.error-with-gw-id"));
             return "";
         }
         frame.gatewayId = gatewayId;
@@ -531,7 +532,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 try {
                     return tp.sendRequest(this, frame);
                 } catch (final CommandNotSupportedException cnse) {
-                    logger.warn("Device {} did not accept command {}", getThing().getLabel(), cnse.getMessage());
+                    logger.warn("{}",
+                            getLocalizedText("warning.device-no-accept", getThing().getLabel(), cnse.getMessage()));
                 }
             }
         } catch (final GatewayIdException gide) {

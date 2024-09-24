@@ -300,8 +300,8 @@ public class LinkTapHandler extends PollingDeviceHandler {
                     requestReadbackPoll();
                 }
             } catch (final InvalidParameterException ipe) {
-                logger.warn("Parameter not accepted by device {} for command {}", getThing().getLabel(),
-                        channelUID.getId());
+                logger.warn("{}",
+                        getLocalizedText("warning.parameter-not-accepted", getThing().getLabel(), channelUID.getId()));
             }
         });
     }
