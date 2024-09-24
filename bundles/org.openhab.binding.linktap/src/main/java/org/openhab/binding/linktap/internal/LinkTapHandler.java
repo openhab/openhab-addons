@@ -37,6 +37,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Channel;
@@ -62,8 +63,6 @@ public class LinkTapHandler extends PollingDeviceHandler {
 
     private static final String DEFAULT_INST_WATERING_VOL_LIMIT = "0";
     private static final String DEFAULT_INST_WATERING_TIME_LIMIT = "15";
-
-    private static final double GW_LITRES_M3_CONVERSION_RATIO = 3.785;
 
     private final Storage<String> strStore;
 
@@ -421,20 +420,20 @@ public class LinkTapHandler extends PollingDeviceHandler {
 
         final Double speed = devStatus.speed;
         if (speed != null) {
-            updateState(DEVICE_CHANNEL_FLOW_RATE, new QuantityType<>(
-                    "L".equals(volumeUnit) ? speed : (speed * GW_LITRES_M3_CONVERSION_RATIO), Units.LITRE_PER_MINUTE));
+            updateState(DEVICE_CHANNEL_FLOW_RATE, new QuantityType<>(speed,
+                    "L".equals(volumeUnit) ? Units.LITRE_PER_MINUTE : ImperialUnits.GALLON_PER_MINUTE));
         }
 
         final Double volume = devStatus.volume;
         if (volume != null) {
-            updateState(DEVICE_CHANNEL_CURRENT_VOLUME, new QuantityType<>(
-                    "L".equals(volumeUnit) ? volume : (volume * GW_LITRES_M3_CONVERSION_RATIO), Units.LITRE));
+            updateState(DEVICE_CHANNEL_CURRENT_VOLUME,
+                    new QuantityType<>(volume, "L".equals(volumeUnit) ? Units.LITRE : ImperialUnits.GALLON_LIQUID_US));
         }
 
         final Double volumeLimit = devStatus.volumeLimit;
         if (volumeLimit != null) {
-            updateState(DEVICE_CHANNEL_FAILSAFE_VOLUME, new QuantityType<>(
-                    "L".equals(volumeUnit) ? volumeLimit : (volumeLimit * GW_LITRES_M3_CONVERSION_RATIO), Units.LITRE));
+            updateState(DEVICE_CHANNEL_FAILSAFE_VOLUME, new QuantityType<>(volumeLimit,
+                    "L".equals(volumeUnit) ? Units.LITRE : ImperialUnits.GALLON_LIQUID_US));
         }
     }
 
