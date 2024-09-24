@@ -341,5 +341,6 @@
 				<option value="GPA">Gapless Play</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
