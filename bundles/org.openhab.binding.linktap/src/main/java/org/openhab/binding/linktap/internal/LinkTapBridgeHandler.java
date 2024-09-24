@@ -370,8 +370,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 final String readGwId = bridgeProps.get(BRIDGE_PROP_GW_ID);
                 if (readGwId != null) {
                     currentGwId = readGwId;
-                } else {
-                    logger.warn("Missing gateway! in response");
                 }
                 final Map<String, String> currentProps = editProperties();
                 currentProps.putAll(bridgeProps);
@@ -402,8 +400,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 try {
                     socket.connect(new InetSocketAddress(hostname, 80), 1500);
                 } catch (IOException e) {
-                    logger.warn("Failed to connect to remote device due to exception", e);
-                    return;
+                    logger.warn("{}", (getLocalizedText("warning.failed-local-address-detection", e.getMessage())));
+                    throw new TransientCommunicationIssueException("Local address lookup failure");
                 }
                 localServerAddr = socket.getLocalAddress().getHostAddress();
                 logger.trace("Local address for connectivity is {}", socket.getLocalAddress().getHostAddress());
