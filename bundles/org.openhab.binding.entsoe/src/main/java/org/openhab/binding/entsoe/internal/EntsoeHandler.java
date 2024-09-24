@@ -176,7 +176,8 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private void refreshPrices() {
         if (!isLinked(EntsoeBindingConstants.CHANNEL_SPOT_PRICE)) {
-            logger.debug("Channel {} is not linked, skipping channel update", EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
+            logger.debug("Channel {} is not linked, skipping channel update",
+                    EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
             return;
         }
 
