@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
@@ -36,11 +37,15 @@ import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -79,9 +84,22 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
 
     protected final ThingRegistry thingRegistry;
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
     @Activate
-    public LinkTapBridgeDiscoveryService(final @Reference ThingRegistry thingRegistry) {
+    public LinkTapBridgeDiscoveryService(final @Reference ThingRegistry thingRegistry,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         this.thingRegistry = thingRegistry;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     @Override
@@ -194,7 +212,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
         try {
             data = new String(serviceInfo.getTextBytes(), TEXT_CHARSET);
         } catch (UnsupportedEncodingException uee) {
-            logger.warn("Missing character set to decode MDNS Text");
+            logger.warn("{}", getLocalizedText("warning.discovery-charset-missing"));
         }
         final int[] keyIndexes = new int[7];
 
