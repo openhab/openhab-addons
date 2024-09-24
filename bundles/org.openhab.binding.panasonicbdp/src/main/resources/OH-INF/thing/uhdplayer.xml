@@ -107,6 +107,7 @@
 				<option value="SKIP_THE_TRAILER">Skip The Trailer</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">
