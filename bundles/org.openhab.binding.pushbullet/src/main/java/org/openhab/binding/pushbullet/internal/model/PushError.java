@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.pushbullet.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,56 +22,41 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Migrated from openHAB 1 action with the same name
+ * @author Jeremy Setton - Add link and file push type support
  */
+@NonNullByDefault
 public class PushError {
 
     @SerializedName("type")
-    private String type;
+    private @Nullable String type;
 
     @SerializedName("message")
-    private String message;
+    private @Nullable String message;
 
     @SerializedName("param")
-    private String param;
+    private @Nullable String param;
 
     @SerializedName("cat")
-    private String cat;
+    private @Nullable String cat;
 
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getMessage() {
+    public @Nullable String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getParam() {
+    public @Nullable String getParam() {
         return param;
     }
 
-    public void setParam(String param) {
-        this.param = param;
-    }
-
-    public String getCat() {
+    public @Nullable String getCat() {
         return cat;
-    }
-
-    public void setCat(String cat) {
-        this.cat = cat;
     }
 
     @Override
     public String toString() {
-        return "PushError {" + "type='" + type + '\'' + ", message='" + message + '\'' + ", param='" + param + '\''
-                + ", cat='" + cat + '\'' + '}';
+        return "PushError {type='" + type + "', message='" + message + "', param='" + param + "', cat='" + cat + "'}";
     }
 }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.pushbullet.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,67 +22,107 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Migrated from openHAB 1 action with the same name
+ * @author Jeremy Setton - Add link and file push type support
  */
+@NonNullByDefault
 public class Push {
 
+    @SerializedName("type")
+    private @Nullable PushType type;
+
     @SerializedName("title")
-    private String title;
+    private @Nullable String title;
 
     @SerializedName("body")
-    private String body;
+    private @Nullable String body;
 
-    @SerializedName("type")
-    private String type;
+    @SerializedName("url")
+    private @Nullable String url;
 
-    @SerializedName("email")
-    private String email;
+    @SerializedName("file_name")
+    private @Nullable String fileName;
+
+    @SerializedName("file_type")
+    private @Nullable String fileType;
+
+    @SerializedName("file_url")
+    private @Nullable String fileUrl;
+
+    @SerializedName("source_device_iden")
+    private @Nullable String sourceDeviceIden;
+
+    @SerializedName("device_iden")
+    private @Nullable String deviceIden;
+
+    @SerializedName("client_iden")
+    private @Nullable String clientIden;
 
     @SerializedName("channel_tag")
-    private String channelTag;
+    private @Nullable String channelTag;
 
-    public String getTitle() {
-        return title;
-    }
+    @SerializedName("email")
+    private @Nullable String email;
 
-    public void setTitle(String title) {
+    @SerializedName("guid")
+    private @Nullable String guid;
+
+    public void setTitle(@Nullable String title) {
         this.title = title;
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
+    public void setType(@Nullable PushType type) {
         this.type = type;
     }
 
-    public String getEmail() {
-        return email;
+    public void setBody(@Nullable String body) {
+        this.body = body;
     }
 
-    public void setEmail(String email) {
+    public void setUrl(@Nullable String url) {
+        this.url = url;
+    }
+
+    public void setFileName(@Nullable String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setFileType(@Nullable String fileType) {
+        this.fileType = fileType;
+    }
+
+    public void setFileUrl(@Nullable String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public void setSourceDeviceIden(@Nullable String sourceDeviceIden) {
+        this.sourceDeviceIden = sourceDeviceIden;
+    }
+
+    public void setDeviceIden(@Nullable String deviceIden) {
+        this.deviceIden = deviceIden;
+    }
+
+    public void setClientIden(@Nullable String clientIden) {
+        this.clientIden = clientIden;
+    }
+
+    public void setChannel(@Nullable String channelTag) {
+        this.channelTag = channelTag;
+    }
+
+    public void setEmail(@Nullable String email) {
         this.email = email;
     }
 
-    public String getChannel() {
-        return channelTag;
-    }
-
-    public void setChannel(String channelTag) {
-        this.channelTag = channelTag;
+    public void setGuid(@Nullable String guid) {
+        this.guid = guid;
     }
 
     @Override
     public String toString() {
-        return "Push {" + "title='" + title + '\'' + ", body='" + body + '\'' + ", type='" + type + '\'' + ", email='"
-                + email + '\'' + ", channelTag='" + channelTag + '\'' + '}';
+        return "Push {type='" + type + "', title='" + title + "', body='" + body + "', url='" + url + "', fileName='"
+                + fileName + "', fileType='" + fileType + "', fileUrl='" + fileUrl + "', sourceDeviceIden='"
+                + sourceDeviceIden + "', deviceIden='" + deviceIden + "', clientIden='" + clientIden + "', channelTag='"
+                + channelTag + "', email='" + email + "', guid='" + guid + "'}";
     }
 }
