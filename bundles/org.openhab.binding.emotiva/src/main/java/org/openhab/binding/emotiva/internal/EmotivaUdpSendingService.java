@@ -196,9 +196,8 @@ public class EmotivaUdpSendingService {
                 logger.debug("Sending successful");
 
                 localDatagramSocket.receive(answer);
-                final int receivedDataLength = Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1).length;
 
-                if (receivedDataLength == 0) {
+                if (Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1).length == 0) {
                     logger.debug("Nothing received, this may happen during shutdown or some unknown error");
                 }
 
