@@ -113,5 +113,6 @@
 				<option value="WideToggle">Wide Toggle</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
