@@ -6,7 +6,7 @@
 
 	<thing-type id="day-ahead">
 
-		<label>Day ahead prices</label>
+		<label>Day-ahead prices</label>
 		<description>Hourly spot prices of the electricity market from European Network of Transmission System Operators
 			(ENTSO-E)</description>
 		<category>WebService</category>
