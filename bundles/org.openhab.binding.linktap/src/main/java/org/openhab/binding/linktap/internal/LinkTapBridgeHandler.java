@@ -507,12 +507,12 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 final String userDataIssues = errors.stream().filter(x -> x.getCause() == USER)
                         .map(ValidationError::toString).collect(Collectors.joining(","));
                 if (!bugs.isEmpty()) {
-                    logger.warn("Potential Bug: Device {} payload validation failed - will not send -> {}",
-                            getThing().getLabel(), bugs);
+                    logger.warn("{}",
+                            getLocalizedText("bug-report.unexpected-payload-failure", getThing().getLabel(), bugs));
                 }
                 if (!userDataIssues.isEmpty()) {
-                    logger.warn("Device {} payload validation failed - will not send due to bad data -> {}",
-                            getThing().getLabel(), userDataIssues);
+                    logger.warn("{}", getLocalizedText("warning.user-data-payload-failure", getThing().getLabel(),
+                            userDataIssues));
                 }
                 return "";
             }
