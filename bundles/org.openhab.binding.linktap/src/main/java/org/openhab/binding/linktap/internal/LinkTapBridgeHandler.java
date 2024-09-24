@@ -319,8 +319,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             host = getHostname();
             final boolean confirmGateway = req.command != TLGatewayFrame.CMD_GET_CONFIGURATION;
             if (confirmGateway && (host.isEmpty() || currentGwId.isEmpty())) {
-                logger.warn("Request when host \"{}\" or gateway \"{}\" id is unknown for command {}", host,
-                        currentGwId, req.command);
+                logger.warn("{}", getLocalizedText("warning.host-gw-unknown-for-cmd", host, currentGwId, req.command));
                 return "";
             }
             if (req.gatewayId.isEmpty()) {
