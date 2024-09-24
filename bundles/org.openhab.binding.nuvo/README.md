@@ -142,10 +142,10 @@ nuvo.items:
 
 ```java
 // system
-Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff", autoupdate="false" }
+Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
-String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd", autoupdate="false" }
+String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd" }
 String nuvo_system_buttonpress "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#buttonpress" }
 
 // zones
@@ -153,7 +153,7 @@ Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
 Number nuvo_z1_source "Source Input [%s]" { channel="nuvo:amplifier:myamp:zone1#source" }
 Dimmer nuvo_z1_volume "Volume [%d %%]" { channel="nuvo:amplifier:myamp:zone1#volume" }
 Switch nuvo_z1_mute "Mute" { channel="nuvo:amplifier:myamp:zone1#mute" }
-Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite", autoupdate="false" }
+Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite" }
 Player nuvo_z1_control "Control" { channel="nuvo:amplifier:myamp:zone1#control" }
 Number nuvo_z1_treble "Treble Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#treble" }
 Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#bass" }
@@ -174,9 +174,9 @@ String nuvo_s1_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s1_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_length" }
 Number:Time nuvo_s1_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
-// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url", autoupdate="false" }
+// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
 // Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
-// String nuvo_s1_source_menu { channel="nuvo:amplifier:myamp:source1#source_menu", autoupdate="false" }
+// String nuvo_s1_source_menu { channel="nuvo:amplifier:myamp:source1#source_menu" }
 
 String nuvo_s2_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line1" }
 String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line2" }
@@ -186,9 +186,9 @@ String nuvo_s2_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s2_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_length" }
 Number:Time nuvo_s2_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
-// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url", autoupdate="false" }
+// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
 // Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
-// String nuvo_s2_source_menu { channel="nuvo:amplifier:myamp:source2#source_menu", autoupdate="false" }
+// String nuvo_s2_source_menu { channel="nuvo:amplifier:myamp:source2#source_menu" }
 
 String nuvo_s3_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line1" }
 String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line2" }
@@ -198,9 +198,9 @@ String nuvo_s3_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s3_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_length" }
 Number:Time nuvo_s3_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
-// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url", autoupdate="false" }
+// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
 // Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
-// String nuvo_s3_source_menu { channel="nuvo:amplifier:myamp:source3#source_menu", autoupdate="false" }
+// String nuvo_s3_source_menu { channel="nuvo:amplifier:myamp:source3#source_menu" }
 
 String nuvo_s4_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line1" }
 String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line2" }
@@ -210,9 +210,9 @@ String nuvo_s4_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s4_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_length" }
 Number:Time nuvo_s4_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
-// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url", autoupdate="false" }
+// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
 // Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
-// String nuvo_s4_source_menu { channel="nuvo:amplifier:myamp:source4#source_menu", autoupdate="false" }
+// String nuvo_s4_source_menu { channel="nuvo:amplifier:myamp:source4#source_menu" }
 
 String nuvo_s5_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line1" }
 String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line2" }
@@ -222,9 +222,9 @@ String nuvo_s5_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s5_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_length" }
 Number:Time nuvo_s5_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
-// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url", autoupdate="false" }
+// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
 // Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
-// String nuvo_s5_source_menu { channel="nuvo:amplifier:myamp:source5#source_menu", autoupdate="false" }
+// String nuvo_s5_source_menu { channel="nuvo:amplifier:myamp:source5#source_menu" }
 
 String nuvo_s6_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line1" }
 String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line2" }
@@ -234,9 +234,9 @@ String nuvo_s6_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s6_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_length" }
 Number:Time nuvo_s6_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
-// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url", autoupdate="false" }
+// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
 // Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
-// String nuvo_s6_source_menu { channel="nuvo:amplifier:myamp:source6#source_menu", autoupdate="false" }
+// String nuvo_s6_source_menu { channel="nuvo:amplifier:myamp:source6#source_menu" }
 
 ```
 
