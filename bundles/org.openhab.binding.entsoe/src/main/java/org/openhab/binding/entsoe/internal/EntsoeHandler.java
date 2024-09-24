@@ -217,8 +217,10 @@ public class EntsoeHandler extends BaseThingHandler {
                 updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
                 scheduler.schedule(this::triggerChannelSpotPricesReceived, 0, TimeUnit.SECONDS);
                 success = true;
-            } catch (EntsoeResponseException | EntsoeConfigurationException e) {
+            } catch (EntsoeResponseException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (EntsoeConfigurationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {
                 schedule(success);
             }
