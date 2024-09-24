@@ -425,8 +425,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
             final Firmware firmware = new Firmware(getThing().getProperties().get(BRIDGE_PROP_GW_VER));
             if (!firmware.supportsLocalConfig()) {
-                logger.warn("{} -> Local configuration support requires newer firmware it should be >= {}",
-                        getThing().getLabel(), firmware.getRecommendedMinVer());
+                logger.warn("{}", getLocalizedText("warning.fw-update-local-config", getThing().getLabel(),
+                        firmware.getRecommendedMinVer()));
             }
         } catch (InterruptedException ignored) {
         } catch (NotTapLinkGatewayException e) {
