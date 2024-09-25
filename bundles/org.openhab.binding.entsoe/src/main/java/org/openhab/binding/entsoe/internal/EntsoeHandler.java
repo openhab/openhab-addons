@@ -72,7 +72,9 @@ public class EntsoeHandler extends BaseThingHandler {
     private Map<ZonedDateTime, Double> responseMap;
 
     // Use region-based ZoneId instead of CET to handle transition to CEST automatically
-    private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("Europe/Paris"));
+    private final String cetZoneId = "Europe/Paris";
+
+    private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of(cetZoneId));
 
     private int historicDaysInitially = 0;
 
@@ -127,7 +129,7 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private ZonedDateTime currentCetTime() {
         // Use region-based ZoneId instead of CET to handle transition to CEST automatically
-        return ZonedDateTime.now(ZoneId.of("Europe/Paris"));
+        return ZonedDateTime.now(ZoneId.of(cetZoneId));
     }
 
     private ZonedDateTime currentCetTimeWholeHours() {
@@ -188,7 +190,7 @@ public class EntsoeHandler extends BaseThingHandler {
         ZonedDateTime endCet = currentCetTimeWholeHours().plusDays(1).withHour(22);
 
         boolean needsUpdate = lastDayAheadReceived
-                .equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of("Europe/Paris"))) || responseMap.isEmpty()
+                .equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of(cetZoneId))) || responseMap.isEmpty()
                 || needToFetchHistoricDays(true);
 
         boolean hasNextDayValue = needsUpdate ? false
