@@ -189,9 +189,8 @@ public class EntsoeHandler extends BaseThingHandler {
                 .minusDays(needToFetchHistoricDays() ? config.historicDays : 1).withHour(22);
         ZonedDateTime endCet = currentCetTimeWholeHours().plusDays(1).withHour(22);
 
-        boolean needsUpdate = lastDayAheadReceived
-                .equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of(cetZoneId))) || responseMap.isEmpty()
-                || needToFetchHistoricDays(true);
+        boolean needsUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, ZoneId.of(cetZoneId)))
+                || responseMap.isEmpty() || needToFetchHistoricDays(true);
 
         boolean hasNextDayValue = needsUpdate ? false
                 : responseMap.entrySet().stream()
