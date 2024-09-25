@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.handler.*;
+import org.openhab.binding.onecta.internal.oauth2.auth.OAuthTokenRefresher;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -54,6 +55,8 @@ public class OnectaBridgeHandlerFactoryTest {
     @Mock
     private HttpClientFactory httpClientFactoryMock;
     @Mock
+    private OAuthTokenRefresher openHabOAuthTokenRefresher;
+    @Mock
     private TimeZoneProvider timeZoneProviderMock;
     @Mock
     private OnectaBridgeHandler onectaBridgeHandlerMock;
@@ -70,7 +73,7 @@ public class OnectaBridgeHandlerFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock);
+        handler = new OnectaBridgeHandlerFactory(httpClientFactoryMock, openHabOAuthTokenRefresher);
         bridgeProperties.put(CONFIG_PAR_USERID, USERID);
         bridgeProperties.put(CONFIG_PAR_PASSWORD, PASSWORD);
         bridgeProperties.put(CONFIG_PAR_REFRESHINTERVAL, "10");

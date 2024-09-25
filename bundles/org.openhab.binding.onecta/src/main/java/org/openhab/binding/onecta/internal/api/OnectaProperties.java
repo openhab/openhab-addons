@@ -26,7 +26,7 @@ import org.openhab.binding.onecta.internal.api.dto.commands.CommandString;
 @NonNullByDefault
 public class OnectaProperties {
 
-    private static final String BASE_URL = "https://api.prod.unicloud.edc.dknadmin.be/v1/gateway-devices/%s";
+    private static final String BASE_URL = "https://api.onecta.daikineurope.com/v1/gateway-devices/%s";
     private static final String BASE_URL_COMMAND = "/management-points/%s/characteristics/%s";
     private static final String COMMAND_ONOFF = "onOffMode";
     private static final String COMMAND_POWERFULMODEONOFF = "powerfulMode";

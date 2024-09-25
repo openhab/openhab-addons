@@ -123,7 +123,7 @@ public final class AccountOverviewServlet extends AbstractShowPageServlet {
     }
 
     private boolean isOnectaBridge(Thing thing) {
-        return OnectaBridgeConstants.BRIDGE_THING_TYPE.equals(thing.getThingTypeUID());
+        return OnectaBridgeConstants.THING_TYPE_BRIDGE.equals(thing.getThingTypeUID());
     }
 
     private String renderSslWarning(HttpServletRequest request, String skeleton) {

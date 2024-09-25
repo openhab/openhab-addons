@@ -37,6 +37,7 @@ public class OnectaBridgeConstants {
     public static final String CONFIG_PAR_USERID = "userId";
     public static final String CONFIG_PAR_REFRESHINTERVAL = "refreshInterval";
     public static final String CONFIG_PAR_UNITID = "unitID";
+    public static final String CHANNEL_OPENHAB_HOST = "openhabHost";
 
     // List of all Bridge Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE);
@@ -47,4 +48,7 @@ public class OnectaBridgeConstants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_GATEWAY);
     public static final ThingTypeUID THING_TYPE_WATERTANK = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_WATERTANK);
     public static final ThingTypeUID THING_TYPE_INDOORUNIT = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_INDOORUNIT);
+
+    public static final String THIRD_PARTY_ENDPOINTS_BASENAME = "https://idp.onecta.daikineurope.com/v1/oidc";
+    public static final String OAUTH2_SERVICE_HANDLE = BINDING_ID + ":" + BRIDGE;
 }
