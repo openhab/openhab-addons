@@ -98,13 +98,13 @@ If you're missing a channel this means that it's not supported for your inverter
 | total-battery-discharge-energy   | Number:Energy              | Total energy from the battery [kWh]                       |
 | total-battery-charge-energy      | Number:Energy              | Total energy to the battery [kWh]                         |
 | total-pv-energy                  | Number:Energy              | Total energy from the PV [kWh]                            |
-| total-consumption                | Number:Energy              | Total energy consumed for the building [kWh]              |
-| total-feed-in-energy             | Number:Energy              | Total energy consumed from the electricity provider [kWh] |
+| total-consumption                | Number:Energy              | Total energy consumed by the building [kWh]               |
+| total-feed-in-energy             | Number:Energy              | Total energy sent to the grid [kWh]                       |
 | today-energy                     | Number:Energy              | Energy output from the inverter for the day [kWh]         |
-| today-battery-discharge-energy   | Number:Energy              | Total energy from the battery output for the day [kWh]    |
-| today-battery-charge-energy      | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
-| today-feed-in-energy             | Number:Energy              | Total energy charged to the battery for the day [kWh]     |
-| today-consumption                | Number:Energy              | Total energy consumed for the day [kWh]                   |
+| today-battery-discharge-energy   | Number:Energy              | Energy from the battery for the day [kWh]                 |
+| today-battery-charge-energy      | Number:Energy              | Energy to the battery for the day [kWh]                   |
+| today-consumption                | Number:Energy              | Energy consumed by the building for the day [kWh]         |
+| today-feed-in-energy             | Number:Energy              | Energy sent to the grid for the day [kWh]                 |
 
 ### Properties
 
@@ -175,8 +175,8 @@ If you're missing a channel this means that it's not supported for your inverter
 | battery-power                   | Number:Power               | The power to / from battery (negative means power is pulled from the battery and vice-versa) [W]                                            |
 | battery-level                   | Number                     | The state of charge of the battery [%]                                                                                                      |
 | feed-in-power                   | Number:Power               | The power to / from grid (negative means power is pulled from the grid and vice-versa) [W]                                                  |
-| total-feed-in-energy            | Number:Energy              | Total energy consumed from the electricity provider [kWh]                                                                                   |
-| total-consumption               | Number:Energy              | Total energy consumed for the building [kWh]                                                                                                |
+| total-feed-in-energy            | Number:Energy              | Total energy sent to the grid [kWh]                                                                                                         |
+| total-consumption               | Number:Energy              | Total energy consumed by the building [kWh]                                                                                                 |
 | today-energy                    | Number:Energy              | Energy output from the inverter for the day [kWh]                                                                                           |
 | total-energy                    | Number:Energy              | Total energy output from the inverter [kWh]                                                                                                 |
 | raw-data                        | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |

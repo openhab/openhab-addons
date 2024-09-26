@@ -9,6 +9,13 @@ The protocol stack is based on the no longer supported smslib project (more prec
 The following devices have been reported functional :
 
 - Huawei E180
+- Huawei E173
+- Huawei E1550
+- Huawei E272
+
+Devices that are reported to have issues:
+
+- Huawei E303C
 
 ## Supported Things
 

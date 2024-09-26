@@ -215,6 +215,13 @@ public class HaID {
     }
 
     /**
+     * Return the topic for this component, without /config
+     */
+    public String getTopic() {
+        return topic;
+    }
+
+    /**
      * Return a topic, which can be used for a mqtt subscription.
      * Defined values for suffix are:
      * <ul>

@@ -352,6 +352,9 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .removeMetadata(namespace) ⇒ `object|null`
   - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
   - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+  - .sendIncreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
+  - .sendDecreaseCommand(value) ⇒ `boolean`: `value` can be a number, or a [`Quantity`](#quantity)
+  - .sendToggleCommand(): Sends a command to flip the Item's state (e.g. if it is 'ON' an 'OFF' command is sent).
   - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
   - .addGroups(...groupNamesOrItems)
   - .removeGroups(...groupNamesOrItems)
@@ -887,6 +890,14 @@ var Locale = require('@js-joda/locale_de-de').Locale.GERMAN;
 var formatter = time.DateTimeFormatter.ofPattern('dd.MM.yyyy HH:mm').withLocale(Locale);
 ```
 
+#### `time.javaInstantToJsInstant()`
+
+Converts a [`java.time.Instant`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Instant.html) to a JS-Joda [`Instant`](https://js-joda.github.io/js-joda/manual/Instant.html).
+
+#### `time.javaZDTToJsZDT()`
+
+Converts a [`java.time.ZonedDateTime`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/ZonedDateTime.html) to a JS-Joda [`ZonedDateTime`](https://js-joda.github.io/js-joda/manual/ZonedDateTime.html).
+
 #### `time.toZDT()`
 
 There will be times when this automatic conversion is not available (for example when working with date times within a rule).
@@ -1241,11 +1252,11 @@ See [Examples](#rule-builder-examples) for further patterns.
 
 - `when()`
 - `or()`
-  - `.channel(channelName)` Specifies a channel event as a source for the rule to fire.
-    - `.triggered(event)` Trigger on a specific event name
-  - `.cron(cronExpression)` Specifies a cron schedule for the rule to fire.
-  - `.timeOfDay(time)` Specifies a time of day in `HH:mm` for the rule to fire.
-  - `.item(itemName)` Specifies an Item as the source of changes to trigger a rule.
+  - `.channel(channelName)`: Specifies a channel event as a source for the rule to fire.
+    - `.triggered(event)`: Trigger on a specific event name
+  - `.cron(cronExpression)`: Specifies a cron schedule for the rule to fire.
+  - `.timeOfDay(time)`: Specifies a time of day in `HH:mm` for the rule to fire.
+  - `.item(itemName)`: Specifies an Item as the source of changes to trigger a rule.
     - `.for(duration)`
     - `.from(state)`
     - `.fromOn()`
@@ -1256,7 +1267,7 @@ See [Examples](#rule-builder-examples) for further patterns.
     - `.receivedCommand()`
     - `.receivedUpdate()`
     - `.changed()`
-  - `.memberOf(groupName)` Specifies a group Item as the source of changes to trigger the rule.
+  - `.memberOf(groupName)`: Specifies a group Item as the source of changes to trigger the rule.
     - `.for(duration)`
     - `.from(state)`
     - `.fromOn()`
@@ -1267,20 +1278,21 @@ See [Examples](#rule-builder-examples) for further patterns.
     - `.receivedCommand()`
     - `.receivedUpdate()`
     - `.changed()`
-  - `.system()` Specifies a system event as a source for the rule to fire.
+  - `.system()`: Specifies a system event as a source for the rule to fire.
     - `.ruleEngineStarted()`
     - `.rulesLoaded()`
     - `.startupComplete()`
     - `.thingsInitialized()`
     - `.userInterfacesStarted()`
     - `.startLevel(level)`
-  - `.thing(thingName)` Specifies a Thing event as a source for the rule to fire.
+  - `.thing(thingName)`: Specifies a Thing event as a source for the rule to fire.
     - `changed()`
     - `updated()`
     - `from(state)`
     - `to(state)`
-  - `.dateTime(itemName)` Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
-    - `.timeOnly()` Only the time of the Item should be compared, the date should be ignored.
+  - `.dateTime(itemName)`: Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
+    - `.timeOnly()`: Only the time of the Item should be compared, the date should be ignored.
+    - `.withOffset(offset)`: The offset in seconds to add to the time of the DateTime Item.
 
 Additionally, all the above triggers have the following functions:
 

@@ -145,7 +145,7 @@ Switch epsonVerticalReverse                            { channel="epsonprojector
 Switch epsonHorizontalReverse                          { channel="epsonprojector:projector-serial:hometheater:horizontalreverse" }
 
 String epsonBackground  "Background [%s]"              { channel="epsonprojector:projector-serial:hometheater:background" }
-String epsonKeyCode     "Key Code [%s]"                { channel="epsonprojector:projector-serial:hometheater:keycode", autoupdate="false" }
+String epsonKeyCode     "Key Code [%s]"                { channel="epsonprojector:projector-serial:hometheater:keycode" }
 String epsonPowerState  "Power State [%s]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:powerstate" }
 Number epsonLampTime    "Lamp Time [%d h]"   <switch>  { channel="epsonprojector:projector-serial:hometheater:lamptime" }
 Number epsonErrCode     "Error Code [%d]"    <error>   { channel="epsonprojector:projector-serial:hometheater:errcode" }

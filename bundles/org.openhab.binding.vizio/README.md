@@ -67,7 +67,7 @@ The following channels are available:
 | source      | String    | Select the source input on the TV. The dropdown list is automatically populated from the TV.                                                                                                |
 | activeApp   | String    | A dropdown containing a list of streaming apps defined by the `appListJson` config option that can be launched by the binding. An app started via remote control is automatically selected. |
 | control     | Player    | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind                                                                                                                              |
-| button      | String    | Sends a remote control command the TV. See list of available commands below.                                                                                                                |
+| button      | String    | Sends a remote control command the TV. See list of available commands below. (WriteOnly)                                                                                                    |
 
 ### List of available button commands for Vizio TVs:
 
