@@ -32,6 +32,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
+import com.hubspot.jinjava.interpret.InvalidInputException;
+import com.hubspot.jinjava.interpret.JinjavaInterpreter;
 
 /**
  * Provides a channel transformation for a Home Assistant channel with a
@@ -42,6 +44,12 @@ import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
  */
 @NonNullByDefault
 public class HomeAssistantChannelTransformation extends ChannelTransformation {
+    public static class UndefinedException extends InvalidInputException {
+        public UndefinedException(JinjavaInterpreter interpreter) {
+            super(interpreter, "is_defined", "Value is undefined");
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantChannelTransformation.class);
 
     private final Jinjava jinjava;
@@ -89,8 +97,17 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
         try {
             transformationResult = jinjava.render(template, bindings);
         } catch (FatalTemplateErrorsException e) {
-            logger.warn("Applying template {} for component {} failed: {}", template,
-                    component.getHaID().toShortTopic(), e.getMessage());
+            var error = e.getErrors().iterator();
+            Exception exception = null;
+            if (error.hasNext()) {
+                exception = error.next().getException();
+            }
+            if (exception instanceof UndefinedException) {
+                // They used the is_defined filter; it's expected to return null, with no warning
+                return Optional.empty();
+            }
+            logger.warn("Applying template {} for component {} failed: {} ({})", template,
+                    component.getHaID().toShortTopic(), e.getMessage(), e.getClass());
             return Optional.empty();
         }
 

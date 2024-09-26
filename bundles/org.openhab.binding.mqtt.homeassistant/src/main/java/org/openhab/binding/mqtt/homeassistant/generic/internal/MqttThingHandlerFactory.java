@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantJinjaFunctionLibrary;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -57,6 +58,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
         this.typeProvider = typeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
+
+        HomeAssistantJinjaFunctionLibrary.register(jinjava.getGlobalContext());
     }
 
     @Override
@@ -78,5 +81,9 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
                     jinjava, 10000, 2000);
         }
         return null;
+    }
+
+    public Jinjava getJinjava() {
+        return jinjava;
     }
 }
