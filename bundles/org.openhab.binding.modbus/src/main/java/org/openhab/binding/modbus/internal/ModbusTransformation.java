@@ -111,10 +111,19 @@ public class ModbusTransformation {
         }
     }
 
+    /**
+     * Transform the given value using the configured transformations.
+     * 
+     * @param value the value to transform
+     * @return the transformed value. If the transformation failed, return a blank string.
+     *         This could happen in one of these situations:
+     *         - The transformation service is not available.
+     *         - An error occurred when performing transformations.
+     *         - The transformation service intentionally returned null.
+     */
     public String transform(String value) {
         if (transformation != null) {
-            // return input if transformation failed
-            return Objects.requireNonNull(transformation.apply(value).orElse(value));
+            return Objects.requireNonNull(transformation.apply(value).orElse(""));
         }
 
         return Objects.requireNonNullElse(constantOutput, value);
