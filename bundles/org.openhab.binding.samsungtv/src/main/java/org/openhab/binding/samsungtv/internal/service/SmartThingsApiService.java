@@ -94,6 +94,7 @@ public class SmartThingsApiService implements SamsungTvService {
     private String host = "";
     private String apiKey = "";
     private String deviceId = "";
+    private boolean subscriptionEnabled = true;
     private int RATE_LIMIT = 1000;
     private int TIMEOUT = 1000; // connection timeout in ms
     private long prevUpdate = 0;
@@ -115,6 +116,7 @@ public class SmartThingsApiService implements SamsungTvService {
         this.host = host;
         this.apiKey = handler.configuration.getSmartThingsApiKey();
         this.deviceId = handler.configuration.getSmartThingsDeviceId();
+        this.subscriptionEnabled = handler.configuration.getSmartThingsSubscription();
         logger.debug("{}: Creating a Samsung TV Smartthings Api service", host);
     }
 
@@ -868,7 +870,9 @@ public class SmartThingsApiService implements SamsungTvService {
     public void start() {
         online = true;
         errorCount = 0;
-        startSSE();
+        if (subscriptionEnabled) {
+            startSSE();
+        }
     }
 
     @Override
