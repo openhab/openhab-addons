@@ -560,7 +560,9 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
     private void poll() {
         try {
             // Skip channels if service is not connected/started
-            services.stream().filter(service -> service.checkConnection())
+            // Only poll SmartThings if TV is ON (ie playing)
+            services.stream().filter(service -> service.checkConnection()).filter(
+                    service -> getPowerState() || !service.getServiceName().equals(SmartThingsApiService.SERVICE_NAME))
                     .forEach(service -> service.getSupportedChannelNames(true).stream()
                             .filter(channel -> isLinked(channel) && !isDuplicateChannel(channel))
                             .forEach(channel -> service.handleCommand(channel, RefreshType.REFRESH)));

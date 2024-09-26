@@ -16,17 +16,19 @@ Basic operation does not require any special configuration.
 
 The binding has the following configuration options, which can be set for "binding:samsungtv":
 
-| Parameter             | Name                      | Description                                                   | Required  |
-|-----------------------|---------------------------|---------------------------------------------------------------|-----------|
-| hostName              | Host Name                 | Network address of the Samsung TV                             | yes       |
-| port                  | TCP Port                  | TCP port of the Samsung TV                                    | no        |
-| macAddress            | MAC Address               | MAC Address of the Samsung TV                                 | no        |
-| refreshInterval       | Refresh Interval          | States how often a refresh shall occur in milliseconds        | no        |
-| protocol              | Remote Control Protocol   | The type of remote control protocol                           | yes       |
-| webSocketToken        | Websocket Token           | Security token for secure websocket connection                | no        |
-| subscription          | Subscribe to UPNP         | Reduces polling on UPNP devices                               | no        |
-| smartThingsApiKey     | Smartthings PAT           | Smartthings Personal Access Token                             | no        |
-| smartThingsDeviceId   | Smartthings Device ID     | Smartthings Device ID for this TV                             | no        |
+| Parameter              | Name                      | Description                                                   | Required  |
+|------------------------|---------------------------|---------------------------------------------------------------|-----------|
+| hostName               | Host Name                 | Network address of the Samsung TV                             | yes       |
+| port                   | TCP Port                  | TCP port of the Samsung TV                                    | no        |
+| macAddress             | MAC Address               | MAC Address of the Samsung TV                                 | no        |
+| refreshInterval        | Refresh Interval          | States how often a refresh shall occur in milliseconds        | no        |
+| protocol               | Remote Control Protocol   | The type of remote control protocol                           | yes       |
+| webSocketToken         | Websocket Token           | Security token for secure websocket connection                | no        |
+| subscription           | Subscribe to UPNP         | Reduces polling on UPNP devices, default false                | no        |
+| orientationKey         | Orientation Key           | Key press to send to rotate auto-rotation mount               | no        |
+| smartThingsApiKey      | Smartthings PAT           | Smartthings Personal Access Token                             | no        |
+| smartThingsDeviceId    | Smartthings Device ID     | Smartthings Device ID for this TV                             | no        |
+| smartThingsSubscription| Smarththings Subscription | Reduces polling on Smartthings channels, default true         | no        |
 
 ## Thing Configuration
 
@@ -89,6 +91,7 @@ TVs support the following channels:
 | artJson             | String   | RW         | Send/receive commands from the TV art websocket Channel                                                 |
 | artBrightness       | Dimmer   | RW         | ArtMode Brightness                                                                                      |
 | artColorTemperature | Number   | RW         | ArtMode Color temperature Minnimum value is -5 and maximum 5                                            |
+| artOrientation      | Switch   | RW         | TV orientation, Landscape (OFF) or Portrait (ON)                                                        |
 
 **NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.  
 **NOTE:** channels: sourceName, sourceId, programTitle, channelName and stopBrowser may need additional configuration. 
@@ -218,6 +221,7 @@ Currently known working commands for 2021 and earlier TV's are:
     get_api_version
     get_artmode_status
     set_artmode_status "value" on or off
+    get_current_rotation "current_rotation_status" 1 is landscape, 2 is Portrait
     get_auto_rotation_status
     set_auto_rotation_status "type" is "slideshow" pr 'shuffelslideshow", "value" is off or duration in minutes "category_id" is a string representing the category
     get_device_info
@@ -244,6 +248,7 @@ Currently known working commands for 2022 and later TV's are:
     api_version
     get_artmode_status
     set_artmode_status "value" on or off
+    get_current_rotation "current_rotation_status" 1 is landscape, 2 is Portrait
     get_slideshow_status
     set_slideshow_status "type" is "slideshow" pr 'shuffelslideshow", "value" is off or duration in minutes "category_id" is a string representing the category
     get_device_info
@@ -303,6 +308,17 @@ You can use a `Setpoint` contol for this item in your `sitemap` eg:
 Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[TV_ArtMode==ON]
 ```
 
+### artOrientation:
+
+`artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.  
+For 2023- TV's `orientationKey` should be KEY_MULTI_VIEW (default), for 2024+ TV's this should be KEY_HOME.
+
+```java
+Switch item=TV_ArtOrientation mappings[OFF="Landscape", ON="Portrait"]
+```
+
+**NOTE:** You should only send commands to the `artOrientation` channel if you have the auto-rotation mount paired to the TV.
+
 ## Full Example
 
 ### samsungtv.things
@@ -334,6 +350,7 @@ Image   TV_ArtImage      "Current Art"                         (gLivingRoomTV)  
 String  TV_ArtJson       "Art Json [%s]"                       (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artJson" }
 Dimmer  TV_ArtBri        "Art Brightness [%d%%]"               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artBrightness" }
 Number  TV_ArtCT         "Art CT [%d]"                         (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artColorTemperature" }
+Switch  TV_ArtOrient     "Art Orientation [%s]"                (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artOrientation" }
 ```
 
 ## WOL
@@ -528,6 +545,11 @@ The binding will attempt to find the Device ID for your TV. If you have several 
 You can now link the `sourceName`, `sourceId`, `channel` and `channelName` channels, and should see the values updating. You can change the TV input source by sending `"HDMI1"`, or `"HDMI2"` to the `sourceName` channel, the exact string will depend on your TV, and how many inputs you have. You can also send a number to the `sourceId` channel.
 
 **NOTE:** You may not get anything for `channelName`, as most TV’s don’t report it. You can only send commands to `channel`, `sourceName` and `sourceId`, `channelName` is read only.
+
+## Smartthings Subscriptions
+
+Smartthings Subscriptions are supported. This is a feature which reduces the polling of Smartthings channels (on by default).  
+If the Smarthings channels only update with the Smartthings app open, turn subscription off, and the channels will be polled instead. Channels are only polled when the TV is ON.
 
 ## UPnP Subscriptions
 

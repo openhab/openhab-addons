@@ -60,4 +60,5 @@ public class SamsungTvBindingConstants {
     public static final String ART_JSON = "artJson";
     public static final String ART_BRIGHTNESS = "artBrightness";
     public static final String ART_COLOR_TEMPERATURE = "artColorTemperature";
+    public static final String ART_ORIENTATION = "artOrientation";
 }
