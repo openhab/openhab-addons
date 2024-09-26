@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Jeremy Setton - Add link and file push type support
  */
 @NonNullByDefault
-public class Push {
+public class PushRequest {
 
     @SerializedName("type")
     private @Nullable PushType type;

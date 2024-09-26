@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents the user response received from the API.
+ * This class represents the user object received from the API.
  *
  * @author Jeremy Setton - Initial contribution
  */
@@ -56,9 +56,6 @@ public class User {
 
     @SerializedName("referrer_iden")
     private @Nullable String referrerIden;
-
-    @SerializedName("error")
-    private @Nullable PushError pushError;
 
     public @Nullable String getIden() {
         return iden;
@@ -100,15 +97,11 @@ public class User {
         return referrerIden;
     }
 
-    public @Nullable PushError getPushError() {
-        return pushError;
-    }
-
     @Override
     public String toString() {
         return "User {iden='" + iden + "', created='" + created + "', modified='" + modified + "', email='" + email
                 + "', emailNormalized='" + emailNormalized + "', name='" + name + "', imageUrl='" + imageUrl
                 + "', maxUploadSize='" + maxUploadSize + "', referredCount='" + referredCount + "', referrerIden='"
-                + referrerIden + "', pushError=" + pushError + "}";
+                + referrerIden + "'}";
     }
 }

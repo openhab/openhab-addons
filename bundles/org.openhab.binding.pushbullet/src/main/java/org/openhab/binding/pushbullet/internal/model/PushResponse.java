@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents the answer to pushes provided by the API.
+ * This class represents the push response received from the API.
  *
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Migrated from openHAB 1 action with the same name
@@ -116,12 +116,6 @@ public class PushResponse {
 
     @SerializedName("image_height")
     private @Nullable Integer imageHeight;
-
-    @SerializedName("error_code")
-    private @Nullable String errorCode;
-
-    @SerializedName("error")
-    private @Nullable PushError pushError;
 
     public @Nullable String getIden() {
         return iden;
@@ -239,14 +233,6 @@ public class PushResponse {
         return imageHeight;
     }
 
-    public @Nullable String getErrorCode() {
-        return errorCode;
-    }
-
-    public @Nullable PushError getPushError() {
-        return pushError;
-    }
-
     @Override
     public String toString() {
         return "PushResponse {iden='" + iden + ", active='" + active + "', created='" + created + "', modified='"
@@ -258,7 +244,6 @@ public class PushResponse {
                 + "', sourceDeviceIden='" + sourceDeviceIden + "', clientIden='" + clientIden + "', channelIden='"
                 + channelIden + "', awakeAppGuids='" + awakeAppGuids + "', title='" + title + "', body='" + body
                 + "', url='" + url + "', fileName='" + fileName + "', fileType='" + fileType + "', fileUrl='" + fileUrl
-                + "', imageUrl='" + imageUrl + "', imageWidth='" + imageWidth + "', imageHeight='" + imageHeight
-                + "', errorCode='" + errorCode + "', pushError=" + pushError + "}";
+                + "', imageUrl='" + imageUrl + "', imageWidth='" + imageWidth + "', imageHeight='" + imageHeight + "'}";
     }
 }

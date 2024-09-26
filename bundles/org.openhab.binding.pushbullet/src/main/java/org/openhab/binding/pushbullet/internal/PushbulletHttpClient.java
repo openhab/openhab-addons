@@ -13,6 +13,7 @@
 package org.openhab.binding.pushbullet.internal;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,6 +29,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletApiException;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletAuthenticationException;
 import org.openhab.binding.pushbullet.internal.model.InstantDeserializer;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.RawType;
@@ -71,9 +74,10 @@ public class PushbulletHttpClient {
      *
      * @param apiEndpoint the request api endpoint
      * @param responseType the response type
-     * @return the unpacked response if available, otherwise null
+     * @return the unpacked response
+     * @throws PushbulletApiException
      */
-    public <T> @Nullable T executeRequest(String apiEndpoint, Class<T> responseType) {
+    public <T> T executeRequest(String apiEndpoint, Class<T> responseType) throws PushbulletApiException {
         return executeRequest(apiEndpoint, null, responseType);
     }
 
@@ -83,9 +87,11 @@ public class PushbulletHttpClient {
      * @param apiEndpoint the request api endpoint
      * @param body the request body object
      * @param responseType the response type
-     * @return the unpacked response if available, otherwise null
+     * @return the unpacked response
+     * @throws PushbulletApiException
      */
-    public <T> @Nullable T executeRequest(String apiEndpoint, @Nullable Object body, Class<T> responseType) {
+    public <T> T executeRequest(String apiEndpoint, @Nullable Object body, Class<T> responseType)
+            throws PushbulletApiException {
         String url = config.getApiUrlBase() + apiEndpoint;
         String accessToken = config.getToken();
 
@@ -98,20 +104,16 @@ public class PushbulletHttpClient {
             request.method(HttpMethod.POST).content(content, contentType);
         }
 
-        ContentResponse contentResponse = sendRequest(request);
-        if (contentResponse != null && (contentResponse.getStatus() == HttpStatus.OK_200
-                || HttpStatus.isClientError(contentResponse.getStatus()))) {
-            try {
-                @Nullable
-                T response = gson.fromJson(contentResponse.getContentAsString(), responseType);
-                logger.debug("Unpacked Response: {}", response);
-                return response;
-            } catch (JsonSyntaxException e) {
-                logger.debug("Failed to unpack response as '{}': {}", responseType.getSimpleName(), e.getMessage());
-            }
-        }
+        String responseBody = sendRequest(request);
 
-        return null;
+        try {
+            T response = Objects.requireNonNull(gson.fromJson(responseBody, responseType));
+            logger.debug("Unpacked Response: {}", response);
+            return response;
+        } catch (JsonSyntaxException e) {
+            logger.debug("Failed to unpack response as '{}': {}", responseType.getSimpleName(), e.getMessage());
+            throw new PushbulletApiException(e);
+        }
     }
 
     /**
@@ -119,17 +121,15 @@ public class PushbulletHttpClient {
      *
      * @param url the upload url
      * @param data the file data
-     * @return true if response status code 204
+     * @throws PushbulletApiException
      */
-    public boolean uploadFile(String url, RawType data) {
+    public void uploadFile(String url, RawType data) throws PushbulletApiException {
         MultiPartContentProvider content = new MultiPartContentProvider();
         content.addFieldPart("file", new BytesContentProvider(data.getMimeType(), data.getBytes()), null);
 
         Request request = newRequest(url).method(HttpMethod.POST).content(content);
 
-        ContentResponse contentResponse = sendRequest(request);
-
-        return contentResponse != null && contentResponse.getStatus() == HttpStatus.NO_CONTENT_204;
+        sendRequest(request);
     }
 
     /**
@@ -146,21 +146,35 @@ public class PushbulletHttpClient {
      * Sends http request
      *
      * @param request the request to send
-     * @return the ContentResponse object if no exception, otherwise null
+     * @return the response body
+     * @throws PushbulletApiException
      */
-    private @Nullable ContentResponse sendRequest(Request request) {
+    private String sendRequest(Request request) throws PushbulletApiException {
         try {
             logger.debug("Request {} {}", request.getMethod(), request.getURI());
             logger.debug("Request Headers: {}", request.getHeaders());
 
             ContentResponse response = request.send();
 
-            logger.debug("Got HTTP {} Response: '{}'", response.getStatus(), response.getContentAsString());
+            int statusCode = response.getStatus();
+            String statusReason = response.getReason();
+            String responseBody = response.getContentAsString();
 
-            return response;
+            logger.debug("Got HTTP {} Response: '{}'", statusCode, responseBody);
+
+            switch (statusCode) {
+                case HttpStatus.OK_200:
+                case HttpStatus.NO_CONTENT_204:
+                    return responseBody;
+                case HttpStatus.UNAUTHORIZED_401:
+                case HttpStatus.FORBIDDEN_403:
+                    throw new PushbulletAuthenticationException(statusReason);
+                default:
+                    throw new PushbulletApiException(statusReason);
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.debug("Failed to send request: {}", e.getMessage());
-            return null;
+            throw new PushbulletApiException(e);
         }
     }
 }

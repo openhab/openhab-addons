@@ -33,7 +33,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pushbullet.internal.PushbulletConfiguration;
 import org.openhab.binding.pushbullet.internal.PushbulletHttpClient;
 import org.openhab.binding.pushbullet.internal.action.PushbulletActions;
-import org.openhab.binding.pushbullet.internal.model.Push;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletApiException;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletAuthenticationException;
+import org.openhab.binding.pushbullet.internal.model.PushRequest;
 import org.openhab.binding.pushbullet.internal.model.PushResponse;
 import org.openhab.binding.pushbullet.internal.model.PushType;
 import org.openhab.binding.pushbullet.internal.model.UploadRequest;
@@ -86,39 +88,42 @@ public class PushbulletHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-        PushbulletConfiguration config = getConfigAs(PushbulletConfiguration.class);
+        logger.debug("Starting {}", thing.getUID());
 
-        httpClient.setConfiguration(config);
+        PushbulletConfiguration config = getConfigAs(PushbulletConfiguration.class);
 
         if (config.getToken().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Undefined token.");
             return;
         }
 
-        User user = httpClient.executeRequest(API_ENDPOINT_USERS_ME, User.class);
-        if (user == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to query Pushbullet API.");
-            return;
-        }
+        httpClient.setConfiguration(config);
 
-        if (user.getPushError() != null) {
+        scheduler.execute(() -> retrieveAccountInfo());
+
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
+    }
+
+    private void retrieveAccountInfo() {
+        try {
+            User user = httpClient.executeRequest(API_ENDPOINT_USERS_ME, User.class);
+
+            maxUploadSize = Objects.requireNonNullElse(user.getMaxUploadSize(), MAX_UPLOAD_SIZE);
+
+            logger.debug("Set maximum upload size for {} to {} bytes", thing.getUID(), maxUploadSize);
+
+            updateProperty(PROPERTY_NAME, user.getName());
+            updateProperty(PROPERTY_EMAIL, user.getEmail());
+
+            logger.debug("Updated properties for {} to {}", thing.getUID(), thing.getProperties());
+
+            updateStatus(ThingStatus.ONLINE);
+        } catch (PushbulletAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid token.");
-            return;
+        } catch (PushbulletApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to retrieve account info.");
         }
-
-        maxUploadSize = Objects.requireNonNullElse(user.getMaxUploadSize(), MAX_UPLOAD_SIZE);
-
-        logger.debug("Set maximum upload size for {} to {} bytes", thing.getUID(), maxUploadSize);
-
-        updateProperty(PROPERTY_NAME, user.getName());
-        updateProperty(PROPERTY_EMAIL, user.getEmail());
-
-        logger.debug("Updated properties for {} to {}", thing.getUID(), thing.getProperties());
-
-        updateStatus(ThingStatus.ONLINE);
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
@@ -135,9 +140,9 @@ public class PushbulletHandler extends BaseThingHandler {
      * @return true if successful
      */
     public boolean sendPushNote(@Nullable String recipient, @Nullable String title, String message) {
-        Push push = newPushRequest(recipient, title, message, PushType.NOTE);
+        PushRequest request = newPushRequest(recipient, title, message, PushType.NOTE);
 
-        return sendPush(push);
+        return sendPush(request);
     }
 
     /**
@@ -151,10 +156,10 @@ public class PushbulletHandler extends BaseThingHandler {
      */
     public boolean sendPushLink(@Nullable String recipient, @Nullable String title, @Nullable String message,
             String url) {
-        Push push = newPushRequest(recipient, title, message, PushType.LINK);
-        push.setUrl(url);
+        PushRequest request = newPushRequest(recipient, title, message, PushType.LINK);
+        request.setUrl(url);
 
-        return sendPush(push);
+        return sendPush(request);
     }
 
     /**
@@ -174,27 +179,30 @@ public class PushbulletHandler extends BaseThingHandler {
             return false;
         }
 
-        Push push = newPushRequest(recipient, title, message, PushType.FILE);
-        push.setFileName(upload.getFileName());
-        push.setFileType(upload.getFileType());
-        push.setFileUrl(upload.getFileUrl());
+        PushRequest request = newPushRequest(recipient, title, message, PushType.FILE);
+        request.setFileName(upload.getFileName());
+        request.setFileType(upload.getFileType());
+        request.setFileUrl(upload.getFileUrl());
 
-        return sendPush(push);
+        return sendPush(request);
     }
 
     /**
      * Helper method to send a push request
      *
-     * @param push the push request
+     * @param request the push request
      * @return true if successful
      */
-    private boolean sendPush(Push push) {
+    private boolean sendPush(PushRequest request) {
         logger.debug("Sending push notification for {}", thing.getUID());
-        logger.debug("Push Request: {}", push);
+        logger.debug("Push Request: {}", request);
 
-        PushResponse response = httpClient.executeRequest(API_ENDPOINT_PUSHES, push, PushResponse.class);
-
-        return response != null && response.getPushError() == null;
+        try {
+            httpClient.executeRequest(API_ENDPOINT_PUSHES, request, PushResponse.class);
+            return true;
+        } catch (PushbulletApiException e) {
+            return false;
+        }
     }
 
     /**
@@ -219,23 +227,27 @@ public class PushbulletHandler extends BaseThingHandler {
             return null;
         }
 
-        UploadRequest request = new UploadRequest();
-        request.setFileName(fileName != null ? fileName : getContentFileName(content));
-        request.setFileType(data.getMimeType());
+        try {
+            UploadRequest request = new UploadRequest();
+            request.setFileName(fileName != null ? fileName : getContentFileName(content));
+            request.setFileType(data.getMimeType());
 
-        logger.debug("Upload Request: {}", request);
+            logger.debug("Upload Request: {}", request);
 
-        UploadResponse response = httpClient.executeRequest(API_ENDPOINT_UPLOAD_REQUEST, request, UploadResponse.class);
-        if (response == null || response.getPushError() != null) {
+            UploadResponse response = httpClient.executeRequest(API_ENDPOINT_UPLOAD_REQUEST, request,
+                    UploadResponse.class);
+
+            String uploadUrl = response.getUploadUrl();
+            if (uploadUrl == null) {
+                throw new PushbulletApiException("Undefined upload url");
+            }
+
+            httpClient.uploadFile(uploadUrl, data);
+
+            return response;
+        } catch (PushbulletApiException e) {
             return null;
         }
-
-        String uploadUrl = response.getUploadUrl();
-        if (uploadUrl == null || !httpClient.uploadFile(uploadUrl, data)) {
-            return null;
-        }
-
-        return response;
     }
 
     /**
@@ -293,32 +305,32 @@ public class PushbulletHandler extends BaseThingHandler {
      *
      * @return the push request object
      */
-    private Push newPushRequest(@Nullable String recipient, @Nullable String title, @Nullable String message,
+    private PushRequest newPushRequest(@Nullable String recipient, @Nullable String title, @Nullable String message,
             PushType type) {
         logger.debug("Recipient is '{}'", recipient);
         logger.debug("Title is     '{}'", title);
         logger.debug("Message is   '{}'", message);
         logger.debug("Type is      '{}'", type);
 
-        Push push = new Push();
-        push.setTitle(title);
-        push.setBody(message);
-        push.setType(type);
+        PushRequest request = new PushRequest();
+        request.setTitle(title);
+        request.setBody(message);
+        request.setType(type);
 
         if (recipient != null) {
             if (isValidEmail(recipient)) {
                 logger.debug("Recipient is an email address");
-                push.setEmail(recipient);
+                request.setEmail(recipient);
             } else if (isValidChannel(recipient)) {
                 logger.debug("Recipient is a channel tag");
-                push.setChannel(recipient);
+                request.setChannel(recipient);
             } else {
                 logger.warn("Invalid recipient: {}", recipient);
                 logger.warn("Message will be broadcast to all user's devices.");
             }
         }
 
-        return push;
+        return request;
     }
 
     /**

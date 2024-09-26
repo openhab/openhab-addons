@@ -65,11 +65,11 @@ The file content can be an image URL, a local file path or an Image item state.
 
 The file name is used in the upload link and how it appears in the push message for non-image content.
 If it is not specified, it is automatically determined from the image URL or file path.
-For Image item state content, it is always `image.jpg`.
+For Image item state content, it defaults to `image.jpg`.
 
-For the `sendPushbulletNote` action, parameter `message` is always required.
+For the `sendPushbulletNote` action, parameter `message` is required.
 Likewise, for `sendPushbulletLink`, `url` and for `sendPushbulletFile`, `content` parameters are required.
-Any other parameters for these actions are optional and can set to `null`.
+Any other parameters for these actions are optional and can be set to `null`.
 
 Examples:
 

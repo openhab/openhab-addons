@@ -37,9 +37,6 @@ public class UploadResponse {
     @SerializedName("upload_url")
     private @Nullable String uploadUrl;
 
-    @SerializedName("error")
-    private @Nullable PushError pushError;
-
     public @Nullable String getFileName() {
         return fileName;
     }
@@ -56,13 +53,9 @@ public class UploadResponse {
         return uploadUrl;
     }
 
-    public @Nullable PushError getPushError() {
-        return pushError;
-    }
-
     @Override
     public String toString() {
         return "UploadResponse {fileName='" + fileName + "', fileType='" + fileType + "', fileUrl='" + fileUrl
-                + "', uploadUrl='" + uploadUrl + "', pushError=" + pushError + "}";
+                + "', uploadUrl='" + uploadUrl + "'}";
     }
 }
