@@ -15,10 +15,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
@@ -26,6 +24,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComp
 import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.Gson;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
@@ -48,11 +47,9 @@ public class ComponentFactory {
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
             ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, TransformationServiceProvider transformationServiceProvider, boolean newStyleChannels)
-            throws ConfigurationException {
+            Gson gson, Jinjava jinjava, boolean newStyleChannels) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, updateListener, tracker, scheduler)
-                .transformationProvider(transformationServiceProvider);
+                channelConfigurationJSON, gson, jinjava, updateListener, tracker, scheduler);
         switch (haID.component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentConfiguration, newStyleChannels);
@@ -100,8 +97,8 @@ public class ComponentFactory {
         private final ChannelStateUpdateListener updateListener;
         private final AvailabilityTracker tracker;
         private final Gson gson;
+        private final Jinjava jinjava;
         private final ScheduledExecutorService scheduler;
-        private @Nullable TransformationServiceProvider transformationServiceProvider;
 
         /**
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
@@ -111,22 +108,17 @@ public class ComponentFactory {
          * @param configJSON The configuration string
          * @param gson A Gson instance
          */
-        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
+        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson, Jinjava jinjava,
                 ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
                 ScheduledExecutorService scheduler) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
+            this.jinjava = jinjava;
             this.updateListener = updateListener;
             this.tracker = tracker;
             this.scheduler = scheduler;
-        }
-
-        public ComponentConfiguration transformationProvider(
-                TransformationServiceProvider transformationServiceProvider) {
-            this.transformationServiceProvider = transformationServiceProvider;
-            return this;
         }
 
         public ThingUID getThingUID() {
@@ -145,13 +137,12 @@ public class ComponentFactory {
             return updateListener;
         }
 
-        @Nullable
-        public TransformationServiceProvider getTransformationServiceProvider() {
-            return transformationServiceProvider;
-        }
-
         public Gson getGson() {
             return gson;
+        }
+
+        public Jinjava getJinjava() {
+            return jinjava;
         }
 
         public AvailabilityTracker getTracker() {

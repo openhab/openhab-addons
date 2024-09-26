@@ -129,6 +129,7 @@ public class OnvifConnection {
     private String imagingXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String ptzXAddr = "http://" + ipAddress + "/onvif/ptz_service";
     public String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
+    public String subscriptionId = "";
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
     private String rtspUri = "";
@@ -340,7 +341,12 @@ public class OnvifConnection {
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
             supportsEvents = true;
             subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
-            logger.debug("subscriptionXAddr={}", subscriptionXAddr);
+            int start = message.indexOf("<dom0:SubscriptionId");
+            int end = message.indexOf("</dom0:SubscriptionId>");
+            if (start > -1 && end > start) {
+                subscriptionId = message.substring(start, end + 22);
+            }
+            logger.debug("subscriptionXAddr={} subscriptionId={}", subscriptionXAddr, subscriptionId);
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
@@ -532,7 +538,12 @@ public class OnvifConnection {
                     + encodeBase64(nonce)
                     + "</Nonce><Created xmlns=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\">"
                     + dateTime + "</Created></UsernameToken></Security>";
-            headers = "<s:Header>" + security + headerTo + "</s:Header>";
+
+            if (requestType.equals(RequestType.PullMessages) || requestType.equals(RequestType.Renew)) {
+                headers = "<s:Header>" + security + headerTo + subscriptionId + "</s:Header>";
+            } else {
+                headers = "<s:Header>" + security + headerTo + "</s:Header>";
+            }
         } else {// GetSystemDateAndTime must not be password protected as per spec.
             headers = "";
         }
@@ -667,10 +678,19 @@ public class OnvifConnection {
                     ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
                 }
                 break;
-            case "VideoSource/MotionAlarm":
-                if ("true".equals(dataValue)) {
+            case "VideoAnalytics/Motion":
+                if ("Trigger".equals(dataValue)) {
                     ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
-                } else if ("false".equals(dataValue)) {
+                } else if ("Normal".equals(dataValue)) {
+                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                }
+                break;
+            case "RuleEngine/tnsaxis:VMD3/vmd3_video_1":
+            case "RuleEngine/MotionRegionDetector/Motion":
+            case "VideoSource/MotionAlarm":
+                if ("true".equals(dataValue) || "1".equals(dataValue)) {
+                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                } else if ("false".equals(dataValue) || "0".equals(dataValue)) {
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 }
                 break;
@@ -702,10 +722,11 @@ public class OnvifConnection {
                     ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "Device/tnsaxis:HardwareFailure/StorageFailure":
             case "Device/HardwareFailure/StorageFailure":
-                if ("true".equals(dataValue)) {
+                if ("true".equals(dataValue) || "1".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
+                } else if ("false".equals(dataValue) || "0".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
                 }
                 break;
@@ -721,9 +742,9 @@ public class OnvifConnection {
             case "VideoSource/GlobalSceneChange/AnalyticsService":
             case "VideoSource/GlobalSceneChange/ImagingService":
             case "VideoSource/GlobalSceneChange/RecordingService":
-                if ("true".equals(dataValue)) {
+                if ("true".equals(dataValue) || "1".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
-                } else if ("false".equals(dataValue)) {
+                } else if ("false".equals(dataValue) || "0".equals(dataValue)) {
                     ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
                 }
                 break;

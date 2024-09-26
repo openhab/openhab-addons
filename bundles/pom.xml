@@ -83,6 +83,7 @@
     <module>org.openhab.binding.bluetooth.generic</module>
     <module>org.openhab.binding.bluetooth.govee</module>
     <module>org.openhab.binding.bluetooth.grundfosalpha</module>
+    <module>org.openhab.binding.bluetooth.hdpowerview</module>
     <module>org.openhab.binding.bluetooth.radoneye</module>
     <module>org.openhab.binding.bluetooth.roaming</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
@@ -145,8 +146,10 @@
     <module>org.openhab.binding.exec</module>
     <module>org.openhab.binding.feed</module>
     <module>org.openhab.binding.feican</module>
+    <module>org.openhab.binding.fenecon</module>
     <module>org.openhab.binding.fineoffsetweatherstation</module>
     <module>org.openhab.binding.flicbutton</module>
+    <module>org.openhab.binding.flume</module>
     <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
@@ -267,6 +270,7 @@
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
+    <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
@@ -284,7 +288,6 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.networkupstools</module>
     <module>org.openhab.binding.nibeheatpump</module>
-    <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.nobohub</module>
@@ -393,6 +396,7 @@
     <module>org.openhab.binding.speedtest</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.sunsynk</module>
     <module>org.openhab.binding.surepetcare</module>
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>
@@ -429,6 +433,7 @@
     <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vesync</module>
     <module>org.openhab.binding.vigicrues</module>
+    <module>org.openhab.binding.visualcrossing</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.vizio</module>
     <module>org.openhab.binding.volvooncall</module>

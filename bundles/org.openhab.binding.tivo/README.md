@@ -136,13 +136,13 @@ tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
 ```java
 /* TIVO */
 String      TiVo_Status         "Status"          {channel="tivo:sckt:Living_Room:dvrStatus"}
-String      TiVo_MenuScreen     "Menu Screen"     {channel="tivo:sckt:Living_Room:menuTeleport", autoupdate="false"}
+String      TiVo_MenuScreen     "Menu Screen"     {channel="tivo:sckt:Living_Room:menuTeleport"}
 Number      TiVo_SetChannel     "Current Channel" {channel="tivo:sckt:Living_Room:channelSet"}
 Number      TiVo_SetChannelName "Channel Name     [MAP(tivo.map):%s]" {channel="tivo:sckt:Living_Room:channelSet"}
 Number      TiVo_ForceChannel   "Force Channel"   {channel="tivo:sckt:Living_Room:channelForce"}
 Number      TiVo_Recording      "Recording        [MAP(tivo.map):rec-%s]" {channel="tivo:sckt:Living_Room:isRecording"}
-String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand", autoupdate="false"}
-String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand", autoupdate="false"}
+String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand"}
+String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand"}
 String      TiVo_KeyboardStr    "Search String"
 ```
 

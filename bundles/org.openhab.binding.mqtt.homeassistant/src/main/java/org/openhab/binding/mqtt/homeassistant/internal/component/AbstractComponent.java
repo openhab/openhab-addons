@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -50,6 +49,7 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
@@ -132,24 +132,27 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
+                List<String> availabilityTemplates = List.of();
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    availabilityTemplates = List.of(availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
-                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), availabilityTemplate,
-                        componentConfiguration.getTransformationServiceProvider());
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(),
+                        availabilityTemplates);
             }
         } else {
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
             if (availabilityTopic != null) {
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                List<String> availabilityTemplates = List.of();
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    availabilityTemplates = List.of(availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplate,
-                        componentConfiguration.getTransformationServiceProvider());
+                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplates);
             }
         }
     }
@@ -324,17 +327,16 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         return channelConfigurationJson;
     }
 
-    @Nullable
-    public TransformationServiceProvider getTransformationServiceProvider() {
-        return componentConfiguration.getTransformationServiceProvider();
-    }
-
     public boolean isEnabledByDefault() {
         return channelConfiguration.isEnabledByDefault();
     }
 
     public Gson getGson() {
         return componentConfiguration.getGson();
+    }
+
+    public Jinjava getJinjava() {
+        return componentConfiguration.getJinjava();
     }
 
     public C getChannelConfiguration() {

@@ -5,14 +5,37 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:basic-profiles:state-filter">
-		<parameter name="conditions" type="text" required="true">
+		<parameter name="conditions" type="text" required="true" multiple="true">
 			<label>Conditions</label>
-			<description>Comma separated list of expressions on the format ITEM_NAME OPERATOR ITEM_STATE, ie "MyItem EQ OFF". Use
-				quotes around ITEM_STATE to treat value as string ie "'OFF'".</description>
+			<description><![CDATA[List of expressions in the format [ITEM_NAME] OPERATOR VALUE_OR_ITEM_NAME, e.g. "MyItem == OFF".
+			Use quotes around VALUE_OR_ITEM_NAME to perform string comparison e.g. "'OFF'".
+				VALUE can be a DecimalType or a QuantityType with a unit.
+				When ITEM_NAME is omitted, the comparisons are done against the input state from the channel.
+				<br /><br />
+				Multiple conditions can be specified by writing each expression on a separate line, or
+				when specified in the same line, separated by the separator character (default: ",").
+				All the conditions are ANDed to determine the result.
+				<br /><br />
+				The following operators are supported:
+				<code>EQ</code> or <code>==</code>,
+				<code>NE</code>, <code>!=</code>, or <code>&lt;&gt;</code>,
+				<code>GT</code> or <code>&gt;</code>,
+				<code>GTE</code> or <code>&gt;=</code>,
+				<code>LT</code> or <code>&lt;</code>, and
+				<code>LTE</code> or <code>&lt;=</code>.
+				]]></description>
 		</parameter>
 		<parameter name="mismatchState" type="text">
 			<label>State for filter rejects</label>
-			<description>State to pass to item instead if conditions are NOT met. Use quotes to treat as `StringType`</description>
+			<description>State to pass to item instead if conditions are NOT met. Use quotes to treat as `StringType`. If
+				not
+				defined, the state update will not be passed to the item when conditions are not met.</description>
+		</parameter>
+		<parameter name="separator" type="text">
+			<advanced>true</advanced>
+			<label>Expression Separator</label>
+			<description>The character/string used to separate multiple conditions in a single line. Defaults to ",".</description>
+			<default>,</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

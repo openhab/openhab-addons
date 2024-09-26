@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.api.dto.Home;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.HomeEvent.NAEventsDataResponse;
@@ -81,19 +80,20 @@ public class SecurityApi extends RestManager {
         throw new NetatmoException("home should not be null");
     }
 
-    public List<HomeEvent> getHomeEvents(String homeId, @Nullable ZonedDateTime freshestEventTime)
-            throws NetatmoException {
+    public List<HomeEvent> getHomeEvents(String homeId, ZonedDateTime freshestEventTime) throws NetatmoException {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
-        // we have to rewind to the latest event just after oldestKnown
-        HomeEvent oldestRetrieved = events.get(events.size() - 1);
-        while (freshestEventTime != null && oldestRetrieved.getTime().isAfter(freshestEventTime)) {
-            events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
-            oldestRetrieved = events.get(events.size() - 1);
+        // we have to rewind to the latest event just after freshestEventTime
+        if (events.size() > 0) {
+            HomeEvent oldestRetrieved = events.get(events.size() - 1);
+            while (oldestRetrieved.getTime().isAfter(freshestEventTime)) {
+                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
+                oldestRetrieved = events.get(events.size() - 1);
+            }
         }
 
-        // Remove unneeded events being before oldestKnown
-        return events.stream().filter(event -> freshestEventTime == null || event.getTime().isAfter(freshestEventTime))
+        // Remove unneeded events being before freshestEventTime
+        return events.stream().filter(event -> event.getTime().isAfter(freshestEventTime))
                 .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
     }
 
@@ -124,12 +124,6 @@ public class SecurityApi extends RestManager {
     public void changeFloodLightMode(String homeId, String cameraId, FloodLightMode mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
         String payload = PAYLOAD_FLOODLIGHT.formatted(homeId, cameraId, mode.name().toLowerCase());
-        post(uriBuilder, ApiResponse.Ok.class, payload);
-    }
-
-    public void changeSirenStatus(String homeId, String moduleId, SirenStatus status) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(PATH_STATE);
-        String payload = PAYLOAD_SIREN_PRESENCE.formatted(homeId, moduleId, status.name().toLowerCase());
         post(uriBuilder, ApiResponse.Ok.class, payload);
     }
 
