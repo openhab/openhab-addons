@@ -18,7 +18,6 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -129,8 +128,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-
-        requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+        this.requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
@@ -139,15 +137,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         ApiHandlerConfiguration configuration = getConfiguration();
 
-        if (configuration.clientId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_ID.message);
-            return;
-        }
-
-        if (configuration.clientSecret.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    ConfigurationLevel.EMPTY_CLIENT_SECRET.message);
+        ConfigurationLevel confLevel = configuration.check();
+        if (!ConfigurationLevel.COMPLETED.equals(confLevel)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confLevel.message);
             return;
         }
 
@@ -171,15 +163,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connected to Netatmo API.");
 
         ApiHandlerConfiguration configuration = getConfiguration();
-        if (!configuration.webHookUrl.isBlank()) {
-            SecurityApi securityApi = getRestManager(SecurityApi.class);
-            if (securityApi != null) {
-                webHookServlet.ifPresent(servlet -> servlet.dispose());
-                WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
-                        configuration.webHookUrl, configuration.webHookPostfix);
-                servlet.startListening();
-                this.webHookServlet = Optional.of(servlet);
-            }
+        if (!configuration.webHookUrl.isBlank()
+                && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
+            webHookServlet.ifPresent(servlet -> servlet.dispose());
+            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+                    configuration.webHookUrl, configuration.webHookPostfix);
+            servlet.startListening();
+            this.webHookServlet = Optional.of(servlet);
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -198,8 +188,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponseByAuthorizationCode(code, redirectUri);
 
                 // Dispose grant servlet upon completion of authorization flow.
-                grantServlet.ifPresent(servlet -> servlet.dispose());
-                grantServlet = Optional.empty();
+                freeGrantServlet();
             } else {
                 accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             }
@@ -237,7 +226,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
             @Nullable String redirectUri) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
         connectApi.dispose();
         freeConnectJob();
         connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
@@ -249,6 +240,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         connectJob = Optional.empty();
     }
 
+    private void freeGrantServlet() {
+        grantServlet.ifPresent(servlet -> servlet.dispose());
+        grantServlet = Optional.empty();
+    }
+
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
@@ -256,8 +252,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         webHookServlet.ifPresent(servlet -> servlet.dispose());
         webHookServlet = Optional.empty();
 
-        grantServlet.ifPresent(servlet -> servlet.dispose());
-        grantServlet = Optional.empty();
+        freeGrantServlet();
 
         connectApi.dispose();
         freeConnectJob();
@@ -282,13 +277,12 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     public <T extends RestManager> @Nullable T getRestManager(Class<T> clazz) {
         if (!managers.containsKey(clazz)) {
             try {
-                Constructor<T> constructor = clazz.getConstructor(getClass());
-                T instance = constructor.newInstance(this);
+                T instance = clazz.getConstructor(getClass()).newInstance(this);
                 Set<Scope> expected = instance.getRequiredScopes();
                 if (connectApi.matchesScopes(expected)) {
                     managers.put(clazz, instance);
                 } else {
-                    logger.info("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
+                    logger.warn("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
                 logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
@@ -305,7 +299,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
 
             if (!authenticate(null, null)) {
-                prepareReconnection(getConfiguration().reconnectInterval, null, null, "@text/status-bridge-offline");
+                prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
@@ -373,7 +367,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 >>>>>>> 41c5ca0 Enhance API limit reached handling
             }
             throw exception;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            throw new NetatmoException(e, "Request interrupted");
+        } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
                 logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
