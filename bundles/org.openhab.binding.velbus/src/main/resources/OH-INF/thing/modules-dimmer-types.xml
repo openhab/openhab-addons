@@ -64,7 +64,6 @@
 			<channel-group id="brightness" typeId="4channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="4channelFadeModule"/>
 			<channel-group id="scene" typeId="4channelSceneModule"/>
-			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:velbus:4channelDevice"/>
@@ -82,7 +81,6 @@
 			<channel-group id="brightness" typeId="8channelBrightnessModule"/>
 			<channel-group id="fade-mode" typeId="8channelFadeModule"/>
 			<channel-group id="scene" typeId="8channelSceneModule"/>
-			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
