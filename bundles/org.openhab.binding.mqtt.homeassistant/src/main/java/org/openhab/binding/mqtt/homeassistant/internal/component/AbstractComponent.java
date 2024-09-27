@@ -31,6 +31,7 @@ import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConsta
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
@@ -40,6 +41,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -60,7 +62,6 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
-    private static final String JINJA_PREFIX = "JINJA:";
 
     // Component location fields
     protected final ComponentConfiguration componentConfiguration;
@@ -132,27 +133,24 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
-                List<String> availabilityTemplates = List.of();
+                ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
-                    availabilityTemplates = List.of(availabilityTemplate);
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
-                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(),
-                        availabilityTemplates);
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), transformation);
             }
         } else {
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
             if (availabilityTopic != null) {
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
-                List<String> availabilityTemplates = List.of();
+                ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
-                    availabilityTemplates = List.of(availabilityTemplate);
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplates);
+                        this.channelConfiguration.getPayloadNotAvailable(), transformation);
             }
         }
     }

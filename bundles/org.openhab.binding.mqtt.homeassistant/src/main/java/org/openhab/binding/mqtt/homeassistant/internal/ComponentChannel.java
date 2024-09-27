@@ -57,8 +57,6 @@ import org.openhab.core.types.StateDescription;
  */
 @NonNullByDefault
 public class ComponentChannel {
-    private static final String JINJA = "JINJA";
-
     private final ChannelState channelState;
     private final Channel channel;
     private final @Nullable StateDescription stateDescription;
