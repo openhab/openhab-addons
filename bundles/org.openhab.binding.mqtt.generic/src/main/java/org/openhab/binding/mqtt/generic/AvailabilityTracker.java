@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.mqtt.generic;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 
 /**
  * Interface to keep track of the availability of device using an availability topic or messages received
@@ -71,11 +71,11 @@ public interface AvailabilityTracker {
      * @param availability_topic The MQTT topic where availability is published to.
      * @param payload_available The value for the topic to indicate the device is online.
      * @param payload_not_available The value for the topic to indicate the device is offline.
-     * @param transformation_pattern A transformation pattern to process the value before comparing to
+     * @param transformation A transformation to process the value before comparing to
      *            payload_available/payload_not_available.
      */
     void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            List<String> transformation_pattern);
+            @Nullable ChannelTransformation transformation);
 
     void removeAvailabilityTopic(String availability_topic);
 

@@ -13,7 +13,6 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -40,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -302,19 +302,17 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
-        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, List.of());
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null);
     }
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            List<String> transformation_pattern) {
+            @Nullable ChannelTransformation transformation) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
-            ChannelState state = new ChannelState(
-                    ChannelConfigBuilder.create().withStateTopic(topic)
-                            .withTransformationPattern(transformation_pattern).build(),
+            ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
                     channelUID, value, new ChannelStateUpdateListener() {
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
@@ -329,7 +327,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         @Override
                         public void postChannelCommand(ChannelUID channelUID, Command value) {
                         }
-                    });
+                    }, transformation, null);
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
                 state.start(connection, scheduler, 0);

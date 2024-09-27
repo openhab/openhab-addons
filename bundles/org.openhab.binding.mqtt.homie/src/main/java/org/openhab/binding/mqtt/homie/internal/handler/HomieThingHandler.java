@@ -44,6 +44,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingType;
@@ -326,5 +327,12 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
 
         return device.nodes.keySet();
+    }
+
+    // This odd method resolves a compilation issue (possibly with Mockito?) where for some reason
+    // it doesn't realize it needs to import this class which is used by AvailabilityTracker, but
+    // not directly from this bundle
+    // See https://github.com/openhab/openhab-addons/pull/17400
+    private void doNothing(ChannelTransformation transform) {
     }
 }
