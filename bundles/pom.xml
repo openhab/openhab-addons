@@ -246,8 +246,8 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
-    <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
+    <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>
