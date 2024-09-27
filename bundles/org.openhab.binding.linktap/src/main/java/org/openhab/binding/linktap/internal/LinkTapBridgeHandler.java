@@ -131,6 +131,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
+        TransactionProcessor.getInstance().setTranslationProviderInfo(translationProvider, localeProvider, bundle);
     }
 
     public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
@@ -400,7 +401,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 try {
                     socket.connect(new InetSocketAddress(hostname, 80), 1500);
                 } catch (IOException e) {
-                    logger.warn("{}", (getLocalizedText("warning.failed-local-address-detection", e.getMessage())));
+                    logger.warn("{}", getLocalizedText("warning.failed-local-address-detection", e.getMessage()));
                     throw new TransientCommunicationIssueException("Local address lookup failure");
                 }
                 localServerAddr = socket.getLocalAddress().getHostAddress();

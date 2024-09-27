@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +38,10 @@ import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException;
 import org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException;
 import org.openhab.binding.linktap.protocol.http.WebServerApi;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingStatus;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +61,27 @@ public final class TransactionProcessor {
     // As the Gateway is an embedded device,
 
     private static final TransactionProcessor INSTANCE = new TransactionProcessor();
+
+    private @Nullable TranslationProvider translationProvider;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable Bundle bundle;
+
+    public void setTranslationProviderInfo(TranslationProvider translationProvider, LocaleProvider localeProvider,
+            Bundle bundle) {
+        this.bundle = bundle;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        TranslationProvider translationProv = translationProvider;
+        LocaleProvider localeProv = localeProvider;
+        if (translationProv == null || localeProv == null) {
+            return key;
+        }
+        String result = translationProv.getText(bundle, key, key, localeProv.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
+    }
 
     private static final WebServerApi API = WebServerApi.getInstance();
 
@@ -78,7 +103,7 @@ public final class TransactionProcessor {
         try {
             processGw(sourceHost, command, payload);
         } catch (CommandNotSupportedException cnse) {
-            logger.warn("Raise Bug Report: Command {} not supported by gateway", command);
+            logger.warn("{}", getLocalizedText("bug-report.gw-unsupported-command", command));
         }
         logger.debug("{} = GW -> APP Response {} -> Payload {}", uid, payload, response);
         return response;
@@ -166,7 +191,7 @@ public final class TransactionProcessor {
                 break;
             }
             default:
-                logger.warn("Unexpected response frame {} -> {}", command, payload);
+                logger.warn("{}", getLocalizedText("warning.unexpected-response-frame", command, payload));
         }
         return response;
     }
@@ -217,7 +242,8 @@ public final class TransactionProcessor {
 
             if (!(request.command == CMD_UPDATE_WATER_TIMER_STATUS && gatewayFrame.command == -1)
                     && request.command != gatewayFrame.command) {
-                logger.warn("Unexpected response from GW (CMD {} != {}", request.command, gatewayFrame.command);
+                logger.warn("{}",
+                        getLocalizedText("warning.incorrect-cmd-resp", request.command, gatewayFrame.command));
                 throw new TransientCommunicationIssueException("Unexpected communication failure");
             }
 
@@ -267,7 +293,7 @@ public final class TransactionProcessor {
                             break;
                         case INVALID:
                         default:
-                            logger.warn("Unexpected command result");
+                            logger.warn("{}", getLocalizedText("warning.unexpected-cmd-result"));
                     }
                     break;
                 case DEFAULT_INT:
@@ -275,13 +301,14 @@ public final class TransactionProcessor {
                         return response;
                     }
                 default:
-                    logger.warn("Unexpected response frame {} -> {}", gatewayFrame.command, GSON.toJson(request));
+                    logger.warn("{}", getLocalizedText("warning.unexpected-response-frame", gatewayFrame.command,
+                            GSON.toJson(request)));
                     return "";
             }
 
             return response;
         } catch (NotTapLinkGatewayException e) {
-            logger.warn("Communicating with non TapLink Gateway detected");
+            logger.warn("{}", getLocalizedText("warning.non-gw"));
         } catch (UnknownHostException e) {
             throw new TransientCommunicationIssueException("Unknown host");
         }
