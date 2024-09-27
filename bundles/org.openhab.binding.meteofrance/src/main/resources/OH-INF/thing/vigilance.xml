@@ -58,10 +58,6 @@
 			</channel>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
-
 		<representation-property>department</representation-property>
 
 		<config-description>

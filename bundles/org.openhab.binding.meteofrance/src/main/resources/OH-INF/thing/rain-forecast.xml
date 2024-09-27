@@ -16,10 +16,6 @@
 			<channel id="intensity" typeId="rain-intensity"/>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
-
 		<representation-property>location</representation-property>
 
 		<config-description>

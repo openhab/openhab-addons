@@ -82,14 +82,15 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         updateStatus(ThingStatus.UNKNOWN);
 
         ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
-        try {
-            PointType point = new PointType(config.location);
 
-            this.location = Optional.of(point);
-            this.refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, 2, TimeUnit.SECONDS));
+        try {
+            this.location = Optional.of(new PointType(config.location));
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect 'location' value.");
+            return;
         }
+
+        this.refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, 2, TimeUnit.SECONDS));
     }
 
     private void disposeJob() {

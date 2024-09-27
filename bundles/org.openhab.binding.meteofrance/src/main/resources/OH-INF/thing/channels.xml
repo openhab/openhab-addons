@@ -22,7 +22,7 @@
 	<channel-type id="vent">
 		<item-type>Number</item-type>
 		<label>Wind</label>
-		<description>Wind Event Alert Level</description>
+		<description>Wind event alert level</description>
 		<category>oh:meteofrance:vent</category>
 		<state readOnly="true">
 			<options>
@@ -37,7 +37,7 @@
 	<channel-type id="orage">
 		<item-type>Number</item-type>
 		<label>Storm</label>
-		<description>Storm Alert Level</description>
+		<description>Storm alert level</description>
 		<category>oh:meteofrance:orage</category>
 		<state readOnly="true">
 			<options>
@@ -52,7 +52,7 @@
 	<channel-type id="inondation">
 		<item-type>Number</item-type>
 		<label>Flood</label>
-		<description>Flood Alert Level</description>
+		<description>Flood alert level</description>
 		<category>oh:meteofrance:inondation</category>
 		<state readOnly="true">
 			<options>
@@ -67,7 +67,7 @@
 	<channel-type id="neige">
 		<item-type>Number</item-type>
 		<label>Snow</label>
-		<description>Snow Event Alert Level</description>
+		<description>Snow event alert level</description>
 		<category>oh:meteofrance:neige</category>
 		<state readOnly="true">
 			<options>
@@ -82,7 +82,7 @@
 	<channel-type id="canicule">
 		<item-type>Number</item-type>
 		<label>Heat Wave</label>
-		<description>High Temperature Alert Level</description>
+		<description>High temperature alert level</description>
 		<category>oh:meteofrance:canicule</category>
 		<state readOnly="true">
 			<options>
@@ -97,7 +97,7 @@
 	<channel-type id="grand-froid">
 		<item-type>Number</item-type>
 		<label>Extreme Cold</label>
-		<description>Negative Temperature Alert Level</description>
+		<description>Negative temperature alert level</description>
 		<category>oh:meteofrance:grand-froid</category>
 		<state readOnly="true">
 			<options>
@@ -112,7 +112,7 @@
 	<channel-type id="avalanches">
 		<item-type>Number</item-type>
 		<label>Avalanches</label>
-		<description>Avalanche Alert Level</description>
+		<description>Avalanche alert level</description>
 		<category>oh:meteofrance:avalanches</category>
 		<state readOnly="true">
 			<options>
@@ -127,7 +127,7 @@
 	<channel-type id="vague-submersion">
 		<item-type>Number</item-type>
 		<label>Wave Submersion</label>
-		<description>Submersion Wave Alert Level</description>
+		<description>Submersion wave alert level</description>
 		<category>oh:meteofrance:vague-submersion</category>
 		<state readOnly="true">
 			<options>
@@ -142,7 +142,7 @@
 	<channel-type id="pluie-inondation">
 		<item-type>Number</item-type>
 		<label>Rain Flood</label>
-		<description>Flood Alert Level Caused by Rainfall</description>
+		<description>Flood caused by rainfall alert level</description>
 		<category>oh:meteofrance:pluie-inondation</category>
 		<state readOnly="true">
 			<options>
