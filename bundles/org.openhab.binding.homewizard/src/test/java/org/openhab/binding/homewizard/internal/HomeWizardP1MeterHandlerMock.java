@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 
+import java.time.ZoneId;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -33,8 +34,8 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class HomeWizardP1MeterHandlerMock extends HomeWizardP1MeterHandler {
 
-    public HomeWizardP1MeterHandlerMock(Thing thing) {
-        super(thing);
+    public HomeWizardP1MeterHandlerMock(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
 
         executorService = Mockito.mock(ScheduledExecutorService.class);
         doAnswer((InvocationOnMock invocation) -> {

@@ -76,7 +76,7 @@ public class HomeWizardP1MeterHandlerTest {
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L1), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L2), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ANY_POWER_FAILURES), //
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_POWER_FAILURES), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT_T1), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT_T2), //
@@ -97,7 +97,8 @@ public class HomeWizardP1MeterHandlerTest {
 
     private static HomeWizardP1MeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
-        final HomeWizardP1MeterHandlerMock handler = spy(new HomeWizardP1MeterHandlerMock(thing));
+        final HomeWizardP1MeterHandlerMock handler = spy(
+                new HomeWizardP1MeterHandlerMock(thing, ZoneId.systemDefault()));
 
         try {
             doReturn(DataUtil.fromFile("response.json")).when(handler).getData();
@@ -181,7 +182,7 @@ public class HomeWizardP1MeterHandlerTest {
                     new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT_T2),
                     getState(2948.827, Units.KILOWATT_HOUR));
             verify(callback).stateUpdated(
-                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_ANY_POWER_FAILURES), getState(7));
+                    new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_POWER_FAILURES), getState(7));
             verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES),
                     getState(2));

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homewizard.internal.handler;
 
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,14 +38,17 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
 
     private String meterModel = "";
     private int meterVersion = 0;
+    private ZoneId zoneId;
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
+     * @param zoneId The time zone id
      */
-    public HomeWizardP1MeterHandler(Thing thing) {
+    public HomeWizardP1MeterHandler(Thing thing, ZoneId zoneId) {
         super(thing);
+        this.zoneId = zoneId;
     }
 
     /**
@@ -88,7 +93,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
-        updateState(HomeWizardBindingConstants.CHANNEL_ANY_POWER_FAILURES,
+        updateState(HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,
                 new DecimalType(payload.getAnyPowerFailCount()));
         updateState(HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
                 new DecimalType(payload.getLongPowerFailCount()));
@@ -111,7 +116,13 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L3,
                 new QuantityType<>(payload.getActiveVoltageL3(), Units.VOLT));
 
-        ZonedDateTime gasTimestamp = payload.getGasTimestamp();
+        ZonedDateTime gasTimestamp;
+        try {
+            gasTimestamp = payload.getGasTimestamp(zoneId);
+        } catch (DateTimeException e) {
+            logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
+            gasTimestamp = null;
+        }
         if (gasTimestamp != null) {
             updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
                     new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));

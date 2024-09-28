@@ -15,6 +15,7 @@ package org.openhab.binding.homewizard.internal.handler;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +40,8 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterH
      *
      * @param thing The thing to handle
      */
-    public HomeWizardStatefulDeviceHandler(Thing thing) {
-        super(thing);
+    public HomeWizardStatefulDeviceHandler(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
     }
 
     /**

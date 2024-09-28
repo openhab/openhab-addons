@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -290,10 +289,13 @@ public class DataPayload {
 
     /**
      * Getter for the time stamp of the last gas update
-     *
+     * 
+     * @param zoneId The time zone id for the return value, falls back to systemDefault() when null
      * @return time stamp of the last gas update as ZonedDateTime
+     * @throws DateTimeException When the method fails to create a ZonedDateTime
      */
-    public @Nullable ZonedDateTime getGasTimestamp() {
+    public @Nullable ZonedDateTime getGasTimestamp(@Nullable ZoneId zoneId) throws DateTimeException {
+        ZoneId timeZoneId = zoneId == null ? ZoneId.systemDefault() : zoneId;
         long dtv = gasTimestamp;
         if (dtv < 1) {
             return null;
@@ -317,12 +319,7 @@ public class DataPayload {
         dtv /= 100;
         int year = (int) (dtv + 2000);
 
-        try {
-            return ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault());
-        } catch (DateTimeException e) {
-            LoggerFactory.getLogger(DataPayload.class).warn("Unable to parse Gas timestamp: {}", gasTimestamp);
-        }
-        return null;
+        return ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, timeZoneId);
     }
 
     /**

@@ -44,7 +44,7 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_ACTIVE_VOLTAGE_L1 = "active_voltage_l1";
     public static final String CHANNEL_ACTIVE_VOLTAGE_L2 = "active_voltage_l2";
     public static final String CHANNEL_ACTIVE_VOLTAGE_L3 = "active_voltage_l3";
-    public static final String CHANNEL_ANY_POWER_FAILURES = "any_power_failures";
+    public static final String CHANNEL_POWER_FAILURES = "power_failures";
     public static final String CHANNEL_LONG_POWER_FAILURES = "long_power_failures";
     public static final String CHANNEL_ENERGY_IMPORT_T1 = "total_energy_import_t1";
     public static final String CHANNEL_ENERGY_IMPORT_T2 = "total_energy_import_t2";

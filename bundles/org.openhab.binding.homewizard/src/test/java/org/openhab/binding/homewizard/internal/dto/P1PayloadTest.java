@@ -57,7 +57,8 @@ public class P1PayloadTest {
         assertThat(key.getTotalEnergyImportT2Kwh(), is(2948.827));
         assertThat(key.getAnyPowerFailCount(), is(7));
         assertThat(key.getLongPowerFailCount(), is(2));
-        assertThat(key.getGasTimestamp(), is(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
+        assertThat(key.getGasTimestamp(ZoneId.systemDefault()),
+                is(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
         assertThat(key.getTotalGasM3(), is(2569.646));
 
         assertThat(key.getMeterModel(), is("ISKRA  2M550T-101"));
@@ -89,7 +90,7 @@ public class P1PayloadTest {
         assertThat(key.getTotalEnergyExportT2Kwh(), is(0.0));
         assertThat(key.getTotalEnergyImportT1Kwh(), is(0.0));
         assertThat(key.getTotalEnergyImportT2Kwh(), is(0.0));
-        assertThat(key.getGasTimestamp(), is(nullValue()));
+        assertThat(key.getGasTimestamp(ZoneId.systemDefault()), is(nullValue()));
         assertThat(key.getTotalGasM3(), is(0.0));
 
         assertThat(key.getMeterModel(), is(""));

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homewizard.internal.handler;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.dto.DataPayload;
@@ -38,8 +40,8 @@ public class HomeWizardEnergySocketHandler extends HomeWizardStatefulDeviceHandl
      *
      * @param thing The thing to handle
      */
-    public HomeWizardEnergySocketHandler(Thing thing) {
-        super(thing);
+    public HomeWizardEnergySocketHandler(Thing thing, ZoneId zoneId) {
+        super(thing, zoneId);
     }
 
     /**
