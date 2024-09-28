@@ -346,8 +346,11 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             return respData;
         } catch (NotTapLinkGatewayException e) {
             logger.warn("{}", getLocalizedText("warning.not-taplink-gw", uid, host));
-        } catch (UnknownHostException | TransientCommunicationIssueException e) {
+        } catch (UnknownHostException e) {
             logger.warn("{}", getLocalizedText("warning.comms-issue-auto-retry", uid, e.getMessage()));
+            scheduleReconnect();
+        } catch (TransientCommunicationIssueException e) {
+            logger.warn("{}", getLocalizedText("warning.comms-issue-auto-retry", uid, getLocalizedText(e.getI18Key())));
             scheduleReconnect();
         }
         return "";
@@ -403,7 +406,8 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                     socket.connect(new InetSocketAddress(hostname, 80), 1500);
                 } catch (IOException e) {
                     logger.warn("{}", getLocalizedText("warning.failed-local-address-detection", e.getMessage()));
-                    throw new TransientCommunicationIssueException("Local address lookup failure");
+                    throw new TransientCommunicationIssueException("Local address lookup failure",
+                            "exception.local-addr-lookup-failure");
                 }
                 localServerAddr = socket.getLocalAddress().getHostAddress();
                 logger.trace("Local address for connectivity is {}", socket.getLocalAddress().getHostAddress());

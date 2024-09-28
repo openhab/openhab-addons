@@ -237,14 +237,16 @@ public final class TransactionProcessor {
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
 
             if (gatewayFrame == null) {
-                throw new TransientCommunicationIssueException("Unexpected communication failure");
+                throw new TransientCommunicationIssueException(
+                        TransientCommunicationIssueException.TransientExecptionDefinitions.COMMUNICATIONS_LOST);
             }
 
             if (!(request.command == CMD_UPDATE_WATER_TIMER_STATUS && gatewayFrame.command == -1)
                     && request.command != gatewayFrame.command) {
                 logger.warn("{}",
                         getLocalizedText("warning.incorrect-cmd-resp", request.command, gatewayFrame.command));
-                throw new TransientCommunicationIssueException("Unexpected communication failure");
+                throw new TransientCommunicationIssueException(
+                        TransientCommunicationIssueException.TransientExecptionDefinitions.COMMUNICATIONS_LOST);
             }
 
             final ResultStatus rs = gatewayFrame.getRes();
@@ -310,7 +312,8 @@ public final class TransactionProcessor {
         } catch (NotTapLinkGatewayException e) {
             logger.warn("{}", getLocalizedText("warning.non-gw"));
         } catch (UnknownHostException e) {
-            throw new TransientCommunicationIssueException("Unknown host");
+            throw new TransientCommunicationIssueException(
+                    TransientCommunicationIssueException.TransientExecptionDefinitions.HOST_NOT_RESOLVED);
         }
         return "";
     }

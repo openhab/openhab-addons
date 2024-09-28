@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class TransientCommunicationIssueException extends Exception {
+public class TransientCommunicationIssueException extends I18Exception {
     @Serial
     private static final long serialVersionUID = -7786449325604143287L;
 
@@ -31,8 +31,13 @@ public class TransientCommunicationIssueException extends Exception {
         super();
     }
 
-    public TransientCommunicationIssueException(final String message) {
+    public TransientCommunicationIssueException(final String message, final String i18key) {
         super(message);
+        this.i18Key = i18key;
+    }
+
+    public TransientCommunicationIssueException(final TransientExecptionDefinitions definition) {
+        this(definition.description, definition.i18Key);
     }
 
     public TransientCommunicationIssueException(final Throwable cause) {
@@ -43,7 +48,46 @@ public class TransientCommunicationIssueException extends Exception {
         super(message, cause);
     }
 
-    public static final String HOST_UNREACHABLE = "Could not connect";
-    public static final String HOST_NOT_RESOLVED = "Could not resolve IP address";
-    public static final String HOST_COMM_TIMEOUT = "Communications Lost";
+    public enum TransientExecptionDefinitions {
+
+        /**
+         * HOST_UNREACHABLE
+         */
+        HOST_UNREACHABLE("Could not connect", "exception.could-not-connect"),
+
+        /**
+         * HOST_NOT_RESOLVED
+         */
+        HOST_NOT_RESOLVED("Could not resolve IP address", "exception.could-not-resolve"),
+
+        /**
+         * COMMUNICATIONS_LOST
+         */
+        COMMUNICATIONS_LOST("Communications Lost", "exception.communications-lost");
+
+        private final String description;
+        private final String i18Key;
+
+        private TransientExecptionDefinitions(final String description, final String i18key) {
+            this.description = description;
+            this.i18Key = i18key;
+        }
+
+        public String getI18Key() {
+            return i18Key;
+        }
+
+        public String getDesc() {
+            return description;
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
+
+    public String getI18Key() {
+        return getI18Key("exception.gw-id-exception");
+    }
 }
