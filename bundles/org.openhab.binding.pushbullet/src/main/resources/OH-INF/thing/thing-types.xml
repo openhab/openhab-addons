@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="bot">
-		<label>@text/thing-type.pushbullet.bot.label</label>
-		<description>@text/thing-type.pushbullet.bot.description</description>
+		<label>Pushbullet Bot</label>
+		<description>Bot to send messages with.</description>
 
 		<channels>
 			<channel id="recipient" typeId="recipient-channel"/>
@@ -16,19 +16,19 @@
 
 		<config-description>
 			<parameter name="name" type="text" required="false">
-				<label>@text/thing-type.config.pushbullet.bot.name.label</label>
-				<description>@text/thing-type.config.pushbullet.bot.name.description</description>
+				<label>Name</label>
+				<description>Explicit Name of Bot, if wanted</description>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="token" type="text" required="true">
-				<label>@text/thing-type.config.pushbullet.bot.token.label</label>
-				<description>@text/thing-type.config.pushbullet.bot.token.description</description>
+				<label>Access Token</label>
+				<description>Access token obtained from the account settings page</description>
 			</parameter>
 
 			<parameter name="apiUrlBase" type="text" required="true">
-				<label>@text/thing-type.config.pushbullet.bot.apiUrlBase.label</label>
-				<description>@text/thing-type.config.pushbullet.bot.apiUrlBase.description</description>
+				<label>API Server</label>
+				<description>The Pushbullet API Server to use, for local testing</description>
 				<default>https://api.pushbullet.com/v2</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -39,20 +39,20 @@
 
 	<channel-type id="recipient-channel">
 		<item-type>String</item-type>
-		<label>@text/channel-type.pushbullet.recipient-channel.label</label>
-		<description>@text/channel-type.pushbullet.recipient-channel.description</description>
+		<label>Recipient</label>
+		<description>Mail address or Channel Name</description>
 	</channel-type>
 
 	<channel-type id="title-channel">
 		<item-type>String</item-type>
-		<label>@text/channel-type.pushbullet.title-channel.label</label>
-		<description>@text/channel-type.pushbullet.title-channel.description</description>
+		<label>Title</label>
+		<description>Title of the message</description>
 	</channel-type>
 
 	<channel-type id="message-channel">
 		<item-type>String</item-type>
-		<label>@text/channel-type.pushbullet.message-channel.label</label>
-		<description>@text/channel-type.pushbullet.message-channel.description</description>
+		<label>Message</label>
+		<description>The text that is to be sent</description>
 	</channel-type>
 
 </thing:thing-descriptions>
