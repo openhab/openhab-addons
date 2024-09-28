@@ -43,4 +43,18 @@ public final class Utils {
         }
         return stBldr.toString();
     }
+
+    public static String getMessage(final Throwable t) {
+        final String localizedMsg = t.getLocalizedMessage();
+        if (localizedMsg != null) {
+            if (!localizedMsg.isBlank()) {
+                return localizedMsg;
+            }
+        }
+        final String msg = t.getMessage();
+        if (msg != null) {
+            return msg;
+        }
+        return t.getClass().getName();
+    }
 }

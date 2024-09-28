@@ -13,7 +13,7 @@
 package org.openhab.binding.linktap.protocol.http;
 
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
-import static org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException.*;
+import static org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException.NotTapLinkGatewapExecptionDefinitions.*;
 import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.*;
 
 import java.net.HttpURLConnection;
@@ -49,6 +49,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openhab.binding.linktap.internal.Firmware;
+import org.openhab.binding.linktap.internal.Utils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
@@ -152,7 +153,7 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                logger.warn("ExecutionException -> {}", e.getMessage());
+                logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
         }
@@ -443,7 +444,7 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                logger.warn("ExecutionException -> {}", e.getMessage());
+                logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
         }
@@ -476,7 +477,7 @@ public final class WebServerApi {
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                logger.warn("ExecutionException -> {}", e.getMessage());
+                logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
             throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
         }
