@@ -350,7 +350,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         // for the older pre-X2 devices (i.e. the UVR 1611) we get a comma. So we
                         // we replace all ',' with '.' to check if it's a valid number...
                         String val = valParts[0].replace(',', '.');
-                        BigDecimal bd = new BigDecimal(val);
+                        float bd = Float.parseFloat(val);
                         if (valParts.length == 2) {
                             if ("°C".equals(valParts[1])) {
                                 channelType = "Number:Temperature";
@@ -374,15 +374,14 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                                 state = new QuantityType<>(bd, Units.HERTZ);
                             } else if ("kW".equals(valParts[1])) {
                                 channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
+                                bd = bd *= 1000;
                                 state = new QuantityType<>(bd, Units.WATT);
                             } else if ("kWh".equals(valParts[1])) {
-                                channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
+                                channelType = "Number:Energy";
                                 state = new QuantityType<>(bd, Units.KILOWATT_HOUR);
                             } else if ("l/h".equals(valParts[1])) {
-                                channelType = "Number:Volume";
-                                bd = bd.divide(new BigDecimal(60));
+                                channelType = "Number:VolumetricFlowRate";
+                                bd = bd /= 60;
                                 state = new QuantityType<>(bd, Units.LITRE_PER_MINUTE);
                             } else {
                                 channelType = "Number";
@@ -440,7 +439,29 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
             }
-            if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
+            if (e != null && !channelType.equals(e.channel.getAcceptedItemType())) {
+                // channel type has changed. we have to rebuild the channel.
+                this.channels.remove(channel);
+                channel = null;
+            }
+            if (channel != null && ctuid == null && cx2e != null) {
+                // custom channel type - check if it already exists and recreate when needed...
+                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
+                if (curCtuid == null) {
+                    // we have to re-create and re-register the channel uuid
+                    logger.debug("Re-Registering channel type UUID for: {} ", shortName);
+                    var ct = buildAndRegisterChannelType(shortName, type, cx2e);
+                    var channelBuilder = ChannelBuilder.create(channel);
+                    channelBuilder.withType(ct.getUID());
+                    channel = channelBuilder.build(); // update channel
+                } else {
+                    // check if channel uuid still exists and re-carete when needed
+                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
+                    if (ct == null) {
+                        buildAndRegisterChannelType(shortName, type, cx2e);
+                    }
+                }
+            } else if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
                 logger.debug("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
                 this.configChanged = true;
                 ChannelUID channelUID = new ChannelUID(this.taCmiSchemaHandler.getThing().getUID(), shortName);
@@ -456,15 +477,6 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error configurating channel for {}: channeltype cannot be determined!", shortName);
                 }
                 channel = channelBuilder.build(); // add configuration property...
-            } else if (ctuid == null && cx2e != null) {
-                // custom channel type - check if it already exists and recreate when needed...
-                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
-                if (curCtuid != null) {
-                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
-                    if (ct == null) {
-                        buildAndRegisterChannelType(shortName, type, cx2e);
-                    }
-                }
             }
             this.configChanged = true;
             e = new ApiPageEntry(type, channel, address, cx2e, state);
