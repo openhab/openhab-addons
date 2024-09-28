@@ -52,11 +52,11 @@ The Thing has a few configuration parameters:
 
 Some notes:
 
-* The control protocol of these players is undocumented and may not work consistently in all situations
-* The UHD models only support playback elapsed time (not title total time or chapter information) reporting
-* The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
-* There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
-* Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- The control protocol of these players is undocumented and may not work consistently in all situations
+- The UHD models only support playback elapsed time (not title total time or chapter information) reporting
+- The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
+- There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
+- Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
 
 ## Channels
 

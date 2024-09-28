@@ -4,15 +4,15 @@ This binding can read information from multiple PLEX players connected to a PLEX
 
 It can be used for multiple scenarios:
 
-* Drive light changes based on player status. For instances turn off the lights when movie starts playing and turn them back on when movie is stopped/paused
-* Create a page that displays currently played media of one or more player connected to the server.
-* Send social media messages when player plays new media
-* Inform what the end time of the currently played media is
+- Drive light changes based on player status. For instances turn off the lights when movie starts playing and turn them back on when movie is stopped/paused
+- Create a page that displays currently played media of one or more player connected to the server.
+- Send social media messages when player plays new media
+- Inform what the end time of the currently played media is
 
 The binding can also control `PLAY/PAUSE/NEXT/PREVIOUS` the players which can be used for:
 
-* Start playing some music when someone enters a room
-* Pause the movie when motion is detected
+- Start playing some music when someone enters a room
+- Pause the movie when motion is detected
 
 ## Supported Things
 

@@ -107,10 +107,10 @@ Icon and tag can potentially be used by cloud instance clients (such as the open
 
 The parameters for these actions have the following meaning:
 
-* `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
-* `message`: String containing the notification message text.
-* `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
-* `tag`: String containing the tag for the notification.
+- `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
+- `message`: String containing the notification message text.
+- `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
+- `tag`: String containing the tag for the notification.
 
 `null` may be used to skip the `icon` or `tag` parameter.
 

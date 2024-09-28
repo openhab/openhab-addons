@@ -787,9 +787,9 @@ If you want to dive deeper see [Troubleshooting](#troubleshooting) `feature-capa
 
 In order to be able to analyze problems 3 advanced channels are placed in the vehicle group.
 
-* `feature-capabilities` - showing which feature your vehicle is equipped with
-* `command-capabilities` - showing which commands can be sent to your vehicle
-* `proto-update` - latest update of your vehicle data
+- `feature-capabilities` - showing which feature your vehicle is equipped with
+- `command-capabilities` - showing which commands can be sent to your vehicle
+- `proto-update` - latest update of your vehicle data
 
 In case you find problems regarding this binding add items to these 3 channels.
 The items are reporting Strings in JSON format.

@@ -15,7 +15,7 @@ This binding supports two thing types:
 
 ## Discovery
 
-All relevant thing types should be added automatically to the inbox through the mDNS discovery process.  
+All relevant thing types should be added automatically to the inbox through the mDNS discovery process.
 
 In the case of the ShieldTV or PhilipsTV, openHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV or PhilipsTV device.
 Only the ShieldTV or PhilipsTV device should be configured, the GoogleTV can be ignored.
@@ -24,7 +24,7 @@ This could cause undesired effects.
 
 ## Binding Configuration
 
-This binding does not require any special configuration files.  
+This binding does not require any special configuration files.
 
 This binding does require a PIN login process (documented below) upon first connection.
 

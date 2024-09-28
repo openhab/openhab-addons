@@ -2,12 +2,12 @@
 
 The metrics service provides:
 
-* an additional REST endpoint to retrieve openHAB core metrics from. This can be used as scrape target for pull-based monitoring systems like [Prometheus](https://prometheus.io/).
-* optionally configurable services to export openHAB core metrics to push-based monitoring systems like [InfluxDB](https://www.influxdata.com/).
+- an additional REST endpoint to retrieve openHAB core metrics from. This can be used as scrape target for pull-based monitoring systems like [Prometheus](https://prometheus.io/).
+- optionally configurable services to export openHAB core metrics to push-based monitoring systems like [InfluxDB](https://www.influxdata.com/).
 
 ## Provided metrics
 
-Currently the following metrics are provided: 
+Currently the following metrics are provided:
 
 - openHAB events counts (per topic)
 - openHAB bundle states
@@ -15,11 +15,11 @@ Currently the following metrics are provided:
 - openHAB rule runs (per rule)
 - openHAB threadpool stats (per scheduler)
 - JVM stats including metrics of
-    - class loader
-    - memory
-    - GarbageCollector
-    - OS (system load, CPU)
-    - thread metrics
+  - class loader
+  - memory
+  - GarbageCollector
+  - OS (system load, CPU)
+  - thread metrics
 
 ## Configuration
 

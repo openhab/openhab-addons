@@ -453,7 +453,6 @@ A Home is the Thing holding various modules and devices. They can hold two areas
 Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
 **Home Configuration**
-
 The Home thing has the following configuration elements:
 
 | Parameter       | Type    | Required | Description                                                                         |
@@ -465,9 +464,9 @@ The Home thing has the following configuration elements:
 
 At least one of these parameter must be filled - at most two : 
 
-* id or securityId
-* id or energyId
-* securityId and energyId
+- id or securityId
+- id or energyId
+- securityId and energyId
 
 (1) this parameter is kept for backward compatibility.
 

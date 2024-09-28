@@ -169,9 +169,9 @@ Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
 
 Adding Velbus modules to your openHAB configuration follows the conventions of your preferred configuration method.
 
-* **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery).
+- **UI-based configuration:** Invoke a manual scan from the Things menu in order to start the [discovery process](#discovery).
 Discovered modules can be found in the inbox.
-* **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a bridge is still required):
+- **Textual `.thing` configuration** can declare Velbus modules either in a standalone fashion (a bridge is still required):
 
   ```java
   Thing velbus:<thingType>:<bridgeId>:<thingId> "Label" @ "Location" [ CH1="Kitchen Light", CH2="Living Light" ]
