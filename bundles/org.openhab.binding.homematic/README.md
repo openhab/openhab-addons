@@ -181,7 +181,7 @@ For a CCU2, the value may need to be increased to 180s.
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
 - **unpairOnDeletion**
-If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.  
+If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.
 **Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
 - **factoryResetOnDeletion**
@@ -192,7 +192,7 @@ Due to the factory reset, the device will also be unpaired from the gateway, eve
   If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
   In this case, e.g. the discovery fails.
   With this setting the buffer size can be adjusted. The value is specified in kB.
-  
+
 - **useAuthentication**
 Username and password are send to the gateway to authenticate the access to the gateway.
 

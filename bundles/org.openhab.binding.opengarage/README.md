@@ -63,9 +63,9 @@ opengarage.sitemap:
 Text item=OpenGarage_StatusText label="Status"
 Switch item=OpenGarage_Status icon="garagedoorclosed" mappings=[ON=Open]  visibility=[OpenGarage_Status == OFF]
 Switch item=OpenGarage_Status icon="garagedooropen"   mappings=[OFF=Close] visibility=[OpenGarage_Status == ON]
-Switch item=OpenGarage_Status icon="garage" 
-Contact item=OpenGarage_Status_Contact icon="garage" 
-Rollershutter item=OpenGarage_Status_Rollershutter icon="garage" 
+Switch item=OpenGarage_Status icon="garage"
+Contact item=OpenGarage_Status_Contact icon="garage"
+Rollershutter item=OpenGarage_Status_Rollershutter icon="garage"
 Text item=OpenGarage_Distance label="OG distance"
 Text item=OpenGarage_Vehicle label="Vehicle Presence"
 

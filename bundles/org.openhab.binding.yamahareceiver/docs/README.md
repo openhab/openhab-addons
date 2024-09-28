@@ -80,7 +80,7 @@ An example for changing the state of the receiver:
 			Destination
 			Freq_Step
 
-	Main Zone	
+	Main Zone
 		Config
 			Feature_Availability
 			Name -> Zone/Scene
@@ -115,7 +115,7 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	Zone2,3	
+	Zone2,3
 		Config
 		Basic_Status
 		Power_Control
@@ -126,7 +126,7 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	Zone4	
+	Zone4
 		Config
 		Basic_Status
 		Power_Control
@@ -135,14 +135,14 @@ An example for changing the state of the receiver:
 		Play_Control
 		List_Control
 
-	USB	
+	USB
 		Config
 		Play_Control
 		Play_Info
 		List_Control
 		List_Info
 
-	Tuner	
+	Tuner
 		Config
 		Play_Control
 		Play_Info

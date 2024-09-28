@@ -93,12 +93,12 @@ Current warning according to configuration
 
 ```java
 Thing pegelonline:station:giessen "Measurement Station Giessen" [
-    uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4", 
-    refreshInterval=15, 
-    warningLevel1=550, 
-    warningLevel2=600, 
-    warningLevel3=650, 
-    hq10=732, 
+    uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4",
+    refreshInterval=15,
+    warningLevel1=550,
+    warningLevel2=600,
+    warningLevel3=650,
+    hq10=732,
     hq100=786
 ]
 ```
@@ -106,10 +106,10 @@ Thing pegelonline:station:giessen "Measurement Station Giessen" [
 ### Items
 
 ```java
-DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }                                                                           
-Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }                                                                           
+DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }
+Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }
 Number           Lahn_Giessen_Trend          "Water Level Trend Lahn Giessen"       {channel="pegelonline:station:giessen:trend"}
-Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}   
+Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}
 ```
 
 ## Links

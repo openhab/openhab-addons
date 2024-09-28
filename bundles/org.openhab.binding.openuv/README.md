@@ -80,7 +80,7 @@ demo.things:
 Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
     Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=20 ]{
         Channels:
-            Type SafeExposure : parents [       
+            Type SafeExposure : parents [
                 index="III"
             ]
             Type SafeExposure : childs [

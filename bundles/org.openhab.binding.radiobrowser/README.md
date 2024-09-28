@@ -36,7 +36,7 @@ The countries need to be the country code not the full name, for example `US` an
 The binding will auto select your country based on openHAB's settings that you made when setting up openHAB.
 It makes sense to do this for languages if the built in way of `languageCount` does not work for your use case.
 Genres are a good example for using the metadata, only show the styles of music and other tags that you like.
-If in doubt you can use the [Event Monitor in the Developer Sidebar](https://www.openhab.org/docs/tutorial/tips-and-tricks.html#event-monitor) to watch what commands are sent to the bindings channels. 
+If in doubt you can use the [Event Monitor in the Developer Sidebar](https://www.openhab.org/docs/tutorial/tips-and-tricks.html#event-monitor) to watch what commands are sent to the bindings channels.
 
 ## Channels
 

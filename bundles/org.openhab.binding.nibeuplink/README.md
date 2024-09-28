@@ -43,21 +43,21 @@ Following models (indoor / main units) are currently supported:
 
 The following configuration parameters are available for this thing:
 
-- **user** (required)  
+- **user** (required)
 username used to login on NibeUplink
 
-- **password** (required)  
+- **password** (required)
 password used to login on NibeUplink
 
-- **nibeId** (required)  
+- **nibeId** (required)
 Id of your heatpump in NibeUplink (can be found in the URL after successful login: `https://www.nibeuplink.com/System/**<nibeId>>**/Status/Overview`)
 
-- **pollingInterval**  
+- **pollingInterval**
 interval (seconds) in which values are retrieved from NibeUplink.
 Setting less than 60 seconds does not make any sense as the heat pump only provides periodic updates to NibeUplink.
 (default = 60)
 
-- **houseKeepingInterval**  
+- **houseKeepingInterval**
   interval (seconds) in which list of "dead channels" (channels that do not return any data or invalid data) should be purged (default = 3600).
   Usually this settings should not be changed.
 

@@ -29,7 +29,7 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 ## Channels
 
-The FENECON binding currently only provides access to read out the values from the energy storage system. 
+The FENECON binding currently only provides access to read out the values from the energy storage system.
 
 | Channel                       | Type                 | Read/Write | Description                                                                 |
 |-------------------------------|----------------------|------------|-----------------------------------------------------------------------------|
@@ -117,7 +117,7 @@ rule "Blackout detection"
 when
   Item EmergencyPowerMode changed to ON
 then
-    val msg = "🚨 Power blackout detected, emergency power mode running." 
+    val msg = "🚨 Power blackout detected, emergency power mode running."
     logInfo("PowerBlackout", msg)
     sendBroadcastNotification(msg)
 end

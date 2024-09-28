@@ -67,8 +67,8 @@ The PolyTTS service uses the openHAB TTS cache to cache audio files produced fro
 ## Rule Examples
 
 ```java
-say("Hello there")  
-say("Hello there", "pollytts:Joanne", "enhancedjavasound")  
-say("" + item.state, "pollytts:Joey", "enhancedjavasound")  
-say("<speak>Children, come to dinner <prosody volume='x-loud'>Right now!</prosody></speak>")  
+say("Hello there")
+say("Hello there", "pollytts:Joanne", "enhancedjavasound")
+say("" + item.state, "pollytts:Joey", "enhancedjavasound")
+say("<speak>Children, come to dinner <prosody volume='x-loud'>Right now!</prosody></speak>")
 ```

@@ -7,12 +7,12 @@ It also uses [libfvad](https://github.com/dpirch/libfvad) for voice activity det
 
 Whisper enables speech recognition for multiple languages and dialects:
 
-english, chinese, german, spanish, russian, korean, french, japanese, portuguese, turkish, polish, catalan, dutch, arabic, swedish, 
-italian, indonesian, hindi, finnish, vietnamese, hebrew, ukrainian, greek, malay, czech, romanian, danish, hungarian, tamil, norwegian, 
-thai, urdu, croatian, bulgarian, lithuanian, latin, maori, malayalam, welsh, slovak, telugu, persian, latvian, bengali, serbian, azerbaijani, 
-slovenian, kannada, estonian, macedonian, breton, basque, icelandic, armenian, nepali, mongolian, bosnian, kazakh, albanian, swahili, galician, 
-marathi, punjabi, sinhala, khmer, shona, yoruba, somali, afrikaans, occitan, georgian, belarusian, tajik, sindhi, gujarati, amharic, yiddish, lao, 
-uzbek, faroese, haitian, pashto, turkmen, nynorsk, maltese, sanskrit, luxembourgish, myanmar, tibetan, tagalog, malagasy, assamese, tatar, lingala, 
+english, chinese, german, spanish, russian, korean, french, japanese, portuguese, turkish, polish, catalan, dutch, arabic, swedish,
+italian, indonesian, hindi, finnish, vietnamese, hebrew, ukrainian, greek, malay, czech, romanian, danish, hungarian, tamil, norwegian,
+thai, urdu, croatian, bulgarian, lithuanian, latin, maori, malayalam, welsh, slovak, telugu, persian, latvian, bengali, serbian, azerbaijani,
+slovenian, kannada, estonian, macedonian, breton, basque, icelandic, armenian, nepali, mongolian, bosnian, kazakh, albanian, swahili, galician,
+marathi, punjabi, sinhala, khmer, shona, yoruba, somali, afrikaans, occitan, georgian, belarusian, tajik, sindhi, gujarati, amharic, yiddish, lao,
+uzbek, faroese, haitian, pashto, turkmen, nynorsk, maltese, sanskrit, luxembourgish, myanmar, tibetan, tagalog, malagasy, assamese, tatar, lingala,
 hausa, bashkir, javanese and sundanese.
 
 ## Supported platforms
@@ -202,7 +202,7 @@ Its contents should look similar to:
 ```ini
 org.openhab.voice.whisperstt:modelName=tiny
 org.openhab.voice.whisperstt:initSilenceSeconds=0.3
-org.openhab.voice.whisperstt:removeSilence=true 
+org.openhab.voice.whisperstt:removeSilence=true
 org.openhab.voice.whisperstt:stepSeconds=0.3
 org.openhab.voice.whisperstt:vadStep=0.5
 org.openhab.voice.whisperstt:singleUtteranceMode=true

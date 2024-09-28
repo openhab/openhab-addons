@@ -6,7 +6,7 @@ Transforms an [XML](https://www.w3.org/XML/) input using an [XPath](https://www.
 
 ### Basic Example
 
-Given a retrieved XML 
+Given a retrieved XML
 
 **Input XML**
 
@@ -83,8 +83,8 @@ rule "Convert XML to Item Type Number"
     val mytest = transform("XPATH", "/*[name()='PTZStatus']
                                      /*[name()='AbsoluteHigh']
                                      /*[name()='azimuth']
-                                     /text()", 
-                                    Temperature_xml.state.toString )  
+                                     /text()",
+                                    Temperature_xml.state.toString )
     // Fully qualified
     val mytest = transform("XPATH", "/*[local-name()='PTZStatus'    and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']
                                      /*[local-name()='AbsoluteHigh' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']

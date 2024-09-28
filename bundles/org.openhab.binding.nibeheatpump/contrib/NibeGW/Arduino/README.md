@@ -2,7 +2,7 @@
 
 ## RS-485 Modules
 
-For settting up a NibeGW you need a RS485 module. 
+For settting up a NibeGW you need a RS485 module.
 While ProDiNo already have RS-485 support included, you need a separate module for Arduino Uno.
 Most cheap modules out there are compatible with 5V voltage and therefore compatible with Arduino based hardware.
 Mostly you will get one of two commonly used designs:
@@ -46,7 +46,7 @@ Also the ProDiNo Ethernet is supported by NibeGW out of the box.
 
 ## Arduino Uno
 
-Arduino Uno has only one serial port which is shared with USB. 
+Arduino Uno has only one serial port which is shared with USB.
 So make sure to disconnect all hardware (ethernet shield, RS485 module, etc.) while uploading the compiled sketch to the Arduino.
 Furthermore do not use the USB port while Arduino is communicating with the Nibe heatpump.
 

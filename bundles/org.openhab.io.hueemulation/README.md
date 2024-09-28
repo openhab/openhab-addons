@@ -25,7 +25,7 @@ Hue bridges are using the Universal Plug and Play (UPnP) protocol for discovery.
 
 ![Philips Hue Bridge](doc/Philips_Hue_Bridge.jpg)
 
-Like the real HUE bridge the service must be put into pairing mode before other applications can access it. 
+Like the real HUE bridge the service must be put into pairing mode before other applications can access it.
 By default the pairing mode disables itself after 1 minute (can be configured).
 
 ## Exposed lights
@@ -204,7 +204,7 @@ It might help to (temporarly) lower the emulated bridge version in the configura
 ## Text configuration example
 
 The item label will be used as the Hue device name. Please be aware that textual defined items are generally a bad idea.
-In this case renaming items in Hue compatible Apps will fail.  
+In this case renaming items in Hue compatible Apps will fail.
 
 ```java
 Switch  TestSwitch      "Kitchen Switch" [ "Switchable" ]    {channel="..."}

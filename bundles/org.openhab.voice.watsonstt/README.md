@@ -1,12 +1,12 @@
 # IBM Watson Speech-to-Text
 
-Watson STT Service uses the non-free IBM Watson Speech-to-Text API to transcript audio data to text. 
+Watson STT Service uses the non-free IBM Watson Speech-to-Text API to transcript audio data to text.
 Be aware that using this service may incur cost on your IBM account.
 You can find pricing information on [this page](https://www.ibm.com/cloud/watson-speech-to-text/pricing).
 
 ## Obtaining Credentials
 
-Before you can use this add-on, you should create a Speech-to-Text instance in the IBM Cloud service. 
+Before you can use this add-on, you should create a Speech-to-Text instance in the IBM Cloud service.
 
 - Go to the following [link](https://cloud.ibm.com/catalog/services/speech-to-text) and create the instance in your desired region.
 - After the instance is created you should be able to view its url and api key.

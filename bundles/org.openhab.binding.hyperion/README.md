@@ -155,7 +155,7 @@ sitemap demo label="Main Menu" {
     'X-Mas'='X-Mas'
   ]
   Switch item=Clear mappings=[50="Clear"]
-  
+
   // only serverNG
   Switch item=HyperionEnabled
   Switch item=BlackBorderEnabled

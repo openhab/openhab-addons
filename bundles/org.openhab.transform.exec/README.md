@@ -30,7 +30,7 @@ numfmt --to=iec-i --suffix=B --padding=7 %s
 #### Item
 
 This will replace the visible label in the UI with the transformation you apply with the command <TransformProgram>.
-  
+
 ```java
 String yourItem "Some info  [EXEC(/absolute/path/to/your/<TransformProgram> %s):%s]"
 ```
@@ -43,7 +43,7 @@ when
     Item YourTriggeringItem changed
 then
     var formatted = transform("EXEC","/absolute/path/to/your/<TransformProgram>", YourTriggeringItem.state.toString)
-    yourFormattedItem.sendCommand(formatted.toString) 
+    yourFormattedItem.sendCommand(formatted.toString)
 end
 ```
 

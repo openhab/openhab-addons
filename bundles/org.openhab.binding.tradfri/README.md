@@ -113,7 +113,7 @@ demo.things:
 
 ```java
 Bridge tradfri:gateway:mygateway [ host="192.168.0.177", code="EHPW5rIJKyXFgjH3" ] {
-    0100 myDimmableBulb "My Dimmable Bulb" [ id=65537 ]    
+    0100 myDimmableBulb "My Dimmable Bulb" [ id=65537 ]
     0220 myColorTempBulb "My Color Temp Bulb" [ id=65538 ]
     0210 myColorBulb "My Color Bulb" [ id=65539 ]
     0830 myRemoteControl "My Remote Control" [ id=65545 ]

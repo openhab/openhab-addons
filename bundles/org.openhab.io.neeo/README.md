@@ -388,7 +388,7 @@ The following changes have occurred:
 
 1. SKIP BACKWARD should be changed to PREVIOUS.
 2. SKIP FORWARD should be changed to NEXT.
-3. ENTER should be changed to CURSOR ENTER. 
+3. ENTER should be changed to CURSOR ENTER.
 4. Added support for 'specificname' (allowing you to override the name shown in NEEO).
 5. Added support for HSBType channels (creates 4 channels: overall, hue, brightness and saturation).
 6. Added NEEO Brain name to the Brain tab.
@@ -412,14 +412,14 @@ Alternatively, you can configure the settings in the file `conf/services/neeo.cf
 # Default is 'true'
 #exposeNeeoBinding=true|false
 
-# The maximum number of search results to return to the brain for any given 
-# search request. 
-# Default is 10 
+# The maximum number of search results to return to the brain for any given
+# search request.
+# Default is 10
 #searchLimit=10
 
 # The interval (in seconds) to check the status of the brain to determine if the
 # brain is reachable or not
-# Default is 10 
+# Default is 10
 #checkStatusInterval=10
 ```
 

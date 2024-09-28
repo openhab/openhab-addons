@@ -25,7 +25,7 @@ Currently the following metrics are provided:
 
 The configuration for the metrics service is available in the openHAB UI under Settings | Other Services | Metrics service.
 Support for pull-based monitoring systems (e. g. Prometheus) is always enabled, since it doesn't imply any significant overhead when not used.
-Support for push-based monitoring systems (e. g. InfluxDB) have to be enabled separately. 
+Support for push-based monitoring systems (e. g. InfluxDB) have to be enabled separately.
 
 The following configuration parameters can be set:
 
@@ -43,7 +43,7 @@ For a start, the following formats are supported:
 ### Prometheus
 
 Once the IO addon is installed, the Prometheus endpoint will be available under:
-_<openhab_host>:8080/rest/metrics/prometheus_ 
+_<openhab_host>:8080/rest/metrics/prometheus_
 
 Refer to the [Prometheus](https://prometheus.io/) documentation on how to setup a Prometheus instance and add a scrape configuration. A typical scrape config could look like this (excerpt from `/etc/prometheus/prometheus.yml`):
 
@@ -58,7 +58,7 @@ scrape_configs:
       - 'openhab.local:8080'
 ````
 
-Replace `openhab.local` by the openhab host.   
+Replace `openhab.local` by the openhab host.
 
 #### Available configuration parameters
 
@@ -105,17 +105,17 @@ jmxMetricsEnabled=false
 
 ## Additional metric formats
 
-The metrics service was implemented using [Micrometer](https://micrometer.io), which supports a number of [monitoring systems](https://micrometer.io/docs) 
+The metrics service was implemented using [Micrometer](https://micrometer.io), which supports a number of [monitoring systems](https://micrometer.io/docs)
 It should be possible to add any of these, especially the ones using a pull mechanism ("scraping") like Prometheus does.
 
 ## Grafana
 
-You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701). 
+You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701).
 I adapted it a little bit to include the openHAB metrics.
 You can download it here [Dashboard](doc/dashboard.json).
 This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.
 
-Here are some screenshots: 
+Here are some screenshots:
 
 ![Grafana (1)](doc/grafana-1.png)
 ![Grafana (2)](doc/grafana-2.png)

@@ -4,13 +4,13 @@ Transform input using the XML Stylesheet Language for Transformations (XSLT).
 
 XSLT is a standard method to transform an XML structure from one document into a new document with a different structure.
 
-The transformation expects the rule to be read from a file which is stored under the `transform` folder. 
+The transformation expects the rule to be read from a file which is stored under the `transform` folder.
 To organize the various transformations one should use subfolders.
 
 General transformation rule summary:
 
 - The directive `xsl:output` defines how the output document should be structured.
-- The directive `xsl:template` specifies matching attributes for the XML node to find. 
+- The directive `xsl:template` specifies matching attributes for the XML node to find.
 - The `xsl:template` tag contains the rule which specifies what should be done.
 
 The Rule uses XPath to gather the XML node information.
@@ -72,7 +72,7 @@ This example has a namespace defined, as you would find in real world applicatio
 
 **transform/azimut.xsl**
 
-In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`. 
+In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`.
 This attribute has to be the same as the namespace for the input document.
 In the rule each step traversed along the path to the next tag has to be prepended with the `xmlns` namespace, here defined as `h`.
 
@@ -84,7 +84,7 @@ In the rule each step traversed along the path to the next tag has to be prepend
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="2.0" 
+<xsl:stylesheet version="2.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 xmlns:h="http://www.hikvision.com/ver20/XMLSchema">
    <xsl:output method="xml" indent="no" encoding="UTF-8" omit-xml-declaration="yes"  />

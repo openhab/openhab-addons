@@ -462,7 +462,7 @@ The Home thing has the following configuration elements:
 | securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
 | refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 180.                   |
 
-At least one of these parameter must be filled - at most two : 
+At least one of these parameter must be filled - at most two :
 
 - id or securityId
 - id or energyId
@@ -809,7 +809,7 @@ sitemap netatmo label="Netatmo" {
         Text item=Indoor_TimeStamp
         Text item=Indoor_LastSeen
     }
-    Frame label="Outdoor" { 
+    Frame label="Outdoor" {
         Text item=Outdoor_Temperature
         Text item=Outdoor_TempTrend
         Text item=Outdoor_Humidity

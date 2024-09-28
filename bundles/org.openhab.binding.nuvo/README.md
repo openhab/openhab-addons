@@ -133,7 +133,7 @@ nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false
 // serial over IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
 
-// MPS4 server IP connection 
+// MPS4 server IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, clockSync=false]
 
 ```
@@ -377,7 +377,7 @@ then
 end
 
 // In the below examples, a method for maintaing Metadata information
-// for a hypothetical non NuvoNet Source 3 is demonstrated 
+// for a hypothetical non NuvoNet Source 3 is demonstrated
 
 // Item_Containing_TrackLength should get a 'received update' when the track changes
 // ('changed' is not sufficient if two consecutive tracks are the same length)
@@ -392,7 +392,7 @@ then
     // '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
     // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
     sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + ",0,2")
-    
+
 end
 
 rule "Load track name for Source 3"
@@ -406,7 +406,7 @@ then
 
     sendCommand(nuvo_s3_display_line4, trackName)
     sendCommand(nuvo_s3_display_line1, "")
-    
+
 end
 
 rule "Load album name for Source 3"
@@ -451,7 +451,7 @@ then
         }
         case "Playing": {
             // when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
-            // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
+            // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad
             sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
         }
         case "Paused": {
@@ -497,10 +497,10 @@ When the item `Top menu 2` is selected the text sent to the button channel will 
 ### Rule to trigger an action based on which keypad zone where a button was pressed or menu item selected
 
 By using the `system#buttonpress` channel it is possible to trigger an action based on which keypad zone was used to send the action.
-This channel appends the zone number and a comma before the button action or menu item selection.  
+This channel appends the zone number and a comma before the button action or menu item selection.
 
-For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`  
-Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`  
+For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`
+Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`
 
 The functionality can be used to create very powerful rules as demontrated below. The following rule triggered from a menu item turns off all zones except for the zone that triggered the rule.
 
@@ -558,7 +558,7 @@ var albumName = ""
 var trackName = ""
 
 // supportedactions bitmask tells the keypad what buttons to display
-// detailed in SourceCommunicationProtocolForNNA_v1.0.pdf 
+// detailed in SourceCommunicationProtocolForNNA_v1.0.pdf
 // 0 : play/pause only
 // 196615 : play/pause/skip
 // 196639 : play/pause/skip/shuffle/repeat
@@ -676,12 +676,12 @@ end
 rule "Music Source update song elapsed time"
 when
     Item music_Music_TrackPosition received update or
-    Item music_Music_Random received update or 
+    Item music_Music_Random received update or
     Item music_Music_Repeat received update
 then
     var int trackLength = Integer::parseInt(music_Music_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
     // track position should not update continuously to prevent excessive amounts of DISPINFOTWO messages from being sent
-    // the keypad counts up the time on its own after a DISPINFOTWO message is received 
+    // the keypad counts up the time on its own after a DISPINFOTWO message is received
     var int trackPosition = Integer::parseInt(music_Music_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
     var playState = music_Music_PlayMode.state.toString()
     var randomMode = music_Music_Random.state
@@ -706,7 +706,7 @@ then
     // DISPINFOTWO sends track time, play state, album art id, source status, etc. all in one command message
     //*SsDISPINFOTWOduration,position,deprecatedstatus,albumartid,sourcemode,sourcestatus,supportedactions
 
-    // The binding will automatically substitute the 'albumartid' token with the id of the JPG processed by the `art_url` channel 
+    // The binding will automatically substitute the 'albumartid' token with the id of the JPG processed by the `art_url` channel
     if (playState == "Playing") {
         // first '2' indicates deprecatedstatus = playing, second '2' is sourcemode = Music Server Mode
         // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from trackPosition)

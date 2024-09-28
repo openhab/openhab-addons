@@ -1,6 +1,6 @@
 # Google Cloud Speech-to-Text
 
-Google Cloud STT Service uses the non-free Google Cloud Speech-to-Text API to transcript audio data to text. 
+Google Cloud STT Service uses the non-free Google Cloud Speech-to-Text API to transcript audio data to text.
 Be aware, that using this service may incur cost on your Google Cloud account.
 You can find pricing information on the [documentation page](https://cloud.google.com/speech-to-text#section-12).
 

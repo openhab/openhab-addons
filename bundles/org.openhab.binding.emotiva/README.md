@@ -38,15 +38,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 | Channel Type ID                    | Item Type          | Description                                                |
 |------------------------------------|--------------------|------------------------------------------------------------|
 | _Main zone_                        |                    |                                                            |
-| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |      
-| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |             
-| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         | 
-| main-zone#mute                     | Switch (RW)        | Main zone mute                                             | 
-| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   | 
+| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |
+| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |
+| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         |
+| main-zone#mute                     | Switch (RW)        | Main zone mute                                             |
+| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   |
 | _Zone 2_                           |                    |                                                            |
-| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        | 
-| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     | 
-| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           | 
+| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        |
+| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     |
+| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           |
 | zone2#mute                         | Switch (RW)        | Zone 2 mute                                                |
 | zone2#input                        | String (RW)        | Zone 2 input                                               |
 | _General_                          |                    |                                                            |
@@ -153,11 +153,11 @@ String                  emotiva-menu-tottom-end     ""                      <non
 ```perl
 Group item=emotiva-input label="Processor" icon="receiver" {
     Default   item=emotiva-power
-    Default   item=emotiva-mute             
-    Setpoint  item=emotiva-volume           
-    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0 
-    Selection item=emotiva-source           
-    Text      item=emotiva-mode-surround    
+    Default   item=emotiva-mute
+    Setpoint  item=emotiva-volume
+    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0
+    Selection item=emotiva-source
+    Text      item=emotiva-mode-surround
     Setpoint  item=emotiva-speakers-center  step=0.5 minValue=-12.0 maxValue=12.0
     Default   item=emotiva-zone2power
 }

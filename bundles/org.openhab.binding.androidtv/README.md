@@ -161,7 +161,7 @@ KEYPRESS will accept the following commands as strings (case sensitive):
 - KEY_MUTE
 - KEY_SUBMIT
 
-The list above causes an instantanious "press and release" of each button.  
+The list above causes an instantanious "press and release" of each button.
 If you would like to manually control the press and release of each you may append _PRESS and _RELEASE to the end of each.
 (e.g. KEY_FORWARD_PRESS or KEY_FORWARD_RELEASE)
 
@@ -169,7 +169,7 @@ You may also send an ASCII character as a single letter to simulate a key entry 
 Use KEY_SUBMIT when full text entry is complete to tell the shield to process the line.
 KEY_SUBMIT is automatically sent by KEYBOARD when a command is sent to the channel.
 
-APP will display the currently active app as presented by the AndroidTV.  
+APP will display the currently active app as presented by the AndroidTV.
 You may also send it a command of the app package name (e.g. com.google.android.youtube.tv) to start/change-to that app.
 
 KEYCODE values are listed at the bottom of this README.
@@ -195,11 +195,11 @@ openhab> openhab:androidtv androidtv:googletv:theater keypress KEY_POWER
 
 ## Pin Code Process
 
-For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.  
+For the AndroidTV to be successfully accessed an on-screen PIN authentication is required on the first connection.
 
 To begin the PIN process, send the text "REQUEST" to the pincode channel while watching your AndroidTV.
 
-CLI Example Usage: 
+CLI Example Usage:
 
 ```shell
 openhab> openhab:androidtv androidtv:googletv:theater pincode REQUEST
