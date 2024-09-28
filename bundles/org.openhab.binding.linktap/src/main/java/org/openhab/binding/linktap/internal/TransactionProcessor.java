@@ -15,6 +15,7 @@ package org.openhab.binding.linktap.internal;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_UTC_OFFSET;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.GSON;
 import static org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse.*;
+import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.TransientExecptionDefinitions.*;
 
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -237,16 +238,14 @@ public final class TransactionProcessor {
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
 
             if (gatewayFrame == null) {
-                throw new TransientCommunicationIssueException(
-                        TransientCommunicationIssueException.TransientExecptionDefinitions.COMMUNICATIONS_LOST);
+                throw new TransientCommunicationIssueException(COMMUNICATIONS_LOST);
             }
 
             if (!(request.command == CMD_UPDATE_WATER_TIMER_STATUS && gatewayFrame.command == -1)
                     && request.command != gatewayFrame.command) {
                 logger.warn("{}",
                         getLocalizedText("warning.incorrect-cmd-resp", request.command, gatewayFrame.command));
-                throw new TransientCommunicationIssueException(
-                        TransientCommunicationIssueException.TransientExecptionDefinitions.COMMUNICATIONS_LOST);
+                throw new TransientCommunicationIssueException(COMMUNICATIONS_LOST);
             }
 
             final ResultStatus rs = gatewayFrame.getRes();
@@ -312,8 +311,7 @@ public final class TransactionProcessor {
         } catch (NotTapLinkGatewayException e) {
             logger.warn("{}", getLocalizedText("warning.non-gw"));
         } catch (UnknownHostException e) {
-            throw new TransientCommunicationIssueException(
-                    TransientCommunicationIssueException.TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+            throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
         }
         return "";
     }

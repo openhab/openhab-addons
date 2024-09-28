@@ -14,7 +14,7 @@ package org.openhab.binding.linktap.protocol.http;
 
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
 import static org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException.NotTapLinkGatewapExecptionDefinitions.*;
-import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.*;
+import static org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException.TransientExecptionDefinitions.*;
 
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -145,11 +145,11 @@ public final class WebServerApi {
         } catch (InterruptedException e) {
             return Map.of();
         } catch (TimeoutException e) {
-            throw new TransientCommunicationIssueException(TransientExecptionDefinitions.COMMUNICATIONS_LOST);
+            throw new TransientCommunicationIssueException(COMMUNICATIONS_LOST);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException || t instanceof SocketTimeoutException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
@@ -360,7 +360,7 @@ public final class WebServerApi {
             throws InterruptedException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             if (hostname == null) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+                throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             }
             final String targetHost = URI_HOST_PREFIX + hostname;
             final Request request = httpClient.newRequest(targetHost).method(HttpMethod.GET);
@@ -434,13 +434,13 @@ public final class WebServerApi {
             return rebootReq;
 
         } catch (TimeoutException e) {
-            throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+            throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+                throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             } else if (t instanceof SocketTimeoutException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
@@ -467,13 +467,13 @@ public final class WebServerApi {
         } catch (InterruptedException e) {
             return false;
         } catch (TimeoutException e) {
-            throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+            throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+                throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             } else if (t instanceof SocketTimeoutException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
@@ -537,17 +537,17 @@ public final class WebServerApi {
         } catch (InterruptedException e) {
             return "";
         } catch (TimeoutException e) {
-            throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+            throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
         } catch (UnknownHostException e) {
-            throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+            throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_NOT_RESOLVED);
+                throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                throw new TransientCommunicationIssueException(TransientExecptionDefinitions.HOST_UNREACHABLE);
+                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             }
         }
     }
