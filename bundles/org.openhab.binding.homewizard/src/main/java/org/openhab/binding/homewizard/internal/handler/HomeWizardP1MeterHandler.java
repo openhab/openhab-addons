@@ -93,8 +93,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
-        updateState(HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,
-                new DecimalType(payload.getAnyPowerFailCount()));
+        updateState(HomeWizardBindingConstants.CHANNEL_POWER_FAILURES, new DecimalType(payload.getAnyPowerFailCount()));
         updateState(HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
                 new DecimalType(payload.getLongPowerFailCount()));
 
