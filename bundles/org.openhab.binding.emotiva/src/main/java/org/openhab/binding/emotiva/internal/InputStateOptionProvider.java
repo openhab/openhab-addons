@@ -65,7 +65,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         ChannelTypeUID typeUID = channel.getChannelTypeUID();
-        if (typeUID == null || !BINDING_ID.equals(typeUID.getBindingId()) || original == null) {
+        if (typeUID == null || !BINDING_ID.equals(typeUID.getBindingId())) {
             return null;
         }
 

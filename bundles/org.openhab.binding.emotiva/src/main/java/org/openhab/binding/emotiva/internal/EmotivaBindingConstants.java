@@ -86,6 +86,9 @@ public class EmotivaBindingConstants {
     public static final int DEFAULT_TRIM_MAX_DECIBEL = 12;
     public static final String MAP_SOURCES_MAIN_ZONE = "sources";
     public static final String MAP_SOURCES_ZONE_2 = "zone2-sources";
+    public static final String MAP_TUNER_CHANNELS = "tuner-channel";
+    public static final String MAP_TUNER_BANDS = "tuner-bands";
+    public static final String MAP_MODES = "modes";
 
     /** Miscellaneous Constants **/
     public static final int PROTOCOL_V3_LEVEL_MULTIPLIER = 2;

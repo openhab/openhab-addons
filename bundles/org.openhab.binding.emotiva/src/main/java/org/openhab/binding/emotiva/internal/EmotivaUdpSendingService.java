@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -122,12 +123,11 @@ public class EmotivaUdpSendingService {
         }
     }
 
-    private void handleReceivedData(DatagramPacket answer, byte[] receivedData,
-            Consumer<EmotivaUdpResponse> localListener) {
+    private void handleReceivedData(DatagramPacket answer, Consumer<EmotivaUdpResponse> localListener) {
         // log & notify listener in new thread (so that listener loop continues immediately)
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
-                logger.trace("Received data on port '{}': {}", answer.getPort(), receivedData);
+                logger.trace("Received data on port '{}'", answer.getPort());
                 EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
                         new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);
@@ -158,7 +158,7 @@ public class EmotivaUdpSendingService {
         send(emotivaXmlUtils.marshallJAXBElementObjects(dto));
     }
 
-    public void sendSubscription(EmotivaSubscriptionTags[] tags, EmotivaConfiguration config) throws IOException {
+    public void sendSubscription(List<EmotivaSubscriptionTags> tags, EmotivaConfiguration config) throws IOException {
         send(emotivaXmlUtils.marshallJAXBElementObjects(new EmotivaSubscriptionRequest(tags, config.protocolVersion)));
     }
 
@@ -171,7 +171,7 @@ public class EmotivaUdpSendingService {
         send(emotivaXmlUtils.marshallJAXBElementObjects(new EmotivaUpdateRequest(tags, config.protocolVersion)));
     }
 
-    public void sendUnsubscribe(EmotivaSubscriptionTags[] defaultCommand) throws IOException {
+    public void sendUnsubscribe(List<EmotivaSubscriptionTags> defaultCommand) throws IOException {
         send(emotivaXmlUtils.marshallJAXBElementObjects(new EmotivaUnsubscribeDTO(defaultCommand)));
     }
 
@@ -196,14 +196,13 @@ public class EmotivaUdpSendingService {
                 logger.debug("Sending successful");
 
                 localDatagramSocket.receive(answer);
-                final byte[] receivedData = Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1);
 
-                if (receivedData.length == 0) {
+                if (Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1).length == 0) {
                     logger.debug("Nothing received, this may happen during shutdown or some unknown error");
                 }
 
                 if (localListener != null) {
-                    handleReceivedData(answer, receivedData, localListener);
+                    handleReceivedData(answer, localListener);
                 }
             } else {
                 throw new SocketException("Datagram Socket closed or not initialized");

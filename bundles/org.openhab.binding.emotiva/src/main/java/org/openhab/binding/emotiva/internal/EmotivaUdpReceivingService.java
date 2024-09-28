@@ -156,9 +156,7 @@ public class EmotivaUdpReceivingService {
                 localReceivingSocket.receive(answer); // receive packet (blocking call)
                 listenerNotifyActive = false;
 
-                final byte[] receivedData = Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1);
-
-                if (receivedData.length == 0) {
+                if (Arrays.copyOfRange(answer.getData(), 0, answer.getLength() - 1).length == 0) {
                     if (isConnected()) {
                         logger.debug("Nothing received, this may happen during shutdown or some unknown error");
                     }
@@ -166,7 +164,7 @@ public class EmotivaUdpReceivingService {
                 }
                 receiveNotifyFailures = 0; // message successfully received, unset failure counter
 
-                handleReceivedData(answer, receivedData, localListener);
+                handleReceivedData(answer, localListener);
             } catch (Exception e) {
                 listenerNotifyActive = false;
 
@@ -190,12 +188,11 @@ public class EmotivaUdpReceivingService {
         }
     }
 
-    private void handleReceivedData(DatagramPacket answer, byte[] receivedData,
-            Consumer<EmotivaUdpResponse> localListener) {
+    private void handleReceivedData(DatagramPacket answer, Consumer<EmotivaUdpResponse> localListener) {
         // log & notify listener in new thread (so that listener loop continues immediately)
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
-                logger.trace("Received data on port '{}': {}", answer.getPort(), receivedData);
+                logger.trace("Received data on port '{}'", answer.getPort());
                 EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
                         new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);
