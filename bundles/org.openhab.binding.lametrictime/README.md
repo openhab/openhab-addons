@@ -233,7 +233,7 @@ rule "Notify Info"
         Item NotifyInfo changed to ON
     then
         NotifyInfo.postUpdate(OFF)
-        
+
         logInfo("demo.rules", "Sending info notification")
         DeviceNotifyInfo.sendCommand("INFO!")
 end
@@ -243,7 +243,7 @@ rule "Notify Warning"
         Item NotifyWarning changed to ON
     then
         NotifyWarning.postUpdate(OFF)
-        
+
         logInfo("demo.rules", "Sending warning notification")
         DeviceNotifyWarning.sendCommand("WARNING!")
 end
@@ -253,7 +253,7 @@ rule "Notify Alert"
         Item NotifyAlert changed to ON
     then
         NotifyAlert.postUpdate(OFF)
-        
+
         logInfo("demo.rules", "Sending alert notification")
         DeviceNotifyAlert.sendCommand("ALERT!")
 end
@@ -263,9 +263,9 @@ rule "Set Alarm in 1 Minute"
          Item SetAlarmIn1Min changed to ON
     then
          SetAlarmIn1Min.postUpdate(OFF)
-         
+
          logInfo("demo.rules", "Setting alarm for 1 minute from now")
-         
+
          val cal = Calendar.getInstance()
          cal.add(Calendar.MINUTE, 1)
          ClockSetAlarm.sendCommand(new DateTimeType(cal))
@@ -276,7 +276,7 @@ rule "Set 2 Minute Timer"
          Item Set2MinTimer changed to ON
     then
          Set2MinTimer.postUpdate(OFF)
-         
+
          logInfo("demo.rules", "Configure timer for 2 minutes without starting")
          TimerDuration.sendCommand(120)
 end

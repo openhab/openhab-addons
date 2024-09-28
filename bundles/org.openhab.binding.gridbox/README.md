@@ -6,7 +6,7 @@ The Viessmann GridBox is a variety of the [gridX Gateway](https://de.gridx.ai/ed
 The measured data (energy production, consumptions, etc.) cannot be accessed locally. However, thanks to the pioneer work in the [unl0ck/viessmann-gridbox-connector](https://github.com/unl0ck/viessmann-gridbox-connector) repository, we can retrieve the data from the gridX cloud service using Rest-API calls.
 The API is documented [here](https://developer.gridx.ai/reference/).
 
-This binding polls the "live data" API endpoint to gather the available data from the GridBox. 
+This binding polls the "live data" API endpoint to gather the available data from the GridBox.
 It creates a GridBox thing with the channels representing the data points of the live data API call.
 
 For connection to the cloud service, account E-Mail and password used to connect to the [GridBox web service](https://mygridbox.viessmann.com/login) are required.
@@ -16,16 +16,16 @@ At the moment, only one API-"system" per account is supported by this binding.
 A "system" is the representation of a GridBox together with its connected appliances (PV inverter, heat pump etc.).
 The binding will use the first system ID retrieved by a call to the https://api.gridx.de/systems API.
 
-Also, only the live data API endpoint is supported by the binding as it is the most interesting for openHAB use cases. 
+Also, only the live data API endpoint is supported by the binding as it is the most interesting for openHAB use cases.
 There is another API endpoint for fetching aggregated measurement data which could be added in the future.
 Only the Viessmann GridBox variant is supported, other variants would need adaptions to the OAuth mechanism.
 
-This binding is not endorsed or supported by Viessmann or gridX. 
+This binding is not endorsed or supported by Viessmann or gridX.
 Arbitrary breaking changes to the API can happen at any time, resulting in this binding failing to retrieve the data.
 
 ## Supported Things
 
-The following thing can be created with the binding: 
+The following thing can be created with the binding:
 
 - `gridbox`: A thing representing the GridBox, tied to an account of the Viessmann GridBox.
 
@@ -73,16 +73,16 @@ The following channels are supplied by the GridBox thing (descriptions taken fro
 | self-sufficiency-rate         | Number    | R           | Ratio of produced energy vs total consumed energy (0.0-1.0).                                                                                                        |
 | self-supply                   | Number    | R           | Power/energy consumed through storage and production.                                                                                                               |
 | total-consumption             | Number    | R           | Adjusted power/energy of the system including heatpumps and EV charging stations.                                                                                   |
-                                                                                                                                                                                                                             
-## Full Example                                                                                                                                                                                                              
-                                                                                                                                                                                                                             
-### Thing Configuration                                                                                                                                                                                                      
-                                                                                                                                                                                                                             
-```java                                                                                                                                                                                                                      
-Thing gridbox:gridbox:901b4766e2 "GridBox" [email="abc@example.com",password="mypassword",refreshInterval=120]                                                                                                               
-```                                                                                                                                                                                                                          
-                                                                                                                                                                                                                             
-### Item Configuration                                                                                                                                                                                                       
+
+## Full Example
+
+### Thing Configuration
+
+```java
+Thing gridbox:gridbox:901b4766e2 "GridBox" [email="abc@example.com",password="mypassword",refreshInterval=120]
+```
+
+### Item Configuration
 
 ```java
 Number GridBox_PhotovoltaicProduction "PV Production [%.0f W]" {channel="gridbox:gridbox:901b4766e2:photovoltaicProduction"}

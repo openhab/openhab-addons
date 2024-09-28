@@ -66,11 +66,11 @@ Thing can be extended with as many SafeExposure channels as needed for each skin
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name          | Dynamic | Illustration |
-|--------------------|---------|--------------|
-| oh:openuv:ozone    |   No    | ![](src/main/resources/icon/ozone.svg) |
-| oh:openuv:uv-alarm |   Yes   | ![](src/main/resources/icon/uv-alarm.svg) |
-| oh:openuv:uv-index |   Yes   | ![](src/main/resources/icon/uv-index.svg) |
+| Icon Name          | Dynamic | Illustration               |
+|--------------------|---------|----------------------------|
+| oh:openuv:ozone    | No      | ![](doc/icon/ozone.svg)    |
+| oh:openuv:uv-alarm | Yes     | ![](doc/icon/uv-alarm.svg) |
+| oh:openuv:uv-index | Yes     | ![](doc/icon/uv-index.svg) |
 
 ## Examples
 
@@ -80,7 +80,7 @@ demo.things:
 Bridge openuv:openuvapi:local "OpenUV Api" [ apikey="xxxxYYYxxxx" ] {
     Thing uvreport city1 "UV In My City" [ location="52.5200066,13.4049540", refresh=20 ]{
         Channels:
-            Type SafeExposure : parents [       
+            Type SafeExposure : parents [
                 index="III"
             ]
             Type SafeExposure : childs [

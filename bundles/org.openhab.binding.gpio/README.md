@@ -17,7 +17,7 @@ On a raspberry (or a compatible device) you have to install pigpiod.
 
 ```shell
 sudo apt-get install pigpiod
-sudo raspi-config 
+sudo raspi-config
 ```
 
 -> Interfacing Options --> Remote GPIO --> YES --> OK --> Finish
@@ -42,7 +42,7 @@ sudo systemctl daemon-reload
 Now that Remote GPIO is enabled, get the pigpiod daemon going (even if installed with apt-get):
 
 ```shell
-sudo systemctl enable pigpiod 
+sudo systemctl enable pigpiod
 sudo systemctl start pigpiod
 ```
 
@@ -86,7 +86,7 @@ Input Channel Disconnect Connect Action determines what happens when the binding
 Input Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
 startup.
-  
+
 - **Do Nothing:** The default, do nothing. Input channels will retain their current value.
 - **Refresh Channel:** Issues a refresh command on the input channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state.
@@ -95,7 +95,7 @@ startup.
 
 Output Channel Connect Action determines what happens when the binding initially connects to pigpiod.
 This action only occurs once after binding startup.
-  
+
 - **Do Nothing:** The default, do nothing. Output channels will retain their default value (UNDEF).
 - **All On:** Issues a ON command to all configured output channels.
 - **All Off:** Issues a OFF command to all configured output channels.
@@ -107,7 +107,7 @@ This action only occurs once after binding startup.
 ### Output Channel Disconnect Connect Action
 
 Output Channel Disconnect Connect Action determines what happens when the binding disconnects from pigpiod.
-  
+
 - **Do Nothing:** he default, do nothing. Input channels will retain their current value.
 - **Set Undef:** Sets the output channel states to UNDEF to indicate that pigpiod has disconnected.
 
@@ -115,7 +115,7 @@ Output Channel Disconnect Connect Action determines what happens when the bindin
 
 Output Channel Reconnect Action determines what happens when the binding reconnects to pigpiod
 after a disconnect. This action does not occur on the initial binding connect to pigpiod.
-  
+
 - **Do Nothing:** The default, do nothing. Output channels will retain their current value.
 - **Refresh Channel:** Issues a refresh command on the output channels. This will refresh the channels from
                     pigpiod causing the gpio pin state to reflect on the channel state. NOTE: This does
@@ -231,7 +231,7 @@ Thing gpio:pigpio-remote:mypi "MyPi GPIO" [ host="192.168.1.5", port=8888,
                 Type pigpio-digital-input  : GPI6  [ gpioId=6, debouncingTime=50,pullupdown="UP",invert=true ]
                 Type pigpio-digital-input  : GPI13 [ gpioId=13,debouncingTime=50,pullupdown="DOWN",invert=false ]
                 Type pigpio-digital-input  : GPI26 [ gpioId=26,debouncingTime=50,pullupdown="OFF",invert=false ]
-    } 
+    }
 ```
 
 demo.items:

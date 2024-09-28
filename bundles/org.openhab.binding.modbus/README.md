@@ -114,15 +114,15 @@ Basic parameters
 
 Advanced parameters
 
-| Parameter                       | Required | Type    | Default if omitted | Description                                                                                                                                                        |
-| ------------------------------- | -------- | ------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `timeBetweenTransactionsMillis` |          | integer | `60`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                                            |
-| `timeBetweenReconnectMillis`    |          | integer | `0`                | How long to wait to before trying to establish a new connection after the previous one has been disconnected. In milliseconds.                                     |
-| `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                                           |
-| `afterConnectionDelayMillis`    |          | integer | `0`                | Connection warm-up time. Additional time which is spent on preparing connection which should be spent waiting while end device is getting ready to answer first modbus call. In milliseconds.  |
-| `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds. |
-| `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                        |
-| `enableDiscovery`                |          | boolean | false               | Enable auto-discovery feature. Effective only if a supporting extension has been installed. |
+| Parameter                       | Required | Type    | Default if omitted | Description                                                                                                                                                                                   |
+|---------------------------------|----------|---------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `timeBetweenTransactionsMillis` |          | integer | `60`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                                                                       |
+| `timeBetweenReconnectMillis`    |          | integer | `0`                | How long to wait to before trying to establish a new connection after the previous one has been disconnected. In milliseconds.                                                                |
+| `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                                                                      |
+| `afterConnectionDelayMillis`    |          | integer | `0`                | Connection warm-up time. Additional time which is spent on preparing connection which should be spent waiting while end device is getting ready to answer first modbus call. In milliseconds. |
+| `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds.                            |
+| `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                                                   |
+| `enableDiscovery`               |          | boolean | false              | Enable auto-discovery feature. Effective only if a supporting extension has been installed.                                                                                                   |
 
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
@@ -136,29 +136,29 @@ Similarly, with some slower devices on might need to increase the values.
 
 Basic parameters
 
-| Parameter | Type    | Required | Default if omitted | Description                                                                                                                                                                                               |     |
-| --------- | ------- | -------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                |     |
-| id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](https://www.simplymodbus.ca/index.html) articles for more information |     |
-| baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                        |     |
-| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                       |     |
-| parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                    |     |
-| dataBits  | integer | ✓        |                    | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                       |     |
-| encoding  | text    |          | `"rtu"`           | Encoding. Valid values are: `"ascii"`, `"rtu"`, `"bin"`.                                                                                                                                                  |     |
-| echo      | boolean |          | `false`            | Flag for setting the RS485 echo mode. This controls whether we should try to read back whatever we send on the line, before reading the response. Valid values are: `true`, `false`.                      |     |
+| Parameter | Type    | Required | Default if omitted | Description                                                                                                                                                                                                |   |
+|-----------|---------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
+| port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                 |   |
+| id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](https://www.simplymodbus.ca/index.html) articles for more information |   |
+| baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                         |   |
+| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                    |   |
+| parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                     |   |
+| dataBits  | integer | ✓        |                    | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                        |   |
+| encoding  | text    |          | `"rtu"`            | Encoding. Valid values are: `"ascii"`, `"rtu"`, `"bin"`.                                                                                                                                                   |   |
+| echo      | boolean |          | `false`            | Flag for setting the RS485 echo mode. This controls whether we should try to read back whatever we send on the line, before reading the response. Valid values are: `true`, `false`.                       |   |
 
 Advanced parameters
 
-| Parameter                       | Required | Type    | Default if omitted | Description                                                                                                                                |
-| ------------------------------- | -------- | ------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `receiveTimeoutMillis`          |          | integer | `1500`             | Timeout for read operations. In milliseconds.                                                                                              |
-| `flowControlIn`                 |          | text    | `"none"`           | Type of flow control for receiving. Valid values are: `"none"`, `"xon/xoff in"`, `"rts/cts in"`.                                           |
-| `flowControlOut`                |          | text    | `"none"`           | Type of flow control for sending. Valid values are: `"none"`, `"xon/xoff out"`, `"rts/cts out"`.                                           |
-| `timeBetweenTransactionsMillis` |          | integer | `35`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                    |
-| `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                   |
-| `afterConnectionDelayMillis`    |          | integer | `0`                | Connection warm-up time. Additional time which is spent on preparing connection which should be spent waiting while end device is getting ready to answer first modbus call. In milliseconds.   |
-| `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds. |
-| `enableDiscovery`                |          | boolean | false               | Enable auto-discovery feature. Effective only if a supporting extension has been installed. |
+| Parameter                       | Required | Type    | Default if omitted | Description                                                                                                                                                                                   |
+|---------------------------------|----------|---------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `receiveTimeoutMillis`          |          | integer | `1500`             | Timeout for read operations. In milliseconds.                                                                                                                                                 |
+| `flowControlIn`                 |          | text    | `"none"`           | Type of flow control for receiving. Valid values are: `"none"`, `"xon/xoff in"`, `"rts/cts in"`.                                                                                              |
+| `flowControlOut`                |          | text    | `"none"`           | Type of flow control for sending. Valid values are: `"none"`, `"xon/xoff out"`, `"rts/cts out"`.                                                                                              |
+| `timeBetweenTransactionsMillis` |          | integer | `35`               | How long to delay we must have at minimum between two consecutive MODBUS transactions. In milliseconds.                                                                                       |
+| `connectMaxTries`               |          | integer | `1`                | How many times we try to establish the connection. Should be at least 1.                                                                                                                      |
+| `afterConnectionDelayMillis`    |          | integer | `0`                | Connection warm-up time. Additional time which is spent on preparing connection which should be spent waiting while end device is getting ready to answer first modbus call. In milliseconds. |
+| `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means thatsystem/OS default is respected. In milliseconds.                                                    |
+| `enableDiscovery`               |          | boolean | false              | Enable auto-discovery feature. Effective only if a supporting extension has been installed.                                                                                                   |
 
 With the exception of `id` parameters should be equal for all `serial` things sharing the same `port`.
 
@@ -174,9 +174,9 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 You must give each of your bridge Things a reference (thing ID) that is unique for this binding.
 
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
-| ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------|---------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                              |
-| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.  Note that protocol limits max length, depending on type                                                                             |
+| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.  Note that protocol limits max length, depending on type                                                                                |
 | `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `"coil"` (FC01), `"discrete"` (FC02), `"holding"`(FC03), `"input"` (FC04). |
 | `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                          |
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
@@ -360,14 +360,14 @@ Note that value types less than 16 bits are not supported on write to holding re
 
 See [Full examples](#full-examples) section for practical examples.
 
-#### `bit`:
+#### `bit`
 
 - a single bit is read from the registers
 - address is given as `X.Y`, where `Y` is between 0...15 (inclusive), representing bit of the register `X`
 - index `Y=0` refers to the least significant bit
 - index `Y=1` refers to the second least significant bit, etc.
 
-#### `int8`:
+#### `int8`
 
 - a byte (8 bits) from the registers is interpreted as signed integer
 - address is given as `X.Y`, where `Y` is between 0...1 (inclusive), representing byte of the register `X`
@@ -375,42 +375,42 @@ See [Full examples](#full-examples) section for practical examples.
 - index `Y=1` refers to high byte
 - it is assumed that each high and low byte is encoded in most significant bit first order
 
-#### `uint8`:
+#### `uint8`
 
 - same as `int8` except value is interpreted as unsigned integer
 
-#### `int16`:
+#### `int16`
 
 - register with index is interpreted as 16 bit signed integer.
 - it is assumed that register is encoded in most significant bit first order
 
-#### `uint16`:
+#### `uint16`
 
 - same as `int16` except value is interpreted as unsigned integer
 
-#### `int32`:
+#### `int32`
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit integer
 - it assumed that the first register contains the most significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order
 
-#### `uint32`:
+#### `uint32`
 
 - same as `int32` except value is interpreted as unsigned integer
 
-#### `float32`:
+#### `float32`
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit floating point number
 - it assumed that the first register contains the most significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order
 
-#### `int64`:
+#### `int64`
 
 - registers `index`, `(index + 1)`, `(index + 2)`, `(index + 3)` are interpreted as signed 64bit integer.
 - it assumed that the first register contains the most significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order
 
-#### `uint64`:
+#### `uint64`
 
 - same as `int64` except value is interpreted as unsigned integer
 
@@ -422,27 +422,27 @@ To resolve this the binding supports a second set of valuetypes that have the wo
 
 If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `uint64` valuetypes then just try the `int32_swap`, `uint32_swap`, `float32_swap`, `int64_swap`, or `uint64_swap` valuetype, depending upon what your data type is.
 
-#### `int32_swap`:
+#### `int32_swap`
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit integer
 - it assumed that the first register contains the least significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order (Big Endian)
 
-#### `uint32_swap`:
+#### `uint32_swap`
 
 - same as `int32_swap` except value is interpreted as unsigned integer
 
-#### `float32_swap`:
+#### `float32_swap`
 
 - registers `index` and `(index + 1)` are interpreted as signed 32bit floating point number
 - it assumed that the first register contains the least significant 16 bits
 - it is assumed that each register is encoded in most significant bit first order (Big Endian)
 
-#### `int64_swap`:
+#### `int64_swap`
 
 - same as `int64` but registers swapped, that is, registers (index + 3), (index + 2), (index + 1), (index + 1) are interpreted as signed 64bit integer
 
-#### `uint64_swap`:
+#### `uint64_swap`
 
 - same as `uint64` except value is interpreted as unsigned integer
 
