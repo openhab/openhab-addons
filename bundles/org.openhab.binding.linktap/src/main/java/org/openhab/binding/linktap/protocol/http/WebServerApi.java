@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openhab.binding.linktap.internal.Firmware;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +80,29 @@ public final class WebServerApi {
         return INSTANCE;
     }
 
+    private @Nullable TranslationProvider translationProvider;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable Bundle bundle;
+
+    public void setTranslationProviderInfo(TranslationProvider translationProvider, LocaleProvider localeProvider,
+            Bundle bundle) {
+        this.bundle = bundle;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        TranslationProvider translationProv = translationProvider;
+        LocaleProvider localeProv = localeProvider;
+        if (translationProv == null || localeProv == null) {
+            return key;
+        }
+        String result = translationProv.getText(bundle, key, key, localeProv.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
+    }
+
     /**
-     * Sets the httpClient object to be used for API calls to Vesync.
+     * Sets the httpClient object to be used for API calls to LinkTap.
      *
      * @param httpClient the client to be used.
      */

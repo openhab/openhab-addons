@@ -133,7 +133,7 @@ public final class TransactionProcessor {
 
         final ResultStatus resultStatus = frame.getRes();
         if (resultStatus == ResultStatus.RET_CMD_NOT_SUPPORTED) {
-            throw new CommandNotSupportedException(resultStatus.getDesc());
+            throw new CommandNotSupportedException(resultStatus);
         }
 
         String response = "";

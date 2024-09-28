@@ -24,7 +24,7 @@ import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class InvalidParameterException extends Exception {
+public class InvalidParameterException extends I18Exception {
     @Serial
     private static final long serialVersionUID = -7784829499604153947L;
 
@@ -46,5 +46,10 @@ public class InvalidParameterException extends Exception {
 
     public InvalidParameterException(final GatewayDeviceResponse.ResultStatus rs) {
         super(rs.getDesc());
+        this.i18Key = rs.getI18Key();
+    }
+
+    public String getI18Key() {
+        return getI18Key("exception.invalid-parameter-exception");
     }
 }
