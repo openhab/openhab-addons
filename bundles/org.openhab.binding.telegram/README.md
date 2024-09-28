@@ -354,7 +354,7 @@ To receive a message and react on that:
 
 telegram.items
 
-```php
+```java
 String telegramMessage "Telegram Message" { channel = "telegram:telegramBot:2b155b22:lastMessageText" }
 ```
 
@@ -373,7 +373,7 @@ To send a question with two alternatives and have the bot handle the reply:
 
 telegram.items
 
-```php
+```java
 String telegramReplyId "Telegram Reply Id" { channel = "telegram:telegramBot:2b155b22:replyId" }
 ```
 

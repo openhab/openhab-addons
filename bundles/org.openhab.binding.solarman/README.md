@@ -158,7 +158,7 @@ Thing solarman:logger:local [hostname="x.x.x.x",inverterType="deye_sg04lp3",seri
 
 Items file example for a SUN-12K-SG04LP3-EU inverter
 
-```text
+```java
 Number:Temperature        AC_Temperature                  "AC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-ac-temperature", unit="°C"}
 Number                    Alert                           "Alert [%s]"                           (solarman)  {channel="solarman:logger:local:alert-alert"}
 Number:ElectricPotential  Battery_Absorption_V            "Battery Absorption V [%.2f V]"        (solarman)  {channel="solarman:logger:local:battery-battery-absorption-v", unit="V"}

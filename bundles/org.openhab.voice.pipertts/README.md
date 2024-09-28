@@ -45,7 +45,7 @@ In case you would like to setup the service via a text file, create a new file i
 
 Its contents should look similar to:
 
-```text
+```ini
 org.openhab.voice.pipertts:preloadModel=true
 ```
 
@@ -60,6 +60,6 @@ You can setup your preferred default Speech-to-Text in the UI:
 
 In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```text
+```ini
 org.openhab.voice:defaultTTS=pipertts
 ```
