@@ -39,6 +39,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -257,6 +258,10 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     String val;
                     if (command instanceof Number qt) {
                         val = String.format(Locale.US, "%.2f", qt.floatValue());
+                    } else if (command instanceof DateTimeType dtt) {
+                        // time is transferred as minutes since midnight...
+                        var zdt = dtt.getZonedDateTime();
+                        val = Integer.toString(zdt.getHour() * 60 + zdt.getMinute());
                     } else {
                         val = command.format("%.2f");
                     }

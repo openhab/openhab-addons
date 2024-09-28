@@ -15,6 +15,10 @@ package org.openhab.binding.tacmi.internal.schema;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +37,7 @@ import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
 import org.openhab.binding.tacmi.internal.schema.ApiPageEntry.Type;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -196,7 +201,18 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     sb = sb.delete(0, 0);
                 }
                 if (this.fieldType == FieldType.READ_ONLY || this.fieldType == FieldType.FORM_VALUE) {
+                    int len = sb.length();
                     int lids = sb.lastIndexOf(":");
+                    if (len - lids == 3) {
+                        int lids2 = sb.lastIndexOf(":", lids - 1);
+                        if (lids2 > 0 && (lids - lids2 >= 3 && lids - lids2 <= 7)) {
+                            // the given value might be a time. validate it
+                            String timeCandidate = sb.substring(lids2 + 1).trim();
+                            if (timeCandidate.length() == 5 && timeCandidate.matches("[0-9]{2}:[0-9]{2}")) {
+                                lids = lids2;
+                            }
+                        }
+                    }
                     int fsp = sb.indexOf(" ");
                     if (fsp < 0 || lids < 0 || fsp > lids) {
                         logger.debug("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
@@ -401,16 +417,27 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             type = Type.NUMERIC_FORM;
                         }
                     } catch (NumberFormatException nfe) {
-                        // not a number...
-                        channelType = "String";
+                        ctuid = null;
+                        // check for time....
+                        String[] valParts = vs.split(":");
+                        if (valParts.length == 2) {
+                            channelType = "DateTime";
+                            // convert it to zonedDateTime with today as date and the
+                            // default timezone.
+                            var zdt = LocalTime.parse(vs, DateTimeFormatter.ofPattern("HH:mm")).atDate(LocalDate.now())
+                                    .atZone(ZoneId.systemDefault());
+                            state = new DateTimeType(zdt);
+                            type = Type.NUMERIC_FORM;
+                        } else {
+                            // not a number and not time...
+                            channelType = "String";
+                            state = new StringType(vs);
+                            type = Type.STATE_FORM;
+                        }
                         if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                             ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
                             type = Type.READ_ONLY_STATE;
-                        } else {
-                            ctuid = null;
-                            type = Type.STATE_FORM;
                         }
-                        state = new StringType(vs);
                     }
                 }
                 break;
@@ -555,8 +582,11 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     }
                 }
                 break;
+            case TIME:
+                itemType = "DateTime";
+                break;
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unhandled OptionType: " + cx2e.optionType);
         }
         ChannelTypeBuilder<?> ctb = ChannelTypeBuilder
                 .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
