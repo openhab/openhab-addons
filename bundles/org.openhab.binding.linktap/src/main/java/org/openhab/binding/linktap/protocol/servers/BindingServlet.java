@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,7 +31,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.linktap.internal.LinkTapBindingConstants;
 import org.openhab.binding.linktap.internal.TransactionProcessor;
+import org.openhab.binding.linktap.internal.Utils;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -52,6 +57,17 @@ public class BindingServlet extends HttpServlet {
     @Nullable
     HttpService httpService;
 
+    private @Nullable TranslationProvider translationProvider;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable Bundle bundle;
+
+    public void setTranslationProviderInfo(TranslationProvider translationProvider, LocaleProvider localeProvider,
+            Bundle bundle) {
+        this.bundle = bundle;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+    }
+
     volatile boolean registered;
     final Object registerLock = new Object();
 
@@ -59,6 +75,16 @@ public class BindingServlet extends HttpServlet {
 
     public static final BindingServlet getInstance() {
         return INSTANCE;
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        TranslationProvider translationProv = translationProvider;
+        LocaleProvider localeProv = localeProvider;
+        if (translationProv == null || localeProv == null) {
+            return key;
+        }
+        String result = translationProv.getText(bundle, key, key, localeProv.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     public void setHttpService(final HttpService httpService) {
@@ -84,7 +110,8 @@ public class BindingServlet extends HttpServlet {
                     registered = true;
                     logger.trace("Registered servlet " + SERVLET_URL);
                 } catch (NamespaceException | ServletException e) {
-                    logger.warn("Register servlet failed for {}", SERVLET_URL, e);
+                    logger.warn("{}",
+                            getLocalizedText("exception.fail-servlet-registration", SERVLET_URL, Utils.getMessage(e)));
                 }
             }
         }

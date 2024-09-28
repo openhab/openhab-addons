@@ -133,6 +133,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         this.bundle = FrameworkUtil.getBundle(getClass());
         TransactionProcessor.getInstance().setTranslationProviderInfo(translationProvider, localeProvider, bundle);
         WebServerApi.getInstance().setTranslationProviderInfo(translationProvider, localeProvider, bundle);
+        BindingServlet.getInstance().setTranslationProviderInfo(translationProvider, localeProvider, bundle);
     }
 
     public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
