@@ -22,8 +22,8 @@
 			</parameter>
 
 			<parameter name="token" type="text" required="true">
-				<label>Token</label>
-				<description>Token as obtained from the server</description>
+				<label>Access Token</label>
+				<description>Access token obtained from the account settings page</description>
 			</parameter>
 
 			<parameter name="apiUrlBase" type="text" required="true">

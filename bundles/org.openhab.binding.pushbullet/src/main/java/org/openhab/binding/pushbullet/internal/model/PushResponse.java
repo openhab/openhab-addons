@@ -12,200 +12,238 @@
  */
 package org.openhab.binding.pushbullet.internal.model;
 
+import java.time.Instant;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * This class represents the answer to pushes provided by the API.
+ * This class represents the push response received from the API.
  *
  * @author Hakan Tandogan - Initial contribution
  * @author Hakan Tandogan - Migrated from openHAB 1 action with the same name
+ * @author Jeremy Setton - Add link and file push type support
  */
+@NonNullByDefault
 public class PushResponse {
 
-    @SerializedName("active")
-    private String active;
-
     @SerializedName("iden")
-    private String iden;
+    private @Nullable String iden;
+
+    @SerializedName("active")
+    private @Nullable Boolean active;
+
+    @SerializedName("created")
+    private @Nullable Instant created;
+
+    @SerializedName("modified")
+    private @Nullable Instant modified;
 
     @SerializedName("type")
-    private String type;
+    private @Nullable PushType type;
 
     @SerializedName("dismissed")
-    private Boolean dismissed;
+    private @Nullable Boolean dismissed;
+
+    @SerializedName("guid")
+    private @Nullable String guid;
 
     @SerializedName("direction")
-    private String direction;
+    private @Nullable String direction;
 
     @SerializedName("sender_iden")
-    private String senderIdentifier;
+    private @Nullable String senderIdentifier;
 
     @SerializedName("sender_email")
-    private String senderEmail;
+    private @Nullable String senderEmail;
 
     @SerializedName("sender_email_normalized")
-    private String senderEmailNormalized;
+    private @Nullable String senderEmailNormalized;
 
     @SerializedName("sender_name")
-    private String senderName;
+    private @Nullable String senderName;
 
     @SerializedName("receiver_iden")
-    private String receiverIdentifier;
+    private @Nullable String receiverIdentifier;
 
     @SerializedName("receiver_email")
-    private String receiverEmail;
+    private @Nullable String receiverEmail;
 
     @SerializedName("receiver_email_normalized")
-    private String receiverEmailNormalized;
+    private @Nullable String receiverEmailNormalized;
+
+    @SerializedName("target_device_iden")
+    private @Nullable String targetDeviceIden;
+
+    @SerializedName("source_device_iden")
+    private @Nullable String sourceDeviceIden;
+
+    @SerializedName("client_iden")
+    private @Nullable String clientIden;
+
+    @SerializedName("channel_iden")
+    private @Nullable String channelIden;
+
+    @SerializedName("awake_app_guids")
+    private @Nullable List<String> awakeAppGuids;
 
     @SerializedName("title")
-    private String title;
+    private @Nullable String title;
 
     @SerializedName("body")
-    private String body;
+    private @Nullable String body;
 
-    @SerializedName("error_code")
-    private String errorCode;
+    @SerializedName("url")
+    private @Nullable String url;
 
-    @SerializedName("error")
-    private PushError pushError;
+    @SerializedName("file_name")
+    private @Nullable String fileName;
 
-    public String getActive() {
-        return active;
-    }
+    @SerializedName("file_type")
+    private @Nullable String fileType;
 
-    public void setActive(String active) {
-        this.active = active;
-    }
+    @SerializedName("file_url")
+    private @Nullable String fileUrl;
 
-    public String getIden() {
+    @SerializedName("image_url")
+    private @Nullable String imageUrl;
+
+    @SerializedName("image_width")
+    private @Nullable Integer imageWidth;
+
+    @SerializedName("image_height")
+    private @Nullable Integer imageHeight;
+
+    public @Nullable String getIden() {
         return iden;
     }
 
-    public void setIden(String iden) {
-        this.iden = iden;
+    public @Nullable Boolean getActive() {
+        return active;
     }
 
-    public String getType() {
+    public @Nullable Instant getCreated() {
+        return created;
+    }
+
+    public @Nullable Instant getModified() {
+        return modified;
+    }
+
+    public @Nullable PushType getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Boolean getDismissed() {
+    public @Nullable Boolean getDismissed() {
         return dismissed;
     }
 
-    public void setDismissed(Boolean dismissed) {
-        this.dismissed = dismissed;
+    public @Nullable String getGuid() {
+        return guid;
     }
 
-    public String getDirection() {
+    public @Nullable String getDirection() {
         return direction;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    public String getSenderIdentifier() {
+    public @Nullable String getSenderIdentifier() {
         return senderIdentifier;
     }
 
-    public void setSenderIdentifier(String senderIdentifier) {
-        this.senderIdentifier = senderIdentifier;
-    }
-
-    public String getSenderEmail() {
+    public @Nullable String getSenderEmail() {
         return senderEmail;
     }
 
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
-    }
-
-    public String getSenderEmailNormalized() {
+    public @Nullable String getSenderEmailNormalized() {
         return senderEmailNormalized;
     }
 
-    public void setSenderEmailNormalized(String senderEmailNormalized) {
-        this.senderEmailNormalized = senderEmailNormalized;
-    }
-
-    public String getSenderName() {
+    public @Nullable String getSenderName() {
         return senderName;
     }
 
-    public void setSenderName(String senderName) {
-        this.senderName = senderName;
-    }
-
-    public String getReceiverIdentifier() {
+    public @Nullable String getReceiverIdentifier() {
         return receiverIdentifier;
     }
 
-    public void setReceiverIdentifier(String receiverIdentifier) {
-        this.receiverIdentifier = receiverIdentifier;
-    }
-
-    public String getReceiverEmail() {
+    public @Nullable String getReceiverEmail() {
         return receiverEmail;
     }
 
-    public void setReceiverEmail(String receiverEmail) {
-        this.receiverEmail = receiverEmail;
-    }
-
-    public String getReceiverEmailNormalized() {
+    public @Nullable String getReceiverEmailNormalized() {
         return receiverEmailNormalized;
     }
 
-    public void setReceiverEmailNormalized(String receiverEmailNormalized) {
-        this.receiverEmailNormalized = receiverEmailNormalized;
+    public @Nullable String getTargetDeviceIden() {
+        return targetDeviceIden;
     }
 
-    public String getTitle() {
+    public @Nullable String getSourceDeviceIden() {
+        return sourceDeviceIden;
+    }
+
+    public @Nullable String getClientIden() {
+        return clientIden;
+    }
+
+    public @Nullable String getChannelIden() {
+        return channelIden;
+    }
+
+    public @Nullable List<String> getAwakeAppGuids() {
+        return awakeAppGuids;
+    }
+
+    public @Nullable String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getBody() {
+    public @Nullable String getBody() {
         return body;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public @Nullable String getUrl() {
+        return url;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public @Nullable String getFileName() {
+        return fileName;
     }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
+    public @Nullable String getFileType() {
+        return fileType;
     }
 
-    public PushError getPushError() {
-        return pushError;
+    public @Nullable String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setPushError(PushError pushError) {
-        this.pushError = pushError;
+    public @Nullable String getImageUrl() {
+        return imageUrl;
+    }
+
+    public @Nullable Integer getImageWidth() {
+        return imageWidth;
+    }
+
+    public @Nullable Integer getImageHeight() {
+        return imageHeight;
     }
 
     @Override
     public String toString() {
-        return "PushResponse {" + "active='" + active + '\'' + ", iden='" + iden + '\'' + ", type='" + type + '\''
-                + ", dismissed=" + dismissed + ", direction='" + direction + '\'' + ", senderIdentifier='"
-                + senderIdentifier + '\'' + ", senderEmail='" + senderEmail + '\'' + ", senderEmailNormalized='"
-                + senderEmailNormalized + '\'' + ", senderName='" + senderName + '\'' + ", receiverIdentifier='"
-                + receiverIdentifier + '\'' + ", receiverEmail='" + receiverEmail + '\'' + ", receiverEmailNormalized='"
-                + receiverEmailNormalized + '\'' + ", title='" + title + '\'' + ", body='" + body + '\''
-                + ", errorCode='" + errorCode + '\'' + ", pushError=" + pushError + '}';
+        return "PushResponse {iden='" + iden + ", active='" + active + "', created='" + created + "', modified='"
+                + modified + "', type='" + type + "', dismissed='" + dismissed + "', guid='" + guid + "', direction='"
+                + direction + "', senderIdentifier='" + senderIdentifier + "', senderEmail='" + senderEmail
+                + "', senderEmailNormalized='" + senderEmailNormalized + "', senderName='" + senderName
+                + "', receiverIdentifier='" + receiverIdentifier + "', receiverEmail='" + receiverEmail
+                + "', receiverEmailNormalized='" + receiverEmailNormalized + "', targetDeviceIden='" + targetDeviceIden
+                + "', sourceDeviceIden='" + sourceDeviceIden + "', clientIden='" + clientIden + "', channelIden='"
+                + channelIden + "', awakeAppGuids='" + awakeAppGuids + "', title='" + title + "', body='" + body
+                + "', url='" + url + "', fileName='" + fileName + "', fileType='" + fileType + "', fileUrl='" + fileUrl
+                + "', imageUrl='" + imageUrl + "', imageWidth='" + imageWidth + "', imageHeight='" + imageHeight + "'}";
     }
 }

@@ -48,6 +48,11 @@ Two different actions available:
 
 - `sendPushbulletNote(String recipient, String messsage)`
 - `sendPushbulletNote(String recipient, String title, String messsage)`
+- `sendPushbulletLink(String recipient, String url)`
+- `sendPushbulletLink(String recipient, String title, String messsage, String url)`
+- `sendPushbulletFile(String recipient, String content)`
+- `sendPushbulletFile(String recipient, String title, String messsage, String content)`
+- `sendPushbulletFile(String recipient, String title, String messsage, String content, String fileName)`
 
 Since there is a separate rule action instance for each `bot` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
 The first parameter always has to be `pushbullet` and the second is the full Thing UID of the bot that should be used.
@@ -56,11 +61,25 @@ Once this action instance is retrieved, you can invoke the action method on it.
 The recipient can either be an email address, a channel tag or `null`.
 If it is not specified or properly formatted, the note will be broadcast to all of the user account's devices.
 
+The file content can be an image URL, a local file path or an Image item state.
+
+The file name is used in the upload link and how it appears in the push message for non-image content.
+If it is not specified, it is automatically determined from the image URL or file path.
+For Image item state content, it defaults to `image.jpg`.
+
+For the `sendPushbulletNote` action, parameter `message` is required.
+Likewise, for `sendPushbulletLink`, `url` and for `sendPushbulletFile`, `content` parameters are required.
+Any other parameters for these actions are optional and can be set to `null`.
+
 Examples:
 
 ```java
 val actions = getActions("pushbullet", "pushbullet:bot:r2d2")
-val result = actions.sendPushbulletNote("someone@example.com", "R2D2 talks here...", "This is the pushed note.")
+actions.sendPushbulletNote("someone@example.com", "Note Example", "This is the pushed note.")
+actions.sendPushbulletLink("someone@example.com", "Link Example", "This is the pushed link", "https://example.com")
+actions.sendPushbulletFile("someone@example.com", "File Example", "This is the pushed file", "https://example.com/image.png")
+actions.sendPushbulletFile("someone@example.com", null, null, "/path/to/somefile.pdf", "document.pdf")
+actions.sendPushbulletFile("someone@example.com", ImageItem.state.toFullString)
 ```
 
 ## Full Example
