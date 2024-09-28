@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.client.util.MultiPartContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
@@ -51,6 +52,8 @@ public class PushbulletHttpClient {
     private static final String AGENT = "openHAB/" + OpenHAB.getVersion();
 
     private static final int TIMEOUT = 30; // in seconds
+
+    private static final String HEADER_RATELIMIT_RESET = "X-Ratelimit-Reset";
 
     private final Logger logger = LoggerFactory.getLogger(PushbulletHttpClient.class);
 
@@ -143,7 +146,7 @@ public class PushbulletHttpClient {
     }
 
     /**
-     * Sends http request
+     * Sends a http request
      *
      * @param request the request to send
      * @return the response body
@@ -169,6 +172,9 @@ public class PushbulletHttpClient {
                 case HttpStatus.UNAUTHORIZED_401:
                 case HttpStatus.FORBIDDEN_403:
                     throw new PushbulletAuthenticationException(statusReason);
+                case HttpStatus.TOO_MANY_REQUESTS_429:
+                    logger.warn("Rate limited for making too many requests until {}",
+                            getRateLimitResetTime(response.getHeaders()));
                 default:
                     throw new PushbulletApiException(statusReason);
             }
@@ -176,5 +182,22 @@ public class PushbulletHttpClient {
             logger.debug("Failed to send request: {}", e.getMessage());
             throw new PushbulletApiException(e);
         }
+    }
+
+    /**
+     * Returns the rate limit reset time included in response headers
+     *
+     * @param headers the response headers
+     * @return the rate limit reset time if found in headers, otherwise null
+     */
+    private @Nullable Instant getRateLimitResetTime(HttpFields headers) {
+        try {
+            long resetTime = headers.getLongField(HEADER_RATELIMIT_RESET);
+            if (resetTime != -1) {
+                return Instant.ofEpochSecond(resetTime);
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return null;
     }
 }
