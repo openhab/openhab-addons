@@ -93,7 +93,7 @@ public class PushbulletHttpClient {
     public <T> T executeRequest(String apiEndpoint, @Nullable Object body, Class<T> responseType)
             throws PushbulletApiException {
         String url = config.getApiUrlBase() + apiEndpoint;
-        String accessToken = config.getToken();
+        String accessToken = config.getAccessToken();
 
         Request request = newRequest(url).header("Access-Token", accessToken);
 

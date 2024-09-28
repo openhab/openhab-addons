@@ -30,6 +30,9 @@ public class User {
     @SerializedName("iden")
     private @Nullable String iden;
 
+    @SerializedName("active")
+    private @Nullable Boolean active;
+
     @SerializedName("created")
     private @Nullable Instant created;
 
@@ -59,6 +62,10 @@ public class User {
 
     public @Nullable String getIden() {
         return iden;
+    }
+
+    public @Nullable Boolean getActive() {
+        return active;
     }
 
     public @Nullable Instant getCreated() {
@@ -99,9 +106,9 @@ public class User {
 
     @Override
     public String toString() {
-        return "User {iden='" + iden + "', created='" + created + "', modified='" + modified + "', email='" + email
-                + "', emailNormalized='" + emailNormalized + "', name='" + name + "', imageUrl='" + imageUrl
-                + "', maxUploadSize='" + maxUploadSize + "', referredCount='" + referredCount + "', referrerIden='"
-                + referrerIden + "'}";
+        return "User {iden='" + iden + ", active='" + active + "', created='" + created + "', modified='" + modified
+                + "', email='" + email + "', emailNormalized='" + emailNormalized + "', name='" + name + "', imageUrl='"
+                + imageUrl + "', maxUploadSize='" + maxUploadSize + "', referredCount='" + referredCount
+                + "', referrerIden='" + referrerIden + "'}";
     }
 }

@@ -34,7 +34,7 @@ public class PushbulletConfiguration {
         return name;
     }
 
-    public String getToken() {
+    public String getAccessToken() {
         return token;
     }
 
