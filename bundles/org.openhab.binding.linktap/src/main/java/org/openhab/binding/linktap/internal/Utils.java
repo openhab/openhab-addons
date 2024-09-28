@@ -13,6 +13,7 @@
 package org.openhab.binding.linktap.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Utils} contains static function's for useful functionality.
@@ -44,7 +45,11 @@ public final class Utils {
         return stBldr.toString();
     }
 
-    public static String getMessage(final Throwable t) {
+    public static String getMessage(final @Nullable Throwable t) {
+        if (t == null) {
+            return "?";
+        }
+
         final String localizedMsg = t.getLocalizedMessage();
         if (localizedMsg != null) {
             if (!localizedMsg.isBlank()) {

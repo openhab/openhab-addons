@@ -155,7 +155,7 @@ public final class WebServerApi {
             } else {
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
-            throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
+            throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
         }
     }
 
@@ -446,7 +446,7 @@ public final class WebServerApi {
             } else {
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
-            throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
+            throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(t)));
         }
     }
 
@@ -479,7 +479,7 @@ public final class WebServerApi {
             } else {
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
-            throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
+            throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
         }
     }
 
