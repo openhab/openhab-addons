@@ -33,7 +33,7 @@ Panel will _reboot_
 
 `Settings` --> `Advanced Settings` --> `Installation` --> `Devices` --> `Wi-Fi Devices` --> `Reveal Secure Token` (copy token to use in panel configuration)
 
-At this point you may add the panel thing in openHAB using the secure token along with the IP or host name of the panel.  
+At this point you may add the panel thing in openHAB using the secure token along with the IP or host name of the panel.
 
 ### Partition (Bridge)
 
@@ -121,5 +121,5 @@ Contact    ZoneKitchenWindows_ZoneContact        "Kitchen Windows Zone Contact" 
 
 Group      ZoneMotionDetector1                   "Motion Detector 1"                                                      ["Equipment"]
 Number     ZoneMotionDetector_ZoneState1         "Motion Detector 1 Zone State"                  (ZoneMotionDetector1)    ["Point"]        {channel="qolsysiq:zone:home:0:2:state"}
-String     ZoneMotionDetector_ZoneStatus1        "Motion Detector 1 Zone Status"                 (ZoneMotionDetector1)    ["Point"]        {channel="qolsysiq:zone:home:0:2:status"} 
+String     ZoneMotionDetector_ZoneStatus1        "Motion Detector 1 Zone Status"                 (ZoneMotionDetector1)    ["Point"]        {channel="qolsysiq:zone:home:0:2:status"}
 ```

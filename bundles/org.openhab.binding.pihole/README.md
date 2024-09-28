@@ -143,7 +143,7 @@ Pi-hole binding provides actions to use in rules:
 
 ```java
 import java.util.concurrent.TimeUnit
-        
+
 rule "test"
 when
     /* when */
@@ -152,16 +152,16 @@ then
 	if (actions !== null) {
             // disable blocking for 5 * 60 seconds (5 minutes)
             actions.disableBlocking(5 * 60)
-    
+
             // disable blocking for 5 minutes
             actions.disableBlocking(5, TimeUnit.MINUTES)
-    
+
             // disable blocking for infinity
             actions.disableBlocking(0)
             actions.disableBlocking()
-    
+
             // enable blocking
             actions.enableBlocking()
-	} 
+	}
 end
 ```

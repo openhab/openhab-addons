@@ -265,7 +265,7 @@ Valid sensors:
 | sensor-co2-pm25-24-hour-average       | Number:Density       | R          | PM2.5 Air Quality 24 Hour Average (CO2-Sensor) |
 | sensor-co2-co2                        | Number:Dimensionless | R          | CO2                                            |
 | sensor-co2-co2-24-hour-average        | Number:Dimensionless | R          | CO2 24 Hour Average                            |
-| leaf-wetness-channel-1                | Number:Dimensionless | R          | Leaf Moisture Channel 1                        |  
+| leaf-wetness-channel-1                | Number:Dimensionless | R          | Leaf Moisture Channel 1                        |
 | leaf-wetness-channel-2                | Number:Dimensionless | R          | Leaf Moisture Channel 2                        |
 | leaf-wetness-channel-3                | Number:Dimensionless | R          | Leaf Moisture Channel 3                        |
 | leaf-wetness-channel-4                | Number:Dimensionless | R          | Leaf Moisture Channel 4                        |
@@ -303,7 +303,7 @@ _weatherstation.things_:
 ```java
 Bridge fineoffsetweatherstation:gateway:3906700515 "Weather station" [
      ip="192.168.1.42",
-     port="45000", 
+     port="45000",
      discoverInterval="900",
      pollingInterval="16",
      protocol="DEFAULT"

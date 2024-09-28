@@ -9,10 +9,10 @@ The binding will search your Jollyday event definition files in the sub folder `
 
 The binding handles the following Things:
 
-* default holiday data (`holiday`)
-* custom holiday file (`custom`)
-* daysets (`dayset`)
-* weekend (`weekend`)
+- default holiday data (`holiday`)
+- custom holiday file (`custom`)
+- daysets (`dayset`)
+- weekend (`weekend`)
 
 ## Discovery
 
@@ -23,7 +23,6 @@ The binding discovers `weekend` and `holiday` things.
 There is no configuration at binding level.
 
 ## Thing Configuration
-
 
 ### `custom` Thing Configuration
 
@@ -38,7 +37,6 @@ The file has to use the syntax described here : https://www.openhab.org/docs/con
 | Name            | Type    | Description               | Default | Required | Advanced |
 |-----------------|---------|---------------------------|---------|----------|----------|
 | name            | text    | Name of the dayset used   | N/A     | yes      | no       |
-
 
 ## Channels
 
@@ -80,7 +78,7 @@ The file has to use the syntax described here : https://www.openhab.org/docs/con
 
 ## Full Example
 
-### Thing Configuration
+### Thing Example
 
 ```java
 Thing ephemeris:holiday:local "Holidays"
@@ -88,7 +86,7 @@ Thing ephemeris:weekend:local "Week-end"
 Thing ephemeris:custom:events "Event" [fileName="events.xml"]
 ```
 
-### Item Configuration
+### Item Example
 
 ```java
 String         ToD_Event_Current          "Event Today"       <calendar>    (gEvents)                           {channel="ephemeris:custom:events:title-today"}
