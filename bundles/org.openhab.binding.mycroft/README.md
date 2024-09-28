@@ -64,7 +64,7 @@ The channel 'full_message' has the following configuration available:
 A manual setup through a `things/mycroft.things` file could look like this:
 
 ```java
-Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X", port=8181] { 
+Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X", port=8181] {
     Channels:
         Type full-message-channel : Text [
             messageTypes="message.type.1,message.type.4"

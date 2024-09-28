@@ -45,7 +45,7 @@ The Smart Home Controller is the central hub that allows you to monitor and cont
 
 | Channel Type ID    | Item Type | Writable | Description                                                             |
 |--------------------|-----------|:--------:|-------------------------------------------------------------------------|
-| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      |
 | trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
 ### In-Wall Switch
@@ -316,7 +316,7 @@ The smoke detector warns you in case of fire.
 
 ### User-defined States
 
-User-defined states enable automations to be better adapted to specific needs and everyday situations. 
+User-defined states enable automations to be better adapted to specific needs and everyday situations.
 Individual states can be activated/deactivated and can be used as triggers, conditions and actions in automations.
 
 **Thing Type ID**: `user-defined-state`
@@ -356,7 +356,7 @@ A universally configurable switch with four buttons.
 
 Smart water leakage detector.
 
-**Thing Type ID**: `water-detector` 
+**Thing Type ID**: `water-detector`
 
 | Channel Type ID            | Item Type | Writable | Description                                       |
 | -------------------------- | --------- | :------: | ------------------------------------------------- |
@@ -372,7 +372,7 @@ Smart water leakage detector.
 ## Limitations
 
 No major limitation known.
-Check list of [openhab issues with "boshshc"](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+boschshc+) 
+Check list of [openhab issues with "boshshc"](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+boschshc+)
 
 ## Discovery
 

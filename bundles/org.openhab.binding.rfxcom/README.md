@@ -703,8 +703,8 @@ Until then, commands 1, 3, 5-13 and 15 are considered ON and 0, 2, 4 and 14 are 
 There are a number of ways to detect the commandId values for your device.
 
 - You can turn on DEBUG messages for the rfxcom binding by adding the line `<Logger level="DEBUG" name="org.openhab.binding.rfxcom"/>` to your `log4j2.xml`.
-You will then be able to see the commandId in the log file when you trigger the device.  
-- You can link a Number Item to the commandId channel. The item will be updated with the detected commandId when you trigger the device.  
+You will then be able to see the commandId in the log file when you trigger the device.
+- You can link a Number Item to the commandId channel. The item will be updated with the detected commandId when you trigger the device.
 - You can use RFXmngr to look at the data from the device. Use the last letter/number of the hexadecimal "Code", and convert it from hexadecimal to decimal.
 
 #### Examples

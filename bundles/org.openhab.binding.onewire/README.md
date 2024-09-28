@@ -49,7 +49,7 @@ The `port` parameter is used to adjust non-standard OWFS installations.
 It defaults to `4304`, which is the default of each OWFS installation.
 
 Bridges of type `owserver` are extensible with channels of type `owfs-number` and `owfs-string`.
-  
+
 ### Generic (`basic`)
 
 The `basic` thing supports iButton-like chips (DS1420, DS2401/DS1990A), temperature sensors (DS18B20, DS18S20, DS1822), digital i/o chips (DS2405, DS2406, DS2408, DS2413) and counter chips (DS2423).
@@ -238,12 +238,12 @@ This is the configuration for a OneWire network consisting of an owserver as bri
 ### demo.things:
 
 ```java
-Bridge onewire:owserver:mybridge [ 
-    network-address="192.168.0.51" 
+Bridge onewire:owserver:mybridge [
+    network-address="192.168.0.51"
     ] {
-    
+
     Thing basic mysensor [
-        id="28.505AF0020000", 
+        id="28.505AF0020000",
         refresh=60
         ] {
             Channels:
@@ -251,20 +251,20 @@ Bridge onewire:owserver:mybridge [
                     ignorepor=true,
                     resolution="11"
                 ]
-        } 
-    
+        }
+
     Thing bms mybms [
         id="26.CD497C010000",
-        refresh=60, 
-        lightsensor=true, 
-        temperaturesensor="DS18B20" 
+        refresh=60,
+        lightsensor=true,
+        temperaturesensor="DS18B20"
         ] {
             Channels:
                 Type temperature-por-res : temperature [
                     ignorepor=false,
                     resolution="9"
                 ]
-        } 
+        }
 
     Thing basic mydio [
         id="3A.67F113000000"
@@ -277,7 +277,7 @@ Bridge onewire:owserver:mybridge [
                     mode="output"
                 ]
         }
-        
+
     Channels:
         Type owfs-number : crc8errors [
             path="statistics/errors/CRC8_errors"

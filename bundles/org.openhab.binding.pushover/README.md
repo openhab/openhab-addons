@@ -23,8 +23,8 @@ You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.
 | `title`                 | text    | The default title of a message (default: `openHAB`).                                                                                                                                                                                                                                                          |
 | `format`                | text    | The default format (`none`, `html` or `monospace`) of a message (default: `none`).                                                                                                                                                                                                                            |
 | `sound`                 | text    | The notification sound on target device (default: `default`) (see [supported notification sounds](https://pushover.net/api#sounds)). This list will be populated dynamically during runtime with 21 different sounds plus user-defined [custom sounds](https://blog.pushover.net/posts/2021/3/custom-sounds). |
-| `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same emergency-priority notification to the user (default: `300`). **advanced**                                                                                                                                                          |
-| `expire`                | integer | The expire parameter specifies how long (in seconds) your emergency-priority notification will continue to be retried (default: `3600`). **advanced**                                                                                                                                                                            |
+| `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same emergency-priority notification to the user (default: `300`). **advanced**                                                                                                                                       |
+| `expire`                | integer | The expire parameter specifies how long (in seconds) your emergency-priority notification will continue to be retried (default: `3600`). **advanced**                                                                                                                                                         |
 | `timeout`               | integer | The timeout parameter specifies maximum number of seconds a request to Pushover can take. **advanced**                                                                                                                                                                                                        |
 
 ## Channels
@@ -74,6 +74,7 @@ For priority `2` only, the action returns a `String` value (the `receipt`) if th
 For other priorities, the action always returns an empty `String`.
 
 - `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message.
+
 The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
 ## Full Example

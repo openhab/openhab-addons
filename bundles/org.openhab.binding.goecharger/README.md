@@ -156,7 +156,7 @@ then
                 GoEChargerMaxCurrent.sendCommand(maxAmp3Phases.intValue)
                 // logInfo("eCharger", "Set charging limit 3 Phases: " + maxAmp3Phases.intValue + " A")
             }
-        } else {         
+        } else {
             if (maxAmp1Phase.intValue >= 6 ) {
                 // set force state to neutral (Neutral=0, Off=1, On=2)
                 if (GoEChargerForceState.state != 0) {

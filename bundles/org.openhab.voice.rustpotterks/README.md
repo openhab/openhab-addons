@@ -55,7 +55,7 @@ org.openhab.voice.rustpotterks:gainRef=0.004
 
 ## Magic Word Configuration
 
-The magic word to spot is gathered from your 'Voice' configuration. 
+The magic word to spot is gathered from your 'Voice' configuration.
 
 You can generate your own wakeword files using the [command line utility](https://github.com/GiviMAD/rustpotter-cli).
 

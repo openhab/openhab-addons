@@ -18,7 +18,7 @@ In case the parsed information that comes with the binding out of the box differ
 | local-connect-charger  | Thing      | An electric vehicle charger representation with all the data available as a channels (directly retrieved from the wi-fi module) |
 | cloud-connect-inverter | Thing      | An inverter representation with all the data available as a channels (retrieved from the Solax cloud API)                       |
 
-Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data. 
+Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data.
 If you're missing a channel this means that it's not supported for your inverter type.
 
 ## Thing Configuration
@@ -194,9 +194,9 @@ Here are some file based examples.
 ### Thing Configuration
 
 ```java
-// The local connect inverter thing 
-Thing solax:local-connect-inverter:localInverter  [ refreshInterval=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ] 
-Thing solax:cloud-connect-inverter:cloudInverter  [ refresh=30, password="<REG_NUMBER>", token="<TOKEN>" ] 
+// The local connect inverter thing
+Thing solax:local-connect-inverter:localInverter  [ refreshInterval=10, password="<SERIAL NUMBER OF THE WIFI MODULE>", hostname="<local IP/hostname in the network>" ]
+Thing solax:cloud-connect-inverter:cloudInverter  [ refresh=30, password="<REG_NUMBER>", token="<TOKEN>" ]
 ```
 
 ### Item Configuration
@@ -221,7 +221,7 @@ Number solaxBatteryVoltage "Battery voltage [%.1f V]" <energy> (gsolax_inverter,
 
 Number solaxFeedInPower "Feed-in power (CEZ) [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:local-connect-inverter:localInverter:feed-in-power" }
 Number solaxCalculatedTotalFeedInPower "Calculated feed-in total power (CEZ) [%.0f KWh]" <energy> (gsolax_inverter,EveryChangePersist)
-Number solaxCalculatedTotalFeedInPowerThisMonth "Calculated feed-in total power this month (CEZ) [%.0f KWh]" <energy> (gsolax_inverter,EveryChangePersist) 
+Number solaxCalculatedTotalFeedInPowerThisMonth "Calculated feed-in total power this month (CEZ) [%.0f KWh]" <energy> (gsolax_inverter,EveryChangePersist)
 Number solaxAcPower "Invertor output power [%.0f W]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:local-connect-inverter:localInverter:inverter-output-power" }
 Number solaxFrequency "Invertor frequency [%.2f Hz]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:local-connect-inverter:localInverter:inverter-frequency" }
 Number solaxVoltage "Invertor voltage [%.1f V]" <energy> (gsolax_inverter,EveryChangePersist){ channel="solax:local-connect-inverter:localInverter:inverter-voltage" }
@@ -233,7 +233,7 @@ String solaxLocalRawData "Local raw data [%s]" <data> (gsolax_inverter) { channe
 String solaxCloudRawData "Cloud raw data [%s]" <data> (gsolax_inverter) { channel="solax:cloud-connect-inverter:cloudInverter:raw-data" }
 
 // Cloud
-Number solaxYieldToday "Yield today [%.0f kWh]" <energy> (gsolax_inverter){ channel="solax:cloud-connect-inverter:cloudInverter:today-energy" } 
+Number solaxYieldToday "Yield today [%.0f kWh]" <energy> (gsolax_inverter){ channel="solax:cloud-connect-inverter:cloudInverter:today-energy" }
 Number solaxYieldTotal "Yield total [%.0f kWh]" <energy> (gsolax_inverter) { channel="solax:cloud-connect-inverter:cloudInverter:total-energy" }
 Number solaxFeedInEnergy "Total Feed-in (CEZ) Power [%.0f kWh]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:cloud-connect-inverter:cloudInverter:total-feed-in-energy" }
 String solaxInverterStatus "Inverter Status [%s]" <energy> (gsolax_inverter,EveryChangePersist) { channel="solax:cloud-connect-inverter:cloudInverter:inverter-status" }
@@ -331,7 +331,7 @@ Frame label="Battery" {
         Switch item=Chart_Period label="Chart Period" mappings=[0="H", 1="D", 2="W", 3="M", 4="Y"]
         Text item=solaxBatteryCurrent icon="energy" valuecolor=[<-800="red", <0="orange", ==0="gray", >=0="green"]
         Chart item=solaxBatteryCurrent period=h refresh=600 visibility=[Chart_Period==0]
-        Chart item=solaxBatteryCurrent period=D refresh=3600 visibility=[Chart_Period==1]			
+        Chart item=solaxBatteryCurrent period=D refresh=3600 visibility=[Chart_Period==1]
         Chart item=solaxBatteryCurrent period=W refresh=3600 visibility=[Chart_Period==2, Chart_Period==Uninitialized]
         Chart item=solaxBatteryCurrent period=M refresh=3600 visibility=[Chart_Period==3]
         Chart item=solaxBatteryCurrent period=Y refresh=3600 visibility=[Chart_Period==4]

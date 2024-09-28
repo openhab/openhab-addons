@@ -12,13 +12,13 @@ ThingTypeUID: `account`
 
 ### Generator
 
-A Generator thing represents an individual generator linked to an account bridge. Multiple generators are supported.  
+A Generator thing represents an individual generator linked to an account bridge. Multiple generators are supported.
 
 ThingTypeUID: `generator`
 
 ## Discovery
 
-The MobileLink account bridge must be added manually. Once added, generator things will automatically be added to the inbox.  
+The MobileLink account bridge must be added manually. Once added, generator things will automatically be added to the inbox.
 
 ## Thing Configuration
 

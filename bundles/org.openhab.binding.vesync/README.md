@@ -225,12 +225,12 @@ Frame {
    Switch item=LoungeAPPower label="Power"
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
    Switch item=LoungeAPDisplay label="Display"
-   Text   item=LoungeAPAirQuality label="Air Quality [%.0f (PM2.5)]"                
+   Text   item=LoungeAPAirQuality label="Air Quality [%.0f (PM2.5)]"
    Switch item=LoungeAPControlsLock label="Controls Locked"
    Text   item=LoungeAPTimerExpiry label="Timer Shutdown @" icon="clock"
    Switch item=LoungeAPMode label="Mode" mappings=[auto="Auto", manual="Manual Fan Control", sleep="Sleeping"] icon="settings"
    Text   item=LoungeAPErrorCode label="Error Code [%.0f]"
-   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3", 4="4"] icon="settings"                               
+   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3", 4="4"] icon="settings"
 }
 ```
 
@@ -242,12 +242,12 @@ Frame {
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
    Switch item=LoungeAPDisplay label="Display"
    Switch item=LoungeAPNightLightMode label="Night Light Mode" mappings=[on="On", dim="Dimmed", off="Off"] icon="settings"
-   Text   item=LoungeAPAirQuality label="Air Quality [%.0f]"                
+   Text   item=LoungeAPAirQuality label="Air Quality [%.0f]"
    Switch item=LoungeAPControlsLock label="Controls Locked"
    Text   item=LoungeAPTimerExpiry label="Timer Shutdown @" icon="clock"
    Switch item=LoungeAPMode label="Mode" mappings=[manual="Manual Fan Control", sleep="Sleeping"] icon="settings"
    Text   item=LoungeAPErrorCode label="Error Code [%.0f]"
-   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3"] icon="settings"                               
+   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3"] icon="settings"
 }
 ```
 

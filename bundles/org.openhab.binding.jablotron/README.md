@@ -104,8 +104,8 @@ Text item=HouseAlarm icon="alarm" {
 
 ```java
 rule "Alarm"
-when 
-  Item ArmSectionA changed or Item ArmSectionAB changed or Item ArmSectionABC changed or 
+when
+  Item ArmSectionA changed or Item ArmSectionAB changed or Item ArmSectionABC changed or
   System started
 then
    if( ArmSectionA.state == ON || ArmSectionAB.state == ON || ArmSectionABC.state == ON)

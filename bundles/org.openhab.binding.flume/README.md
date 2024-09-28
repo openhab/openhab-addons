@@ -53,7 +53,7 @@ Note, there is a rate limit of 120 queries per hour imposed by Flume so use caut
 | Battery Level         | battery-level     | Number:Dimensionless      | R          | Estimate of percent of remaining battery level                   |
 | Low Battery           | low-battery       | Switch                    | R          | Indicator of low battery level                                   |
 | Last Seen             | last-seen         | DateTime                  | R          | Date/Time when meter was last seen on the network                |
-| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification                     | 
+| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification                     |
 
 ## Full Example
 
@@ -64,7 +64,7 @@ When the Bridge device is first created, there will be a log message with the ID
 
 ```
 Bridge flume:cloud:cloudconnector [ username="xxx", password="xxx", clientId="xxx", clientSecret="xxx" ] {
-    
+
     meter-device meter [ id="xxx" ]
 }
 ```
@@ -74,9 +74,9 @@ Bridge flume:cloud:cloudconnector [ username="xxx", password="xxx", clientId="xx
 ```
 Number:VolumetricFlowRate     InstantUsage     "Instant Usage"         { channel = "flume:meter-device:1:meter:instant-usage" }
 Number:Volume                 CumulativeUsed   "Cumulative Used"       { channel = "flume:meter-device:1:meter:cumulative-usage" }
-Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:meter-device:1:meter:battery-level" }   
+Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:meter-device:1:meter:battery-level" }
 DateTime                      LastSeen         "Last Seen"             { channel = "flume:meter-device:1:meter:last-seen" }
-Switch                        LowPower         "Battery Low Power"     { channel = "flume:meter-device:1:meter:low-battery" }  
+Switch                        LowPower         "Battery Low Power"     { channel = "flume:meter-device:1:meter:low-battery" }
 
 ```
 

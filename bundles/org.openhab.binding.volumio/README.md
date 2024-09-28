@@ -41,7 +41,7 @@ The devices support the following channels:
 | track-type        | String | R          | Track type of the currently played track.                                                                            |
 | play-radiostream  | String | RW         | Play the given radio stream.                                                                                         |
 | play-playlist     | String | RW         | Play a playlist identified  by its name.                                                                             |
-| clear-queue       | Switch | RW         | Clear the current queue.                                                                                             | 
+| clear-queue       | Switch | RW         | Clear the current queue.                                                                                             |
 | play-uri          | String | RW         | Play the stream at given uri.                                                                                        |
 | play-file         | String | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
 | random            | Switch | RW         | Activate random mode.                                                                                                |

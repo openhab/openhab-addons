@@ -14,10 +14,10 @@ The binding does not support auto discovery.
 
 As a minimum, the hostname is needed:
 
-* hostname - The hostname of the Tesla Powerwall 2. Defaults to powerwall to avoid SSL certificate issues
-* email - the email of the local account on the Powerwall that the installer provided
-* password - the password of the local account on the Powerwall that the installer provided
-* refresh - The frequency with which to refresh information from the Tesla Powerwall2 specified in seconds. Defaults to 10 seconds.
+- hostname - The hostname of the Tesla Powerwall 2. Defaults to powerwall to avoid SSL certificate issues
+- email - the email of the local account on the Powerwall that the installer provided
+- password - the password of the local account on the Powerwall that the installer provided
+- refresh - The frequency with which to refresh information from the Tesla Powerwall2 specified in seconds. Defaults to 10 seconds.
 
 ## Channels
 

@@ -56,37 +56,37 @@ Some Notes:
 
 - The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
 
-**List of available button commands for Roku streaming devices:**  
-Home  
-Rev  
-Fwd  
-Play  
-Select  
-Left  
-Right  
-Up  
-Down  
-Back  
-InstantReplay  
-Info  
-Backspace  
-Search  
-Enter  
-FindRemote  
-  
-**List of additional button commands for Roku TVs:**  
-ChannelUp  
-ChannelDown  
-VolumeUp  
-VolumeDown  
-VolumeMute  
-InputTuner  
-InputHDMI1  
-InputHDMI2  
-InputHDMI3  
-InputHDMI4  
-InputAV1  
-PowerOff  
+**List of available button commands for Roku streaming devices:**
+Home
+Rev
+Fwd
+Play
+Select
+Left
+Right
+Up
+Down
+Back
+InstantReplay
+Info
+Backspace
+Search
+Enter
+FindRemote
+
+**List of additional button commands for Roku TVs:**
+ChannelUp
+ChannelDown
+VolumeUp
+VolumeDown
+VolumeMute
+InputTuner
+InputHDMI1
+InputHDMI2
+InputHDMI3
+InputHDMI4
+InputAV1
+PowerOff
 POWERON _(NOTE: POWERON needs to be completely capitalized due to a bug with older Roku devices)_
 
 ## Full Example

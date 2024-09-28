@@ -87,6 +87,6 @@ String  SWC_presstrend          "Pressure Trend"                        (gSager)
 String  SWC_forecast            "Weather Forecast"                      (gSager)                {channel="sagercaster:sagercaster:triel:output#forecast"}
 String  SWC_velocity            "Wind Velocity"                         (gSager)                {channel="sagercaster:sagercaster:triel:output#velocity"}
 String  SWC_windfrom            "Wind from"                             (gSager)                {channel="sagercaster:sagercaster:triel:output#wind-from"}
- 
+
 DateTime SWC_ObservationTime    "Timestamp [%1$tH:%1$tM]"       <time>  (gSager, gTrackAge)     {channel="sagercaster:sagercaster:triel:output#timestamp" }
 ```

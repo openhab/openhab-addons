@@ -154,10 +154,10 @@ Number:Energy stiebel_eltron_consumption_water_total            "Water heating p
 ```perl
 Text label="Heat pumpt" icon="temperature" {
  Frame label="Optation Mode" {
-  Default item=stiebel_eltron_mode_pump 
+  Default item=stiebel_eltron_mode_pump
   Default item=stiebel_eltron_mode_heating
-  Default item=stiebel_eltron_mode_water 
-  Default item=stiebel_eltron_mode_cooling 
+  Default item=stiebel_eltron_mode_water
+  Default item=stiebel_eltron_mode_cooling
   Default item=stiebel_eltron_mode_summer
  }
  Frame label= "State" {

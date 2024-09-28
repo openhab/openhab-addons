@@ -366,7 +366,7 @@ then
         Thread.sleep(750)
         ContactClosure1.sendCommand(OFF)
         isRunning = false
-    }      
+    }
 end
 ```
 

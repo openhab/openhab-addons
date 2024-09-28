@@ -116,7 +116,7 @@ This is useful to keep the pool system clock set correct and automatically adjus
 
 | Channel Group                     | Channel           | Type               |     | Description  |
 | :------------------------------:  | :-------:         | :----:             | :-: | :--------------: |
-| pool, spa, aux[1-8], feature[1-8] | switch            | Switch             | RW  | Indicates the particulcar circuit or feature is on or off.  | 
+| pool, spa, aux[1-8], feature[1-8] | switch            | Switch             | RW  | Indicates the particulcar circuit or feature is on or off.  |
 | "                                 | name              | String             | R   | Name of circuit |
 | "                                 | feature           | String             | R   | Feature of ciruit |
 | poolheat, spaheat                 | setpoint          | Number:Temperature | RW  | Temperature setpoint |
@@ -260,7 +260,7 @@ Switch Pump_Run                 "Pump run"                                      
 Number Pump_RPM                 "Pump RPM [%d]"                                 (gPool)     { channel = "pentair:intelliflo:1:pump1:rpm" }
 Number Pump_GPM                 "Pump GPM [%d]"                                 (gPool)     { channel = "pentair:intelliflo:1:pump1:gpm" }
 Number Pump_Power               "Pump Power [%d W]"                             (gPool)     { channel = "pentair:intelliflo:1:pump1:power" }
-Number Pump_Error               "Pump Error [%d]"                               (gPool)     { channel = "pentair:intelliflo:1:pump1:error" }                                                                                                                                      
+Number Pump_Error               "Pump Error [%d]"                               (gPool)     { channel = "pentair:intelliflo:1:pump1:error" }
 Number Pump_Status1             "Pump Status 1 [%d]"                            (gPool)     { channel = "pentair:intelliflo:1:pump1:status1" }
 Number Pump_Status2             "Pump Status 2 [%d]"                            (gPool)     { channel = "pentair:intelliflo:1:pump1:status2" }
 
@@ -269,7 +269,7 @@ Number Schedule1_End            "Schedule 1 end"                                
 Number Schedule1_Type           "Schedule 1 type"                               (gPool)     { channel = "pentair:controller:1:main:schedule1#type" }
 String Schedule1_String         "Schedule 1 string"                             (gPool)     { channel = "pentair:controller:1:main:schedule1#schedule" }
 Number Schedule1_Circuit        "Schedule 1 circuit"                            (gPool)     { channel = "pentair:controller:1:main:schedule1#circuit" }
-String Schedule1_Days           "Schedule 1 days"                               (gPool)     { channel = "pentair:controller:1:main:schedule1#days" }                                                                                                                                     
+String Schedule1_Days           "Schedule 1 days"                               (gPool)     { channel = "pentair:controller:1:main:schedule1#days" }
 ```
 
 ### sitemap

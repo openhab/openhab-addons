@@ -121,7 +121,7 @@ rule "NEEO"
         Channel 'neeo:Brain:d487672e:forwardActions' triggered
     then
         logInfo("neeo", "action received")
-        
+
         var data = receivedEvent.getEvent()
 
         logInfo("neeo", "data: {}", data)
@@ -131,9 +131,9 @@ rule "NEEO"
         var String device = transform("JSONPATH", "$.device", data);
         var String room = transform("JSONPATH", "$.room", data);
         var String actionparameter = transform("JSONPATH", "$.actionparameter", data);
-        
+
         logInfo("neeo", "action: {}, recipe: {}, device: {}, room: {}, actionparameter: {}", action, recipe, device, room, actionparameter)
-end   
+end
 ```
 
 Since the NEEO Brain ONLY allows a single forward actions URL, the NEEO Brain Bridge can be configured to:
@@ -210,7 +210,7 @@ The following channels will be in the Room state group:
 |--------------------|------------|--------------|--------------------------------------------------------------------------------------------|
 | currentStep*       | R          | trigger      | Displays the current step being executed                                                   |
 
-Current Step will ONLY be triggered if openHAB started the corresponding recipe (or scenario).  
+Current Step will ONLY be triggered if openHAB started the corresponding recipe (or scenario).
 If the NEEO Remote or NEEO App starts the recipe or scenario, the currentStep will never be triggered.
 
 The current step is ONLY communicated from the Brain to the device that started the Recipe/Scenario.

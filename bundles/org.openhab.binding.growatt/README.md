@@ -147,7 +147,7 @@ Where the first parameter must always be `growatt` and the second must be the fu
 Once the action instance has been retrieved, you can invoke the following method:
 
 ```php
-growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime, @Nullable Boolean enableProgram) 
+growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime, @Nullable Boolean enableProgram)
 ```
 
 The meaning of the method parameters is as follows:
@@ -283,7 +283,7 @@ then
     var pauseStartDateTime = (pauseStartState as DateTimeType).getZonedDateTime()
     if (pauseStartDateTime.getHour() < 8) {
         logWarn("Rules", "Power Pause program shall not start before 08:00h => " + pauseStartDateTime)
-        return 
+        return
     }
 
     val programDuration = Duration.between(now, pauseStartDateTime)

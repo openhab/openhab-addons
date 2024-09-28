@@ -56,7 +56,7 @@ Channels available for the gates are :
 (1) : Accepted commands are : STOP, MOVE
 (2) : Valid status are : OPEN, CLOSED, OPENING, CLOSING, STOPPED
 (3) : Accepted commands are : "stop","open","close"
-(4) : There is no way to retrieve the current status of the courtesy light. It is supposed to be ON when the gate is moving and turned OFF once done. 
+(4) : There is no way to retrieve the current status of the courtesy light. It is supposed to be ON when the gate is moving and turned OFF once done.
 The delay between the moving end and light being turned off is a configuration parameter of the `courtesy` channel.
 
 ### T4 Commands

@@ -83,7 +83,7 @@ Bridge evohome:account:your_account_alias [ username="your_user_name", password=
 }
 ```
 
-### demo.items  
+### demo.items
 
 ```java
 // evohome Display
@@ -112,8 +112,8 @@ sitemap evohome label="evohome Menu"
     }
 
     Frame label="evohome heating zone" {
-        Text     label="Temperature"      item=DemoZoneTemperature      
-        Text     label="Status"           item=DemoZoneSetPointStatus   
+        Text     label="Temperature"      item=DemoZoneTemperature
+        Text     label="Status"           item=DemoZoneSetPointStatus
         Setpoint label="Zone set point"   item=DemoZoneSetPoint minValue=5 maxValue=35 step=0.5
     }
 }

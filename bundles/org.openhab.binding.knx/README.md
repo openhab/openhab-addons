@@ -163,7 +163,7 @@ A change would break all existing installations and is therefore not implemented
 | position         | Group address of the absolute position | 5.001       |
 | increaseDecrease | Group address for relative movement    | 3.007       |
 
-##### Channel Type `number`, `number-control` 
+##### Channel Type `number`, `number-control`
 
 | Parameter | Description   | Default DPT |
 |-----------|---------------|-------------|
@@ -411,7 +411,7 @@ Further DPTs and subtypes may be added later once implemented and released in th
 |||
 | 232.600         | HSBType (color)                                    | RGB                                  |
 | 232.60000       | HSBType (color)                                    | Non-Standard, DPT 232.600 with HSB instead of RGB data |
-||| 
+|||
 | 235.001         | QuantityType\<> (number) (Number:ActiveEnergy)     | Composed DPT 235.001, first element ActiveEnergy (Wh), read only  |
 | 235.61001       | DecimalType (number)                               | Non-Standard, composed DPT 235.001, second element Tariff (plain number), read only |
 |||
@@ -621,7 +621,7 @@ Bridge knx:serial:bridge [
     Thing device generic {
         Type switch-control        : controlSwitch        "Control Switch"        [ ga="3/3/10+<3/3/11" ]   // '<'  signs are allowed but will be ignored for control Channels
         Type dimmer-control        : controlDimmer        "Control Dimmer"        [ switch="3/3/50+3/3/48", position="3/3/46", increaseDecrease="3/3/49", frequency=300 ]
-        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14", 
+        Type color                 : controlColorLight    "Color"                 [ hsb="6/0/10", switch="6/0/12", position="6/0/14",
         Type rollershutter-control : controlRollershutter "Control Rollershutter" [ upDown="3/4/1+3/4/2", stopMove="3/4/3", position="3/4/4" ]
         Type number-control        : controlNumber        "Control Number"        [ ga="1/2/2" ]
         Type string-control        : controlString        "Control String"        [ ga="1/4/2" ]

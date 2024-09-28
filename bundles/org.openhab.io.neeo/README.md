@@ -14,10 +14,10 @@ This integration compliments the NEEO binding by exposing a brain's devices to a
 
 The openHAB NEEO Integration will provide the following:
 
-* Automatic discovery of NEEO brains on the network and automatic registering of the openHAB as an SDK.
-* A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
-* Discovery of openHAB things on the NEEO app.
-* Full two-way communcation between openHAB and brain.
+- Automatic discovery of NEEO brains on the network and automatic registering of the openHAB as an SDK.
+- A NEEO dashboard tile that will show the status of NEEO Brain connections and provide the ability to customize the mapping between openHAB things/item and NEEO device/capabilities.
+- Discovery of openHAB things on the NEEO app.
+- Full two-way communcation between openHAB and brain.
 
 Item changes in openHAB will appear in NEEO and vice-versa.
 
@@ -25,10 +25,10 @@ Item changes in openHAB will appear in NEEO and vice-versa.
 
 If searching for openHAB devices on the NEEO Brain is always returning nothing, here are a few tips to solve the issue:
 
-1.  Read sections IP Address and openHAB Primary Address below.
-2.  Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
-3.  Make sure your firewall is not blocking access to the openHAB server
-4.  Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
+1. Read sections IP Address and openHAB Primary Address below.
+2. Make sure the openHAB primary address is set to an address that is reachable from the NEEO Brain (see openHAB Primary Address section below).
+3. Make sure your firewall is not blocking access to the openHAB server
+4. Your search criteria has included too many openHAB devices (especially if "Expose ALL" setting has been turned on).
 
 The NEEO brain has an (unknown) size limit to the amount of items that can be returned for a search and you may be going beyond that limit.
 Narrow your search to a specific item to see if you were hitting that search limit.
@@ -388,7 +388,7 @@ The following changes have occurred:
 
 1. SKIP BACKWARD should be changed to PREVIOUS.
 2. SKIP FORWARD should be changed to NEXT.
-3. ENTER should be changed to CURSOR ENTER. 
+3. ENTER should be changed to CURSOR ENTER.
 4. Added support for 'specificname' (allowing you to override the name shown in NEEO).
 5. Added support for HSBType channels (creates 4 channels: overall, hue, brightness and saturation).
 6. Added NEEO Brain name to the Brain tab.
@@ -412,14 +412,14 @@ Alternatively, you can configure the settings in the file `conf/services/neeo.cf
 # Default is 'true'
 #exposeNeeoBinding=true|false
 
-# The maximum number of search results to return to the brain for any given 
-# search request. 
-# Default is 10 
+# The maximum number of search results to return to the brain for any given
+# search request.
+# Default is 10
 #searchLimit=10
 
 # The interval (in seconds) to check the status of the brain to determine if the
 # brain is reachable or not
-# Default is 10 
+# Default is 10
 #checkStatusInterval=10
 ```
 

@@ -118,7 +118,7 @@ Number YourNumber "Your Number [%.1f °C]"
 Switch yourcommand_Run {channel="exec:command:yourcommand:run", autoupdate="false"}
 // Arguments to be placed for '%2$s' in command line
 String yourcommand_Args {channel="exec:command:yourcommand:input"}
-// Output of command line execution 
+// Output of command line execution
 String yourcommand_Out {channel="exec:command:yourcommand:output"}
 ```
 
