@@ -18,7 +18,7 @@ If you are running 203.2.4 or newer firmware you can enable the websockets suppo
 
 ## Channels
 
-The exposed channels are :
+The exposed channels are:
 
 | Name    | Type           | Description |
 | ------- |:--------------:|:-----------:|
