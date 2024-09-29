@@ -25,6 +25,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -157,12 +158,15 @@ public class CasoKitchenHandler extends BaseThingHandler {
                 }
             }
             if (lr.isValid()) {
+                logger.info("Send {} with command {}", LIGHT_URL, GSON.toJson(lr));
                 Request req = httpClient.POST(LIGHT_URL);
                 req.header(HttpHeader.CONTENT_TYPE, "application/json");
                 req.header(HTTP_HEADER_API_KEY, configuration.get().apiKey);
                 req.content(new StringContentProvider(GSON.toJson(lr)));
                 try {
-                    req.send();
+                    ContentResponse response = req.timeout(60, TimeUnit.SECONDS).send();
+                    logger.info("Call to {} responded with status {} reason {}", LIGHT_URL, response.getStatus(),
+                            response.getReason());
                 } catch (InterruptedException | TimeoutException | ExecutionException e) {
                     logger.warn("Call to {} failed with reason {}", LIGHT_URL, e.getMessage());
                 }
@@ -239,7 +243,7 @@ public class CasoKitchenHandler extends BaseThingHandler {
         req.header(HttpHeader.CONTENT_TYPE, "application/json");
         req.header(HTTP_HEADER_API_KEY, configuration.get().apiKey);
         req.content(new StringContentProvider(GSON.toJson(requestContent)));
-        req.timeout(15, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+        req.timeout(60, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
             @Override
             public void onComplete(org.eclipse.jetty.client.api.Result result) {
