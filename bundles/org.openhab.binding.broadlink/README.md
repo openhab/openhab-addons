@@ -56,6 +56,7 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | power-on-usb      | MP1_1k3s2u               | Switch               | USB power                                       |
 | power-consumption | MP2, SP2s,SP3s           | Number:Power         | Power consumption                               |
 | command           | all RMx                  | String               | IR Command code to transmit                     |
+| rf-command        | RM Pro, RM4 Pro          | String               | RF Command code to transmit
 | learning-control  | all RMx                  | String               | Learn mode command channel (see below)          |
 
 ## Learning Remote Codes

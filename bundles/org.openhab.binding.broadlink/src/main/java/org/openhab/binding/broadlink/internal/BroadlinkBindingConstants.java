@@ -70,7 +70,7 @@ public class BroadlinkBindingConstants {
 
     public static final String COMMAND_CHANNEL = "command";
     public static final String LEARNING_CONTROL_CHANNEL = "learning-control";
-    public static final String RF_COMMAND_CHANNEL = "rfcommand";
+    public static final String RF_COMMAND_CHANNEL = "rf-command";
     public static final String RF_LEARNING_CONTROL_CHANNEL = "learning-rf-control";
     public static final String LEARNING_CONTROL_COMMAND_LEARN = "LEARN";
     public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";

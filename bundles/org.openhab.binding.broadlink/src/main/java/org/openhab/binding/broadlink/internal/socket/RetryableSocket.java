@@ -68,7 +68,6 @@ public class RetryableSocket {
         return null;
     }
 
-    @SuppressWarnings("null")
     private boolean sendDatagram(byte message[], String purpose) {
         try {
             DatagramSocket socket = this.socket;
@@ -90,8 +89,8 @@ public class RetryableSocket {
         }
     }
 
-    @SuppressWarnings("null")
     private @Nullable DatagramPacket receiveDatagram(String purpose, DatagramPacket receivePacket) {
+        DatagramSocket socket = this.socket;
         try {
             if (socket == null) {
                 logger.warn("receiveDatagram {} for socket was unexpectedly null", purpose);

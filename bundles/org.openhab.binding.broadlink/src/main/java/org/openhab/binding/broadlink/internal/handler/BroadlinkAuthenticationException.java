@@ -22,7 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BroadlinkAuthenticationException extends BroadlinkException {
 
-        private static final long serialVersionUID = 6332210773192650617L;
+    private static final long serialVersionUID = 6332210773192650617L;
+
     public BroadlinkAuthenticationException(String message) {
         super(message);
     }

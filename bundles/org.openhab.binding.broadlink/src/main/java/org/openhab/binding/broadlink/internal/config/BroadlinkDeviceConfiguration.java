@@ -31,7 +31,6 @@ public class BroadlinkDeviceConfiguration {
     private byte[] macAddressBytes = new byte[0];
     private int pollingInterval = 30;
     private String nameOfCommandToLearn = "DEVICE_ON";
-    private boolean ignoreFailedUpdates = false;
     private int deviceType;
 
     public String getIpAddress() {
@@ -93,14 +92,6 @@ public class BroadlinkDeviceConfiguration {
 
     public void setDeviceType(int newDeviceType) {
         this.deviceType = newDeviceType;
-    }
-
-    public void setIgnoreFailedUpdates(boolean ignore) {
-        this.ignoreFailedUpdates = ignore;
-    }
-
-    public boolean isIgnoreFailedUpdates() {
-        return this.ignoreFailedUpdates;
     }
 
     public String getNameOfCommandToLearn() {

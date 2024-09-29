@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.internal.handler;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
-import org.openhab.binding.broadlink.internal.NetworkUtils;
 import org.openhab.binding.broadlink.internal.Utils;
 import org.openhab.binding.broadlink.internal.config.BroadlinkDeviceConfiguration;
 import org.openhab.binding.broadlink.internal.discovery.DeviceRediscoveryAgent;

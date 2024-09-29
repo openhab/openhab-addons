@@ -83,7 +83,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         BroadlinkMappingService mappingService = this.mappingService;
         if (mappingService != null) {
             mappingService.dispose();
-            this.mappingSerivce = null;
+            this.mappingService = null;
         }
         super.dispose();
     }

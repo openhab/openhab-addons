@@ -13,17 +13,17 @@
 package org.openhab.binding.broadlink.internal;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkHostNotReachableException;
+import org.openhab.core.net.NetUtil;
 import org.slf4j.Logger;
 
 /**
@@ -60,7 +60,8 @@ public class NetworkUtils {
      * @throws SocketException thrown when no socket can be opened.
      */
     public static @Nullable InetAddress findNonLoopbackAddress() throws SocketException {
-        for (InetAddress address : NetUtil.getAllInterfaceAddresses().stream().filter(a->a.getAddress() instanceof Inet4Address).map(a->a.getAddress()).toList()) {
+        for (InetAddress address : NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> a.getAddress() instanceof Inet4Address).map(a -> a.getAddress()).toList()) {
             if (address.isSiteLocalAddress()) {
                 return address;
             }
