@@ -37,7 +37,7 @@ To avoid this, there is a discovery configuration parameter `removalGracePeriod`
 The default value is 15 seconds.
 If you want to change this value just add the following line to your `$OPENHAB_CONF/services/runtime.cfg` file.
 
-```text
+```ini
 discovery.miele:removalGracePeriod=30
 ```
 

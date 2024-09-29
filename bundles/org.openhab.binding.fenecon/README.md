@@ -93,7 +93,6 @@ Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRo
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
 Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
-
 ```
 
 ### demo.sitemap

@@ -17,7 +17,7 @@ The binding has the following configuration options:
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
-```text
+```ini
 binding.network:allowSystemPings=true
 binding.network:allowDHCPlisten=false
 binding.network:arpPingToolPath=arping
