@@ -53,7 +53,7 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
-			<channel id="rfcommand" typeId="rfcommand"/>
+			<channel id="rf-command" typeId="rf-command"/>
 			<channel id="learning-rf-control" typeId="learning-rf-control"/>
 			<channel id="temperature" typeId="system.indoor-temperature"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
