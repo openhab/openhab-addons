@@ -70,12 +70,9 @@ public class SecurityApi extends RestManager {
 
     private List<HomeEvent> getEvents(@Nullable Object... params) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GET_EVENTS, params);
-        BodyResponse<Home> body = get(uriBuilder, NAEventsDataResponse.class).getBody();
-        if (body != null) {
-            Home home = body.getElement();
-            if (home != null) {
-                return home.getEvents();
-            }
+        if (get(uriBuilder, NAEventsDataResponse.class).getBody() instanceof BodyResponse<Home> body
+                && body.getElement() instanceof Home home) {
+            return home.getEvents();
         }
         throw new NetatmoException("home should not be null");
     }
@@ -84,10 +81,12 @@ public class SecurityApi extends RestManager {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
         // we have to rewind to the latest event just after freshestEventTime
-        if (events.size() > 0) {
+        String oldestId = "";
+        if (!events.isEmpty()) {
             HomeEvent oldestRetrieved = events.get(events.size() - 1);
-            while (oldestRetrieved.getTime().isAfter(freshestEventTime)) {
-                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestRetrieved.getId()));
+            while (oldestRetrieved.getTime().isAfter(freshestEventTime) && !oldestId.equals(oldestRetrieved.getId())) {
+                oldestId = oldestRetrieved.getId();
+                events.addAll(getEvents(PARAM_HOME_ID, homeId, PARAM_EVENT_ID, oldestId, PARAM_SIZE, 300));
                 oldestRetrieved = events.get(events.size() - 1);
             }
         }
