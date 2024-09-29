@@ -439,21 +439,21 @@ For those who are interested in more detailed insight of the processing of this 
 
 With Karaf you can use the following command sequence:
 
-```text
+```shell
 log:set TRACE org.openhab.binding.velux
 log:tail
 ```
 
 This, of course, is possible on command line with the commands:
 
-```text
+```shell
 % openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
-```text
+```xml
     <logger name="org.openhab.binding.velux" level="TRACE">
         <appender-ref ref="FILE" />
     </logger>

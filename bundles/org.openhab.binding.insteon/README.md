@@ -836,7 +836,7 @@ Insufficient access to the lock directory will result in openHAB failing to acce
 Device types are defined in the file `device_types.xml`, which is inside the Insteon bundle and thus not visible to the user.
 You can however load your own device_types.xml by referencing it in the network config parameters:
 
-```text
+```ini
 additionalDevices="/usr/local/openhab/rt/my_own_devices.xml"
 ```
 
@@ -861,7 +861,7 @@ Avoid duplicate keys by finding the highest fake product key in the `device_type
 
 If you can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
 
-```text
+```ini
 additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
 ```
 

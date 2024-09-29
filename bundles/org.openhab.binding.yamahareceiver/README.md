@@ -234,7 +234,7 @@ Enabling detailed logging may help troubleshoot your configuration (or trace bug
 
 Add the following lines to the logger configuration file (`userdata\etc\org.ops4j.pax.logging.cfg`):
 
-```text
+```ini
 log4j2.logger.yamaha.name = org.openhab.binding.yamahareceiver
 log4j2.logger.yamaha.level = TRACE
 ```

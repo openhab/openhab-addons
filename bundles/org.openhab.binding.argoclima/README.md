@@ -269,7 +269,7 @@ Switch  ArgoClimaHVACRemote_FilterMode  "Filter Mode"    <switch> (GArgoClimaHVA
 
 ### argoclima.sitemap
 
-```java
+```perl
 // All things in all modes expose the same channels
 Frame label="❄ HVAC Control" {
     Switch item=ArgoClimaHVACRemote_Power

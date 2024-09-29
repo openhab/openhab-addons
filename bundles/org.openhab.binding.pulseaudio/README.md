@@ -29,7 +29,7 @@ The Pulseaudio binding can be customized to handle different devices. The Sink a
 
 You can use the GUI on the bindings page (click on the pulseaudio binding then "Expand for details"), or create a `<openHAB-conf>/services/pulseaudio.cfg` file and use the above options like this:
 
-```text
+```ini
 binding.pulseaudio:sink=true
 binding.pulseaudio:source=true
 binding.pulseaudio:sinkInput=false

@@ -126,7 +126,7 @@ To do so
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```text
+```ini
 discovery.avmfritz:background=false
 ```
 

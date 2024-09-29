@@ -137,15 +137,16 @@ It is therefore recommended to disable IPv6 on the openHAB server.
 
 This can e.g. be achieved on openHABian the following way:
 
-```text
+```shell
 sudo nano /etc/sysctl.conf`
+```
 
 Add the following at the bottom of the file:
 
+```ini
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
-
 ```
 
 Reboot your server after the change.

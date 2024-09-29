@@ -117,15 +117,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 
 ## Full Example
 
-### `.things` file:
+### `.things` file
 
-```perl
+```java
 Thing emotiva:processor:1 "XMC-2" @ "Living room" [ipAddress="10.0.0.100", protocolVersion="3.0"]
 ```
 
-### `.items` file:
+### `.items` file
 
-```perl
+```java
 Switch                  emotiva-power               "Processor"                     {channel="emotiva:processor:1:general#power"}
 Dimmer                  emotiva-volume              "Volume [%d %%]"                {channel="emotiva:processor:1:main-zone#volume"}
 Number:Dimensionless    emotiva-volume-db           "Volume [%d dB]"                {channel="emotiva:processor:1:main-zone#volume-db"}
@@ -148,7 +148,7 @@ String                  emotiva-menu-tottom-center  ""                      <non
 String                  emotiva-menu-tottom-end     ""                      <none>  {channel="emotiva:processor:1:general#menu-display-bottom-end"}
 ```
 
-### `.sitemap` file:
+### `.sitemap` file
 
 ```perl
 Group item=emotiva-input label="Processor" icon="receiver" {

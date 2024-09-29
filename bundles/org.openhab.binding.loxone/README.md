@@ -200,7 +200,7 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-```text
+```ini
 keepAlivePeriod=120
 ```
 
