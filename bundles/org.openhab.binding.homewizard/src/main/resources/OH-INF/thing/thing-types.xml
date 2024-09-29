@@ -134,7 +134,7 @@
 
 	<channel-type id="power_failures">
 		<item-type>Number</item-type>
-		<label>Any Power Failures</label>
+		<label>Power Failures</label>
 		<description>This channel provides the count of any type of power failure.</description>
 	</channel-type>
 
