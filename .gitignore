@@ -19,6 +19,7 @@ xtend-gen/
 **/.settings/org.eclipse.*
 
 bundles/**/src/main/history
+bundles/**/.vscode
 features/**/src/main/history
 features/**/src/main/feature
 
