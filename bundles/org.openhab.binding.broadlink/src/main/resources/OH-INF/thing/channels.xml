@@ -23,7 +23,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rfcommand">
+	<channel-type id="rf-command">
 		<item-type>String</item-type>
 		<label>RF Command</label>
 		<description>The RF command sent to the device</description>

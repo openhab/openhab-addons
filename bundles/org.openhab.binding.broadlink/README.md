@@ -135,7 +135,7 @@ heatpump_off=2600760069380D0C0D0C0D290D0C0D290D0C0D0C0D0C0D290D290D0C0D0C0D0C0D2
 
 The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu heat pump.
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
-For RF, the `rfcommand` channel is used. 
+For RF, the `rf-command` channel is used.
 
 Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory.
 As an advantage, the files are now backed up by openHAB, which is more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
