@@ -4,13 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!--
-		Documentation:
-		- https://www.openhab.org/docs/developer/addons/config-xml.html
-		- https://www.openhab.org/docs/developer/bindings/thing-xml.html
-		- https://www.openhab.org/schemas/config-description-1.0.0.xsd
-	-->
-
 	<channel-type id="device-info-firmware">
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
