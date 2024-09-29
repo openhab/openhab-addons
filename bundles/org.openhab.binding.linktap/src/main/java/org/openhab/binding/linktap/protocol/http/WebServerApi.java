@@ -132,7 +132,7 @@ public final class WebServerApi {
     }
 
     public Map<String, String> getBridgeProperities(final String hostname)
-            throws NotTapLinkGatewayException, TransientCommunicationIssueException {
+            throws LinkTapException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname).method(HttpMethod.GET);
             final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
@@ -173,7 +173,7 @@ public final class WebServerApi {
             } else {
                 logger.warn("{}", getLocalizedText("ExecutionException -> {}", Utils.getMessage(e)));
             }
-            throw new NotTapLinkGatewayException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
+            throw new LinkTapException(getLocalizedText("exception.unexpected-failure", Utils.getMessage(e)));
         }
     }
 
@@ -469,7 +469,7 @@ public final class WebServerApi {
     }
 
     public boolean unlockWebInterface(final String hostname, final String username, final String password)
-            throws NotTapLinkGatewayException, TransientCommunicationIssueException {
+            throws LinkTapException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             org.eclipse.jetty.util.Fields fields = new org.eclipse.jetty.util.Fields();
             fields.put(FIELD_ADMIN_USER, username);

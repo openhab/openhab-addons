@@ -51,6 +51,7 @@ import org.openhab.binding.linktap.protocol.http.CommandNotSupportedException;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
 import org.openhab.binding.linktap.protocol.http.GatewayIdException;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
+import org.openhab.binding.linktap.protocol.http.LinkTapException;
 import org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException;
 import org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException;
 import org.openhab.binding.linktap.protocol.http.WebServerApi;
@@ -430,7 +431,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                         firmware.getRecommendedMinVer()));
             }
         } catch (InterruptedException ignored) {
-        } catch (NotTapLinkGatewayException e) {
+        } catch (LinkTapException | NotTapLinkGatewayException e) {
             deregisterBridge(this);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     getLocalizedText("bridge.error.target-is-not-gateway"));
