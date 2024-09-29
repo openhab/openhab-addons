@@ -42,7 +42,7 @@ Once done, you can also create your things via *.things file.
 
 There is no channel associated with the bridge.
 
-Channels available for the gates are :
+Channels available for the gates are:
 
 | Channel   | Type   | Read/Write | Description                                              |
 |-----------|--------|------------|----------------------------------------------------------|
@@ -65,7 +65,7 @@ Depending upon your gate model and motor capabilities, some T4 commands can be u
 The list of available commands for your model will be automatically discovered by the binding.
 This information is stored in the `allowedT4` property held by the gate Thing itself.
 
-Complete list of T4 Commands :
+Complete list of T4 Commands:
 
 | Command | Action                     |
 |---------|----------------------------|
