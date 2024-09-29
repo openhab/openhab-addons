@@ -10,19 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.api.dto.execution;
+package org.openhab.binding.huesync.internal.api.dto.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * HDMI Sync Box Device Information - Wifi connection information
  * 
  * @author Patrik Gfeller - Initial Contribution
  * 
+ * @see <a href=
+ *      "https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/#Resource%20Table">Hue
+ *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncExecutionDtoGame {
-    public @Nullable String intensity;
-
-    public boolean backgroundLighting;
+public class HueSyncDeviceDetailedWifiInfo {
+    /** Wifi SSID */
+    public @Nullable String ssid;
+    /**
+     * 0 = not connected;
+     * 1 = weak;
+     * 2 = fair;
+     * 3 = good;
+     * 4 = excellent
+     */
+    public int strength;
 }

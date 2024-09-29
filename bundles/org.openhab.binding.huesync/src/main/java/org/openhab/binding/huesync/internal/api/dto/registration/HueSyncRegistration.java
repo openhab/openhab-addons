@@ -10,19 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.huesync.internal.api.dto.execution;
+package org.openhab.binding.huesync.internal.api.dto.registration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
- * 
  */
 @NonNullByDefault
-public class HueSyncExecutionDtoVideo {
-    public @Nullable String intensity;
-
-    public boolean backgroundLighting;
+public class HueSyncRegistration {
+    public String registrationId = "";
+    public String accessToken = "";
 }

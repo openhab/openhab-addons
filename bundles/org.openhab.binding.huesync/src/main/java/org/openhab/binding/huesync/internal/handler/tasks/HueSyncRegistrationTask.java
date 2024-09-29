@@ -15,8 +15,8 @@ package org.openhab.binding.huesync.internal.handler.tasks;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
@@ -31,12 +31,12 @@ public class HueSyncRegistrationTask implements Runnable {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncRegistrationTask.class);
 
     private HueSyncDeviceConnection connection;
-    private HueSyncDeviceDto deviceInfo;
+    private HueSyncDevice deviceInfo;
 
-    private Consumer<HueSyncRegistrationDto> action;
+    private Consumer<HueSyncRegistration> action;
 
-    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceDto deviceInfo,
-            Consumer<HueSyncRegistrationDto> action) {
+    public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
+            Consumer<HueSyncRegistration> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -55,7 +55,7 @@ public class HueSyncRegistrationTask implements Runnable {
             this.logger.info("Listening for device registration - {} {}:{}", this.deviceInfo.name,
                     this.deviceInfo.deviceType, id);
 
-            HueSyncRegistrationDto registration = this.connection.registerDevice(id);
+            HueSyncRegistration registration = this.connection.registerDevice(id);
 
             if (registration != null) {
                 this.logger.info("API token for {} received", this.deviceInfo.name);

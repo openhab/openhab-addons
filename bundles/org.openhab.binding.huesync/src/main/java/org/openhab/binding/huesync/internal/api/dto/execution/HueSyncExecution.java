@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  */
 @NonNullByDefault
-public class HueSyncExecutionDto {
+public class HueSyncExecution {
     private static final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
 
     public static final List<String> KNOWN_MODES = Collections
@@ -57,13 +57,13 @@ public class HueSyncExecutionDto {
      * @param mode powersave, passthrough, video, game, music
      */
     public void setMode(String mode) {
-        if (!HueSyncExecutionDto.KNOWN_MODES.contains(mode)) {
+        if (!HueSyncExecution.KNOWN_MODES.contains(mode)) {
             logger.warn(
                     "device mode [{}] is not known by this version of the binding ➡️ please open an issue to notify the maintainer(s). Fallback will be used. ",
                     mode);
         }
 
-        this.mode = HueSyncExecutionDto.KNOWN_MODES.contains(mode) ? mode : "unknown";
+        this.mode = HueSyncExecution.KNOWN_MODES.contains(mode) ? mode : "unknown";
     }
 
     /**
@@ -97,7 +97,7 @@ public class HueSyncExecutionDto {
      */
     public int brightness;
 
-    public @Nullable HueSyncExecutionDtoVideo video;
-    public @Nullable HueSyncExecutionDtoGame game;
-    public @Nullable HueSyncExecutionDtoMusic music;
+    public @Nullable HueSyncExecutionVideo video;
+    public @Nullable HueSyncExecutionGame game;
+    public @Nullable HueSyncExecutionMusic music;
 }

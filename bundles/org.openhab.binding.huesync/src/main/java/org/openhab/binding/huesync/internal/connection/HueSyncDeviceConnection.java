@@ -26,12 +26,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.HueSyncConstants.CHANNELS.COMMANDS;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
-import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
-import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequestDto;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
+import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecution;
+import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -126,39 +126,39 @@ public class HueSyncDeviceConnection {
         }
     }
 
-    public @Nullable HueSyncDeviceDto getDeviceInfo() {
-        return this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceDto.class);
+    public @Nullable HueSyncDevice getDeviceInfo() {
+        return this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDevice.class);
     }
 
-    public @Nullable HueSyncDeviceDtoDetailed getDetailedDeviceInfo() {
+    public @Nullable HueSyncDeviceDetailed getDetailedDeviceInfo() {
         return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDeviceDtoDetailed.class)
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDeviceDetailed.class)
                 : null;
     }
 
-    public @Nullable HueSyncHdmiDto getHdmiInfo() {
+    public @Nullable HueSyncHdmi getHdmiInfo() {
         return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.HDMI, "", HueSyncHdmiDto.class)
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.HDMI, "", HueSyncHdmi.class)
                 : null;
     }
 
-    public @Nullable HueSyncExecutionDto getExecutionInfo() {
+    public @Nullable HueSyncExecution getExecutionInfo() {
         return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.EXECUTION, "", HueSyncExecutionDto.class)
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.EXECUTION, "", HueSyncExecution.class)
                 : null;
     }
 
-    public @Nullable HueSyncRegistrationDto registerDevice(String id) {
+    public @Nullable HueSyncRegistration registerDevice(String id) {
         if (!id.isBlank()) {
             try {
-                HueSyncRegistrationRequestDto dto = new HueSyncRegistrationRequestDto();
+                HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();
                 dto.appName = HueSyncConstants.APPLICATION_NAME;
                 dto.instanceName = id;
 
                 String payload = HueSyncConnection.ObjectMapper.writeValueAsString(dto);
 
-                HueSyncRegistrationDto registration = this.connection.executeRequest(HttpMethod.POST,
-                        ENDPOINTS.REGISTRATIONS, payload, HueSyncRegistrationDto.class);
+                HueSyncRegistration registration = this.connection.executeRequest(HttpMethod.POST,
+                        ENDPOINTS.REGISTRATIONS, payload, HueSyncRegistration.class);
                 if (registration != null) {
                     this.connection.updateAuthentication(id, registration.accessToken);
 

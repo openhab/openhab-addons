@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * HDMI Sync Box Device Information DTO
+ * HDMI Sync Box Device Information
  * 
  * @author Patrik Gfeller - Initial Contribution
  * 
@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDeviceDto {
+public class HueSyncDevice {
     /** Friendly name of the device */
     public @Nullable String name;
     /** Device Type identifier */
@@ -58,7 +58,7 @@ public class HueSyncDeviceDto {
     public @Nullable String wifiState;
     public @Nullable String ipAddress;
 
-    public @Nullable HueSyncDeviceDtoCapabilitiesInfo capabilities;
+    public @Nullable HueSyncDeviceCapabilitiesInfo capabilities;
 
     public boolean beta;
     public boolean overheating;

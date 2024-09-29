@@ -14,9 +14,9 @@ package org.openhab.binding.huesync.internal.handler.tasks;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
-import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
-import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
+import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecution;
+import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
 
 /**
  * 
@@ -24,7 +24,7 @@ import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
  */
 @NonNullByDefault
 public class HueSyncUpdateTaskResultDto {
-    public @Nullable HueSyncDeviceDtoDetailed deviceStatus;
-    public @Nullable HueSyncHdmiDto hdmiStatus;
-    public @Nullable HueSyncExecutionDto execution;
+    public @Nullable HueSyncDeviceDetailed deviceStatus;
+    public @Nullable HueSyncHdmi hdmiStatus;
+    public @Nullable HueSyncExecution execution;
 }

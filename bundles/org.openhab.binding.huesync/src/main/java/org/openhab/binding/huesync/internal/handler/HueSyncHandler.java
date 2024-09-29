@@ -26,11 +26,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
-import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
-import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
-import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
-import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
+import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
+import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecution;
+import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
+import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
@@ -70,7 +70,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
 
-    private Optional<HueSyncDeviceDto> deviceInfo = Optional.empty();
+    private Optional<HueSyncDevice> deviceInfo = Optional.empty();
     private HueSyncDeviceConnection connection;
 
     private HttpClient httpClient;
@@ -203,7 +203,7 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void updateHdmiInformation(HueSyncHdmiDto hdmiStatus) {
+    private void updateHdmiInformation(HueSyncHdmi hdmiStatus) {
         // TODO: Resolve warnings ➡️ consider to encapsulate hdmi status obj to avoid complex null
         // handling ...
         this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.NAME, new StringType(hdmiStatus.input1.name));
@@ -232,7 +232,7 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.MODE, new StringType(hdmiStatus.output.lastSyncMode));
     }
 
-    private void updateFirmwareInformation(HueSyncDeviceDtoDetailed deviceStatus) {
+    private void updateFirmwareInformation(HueSyncDeviceDetailed deviceStatus) {
         State firmwareState = new StringType(deviceStatus.firmwareVersion);
         State firmwareAvailableState = new StringType(
                 deviceStatus.updatableFirmwareVersion != null ? deviceStatus.updatableFirmwareVersion
@@ -245,7 +245,7 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
     }
 
-    private void updateExecutionInformation(HueSyncExecutionDto executionStatus) {
+    private void updateExecutionInformation(HueSyncExecution executionStatus) {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
                 executionStatus.syncActive ? OnOffType.ON : OnOffType.OFF);
@@ -255,7 +255,7 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS, new DecimalType(executionStatus.brightness));
     }
 
-    private void handleRegistration(HueSyncRegistrationDto registration) {
+    private void handleRegistration(HueSyncRegistration registration) {
         this.stopTasks();
 
         setProperty(HueSyncConstants.REGISTRATION_ID, registration.registrationId);
@@ -272,7 +272,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void checkCompatibility() throws HueSyncApiException {
         try {
-            HueSyncDeviceDto deviceInformation = this.deviceInfo.orElseThrow();
+            HueSyncDevice deviceInformation = this.deviceInfo.orElseThrow();
 
             if (deviceInformation.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {
                 throw new HueSyncApiException("@text/api.minimal-version", this.logger);

@@ -21,15 +21,15 @@ import org.eclipse.jdt.annotation.Nullable;
  * 
  */
 @NonNullByDefault
-public class HueSyncHdmiDto {
-    public @Nullable HueSyncHdmiDtoConnectionInfo input1;
-    public @Nullable HueSyncHdmiDtoConnectionInfo input2;
-    public @Nullable HueSyncHdmiDtoConnectionInfo input3;
-    public @Nullable HueSyncHdmiDtoConnectionInfo input4;
+public class HueSyncHdmi {
+    public @Nullable HueSyncHdmiConnectionInfo input1;
+    public @Nullable HueSyncHdmiConnectionInfo input2;
+    public @Nullable HueSyncHdmiConnectionInfo input3;
+    public @Nullable HueSyncHdmiConnectionInfo input4;
 
-    public @Nullable HueSyncHdmiDtoConnectionInfo output;
+    public @Nullable HueSyncHdmiConnectionInfo output;
 
-    /** <horizontal pixels> x <vertical pixels> @ <framerate fpks> – <HDR> */
+    /** <horizontal pixels> x <vertical pixels> @ <framerate fps> – <HDR> */
     public @Nullable String contentSpecs;
 
     /** Current content specs supported for video sync (video/game mode) */

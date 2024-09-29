@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * HDMI Sync Box Device Information DTO - Extended information (only available
+ * HDMI Sync Box Device Information - Extended information (only available
  * to registered clients)
  * 
  * @author Patrik Gfeller - Initial Contribution
@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.Nullable;
  *      HDMI Sync Box API</a>
  */
 @NonNullByDefault
-public class HueSyncDeviceDtoDetailed extends HueSyncDeviceDto {
-    public @Nullable HueSyncDeviceDtoDetailedWifiInfo wifi;
-    public @Nullable HueSyncDeviceDtoDetailedUpdateInfo update;
+public class HueSyncDeviceDetailed extends HueSyncDevice {
+    public @Nullable HueSyncDeviceDetailedWifiInfo wifi;
+    public @Nullable HueSyncDeviceDetailedUpdateInfo update;
 
     /** UTC time when last check for update was performed. */
     public @Nullable Date lastCheckedUpdate;

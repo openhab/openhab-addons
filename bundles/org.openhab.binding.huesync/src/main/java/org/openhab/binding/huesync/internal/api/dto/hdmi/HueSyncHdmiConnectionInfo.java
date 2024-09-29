@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * 
  */
 @NonNullByDefault
-public class HueSyncHdmiDtoConnectionInfo {
+public class HueSyncHdmiConnectionInfo {
     /** Friendly name, not empty */
     public @Nullable String name;
     /**
