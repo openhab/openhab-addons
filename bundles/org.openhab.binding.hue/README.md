@@ -37,7 +37,7 @@ Potentially two types of Bridge will be discovered - namely an API v1 Bridge and
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```text
+```ini
 discovery.hue:background=false
 ```
 

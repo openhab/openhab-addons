@@ -212,7 +212,7 @@ Create a rule that is fired
 - **When** `calculateParameters` is triggered in `myquery`
 - **Then** executes the following script action (in that example Jython):
 
-```text
+```python
 map = {"time" : "-2h"}
 dbquery = actions.get("dbquery","dbquery:query:myquery")
 dbquery.setQueryParameters(map)

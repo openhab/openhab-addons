@@ -73,11 +73,11 @@ Number  Temperature "Temperature [%.1f °C]"
 
 ### .rules
 
-```php
+```java
 rule "Convert XML to Item Type Number"
-  when
+when
     Item Temperature_xml changed
-  then
+then
     // use the transformation service to retrieve the value
     // Simple
     val mytest = transform("XPATH", "/*[name()='PTZStatus']

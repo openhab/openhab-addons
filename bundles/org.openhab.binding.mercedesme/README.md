@@ -615,7 +615,6 @@ The Mercedes ECO Score is aimed to improve your driving behavior.
 - Constant Score: drive at constant speed e.g. use *cruise control*
 - Bonus Range: assumed bonus range vs. a *very sportive driver*
 
-
 ### Position
 
 Group name: `position`
@@ -740,7 +739,7 @@ Send lock/unlock or temperatures in a short period of time will result in failur
 
 ## Vehicle Actions
 
-Actions for `vehicle` [thing}(#vehicle) are provided.
+Actions for `vehicle` [thing](#vehicle) are provided.
 
 ### `sendPOI`
 
@@ -760,16 +759,16 @@ This POI can be used as navigation destination.
 
 Required information
 
-```
-        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
-        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853)
+```java
+val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853)
 ```
 
 Full information
 
-```
-        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
-        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853,"Paris","Av. Gustave Eiffel", "75007")
+```java
+val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853,"Paris","Av. Gustave Eiffel", "75007")
 ```
 
 ## Discover your Vehicle
@@ -797,14 +796,14 @@ Vehicle Identification Number (VIN) isn't part of data.
 GPS data which is showing your location is anonymized.
 Please double check yourself no critical data is inside.
 The content of these items shall be used to create a problem report.
-During development the `proto-update`  contains an entry with binding version information.
+During development the `proto-update` contains an entry with binding version information.
 
-```
-    "bindingInfo": {
-        "oh-bundle": "4.1.0.202309241814",
-        "version": "2.2-alpha",
-        "vehicle": "mercedesme:bev"
-    }
+```json
+"bindingInfo": {
+    "oh-bundle": "4.1.0.202309241814",
+    "version": "2.2-alpha",
+    "vehicle": "mercedesme:bev"
+}
 ```
 
 Keep these 3 channels disconnected during normal operation.
@@ -896,7 +895,7 @@ DateTime                EQA_CommandTimestamp        {channel="mercedesme:bev:471
 
 ### POI ruleExample
 
-```
+```java
 // send POI from JSON String item
 rule "Send POI"
     when

@@ -64,21 +64,20 @@ Searches can be done in a few different ways and since the binding will auto sel
 
 Examples on how to do searches from rules, or you can also change an item to take input by using `oh-input-item` using metadata called `Default list item widget`.
 
-
 Search for all stations that contain `hit` in their name, and auto select the first result.
 
-```
+```java
 Radio_Station.sendCommand("hit")
 ```
 
 Search and auto select the station if you know the UUID from the website.
 
-```
+```java
 Radio_Station.sendCommand("b6a490e8-f498-4a7c-b024-607b3d997614")
 ```
 
 Clear any manual search results using the above two methods, and `REFRESH` back to using the normal filter channels.
 
-```
+```java
 Radio_Station.sendCommand(REFRESH)
 ```
