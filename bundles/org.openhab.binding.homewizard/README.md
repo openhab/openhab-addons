@@ -70,7 +70,7 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | gas_timestamp          | DateTime                  | The time stamp of the total_gas measurement.                                               | P         |
 | total_water            | Number:Volume             | Total water used.                                                                          | W         |
 | current_water          | Number:VolumetricFlowRate | Current water usage.                                                                       | W         |
-| power_failures     | Number                    | The count of long power failures.                                                          | P         |
+| power_failures         | Number                    | The count of long power failures.                                                          | P         |
 | long_power_failures    | Number                    | the count of any power failures.                                                           | P         |
 | power_switch           | Switch                    | Controls the power switch of the socket.                                                   | E         |
 | power_lock             | Switch                    | Controls the lock of the power switch (un/locking both the API and the physical button)    | E         |
