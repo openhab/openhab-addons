@@ -39,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -301,13 +302,12 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
-        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null);
     }
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable String transformation_pattern,
-            @Nullable TransformationServiceProvider transformationServiceProvider) {
+            @Nullable ChannelTransformation transformation) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
@@ -327,10 +327,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         @Override
                         public void postChannelCommand(ChannelUID channelUID, Command value) {
                         }
-                    });
-            if (transformation_pattern != null && transformationServiceProvider != null) {
-                state.addTransformation(transformation_pattern, transformationServiceProvider);
-            }
+                    }, transformation, null);
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
                 state.start(connection, scheduler, 0);

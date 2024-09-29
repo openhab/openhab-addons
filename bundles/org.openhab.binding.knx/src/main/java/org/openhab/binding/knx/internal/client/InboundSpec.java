@@ -37,7 +37,7 @@ public interface InboundSpec {
     /**
      * Get the affected group addresses.
      *
-     * @return a list of group addresses.
+     * @return a Set of group addresses.
      */
     Set<GroupAddress> getGroupAddresses();
 }

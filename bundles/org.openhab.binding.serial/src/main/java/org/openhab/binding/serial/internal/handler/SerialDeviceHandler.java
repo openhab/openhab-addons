@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.channel.ChannelConfig;
 import org.openhab.binding.serial.internal.channel.DeviceChannel;
 import org.openhab.binding.serial.internal.channel.DeviceChannelFactory;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -45,17 +44,14 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
 
-    private final ValueTransformationProvider valueTransformationProvider;
-
     private @Nullable Pattern devicePattern;
 
     private @Nullable String lastValue;
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
-    public SerialDeviceHandler(final Thing thing, final ValueTransformationProvider valueTransformationProvider) {
+    public SerialDeviceHandler(final Thing thing) {
         super(thing);
-        this.valueTransformationProvider = valueTransformationProvider;
     }
 
     @Override
@@ -100,8 +96,8 @@ public class SerialDeviceHandler extends BaseThingHandler {
             if (type != null) {
                 final ChannelConfig channelConfig = c.getConfiguration().as(ChannelConfig.class);
                 try {
-                    final DeviceChannel deviceChannel = DeviceChannelFactory
-                            .createDeviceChannel(valueTransformationProvider, channelConfig, type.getId());
+                    final DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(channelConfig,
+                            type.getId());
                     if (deviceChannel != null) {
                         channels.put(c.getUID(), deviceChannel);
                     }

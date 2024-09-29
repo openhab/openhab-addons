@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Keyring Project="openHAB test" CreatedBy="6.0.2" Created="2022-02-16T20:14:21" Signature="7DCcy3pjn9UL/62Cd4JRNw==" xmlns="http://knx.org/xml/keyring/1">
+  <Backbone MulticastAddress="224.0.23.12" Latency="2000" Key="jqQQPxOaT9yQmGntjzmmcA==" />
+  <Interface IndividualAddress="1.1.2" Type="Tunneling" Host="1.1.1" UserID="2" Password="I/mTxaNvfOBksLSm+DpvJEOByNJ2CdFstHUApyc7vYg=" Authentication="pywl6qpSlAHikvSZ95qa8Tpz1ybtBPbLsNWr11Y+rCc=" />
+  <Interface IndividualAddress="1.1.3" Type="Tunneling" Host="1.1.1" UserID="3" Password="VS5jc4CYCkn3fLjXOfucRX/IyWV5vFWCVOf+o7Z2WkQ=" Authentication="Is2o/DJtci597gNs8kk3xa2PnvR73CREFS4CSsxvs4E=" />
+  <Interface IndividualAddress="1.1.4" Type="Tunneling" Host="1.1.1" UserID="4" Password="TEPR9kJnMBfR4ZjknYk/LVpFa9NecnMS9eVYzQ9nDtU=" Authentication="HCSeleEDD2ZUIP9Necvt8bWb7N1Lmb/rmZZ2MWKGxto=" />
+  <Interface IndividualAddress="1.1.5" Type="Tunneling" Host="1.1.1" UserID="5" Password="ik4IhpmfEca7E1fs1tAOJ+dw2t3VIAmNtwbcUcjV6l8=" Authentication="jZRam0aOS8pFF5jNGTWsp8dlAYSBvtFtby3zLXdGqJ4=" />
+  <Interface IndividualAddress="1.1.6" Type="Tunneling" Host="1.1.1" UserID="6" Password="ZLaimyAb6WK4W24vKWx+9/p7F7PsmxXlu53i1xgl/3c=" Authentication="mTAGaAAv310sfwb8150/kG+qEl4SNJEpPexGly/gEj8=" />
+  <Interface IndividualAddress="1.1.7" Type="Tunneling" Host="1.1.1" UserID="7" Password="iShH6XxU8ynPd2bxk9e07lOPHqfvk+pyoNhirjwmseM=" Authentication="pPg4npj9AkGr7e9i4zTTHgdIjq8pPNB/t/ThVofm1I0=" />
+  <Interface IndividualAddress="1.1.8" Type="Tunneling" Host="1.1.1" UserID="8" Password="Qsoe9Uql3HRm0Acm3g1MNBh4aWI9e6Z7+Bdaxr4HgBg=" Authentication="+0DEjJHPWZBXNcOz7kvK+hcYwrlj5Ep/cb/EdQB5s1o=" />
+  <Interface IndividualAddress="1.1.9" Type="Tunneling" Host="1.1.1" UserID="9" Password="u35VfR3rgsZo9iMbhudqMd79a1ymcXJA1nFqUqUIrOg=" Authentication="2516mjVwl1+e0uF2gMYUsv9+OkMqpnmMlDUJJtLqY54=" />
+  <Interface IndividualAddress="1.1.10" Type="Tunneling" Host="1.1.0" UserID="2" Password="mVhL48YOaihWHFtXa+wmzI9JckF3ABbdvlbZCJGFiSo=" Authentication="xl7KByFbKpHIVX1HwP6coo8tN9Kn7v7FODYQ9YrYvLQ=" />
+  <Interface IndividualAddress="1.1.11" Type="Tunneling" Host="1.1.0" UserID="3" Password="aVxzF1AAwa0Fe6VCkPIpBnYlQQNVUAESgEev0fTNez8=" Authentication="R82NqLPaZsBqseWcWWYkpb+lojfwTvXnjJJIrgD/GgM=" />
+  <Interface IndividualAddress="1.1.12" Type="Tunneling" Host="1.1.0" UserID="4" Password="ZfpsaaR1Z1f3xOrdl3lMB3ECEaJHGQ67hYYJtS8kJvk=" Authentication="7W0oAfAWRM4AvCgDqJaAK2D+syyaz62Z6L9JyCc5Pe8=" />
+  <Interface IndividualAddress="1.1.13" Type="Tunneling" Host="1.1.0" UserID="5" Password="RFHe5Rf6dOnBXFc6I5Ib/gyPHdnVrqVnA0miEg8Hf1U=" Authentication="dy10MHltqGJI5HVVPVzKFVz21NJBv+d4riTrsjgkgfk=" />
+  <Interface IndividualAddress="1.1.14" Type="Tunneling" Host="1.1.0" UserID="6" Password="Es9do2yHUNMKNqqqXsqPhWQHmqzpABd0bllosyHBl4M=" Authentication="FPvvbkyXtztAy/vg4p+yb/duUiR2ynD9dDbfD3ceFWI=" />
+  <Interface IndividualAddress="1.1.15" Type="Tunneling" Host="1.1.0" UserID="7" Password="hVHfIe+089Gsl7ONAcFnVGWwtb8H7PEgts+M5mI8ssw=" Authentication="I/NINRXOpKypAHMn41GQKtZL/YkehxGnUnPP2Mlnv4c=" />
+  <Interface IndividualAddress="1.1.16" Type="Tunneling" Host="1.1.0" UserID="8" Password="hIEQVBFFg7N5d4pGDUZwZljIH3k4OiCmc3cNHmwP7Ko=" Authentication="WM31k8coJR+fe/1NC15iFinZUWhrg8wSqPhnmQPVF/c=" />
+  <Interface IndividualAddress="1.1.17" Type="Tunneling" Host="1.1.0" UserID="9" Password="LYzsUD6qXY5fJYMyglcoYF57ImWQ9R343DcVqIpGCos=" Authentication="MJQmHxu2dS9JIs4K8vUhvcbmt1flKwPJEk/53EzRENI=" />
+  <Interface IndividualAddress="1.0.128" Type="Backbone">
+    <Group Address="16384" Senders="1.1.42" />
+    <Group Address="17408" Senders="1.1.42" />
+  </Interface>
+  <GroupAddresses>
+    <Group Address="16384" Key="aet9NVDLVrBozo0fjAZsfw==" />
+    <Group Address="17408" Key="JNPEYPcwjqvNVMGEqfLYFg==" />
+    <Group Address="17409" Key="hSZjJizZHAaEJDCGWBG02g==" />
+  </GroupAddresses>
+  <Devices>
+    <Device IndividualAddress="1.0.128" ToolKey="y6tTTgkjYVHzadcO3DsaYA==" ManagementPassword="eh9/MLvXQp5YI+rHKRt+eg9X4oHCiHcsx2sZllE1UAo=" Authentication="bSNdyKdQK9K36wnSF5p+FaoOnFu7vtppdYE+wgoMAHw=" />
+    <Device IndividualAddress="1.1.0" ToolKey="YQn06Qzc5YKOtzLH4qAasg==" ManagementPassword="hOvb9C7GWTx0kyc043QJouMCC1xKV5sq0zyf6qIri8c=" Authentication="fIvCX/e7mlRGBZ6g8tforCijY3+OZYXmAwC1DiDcBkQ=" />
+    <Device IndividualAddress="1.1.1" ToolKey="/dXTk0oJstzyIfOVyAAZOg==" ManagementPassword="DwfYrNbvxKev6Lk+T+vJ5Gw9TW3mfsvmvK6Eh6Slrrs=" Authentication="/Ioy/hSd4D9GSRgwrt8zP4bV8tIeews4650OKxl4AEg=" />
+    <Device IndividualAddress="1.1.42" ToolKey="c+Qmg96GNf8SB3idRFei6A==" />
+  </Devices>
+</Keyring>

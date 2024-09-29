@@ -106,11 +106,11 @@ Please note that you have to replace _\<N\>_ with your loadpoint id/number.
 
 Those channels exist:
 
-* 1 per configured loadpoint with `chargerFeatureHeating = false`:
-  * These channels point to the heating device that is currently active/connected at/to the loadpoint
-  * Please note that you have to replace _\<N\>_ with your loadpoint id/number
-* 1 per configured vehicle:
-  * Please note that you have to replace _\<ID\>_ with your vehicle id/name
+- 1 per configured loadpoint with `chargerFeatureHeating = false`:
+  - These channels point to the heating device that is currently active/connected at/to the loadpoint
+  - Please note that you have to replace _\<N\>_ with your loadpoint id/number
+- 1 per configured vehicle:
+  - Please note that you have to replace _\<ID\>_ with your vehicle id/name
 
 | Channel                                            | Type                 | Read/Write | Description                                                              |
 |----------------------------------------------------|----------------------|------------|--------------------------------------------------------------------------|
@@ -126,11 +126,11 @@ Those channels exist:
 
 Those channels exist:
 
-* 1 per configured loadpoint with `chargerFeatureHeating = true`:
-  * These channels point to the heating device that is currently active/connected at/to the loadpoint
-  * Please note that you have to replace _\<N\>_ with your loadpoint id/number
-* 1 per configured heating device:
-  * Please note that you have to replace _\<ID\>_ with your heating device id/name
+- 1 per configured loadpoint with `chargerFeatureHeating = true`:
+  - These channels point to the heating device that is currently active/connected at/to the loadpoint
+  - Please note that you have to replace _\<N\>_ with your loadpoint id/number
+- 1 per configured heating device:
+  - Please note that you have to replace _\<ID\>_ with your heating device id/name
 
 | Channel                                                 | Type               | Read/Write | Description                                                           |
 |---------------------------------------------------------|--------------------|------------|-----------------------------------------------------------------------|

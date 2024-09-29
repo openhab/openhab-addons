@@ -101,6 +101,7 @@
 				<option value="FindRemote">Find Remote</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="buttonTv">
@@ -140,6 +141,7 @@
 				<option value="POWERON">Power On</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">

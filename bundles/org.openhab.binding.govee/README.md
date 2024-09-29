@@ -43,6 +43,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H61A1 RGBIC Neon Rope Light 2M
 - H61A2 RGBIC Neon Rope Light 5M
 - H61A3 RGBIC Neon Rope Light
+- H61C5 RGBIC LED Neon Rope Lights for Desks (*)
 - H61D3 Neon Rope Light 2 3M (*)
 - H61D5 Neon Rope Light 2 5M (*)
 - H61A5 Neon LED Strip Light 10
@@ -110,7 +111,7 @@ arp -a | grep "MAC_ADDRESS"
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |   
+| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
 
 ## Channels

@@ -294,7 +294,7 @@ To move a camera with this binding you need an ONVIF camera that supports one of
 
 - Absolute movements
 - Relative movements
-- Continuous movements  
+- Continuous movements
 - Presets
 
 To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).

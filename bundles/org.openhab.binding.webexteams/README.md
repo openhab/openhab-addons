@@ -83,5 +83,5 @@ This binding includes these rule actions for sending messages:
 - `var success = botActions.sendPersonMessage(String personEmail, String markdown, String attach)` - Send a direct message to a person, with attachment.
 
 Sending messages for bot or person accounts works exactly the same.
-Attachments must be URLs.  
+Attachments must be URLs.
 Sending local files is not supported at this moment.

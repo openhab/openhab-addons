@@ -22,13 +22,14 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
 
-import org.openhab.binding.melcloud.internal.api.json.HeatpumpDeviceStatus;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.melcloud.internal.api.dto.HeatpumpDeviceStatus;
 import org.openhab.binding.melcloud.internal.config.HeatpumpDeviceConfig;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
@@ -45,6 +46,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -57,16 +59,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wietse van Buitenen - Initial contribution
  */
+@NonNullByDefault
 public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     private static final long EFFECTIVE_FLAG_POWER = 1L;
     private static final long EFFECTIVE_FLAG_TEMPERATURE_ZONE1 = 8589934720L;
     private static final long EFFECTIVE_FLAG_HOTWATER = 65536L;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHeatpumpDeviceHandler.class);
-    private HeatpumpDeviceConfig config;
-    private MelCloudAccountHandler melCloudHandler;
-    private HeatpumpDeviceStatus heatpumpDeviceStatus;
-    private ScheduledFuture<?> refreshTask;
+    private HeatpumpDeviceConfig config = new HeatpumpDeviceConfig();
+    private @Nullable MelCloudAccountHandler melCloudHandler;
+    private @Nullable HeatpumpDeviceStatus heatpumpDeviceStatus;
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     public MelCloudHeatpumpDeviceHandler(Thing thing) {
         super(thing);
@@ -77,7 +80,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         logger.debug("Initializing {} handler.", getThing().getThingTypeUID());
 
         Bridge bridge = getBridge();
-        if (bridge == null) {
+        if (bridge == null || !(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
             return;
         }
@@ -85,15 +88,16 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
         config = getConfigAs(HeatpumpDeviceConfig.class);
         logger.debug("Heatpump device config: {}", config);
 
-        initializeBridge(bridge.getHandler(), bridge.getStatus());
+        initializeBridge(bridgeHandler, bridge.getStatus());
     }
 
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
+        ScheduledFuture<?> refreshTask = this.refreshTask;
         if (refreshTask != null) {
             refreshTask.cancel(true);
-            refreshTask = null;
+            this.refreshTask = null;
         }
         melCloudHandler = null;
     }
@@ -102,25 +106,21 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("bridgeStatusChanged {} for thing {}", bridgeStatusInfo, getThing().getUID());
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            initializeBridge(bridge.getHandler(), bridgeStatusInfo.getStatus());
+        if (bridge != null && bridge.getHandler() instanceof BridgeHandler bridgeHandler) {
+            initializeBridge(bridgeHandler, bridgeStatusInfo.getStatus());
         }
     }
 
     private void initializeBridge(ThingHandler thingHandler, ThingStatus bridgeStatus) {
         logger.debug("initializeBridge {} for thing {}", bridgeStatus, getThing().getUID());
 
-        if (thingHandler != null && bridgeStatus != null) {
-            melCloudHandler = (MelCloudAccountHandler) thingHandler;
+        melCloudHandler = (MelCloudAccountHandler) thingHandler;
 
-            if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-                startAutomaticRefresh();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -133,11 +133,12 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
             return;
         }
 
+        MelCloudAccountHandler melCloudHandler = this.melCloudHandler;
         if (melCloudHandler == null) {
             logger.warn("No connection to MELCloud available, ignoring command");
             return;
         }
-
+        HeatpumpDeviceStatus heatpumpDeviceStatus = this.heatpumpDeviceStatus;
         if (heatpumpDeviceStatus == null) {
             logger.info("No initial data available, bridge is probably offline. Ignoring command");
             return;
@@ -207,18 +208,20 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     }
 
     private void startAutomaticRefresh() {
+        ScheduledFuture<?> refreshTask = this.refreshTask;
         if (refreshTask == null || refreshTask.isCancelled()) {
-            refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
+            this.refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
                     config.pollingInterval, TimeUnit.SECONDS);
         }
     }
 
     private void getDeviceDataAndUpdateChannels() {
-        if (melCloudHandler.isConnected()) {
+        MelCloudAccountHandler melCloudHandler = this.melCloudHandler;
+        if (melCloudHandler != null && melCloudHandler.isConnected()) {
             logger.debug("Update device '{}' channels", getThing().getThingTypeUID());
             try {
                 HeatpumpDeviceStatus newHeatpumpDeviceStatus = melCloudHandler
-                        .fetchHeatpumpDeviceStatus(config.deviceID, Optional.ofNullable(config.buildingID));
+                        .fetchHeatpumpDeviceStatus(config.deviceID, config.buildingID);
                 updateChannels(newHeatpumpDeviceStatus);
             } catch (MelCloudLoginException e) {
                 logger.debug("Login error occurred during device '{}' polling, reason {}. ",
@@ -233,7 +236,7 @@ public class MelCloudHeatpumpDeviceHandler extends BaseThingHandler {
     }
 
     private synchronized void updateChannels(HeatpumpDeviceStatus newHeatpumpDeviceStatus) {
-        heatpumpDeviceStatus = newHeatpumpDeviceStatus;
+        HeatpumpDeviceStatus heatpumpDeviceStatus = this.heatpumpDeviceStatus = newHeatpumpDeviceStatus;
         for (Channel channel : getThing().getChannels()) {
             updateChannels(channel.getUID().getId(), heatpumpDeviceStatus);
         }

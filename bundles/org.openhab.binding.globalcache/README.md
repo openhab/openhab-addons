@@ -127,7 +127,7 @@ The GlobalCache binding will automatically detect those devices, then add them t
 Background discovery is **enabled** by default.
 To disable background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
-```text
+```ini
 discovery.globalcache:background=false
 ```
 
@@ -366,7 +366,7 @@ then
         Thread.sleep(750)
         ContactClosure1.sendCommand(OFF)
         isRunning = false
-    }      
+    }
 end
 ```
 

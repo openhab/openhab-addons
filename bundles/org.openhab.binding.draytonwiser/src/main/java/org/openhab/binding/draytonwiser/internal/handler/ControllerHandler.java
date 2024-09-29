@@ -112,7 +112,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     private State getHeatChannel1Demand() {
-        return getData().heatingChannels.size() >= 1
+        return !getData().heatingChannels.isEmpty()
                 ? new QuantityType<>(getData().heatingChannels.get(0).getPercentageDemand(), Units.PERCENT)
                 : UnDefType.UNDEF;
     }
@@ -124,7 +124,7 @@ public class ControllerHandler extends DraytonWiserThingHandler<ControllerData> 
     }
 
     private State getHeatChannel1DemandState() {
-        return OnOffType.from(getData().heatingChannels.size() >= 1
+        return OnOffType.from(!getData().heatingChannels.isEmpty()
                 && "ON".equalsIgnoreCase(getData().heatingChannels.get(0).getHeatingRelayState()));
     }
 

@@ -26,12 +26,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
@@ -41,6 +41,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -50,6 +51,7 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
@@ -60,7 +62,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
-    private static final String JINJA_PREFIX = "JINJA:";
 
     // Component location fields
     protected final ComponentConfiguration componentConfiguration;
@@ -132,24 +133,24 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
+                ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
-                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), availabilityTemplate,
-                        componentConfiguration.getTransformationServiceProvider());
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), transformation);
             }
         } else {
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
             if (availabilityTopic != null) {
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplate,
-                        componentConfiguration.getTransformationServiceProvider());
+                        this.channelConfiguration.getPayloadNotAvailable(), transformation);
             }
         }
     }
@@ -324,17 +325,16 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         return channelConfigurationJson;
     }
 
-    @Nullable
-    public TransformationServiceProvider getTransformationServiceProvider() {
-        return componentConfiguration.getTransformationServiceProvider();
-    }
-
     public boolean isEnabledByDefault() {
         return channelConfiguration.isEnabledByDefault();
     }
 
     public Gson getGson() {
         return componentConfiguration.getGson();
+    }
+
+    public Jinjava getJinjava() {
+        return componentConfiguration.getJinjava();
     }
 
     public C getChannelConfiguration() {

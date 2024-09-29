@@ -105,7 +105,7 @@ Channel availability depends on the electricity connection (single or three-phas
 | bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | All    | Tempo |
 | bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | All    | Tempo |
 | bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | All    | Tempo |
-| pejp     | `Number:Duration`         | Prior notice to EJP start                                | All    | EJP   |
+| pejp     | `Number:Time`             | Prior notice to EJP start                                | All    | EJP   |
 | demain   | `String`                  | Following day color                                      | All    | Tempo |
 
 ### Standard TIC mode
@@ -194,7 +194,7 @@ These channels are available on the following telemeters:
 
 ### Historical TIC mode
 
-The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289` :
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Single-phase Electricity meter with HC/HP option - CBEMM Evolution ICC and adco `031528042289`:
 
 ```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0" ]{
@@ -220,7 +220,7 @@ String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_h
 
 ### Standard TIC mode
 
-The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289` :
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289`:
 
 ```java
 Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMode="STANDARD" ]{

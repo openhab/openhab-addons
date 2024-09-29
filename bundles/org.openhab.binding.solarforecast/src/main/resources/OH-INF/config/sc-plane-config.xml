@@ -9,9 +9,9 @@
 			<label>Rooftop Resource Id</label>
 			<description>Resource Id of Solcast rooftop site</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+		<parameter name="refreshInterval" type="integer" min="0" unit="min" required="true">
 			<label>Forecast Refresh Interval</label>
-			<description>Data refresh rate of forecast data in minutes</description>
+			<description>Data refresh rate of forecast data in minutes, zero for manual updates.</description>
 			<default>120</default>
 		</parameter>
 	</config-description>
