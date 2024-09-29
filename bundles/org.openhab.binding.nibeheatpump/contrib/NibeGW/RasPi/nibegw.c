@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,7 @@
  *	20.2.2017   v1.22   Separated read and write token support.
  *	7.2.2021    v1.23   Fixed compile error in RasPi.
  *	19.11.2022  v1.30   Support 16-bit addressing.
+ *	26.12.2022  v1.31   Fixed serial settings (for RPi Zero 2 W + Waveshare RS485 CAN hat)
  */
 
 #include <signal.h>
@@ -75,7 +76,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-#define VERSION	"1.23"
+#define VERSION	"1.31"
 
 #define FALSE	0
 #define TRUE	1
@@ -97,7 +98,6 @@ int initSerialPort(int fd, int hwflowctrl)
 	struct termios options;
 	
 	// Get the current options for the port...
-	
 	tcgetattr(fd, &options);
 	
 	// Set the baud rates
@@ -113,13 +113,18 @@ int initSerialPort(int fd, int hwflowctrl)
 	options.c_cflag &= ~CSIZE;
 	options.c_cflag |= CS8;
 	
-	// Flow control
-	options.c_iflag &= ~(IXON | IXOFF | IXANY);
-	
 	if (hwflowctrl)
 		options.c_cflag |= CRTSCTS;		// Enable hardware flow control
 	else
 		options.c_cflag &= ~CRTSCTS;	// Disable hardware flow control
+	
+	// Flow control
+	options.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL );
+	
+	// Local flags
+	options.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHONL | ECHOCTL | ECHOKE );
+	
+	options.c_oflag &= ~(OPOST | ONLCR);
 	
 	options.c_cc[VMIN] = 1;				// Min character to be read
 	options.c_cc[VTIME] = 1;			// Time to wait for data (tenth of seconds)

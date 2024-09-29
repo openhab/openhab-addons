@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BluetoothDiscoveryProcess} does the work of creating a DiscoveryResult from a set of
- * {@link BluetoothDisocveryParticipant}s
+ * {@link BluetoothDiscoveryParticipant}s
  *
  * @author Connor Petty - Initial Contribution
  */

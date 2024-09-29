@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
 /**
@@ -29,10 +30,10 @@ import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 public class GetConfiguration extends AbstractCommand {
     private final String url;
 
-    public GetConfiguration(EaseeThingHandler handler, String chargerId) {
+    public GetConfiguration(EaseeThingHandler handler, String chargerId, JsonResultProcessor resultProcessor) {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
         this.url = GET_CONFIGURATION_URL.replaceAll("\\{id\\}", chargerId);
     }
 

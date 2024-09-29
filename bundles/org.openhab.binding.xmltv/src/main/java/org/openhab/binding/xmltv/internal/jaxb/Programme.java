@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,8 +77,7 @@ public class Programme {
     }
 
     private long iso860DateToEpoch(String date) {
-        long epoch = ZonedDateTime.parse(date, XMLTV_DATE_FORMAT).toInstant().toEpochMilli();
-        return epoch;
+        return ZonedDateTime.parse(date, XMLTV_DATE_FORMAT).toInstant().toEpochMilli();
     }
 
     public List<Icon> getIcons() {

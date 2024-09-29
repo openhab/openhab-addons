@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,22 +20,22 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
-import org.openhab.binding.tado.internal.api.model.ACFanLevel;
-import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
-import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
-import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
-import org.openhab.binding.tado.internal.api.model.AcMode;
-import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.ManualTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionTemplate;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
-import org.openhab.binding.tado.internal.api.model.TadoModeTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.TemperatureObject;
-import org.openhab.binding.tado.internal.api.model.TimerTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.TimerTerminationConditionTemplate;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACFanLevel;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACHorizontalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcFanSpeed;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcMode;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcModeCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.AirConditioningCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.ManualTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionTemplate;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoModeTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.TemperatureObject;
+import org.openhab.binding.tado.swagger.codegen.api.model.TimerTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.TimerTerminationConditionTemplate;
 
 /**
  * Utility methods for the conversion of API types.
@@ -226,8 +226,8 @@ public class TadoApiTypeUtils {
             @Nullable GenericZoneCapabilities capabilities) {
         AirConditioningCapabilities acCapabilities;
 
-        if (capabilities instanceof AirConditioningCapabilities) {
-            acCapabilities = (AirConditioningCapabilities) capabilities;
+        if (capabilities instanceof AirConditioningCapabilities conditioningCapabilities) {
+            acCapabilities = conditioningCapabilities;
         } else {
             acCapabilities = new AirConditioningCapabilities();
         }

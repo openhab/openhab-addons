@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -120,9 +121,9 @@ public class MagentaTVOAuth {
         if (cred.sam3Para != null) {
             for (OauthKeyValue si : cred.sam3Para) {
                 logger.trace("sam3Para.{} = {}", si.key, si.value);
-                if (si.key.equalsIgnoreCase("oAuthScope")) {
+                if ("oAuthScope".equalsIgnoreCase(si.key)) {
                     oAuthScope = si.value;
-                } else if (si.key.equalsIgnoreCase("SAM3ServiceURL")) {
+                } else if ("SAM3ServiceURL".equalsIgnoreCase(si.key)) {
                     oAuthService = si.value;
                 }
             }
@@ -215,7 +216,7 @@ public class MagentaTVOAuth {
                     TimeUnit.MILLISECONDS);
             for (Enumeration<?> e = headers.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
-                String val = (String) headers.get(key);
+                String val = (String) headers.get(Objects.requireNonNull(key));
                 request.header(key, val);
             }
             if (method.equals(HttpMethod.POST)) {
@@ -242,7 +243,7 @@ public class MagentaTVOAuth {
             // validate response, API errors are reported as Json
             HttpFields responseHeaders = contentResponse.getHeaders();
             for (HttpField f : responseHeaders) {
-                if (f.getName().equals("Set-Cookie")) {
+                if ("Set-Cookie".equals(f.getName())) {
                     HttpCookie c = new HttpCookie(f.getName(), f.getValue());
                     cookies.add(c);
                 }

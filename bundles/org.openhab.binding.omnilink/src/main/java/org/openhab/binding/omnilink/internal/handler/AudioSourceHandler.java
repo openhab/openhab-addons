@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,8 +118,8 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
                 if (command instanceof RefreshType) {
                     updateState(CHANNEL_AUDIO_SOURCE_POLLING,
                             OnOffType.from((scheduledPolling != null && !scheduledPolling.isDone())));
-                } else if (command instanceof OnOffType) {
-                    handlePolling(channelUID, (OnOffType) command);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handlePolling(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be RefreshType or OnOffType", command);
                 }

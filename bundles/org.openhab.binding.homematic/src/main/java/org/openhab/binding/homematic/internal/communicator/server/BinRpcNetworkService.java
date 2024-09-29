@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,9 +28,9 @@ import org.openhab.core.common.ThreadPoolManager;
  * @author Gerhard Riegler - Initial contribution
  */
 public class BinRpcNetworkService implements Runnable {
-    private static final byte BIN_EMPTY_STRING[] = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 0, 3, 0, 0, 0, 0 };
-    private static final byte BIN_EMPTY_ARRAY[] = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0 };
-    private static final byte BIN_EMPTY_EVENT_LIST[] = { 'B', 'i', 'n', 1, 0, 0, 0, 21, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
+    private static final byte[] BIN_EMPTY_STRING = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 0, 3, 0, 0, 0, 0 };
+    private static final byte[] BIN_EMPTY_ARRAY = { 'B', 'i', 'n', 1, 0, 0, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0 };
+    private static final byte[] BIN_EMPTY_EVENT_LIST = { 'B', 'i', 'n', 1, 0, 0, 0, 21, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0,
             3, 0, 0, 0, 5, 'e', 'v', 'e', 'n', 't' };
 
     private static final String RPC_POOL_NAME = "homematicRpc";
@@ -49,7 +49,7 @@ public class BinRpcNetworkService implements Runnable {
         serverSocket.setReuseAddress(true);
         serverSocket.bind(new InetSocketAddress(config.getBinCallbackPort()));
 
-        this.rpcResponseHandler = new RpcResponseHandler<byte[]>(listener) {
+        this.rpcResponseHandler = new RpcResponseHandler<>(listener) {
 
             @Override
             protected byte[] getEmptyStringResult() {

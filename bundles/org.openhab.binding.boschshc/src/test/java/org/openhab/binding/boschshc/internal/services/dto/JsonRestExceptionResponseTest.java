@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 @NonNullByDefault
-public class JsonRestExceptionResponseTest {
+class JsonRestExceptionResponseTest {
 
     private @NonNullByDefault({}) JsonRestExceptionResponse fixture;
 
@@ -35,7 +35,7 @@ public class JsonRestExceptionResponseTest {
     }
 
     @Test
-    public void testIsValid() {
+    void testIsValid() {
         assertFalse(JsonRestExceptionResponse.isValid(null));
         assertTrue(JsonRestExceptionResponse.isValid(fixture));
         fixture.errorCode = null;

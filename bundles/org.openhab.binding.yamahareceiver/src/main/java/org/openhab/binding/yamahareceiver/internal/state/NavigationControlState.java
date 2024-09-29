@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ public class NavigationControlState implements Invalidateable {
     public int menuLayer = -1;
     public int currentLine = 0;
     public int maxLine = -1;
-    public String items[] = new String[InputWithNavigationControlXML.MAX_PER_PAGE];
+    public String[] items = new String[InputWithNavigationControlXML.MAX_PER_PAGE];
 
     public String getCurrentItemName() {
         if (currentLine < 1 || currentLine > items.length) {

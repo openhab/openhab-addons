@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,13 +86,35 @@ class IntrusionDetectionControlStateServiceTest {
 
     @Test
     void onStateUpdate() {
-        final String json = "{\n" + "\"@type\": \"intrusionDetectionControlState\",\n" + "\"activeProfile\": \"0\",\n"
-                + "\"alarmActivationDelayTime\": 30,\n" + "\"actuators\": [\n" + "{\n" + "\"readonly\": false,\n"
-                + "\"active\": true,\n" + "\"id\": \"intrusion:video\"\n" + "},\n" + "{\n" + "\"readonly\": false,\n"
-                + "\"active\": false,\n" + "\"id\": \"intrusion:siren\"\n" + "}\n" + "],\n"
-                + "\"remainingTimeUntilArmed\": 28959,\n" + "\"armActivationDelayTime\": 30,\n" + "\"triggers\": [\n"
-                + "{\n" + "\"readonly\": false,\n" + "\"active\": true,\n" + "\"id\": \"hdm:ZigBee:000d6f0422f42378\"\n"
-                + "}\n" + "],\n" + "\"value\": \"SYSTEM_ARMING\"\n" + "}";
+        final String json = """
+                {
+                    "@type":"intrusionDetectionControlState",
+                    "activeProfile":"0",
+                    "alarmActivationDelayTime":30,
+                    "actuators":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"intrusion:video"
+                        },
+                        {
+                            "readonly":false,
+                            "active":false,
+                            "id":"intrusion:siren"
+                        }
+                    ],
+                    "remainingTimeUntilArmed":28959,
+                    "armActivationDelayTime":30,
+                    "triggers":[
+                        {
+                            "readonly":false,
+                            "active":true,
+                            "id":"hdm:ZigBee:000d6f0422f42378"
+                        }
+                    ],
+                    "value":"SYSTEM_ARMING"
+                }\
+                """;
         JsonElement jsonElement = JsonParser.parseString(json);
         fixture.onStateUpdate(jsonElement);
         verify(consumer).accept(any());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -203,8 +203,8 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
 
     void execute(ChannelUID channelUID, Command command) {
         if (CHANNEL_WRITE_MSG.equals(channelUID.getId())) {
-            if (command instanceof StringType) {
-                getXiaomiBridgeHandler().writeToDevice(itemId, ((StringType) command).toFullString());
+            if (command instanceof StringType str) {
+                getXiaomiBridgeHandler().writeToDevice(itemId, str.toFullString());
             } else {
                 logger.debug("Command \"{}\" has to be of StringType", command);
             }
@@ -246,8 +246,8 @@ public class XiaomiDeviceBaseHandler extends BaseThingHandler implements XiaomiI
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof XiaomiBridgeHandler) {
-                this.bridgeHandler = (XiaomiBridgeHandler) handler;
+            if (handler instanceof XiaomiBridgeHandler xiaomiBridgeHandler) {
+                this.bridgeHandler = xiaomiBridgeHandler;
                 this.bridgeHandler.registerItemListener(this);
             } else {
                 return null;

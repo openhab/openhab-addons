@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,11 +97,10 @@ class LxControlRadio extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (((command instanceof OnOffType && (OnOffType) command == OnOffType.OFF) || DecimalType.ZERO.equals(command))
-                && outputsMap.containsKey("0")) {
+        if (((command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.OFF)
+                || DecimalType.ZERO.equals(command)) && outputsMap.containsKey("0")) {
             sendAction(CMD_RESET);
-        } else if (command instanceof DecimalType) {
-            DecimalType output = (DecimalType) command;
+        } else if (command instanceof DecimalType output) {
             if (outputsMap.containsKey(output.toString())) {
                 sendAction(String.valueOf(output.intValue()));
             }

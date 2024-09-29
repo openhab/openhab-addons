@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.mqtt.espmilighthub.internal.handler;
 
 import static org.openhab.binding.mqtt.MqttBindingConstants.BINDING_ID;
@@ -19,6 +18,9 @@ import static org.openhab.binding.mqtt.espmilighthub.internal.EspMilightHubBindi
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,27 +28,28 @@ import org.openhab.binding.mqtt.espmilighthub.internal.ConfigOptions;
 import org.openhab.binding.mqtt.espmilighthub.internal.Helper;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
-import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 @NonNullByDefault
-public class EspMilightHubHandler extends BaseThingHandler implements MqttConnectionObserver, MqttMessageSubscriber {
+public class EspMilightHubHandler extends BaseThingHandler implements MqttMessageSubscriber {
     // these are all constants used in color conversion calcuations.
     // strings are necessary to prevent floating point loss of precision
     private static final BigDecimal BIG_DECIMAL_THOUSAND = new BigDecimal(1000);
@@ -95,7 +98,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             new BigDecimal("-0.5179722"), new BigDecimal("1.5317403"), new BigDecimal("-2.4243787"),
             new BigDecimal("1.925865"), new BigDecimal("-0.471106") };
 
-    private static final BigDecimal BIG_DECIMAL_153 = new BigDecimal(153);
     private static final BigDecimal BIG_DECIMAL_217 = new BigDecimal(217);
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -153,13 +155,20 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         String bulbLevel = Helper.resolveJSON(messageJSON, "\"level\":", 3);
         if (!bulbLevel.isEmpty()) {
             if ("0".equals(bulbLevel) || "OFF".equals(bulbState)) {
-                changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
+                if (!hasRGB()) {
+                    changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
+                }
             } else {
                 tempBulbLevel = new PercentType(Integer.valueOf(bulbLevel));
-                changeChannel(CHANNEL_LEVEL, tempBulbLevel);
+                savedLevel = tempBulbLevel.toBigDecimal();
+                if (!hasRGB()) {
+                    changeChannel(CHANNEL_LEVEL, tempBulbLevel);
+                }
             }
         } else if ("ON".equals(bulbState) || "OFF".equals(bulbState)) { // NOTE: Level is missing when this runs
-            changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
+            if (!hasRGB()) {
+                changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
+            }
         }
         bulbMode = Helper.resolveJSON(messageJSON, "\"bulb_mode\":\"", 5);
         switch (bulbMode) {
@@ -172,6 +181,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 if (!bulbCTempS.isEmpty()) {
                     var bulbCTemp = Integer.valueOf(bulbCTempS);
                     changeChannel(CHANNEL_COLOURTEMP, scaleMireds(bulbCTemp));
+                    changeChannel(CHANNEL_COLOURTEMP_ABS, new QuantityType(bulbCTemp, Units.MIRED));
                     if (hasRGB()) {
                         changeChannel(CHANNEL_COLOUR, calculateHSBFromColorTemp(bulbCTemp, tempBulbLevel));
                     }
@@ -189,14 +199,16 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                         bulbSaturation = "100";
                     }
                     // 360 isn't allowed by OpenHAB
-                    if (bulbHue.equals("360")) {
+                    if ("360".equals(bulbHue)) {
                         bulbHue = "0";
                     }
                     var hsb = new HSBType(new DecimalType(Integer.valueOf(bulbHue)),
                             new PercentType(Integer.valueOf(bulbSaturation)), tempBulbLevel);
                     changeChannel(CHANNEL_COLOUR, hsb);
                     if (hasCCT()) {
-                        changeChannel(CHANNEL_COLOURTEMP, scaleMireds(calculateColorTempFromHSB(hsb)));
+                        int mireds = calculateColorTempFromHSB(hsb);
+                        changeChannel(CHANNEL_COLOURTEMP, scaleMireds(mireds));
+                        changeChannel(CHANNEL_COLOURTEMP_ABS, new QuantityType(mireds, Units.MIRED));
                     }
                 }
                 break;
@@ -212,9 +224,6 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             case "night":
                 if (hasRGB()) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("night"));
-                    if (config.oneTriggersNightMode) {
-                        changeChannel(CHANNEL_LEVEL, new PercentType("1"));
-                    }
                 }
                 break;
         }
@@ -293,7 +302,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             coefficients = KANG_Y_COEFFICIENTS[0];
         }
         BigDecimal y = polynomialFit(x, coefficients);
-        var rawHsb = HSBType.fromXY(x.floatValue() * 100.0f, y.floatValue() * 100.0f);
+        var rawHsb = ColorUtil.xyToHsb(new double[] { x.doubleValue(), y.doubleValue() });
         return new HSBType(rawHsb.getHue(), rawHsb.getSaturation(), brightness);
     }
 
@@ -367,8 +376,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel.intValue() + "}");
             return;
-        } else if (command instanceof HSBType) {
-            HSBType hsb = (HSBType) command;
+        } else if (command instanceof HSBType hsb) {
             // This feature allows google home or Echo to trigger white mode when asked to turn color to white.
             if (hsb.getHue().intValue() == config.whiteHue && hsb.getSaturation().intValue() == config.whiteSat) {
                 if (hasCCT()) {
@@ -393,8 +401,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             }
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
-        } else if (command instanceof PercentType) {
-            PercentType percentType = (PercentType) command;
+        } else if (command instanceof PercentType percentType) {
             if (percentType.intValue() == 0) {
                 turnOff();
                 return;
@@ -430,6 +437,17 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 int scaledCommand = (int) Math.round((370 - (2.17 * Float.valueOf(command.toString()))));
                 sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + scaledCommand + "}");
                 break;
+            case CHANNEL_COLOURTEMP_ABS:
+                int mireds;
+                QuantityType<?> miredsQt;
+                if (command instanceof QuantityType
+                        && (miredsQt = ((QuantityType<?>) command).toInvertibleUnit(Units.MIRED)) != null) {
+                    mireds = miredsQt.intValue();
+                } else {
+                    mireds = Integer.valueOf(command.toString());
+                }
+                sendMQTT("{\"state\":\"ON\",\"level\":" + savedLevel + ",\"color_temp\":" + mireds + "}");
+                break;
             case CHANNEL_COMMAND:
                 sendMQTT("{\"command\":\"" + command + "\"}");
                 break;
@@ -451,29 +469,22 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 return;
             }
         }
-        Bridge localBridge = getBridge();
-        if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Globe must have a valid bridge selected before it can come online.");
-            return;
-        } else {
-            globeType = thing.getThingTypeUID().getId();// eg rgb_cct
-            String globeLocation = this.getThing().getUID().getId();// eg 0x014
-            remotesGroupID = globeLocation.substring(globeLocation.length() - 1, globeLocation.length());// eg 4
-            String remotesIDCode = globeLocation.substring(0, globeLocation.length() - 1);// eg 0x01
-            fullCommandTopic = COMMANDS_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
-            fullStatesTopic = STATES_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
-            // Need to remove the lowercase x from 0x12AB in case it contains all numbers
-            String caseCheck = globeLocation.substring(2, globeLocation.length() - 1);
-            if (!caseCheck.equals(caseCheck.toUpperCase())) {
-                logger.warn(
-                        "The milight globe {}{} is using lowercase for the remote code when the hub needs UPPERCASE",
-                        remotesIDCode, remotesGroupID);
-            }
-            channelPrefix = BINDING_ID + ":" + globeType + ":" + localBridge.getUID().getId() + ":" + remotesIDCode
-                    + remotesGroupID + ":";
-            connectMQTT();
+
+        globeType = thing.getThingTypeUID().getId();// eg rgb_cct
+        String globeLocation = this.getThing().getUID().getId();// eg 0x014
+        remotesGroupID = globeLocation.substring(globeLocation.length() - 1, globeLocation.length());// eg 4
+        String remotesIDCode = globeLocation.substring(0, globeLocation.length() - 1);// eg 0x01
+        fullCommandTopic = COMMANDS_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
+        fullStatesTopic = STATES_BASE_TOPIC + remotesIDCode + "/" + globeType + "/" + remotesGroupID;
+        // Need to remove the lowercase x from 0x12AB in case it contains all numbers
+        String caseCheck = globeLocation.substring(2, globeLocation.length() - 1);
+        if (!caseCheck.equals(caseCheck.toUpperCase())) {
+            logger.warn("The milight globe {}{} is using lowercase for the remote code when the hub needs UPPERCASE",
+                    remotesIDCode, remotesGroupID);
         }
+        channelPrefix = BINDING_ID + ":" + globeType + ":" + thing.getBridgeUID().getId() + ":" + remotesIDCode
+                + remotesGroupID + ":";
+        bridgeStatusChanged(getBridgeStatus());
     }
 
     private void sendMQTT(String payload) {
@@ -487,57 +498,65 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     public void processMessage(String topic, byte[] payload) {
         String state = new String(payload, StandardCharsets.UTF_8);
         logger.trace("Received the following new Milight state:{}:{}", topic, state);
-        try {
-            processIncomingState(state);
-        } catch (Exception e) {
-            logger.warn("Failed processing Milight state {} for {}", state, topic, e);
+
+        if (topic.equals(STATUS_TOPIC)) {
+            if (state.equals(CONNECTED)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Waiting for 'milight/status: connected' MQTT message to be sent from your ESP Milight hub.");
+            }
+        } else {
+            try {
+                processIncomingState(state);
+            } catch (Exception e) {
+                logger.warn("Failed processing Milight state {} for {}", state, topic, e);
+            }
+        }
+    }
+
+    public ThingStatusInfo getBridgeStatus() {
+        Bridge b = getBridge();
+        if (b != null) {
+            return b.getStatusInfo();
+        } else {
+            return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
         }
     }
 
     @Override
-    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
-        logger.debug("MQTT brokers state changed to:{}", state);
-        switch (state) {
-            case CONNECTED:
-                updateStatus(ThingStatus.ONLINE);
-                break;
-            case CONNECTING:
-            case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Bridge (broker) is not connected to your MQTT broker.");
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            connection = null;
+            return;
         }
-    }
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
 
-    public void connectMQTT() {
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
-        ThingUID thingUID = localBridge.getUID();
-        Thing thing = thingRegistry.get(thingUID);
-        if (thing == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "Bridge is missing or offline, you need to setup a working MQTT broker first.");
-            return;
-        }
-        ThingHandler handler = thing.getHandler();
-        if (handler instanceof AbstractBrokerHandler) {
-            AbstractBrokerHandler abh = (AbstractBrokerHandler) handler;
-            MqttBrokerConnection localConnection = abh.getConnection();
-            if (localConnection != null) {
-                localConnection.setKeepAliveInterval(20);
-                localConnection.setQos(1);
-                localConnection.setUnsubscribeOnStop(true);
-                localConnection.addConnectionObserver(this);
-                localConnection.start();
-                localConnection.subscribe(fullStatesTopic + "/#", this);
-                connection = localConnection;
-                if (localConnection.connectionState().compareTo(MqttConnectionState.CONNECTED) == 0) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+        ThingHandler handler = localBridge.getHandler();
+        if (handler instanceof AbstractBrokerHandler abh) {
+            final MqttBrokerConnection connection;
+            try {
+                connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                        "Bridge handler has no valid broker connection!");
+                return;
             }
+            this.connection = connection;
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "Waiting for 'milight/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
+            connection.subscribe(fullStatesTopic, this);
+            connection.subscribe(STATUS_TOPIC, this);
         }
         return;
     }
@@ -546,7 +565,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     public void dispose() {
         MqttBrokerConnection localConnection = connection;
         if (localConnection != null) {
-            localConnection.unsubscribe(fullStatesTopic + "/#", this);
+            localConnection.unsubscribe(fullStatesTopic, this);
+            localConnection.unsubscribe(STATUS_TOPIC, this);
         }
     }
 }

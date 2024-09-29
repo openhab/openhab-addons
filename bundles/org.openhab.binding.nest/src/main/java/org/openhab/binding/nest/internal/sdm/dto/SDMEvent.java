@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,8 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://developers.google.com/nest/device-access/api/events
+ * @see <a href="https://developers.google.com/nest/device-access/api/events">
+ *      https://developers.google.com/nest/device-access/api/events</a>
  */
 public class SDMEvent {
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.vizio.internal.communication;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,6 +52,7 @@ public class VizioCommunicator {
     private static final String AUTH_HEADER = "AUTH";
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final String JSON_VALUE = "{\"VALUE\": %s}";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final HttpClient httpClient;
     private final Gson gson = new GsonBuilder().serializeNulls().create();
@@ -109,7 +111,7 @@ public class VizioCommunicator {
     /**
      * Change the volume of the Vizio TV
      *
-     * @param the command JSON for the desired volue
+     * @param commandJSON the command JSON for the desired volue
      * @return A PutResponse response object
      * @throws VizioException
      *
@@ -132,7 +134,7 @@ public class VizioCommunicator {
     /**
      * Change the currently selected input of the Vizio TV
      *
-     * @param the command JSON for the selected input
+     * @param commandJSON the command JSON for the selected input
      * @return A PutResponse response object
      * @throws VizioException
      *
@@ -166,7 +168,7 @@ public class VizioCommunicator {
     /**
      * Launch a given streaming app on the Vizio TV
      *
-     * @param the VizioAppConfig data for the app to launch
+     * @param appConfig the VizioAppConfig data for the app to launch
      * @return A PutResponse response object
      * @throws VizioException
      *
@@ -178,7 +180,7 @@ public class VizioCommunicator {
     /**
      * Send a key press command to the Vizio TV
      *
-     * @param the command JSON for the key press
+     * @param commandJSON the command JSON for the key press
      * @return A PutResponse response object
      * @throws VizioException
      *
@@ -190,8 +192,8 @@ public class VizioCommunicator {
     /**
      * Start the pairing process to obtain an auth token from the TV
      *
-     * @param the deviceName that is displayed in the TV settings after the device is registered
-     * @param the deviceId a unique number that identifies this pairing request
+     * @param deviceName the deviceName that is displayed in the TV settings after the device is registered
+     * @param deviceId the deviceId a unique number that identifies this pairing request
      * @return A PairingStart response object
      * @throws VizioException
      *
@@ -206,9 +208,9 @@ public class VizioCommunicator {
     /**
      * Finish the pairing process by submitting the code that was displayed on the TV to obtain the auth token
      *
-     * @param the same deviceId that was used by startPairing()
-     * @param the pairingCode that was displayed on the TV
-     * @param the pairingToken returned by startPairing()
+     * @param deviceId the same deviceId that was used by startPairing()
+     * @param pairingCode the pairingCode that was displayed on the TV
+     * @param pairingToken the pairingToken returned by startPairing()
      * @return A PairingComplete response object
      * @throws VizioException
      *
@@ -230,6 +232,7 @@ public class VizioCommunicator {
     private String getCommand(String url) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             request.header(AUTH_HEADER, authToken);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 
@@ -254,6 +257,7 @@ public class VizioCommunicator {
     private String putCommand(String url, String commandJSON) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.PUT);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (!url.contains("pairing")) {
                 request.header(AUTH_HEADER, authToken);
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class NeeoBrainSearchService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && paths[0].equalsIgnoreCase("db");
+        return paths.length >= 1 && "db".equalsIgnoreCase(paths[0]);
     }
 
     /**
@@ -107,12 +107,12 @@ public class NeeoBrainSearchService extends DefaultServletService {
 
         final String path = paths[1].toLowerCase();
 
-        if (path.equalsIgnoreCase("search")) {
+        if ("search".equalsIgnoreCase(path)) {
             String queryString = req.getQueryString();
             if (queryString != null) {
                 doSearch(queryString, resp);
             }
-        } else if (path.equalsIgnoreCase("adapterdefinition") && paths.length >= 3) {
+        } else if ("adapterdefinition".equalsIgnoreCase(path) && paths.length >= 3) {
             doAdapterDefinition(paths[2], resp);
         } else {
             doQuery(path, resp);

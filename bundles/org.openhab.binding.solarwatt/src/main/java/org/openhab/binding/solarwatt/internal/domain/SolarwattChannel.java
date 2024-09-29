@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Aggregation of the interesting parts to write into a channel.
  *
- * From this the {@link ChannelType}s are created.
+ * From this the {@link org.openhab.core.thing.type.ChannelType}s are created.
  *
  * @author Sven Carstens - Initial contribution
  */

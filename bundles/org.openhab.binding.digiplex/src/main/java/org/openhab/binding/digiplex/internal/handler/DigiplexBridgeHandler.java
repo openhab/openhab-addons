@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TooManyListenersException;
@@ -272,7 +272,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DigiplexDiscoveryService.class);
+        return List.of(DigiplexDiscoveryService.class);
     }
 
     private class BridgeMessageHandler implements DigiplexMessageHandler {
@@ -309,7 +309,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         @Override
         public void run() {
-            logger.debug("Receiver thread started");
+            logger.debug("Starting receiver thread");
             while (!interrupted()) {
                 try {
                     Optional<String> message = readLineBlocking();
@@ -360,14 +360,14 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         @Override
         public void run() {
-            logger.debug("Sender thread started");
+            logger.debug("Starting sender thread");
             while (!interrupted()) {
                 try {
                     DigiplexRequest request = sendQueue.take();
                     stream.write(request.getSerialMessage().getBytes());
                     stream.flush();
                     updateState(BRIDGE_MESSAGES_SENT, new DecimalType(messagesSent.incrementAndGet()));
-                    logger.debug("message sent: '{}'", request.getSerialMessage().replaceAll("\r", ""));
+                    logger.debug("message sent: '{}'", request.getSerialMessage().replace("\r", ""));
                     Thread.sleep(SLEEP_TIME); // do not flood PRT3 with messages as it creates unpredictable responses
                 } catch (IOException e) {
                     handleCommunicationError();

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>GeneracMobileLink Binding</name>
 	<description>This binding monitors Generac manufactured generators through the MobileLink cloud service.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

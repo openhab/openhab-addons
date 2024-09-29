@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,13 +20,14 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
 
 /**
  * The {@link OnvifCodec} is used by Netty to decode Onvif traffic into message Strings.
- *
  *
  * @author Matthew Skinner - Initial contribution
  */
@@ -46,8 +47,12 @@ public class OnvifCodec extends ChannelDuplexHandler {
             return;
         }
         try {
-            if (msg instanceof HttpContent) {
-                HttpContent content = (HttpContent) msg;
+            if (msg instanceof HttpResponse response) {
+                if (response.status().code() != 200) {
+                    logger.trace("ONVIF replied with code {} message is {}", response.status().code(), msg);
+                }
+            }
+            if (msg instanceof HttpContent content) {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
@@ -56,6 +61,21 @@ public class OnvifCodec extends ChannelDuplexHandler {
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+
+    @Override
+    public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
+        if (ctx == null) {
+            return;
+        }
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent e = (IdleStateEvent) evt;
+            logger.debug("IdleStateEvent received: {}", e.state());
+            onvifConnection.setIsConnected(false);
+            ctx.close();
+        } else {
+            logger.debug("ONVIF netty channel event occurred: {}", evt);
         }
     }
 

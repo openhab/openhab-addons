@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link meteostickBinding} class defines common constants, which are
+ * The {@link MeteostickBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Chris Jackson - Initial contribution
@@ -38,6 +38,7 @@ public class MeteostickBindingConstants {
     public static final String CHANNEL_RAIN_RAW = "rain-raw";
     public static final String CHANNEL_RAIN_CURRENTHOUR = "rain-currenthour";
     public static final String CHANNEL_RAIN_LASTHOUR = "rain-lasthour";
+    public static final String CHANNEL_RAIN_TODAY = "rain-today";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
     public static final String CHANNEL_WIND_DIRECTION = "wind-direction";
     public static final String CHANNEL_WIND_SPEED_LAST2MIN_AVERAGE = "wind-speed-last2min-average";
@@ -51,6 +52,7 @@ public class MeteostickBindingConstants {
     public static final String PARAMETER_CHANNEL = "channel";
     public static final String PARAMETER_SPOON = "spoon";
     public static final String PARAMETER_SPOON_DEFAULT = "0.254";
+    public static final String PARAMETER_WINDVANE = "deltaWindDirection";
 
     // Miscellaneous constants
     public static final long HOUR_IN_SEC = 60 * 60;

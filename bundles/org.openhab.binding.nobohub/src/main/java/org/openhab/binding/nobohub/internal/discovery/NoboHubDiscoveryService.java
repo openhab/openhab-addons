@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.nobohub.internal.discovery;
 
 import static org.openhab.binding.nobohub.internal.NoboHubBindingConstants.NOBO_HUB_BROADCAST_ADDRESS;
@@ -28,22 +27,19 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nobohub.internal.NoboHubBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +50,12 @@ import org.slf4j.LoggerFactory;
  * @author Espen Fossen - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.nobohub")
-public class NoboHubDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = NoboHubDiscoveryService.class, configurationPid = "discovery.nobohub")
+public class NoboHubDiscoveryService extends AbstractThingHandlerDiscoveryService<NoboHubBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(NoboHubDiscoveryService.class);
 
-    private @NonNullByDefault({}) NoboHubBridgeHandler hubBridgeHandler;
-
     public NoboHubDiscoveryService() {
-        super(DISCOVERABLE_DEVICE_TYPES_UIDS, 10, true);
+        super(NoboHubBridgeHandler.class, DISCOVERABLE_DEVICE_TYPES_UIDS, 10, true);
     }
 
     @Override
@@ -76,20 +70,9 @@ public class NoboHubDiscoveryService extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof NoboHubBridgeHandler) {
-            this.hubBridgeHandler = (NoboHubBridgeHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return hubBridgeHandler;
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     private final Runnable scanner = new Runnable() {

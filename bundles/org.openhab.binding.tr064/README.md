@@ -1,6 +1,6 @@
 # TR-064 Binding
 
-This binding brings support for internet gateway devices that support the TR-064 protocol (e.g. the AVM FritzBox family of routers). 
+This binding brings support for internet gateway devices that support the TR-064 protocol (e.g. the AVM FritzBox family of routers).
 It can be used to gather information from the device and/or re-configure it.
 Even though textual configuration is possible, it is strongly recommended to use the Main User Interface for configuration.
 
@@ -13,7 +13,7 @@ Two Bridge things are supported:
 
 Two kind of Things are supported:
 
-- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface) 
+- `subDevice`: a sub-device of the Bridge thing (e.g. a WAN interface)
 - `subDeviceLan`: a special type of sub-device that supports MAC-detection
 
 ## Discovery
@@ -44,9 +44,9 @@ It only needs to be changed from the default value of `5` seconds when the remot
 
 ### `fritzbox`
 
-The `fritzbox` devices can give additional informations in dedicated channels, controlled 
+The `fritzbox` devices can give additional informations in dedicated channels, controlled
  by additional parameters (visible if Show Advanced is selected), w.r.t. to `generic` devices.
-If the parameters are specified, the corresponding channels will be added to the device. 
+If the parameters are specified, the corresponding channels will be added to the device.
 
 One or more TAM (telephone answering machines) are supported by most fritzbox devices.
 By setting the `tamIndices` parameter you can instruct the binding to add channels for these
@@ -62,7 +62,7 @@ This is an optional parameter and multiple values are allowed:  add one value pe
 Most devices support call lists.
 The binding can retrieve these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls,
 for a given number of days. A channel is added to the Thing if such a number is set through the corresponding parameter
-in the Main User Interface. 
+in the Main User Interface.
 The parameters are: `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
 
 Since FritzOS! 7.20 WAN access of local devices can be controlled by their IPs.
@@ -90,7 +90,7 @@ If no password is given, the user password (parameter `password`) is used.
 ### `subdevice`, `subdeviceLan`
 
 Additional informations (i.e. channels) are available in subdevices of the bridge.
-Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device. 
+Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device.
 This is a mandatory parameter to be set in order to add the subdevice. Since the parameter value can only be determined
 by examining the SCPD of the root device, the simplest way to obtain it is through auto-discovery.
 
@@ -101,7 +101,7 @@ It therefore optionally contains a channel for each MAC address (in a format 11:
 
 ## Channels
 
-Channels are grouped according to the subdevice they belong to. 
+Channels are grouped according to the subdevice they belong to.
 
 ### `fritzbox` bridge channels
 
@@ -110,7 +110,7 @@ Advanced channels appear only if the corresponding parameters are set in the Thi
 | channel                    | item-type                 | advanced | description                                                    |
 |----------------------------|---------------------------|:--------:|----------------------------------------------------------------|
 | `callDeflectionEnable`     | `Switch`                  |     x    | Enable/Disable the call deflection setup with the given index. |
-| `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |    
+| `callList`                 | `String`                  |     x    | A string containing the call list as JSON (see below)          |
 | `deviceLog`                | `String`                  |     x    | A string containing the last log messages                      |
 | `missedCalls`              | `Number`                  |          | Number of missed calls within the given number of days.        |
 | `outboundCalls`            | `Number`                  |     x    | Number of outbound calls within the given number of days.      |
@@ -130,17 +130,23 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 
 | channel              | item-type                 | advanced | description                                                                                                  |
 |----------------------|---------------------------|:--------:|--------------------------------------------------------------------------------------------------------------|
-| `wifi24GHzEnable`    | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device.                                                                      |
-| `wifi5GHzEnable`     | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device.                                                                      |
-| `wifiGuestEnable`    | `Switch`                  |          | Enable/Disable the guest WiFi.                                                                               |
+| `wifi24GHzEnable`    | `Switch`                  |          | Enable/Disable the 2.4 GHz WiFi device. Deprecated for removal. Use `wifi1Enable`.                           |
+| `wifi5GHzEnable`     | `Switch`                  |          | Enable/Disable the 5.0 GHz WiFi device. Deprecated for removal. Use `wifi2Enable`.                           |
+| `wifiGuestEnable`    | `Switch`                  |          | Enable/Disable the guest WiFi. Deprecated for removal. Use `wifi3Enable`.                                    |
+| `wifiXEnable`        | `Switch`                  |          | Enable/Disable the WiFi X. See below for details.                                                            |
 | `macOnline`          | `Switch`                  |    x     | Online status of the device with the given MAC                                                               |
 | `macOnlineIpAddress` | `String`                  |    x     | IP of the MAC (uses same parameter as `macOnline`)                                                           |
 | `macSignalStrength1` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz |
 | `macSpeed1`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz           |
 | `macSignalStrength2` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
 | `macSpeed2`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
-Older FritzBox devices may not support 5 GHz WiFi.
-In this case you have to use the `wifi5GHzEnable` channel for switching the guest WiFi.
+
+***Note:*** The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable`channels have been deprecated and will be removed in future versions.
+They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`).
+
+- FritzBoxes which do not support 5 GHz use `wifi1Enable` for the standard WiFi and `wifi2Enable`for the guest WiFi.
+- FritzBoxes which support 5 GHz use `wifi1Enable` for the 2.5 GHz WiFi, `wifi2Enable` for the 5 GHz WiFi and `wifi3Enable` for the guest WiFi.
+- FritzBoxes which support two 5 GHz networks use `wifi1Enable` for the 2.5 GHz WiFi, `wifi2Enable` and `wifi3Enable` for the 5 GHz WiFis and `wifi4Enable` for the guest WiFi.
 
 ### WANConnection `subdevice` channels
 
@@ -178,7 +184,7 @@ In this case you have to use the `wifi5GHzEnable` channel for switching the gues
 | `wanPhysicalLinkStatus`    | `String`                  |    x     | Link Status                                                    |
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |    x     | Total Bytes Received                                           |
 | `wanTotalBytesSent`        | `Number:DataAmount`       |    x     | Total Bytes Sent                                               |
- 
+
 **Note:** AVM FritzBox devices use 4-byte-unsigned-integers for `wanTotalBytesReceived` and `wanTotalBytesSent`, because of that the counters are reset after around 4GB data.
 
 ## `PHONEBOOK` Profile
@@ -248,12 +254,12 @@ needed subdevices).
 
 The definition of the bridge and of the subdevices things is the following
 
-```
+```java
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
                                                          phonebookInterval="0"]{
     Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
-                                                macOnline="XX:XX:XX:XX:XX:XX",  
-                                                          "YY:YY:YY:YY:YY:YY"]  
+                                                macOnline="XX:XX:XX:XX:XX:XX",
+                                                          "YY:YY:YY:YY:YY:YY"]
     Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
     Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
     }
@@ -261,13 +267,13 @@ Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", us
 
 The channel are automatically generated and it is simpler to use the Main User Interface to copy the textual definition of the channel
 
-```
+```java
 Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
 Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
 ```
 
 Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
 
-```
+```java
 Call IncomingCallResolved "Caller name: [%s]" { channel="avmfritz:fritzbox:fritzbox:incoming_call" [profile="transform:PHONEBOOK", phonebook="tr064_3Afritzbox_3AfritzboxTR064", phoneNumberIndex="1", matchCount="8"] }
 ```

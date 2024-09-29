@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,14 +103,19 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
         }
         GroupUpdate update = new GroupUpdate();
         switch (channelUID.getId()) {
+            case AmpliPiBindingConstants.CHANNEL_POWER:
+                if (command instanceof OnOffType) {
+                    update.setMute(command == OnOffType.OFF);
+                }
+                break;
             case AmpliPiBindingConstants.CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
                     update.setMute(command == OnOffType.ON);
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume((PercentType) command));
+                if (command instanceof PercentType percentCommand) {
+                    update.setVolDelta(AmpliPiUtils.percentTypeToVolume(percentCommand));
                 } else if (command instanceof IncreaseDecreaseType) {
                     if (groupState != null) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
@@ -125,14 +130,13 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
                 }
                 break;
             case AmpliPiBindingConstants.CHANNEL_SOURCE:
-                if (command instanceof DecimalType) {
-                    update.setSourceId(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    update.setSourceId(decimalCommand.intValue());
                 }
                 break;
         }
         if (bridgeHandler != null) {
             String url = bridgeHandler.getUrl() + "/api/groups/" + getId(thing);
-            ;
             StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
             try {
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.PATCH)
@@ -160,11 +164,13 @@ public class AmpliPiGroupHandler extends BaseThingHandler implements AmpliPiStat
     private void updateGroupState(Group state) {
         this.groupState = state;
 
+        Boolean power = !groupState.getMute();
         Boolean mute = groupState.getMute();
         Integer volDelta = groupState.getVolDelta();
         Integer sourceId = groupState.getSourceId();
 
-        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateState(AmpliPiBindingConstants.CHANNEL_POWER, OnOffType.from(power));
+        updateState(AmpliPiBindingConstants.CHANNEL_MUTE, OnOffType.from(mute));
         updateState(AmpliPiBindingConstants.CHANNEL_VOLUME, AmpliPiUtils.volumeToPercentType(volDelta));
         updateState(AmpliPiBindingConstants.CHANNEL_SOURCE, new DecimalType(sourceId));
     }

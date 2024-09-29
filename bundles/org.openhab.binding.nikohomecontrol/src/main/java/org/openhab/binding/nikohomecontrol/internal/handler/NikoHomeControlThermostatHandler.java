@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,8 +37,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +48,12 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlThermostatHandler extends BaseThingHandler implements NhcThermostatEvent {
+public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler implements NhcThermostatEvent {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlThermostatHandler.class);
 
     private volatile @Nullable NhcThermostat nhcThermostat;
 
-    private volatile boolean initialized = false;
-
-    private String thermostatId = "";
     private int overruleTime;
 
     private volatile @Nullable ScheduledFuture<?> refreshTimer; // used to refresh the remaining overrule time every
@@ -69,29 +64,10 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
-        if (nhcComm == null) {
-            logger.debug("communication not up yet, cannot handle command {} for {}", command, channelUID);
-            return;
-        }
-
-        // This can be expensive, therefore do it in a job.
-        scheduler.submit(() -> {
-            if (!nhcComm.communicationActive()) {
-                restartCommunication(nhcComm);
-            }
-
-            if (nhcComm.communicationActive()) {
-                handleCommandSelection(channelUID, command);
-            }
-        });
-    }
-
-    private void handleCommandSelection(ChannelUID channelUID, Command command) {
+    void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
-            logger.debug("thermostat with ID {} not initialized", thermostatId);
+            logger.debug("thermostat with ID {} not initialized", deviceId);
             return;
         }
 
@@ -107,19 +83,16 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             case CHANNEL_MEASURED:
             case CHANNEL_DEMAND:
             case CHANNEL_HEATING_DEMAND:
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_MODE:
-                if (command instanceof DecimalType) {
-                    nhcThermostat.executeMode(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    nhcThermostat.executeMode(decimalCommand.intValue());
                 }
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_HEATING_MODE:
                 if (command instanceof StringType) {
                     nhcThermostat.executeMode(command.toString());
                 }
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_SETPOINT:
                 // Always set the new setpoint temperature as an overrule
@@ -128,20 +101,19 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 if (time <= 0) {
                     time = overruleTime;
                 }
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> setpoint = ((QuantityType<?>) command).toUnit(CELSIUS);
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    QuantityType<?> setpoint = quantityCommand.toUnit(CELSIUS);
                     if (setpoint != null) {
                         nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                     }
-                } else if (command instanceof DecimalType) {
-                    BigDecimal setpoint = ((DecimalType) command).toBigDecimal();
+                } else if (command instanceof DecimalType decimalCommand) {
+                    BigDecimal setpoint = decimalCommand.toBigDecimal();
                     nhcThermostat.executeOverrule(Math.round(setpoint.floatValue() * 10), time);
                 }
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_OVERRULETIME:
-                if (command instanceof DecimalType) {
-                    int overruletime = ((DecimalType) command).intValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    int overruletime = decimalCommand.intValue();
                     int overrule = nhcThermostat.getOverrule();
                     if (overruletime <= 0) {
                         overruletime = 0;
@@ -149,7 +121,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                     }
                     nhcThermostat.executeOverrule(overrule, overruletime);
                 }
-                updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 logger.debug("unexpected command for channel {}", channelUID.getId());
@@ -162,7 +133,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
         NikoHomeControlThermostatConfig config = getConfig().as(NikoHomeControlThermostatConfig.class);
 
-        thermostatId = config.thermostatId;
+        deviceId = config.thermostatId;
         overruleTime = config.overruleTime;
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
@@ -178,11 +149,12 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
-    private synchronized void startCommunication() {
+    @Override
+    synchronized void startCommunication() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
 
         if (nhcComm == null) {
@@ -195,10 +167,10 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             return;
         }
 
-        NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
+        NhcThermostat nhcThermostat = nhcComm.getThermostats().get(deviceId);
         if (nhcThermostat == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.thermostatId");
+                    "@text/offline.configuration-error.deviceId");
             return;
         }
 
@@ -213,26 +185,24 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
         this.nhcThermostat = nhcThermostat;
 
-        logger.debug("thermostat intialized {}", thermostatId);
-
-        Bridge bridge = getBridge();
-        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-
-        thermostatEvent(nhcThermostat.getMeasured(), nhcThermostat.getSetpoint(), nhcThermostat.getMode(),
-                nhcThermostat.getOverrule(), nhcThermostat.getDemand());
-
         initialized = true;
+        deviceInitialized();
+    }
+
+    @Override
+    void refresh() {
+        NhcThermostat thermostat = nhcThermostat;
+        if (thermostat != null) {
+            thermostatEvent(thermostat.getMeasured(), thermostat.getSetpoint(), thermostat.getMode(),
+                    thermostat.getOverrule(), thermostat.getDemand());
+        }
     }
 
     @Override
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            NhcThermostat thermostat = nhcComm.getThermostats().get(thermostatId);
+            NhcThermostat thermostat = nhcComm.getThermostats().get(deviceId);
             if (thermostat != null) {
                 thermostat.unsetEventHandler();
             }
@@ -244,8 +214,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private void updateProperties(NhcThermostat nhcThermostat) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcThermostat instanceof NhcThermostat2) {
-            NhcThermostat2 thermostat = (NhcThermostat2) nhcThermostat;
+        if (nhcThermostat instanceof NhcThermostat2 thermostat) {
             properties.put(PROPERTY_DEVICE_TYPE, thermostat.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, thermostat.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, thermostat.getDeviceModel());
@@ -258,7 +227,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
-            logger.debug("thermostat with ID {} not initialized", thermostatId);
+            logger.debug("thermostat with ID {} not initialized", deviceId);
             return;
         }
 
@@ -290,7 +259,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
      * Method to update state of overruletime channel every minute with remaining time.
      *
      * @param NhcThermostat object
-     *
      */
     private void scheduleRefreshOverruletime(NhcThermostat nhcThermostat) {
         cancelRefreshTimer();
@@ -314,63 +282,5 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             timer.cancel(true);
         }
         refreshTimer = null;
-    }
-
-    @Override
-    public void thermostatInitialized() {
-        Bridge bridge = getBridge();
-        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    @Override
-    public void thermostatRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.configuration-error.thermostatRemoved");
-    }
-
-    private void restartCommunication(NikoHomeControlCommunication nhcComm) {
-        // We lost connection but the connection object is there, so was correctly started.
-        // Try to restart communication.
-        nhcComm.scheduleRestartCommunication();
-        // If still not active, take thing offline and return.
-        if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
-            return;
-        }
-        // Also put the bridge back online
-        NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
-        if (nhcBridgeHandler != null) {
-            nhcBridgeHandler.bridgeOnline();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.invalid-bridge-handler");
-        }
-    }
-
-    private @Nullable NikoHomeControlCommunication getCommunication(
-            @Nullable NikoHomeControlBridgeHandler nhcBridgeHandler) {
-        return nhcBridgeHandler != null ? nhcBridgeHandler.getCommunication() : null;
-    }
-
-    private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
-        Bridge nhcBridge = getBridge();
-        return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
-        if (ThingStatus.ONLINE.equals(bridgeStatus)) {
-            if (!initialized) {
-                scheduler.submit(this::startCommunication);
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
     }
 }

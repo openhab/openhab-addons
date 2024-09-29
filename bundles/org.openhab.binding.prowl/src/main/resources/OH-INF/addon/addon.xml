@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Prowl Binding</name>
 	<description>This is the binding for Prowl.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

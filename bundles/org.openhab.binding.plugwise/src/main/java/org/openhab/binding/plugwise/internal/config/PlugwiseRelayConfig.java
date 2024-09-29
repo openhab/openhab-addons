@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.plugwise.internal.config;
 
-import static org.openhab.binding.plugwise.internal.PlugwiseUtils.*;
 import static org.openhab.binding.plugwise.internal.config.PlugwiseRelayConfig.PowerStateChanging.COMMAND_SWITCHING;
 
 import java.time.Duration;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.plugwise.internal.PlugwiseUtils;
 import org.openhab.binding.plugwise.internal.protocol.field.MACAddress;
+import org.openhab.core.util.StringUtils;
 
 /**
  * The {@link PlugwiseRelayConfig} class represents the configuration for a Plugwise relay device (Circle, Circle+,
@@ -36,7 +38,8 @@ public class PlugwiseRelayConfig {
     }
 
     private String macAddress = "";
-    private String powerStateChanging = upperUnderscoreToLowerCamel(COMMAND_SWITCHING.name());
+    private String powerStateChanging = Objects
+            .requireNonNull(StringUtils.capitalizeByUnderscore(COMMAND_SWITCHING.name()));
     private boolean suppliesPower = false;
     private int measurementInterval = 60; // minutes
     private boolean temporarilyNotInNetwork = false;
@@ -47,7 +50,7 @@ public class PlugwiseRelayConfig {
     }
 
     public PowerStateChanging getPowerStateChanging() {
-        return PowerStateChanging.valueOf(lowerCamelToUpperUnderscore(powerStateChanging));
+        return PowerStateChanging.valueOf(PlugwiseUtils.lowerCamelToUpperUnderscore(powerStateChanging));
     }
 
     public boolean isSuppliesPower() {

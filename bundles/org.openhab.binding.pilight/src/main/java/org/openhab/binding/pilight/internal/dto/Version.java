@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * pilight version information object
  *
- * {@link http://www.pilight.org/development/api/#controller}
+ * @see <a href="https://manual.pilight.org/development/socket/index.html">
+ *      https://manual.pilight.org/development/socket/index.html</a>
  *
  * @author Niklas Dörfler - Initial contribution
  */

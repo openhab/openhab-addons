@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>NTP Binding</name>
 	<description>The NTP Binding polls the configured timeserver and post the current date and time.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

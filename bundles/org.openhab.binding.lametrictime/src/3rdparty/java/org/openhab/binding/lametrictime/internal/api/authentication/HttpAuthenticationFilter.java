@@ -211,7 +211,7 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
 
         Invocation.Builder builder = resourceTarget.request(mediaType);
 
-        MultivaluedMap<String, Object> newHeaders = new MultivaluedHashMap<String, Object>();
+        MultivaluedMap<String, Object> newHeaders = new MultivaluedHashMap<>();
 
         for (Map.Entry<String, List<Object>> entry : request.getHeaders().entrySet()) {
             if (HttpHeaders.AUTHORIZATION.equals(entry.getKey())) {
@@ -305,13 +305,13 @@ class HttpAuthenticationFilter implements ClientRequestFilter, ClientResponseFil
         }
 
         String userName = (String) request.getProperty(usernameKey);
-        if (userName != null && !userName.equals("")) {
+        if (userName != null && !"".equals(userName)) {
             byte[] pwdBytes;
             Object password = request.getProperty(passwordKey);
-            if (password instanceof byte[]) {
-                pwdBytes = ((byte[]) password);
-            } else if (password instanceof String) {
-                pwdBytes = ((String) password).getBytes(CHARACTER_SET);
+            if (password instanceof byte[] bytes) {
+                pwdBytes = bytes;
+            } else if (password instanceof String stringValue) {
+                pwdBytes = stringValue.getBytes(CHARACTER_SET);
             } else {
                 throw new RequestAuthenticationException("Passwort invalid.");
             }

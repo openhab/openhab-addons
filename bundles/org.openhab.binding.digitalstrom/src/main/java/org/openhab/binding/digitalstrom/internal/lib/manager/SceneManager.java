@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
  * , {@link #callDeviceScene(String, Short)} etc. can be used.
  *
  * <p>
- * If you call the {@link #start()} method an {@link EventListener} will be started to handle scene calls and undos from
- * the outside.
+ * If you call the {@link #start()} method an {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}
+ * will be started to handle scene calls and undos from the outside.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution
@@ -131,7 +131,8 @@ public interface SceneManager extends EventHandler {
     void addInternalScene(InternalScene intScene);
 
     /**
-     * Adds the scene call with the given dSID and sceneId as an echo to ignore them by detecting the {@link EventItem}.
+     * Adds the scene call with the given dSID and sceneId as an echo to ignore them by detecting the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem}.
      *
      * @param dSID of the {@link Device} that will be ignored
      * @param sceneId of the scene that will be ignored
@@ -139,7 +140,8 @@ public interface SceneManager extends EventHandler {
     void addEcho(String dSID, short sceneId);
 
     /**
-     * Adds the scene call with the given internal scene id as an echo to ignore them by detecting the {@link EventItem}
+     * Adds the scene call with the given internal scene id as an echo to ignore them by detecting the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem}
      * .
      *
      * @param internalSceneID to ignore
@@ -167,7 +169,8 @@ public interface SceneManager extends EventHandler {
     void generateScenes();
 
     /**
-     * Will be called from the {@link SceneDiscovery}, if a scene type is generated or is fail.<br>
+     * Will be called from the {@link org.openhab.binding.digitalstrom.internal.lib.structure.scene.SceneDiscovery},
+     * if a scene type is generated or is fail.<br>
      * For that the scenesGenerated char array has four chars. Each char represents one scene type in the following
      * direction:
      * <ul>
@@ -191,12 +194,12 @@ public interface SceneManager extends EventHandler {
     boolean isDiscoveryRegistrated();
 
     /**
-     * Starts the {@link EventListener}.
+     * Starts the {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}.
      */
     void start();
 
     /**
-     * Stops the {@link EventListener}.
+     * Stops the {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}.
      */
     void stop();
 

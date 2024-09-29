@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,7 +105,7 @@ import org.slf4j.LoggerFactory;
  * to the framework. All {@link MaxDevicesHandler}s use the
  * {@link MaxCubeBridgeHandler} to execute the actual commands.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Initial contribution OH2 version
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Exclusive mode
  */
@@ -126,7 +126,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /** maximum queue size that we're allowing */
     private static final int MAX_COMMANDS = 50;
     private static final int MAX_DUTY_CYCLE = 80;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmm");
 
     private final Logger logger = LoggerFactory.getLogger(MaxCubeBridgeHandler.class);
     private final List<Device> devices = new ArrayList<>();
@@ -927,7 +927,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
      * Max! Cube, they will be removed from the queue as they would not be
      * meaningful. This will improve the behavior when using sliders in the GUI.
      *
-     * @param SendCommand
+     * @param sendCommand
      *            the SendCommand containing the serial number of the device as
      *            String the channelUID used to send the command and the the
      *            command data
@@ -965,7 +965,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     /**
      * Delete a devices from the cube and updates the room information
      *
-     * @param Device Serial
+     * @param maxDeviceSerial Serial
      */
     public void sendDeviceDelete(String maxDeviceSerial) {
         Device device = getDevice(maxDeviceSerial);
@@ -997,7 +997,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     private boolean socketConnect() throws UnknownHostException, IOException {
         socket = new Socket(ipAddress, port);
-        socket.setSoTimeout((NETWORK_TIMEOUT));
+        socket.setSoTimeout(NETWORK_TIMEOUT);
         logger.debug("Open new connection... to {} port {}", ipAddress, port);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
@@ -1025,7 +1025,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void backup() {
         this.backup = BackupState.REQUESTED;
         this.backupUtil = new MaxBackupUtils(
-                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter));
+                new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(FORMATTER));
         socketClose();
     }
 }

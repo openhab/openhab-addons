@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.CHANNEL_FLOODLIGHT;
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.List;
 
@@ -50,18 +50,20 @@ public class PresenceCapability extends CameraCapability {
                 return;
             } else if (command instanceof StringType) {
                 try {
-                    FloodLightMode mode = FloodLightMode.valueOf(command.toString());
-                    changeFloodlightMode(mode);
+                    changeFloodlightMode(FloodLightMode.valueOf(command.toString()));
                 } catch (IllegalArgumentException e) {
-                    logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
+                    logger.warn("Incorrect command '{}' received for channel '{}'", command, channelName);
                 }
                 return;
             }
+        } else if (CHANNEL_SIREN.equals(channelName)) {
+            logger.info("Channel '{}' is read-only", channelName);
+            return;
         }
         super.handleCommand(channelName, command);
     }
 
     private void changeFloodlightMode(FloodLightMode mode) {
-        securityCapability.ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
+        getSecurityCapability().ifPresent(cap -> cap.changeFloodlightMode(handler.getId(), mode));
     }
 }

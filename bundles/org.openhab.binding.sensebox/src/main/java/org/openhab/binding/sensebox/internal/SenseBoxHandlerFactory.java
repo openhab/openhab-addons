@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.sensebox.internal;
 
 import static org.openhab.binding.sensebox.internal.SenseBoxBindingConstants.THING_TYPE_BOX;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class SenseBoxHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_BOX);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BOX);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

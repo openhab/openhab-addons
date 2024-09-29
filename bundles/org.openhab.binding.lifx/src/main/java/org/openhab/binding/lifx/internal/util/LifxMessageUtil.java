@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,12 +106,12 @@ public final class LifxMessageUtil {
     }
 
     public static int commandToKelvin(Command temperature, TemperatureRange temperatureRange) {
-        if (temperature instanceof PercentType) {
-            return percentTypeToKelvin((PercentType) temperature, temperatureRange);
-        } else if (temperature instanceof QuantityType) {
-            return quantityTypeToKelvin((QuantityType) temperature, temperatureRange);
-        } else if (temperature instanceof DecimalType) {
-            return decimalTypeToKelvin((DecimalType) temperature, temperatureRange);
+        if (temperature instanceof PercentType percentValue) {
+            return percentTypeToKelvin(percentValue, temperatureRange);
+        } else if (temperature instanceof QuantityType quantityValue) {
+            return quantityTypeToKelvin(quantityValue, temperatureRange);
+        } else if (temperature instanceof DecimalType decimalValue) {
+            return decimalTypeToKelvin(decimalValue, temperatureRange);
         } else {
             throw new IllegalStateException(
                     "Unexpected command type " + temperature.getClass().getName() + " for color temperature command.");

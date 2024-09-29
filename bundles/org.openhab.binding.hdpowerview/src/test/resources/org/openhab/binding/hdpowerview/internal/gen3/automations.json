@@ -1,0 +1,13 @@
+[
+  {
+    "id": 33,
+    "type": 6,
+    "enabled": true,
+    "days": "24",
+    "hour": 4,
+    "min": 5,
+    "bleId": 83,
+    "sceneId": 116,
+    "errorShd_Ids": null
+  }
+]

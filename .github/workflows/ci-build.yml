@@ -18,24 +18,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '17' ]
-        maven: [ '3.8.6' ]
+        java: [ '17', '21', 'profile-j21' ]
+        maven: [ '3.9.6' ]
         os: [ 'ubuntu-22.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         if: github.head_ref == ''
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Checkout merge
         if: github.head_ref != ''
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
 
       - name: Set up Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository
@@ -45,13 +45,21 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Set up Java ${{ matrix.java }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
+        if: ${{ matrix.java != 'profile-j21' }}
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        if: ${{ matrix.java == 'profile-j21' }}
+        with:
+          distribution: 'temurin'
+          java-version: ${{ 21 }}
+
       - name: Set up Maven ${{ matrix.maven }}
-        uses: stCarolas/setup-maven@v4.5
+        uses: stCarolas/setup-maven@v5
         with:
           maven-version: ${{ matrix.maven }}
 
@@ -64,11 +72,12 @@ jobs:
       - name: Get Changed Files
         if: github.head_ref != ''
         id: files
-        uses: Ana06/get-changed-files@v2.2.0
+        uses: Ana06/get-changed-files@v2.3.0
         with:
           format: 'csv'
 
       - name: Build
+        if: ${{ matrix.java != 'profile-j21' }}
         id: build
         run: './.github/scripts/maven-build'
         env:
@@ -79,16 +88,28 @@ jobs:
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: Build
+        if: ${{ matrix.java == 'profile-j21' }}
+        id: build-j21
+        run: './.github/scripts/maven-build clean verify -B -T 1.5C -U -Pj21'
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_OPTS: >-
+            -Xmx2g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
       - name: Upload Build Log
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v3
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure') || (steps.build-j21.outcome == 'success') || (steps.build-j21.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v4
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
           path: build.log
 
       - name: Upload SAT Summary Report
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v3
+        if: ${{ matrix.java == '17' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v4
         with:
           name: sat-summary-report
           path: target/summary_report.html

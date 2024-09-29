@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,10 +50,10 @@ public class AdorneDimmerHandler extends AdorneSwitchHandler {
             if (channelUID.getId().equals(CHANNEL_BRIGHTNESS)) {
                 if (command instanceof RefreshType) {
                     refreshBrightness();
-                } else if (command instanceof PercentType) {
+                } else if (command instanceof PercentType percentCommand) {
                     // Change the brightness through the hub controller
                     AdorneHubController adorneHubController = getAdorneHubController();
-                    int level = ((PercentType) command).intValue();
+                    int level = percentCommand.intValue();
                     if (level >= 1 && level <= 100) { // Ignore commands outside of the supported 1-100 range
                         adorneHubController.setBrightness(zoneId, level);
                     } else {

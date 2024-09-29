@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,7 +108,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
                 }
             } else if (CHANNEL_HEATING_ACTIVE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(channelUID, room.isHeatingActive() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(room.isHeatingActive()));
                 }
             } else {
                 logger.debug("Received command {} on channel {}, but this channel is not handled or supported by {}",

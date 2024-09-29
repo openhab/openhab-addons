@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Nest Binding</name>
 	<description>Nest connects to the Nest cloud and allows control of the various Nest devices.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

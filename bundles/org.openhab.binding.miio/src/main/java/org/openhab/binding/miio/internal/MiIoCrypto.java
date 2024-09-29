@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,8 +62,7 @@ public class MiIoCrypto {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, vector);
-            byte[] encrypted = cipher.doFinal(cipherText);
-            return encrypted;
+            return cipher.doFinal(cipherText);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);
@@ -80,8 +79,7 @@ public class MiIoCrypto {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(key, "AES");
             cipher.init(Cipher.DECRYPT_MODE, keySpec, vector);
-            byte[] crypted = cipher.doFinal(cipherText);
-            return (crypted);
+            return cipher.doFinal(cipherText);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);

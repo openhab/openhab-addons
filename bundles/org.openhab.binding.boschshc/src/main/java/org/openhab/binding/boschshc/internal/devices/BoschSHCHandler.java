@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,10 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.AbstractBoschSHCService;
+import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCDeviceService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCServiceWithRequestBody;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
@@ -40,7 +42,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
@@ -50,6 +51,7 @@ import com.google.gson.JsonElement;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
  * @author David Pace - Handler abstraction
+ * @author David Pace - Support for child device updates
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
@@ -80,12 +82,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         public final Collection<String> affectedChannels;
     }
 
-    /**
-     * Reusable gson instance to convert a class to json string and back in derived classes.
-     */
-    protected static final Gson GSON = new Gson();
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Services of the device.
@@ -119,12 +116,10 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     public abstract @Nullable String getBoschID();
 
     /**
-     * Initializes this handler. Use this method to register all services of the device with
-     * {@link #registerService(BoschSHCService)}.
+     * Initializes this handler.
      */
     @Override
     public void initialize() {
-
         // Initialize device services
         try {
             this.initializeServices();
@@ -162,7 +157,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param stateData Current state of device service. Serialized as JSON.
      */
     public void processUpdate(String serviceName, @Nullable JsonElement stateData) {
-        // Check services of device to correctly
+        // Find service(s) with the specified name and propagate new state to them
         for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
             BoschSHCService<? extends BoschSHCServiceState> service = deviceService.service;
             if (serviceName.equals(service.getServiceName())) {
@@ -172,9 +167,31 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
-     * Should be used by handlers to create their required services.
+     * Processes an update for a logical child device.
+     * 
+     * @param childDeviceId the ID of the logical child device
+     * @param serviceName the name of the service this update is targeted at
+     * @param stateData the new service state serialized as JSON
+     */
+    public void processChildUpdate(String childDeviceId, String serviceName, @Nullable JsonElement stateData) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Processes a device-specific message from the Bosch Smart Home Controller.
+     * 
+     * @param message the message published by the controller
+     */
+    public void processMessage(Message message) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Use this method to register all services of the device with
+     * {@link #registerService(BoschSHCService, Consumer, Collection, boolean)}.
      */
     protected void initializeServices() throws BoschSHCException {
+        // default implementation is empty, subclasses may override
     }
 
     /**
@@ -200,7 +217,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Query the Bosch Smart Home Controller for the state of the service with the specified name.
      *
-     * @note Use services instead of directly requesting a state.
+     * @implNote Use services instead of directly requesting a state.
      *
      * @param stateName Name of the service to query
      * @param classOfT Class to convert the resulting JSON to
@@ -304,7 +321,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels,
             boolean shouldFetchInitialState) throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId, stateUpdateListener);
         this.registerService(service, affectedChannels);
@@ -325,7 +341,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void fetchInitialState(
             TService service, Consumer<TState> stateUpdateListener) {
-
         try {
             @Nullable
             TState serviceState = service.getState();
@@ -353,7 +368,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     protected <TService extends AbstractBoschSHCService> void registerStatelessService(TService service)
             throws BoschSHCException {
-
         String deviceId = verifyBoschID();
         service.initialize(getBridgeHandler(), deviceId);
         // do not register in service list because the service can not receive state updates
@@ -389,11 +403,25 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             service.setState(state);
         } catch (TimeoutException | ExecutionException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
-                    "Error when trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
+                    "Error while trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
-                    .format("Interrupted update state for service %s: %s", service.getServiceName(), e.getMessage()));
             Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
+        }
+    }
+
+    protected <TService extends AbstractStatelessBoschSHCDeviceService<TState>, TState extends BoschSHCServiceState> void postState(
+            TService service, TState state) {
+        try {
+            service.setState(state);
+        } catch (TimeoutException | ExecutionException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
+                    "Error while trying to post state for service %s: %s", service.getServiceName(), e.getMessage()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
         }
     }
 
@@ -454,7 +482,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     private <TState extends BoschSHCServiceState> void registerService(BoschSHCService<TState> service,
             Collection<String> affectedChannels) {
-        this.services.add(new DeviceService<TState>(service, affectedChannels));
+        this.services.add(new DeviceService<>(service, affectedChannels));
     }
 
     /**

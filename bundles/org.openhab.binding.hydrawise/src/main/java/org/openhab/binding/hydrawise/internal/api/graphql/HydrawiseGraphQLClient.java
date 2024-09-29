@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,13 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseAuthenticationException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseCommandException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseConnectionException;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.ControllerStatus;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Forecast;
+import org.openhab.binding.hydrawise.internal.api.graphql.dto.Hardware;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Mutation;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.MutationResponse;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.MutationResponse.MutationResponseStatus;
@@ -59,6 +61,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  *
@@ -75,7 +78,8 @@ public class HydrawiseGraphQLClient {
             .registerTypeAdapter(ZoneRun.class, new ResponseDeserializer<ZoneRun>())
             .registerTypeAdapter(Forecast.class, new ResponseDeserializer<Forecast>())
             .registerTypeAdapter(Sensor.class, new ResponseDeserializer<Forecast>())
-            .registerTypeAdapter(ControllerStatus.class, new ResponseDeserializer<ControllerStatus>()).create();
+            .registerTypeAdapter(ControllerStatus.class, new ResponseDeserializer<ControllerStatus>())
+            .registerTypeAdapter(Hardware.class, new ResponseDeserializer<ControllerStatus>()).create();
 
     private static final String GRAPH_URL = "https://app.hydrawise.com/api/v2/graph";
     private static final String MUTATION_START_ZONE = "startZone(zoneId: %d) { status }";
@@ -92,6 +96,7 @@ public class HydrawiseGraphQLClient {
     private final HttpClient httpClient;
     private final OAuthClientService oAuthService;
     private String queryString = "";
+    private String weatherString = "";
 
     public HydrawiseGraphQLClient(HttpClient httpClient, OAuthClientService oAuthService) {
         this.httpClient = httpClient;
@@ -107,15 +112,47 @@ public class HydrawiseGraphQLClient {
      */
     public @Nullable QueryResponse queryControllers()
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-        QueryRequest query;
         try {
-            query = new QueryRequest(getQueryString());
+            return queryRequest(getQueryString());
         } catch (IOException e) {
             throw new HydrawiseConnectionException(e);
         }
+    }
+
+    /**
+     * Sends a GrapQL query for controller data
+     *
+     * @return QueryResponse
+     * @throws HydrawiseConnectionException
+     * @throws HydrawiseAuthenticationException
+     */
+    public @Nullable QueryResponse queryWeather()
+            throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+        try {
+            return queryRequest(getWeatherString());
+        } catch (IOException e) {
+            throw new HydrawiseConnectionException(e);
+        }
+    }
+
+    /**
+     * Sends a GrapQL query for controller data
+     *
+     * @param queryString
+     * @return QueryResponse
+     * @throws HydrawiseConnectionException
+     * @throws HydrawiseAuthenticationException
+     */
+    private @Nullable QueryResponse queryRequest(String queryString)
+            throws HydrawiseConnectionException, HydrawiseAuthenticationException {
+        QueryRequest query = new QueryRequest(queryString);
         String queryJson = gson.toJson(query);
         String response = sendGraphQLQuery(queryJson);
-        return gson.fromJson(response, QueryResponse.class);
+        try {
+            return gson.fromJson(response, QueryResponse.class);
+        } catch (JsonSyntaxException e) {
+            throw new HydrawiseConnectionException("Invalid Response: " + response);
+        }
     }
 
     /***
@@ -259,19 +296,23 @@ public class HydrawiseGraphQLClient {
     private void sendGraphQLMutation(String content)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         Mutation mutation = new Mutation(content);
-        logger.debug("Sending Mutation {}", gson.toJson(mutation).toString());
-        String response = sendGraphQLRequest(gson.toJson(mutation).toString());
+        logger.debug("Sending Mutation {}", gson.toJson(mutation));
+        String response = sendGraphQLRequest(gson.toJson(mutation));
         logger.debug("Mutation response {}", response);
-        MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
-        if (mResponse == null) {
-            throw new HydrawiseCommandException("Malformed response: " + response);
-        }
-        Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
-        if (!status.isPresent()) {
-            throw new HydrawiseCommandException("Unknown response: " + response);
-        }
-        if (status.get().status != StatusCode.OK) {
-            throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
+        try {
+            MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
+            if (mResponse == null) {
+                throw new HydrawiseCommandException("Malformed response: " + response);
+            }
+            Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
+            if (status.isEmpty()) {
+                throw new HydrawiseCommandException("Unknown response: " + response);
+            }
+            if (status.get().status != StatusCode.OK) {
+                throw new HydrawiseCommandException("Command Status: " + status.get().status.name());
+            }
+        } catch (JsonSyntaxException e) {
+            throw new HydrawiseConnectionException("Invalid Response: " + response);
         }
     }
 
@@ -301,6 +342,12 @@ public class HydrawiseGraphQLClient {
                     }).send();
             String stringResponse = response.getContentAsString();
             logger.trace("Received Response: {}", stringResponse);
+            int statusCode = response.getStatus();
+            if (!HttpStatus.isSuccess(statusCode)) {
+                throw new HydrawiseConnectionException(
+                        "Request failed with HTTP status code: " + statusCode + " response: " + stringResponse,
+                        statusCode, stringResponse);
+            }
             return stringResponse;
         } catch (InterruptedException | TimeoutException | OAuthException | IOException e) {
             logger.debug("Could not send request", e);
@@ -310,6 +357,8 @@ public class HydrawiseGraphQLClient {
         } catch (ExecutionException e) {
             // Hydrawise returns back a 40x status, but without a valid Realm , so jetty throws an exception,
             // this allows us to catch this in a callback and handle accordingly
+            logger.debug("ExecutionException", e);
+            logger.debug("ExecutionException {} {}", responseCode.get(), responseMessage);
             switch (responseCode.get()) {
                 case 401:
                 case 403:
@@ -322,13 +371,23 @@ public class HydrawiseGraphQLClient {
 
     private String getQueryString() throws IOException {
         if (queryString.isBlank()) {
-            try (InputStream inputStream = HydrawiseGraphQLClient.class.getClassLoader()
-                    .getResourceAsStream("query.graphql");
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-                queryString = bufferedReader.lines().collect(Collectors.joining("\n"));
-            }
+            queryString = getResourceString("query.graphql");
         }
         return queryString;
+    }
+
+    private String getWeatherString() throws IOException {
+        if (weatherString.isBlank()) {
+            weatherString = getResourceString("weather.graphql");
+        }
+        return weatherString;
+    }
+
+    private String getResourceString(String name) throws IOException {
+        try (InputStream inputStream = HydrawiseGraphQLClient.class.getClassLoader().getResourceAsStream(name);
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            return bufferedReader.lines().collect(Collectors.joining("\n"));
+        }
     }
 
     class ResponseDeserializer<T> implements JsonDeserializer<T> {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,12 +97,12 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
             Thread.currentThread().interrupt(); // Reset interrupt flag
         }
         executorService.shutdown();
+        this.executorService = null;
     }
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
         // uid must not contains dots
-        return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK,
-                ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
+        return new ThingUID(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK, ip.replace('.', '_') + "_" + tcpPort);
     }
 
     protected abstract void checkAddress(InetAddress ip, int tcpPort, int timeout);

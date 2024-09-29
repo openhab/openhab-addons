@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineManager;
 import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptFileWatcher;
@@ -30,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Monitors <openHAB-conf>/automation/js for Javascript files, but not libraries
+ * Monitors {@code <openHAB-conf>/automation/js} for Javascript files, but not libraries
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService
@@ -49,11 +48,11 @@ public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        if (!scriptFilePath.startsWith(getWatchPath().resolve("node_modules"))
-                && "js".equals(super.getScriptType(scriptFilePath).orElse(null))) {
-            return Optional.of(GraalJSScriptEngineFactory.MIME_TYPE);
-        } else {
-            return Optional.empty();
+        Optional<String> scriptType = super.getScriptType(scriptFilePath);
+        if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("node_modules"))
+                && ("js".equals(scriptType.get()))) {
+            return scriptType;
         }
+        return Optional.empty();
     }
 }

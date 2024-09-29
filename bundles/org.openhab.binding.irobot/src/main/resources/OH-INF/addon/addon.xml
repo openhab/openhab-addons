@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>iRobot Binding</name>
 	<description>This is the binding for iRobot vacuum robots.</description>
+	<connection>local</connection>
 
 </addon:addon>

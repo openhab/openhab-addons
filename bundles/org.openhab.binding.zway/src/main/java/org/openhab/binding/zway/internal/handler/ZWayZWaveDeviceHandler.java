@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                         // Check command classes (only for ThermostatMode)
                         ZWaveDevice zwaveDevice = getZWayBridgeHandler().getZWayApi()
                                 .getZWaveDevice(mConfig.getNodeId());
-                        if (!zwaveDevice.getInstances().get0().getCommandClasses().get64().getName().equals("")) {
+                        if (!"".equals(zwaveDevice.getInstances().get0().getCommandClasses().get64().getName())) {
                             // Load available thermostat modes
                             Map<Integer, String> modes = zwaveDevice.getInstances().get0().getCommandClasses().get64()
                                     .getThermostatModes();

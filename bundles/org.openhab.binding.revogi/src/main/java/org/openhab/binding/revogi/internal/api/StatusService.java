@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,13 +56,13 @@ public class StatusService {
     }
 
     private StatusDTO getStatus(final List<UdpResponseDTO> singleResponse) {
-        return singleResponse.stream()
+        return Objects.requireNonNull(singleResponse.stream()
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
                 .map(statusRaw -> new StatusDTO(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(),
                         statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
-                .findFirst().orElse(new StatusDTO(false, 503, null, null, null));
+                .findFirst().orElse(new StatusDTO(false, 503, null, null, null)));
     }
 
     private StatusRawDTO deserializeString(String response) {

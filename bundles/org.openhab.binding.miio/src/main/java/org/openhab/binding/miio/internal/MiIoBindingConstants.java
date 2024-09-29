@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,6 +61,8 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_MAP_PRESENT = "status#map_present";
     public static final String CHANNEL_STATE = "status#state";
     public static final String CHANNEL_STATE_ID = "status#state_id";
+    public static final String CHANNEL_DOCK_STATE = "status#dock_state";
+    public static final String CHANNEL_DOCK_STATE_ID = "status#dock_state_id";
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
@@ -94,12 +96,16 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_TOTALAREA = "history#total_clean_area";
     public static final String CHANNEL_HISTORY_COUNT = "history#total_clean_count";
 
+    public static final String CHANNEL_MOP_TOTALDRYTIME = "status#mop_drying_time";
+
     public static final String CHANNEL_HISTORY_START_TIME = "cleaning#last_clean_start_time";
     public static final String CHANNEL_HISTORY_END_TIME = "cleaning#last_clean_end_time";
     public static final String CHANNEL_HISTORY_AREA = "cleaning#last_clean_area";
     public static final String CHANNEL_HISTORY_DURATION = "cleaning#last_clean_duration";
     public static final String CHANNEL_HISTORY_ERROR = "cleaning#last_clean_error";
     public static final String CHANNEL_HISTORY_FINISH = "cleaning#last_clean_finish";
+    public static final String CHANNEL_HISTORY_FINISHREASON = "cleaning#last_clean_finish_reason";
+    public static final String CHANNEL_HISTORY_DUSTCOLLECTION = "cleaning#last_clean_dustcollection_status";
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 

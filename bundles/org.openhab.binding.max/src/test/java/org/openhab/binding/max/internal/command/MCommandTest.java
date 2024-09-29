@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class MCommandTest {
     private List<Device> devices = new ArrayList<>();
     private List<RoomInformation> rooms = new ArrayList<>();
 
-    String deviceCMsg[] = {
+    String[] deviceCMsg = {
             "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==",
             "C:08c1d6,0gjB1gEFGP9LRVEwNjQ5MzEyKyE9CQcYAzAM/wBEeFUgVSBVIFUgVSBVIEUgRSBFIEUgRSBFIER4VRZFIEUgRSBFIEUgRSBFIEUgRSBFIEUgRFFEYkTkTQ9FIEUgRSBFIEUgRSBFIEUgRSBEUURiRORND0UgRSBFIEUgRSBFIEUgRSBFIERRRGJE5E0PRSBFIEUgRSBFIEUgRSBFIEUgRFFEYkTkTQ9FIEUgRSBFIEUgRSBFIEUgRSBEUURiRORRGEUgRSBFIEUgRSBFIEUgRSBFIA==",
             "C:0e75f6,EQ519gQCEABLRVExMTA0Mzgw",

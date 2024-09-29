@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,13 +19,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler.RemoteService;
+import org.openhab.binding.mybmw.internal.handler.enums.RemoteService;
 import org.openhab.core.types.CommandOption;
 
 /**
  * Helper class for Remote Service Commands
  *
  * @author Norbert Truchsess - Initial contribution
+ * @author Martin Grassl - small refactoring
  */
 @NonNullByDefault
 public class RemoteServiceUtils {
@@ -33,7 +34,7 @@ public class RemoteServiceUtils {
     private static final Map<String, RemoteService> COMMAND_SERVICES = Stream.of(RemoteService.values())
             .collect(Collectors.toUnmodifiableMap(RemoteService::getId, service -> service));
 
-    public static Optional<RemoteService> getRemoteService(final String command) {
+    public static Optional<RemoteService> getRemoteServiceFromCommand(final String command) {
         return Optional.ofNullable(COMMAND_SERVICES.get(command));
     }
 

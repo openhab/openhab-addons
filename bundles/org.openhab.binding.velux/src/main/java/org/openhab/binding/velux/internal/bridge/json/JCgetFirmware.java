@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,6 @@ class JCgetFirmware extends GetFirmware implements JsonBridgeCommunicationProtoc
      */
     @Override
     public VeluxGwFirmware getFirmware() {
-        VeluxGwFirmware gwFirmware = new VeluxGwFirmware(response.data.version);
-        return gwFirmware;
+        return new VeluxGwFirmware(response.data.version);
     }
 }

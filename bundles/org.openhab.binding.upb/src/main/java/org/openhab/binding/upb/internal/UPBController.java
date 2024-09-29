@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,16 +87,14 @@ public class UPBController {
     }
 
     public void deviceAdded(final ThingHandler childHandler, final Thing childThing) {
-        if (childHandler instanceof UPBThingHandler) {
-            final UPBThingHandler hnd = (UPBThingHandler) childHandler;
-            things.put(mkAddr(hnd.getNetworkId(), hnd.getUnitId()), hnd);
+        if (childHandler instanceof UPBThingHandler upbThingHandler) {
+            things.put(mkAddr(upbThingHandler.getNetworkId(), upbThingHandler.getUnitId()), upbThingHandler);
         }
     }
 
     public void deviceRemoved(final ThingHandler childHandler, final Thing childThing) {
-        if (childHandler instanceof UPBThingHandler) {
-            final UPBThingHandler hnd = (UPBThingHandler) childHandler;
-            things.remove(mkAddr(hnd.getNetworkId(), hnd.getUnitId()), hnd);
+        if (childHandler instanceof UPBThingHandler upbThingHandler) {
+            things.remove(mkAddr(upbThingHandler.getNetworkId(), upbThingHandler.getUnitId()), upbThingHandler);
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,9 +43,17 @@ public class AndroidDebugBridgeConfiguration {
      */
     public int recordDuration = 5;
     /**
+     * Percent to increase/decrease volume.
+     */
+    public int volumeStepPercent = 15;
+    /**
      * Assumed max volume for devices with android versions that do not expose this value (>=android 11).
      */
     public int deviceMaxVolume = 25;
+    /**
+     * Max ADB command consecutive timeouts to force to reset the connection. (0 for disabled)
+     */
+    public int maxADBTimeouts;
     /**
      * Settings key for android versions where volume is gather using settings command (>=android 11).
      */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,8 +43,8 @@ public class IrCommand {
      *
      */
     private class PulsePair {
-        public int Pulse;
-        public int Pause;
+        public int pulse;
+        public int pause;
     }
 
     private String remote;
@@ -254,7 +254,7 @@ public class IrCommand {
 
         // Pause timings - 8 Shorts = 16 bytes
         for (int i = 0; i < pulsePairs.size(); i++) {
-            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).Pause / 8));
+            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).pause / 8));
         }
         for (int i = pulsePairs.size(); i <= 7; i++) {
             byteBuffer.putShort((short) 0);
@@ -262,7 +262,7 @@ public class IrCommand {
 
         // Pulse timings - 8 Shorts = 16 bytes
         for (int i = 0; i < pulsePairs.size(); i++) {
-            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).Pulse / 8));
+            byteBuffer.putShort((short) Math.round(pulsePairs.get(i).pulse / 8));
         }
         for (int i = pulsePairs.size(); i <= 7; i++) {
             byteBuffer.putShort((short) 0);
@@ -315,7 +315,7 @@ public class IrCommand {
      * @return the byte buffer in Hex format
      */
     public ByteBuffer toHEXByteBuffer() {
-        byte hexDigit[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        byte[] hexDigit = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
         ByteBuffer byteBuffer = toByteBuffer();
         byte[] toConvert = new byte[byteBuffer.limit()];

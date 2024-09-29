@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,8 +49,6 @@ public class ManifestInformation {
      * @return <B>bundleVersion</B> the resulted bundle version as {@link String}.
      */
     public static String getBundleVersion() {
-        String osgiBundleVersion = FrameworkUtil.getBundle(ManifestInformation.class).getBundleContext().getBundle()
-                .toString();
-        return osgiBundleVersion;
+        return FrameworkUtil.getBundle(ManifestInformation.class).getBundleContext().getBundle().toString();
     }
 }

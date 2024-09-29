@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.ntp.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ntpBinding} class defines common constants, which are used across
+ * The {@link NtpBindingConstants} class defines common constants, which are used across
  * the whole binding.
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -46,5 +45,5 @@ public class NtpBindingConstants {
     public static final String PROPERTY_DATE_TIME_FORMAT = "DateTimeFormat";
     public static final String PROPERTY_NTP_SERVER_PORT = "serverPort";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_NTP);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NTP);
 }

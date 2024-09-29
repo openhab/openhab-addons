@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.persistence.FilterCriteria;
 
 /**
  * Manages InfluxDB server interaction maintaining client connection
@@ -54,33 +55,34 @@ public interface InfluxDBRepository {
     /**
      * Return all stored item names with its count of stored points
      *
-     * @return Map with <ItemName,ItemCount> entries
+     * @return Map with {@code <ItemName,ItemCount>} entries
      */
     Map<String, Integer> getStoredItemsCount();
 
     /**
      * Executes Flux query
      *
-     * @param query Query
+     * @param filter the query filter
      * @return Query results
      * 
      */
-    List<InfluxRow> query(String query);
+    List<InfluxRow> query(FilterCriteria filter, String retentionPolicy);
 
     /**
-     * Write point to database
+     * Write points to database
      *
-     * @param influxPoint Point to write
-     * @throws UnexpectedConditionException when an error occurs
+     * @param influxPoints {@link List<InfluxPoint>} to write
+     * @return <code>true</code> if points have been written, <code>false</code> otherwise
      */
-    void write(InfluxPoint influxPoint) throws UnexpectedConditionException;
+    boolean write(List<InfluxPoint> influxPoints);
 
     /**
-     * create a query creator on this repository
+     * Execute delete query
      *
-     * @return the query creator for this repository
+     * @param filter the query filter
+     * @return <code>true</code> if query executed successfully, <code>false</code> otherwise
      */
-    FilterCriteriaQueryCreator createQueryCreator();
+    boolean remove(FilterCriteria filter);
 
     record InfluxRow(Instant time, String itemName, Object value) {
     }

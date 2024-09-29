@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,10 +58,11 @@ package org.openhab.binding.sagercaster.internal.caster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -89,7 +90,7 @@ public class SagerWeatherCaster {
     private final Logger logger = LoggerFactory.getLogger(SagerWeatherCaster.class);
     private final Properties forecaster = new Properties();
 
-    private Optional<SagerPrediction> prevision = Optional.empty();
+    private @Nullable SagerPrediction prevision;
     private String[] usedDirections = NTZDIRECTIONS; // Defaulted to Northern Zone
 
     private int currentBearing = -1;
@@ -107,7 +108,7 @@ public class SagerWeatherCaster {
     public SagerWeatherCaster() {
         try (InputStream input = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("/sagerForecaster.properties")) {
-            forecaster.load(input);
+            forecaster.load(Objects.requireNonNull(input));
         } catch (IOException e) {
             logger.warn("Error during Sager Forecaster startup", e);
         }
@@ -318,29 +319,32 @@ public class SagerWeatherCaster {
                     d1 = "Z";
                 }
         }
-        String forecast = forecaster.getProperty(
-                d1 + String.valueOf(sagerPressure) + String.valueOf(pressureEvolution) + String.valueOf(nubes));
-        prevision = Optional.ofNullable(forecast != null ? new SagerPrediction(forecast) : null);
+        String forecast = forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
+        prevision = forecast != null ? new SagerPrediction(forecast) : null;
     }
 
     public String getForecast() {
-        return prevision.map(p -> p.getForecast()).orElse(UNDEF);
+        return Objects.requireNonNullElse(this.prevision.getForecast(), UNDEF);
     }
 
     public String getWindVelocity() {
-        return prevision.map(p -> p.getWindVelocity()).orElse(UNDEF);
+        SagerPrediction prevision = this.prevision;
+        return prevision != null ? prevision.getWindVelocity() : UNDEF;
     }
 
     public String getWindDirection() {
-        return prevision.map(p -> p.getWindDirection()).orElse(UNDEF);
+        SagerPrediction prevision = this.prevision;
+        return prevision != null ? prevision.getWindDirection() : UNDEF;
     }
 
     public String getWindDirection2() {
-        return prevision.map(p -> p.getWindDirection2()).orElse(UNDEF);
+        SagerPrediction prevision = this.prevision;
+        return prevision != null ? prevision.getWindDirection2() : UNDEF;
     }
 
     public String getSagerCode() {
-        return prevision.map(p -> p.getSagerCode()).orElse(UNDEF);
+        SagerPrediction prevision = this.prevision;
+        return prevision != null ? prevision.getSagerCode() : UNDEF;
     }
 
     public void setLatitude(double latitude) {

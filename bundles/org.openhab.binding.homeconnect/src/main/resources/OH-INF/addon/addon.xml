@@ -7,5 +7,18 @@
 	<name>Home Connect Binding</name>
 	<description>The binding integrates the Home Connect (https://www.home-connect.com/) system into openHAB. It connects
 		to household devices from brands like Bosch and Siemens.</description>
+	<connection>cloud</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_homeconnect._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

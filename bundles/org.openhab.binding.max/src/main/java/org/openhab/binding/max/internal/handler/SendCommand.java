@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,8 +68,7 @@ public final class SendCommand {
      * This is can be used to find duplicated commands in the queue
      */
     private static String getKey(String serialNumber, CubeCommand cubeCommand) {
-        String key = serialNumber + "-" + cubeCommand.getClass().getSimpleName();
-        return key;
+        return serialNumber + "-" + cubeCommand.getClass().getSimpleName();
     }
 
     /**

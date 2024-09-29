@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Luxtronik Heatpump Binding</name>
 	<description>This is the binding for a Heatpump with Luxtronik control.</description>
+	<connection>local</connection>
 
 </addon:addon>

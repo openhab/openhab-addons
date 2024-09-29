@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.IllformedLocaleException;
 import java.util.Iterator;
@@ -51,6 +52,7 @@ import org.openhab.binding.miele.internal.MieleGatewayCommunicationController;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
 import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
+import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
@@ -60,6 +62,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -74,7 +77,7 @@ import com.google.gson.JsonElement;
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Fixed lifecycle issues
- * @author Martin Lepsy - Added protocol information to support WiFi devices & some refactoring for HomeDevice
+ * @author Martin Lepsy - Added protocol information to support WiFi devices and some refactoring for HomeDevice
  * @author Jacob Laursen - Fixed multicast and protocol support (Zigbee/LAN)
  **/
 @NonNullByDefault
@@ -132,6 +135,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         lastBridgeConnectionState = false;
         schedulePollingAndEventListener();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(MieleApplianceDiscoveryService.class);
     }
 
     private boolean validateConfig(Configuration config) {
@@ -543,7 +551,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 if (cause == null) {
                     logger.debug("An exception occurred while getting the home devices: '{}'", e.getMessage());
                 } else {
-                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}", e.getMessage(),
+                    logger.debug("An exception occurred while getting the home devices: '{}' -> '{}'", e.getMessage(),
                             cause.getMessage());
                 }
             }

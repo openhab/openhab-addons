@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,10 +30,13 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
  * The {@link DeviceStatusManager} is responsible for the synchronization between the internal model of the
  * digitalSTROM-devices and the real existing digitalSTROM-devices. You can change the state of a device by sending a
  * direct command to the devices or by calling a scene. Furthermore the {@link DeviceStatusManager} get informed over
- * the {@link SceneManager} by the {@link EventListener} if scenes are called by external sources. All
+ * the {@link SceneManager} by the {@link org.openhab.binding.digitalstrom.internal.lib.event.EventListener}
+ * if scenes are called by external sources. All
  * configurations of the physically device will be synchronized to the internally managed model and updated as required.
- * The {@link DeviceStatusManager} also initializes {@link SensorJob}'s with the {@link SensorJobExecutor} and
- * {@link SceneReadingJobExecutor} to update required sensor and scene data.
+ * The {@link DeviceStatusManager} also initializes {@link SensorJob}'s with the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} and
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SceneReadingJobExecutor} to update required
+ * sensor and scene data.
  *
  * <p>
  * Therefore the {@link DeviceStatusManager} uses the {@link StructureManager} for the internal management of the
@@ -67,14 +70,18 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
 public interface DeviceStatusManager extends EventHandler {
 
     /**
-     * Starts the working process for device synchronization. It also starts the {@link SensorJobExecutor} and the
-     * {@link SceneReadingJobExecutor} and the {@link SceneManager}.
+     * Starts the working process for device synchronization. It also starts the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} and the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SceneReadingJobExecutor}
+     * and the {@link SceneManager}.
      */
     void start();
 
     /**
-     * Stops the working process for device synchronization. It also stops the {@link SensorJobExecutor} and the
-     * {@link SceneReadingJobExecutor} and the {@link SceneManager}.
+     * Stops the working process for device synchronization. It also stops the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SensorJobExecutor} and the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SceneReadingJobExecutor} and the
+     * {@link SceneManager}.
      */
     void stop();
 
@@ -119,7 +126,8 @@ public interface DeviceStatusManager extends EventHandler {
     void updateSensorData(SensorJob sensorJob, String priority);
 
     /**
-     * This method adds a {@link SensorJob} with the appropriate priority to the {@link SceneReadingJobExecutor}.
+     * This method adds a {@link SensorJob} with the appropriate priority to the
+     * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.SceneReadingJobExecutor}.
      *
      * @param device device which will update scene data
      * @param deviceStateUpdate scene data to update

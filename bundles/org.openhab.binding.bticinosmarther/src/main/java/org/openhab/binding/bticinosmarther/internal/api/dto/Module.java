@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bticinosmarther.internal.api.dto;
 
-import org.openhab.binding.bticinosmarther.internal.util.StringUtil;
+import org.openhab.core.util.StringUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -34,7 +34,7 @@ public class Module {
      * @return a string containing the module device type
      */
     public String getDeviceType() {
-        return StringUtil.capitalizeAll(deviceType);
+        return StringUtils.capitalizeByWhitespace(deviceType);
     }
 
     /**

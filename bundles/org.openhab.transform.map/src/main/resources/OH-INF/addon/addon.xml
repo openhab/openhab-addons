@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>MAP transformation</name>
 	<description>Transforms the input by mapping it to another string.</description>
+	<connection>none</connection>
 
 </addon:addon>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.haywardomnilogic.internal;
 
 import java.util.HashMap;
@@ -35,7 +34,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HaywarThingHandler} is a subclass of the BaseThingHandler and a Super
+ * The {@link HaywardThingHandler} is a subclass of the BaseThingHandler and a Super
  * Class to each Hayward Thing Handler
  *
  * @author Matt Myers - Initial contribution
@@ -67,7 +66,7 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             case "Number":
                 return new DecimalType(value);
             case "Switch":
-                return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(Integer.parseInt(value) > 0);
             case "Number:Dimensionless":
                 switch (channelID) {
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:
@@ -80,20 +79,25 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
                     case HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
                     case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
                         return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                 }
                 return StringType.valueOf(value);
+            case "Number:Frequency":
+                switch (channelID) {
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
+                        return new QuantityType<>(Integer.parseInt(value), Units.RPM);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
+                        return new QuantityType<>(Integer.parseInt(value), Units.RPM);
+                }
             case "Number:Temperature":
                 Bridge bridge = getBridge();
                 if (bridge != null) {
                     HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
                     if (bridgehandler != null) {
-                        if (bridgehandler.account.units.equals("Standard")) {
+                        if ("Standard".equals(bridgehandler.account.units)) {
                             return new QuantityType<>(Integer.parseInt(value), ImperialUnits.FAHRENHEIT);
                         } else {
                             return new QuantityType<>(Integer.parseInt(value), SIUnits.CELSIUS);
@@ -112,10 +116,10 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
             return "0";
         } else if (command == OnOffType.ON) {
             return "1";
-        } else if (command instanceof DecimalType) {
-            return ((DecimalType) command).toString();
-        } else if (command instanceof QuantityType) {
-            return ((QuantityType<?>) command).format("%1.0f");
+        } else if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.toString();
+        } else if (command instanceof QuantityType quantityCommand) {
+            return quantityCommand.format("%1.0f");
         } else {
             return command.toString();
         }

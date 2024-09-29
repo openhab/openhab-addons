@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link FMIDiscoveryService} creates things based on the configured location.
+ * The {@link FMIWeatherDiscoveryService} creates things based on the configured location.
  *
  * @author Sami Salonen - Initial contribution
  */

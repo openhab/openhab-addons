@@ -6,4 +6,5 @@
 	<type>binding</type>
 	<name>Neato Binding</name>
 	<description>This is the binding for Neato.</description>
+	<connection>cloud</connection>
 </addon:addon>

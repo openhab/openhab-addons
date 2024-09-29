@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>@text/addon.shelly.name</name>
 	<description>@text/addon.shelly.description</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="defaultUserId" type="text">
@@ -30,5 +31,23 @@
 			<description>@text/addon.shelly.config.autoCoIoT.description</description>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_http._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>.*Shelly.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

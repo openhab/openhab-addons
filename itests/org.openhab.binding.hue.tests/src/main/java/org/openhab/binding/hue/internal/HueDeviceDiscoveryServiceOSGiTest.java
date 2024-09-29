@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,15 +25,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.connection.HueBridge;
 import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
-import org.openhab.binding.hue.internal.dto.FullLight;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.core.Configuration;
@@ -61,16 +63,17 @@ import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Markus Rathgeb - migrated to plain Java test
  */
+@NonNullByDefault
 public class HueDeviceDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent {
 
-    protected DiscoveryListener discoveryListener;
-    protected ThingRegistry thingRegistry;
-    protected Bridge hueBridge;
-    protected HueBridgeHandler hueBridgeHandler;
-    protected HueDeviceDiscoveryService discoveryService;
+    protected @Nullable DiscoveryListener discoveryListener;
+    protected @NonNullByDefault({}) ThingRegistry thingRegistry;
+    protected @NonNullByDefault({}) Bridge hueBridge;
+    protected @NonNullByDefault({}) HueBridgeHandler hueBridgeHandler;
+    protected @NonNullByDefault({}) HueDeviceDiscoveryService discoveryService;
 
-    protected final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("hue", "bridge");
-    protected final ThingUID BRIDGE_THING_UID = new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge");
+    protected static final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("hue", "bridge");
+    protected static final ThingUID BRIDGE_THING_UID = new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge");
 
     @BeforeEach
     public void setUp() {
@@ -139,8 +142,8 @@ public class HueDeviceDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent
             }
 
             @Override
-            public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-                    Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+                    @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }
         });

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -112,7 +111,7 @@ public class ActionsTest {
         Actions actions = new Gson().fromJson(json, Actions.class);
 
         // then:
-        assertEquals(Collections.singletonList(ProcessAction.START), actions.getProcessAction());
+        assertEquals(List.of(ProcessAction.START), actions.getProcessAction());
     }
 
     @Test

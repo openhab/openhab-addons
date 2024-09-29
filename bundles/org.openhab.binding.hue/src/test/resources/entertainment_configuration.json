@@ -1,0 +1,109 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"configuration_type": "screen",
+			"id": "7535ee8b-bc2f-4edf-8542-da5d6ab557e9",
+			"id_v1": "/groups/14",
+			"locations": {
+				"service_locations": [
+					{
+						"positions": [
+							{
+								"x": 0.75,
+								"y": -0.52,
+								"z": 0.0
+							}
+						],
+						"service": {
+							"rid": "a22e43a7-b804-47dd-b50e-9a8f49efc6df",
+							"rtype": "entertainment"
+						},
+						"position": {
+							"x": 0.75,
+							"y": -0.51999,
+							"z": 0.0
+						}
+					},
+					{
+						"positions": [
+							{
+								"x": -0.76,
+								"y": -0.53,
+								"z": 0.0
+							}
+						],
+						"service": {
+							"rid": "819489fb-2485-4e34-8805-aa19f85c6e5f",
+							"rtype": "entertainment"
+						},
+						"position": {
+							"x": -0.75999,
+							"y": -0.52999,
+							"z": 0.0
+						}
+					}
+				]
+			},
+			"metadata": {
+				"name": "Entertainment area 1"
+			},
+			"stream_proxy": {
+				"mode": "auto",
+				"node": {
+					"rtype": "entertainment",
+					"rid": "f391a6b1-8266-4039-b19c-3cce3572236f"
+				}
+			},
+			"light_services": [
+				{
+					"rtype": "light",
+					"rid": "cb77dbcb-f67b-4e9a-b287-e35a046b4288"
+				},
+				{
+					"rtype": "light",
+					"rid": "7f077235-0130-4a0a-95f9-107cf83639a3"
+				}
+			],
+			"channels": [
+				{
+					"channel_id": 0,
+					"position": {
+						"x": 0.75,
+						"y": -0.51999,
+						"z": 0.0
+					},
+					"members": [
+						{
+							"index": 0,
+							"service": {
+								"rtype": "entertainment",
+								"rid": "a22e43a7-b804-47dd-b50e-9a8f49efc6df"
+							}
+						}
+					]
+				},
+				{
+					"channel_id": 1,
+					"position": {
+						"x": -0.75999,
+						"y": -0.52999,
+						"z": 0.0
+					},
+					"members": [
+						{
+							"index": 0,
+							"service": {
+								"rtype": "entertainment",
+								"rid": "819489fb-2485-4e34-8805-aa19f85c6e5f"
+							}
+						}
+					]
+				}
+			],
+			"type": "entertainment_configuration",
+			"name": "Entertainment area 1",
+			"status": "inactive"
+		}
+	]
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class TivoStatusData {
         UNKNOWN,
         OFFLINE,
         STANDBY,
-        ONLINE;
+        ONLINE
     }
 
     /**
@@ -101,7 +101,7 @@ public class TivoStatusData {
     }
 
     /**
-     * {@link isCmdOK} indicates if the last command executed correctly.
+     * {@link #isCmdOk()} indicates if the last command executed correctly.
      *
      * @return cmdOk boolean true = executed correctly, false = last command failed with error message
      */

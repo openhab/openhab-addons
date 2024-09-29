@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -326,7 +326,7 @@ public class PushsaferMessageBuilder {
         body.addFieldPart(MESSAGE_KEY_ANSWERFORCE, new StringContentProvider(String.valueOf(answerforce)), null);
 
         body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
-
+        String attachment = this.attachment;
         if (attachment != null) {
             String localAttachment = attachment;
             final String encodedString;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class AirCareCapability extends RestCapability<AircareApi> {
         try {
             return List.of(api.getHomeCoach(handler.getId()));
         } catch (NetatmoException e) {
-            logger.warn("Error retrieving home-coach data '{}' : {}", handler.getId(), e.getMessage());
+            logger.warn("Error retrieving home-coach data '{}': {}", handler.getId(), e.getMessage());
         }
         return List.of();
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +64,7 @@ public class GreeAirDevice {
     private final InetAddress ipAddress;
     private int port = 0;
     private String encKey = "";
+    private GreeCryptoUtil.EncryptionTypes encType = GreeCryptoUtil.EncryptionTypes.ECB;
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
@@ -77,6 +77,7 @@ public class GreeAirDevice {
         this.ipAddress = ipAddress;
         this.port = port;
         this.scanResponseGson = Optional.of(scanResponse);
+        this.encType = GreeCryptoUtil.getEncryptionType(scanResponse);
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
@@ -118,9 +119,8 @@ public class GreeAirDevice {
             String reqStatusPackStr = GSON.toJson(reqStatusPackGson);
 
             // Encrypt and send the Status Request pack
-            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey(), reqStatusPackStr);
-            DatagramPacket sendPacket = createPackRequest(0,
-                    new String(encryptedStatusReqPacket.getBytes(), StandardCharsets.UTF_8));
+            String[] encryptedStatusReqData = GreeCryptoUtil.encrypt(getKey(), reqStatusPackStr, encType);
+            DatagramPacket sendPacket = createPackRequest(0, encryptedStatusReqData);
             clientSocket.send(sendPacket);
 
             // Keep a copy of the old response to be used to check if values have changed
@@ -132,7 +132,7 @@ public class GreeAirDevice {
 
             // Read the response, create the JSON to hold the response values
             GreeStatusResponseDTO resp = receiveResponse(clientSocket, GreeStatusResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), resp.pack);
+            resp.decryptedPack = GreeCryptoUtil.decrypt(getKey(), resp, encType);
             logger.debug("Response from device: {}", resp.decryptedPack);
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeStatusResponsePackDTO.class);
 
@@ -158,14 +158,14 @@ public class GreeAirDevice {
             String bindReqPackStr = GSON.toJson(bindReqPackGson);
 
             // Encrypt and send the Binding Request pack
-            String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
-                    bindReqPackStr);
-            DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqPacket);
+            String[] encryptedBindReqData = GreeCryptoUtil.encrypt(GreeCryptoUtil.getGeneralKeyByteArray(encType),
+                    bindReqPackStr, encType);
+            DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqData);
             clientSocket.send(sendPacket);
 
             // Recieve a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
+            resp.decryptedPack = GreeCryptoUtil.decrypt(resp, encType);
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
 
             // Now set the key and flag to indicate the bind was successful
@@ -214,7 +214,7 @@ public class GreeAirDevice {
 
     /**
      * SwingLfRig: controls the swing mode of the horizontal air blades (available on limited number of devices, e.g.
-     * some Cooper & Hunter units - thanks to mvmn)
+     * some Cooper and Hunter units - thanks to mvmn)
      *
      * 0: default
      * 1: full swing
@@ -271,7 +271,7 @@ public class GreeAirDevice {
     }
 
     /**
-     * @param value set temperature in degrees Celsius or Fahrenheit
+     * @param temp set temperature in degrees Celsius or Fahrenheit
      */
     public void setDeviceTempSet(DatagramSocket clientSocket, QuantityType<?> temp) throws GreeException {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
@@ -370,8 +370,7 @@ public class GreeAirDevice {
             int valueArrayposition = colList.indexOf(valueName);
             if (valueArrayposition != -1) {
                 // get the Corresponding value
-                Integer value = valList.get(valueArrayposition);
-                return value;
+                return valList.get(valueArrayposition);
             }
         }
 
@@ -384,7 +383,7 @@ public class GreeAirDevice {
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {
-        if (!prevStatusResponsePackGson.isPresent()) {
+        if (prevStatusResponsePackGson.isEmpty()) {
             return true; // update value if there is no previous one
         }
         // Find the valueName in the Current Status object
@@ -426,13 +425,13 @@ public class GreeAirDevice {
             String execCmdPackStr = GSON.toJson(execCmdPackGson);
 
             // Now encrypt and send the Command Request pack
-            String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey(), execCmdPackStr);
-            DatagramPacket sendPacket = createPackRequest(0, encryptedCommandReqPacket);
+            String[] encryptedCommandReqData = GreeCryptoUtil.encrypt(getKey(), execCmdPackStr, encType);
+            DatagramPacket sendPacket = createPackRequest(0, encryptedCommandReqData);
             clientSocket.send(sendPacket);
 
             // Receive and decode result
             GreeExecResponseDTO execResponseGson = receiveResponse(clientSocket, GreeExecResponseDTO.class);
-            execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), execResponseGson.pack);
+            execResponseGson.decryptedPack = GreeCryptoUtil.decrypt(getKey(), execResponseGson, encType);
 
             // Create the JSON to hold the response values
             execResponseGson.packJson = GSON.fromJson(execResponseGson.decryptedPack, GreeExecResponsePackDTO.class);
@@ -442,7 +441,7 @@ public class GreeAirDevice {
     }
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value) throws GreeException {
-        executeCommand(clientSocket, Collections.singletonMap(command, value));
+        executeCommand(clientSocket, Map.of(command, value));
     }
 
     private void setCommandValue(DatagramSocket clientSocket, String command, int value, int min, int max)
@@ -450,20 +449,26 @@ public class GreeAirDevice {
         if ((value < min) || (value > max)) {
             throw new GreeException("Command value out of range!");
         }
-        executeCommand(clientSocket, Collections.singletonMap(command, value));
+        executeCommand(clientSocket, Map.of(command, value));
     }
 
-    private DatagramPacket createPackRequest(int i, String pack) {
+    private DatagramPacket createPackRequest(int i, String[] data) {
         GreeRequestDTO request = new GreeRequestDTO();
         request.cid = GREE_CID;
         request.i = i;
         request.t = GREE_CMDT_PACK;
         request.uid = 0;
         request.tcid = getId();
-        request.pack = pack;
+        request.pack = data[0];
+        if (encType == GreeCryptoUtil.EncryptionTypes.GCM) {
+            if (data.length > 1) {
+                request.tag = data[1];
+            } else {
+                logger.warn("Missing string for tag property for GCM encryption data");
+            }
+        }
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
-        return sendPacket;
+        return new DatagramPacket(sendData, sendData.length, ipAddress, port);
     }
 
     private <T> T receiveResponse(DatagramSocket clientSocket, Class<T> classOfT)

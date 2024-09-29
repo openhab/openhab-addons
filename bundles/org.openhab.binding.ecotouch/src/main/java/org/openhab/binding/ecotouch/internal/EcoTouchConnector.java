@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * app. The meaning of the EcoTouch tags was provided by Waterkotte's technical
  * service (by an excerpt of a developer manual).
  *
- * @author Sebastian Held <sebastian.held@gmx.de> - Initial contribution
+ * @author Sebastian Held - Initial contribution
  * @since 1.5.0
  */
 
@@ -104,13 +104,13 @@ public class EcoTouchConnector {
             cause = e.toString();
         }
 
-        if (line2 != null && line2.trim().equals("#E_USER_DONT_EXIST")) {
+        if (line2 != null && "#E_USER_DONT_EXIST".equals(line2.trim())) {
             throw new IOException("Username does not exist.");
         }
-        if (line2 != null && line2.trim().equals("#E_PASS_DONT_MATCH")) {
+        if (line2 != null && "#E_PASS_DONT_MATCH".equals(line2.trim())) {
             throw new IOException("Password does not match.");
         }
-        if (line2 != null && line2.trim().equals("#E_TOO_MANY_USERS")) {
+        if (line2 != null && "#E_TOO_MANY_USERS".equals(line2.trim())) {
             throw new IOException("Too many users already logged in.");
         }
         if (cookies == null) {
@@ -162,7 +162,7 @@ public class EcoTouchConnector {
     public Map<String, String> getValues(Set<String> tags) throws Exception {
         final Integer maxNum = 100;
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         Integer counter = 1;
         StringBuilder query = new StringBuilder();
         Iterator<String> iter = tags.iterator();
@@ -196,7 +196,7 @@ public class EcoTouchConnector {
      */
     private Map<String, String> getValues(String url) throws Exception {
         trylogin(false);
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         int loginAttempt = 0;
         while (loginAttempt < 2) {
             BufferedReader reader = null;

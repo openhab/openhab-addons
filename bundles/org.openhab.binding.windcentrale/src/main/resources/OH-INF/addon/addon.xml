@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>Windcentrale Binding</name>
 	<description>Binding for Windcentrale windmills</description>
+	<connection>cloud</connection>
+	<countries>nl</countries>
 
 </addon:addon>

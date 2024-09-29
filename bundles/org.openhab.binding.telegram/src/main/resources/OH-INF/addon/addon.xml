@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Telegram Binding</name>
 	<description>This is the binding for Telegram. It allows to send and receive messages.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

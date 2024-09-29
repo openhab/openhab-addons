@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -95,7 +96,7 @@ public class VoskSTTService implements STTService {
         try {
             String osName = System.getProperty("os.name", "generic").toLowerCase();
             String osArch = System.getProperty("os.arch", "").toLowerCase();
-            if (osName.contains("linux") && (osArch.equals("arm") || osArch.equals("armv7l"))) {
+            if (osName.contains("linux") && ("arm".equals(osArch) || "armv7l".equals(osArch))) {
                 // workaround for loading required shared libraries
                 loadSharedLibrariesArmv7l();
             }
@@ -159,6 +160,7 @@ public class VoskSTTService implements STTService {
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L),
                 new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L));
     }
 
@@ -167,9 +169,13 @@ public class VoskSTTService implements STTService {
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
-            var frequency = audioStream.getFormat().getFrequency();
+            AudioFormat format = audioStream.getFormat();
+            var frequency = format.getFrequency();
             if (frequency == null) {
                 throw new IOException("missing audio stream frequency");
+            }
+            if (AudioFormat.CONTAINER_WAVE.equals(format.getContainer())) {
+                AudioWaveUtils.removeFMT(audioStream);
             }
             backgroundRecognize(sttListener, audioStream, frequency, aborted);
         } catch (IOException e) {
@@ -265,27 +271,15 @@ public class VoskSTTService implements STTService {
                     if (!transcript.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1F));
                     } else {
-                        if (!config.noResultsMessage.isBlank()) {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                        } else {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                        }
+                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                     }
                 }
             } catch (IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } catch (UnsatisfiedLinkError e) {
                 logger.warn("Missing native dependency: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } finally {
                 if (recognizer != null) {
                     recognizer.close();

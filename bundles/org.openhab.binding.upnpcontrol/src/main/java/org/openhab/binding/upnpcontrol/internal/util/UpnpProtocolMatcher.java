@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public final class UpnpProtocolMatcher {
      * Test if an UPnP protocol matches the object class. This method is used to filter resources for the primary
      * resource.
      *
-     * @param protocol format: <protocol>:<network>:<contentFormat>:<additionalInfo>
+     * @param protocol format: {@code <protocol>:<network>:<contentFormat>:<additionalInfo>}
      *            e.g. http-get:*:audio/mpeg:*
      * @param objectClass e.g. object.item.audioItem.musicTrack
      * @return true if protocol matches objectClass
@@ -71,7 +71,7 @@ public final class UpnpProtocolMatcher {
      * Ignore vendor specific additionalInfo part in UPnP protocol string.
      * Do all comparisons in lower case.
      *
-     * @param protocol format: <protocol>:<network>:<contentFormat>:<additionalInfo>
+     * @param protocol format: {@code <protocol>:<network>:<contentFormat>:<additionalInfo>}
      * @param protocolSet
      * @return true if protocol in protocolSet
      */

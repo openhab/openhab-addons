@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,26 +60,19 @@ public class DmxHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_ARTNET_BRIDGE)) {
-            ArtnetBridgeHandler handler = new ArtnetBridgeHandler((Bridge) thing);
-            return handler;
+            return new ArtnetBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_LIB485_BRIDGE)) {
-            Lib485BridgeHandler handler = new Lib485BridgeHandler((Bridge) thing);
-            return handler;
+            return new Lib485BridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_SACN_BRIDGE)) {
-            SacnBridgeHandler handler = new SacnBridgeHandler((Bridge) thing);
-            return handler;
+            return new SacnBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
-            DimmerThingHandler handler = new DimmerThingHandler(thing);
-            return handler;
+            return new DimmerThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_COLOR)) {
-            ColorThingHandler handler = new ColorThingHandler(thing);
-            return handler;
+            return new ColorThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TUNABLEWHITE)) {
-            TunableWhiteThingHandler handler = new TunableWhiteThingHandler(thing);
-            return handler;
+            return new TunableWhiteThingHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CHASER)) {
-            ChaserThingHandler handler = new ChaserThingHandler(thing);
-            return handler;
+            return new ChaserThingHandler(thing);
         }
         return null;
     }

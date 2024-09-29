@@ -1,0 +1,18 @@
+[
+	{
+		"hourStart": "2023-10-03T20:00:00Z",
+		"spotPrice": 0.020059999
+	},
+	{
+		"hourStart": "2023-10-03T21:00:00Z",
+		"spotPrice": 0.00544
+	},
+	{
+		"hourStart": "2023-10-03T22:00:00Z",
+		"spotPrice": 0.00097
+	},
+	{
+		"hourStart": "2023-10-03T23:00:00Z",
+		"spotPrice": 0.00007
+	}
+]

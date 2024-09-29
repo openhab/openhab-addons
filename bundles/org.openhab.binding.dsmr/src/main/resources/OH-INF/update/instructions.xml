@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="dsmr:device_emucs_v1_0">
+		<instruction-set targetVersion="1">
+			<add-channel id="emeter_actual_demand">
+				<type>dsmr:actualDeliveryBelgiumType</type>
+			</add-channel>
+			<add-channel id="emeter_maximum_demand_current_month">
+				<type>dsmr:actualDeliveryBelgiumType</type>
+				<label>Power Demand Current Month</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

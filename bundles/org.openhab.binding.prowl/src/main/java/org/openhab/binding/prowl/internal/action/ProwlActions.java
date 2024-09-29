@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ondrej Pecta - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ProwlActions.class)
 @ThingActionsScope(name = "prowl")
 @NonNullByDefault
 public class ProwlActions implements ThingActions {
@@ -78,8 +81,8 @@ public class ProwlActions implements ThingActions {
 
     public static void pushNotification(@Nullable ThingActions actions, @Nullable String event,
             @Nullable String description, int priority) {
-        if (actions instanceof ProwlActions) {
-            ((ProwlActions) actions).pushNotification(event, description, priority);
+        if (actions instanceof ProwlActions prowlActions) {
+            prowlActions.pushNotification(event, description, priority);
         } else {
             throw new IllegalArgumentException("Instance is not a ProwlActions class.");
         }

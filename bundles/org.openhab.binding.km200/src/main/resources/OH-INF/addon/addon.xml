@@ -9,5 +9,23 @@
 		These devices
 		are gateways for heating systems and allows to control them. It is possible to receive and send parameters.
 	</description>
+	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_http._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>hwversion</name>
+					<regex>.*iCom_Low.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Feican Binding</name>
 	<description>This is the binding for Feican light bulbs.</description>
+	<connection>local</connection>
 
 </addon:addon>

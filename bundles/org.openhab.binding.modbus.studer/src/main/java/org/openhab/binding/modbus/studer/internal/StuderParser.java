@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,7 +207,7 @@ public class StuderParser {
      * @return the converted float
      */
     public @Nullable Float hexToFloat(String hex) {
-        String t = hex.replaceAll(" ", "");
+        String t = hex.replace(" ", "");
         float f = Float.intBitsToFloat((int) Long.parseLong(t, 16));
         if (Float.isNaN(f)) {
             return null;

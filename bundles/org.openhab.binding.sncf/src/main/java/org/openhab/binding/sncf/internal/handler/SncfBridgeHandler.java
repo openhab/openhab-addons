@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,6 @@ import org.openhab.binding.sncf.internal.dto.SncfAnswer;
 import org.openhab.binding.sncf.internal.dto.StopPoint;
 import org.openhab.binding.sncf.internal.dto.StopPoints;
 import org.openhab.core.cache.ExpiringCacheMap;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -68,16 +67,14 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     public static final String SERVICE_URL = "https://api.sncf.com/v1/coverage/sncf/";
 
     private final Logger logger = LoggerFactory.getLogger(SncfBridgeHandler.class);
-    private final LocationProvider locationProvider;
     private final ExpiringCacheMap<String, @Nullable String> cache = new ExpiringCacheMap<>(Duration.ofMinutes(1));
     private final HttpClient httpClient;
 
     private final Gson gson;
     private @NonNullByDefault({}) String apiId;
 
-    public SncfBridgeHandler(Bridge bridge, Gson gson, LocationProvider locationProvider, HttpClient httpClient) {
+    public SncfBridgeHandler(Bridge bridge, Gson gson, HttpClient httpClient) {
         super(bridge);
-        this.locationProvider = locationProvider;
         this.httpClient = httpClient;
         this.gson = gson;
     }
@@ -158,10 +155,6 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
                 expected);
         List<Passage> passages = getResponseFromCache(url, Passages.class).passages;
         return passages != null && !passages.isEmpty() ? Optional.ofNullable(passages.get(0)) : Optional.empty();
-    }
-
-    public LocationProvider getLocationProvider() {
-        return locationProvider;
     }
 
     @Override

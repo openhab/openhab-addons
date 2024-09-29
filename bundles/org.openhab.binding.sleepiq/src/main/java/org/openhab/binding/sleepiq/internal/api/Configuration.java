@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,8 +27,6 @@ public class Configuration {
     private String password = "";
 
     private URI baseUri = URI.create("https://api.sleepiq.sleepnumber.com");
-
-    private boolean logging = false;
 
     /**
      * Get the username on the account.
@@ -126,41 +124,6 @@ public class Configuration {
      */
     public Configuration withBaseUri(URI baseUri) {
         setBaseUri(baseUri);
-        return this;
-    }
-
-    /**
-     * Get the logging flag.
-     *
-     * @return the logging flag
-     */
-    public boolean isLogging() {
-        return logging;
-    }
-
-    /**
-     * Set the logging flag. When this is set to <code>true</code>, all requests
-     * and responses will be logged at the {@link Level#INFO} level. <b>This
-     * includes usernames and passwords!</b>
-     *
-     * @param logging
-     *            the value to set
-     */
-    public void setLogging(boolean logging) {
-        this.logging = logging;
-    }
-
-    /**
-     * Set the logging flag. When this is set to <code>true</code>, all requests
-     * and responses will be logged at the {@link Level#INFO} level. <b>This
-     * includes usernames and passwords!</b>
-     *
-     * @param logging
-     *            the value to set
-     * @return this configuration instance
-     */
-    public Configuration withLogging(boolean logging) {
-        setLogging(logging);
         return this;
     }
 }

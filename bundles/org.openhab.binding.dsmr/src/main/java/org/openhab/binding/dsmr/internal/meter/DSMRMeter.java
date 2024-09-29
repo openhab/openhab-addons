@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,12 +73,11 @@ public class DSMRMeter {
      */
     public List<CosemObject> filterMeterValues(List<CosemObject> cosemObjects, int channel) {
         logger.trace("supported identifiers: {}, searching for objects {}", supportedIdentifiers, cosemObjects);
-        List<CosemObject> filteredValues = cosemObjects.stream()
+        return cosemObjects.stream()
                 .filter(cosemObject -> (DSMRMeterConstants.UNKNOWN_CHANNEL == channel
                         || cosemObject.getObisIdentifier().getChannel() == channel)
                         && supportedIdentifiers.contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
                 .collect(Collectors.toList());
-        return filteredValues;
     }
 
     /**

@@ -1,0 +1,58 @@
+{
+	"features": {
+		"auxHeat": false,
+		"bidirectionalCharging": false,
+		"chargingClockTimer": false,
+		"controllableRearWindowBlind": false,
+		"controllableSunroof": true,
+		"convertible": false,
+		"dcCharging": false,
+		"distronicPro": false,
+		"doubleDoorLock": false,
+		"driverAssistancePackageHigh": false,
+		"driverAssistancePackagePlus": false,
+		"ecoCharging": false,
+		"fastCharging": false,
+		"hepaFilter": false,
+		"mopf": false,
+		"pictureTransfer": false,
+		"pluggedStateDependingPreEntryClimateControl": false,
+		"precondNow": true,
+		"rearSunProtectionBlinds": false,
+		"remoteSettingPersonalizedTemperature": false,
+		"remoteSettingTemperature": true,
+		"urbanGuard": true,
+		"variableOpenableSunroof": false,
+		"variableOpenableWindow": false,
+		"weeklyProfile": true
+	},
+	"vehicle": {
+		"baumuster": "247086",
+		"changeYearCodes": null,
+		"controllableSunroofBlindsCount": null,
+		"doorsCount": 4,
+		"doorsHandleType": "WITH_CAP",
+		"drivingSide": "LEFT",
+		"electricVehicleType": "PLUGIN",
+		"electricWindowLifts": [
+			"FIRST_ROW_LEFT",
+			"FIRST_ROW_RIGHT",
+			"SECOND_ROW_LEFT",
+			"SECOND_ROW_RIGHT"
+		],
+		"fuelTypes": [
+			"ELECTRIC",
+			"GASOLINE"
+		],
+		"headUnitSoftwareVersion": "FRESHUP4",
+		"headUnitType": "NTG6",
+		"modelYearCode": "801",
+		"powertrainBatteryModel": [],
+		"productGroup": "PASSENGER",
+		"remoteSeatConfiguration": "ONLY_DRIVER_OR_ALL_SEATS",
+		"starArchitecture": "STAR2_3",
+		"sunroofType": "PANORAMIC",
+		"tcuType": "HERMES2FU2",
+		"tirePressureMonitorType": "TIRE_PRESSURE_MONITORING_SYSTEM"
+	}
+}

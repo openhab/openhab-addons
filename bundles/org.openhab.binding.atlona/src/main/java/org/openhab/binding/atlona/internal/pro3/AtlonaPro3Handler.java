@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,7 +116,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
      * Handles commands to specific channels. This implementation will offload much of its work to the
      * {@link AtlonaPro3PortocolHandler}. Basically we validate the type of command for the channel then call the
      * {@link AtlonaPro3PortocolHandler} to handle the actual protocol. Special use case is the {@link RefreshType}
-     * where we call {{@link #handleRefresh(String)} to handle a refresh of the specific channel (which in turn calls
+     * where we call {{@link #handleRefresh(ChannelUID)} to handle a refresh of the specific channel (which in turn
+     * calls
      * {@link AtlonaPro3PortocolHandler} to handle the actual refresh
      */
     @Override
@@ -133,8 +134,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         if ((m = GROUP_PRIMARY_PATTERN.matcher(group)).matches()) {
             switch (id) {
                 case AtlonaPro3Constants.CHANNEL_POWER:
-                    if (command instanceof OnOffType) {
-                        final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
+                    if (command instanceof OnOffType onOffCommand) {
+                        final boolean makeOn = onOffCommand == OnOffType.ON;
                         atlonaHandler.setPower(makeOn);
                     } else {
                         logger.debug("Received a POWER channel command with a non OnOffType: {}", command);
@@ -143,8 +144,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                     break;
 
                 case AtlonaPro3Constants.CHANNEL_PANELLOCK:
-                    if (command instanceof OnOffType) {
-                        final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
+                    if (command instanceof OnOffType onOffCommand) {
+                        final boolean makeOn = onOffCommand == OnOffType.ON;
                         atlonaHandler.setPanelLock(makeOn);
                     } else {
                         logger.debug("Received a PANELLOCK channel command with a non OnOffType: {}", command);
@@ -152,8 +153,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                     break;
 
                 case AtlonaPro3Constants.CHANNEL_IRENABLE:
-                    if (command instanceof OnOffType) {
-                        final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
+                    if (command instanceof OnOffType onOffCommand) {
+                        final boolean makeOn = onOffCommand == OnOffType.ON;
                         atlonaHandler.setIrOn(makeOn);
                     } else {
                         logger.debug("Received an IRLOCK channel command with a non OnOffType: {}", command);
@@ -232,8 +233,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_PORTOUTPUT:
-                            if (command instanceof DecimalType) {
-                                final int inpNbr = ((DecimalType) command).intValue();
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int inpNbr = decimalCommand.intValue();
                                 atlonaHandler.setPortSwitch(inpNbr, portNbr);
                             } else {
                                 logger.debug("Received a PORTOUTPUT channel command with a non DecimalType: {}",
@@ -243,8 +244,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                             break;
 
                         case AtlonaPro3Constants.CHANNEL_PORTPOWER:
-                            if (command instanceof OnOffType) {
-                                final boolean makeOn = ((OnOffType) command) == OnOffType.ON;
+                            if (command instanceof OnOffType onOffCommand) {
+                                final boolean makeOn = onOffCommand == OnOffType.ON;
                                 atlonaHandler.setPortPower(portNbr, makeOn);
                             } else {
                                 logger.debug("Received a PORTPOWER channel command with a non OnOffType: {}", command);
@@ -265,8 +266,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_PORTMIRROR:
-                            if (command instanceof DecimalType) {
-                                final int outPortNbr = ((DecimalType) command).intValue();
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int outPortNbr = decimalCommand.intValue();
                                 if (outPortNbr <= 0) {
                                     atlonaHandler.removePortMirror(hdmiPortNbr);
                                 } else {
@@ -285,8 +286,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                                             .getCallback();
                                     final State state = callback.getState(AtlonaPro3Constants.CHANNEL_PORTMIRROR);
                                     int outPortNbr = 1;
-                                    if (state != null && state instanceof DecimalType) {
-                                        outPortNbr = ((DecimalType) state).intValue();
+                                    if (state instanceof DecimalType decimalCommand) {
+                                        outPortNbr = decimalCommand.intValue();
                                     }
                                     atlonaHandler.setPortMirror(hdmiPortNbr, outPortNbr);
                                 } else {
@@ -313,8 +314,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                     switch (id) {
                         case AtlonaPro3Constants.CHANNEL_VOLUME_MUTE:
-                            if (command instanceof OnOffType) {
-                                atlonaHandler.setVolumeMute(portNbr, ((OnOffType) command) == OnOffType.ON);
+                            if (command instanceof OnOffType onOffCommand) {
+                                atlonaHandler.setVolumeMute(portNbr, onOffCommand == OnOffType.ON);
                             } else {
                                 logger.debug("Received a VOLUME MUTE channel command with a non OnOffType: {}",
                                         command);
@@ -322,8 +323,8 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
 
                             break;
                         case AtlonaPro3Constants.CHANNEL_VOLUME:
-                            if (command instanceof DecimalType) {
-                                final int level = ((DecimalType) command).intValue();
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int level = decimalCommand.intValue();
                                 atlonaHandler.setVolume(portNbr, level);
                             } else {
                                 logger.debug("Received a VOLUME channel command with a non DecimalType: {}", command);
@@ -576,7 +577,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         if (retryConnection == null) {
             final AtlonaPro3Config config = getAtlonaConfig();
             if (config != null) {
-                logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
+                logger.debug("Will try to reconnect in {} seconds", config.getRetryPolling());
                 retryConnection = this.scheduler.schedule(() -> {
                     retryConnection = null;
                     connect();

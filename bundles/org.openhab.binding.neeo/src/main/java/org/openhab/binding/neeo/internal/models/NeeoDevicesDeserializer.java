@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,9 +41,9 @@ public class NeeoDevicesDeserializer implements JsonDeserializer<@Nullable NeeoD
         Objects.requireNonNull(jsonElement, "jsonElement cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
-        if (jsonElement instanceof JsonObject) {
+        if (jsonElement instanceof JsonObject jsonObject) {
             final List<NeeoDevice> scenarios = new ArrayList<>();
-            for (Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()) {
+            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 final NeeoDevice device = context.deserialize(entry.getValue(), NeeoDevice.class);
                 scenarios.add(device);
             }

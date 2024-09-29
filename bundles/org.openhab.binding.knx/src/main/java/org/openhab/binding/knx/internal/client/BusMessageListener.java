@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      * Called when the KNX bridge receives a group read telegram
@@ -43,7 +43,7 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      * Called when the KNX bridge receives a group read response telegram
@@ -53,6 +53,5 @@ public interface BusMessageListener {
      * @param destination
      * @param asdu
      */
-    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
-            byte[] asdu);
+    void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 }

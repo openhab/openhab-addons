@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,16 +20,16 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tado.internal.CapabilitiesSupport;
-import org.openhab.binding.tado.internal.api.model.ACFanLevel;
-import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
-import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
-import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.AirConditioningCapabilities;
-import org.openhab.binding.tado.internal.api.model.ControlDevice;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.Power;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.Zone;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACFanLevel;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcFanSpeed;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcModeCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.AirConditioningCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.ControlDevice;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.Power;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.Zone;
 
 import com.google.gson.Gson;
 

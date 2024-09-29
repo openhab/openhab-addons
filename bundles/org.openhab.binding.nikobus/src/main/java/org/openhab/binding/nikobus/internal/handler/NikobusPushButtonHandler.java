@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -195,8 +195,8 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
 
         ThingHandler thingHandler = thing.getHandler();
-        if (thingHandler instanceof NikobusModuleHandler) {
-            return (NikobusModuleHandler) thingHandler;
+        if (thingHandler instanceof NikobusModuleHandler nikobusModuleHandler) {
+            return nikobusModuleHandler;
         }
         return null;
     }
@@ -256,10 +256,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
 
         SwitchModuleGroup getGroup() {
-            if (getSegment(2).equals("1")) {
+            if ("1".equals(getSegment(2))) {
                 return FIRST;
             }
-            if (getSegment(2).equals("2")) {
+            if ("2".equals(getSegment(2))) {
                 return SECOND;
             }
             throw new IllegalArgumentException("Unexpected group found " + getSegment(2));

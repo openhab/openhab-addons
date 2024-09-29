@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,15 @@ public class NuvoIpConnector extends NuvoConnector {
         this.address = address;
         this.port = port;
         this.uid = uid;
+    }
+
+    /**
+     * Default constructor for temporary connector object that gets replaced during initialize()
+     */
+    public NuvoIpConnector() {
+        this.address = "";
+        this.port = -1;
+        this.uid = "";
     }
 
     @Override

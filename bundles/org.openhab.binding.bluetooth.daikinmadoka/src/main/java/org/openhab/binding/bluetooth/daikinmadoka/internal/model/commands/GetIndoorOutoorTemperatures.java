@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,10 +74,10 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
             }
         }
 
-        indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature, SIUnits.CELSIUS);
+        indoorTemperature = new QuantityType<>(iIndoorTemperature, SIUnits.CELSIUS);
 
         if (iOutdoorTemperature != null) {
-            outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature, SIUnits.CELSIUS);
+            outdoorTemperature = new QuantityType<>(iOutdoorTemperature, SIUnits.CELSIUS);
         }
 
         logger.debug("Indoor Temp: {}", indoorTemperature);

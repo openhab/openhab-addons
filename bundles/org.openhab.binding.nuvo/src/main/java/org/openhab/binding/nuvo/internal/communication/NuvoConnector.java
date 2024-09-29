@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,7 +110,7 @@ public abstract class NuvoConnector {
     /**
      * Tell the connector if the device is an Essentia G or not
      *
-     * @param true if the device is an Essentia G
+     * @param isEssentia true if the device is an Essentia G
      */
     public void setEssentia(boolean isEssentia) {
         this.isEssentia = isEssentia;
@@ -119,7 +119,7 @@ public abstract class NuvoConnector {
     /**
      * Tell the connector to listen for NuvoNet source messages
      *
-     * @param true if any sources are configured as openHAB NuvoNet sources
+     * @param isAnyOhNuvoNet true if any sources are configured as openHAB NuvoNet sources
      */
     public void setAnyOhNuvoNet(boolean isAnyOhNuvoNet) {
         this.isAnyOhNuvoNet = isAnyOhNuvoNet;

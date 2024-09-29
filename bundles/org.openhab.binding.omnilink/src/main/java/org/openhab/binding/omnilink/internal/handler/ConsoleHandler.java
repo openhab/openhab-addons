@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,16 +68,16 @@ public class ConsoleHandler extends AbstractOmnilinkHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_CONSOLE_ENABLE_DISABLE_BEEPER:
-                if (command instanceof StringType) {
+                if (command instanceof StringType stringCommand) {
                     sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_ENABLE_DISABLE_BEEPER,
-                            ((StringType) command).equals(StringType.valueOf("OFF")) ? 0 : 1, thingID);
+                            stringCommand.equals(StringType.valueOf("OFF")) ? 0 : 1, thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be StringType", command);
                 }
                 break;
             case CHANNEL_CONSOLE_BEEP:
-                if (command instanceof DecimalType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_BEEP, ((DecimalType) command).intValue(), thingID);
+                if (command instanceof DecimalType decimalCommand) {
+                    sendOmnilinkCommand(CommandMessage.CMD_CONSOLE_BEEP, decimalCommand.intValue(), thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }

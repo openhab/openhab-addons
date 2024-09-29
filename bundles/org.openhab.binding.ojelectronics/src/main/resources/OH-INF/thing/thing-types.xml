@@ -22,16 +22,10 @@
 			</parameter>
 			<parameter name="apiUrl" type="text" required="true">
 				<label>API-URL</label>
-				<description>URL to cloud API-service.</description>
+				<description>URL to cloud API-service and Socket-Notification.</description>
 				<context>url</context>
 				<advanced>true</advanced>
-				<default>https://OWD5-OJ001-App.ojelectronics.com/api</default>
-			</parameter>
-			<parameter name="refreshDelayInSeconds" type="integer" required="true" min="15" unit="s">
-				<label>Refresh Delay</label>
-				<description>Refresh delay in seconds.</description>
-				<advanced>true</advanced>
-				<default>30</default>
+				<default>https://OWD5-OJ001-App.ojelectronics.com</default>
 			</parameter>
 			<parameter name="customerId" type="integer" required="true">
 				<label>Customer ID</label>

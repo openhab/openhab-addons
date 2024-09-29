@@ -6,5 +6,5 @@
 	<type>binding</type>
 	<name>Systeminfo Binding</name>
 	<description>This binding provides information about the operating system and the hardware.</description>
-
+	<connection>local</connection>
 </addon:addon>

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>ValloxMV Binding</name>
 	<description>Binding for online interface of Vallox ventilation unit</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,15 +26,15 @@ import org.openhab.binding.lametrictime.internal.api.cloud.impl.LaMetricTimeClou
  */
 @NonNullByDefault
 public interface LaMetricTimeCloud {
-    public Icons getIcons();
+    Icons getIcons();
 
-    public Icons getIcons(IconFilter filter);
+    Icons getIcons(IconFilter filter);
 
-    public static LaMetricTimeCloud create(CloudConfiguration config) {
+    static LaMetricTimeCloud create(CloudConfiguration config) {
         return new LaMetricTimeCloudImpl(config);
     }
 
-    public static LaMetricTimeCloud create(CloudConfiguration config, ClientBuilder clientBuilder) {
+    static LaMetricTimeCloud create(CloudConfiguration config, ClientBuilder clientBuilder) {
         return new LaMetricTimeCloudImpl(config, clientBuilder);
     }
 }

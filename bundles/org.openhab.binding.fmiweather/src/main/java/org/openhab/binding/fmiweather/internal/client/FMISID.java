@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.fmiweather.internal.client;
 
 import java.util.AbstractMap;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +35,6 @@ public class FMISID implements QueryParameter {
 
     @Override
     public List<Map.Entry<String, String>> toRequestParameters() {
-        return Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>("fmisid", fmisid));
+        return List.of(new AbstractMap.SimpleImmutableEntry<>("fmisid", fmisid));
     }
 }

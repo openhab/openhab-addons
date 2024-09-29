@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -240,8 +240,7 @@ public enum Variable {
      * Checks if the target LCN module would automatically send status-updates if
      * the given variable type was changed by command.
      *
-     * @param variable the variable type to check
-     * @param is2013 the target module's-generation
+     * @param firmwareVersion
      * @return true if a poll is required to get the new status-value
      */
     @SuppressWarnings("PMD.SimplifyBooleanReturns")

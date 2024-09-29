@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class PageOfInterestSubscriber<T> implements Subscriber<T> {
     /**
      * Create new PageOfInterestSubscriber
      *
-     * @param subscriber subscriber to get the page of interest
+     * @param future subscriber to get the page of interest
      * @param pageIndex page index that we want subscribe
      * @param pageSize page size
      */

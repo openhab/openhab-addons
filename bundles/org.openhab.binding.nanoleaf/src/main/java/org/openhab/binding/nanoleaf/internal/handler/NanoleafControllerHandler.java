@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
-    private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+    private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
     private PanelLayout previousPanelLayout = new PanelLayout();
     private final NanoleafPanelColors panelColors = new NanoleafPanelColors();
     private boolean updateVisualLayout = true;
@@ -678,10 +678,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         updateState(CHANNEL_COLOR, stateColor);
         updateState(CHANNEL_COLOR_MODE, new StringType(state.getColorMode()));
-        updateState(CHANNEL_RHYTHM_ACTIVE, controllerInfo.getRhythm().getRhythmActive() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RHYTHM_ACTIVE, OnOffType.from(controllerInfo.getRhythm().getRhythmActive()));
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
-        updateState(CHANNEL_RHYTHM_STATE,
-                controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_RHYTHM_STATE, OnOffType.from(controllerInfo.getRhythm().getRhythmConnected()));
 
         updatePanelColors();
         if (EFFECT_NAME_SOLID_COLOR.equals(controllerInfo.getEffects().getSelect())) {

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Guntamatic Binding</name>
 	<description>Binding for Guntamatic Heating Systems.</description>
+	<connection>local</connection>
 
 </addon:addon>

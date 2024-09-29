@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,26 @@ package org.openhab.binding.pentair.internal.handler;
 
 import static org.openhab.binding.pentair.internal.PentairBindingConstants.*;
 
-import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
-import org.openhab.binding.pentair.internal.PentairBindingConstants;
-import org.openhab.binding.pentair.internal.PentairPacket;
-import org.openhab.binding.pentair.internal.PentairPacketPumpStatus;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.pentair.internal.actions.PentairIntelliFloActions;
+import org.openhab.binding.pentair.internal.handler.helpers.PentairPumpStatus;
+import org.openhab.binding.pentair.internal.parser.PentairBasePacket;
+import org.openhab.binding.pentair.internal.parser.PentairStandardPacket;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -31,158 +41,226 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PentairIntelliFloHandler} is responsible for implementation of the Intelliflo Pump. This will
- * parse/dispose of
- * status packets to set the stat for various channels.
+ * parse status packets to set the stat for various channels.
  *
  * @author Jeff James - Initial contribution
  */
+@NonNullByDefault
 public class PentairIntelliFloHandler extends PentairBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PentairIntelliFloHandler.class);
-    protected PentairPacketPumpStatus ppscur = new PentairPacketPumpStatus();
+    private PentairPumpStatus pumpStatus = new PentairPumpStatus();
+
+    // runmode is used to send watchdog to pump when running
+    private boolean runMode = false;
+
+    private static @Nullable ScheduledFuture<?> pollingJob;
+
+    private PentairIntelliFloActions actions = new PentairIntelliFloActions();
 
     public PentairIntelliFloHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Initializing Intelliflo - Thing ID: {}.", this.getThing().getUID());
+    public void finishOnline() {
+        super.finishOnline();
+        actions.initialize(Objects.requireNonNull(getBridgeHandler()).getBaseActions(), getPentairID());
 
-        id = ((BigDecimal) getConfig().get("id")).intValue();
-
-        updateStatus(ThingStatus.ONLINE);
+        startPollingJob();
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Thing {} disposed.", getThing().getUID());
+    public void goOffline(ThingStatusDetail detail) {
+        super.goOffline(detail);
+
+        // PentairIntelliFloHandler.pollingJob will be cancelled when called and there are no pumps associated
+        // with the bridge
+    }
+
+    public PentairIntelliFloActions getActions() {
+        return actions;
+    }
+
+    public void setRunMode(boolean runMode) {
+        this.runMode = runMode;
+    }
+
+    private void startPollingJob() {
+        if (pollingJob == null) {
+            PentairIntelliFloHandler.pollingJob = scheduler
+                    .scheduleWithFixedDelay(PentairIntelliFloHandler::pumpWatchDog, 10, 30, TimeUnit.SECONDS);
+        }
+    }
+
+    private static void stopPollingJob() {
+        ScheduledFuture<?> pollingJob = PentairIntelliFloHandler.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+        }
+        PentairIntelliFloHandler.pollingJob = null;
+    }
+
+    /**
+     * Job to send pump query status packages to all Intelliflo Pump things in order to see the status.
+     * Note: From the internet is seems some FW versions of EasyTouch controllers send this automatically and this the
+     * pump status packets can just be snooped, however my controller version does not do this. No harm in sending.
+     *
+     */
+    private static void pumpWatchDog() {
+        boolean pumpsStillOnline = false;
+        Bridge bridge = PentairBaseBridgeHandler.getSingleBridge();
+        if (bridge == null) {
+            PentairIntelliFloHandler.stopPollingJob();
+            return;
+        }
+
+        Collection<Thing> things = bridge.getThings();
+
+        for (Thing t : things) {
+            if (!t.getThingTypeUID().equals(INTELLIFLO_THING_TYPE)) {
+                continue;
+            }
+
+            if (t.getStatus() != ThingStatus.ONLINE) {
+                continue;
+            }
+
+            pumpsStillOnline = true;
+
+            PentairIntelliFloHandler handler = (PentairIntelliFloHandler) t.getHandler();
+            if (handler == null) {
+                continue;
+            }
+
+            if (handler.runMode) {
+                handler.getActions().coreSetOnOROff(true);
+            } else {
+                handler.getActions().getStatus();
+            }
+        }
+
+        if (!pumpsStillOnline) {
+            PentairIntelliFloHandler.stopPollingJob();
+        }
+    }
+
+    // checkOtherMaster - check to make sure the system does not have a controller OR that the controller is in
+    // servicemode
+    private boolean checkOtherMaster() {
+        PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
+
+        if (bridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.bridge-missing");
+            return true;
+        }
+
+        PentairControllerHandler handler = bridgeHandler.findController();
+
+        return (handler != null && !handler.getServiceMode());
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            logger.debug("Intellflo received refresh command");
-            updateChannel(channelUID.getId(), null);
+        if (command instanceof OnOffType onOffCommand) {
+            boolean state = onOffCommand == OnOffType.ON;
+
+            switch (channelUID.getId()) {
+                case CHANNEL_INTELLIFLO_RUN:
+                case CHANNEL_INTELLIFLO_RPM:
+                    if (!state) {
+                        updateState(INTELLIFLO_RUNPROGRAM, OnOffType.OFF);
+                    }
+
+                    actions.setOnOrOff(state);
+
+                    break;
+                case INTELLIFLO_RUNPROGRAM:
+                    if (checkOtherMaster()) {
+                        logger.debug("Unable to send command to pump as there is another master in the system");
+                        return;
+                    }
+
+                    if (command instanceof DecimalType programNumber) {
+                        if (programNumber.intValue() == 0) {
+                            actions.setOnOrOff(false);
+                        } else {
+                            actions.setRunProgram(programNumber.intValue());
+                        }
+                    }
+            }
+        } else if (command instanceof DecimalType decimalCommand) {
+            int num = decimalCommand.intValue();
+
+            switch (channelUID.getId()) {
+                case CHANNEL_INTELLIFLO_RPM:
+                    updateState(INTELLIFLO_RUNPROGRAM, OnOffType.OFF);
+                    actions.setRPM(num);
+                    break;
+            }
+        } else if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case CHANNEL_INTELLIFLO_RUN:
+                    updateChannel(channelUID, pumpStatus.run);
+                    break;
+                case CHANNEL_INTELLIFLO_POWER:
+                    updateChannel(channelUID, pumpStatus.power, Units.WATT);
+                    break;
+                case CHANNEL_INTELLIFLO_RPM:
+                    updateChannel(channelUID, pumpStatus.rpm);
+                    break;
+                case INTELLIFLO_GPM:
+                    updateChannel(channelUID, pumpStatus.gpm, ImperialUnits.GALLON_PER_MINUTE);
+                    break;
+                case INTELLIFLO_STATUS1:
+                    updateChannel(channelUID, pumpStatus.status1);
+                    break;
+                case INTELLIFLO_STATUS2:
+                    updateChannel(channelUID, pumpStatus.status2);
+                    break;
+            }
         }
     }
 
     @Override
-    public void processPacketFrom(PentairPacket p) {
-        switch (p.getAction()) {
-            case 1: // Pump command - A5 00 10 60 01 02 00 20
-                logger.trace("Pump command (ack): {}: ", p);
+    public void processPacketFrom(PentairBasePacket packet) {
+        if (waitStatusForOnline) {
+            finishOnline();
+        }
+
+        PentairStandardPacket p = (PentairStandardPacket) packet;
+
+        switch (p.getByte(PentairStandardPacket.ACTION)) {
+            case 0x01: // Pump command - A5 00 10 60 01 02 00 20
+                logger.debug("[{}] Pump command (ack)", p.getSource());
                 break;
-            case 4: // Pump control panel on/off
-                logger.trace("Turn pump control panel (ack) {}: {} - {}", p.getSource(),
-                        p.getByte(PentairPacket.STARTOFDATA), p);
+            case 0x04: // Pump control panel on/off
+                boolean remotemode;
+
+                remotemode = p.getByte(0 + PentairStandardPacket.STARTOFDATA) == (byte) 0xFF;
+                logger.debug("[{}] Pump control panel (ack): {}", p.getSource(), remotemode);
                 break;
-            case 5: // Set pump mode
-                logger.trace("Set pump mode (ack) {}: {} - {}", p.getSource(), p.getByte(PentairPacket.STARTOFDATA), p);
+            case 0x05: // Set pump mode ack
+                logger.debug("[{}] Set pump mode (ack): {}", p.getSource(),
+                        p.getByte(0 + PentairStandardPacket.STARTOFDATA));
                 break;
-            case 6: // Set run mode
-                logger.trace("Set run mode (ack) {}: {} - {}", p.getSource(), p.getByte(PentairPacket.STARTOFDATA), p);
+            case 0x06: // Set run mode ack
+                logger.debug("[{}] Set run mode (ack): {}", p.getSource(),
+                        p.getByte(0 + PentairStandardPacket.STARTOFDATA));
                 break;
-            case 7: // Pump status (after a request)
-                if (p.getLength() != 15) {
-                    logger.debug("Expected length of 15: {}", p);
+            case 0x07: // Pump status (after a request)
+                if (p.getPacketLengthHeader() != 15) {
+                    logger.debug("[{}]: Expected length of 15 onm pump status: {}", p.getSource(), p);
                     return;
                 }
 
-                /*
-                 * P: A500 d=10 s=60 c=07 l=0f 0A0602024A08AC120000000A000F22 <028A>
-                 * RUN 0a Started
-                 * MOD 06 Feature 1
-                 * PMP 02 ? drive state
-                 * PWR 024a 586 WATT
-                 * RPM 08ac 2220 RPM
-                 * GPM 12 18 GPM
-                 * PPC 00 0 %
-                 * b09 00 ?
-                 * ERR 00 ok
-                 * b11 0a ?
-                 * TMR 00 0 MIN
-                 * CLK 0f22 15:34
-                 */
-
-                logger.debug("Pump status: {}", p);
-
-                /*
-                 * Save the previous state of the packet (p29cur) into a temp variable (p29old)
-                 * Update the current state to the new packet we just received.
-                 * Then call updateChannel which will compare the previous state (now p29old) to the new state (p29cur)
-                 * to determine if updateState needs to be called
-                 */
-                PentairPacketPumpStatus ppsOld = ppscur;
-                ppscur = new PentairPacketPumpStatus(p);
-
-                updateChannel(INTELLIFLO_RUN, ppsOld);
-                updateChannel(INTELLIFLO_MODE, ppsOld);
-                updateChannel(INTELLIFLO_DRIVESTATE, ppsOld);
-                updateChannel(INTELLIFLO_POWER, ppsOld);
-                updateChannel(INTELLIFLO_RPM, ppsOld);
-                updateChannel(INTELLIFLO_PPC, ppsOld);
-                updateChannel(INTELLIFLO_ERROR, ppsOld);
-                updateChannel(INTELLIFLO_TIMER, ppsOld);
-
+                pumpStatus.parsePacket(p);
+                logger.debug("[{}] Pump status: {}", p.getSource(), pumpStatus);
+                this.refreshAllChannels();
                 break;
             default:
-                logger.debug("Unhandled Intelliflo command: {}", p.toString());
-                break;
-        }
-    }
-
-    /**
-     * Helper function to compare and update channel if needed. The class variables p29_cur and phsp_cur are used to
-     * determine the appropriate state of the channel.
-     *
-     * @param channel name of channel to be updated, corresponds to channel name in {@link PentairBindingConstants}
-     * @param p Packet representing the former state. If null, no compare is done and state is updated.
-     */
-    public void updateChannel(String channel, PentairPacket p) {
-        // Only called from this class's processPacketFrom, so we are confident this will be a PentairPacketPumpStatus
-        PentairPacketPumpStatus pps = (PentairPacketPumpStatus) p;
-
-        switch (channel) {
-            case INTELLIFLO_RUN:
-                if (pps == null || (pps.run != ppscur.run)) {
-                    updateState(channel, (ppscur.run) ? OnOffType.ON : OnOffType.OFF);
-                }
-                break;
-            case INTELLIFLO_MODE:
-                if (pps == null || (pps.mode != ppscur.mode)) {
-                    updateState(channel, new DecimalType(ppscur.mode));
-                }
-                break;
-            case INTELLIFLO_DRIVESTATE:
-                if (pps == null || (pps.drivestate != ppscur.drivestate)) {
-                    updateState(channel, new DecimalType(ppscur.drivestate));
-                }
-                break;
-            case INTELLIFLO_POWER:
-                if (pps == null || (pps.power != ppscur.power)) {
-                    updateState(channel, new DecimalType(ppscur.power));
-                }
-                break;
-            case INTELLIFLO_RPM:
-                if (pps == null || (pps.rpm != ppscur.rpm)) {
-                    updateState(channel, new DecimalType(ppscur.rpm));
-                }
-                break;
-            case INTELLIFLO_PPC:
-                if (pps == null || (pps.ppc != ppscur.ppc)) {
-                    updateState(channel, new DecimalType(ppscur.ppc));
-                }
-                break;
-            case INTELLIFLO_ERROR:
-                if (pps == null || (pps.error != ppscur.error)) {
-                    updateState(channel, new DecimalType(ppscur.error));
-                }
-                break;
-            case INTELLIFLO_TIMER:
-                if (pps == null || (pps.timer != ppscur.timer)) {
-                    updateState(channel, new DecimalType(ppscur.timer));
-                }
+                logger.debug("[{}] Unhandled Intelliflo command {}: {}", p.getSource(), p.getAction(), p.toString());
                 break;
         }
     }

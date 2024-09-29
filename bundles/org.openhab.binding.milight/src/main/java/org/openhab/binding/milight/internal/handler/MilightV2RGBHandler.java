@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,13 +71,13 @@ public class MilightV2RGBHandler extends AbstractLedHandler {
     public void setPower(boolean on, MilightThingState state) {
         if (on) {
             logger.debug("milight: sendOn");
-            byte messageBytes[] = null;
+            byte[] messageBytes = null;
             // message rgb bulbs ON
             messageBytes = new byte[] { 0x22, 0x00, 0x55 };
             sendQueue.queue(createRepeatable(uidc(ProtocolConstants.CAT_POWER_MODE), messageBytes));
         } else {
             logger.debug("milight: sendOff");
-            byte messageBytes[] = null;
+            byte[] messageBytes = null;
 
             // message rgb bulbs OFF
             messageBytes = new byte[] { 0x21, 0x00, 0x55 };

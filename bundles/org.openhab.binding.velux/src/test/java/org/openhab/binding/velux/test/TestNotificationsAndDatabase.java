@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,10 +107,12 @@ public class TestNotificationsAndDatabase {
     @Order(3)
     public void testSCgetProduct() {
         // initialise the test parameters
-        final String packet = "06 00 06 00 48 6F 62 62 79 6B 61 6D 65 72 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 01 04 40 00 00 00 00 00 00 00 00 00 00 00 00 00 2D C8 00 C8 00 F7 FF F7 FF 00 00 F7 FF 00"
-                + " 00 4F 00 4A EA 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
+        final String packet = """
+                06 00 06 00 48 6F 62 62 79 6B 61 6D 65 72 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 01 04 40 00 00 00 00 00 00 00 00 00 00 00 00 00 2D C8 00 C8 00 F7 FF F7 FF 00 00 F7 FF 00\
+                 00 4F 00 4A EA 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                """;
         final Command command = VeluxKLFAPI.Command.GW_GET_NODE_INFORMATION_NTF;
 
         // initialise the BCP
@@ -198,8 +200,10 @@ public class TestNotificationsAndDatabase {
     @Order(5)
     public void testSCgetProductStatus() {
         // initialise the test parameters
-        final String packet = "00 D8 01 06 00 01 01 02 00 C8 00 03 63 4F 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
+        final String packet = """
+                00 D8 01 06 00 01 01 02 00 C8 00 03 63 4F 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                """;
         final Command command = VeluxKLFAPI.Command.GW_STATUS_REQUEST_NTF;
 
         // initialise the BCP
@@ -334,10 +338,12 @@ public class TestNotificationsAndDatabase {
     @Order(9)
     public void testSCgetProductOnVelux() {
         // initialise the test parameters
-        final String packet = "00 00 00 00 53 68 65 64 20 57 69 6E 64 6F 77 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 01 01 01 03 07 00 01 16 56 24 5C 26 14 19 00 FC 05 46 00 46 00 F7 FF F7"
-                + " FF F7 FF F7 FF 00 00 4F 05 B3 5F 01 D8 03 B2 1C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00";
+        final String packet = """
+                00 00 00 00 53 68 65 64 20 57 69 6E 64 6F 77 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 01 01 01 03 07 00 01 16 56 24 5C 26 14 19 00 FC 05 46 00 46 00 F7 FF F7\
+                 FF F7 FF F7 FF 00 00 4F 05 B3 5F 01 D8 03 B2 1C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                """;
         final short command = VeluxKLFAPI.Command.GW_GET_NODE_INFORMATION_NTF.getShort();
 
         // initialise the BCP
@@ -454,9 +460,11 @@ public class TestNotificationsAndDatabase {
     @Test
     @Order(12)
     public void testSCrunProductA() {
-        final String expectedString = "02 1C 08 05 00 20 00 90 00 00 00 00 00 A0 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00";
+        final String expectedString = """
+                02 1C 08 05 00 20 00 90 00 00 00 00 00 A0 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00\
+                """;
         final byte[] expectedPacket = toByteArray(expectedString);
         final int targetMainPosition = 0x9000;
         final int targetVanePosition = 0xA000;
@@ -885,9 +893,11 @@ public class TestNotificationsAndDatabase {
     @Order(21)
     public void testErrorStateMapping() {
         // initialise the test parameters
-        final String packet = "0F A3 01 06 01 00 01 02 00 9A 36 03 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
-                + " 00 00 00 00 00";
+        final String packet = """
+                0F A3 01 06 01 00 01 02 00 9A 36 03 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\
+                 00 00 00 00 00\
+                """;
         final Command command = VeluxKLFAPI.Command.GW_STATUS_REQUEST_NTF;
 
         // initialise the BCP

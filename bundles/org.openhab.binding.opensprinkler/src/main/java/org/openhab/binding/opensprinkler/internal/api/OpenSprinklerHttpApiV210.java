@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,8 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
     /**
      * {@inheritDoc}
      *
-     * @throws Exception
+     * @throws CommunicationApiException
+     * @throws UnauthorizedApiException
      */
     @Override
     public void enterManualMode() throws CommunicationApiException, UnauthorizedApiException {
@@ -150,7 +151,7 @@ class OpenSprinklerHttpApiV210 extends OpenSprinklerHttpApiV100 {
      *
      * @param returnContent String value of the return content from the OpenSprinkler device when
      *            an action result is returned from the API.
-     * @throws Exception Returns a custom exception based on the result key.
+     * @throws GeneralApiException Returns a custom exception based on the result key.
      */
     protected void resultParser(String returnContent) throws GeneralApiException {
         int returnCode;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConst
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +94,7 @@ public class BridgeHandler extends BaseBridgeHandler
     /**
      * Contains all supported thing types of this handler
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DSS_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DSS_BRIDGE);
 
     private static final long RECONNECT_TRACKER_INTERVAL = 15;
 
@@ -631,8 +630,10 @@ public class BridgeHandler extends BaseBridgeHandler
             switch (reason) {
                 case WRONG_APP_TOKEN:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "User defined Application-Token is wrong. "
-                                    + "Please set user name and password to generate an Application-Token or set a valid Application-Token.");
+                            """
+                                    User defined Application-Token is wrong. \
+                                    Please set user name and password to generate an Application-Token or set a valid Application-Token.\
+                                    """);
                     stopServices();
                     return;
                 case WRONG_USER_OR_PASSWORD:
@@ -655,10 +656,12 @@ public class BridgeHandler extends BaseBridgeHandler
                         return;
                     }
                 case HOST_NOT_FOUND:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Server not found! Please check these points:\n" + " - Is digitalSTROM-Server turned on?\n"
-                                    + " - Is the host address correct?\n"
-                                    + " - Is the ethernet cable connection established?");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, """
+                            Server not found! Please check these points:
+                             - Is digitalSTROM-Server turned on?
+                             - Is the host address correct?
+                             - Is the ethernet cable connection established?\
+                            """);
                     break;
                 case UNKNOWN_HOST:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

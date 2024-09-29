@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -217,7 +217,6 @@ public abstract class AbstractCommand implements CommandInterface {
             if (isErrorReply(deviceReply)) {
                 return false;
             }
-
         } catch (InterruptedException e) {
             createGenericError("Poll of response queue was interrupted");
             return false;
@@ -326,7 +325,6 @@ public abstract class AbstractCommand implements CommandInterface {
         int eCode;
         try {
             eCode = Integer.parseInt(errorCode);
-
         } catch (NumberFormatException e) {
             eCode = 0;
             logger.debug("Badly formatted error code '{}' received from device: {}", errorCode, e.getMessage());

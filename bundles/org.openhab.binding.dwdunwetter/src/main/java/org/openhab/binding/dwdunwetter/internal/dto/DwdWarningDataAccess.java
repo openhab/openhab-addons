@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,10 +51,14 @@ public class DwdWarningDataAccess {
             stringBuilder.append("&CQL_FILTER=");
             stringBuilder.append(URLEncoder.encode("WARNCELLID LIKE '" + cellId + "'", StandardCharsets.UTF_8));
             logger.debug("Refreshing Data for cell {}", cellId);
-            String rawData = HttpUtil.executeUrl("GET", stringBuilder.toString(), 5000);
+            String rawData = getByURL(stringBuilder.toString());
             logger.trace("Raw request: {}", stringBuilder);
             logger.trace("Raw response: {}", rawData);
 
+            if (rawData == null || !rawData.startsWith("<?xml") || !rawData.contains("FeatureCollection")) {
+                logger.warn("Communication error occurred while getting data, response is not in expected XML-format");
+                return "";
+            }
             return rawData;
         } catch (IOException e) {
             logger.warn("Communication error occurred while getting data: {}", e.getMessage());
@@ -62,5 +66,9 @@ public class DwdWarningDataAccess {
         }
 
         return "";
+    }
+
+    public String getByURL(String url) throws IOException {
+        return HttpUtil.executeUrl("GET", url, 5000);
     }
 }

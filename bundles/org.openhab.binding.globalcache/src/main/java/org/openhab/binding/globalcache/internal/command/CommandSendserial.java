@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class CommandSendserial extends AbstractCommand {
             String con, String code) {
         super(thing, queue, "sendserial", CommandType.SERIAL1);
         // Check to see if this is for the second serial port on a GC-100-12
-        if (isGC100Model12() && mod.equals("2")) {
+        if (isGC100Model12() && "2".equals(mod)) {
             setCommandType(CommandType.SERIAL2);
         }
         this.command = command;

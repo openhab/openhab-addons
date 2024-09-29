@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -117,7 +118,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         // create the MD5 hashes
         String ha1 = username + ":" + realm + ":" + password;
         ha1 = calcMD5Hash(ha1);
-        Random random = new Random();
+        Random random = new SecureRandom();
         String cnonce = Integer.toHexString(random.nextInt());
         ncCounter = (ncCounter > 125) ? 1 : ++ncCounter;
         String nc = String.format("%08X", ncCounter); // 8 digit hex number
@@ -144,15 +145,14 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        if (msg instanceof HttpResponse) {
-            HttpResponse response = (HttpResponse) msg;
+        if (msg instanceof HttpResponse response) {
             if (response.status().code() == 401) {
                 ctx.close();
                 if (!response.headers().isEmpty()) {
                     String authenticate = "";
                     for (CharSequence name : response.headers().names()) {
                         for (CharSequence value : response.headers().getAll(name)) {
-                            if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
+                            if ("WWW-Authenticate".equalsIgnoreCase(name.toString())) {
                                 authenticate = value.toString();
                             }
                         }
@@ -160,8 +160,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
-                        ipCameraHandler.cameraConfigError(
-                                "Camera gave no WWW-Authenticate: Your login details must be wrong.");
+                        ipCameraHandler.cameraCommunicationError(
+                                "Camera gave no WWW-Authenticate: Your login details might be wrong. Trying to reconnect");
                     }
                 }
             } else if (response.status().code() != 200) {

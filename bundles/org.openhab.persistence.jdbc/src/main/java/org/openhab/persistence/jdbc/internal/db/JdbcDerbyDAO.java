@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -223,7 +223,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         logger.debug("JDBC::doGetHistItemFilterQuery got Array length={}", m.size());
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
-        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ni ? ni.getUnit() : null;
         return m.stream().map(o -> {
             logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
             return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0]));
@@ -242,15 +242,15 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
                 StringUtilsExt.filterToString(filter), numberDecimalcount, table, simpleName);
 
         String filterString = "";
-        if (filter.getBeginDate() != null) {
+        ZonedDateTime beginDate = filter.getBeginDate();
+        if (beginDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME>='" + JDBC_DATE_FORMAT.format(beginDate.withZoneSameInstant(timeZone)) + "'";
         }
-        if (filter.getEndDate() != null) {
+        ZonedDateTime endDate = filter.getEndDate();
+        if (endDate != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
-                    + "'";
+            filterString += " TIME<='" + JDBC_DATE_FORMAT.format(endDate.withZoneSameInstant(timeZone)) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {

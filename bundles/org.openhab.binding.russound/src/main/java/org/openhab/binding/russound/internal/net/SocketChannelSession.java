@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -292,15 +292,15 @@ public class SocketChannelSession implements SocketSession {
                     final Object response = responses.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String) {
+                        if (response instanceof String stringCommand) {
                             logger.debug("Dispatching response: {}", response);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseReceived((String) response);
+                                listener.responseReceived(stringCommand);
                             }
-                        } else if (response instanceof IOException) {
+                        } else if (response instanceof IOException ioException) {
                             logger.debug("Dispatching exception: {}", response);
                             for (SocketSessionListener listener : listeners) {
-                                listener.responseException((IOException) response);
+                                listener.responseException(ioException);
                             }
                         } else {
                             logger.warn("Unknown response class: {}", response);

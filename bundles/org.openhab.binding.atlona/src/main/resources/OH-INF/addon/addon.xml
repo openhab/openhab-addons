@@ -4,6 +4,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Atlona Products</name>
+	<name>Atlona Binding</name>
 	<description>Binding for Atlona PRO3 HDBaseT Matrix switches.</description>
+	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>sddp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*atlona.*</regex>
+				</match-property>
+				<match-property>
+					<name>model</name>
+					<regex>(?i).*(AT-UHD-PRO3|AT-PRO3HD).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

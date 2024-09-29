@@ -7,5 +7,6 @@
 	<name>Qbus Binding</name>
 	<description>This is the binding for the Qbus home automation system. Qbus is a system made and developed in Belgium
 		(https://www.qbus.be/nl-nl)</description>
+	<connection>local</connection>
 
 </addon:addon>

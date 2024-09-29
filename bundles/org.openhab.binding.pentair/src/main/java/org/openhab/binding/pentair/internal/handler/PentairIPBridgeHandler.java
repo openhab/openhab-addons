@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.pentair.internal.handler;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pentair.internal.config.PentairIPBridgeConfig;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -26,91 +28,76 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler for the IPBridge. Implements the connect and disconnect abstract methods of {@link PentairBaseBridgeHandler}
+ * The {@link PentairIPBridgeHandler } class implements the the IPBridge.
+ * Implements the connect and disconnect abstract methods of {@link PentairBaseBridgeHandler}
  *
  * @author Jeff James - Initial contribution
- *
  */
+
+@NonNullByDefault
 public class PentairIPBridgeHandler extends PentairBaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(PentairIPBridgeHandler.class);
 
-    /** Socket object for connection */
-    protected Socket socket;
+    public PentairIPBridgeConfig config = new PentairIPBridgeConfig();
+
+    private @Nullable Socket socket;
 
     public PentairIPBridgeHandler(Bridge bridge) {
         super(bridge);
     }
 
     @Override
-    protected synchronized void connect() {
-        PentairIPBridgeConfig configuration = getConfigAs(PentairIPBridgeConfig.class);
-
-        id = configuration.id;
+    protected synchronized boolean connect() {
+        config = getConfigAs(PentairIPBridgeConfig.class);
 
         try {
-            socket = new Socket(configuration.address, configuration.port);
-            reader = new BufferedInputStream(socket.getInputStream());
-            writer = new BufferedOutputStream(socket.getOutputStream());
-            logger.info("Pentair IPBridge connected to {}:{}", configuration.address, configuration.port);
+            this.socket = new Socket(config.address, config.port);
+            Socket socket = this.socket;
+
+            if (socket == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.ip-stream-error");
+                return false;
+            }
+
+            InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
+            if (inputStream == null || outputStream == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication-error.ip-stream-error");
+                return false;
+            }
+
+            setInputStream(socket.getInputStream());
+            setOutputStream(socket.getOutputStream());
+
+            logger.debug("Pentair IPBridge connected to {}:{}", config.address, config.port);
         } catch (UnknownHostException e) {
-            String msg = String.format("unknown host name: %s", configuration.address);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            return;
+            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                String msg = String.format("unknown host name: %s, %s", config.address, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            }
+            return false;
         } catch (IOException e) {
-            String msg = String.format("cannot open connection to %s", configuration.address);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-            return;
+            if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                String msg = String.format("cannot open connection to %s, %s", config.address, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            }
+            return false;
         }
 
-        parser = new Parser();
-        thread = new Thread(parser);
-        thread.start();
-
-        if (socket != null && reader != null && writer != null) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to connect");
-        }
+        return true;
     }
 
     @Override
     protected synchronized void disconnect() {
-        updateStatus(ThingStatus.OFFLINE);
-
-        if (thread != null) {
-            try {
-                thread.interrupt();
-                thread.join(); // wait for thread to complete
-            } catch (InterruptedException e) {
-                // do nothing
-            }
-            thread = null;
-            parser = null;
-        }
-
-        if (reader != null) {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error in closing reader");
-            }
-            reader = null;
-        }
-
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error in closing writer");
-            }
-            writer = null;
-        }
+        Socket socket = this.socket;
 
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error("error when closing socket ", e);
+                logger.debug("error when closing socket ", e);
             }
             socket = null;
         }

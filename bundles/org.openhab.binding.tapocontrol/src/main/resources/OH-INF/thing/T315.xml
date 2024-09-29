@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- T315 THING-TYPE (SMART CONTACT SENSOR) -->
+	<thing-type id="T315">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="H100"/>
+		</supported-bridge-type-refs>
+
+		<label>T315 Temperature Monitor</label>
+		<description>Tapo Smart Temperature and Humidity Monitor</description>
+
+		<channel-groups>
+			<channel-group id="sensor" typeId="temperatureSensor"/>
+			<channel-group id="device" typeId="childDeviceState"/>
+		</channel-groups>
+		<representation-property>serialNumber</representation-property>
+	</thing-type>
+</thing:thing-descriptions>

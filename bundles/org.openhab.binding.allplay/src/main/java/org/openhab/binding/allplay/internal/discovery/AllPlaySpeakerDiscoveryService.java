@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.allplay.internal.discovery;
 
 import static org.openhab.binding.allplay.internal.AllPlayBindingConstants.SPEAKER_THING_TYPE;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class AllPlaySpeakerDiscoveryService extends AbstractDiscoveryService imp
     private final Logger logger = LoggerFactory.getLogger(AllPlaySpeakerDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT = 30;
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Collections.singleton(SPEAKER_THING_TYPE);
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(SPEAKER_THING_TYPE);
     private AllPlay allPlay;
 
     public AllPlaySpeakerDiscoveryService() {

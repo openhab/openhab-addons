@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.generic;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,9 +34,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -49,11 +53,19 @@ import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.transform.TransformationException;
+import org.openhab.core.transform.TransformationHelper;
+import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.ColorUtil;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Tests the {@link ChannelState} class.
@@ -126,6 +138,41 @@ public class ChannelStateTests {
         c.config.retained = true;
         c.publishValue(new StringType("UPDATE")).get();
         verify(connectionMock).publish(eq("command"), any(), anyInt(), eq(true));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopSeparateTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").withStopCommandTopic("stopCommand")
+                .build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("stopCommand"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));
@@ -247,7 +294,7 @@ public class ChannelStateTests {
 
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("26,26,26"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
         assertThat(value.getChannelState().toString(), is("0,0,0"));
@@ -255,15 +302,14 @@ public class ChannelStateTests {
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("25,25,25"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("26,26,26"));
 
         HSBType t = HSBType.fromRGB(12, 18, 231);
 
         c.processMessage("state", "12,18,231".getBytes());
         assertThat(value.getChannelState(), is(t)); // HSB
-        // rgb -> hsv -> rgb is quite lossy
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("13,20,229"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("229,20,13"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("12,18,231"));
+        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$d,%2$d,%1$d"), is("231,18,12"));
     }
 
     @Test
@@ -295,25 +341,39 @@ public class ChannelStateTests {
         ChannelState c = spy(new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock));
         c.start(connectionMock, mock(ScheduledExecutorService.class), 100);
 
+        // incoming messages
         c.processMessage("state", "ON".getBytes()); // Normal on state
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.312716,0.329002,10.00"));
 
         c.processMessage("state", "FOFF".getBytes()); // Custom off state
-        assertThat(value.getChannelState().toString(), is("0,0,0"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.312716,0.329002,0.00"));
+        // note we don't care what color value is currently stored, just that brightness is off
+        assertThat(((HSBType) value.getChannelState()).getBrightness(), is(PercentType.ZERO));
 
         c.processMessage("state", "10".getBytes()); // Brightness only
         assertThat(value.getChannelState().toString(), is("0,0,10"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.312716,0.329002,10.00"));
 
-        HSBType t = HSBType.fromXY(0.3f, 0.6f);
-
+        HSBType t = ColorUtil.xyToHsb(new double[] { 0.3f, 0.6f });
         c.processMessage("state", "0.3,0.6,100".getBytes());
-        assertThat(value.getChannelState(), is(t)); // HSB
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), null), is("0.300000,0.600000,100.00"));
-        assertThat(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$.1f,%2$.4f,%1$.4f"),
-                is("100.0,0.6000,0.3000"));
+        assertTrue(((HSBType) value.getChannelState()).closeTo(t, 0.001)); // HSB
+
+        // outgoing messages
+        // these use the 0.3,0.6,100 from above, but care more about proper formatting of the outgoing message
+        // than about the precise value (since color conversions have happened)
+        assertCloseTo(value.getMQTTpublishValue((Command) value.getChannelState(), null), "0.300000,0.600000,100.00");
+        assertCloseTo(value.getMQTTpublishValue((Command) value.getChannelState(), "%3$.1f,%2$.2f,%1$.2f"),
+                "100.0,0.60,0.30");
+    }
+
+    // also ensures the string elements are the same _length_, i.e. the correct precision for each element
+    private void assertCloseTo(String aString, String bString) {
+        String[] aElements = aString.split(",");
+        String[] bElements = bString.split(",");
+        double[] a = Arrays.stream(aElements).mapToDouble(Double::parseDouble).toArray();
+        double[] b = Arrays.stream(bElements).mapToDouble(Double::parseDouble).toArray();
+        for (int i = 0; i < a.length; i++) {
+            assertThat(aElements[i].length(), is(bElements[i].length()));
+            assertThat(a[i], closeTo(b[i], 0.002));
+        }
     }
 
     @Test
@@ -354,5 +414,98 @@ public class ChannelStateTests {
         c.processMessage("state", payload);
         assertThat(value.getChannelState(), is(instanceOf(RawType.class)));
         assertThat(((RawType) value.getChannelState()).getMimeType(), is("image/jpeg"));
+    }
+
+    @Nested
+    public class TransformationTests {
+        // Copied from org.openhab.core.thing.binding.generic.ChannelTransformationTest
+        private static final String T1_NAME = "TRANSFORM1";
+        private static final String T1_PATTERN = "T1Pattern";
+        private static final String T1_INPUT = "T1Input";
+        private static final String T1_RESULT = "T1Result";
+
+        private static final String NULL_INPUT = "nullInput";
+        private static final @Nullable String NULL_RESULT = null;
+
+        private @Mock @NonNullByDefault({}) TransformationService transformationService1Mock;
+
+        private @Mock @NonNullByDefault({}) BundleContext bundleContextMock;
+        private @Mock @NonNullByDefault({}) ServiceReference<TransformationService> serviceRef1Mock;
+
+        private @NonNullByDefault({}) TransformationHelper transformationHelper;
+
+        @BeforeEach
+        public void init() throws TransformationException {
+            Mockito.when(transformationService1Mock.transform(eq(T1_PATTERN), eq(T1_INPUT)))
+                    .thenAnswer(answer -> T1_RESULT);
+            Mockito.when(transformationService1Mock.transform(eq(T1_PATTERN), eq(NULL_INPUT)))
+                    .thenAnswer(answer -> NULL_RESULT);
+
+            Mockito.when(serviceRef1Mock.getProperty(any())).thenReturn("TRANSFORM1");
+
+            Mockito.when(bundleContextMock.getService(serviceRef1Mock)).thenReturn(transformationService1Mock);
+
+            transformationHelper = new TransformationHelper(bundleContextMock);
+            transformationHelper.setTransformationService(serviceRef1Mock);
+        }
+
+        @AfterEach
+        public void tearDown() {
+            transformationHelper.deactivate();
+        }
+
+        @Test
+        public void transformationPatternTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", T1_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+        }
+
+        @Test
+        public void transformationPatternReturningNullTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPattern(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            // First, test with an input that doesn't get transformed to null
+            CompletableFuture<@Nullable Void> future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", T1_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock).updateChannelState(eq(channelUIDMock), any());
+
+            clearInvocations(channelStateUpdateListenerMock);
+
+            // now test with an input that gets transformed to null
+            future = c.start(connectionMock, scheduler, 100);
+            c.processMessage("state", NULL_INPUT.getBytes());
+            future.get(300, TimeUnit.MILLISECONDS);
+
+            // textValue should not have been updated
+            assertThat(textValue.getChannelState().toString(), is(T1_RESULT));
+            verify(channelStateUpdateListenerMock, never()).updateChannelState(eq(channelUIDMock), any());
+        }
+
+        @Test
+        public void transformationPatternOutTest() throws Exception {
+            ChannelConfig config = ChannelConfigBuilder.create("state", "command")
+                    .withTransformationPatternOut(List.of(T1_NAME + ":" + T1_PATTERN)).build();
+            ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+            c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+            verify(connectionMock).subscribe(eq("state"), eq(c));
+
+            c.publishValue(new StringType(T1_INPUT)).get();
+            verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, T1_RESULT.getBytes())),
+                    anyInt(), eq(false));
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,6 @@ public class DeviceGroup implements DeviceNode {
     }
 
     public List<Device> getDevices() {
-        return devices != null ? devices : Collections.<Device> emptyList();
+        return devices != null ? devices : Collections.emptyList();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,22 +132,22 @@ class LxControlJalousie extends LxControl {
 
     private void handleOperateCommands(Command command) throws IOException {
         logger.debug("Command input {}", command);
-        if (command instanceof PercentType) {
+        if (command instanceof PercentType percentCommand) {
             if (PercentType.ZERO.equals(command)) {
                 sendAction(CMD_FULL_UP);
             } else if (PercentType.HUNDRED.equals(command)) {
                 sendAction(CMD_FULL_DOWN);
             } else {
-                moveToPosition(((PercentType) command).doubleValue() / 100);
+                moveToPosition(percentCommand.doubleValue() / 100);
             }
-        } else if (command instanceof UpDownType) {
-            if ((UpDownType) command == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_FULL_UP);
             } else {
                 sendAction(CMD_FULL_DOWN);
             }
-        } else if (command instanceof StopMoveType) {
-            if ((StopMoveType) command == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 sendAction(CMD_STOP);
             }
         }
@@ -169,16 +169,16 @@ class LxControlJalousie extends LxControl {
     }
 
     private void handleShadeCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_SHADE);
             }
         }
     }
 
     private void handleAutoShadeCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_AUTO);
             } else {
                 sendAction(CMD_NO_AUTO);
@@ -189,7 +189,7 @@ class LxControlJalousie extends LxControl {
     private OnOffType getAutoShadeState() {
         Double value = getStateDoubleValue(STATE_AUTO_ACTIVE);
         if (value != null) {
-            return value == 1.0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(value == 1.0);
         }
         return null;
     }

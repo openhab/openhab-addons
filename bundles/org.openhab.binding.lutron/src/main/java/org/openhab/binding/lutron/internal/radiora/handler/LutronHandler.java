@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,8 +42,8 @@ public abstract class LutronHandler extends BaseThingHandler {
             return null;
         }
         ThingHandler th = bridge.getHandler();
-        if (th instanceof RS232Handler) {
-            return (RS232Handler) th;
+        if (th instanceof RS232Handler handler) {
+            return handler;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not properly configured.");
             return null;

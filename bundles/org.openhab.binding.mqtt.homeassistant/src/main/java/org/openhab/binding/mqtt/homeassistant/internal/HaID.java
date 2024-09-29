@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public class HaID {
      * Return the topic to put into the HandlerConfiguration for this component.
      * <p>
      * <code>objectid</code> in the thing configuration will be
-     * <code>nodeID/objectID<code> from the HaID, if <code>nodeID</code> is not empty.
+     * <code>nodeID/objectID</code> from the HaID, if <code>nodeID</code> is not empty.
      * <p>
      *
      * @return the short topic.
@@ -187,8 +187,18 @@ public class HaID {
      *
      * @return group id
      */
-    public String getGroupId(@Nullable final String uniqueId) {
+    public String getGroupId(@Nullable final String uniqueId, boolean newStyleChannels) {
         String result = uniqueId;
+
+        // newStyleChannels are auto-discovered things with openHAB >= 4.3.0
+        // assuming the topic has both a node ID and an object ID, simply use
+        // the component type and object ID - without encoding(!)
+        // since the only character allowed in object IDs but not allowed in UID
+        // is `-`. It also doesn't need to be reversible, so it's okay to just
+        // collapse `-` to `_`.
+        if (!nodeID.isBlank() && newStyleChannels) {
+            return component + "_" + objectID.replace('-', '_');
+        }
 
         // the null test is only here so the compile knows, result is not null afterwards
         if (result == null || result.isBlank()) {
@@ -202,6 +212,13 @@ public class HaID {
         }
 
         return UIDUtils.encode(result);
+    }
+
+    /**
+     * Return the topic for this component, without /config
+     */
+    public String getTopic() {
+        return topic;
     }
 
     /**

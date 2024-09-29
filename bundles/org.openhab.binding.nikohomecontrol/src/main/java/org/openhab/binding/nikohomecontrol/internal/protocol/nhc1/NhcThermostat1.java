@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,7 @@ public class NhcThermostat1 extends NhcThermostat {
      * Sends thermostat setpoint to Niko Home Control.
      *
      * @param overrule temperature to overrule the setpoint in 0.1°C multiples
-     * @param time time duration in min for overrule
+     * @param overruletime time duration in min for overrule
      */
     @Override
     public void executeOverrule(int overrule, int overruletime) {

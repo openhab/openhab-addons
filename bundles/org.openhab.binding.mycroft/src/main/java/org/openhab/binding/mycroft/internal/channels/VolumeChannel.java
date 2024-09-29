@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,6 @@ public class VolumeChannel extends MycroftChannel<State> {
 
     @Override
     public void messageReceived(BaseMessage message) {
-
         if (message.type == MessageType.mycroft_volume_get_response) {
             float volumeGet = ((MessageVolumeGetResponse) message).data.percent;
             updateAndSaveMyState(normalizeVolume(volumeGet));
@@ -87,10 +86,10 @@ public class VolumeChannel extends MycroftChannel<State> {
     }
 
     protected final void updateAndSaveMyState(State state) {
-        if (state instanceof PercentType) {
-            this.lastVolume = ((PercentType) state);
-            if (((PercentType) state).intValue() > 0) {
-                this.lastNonZeroVolume = ((PercentType) state);
+        if (state instanceof PercentType volume) {
+            this.lastVolume = volume;
+            if (volume.intValue() > 0) {
+                this.lastNonZeroVolume = volume;
             }
         }
         super.updateMyState(state);
@@ -140,7 +139,7 @@ public class VolumeChannel extends MycroftChannel<State> {
     }
 
     private boolean sendSetMessage(float volume) {
-        String messageToSend = VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME", Float.valueOf(volume).toString());
+        String messageToSend = VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME", Float.toString(volume));
         return handler.sendMessage(messageToSend);
     }
 
@@ -167,9 +166,9 @@ public class VolumeChannel extends MycroftChannel<State> {
                 handler.sendMessage(new MessageVolumeDecrease());
                 updateAndSaveMyState(computeNewVolume(-10));
             }
-        } else if (command instanceof PercentType) {
-            sendSetMessage(toMycroftVolume((PercentType) command));
-            updateAndSaveMyState((PercentType) command);
+        } else if (command instanceof PercentType volume) {
+            sendSetMessage(toMycroftVolume(volume));
+            updateAndSaveMyState(volume);
         } else if (command instanceof RefreshType) {
             handler.sendMessage(new MessageVolumeGet());
         }

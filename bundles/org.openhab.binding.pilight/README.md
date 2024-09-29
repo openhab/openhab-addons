@@ -33,11 +33,12 @@ different pilight `bridge` things.
 
 The `bridge` requires the following configuration parameters:
 
-| Parameter Label | Parameter ID | Description                                                                                                                                                                              | Required |
-|-----------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| IP Address      | ipAddress    | Host name or IP address of the pilight daemon                                                                                                                                            | yes      |
-| Port            | port         | Port number on which the pilight daemon is listening. Default: 5000                                                                                                                      | yes      |
-| Delay           | delay        | Delay (in millisecond) between consecutive commands. Recommended value without band pass filter: 1000. Recommended value with band pass filter: somewhere between 200-500. Default: 500 | no       |
+| Parameter Label      | Parameter ID        | Description                                                                                                                                                                             | Required |
+|----------------------|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| IP Address           | ipAddress           | Host name or IP address of the pilight daemon                                                                                                                                           | yes      |
+| Port                 | port                | Port number on which the pilight daemon is listening. Default: 5000                                                                                                                     | yes      |
+| Delay                | delay               | Delay (in millisecond) between consecutive commands. Recommended value without band pass filter: 1000. Recommended value with band pass filter: somewhere between 200-500. Default: 500 | no       |
+| Background Discovery | backgroundDiscovery | Whether pilight devices for this Bridge should automatically be discovered. Default: true                                                                                               | no       |
 
 Important: you must explicitly configure the port in the pilight daemon config or otherwise a random port will be used
 and the binding will not be able to connect.
@@ -87,13 +88,13 @@ things from them.
 ### pilight.things
 
 ```java
-Bridge pilight:bridge:raspi "Pilight Daemon raspi" [ ipAddress="192.168.1.1", port=5000 ] {
+Bridge pilight:bridge:raspi "Pilight Daemon raspi" [ ipAddress="192.168.1.1", port=5000, backgroundDiscovery=false ] {
         Thing switch office "Office" [ name="office" ]
         Thing dimmer piano "Piano"  [ name="piano" ]
         Thing generic weather "Weather"  [ name="weather" ] {
             Channels:
-              State Number : temperature [ property="temperature"]
-              State Number : humidity [ property="humidity"]
+              Type number : temperature "Temperature" [ property="temperature"]
+              Type number : humidity "Humidity" [ property="humidity"]
         }
 }
 ```

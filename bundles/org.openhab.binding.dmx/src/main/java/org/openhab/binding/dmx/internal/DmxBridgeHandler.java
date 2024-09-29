@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.CHANNEL_MUTE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +60,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
     private boolean isMuted = false;
     private int refreshTime = 1000 / DEFAULT_REFRESH_RATE;
 
-    public DmxBridgeHandler(Bridge dmxBridge) {
+    protected DmxBridgeHandler(Bridge dmxBridge) {
         super(dmxBridge);
     }
 
@@ -149,18 +148,24 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
             uninstallScheduler();
         }
         if (refreshTime > 0) {
-            senderJob = scheduler.scheduleAtFixedRate(() -> {
-                logger.trace("runnable packet sender for universe {} called, state {}/{}", universe.getUniverseId(),
-                        getThing().getStatus(), isMuted);
-                if (!isMuted) {
-                    sendDmxData();
-                } else {
-                    logger.trace("bridge {} is muted", getThing().getUID());
-                }
-            }, 1, refreshTime, TimeUnit.MILLISECONDS);
+            senderJob = scheduler.scheduleAtFixedRate(this::refresh, 1, refreshTime, TimeUnit.MILLISECONDS);
             logger.trace("started scheduler for thing {}", this.thing.getUID());
         } else {
             logger.info("refresh disabled for thing {}", this.thing.getUID());
+        }
+    }
+
+    private void refresh() {
+        try {
+            logger.trace("runnable packet sender for universe {} called, state {}/{}", universe.getUniverseId(),
+                    getThing().getStatus(), isMuted);
+            if (!isMuted) {
+                sendDmxData();
+            } else {
+                logger.trace("bridge {} is muted", getThing().getUID());
+            }
+        } catch (RuntimeException e) {
+            logger.debug("failed to send DMX data: ", e);
         }
     }
 
@@ -275,6 +280,6 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DmxActions.class);
+        return List.of(DmxActions.class);
     }
 }

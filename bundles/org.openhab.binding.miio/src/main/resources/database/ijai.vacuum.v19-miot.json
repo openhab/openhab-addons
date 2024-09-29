@@ -1350,6 +1350,7 @@
 				"friendlyName": "Robot Cleaner - Locate Volume",
 				"channel": "volume",
 				"type": "Number:Dimensionless",
+				"unit": "percentage",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 10,
@@ -2490,6 +2491,7 @@
 				"actions": []
 			}
 		],
+		"readmeComment": "Example command for room cleaning `xiaomi_robot_execute.sendCommand(\u0027action{\"siid\":7,\"aiid\":3,\"in\":[{\"piid\":24,\"value\":\"11,12,etc room ids\"},{\"piid\":25,\"value\":0},{\"piid\":26,\"value\":1}]}\u0027)`",
 		"experimental": false
 	}
 }

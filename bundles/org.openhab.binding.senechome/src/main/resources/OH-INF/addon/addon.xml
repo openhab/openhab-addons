@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>SenecHome Binding</name>
 	<description>This is the binding for SenecHome.</description>
+	<connection>local</connection>
 
 </addon:addon>

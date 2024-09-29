@@ -4,7 +4,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Kaleidescape System Binding</name>
-	<description>Controls a Kaleidescape System Movie Player</description>
+	<name>Kaleidescape Binding</name>
+	<description>Controls a Kaleidescape Movie Player</description>
+	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)Kaleidescape</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*Basic.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

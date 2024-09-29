@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,11 +126,10 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Send broadcast packets with service request string until a response
-     * is received. Return the response as String (even though it should
-     * contain an internet address).
+     * is received.
      *
-     * @return String received from server. Should be server IP address.
-     *         Returns empty string if failed to get valid reply.
+     * @param listener Listener to process the String received from server. Should be server IP address.
+     * 
      */
     public void sendBroadcast(Consumer<ServerInfo> listener) {
         byte[] receiveBuffer = new byte[MAX_PACKET_SIZE];

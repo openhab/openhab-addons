@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public final class ValidationUtils {
     /**
      * Validates if one Mac address is not valid.
      *
-     * @param mac the mac, with or without :
+     * @param macAddress the mac, with or without :
      * @return true if is not valid.
      */
     public static boolean isMacNotValid(final String macAddress) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public interface DeviceStateListener {
     /**
      * Invoked when a new process action is available for a device.
      *
-     * @param ActionsState The action state information.
+     * @param actionState The action state information.
      */
     void onProcessActionUpdated(ActionsState actionState);
 

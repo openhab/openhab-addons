@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public class FeatureTemplateLoader {
 
     private static FeatureTemplate parseFeature(Element e) throws ParsingException {
         String name = e.getAttribute("name");
-        boolean statusFeature = e.getAttribute("statusFeature").equals("true");
+        boolean statusFeature = "true".equals(e.getAttribute("statusFeature"));
         FeatureTemplate feature = new FeatureTemplate(name, statusFeature, e.getAttribute("timeout"));
 
         NodeList nodes = e.getChildNodes();
@@ -94,13 +94,13 @@ public class FeatureTemplateLoader {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) node;
-                if (child.getTagName().equals("message-handler")) {
+                if ("message-handler".equals(child.getTagName())) {
                     parseMessageHandler(child, feature);
-                } else if (child.getTagName().equals("command-handler")) {
+                } else if ("command-handler".equals(child.getTagName())) {
                     parseCommandHandler(child, feature);
-                } else if (child.getTagName().equals("message-dispatcher")) {
+                } else if ("message-dispatcher".equals(child.getTagName())) {
                     parseMessageDispatcher(child, feature);
-                } else if (child.getTagName().equals("poll-handler")) {
+                } else if ("poll-handler".equals(child.getTagName())) {
                     parsePollHandler(child, feature);
                 }
             }

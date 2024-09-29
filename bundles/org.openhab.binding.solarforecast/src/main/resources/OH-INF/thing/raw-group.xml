@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="raw-values">
+		<label>Raw Forecast Values</label>
+		<description>Raw response from service provider</description>
+		<channels>
+			<channel id="json" typeId="json"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

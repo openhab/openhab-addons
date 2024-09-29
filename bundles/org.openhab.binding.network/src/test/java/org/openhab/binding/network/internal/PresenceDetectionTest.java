@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,14 +19,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.AfterEach;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync;
-import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheHelper;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
@@ -49,118 +46,141 @@ import org.openhab.binding.network.internal.utils.PingResult;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class PresenceDetectionTest {
-    private static final long CACHETIME = 2000L;
 
-    private PresenceDetection subject;
+    private @NonNullByDefault({}) PresenceDetection subject;
 
-    private @Mock Consumer<PresenceDetectionValue> callback;
-    private @Mock ExecutorService executorService;
-    private @Mock PresenceDetectionListener listener;
-    private @Mock NetworkUtils networkUtils;
+    private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
+    private @Mock @NonNullByDefault({}) ExecutorService detectionExecutorService;
+    private @Mock @NonNullByDefault({}) ExecutorService waitForResultExecutorService;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduledExecutorService;
+    private @Mock @NonNullByDefault({}) PresenceDetectionListener listener;
+    private @Mock @NonNullByDefault({}) NetworkUtils networkUtils;
 
     @BeforeEach
-    public void setUp() throws UnknownHostException {
+    public void setUp() {
         // Mock an interface
-        when(networkUtils.getInterfaceNames()).thenReturn(Collections.singleton("TESTinterface"));
-        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeARPpingMethod(anyString());
+        when(networkUtils.getInterfaceNames()).thenReturn(Set.of("TESTinterface"));
+        doReturn(ArpPingUtilEnum.IPUTILS_ARPING).when(networkUtils).determineNativeArpPingMethod(anyString());
         doReturn(IpPingMethodEnum.WINDOWS_PING).when(networkUtils).determinePingMethod();
 
-        subject = spy(new PresenceDetection(listener, (int) CACHETIME));
+        subject = spy(new PresenceDetection(listener, scheduledExecutorService, Duration.ofSeconds(2)));
         subject.networkUtils = networkUtils;
-        subject.cache = spy(new ExpiringCacheAsync<>(CACHETIME, () -> {
-            subject.performPresenceDetection(false);
-        }));
 
         // Set a useful configuration. The default presenceDetection is a no-op.
         subject.setHostname("127.0.0.1");
-        subject.setTimeout(300);
+        subject.setTimeout(Duration.ofMillis(300));
         subject.setUseDhcpSniffing(false);
         subject.setIOSDevice(true);
-        subject.setServicePorts(Collections.singleton(1010));
+        subject.setServicePorts(Set.of(1010));
         subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
         assertThat(subject.pingMethod, is(IpPingMethodEnum.WINDOWS_PING));
     }
 
-    @AfterEach
-    public void shutDown() {
-        subject.waitForPresenceDetection();
-    }
-
     // Depending on the amount of test methods an according amount of threads is spawned.
     // We will check if they spawn and return in time.
     @Test
     public void threadCountTest() {
-        assertNull(subject.executorService);
+        assertNull(subject.detectionExecutorService);
 
-        doNothing().when(subject).performARPping(any());
-        doNothing().when(subject).performJavaPing();
-        doNothing().when(subject).performSystemPing();
-        doNothing().when(subject).performServicePing(anyInt());
+        doNothing().when(subject).performArpPing(any(), any());
+        doNothing().when(subject).performJavaPing(any());
+        doNothing().when(subject).performSystemPing(any());
+        doNothing().when(subject).performServicePing(any(), anyInt());
 
-        subject.performPresenceDetection(false);
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
+
+        subject.getValue(callback -> {
+        });
 
         // Thread count: ARP + ICMP + 1*TCP
         assertThat(subject.detectionChecks, is(3));
-        assertNotNull(subject.executorService);
+        assertNotNull(subject.detectionExecutorService);
 
-        subject.waitForPresenceDetection();
+        // "Wait" for the presence detection to finish
+        ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
+        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
+        runnableCapture.getValue().run();
+
         assertThat(subject.detectionChecks, is(0));
-        assertNull(subject.executorService);
+        assertNull(subject.detectionExecutorService);
     }
 
     @Test
     public void partialAndFinalCallbackTests() throws InterruptedException, IOException {
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
-                anyString(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
+        PingResult pingResult = new PingResult(true, Duration.ofMillis(10));
+        doReturn(pingResult).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), any());
+        doReturn(pingResult).when(networkUtils).nativeArpPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
+                anyString(), any(), any());
+        doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        assertTrue(subject.performPresenceDetection(false));
-        subject.waitForPresenceDetection();
+        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
 
-        verify(subject, times(0)).performJavaPing();
-        verify(subject).performSystemPing();
-        verify(subject).performARPping(any());
-        verify(subject).performServicePing(anyInt());
+        subject.performPresenceDetection();
+
+        assertThat(subject.detectionChecks, is(3));
+
+        // Perform the different presence detection threads now
+        ArgumentCaptor<Runnable> capture = ArgumentCaptor.forClass(Runnable.class);
+        verify(detectionExecutorService, times(3)).execute(capture.capture());
+        for (Runnable r : capture.getAllValues()) {
+            r.run();
+        }
+
+        // "Wait" for the presence detection to finish
+        ArgumentCaptor<Runnable> runnableCapture = ArgumentCaptor.forClass(Runnable.class);
+        verify(waitForResultExecutorService, times(1)).execute(runnableCapture.capture());
+        runnableCapture.getValue().run();
+
+        assertThat(subject.detectionChecks, is(0));
+
+        verify(subject, times(0)).performJavaPing(any());
+        verify(subject).performSystemPing(any());
+        verify(subject).performArpPing(any(), any());
+        verify(subject).performServicePing(any(), anyInt());
 
         verify(listener, times(3)).partialDetectionResult(any());
-        ArgumentCaptor<PresenceDetectionValue> capture = ArgumentCaptor.forClass(PresenceDetectionValue.class);
-        verify(listener, times(1)).finalDetectionResult(capture.capture());
+        ArgumentCaptor<PresenceDetectionValue> pdvCapture = ArgumentCaptor.forClass(PresenceDetectionValue.class);
+        verify(listener, times(1)).finalDetectionResult(pdvCapture.capture());
 
-        assertThat(capture.getValue().getSuccessfulDetectionTypes(), is("ARP_PING, ICMP_PING, TCP_CONNECTION"));
+        assertThat(pdvCapture.getValue().getSuccessfulDetectionTypes(), is("ARP_PING, ICMP_PING, TCP_CONNECTION"));
     }
 
     @Test
     public void cacheTest() throws InterruptedException, IOException {
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING),
-                anyString(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils)
-                .nativeARPPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(), anyString(), any(), anyInt());
-        doReturn(Optional.of(new PingResult(true, 10))).when(networkUtils).servicePing(anyString(), anyInt(), anyInt());
+        PingResult pingResult = new PingResult(true, Duration.ofMillis(10));
+        doReturn(pingResult).when(networkUtils).nativePing(eq(IpPingMethodEnum.WINDOWS_PING), anyString(), any());
+        doReturn(pingResult).when(networkUtils).nativeArpPing(eq(ArpPingUtilEnum.IPUTILS_ARPING), anyString(),
+                anyString(), any(), any());
+        doReturn(pingResult).when(networkUtils).servicePing(anyString(), anyInt(), any());
 
-        doReturn(executorService).when(subject).getThreadsFor(anyInt());
+        doReturn(detectionExecutorService).when(subject).getThreadsFor(3);
+        doReturn(waitForResultExecutorService).when(subject).getThreadsFor(1);
 
         // We expect no valid value
         assertTrue(subject.cache.isExpired());
         // Get value will issue a PresenceDetection internally.
         subject.getValue(callback);
-        verify(subject).performPresenceDetection(eq(false));
-        assertNotNull(subject.executorService);
+        verify(subject).performPresenceDetection();
+        assertNotNull(subject.detectionExecutorService);
         // There should be no straight callback yet
         verify(callback, times(0)).accept(any());
 
         // Perform the different presence detection threads now
         ArgumentCaptor<Runnable> capture = ArgumentCaptor.forClass(Runnable.class);
-        verify(executorService, times(3)).execute(capture.capture());
+        verify(detectionExecutorService, times(3)).execute(capture.capture());
         for (Runnable r : capture.getAllValues()) {
             r.run();
         }
+
         // "Wait" for the presence detection to finish
-        subject.waitForPresenceDetection();
+        capture = ArgumentCaptor.forClass(Runnable.class);
+        verify(waitForResultExecutorService, times(1)).execute(capture.capture());
+        capture.getValue().run();
 
         // Although there are multiple partial results and a final result,
         // the getValue() consumers get the fastest response possible, and only once.
@@ -174,35 +194,5 @@ public class PresenceDetectionTest {
         subject.cache.invalidateValue();
         subject.getValue(callback);
         verify(callback, times(2)).accept(any());
-    }
-
-    @Test
-    public void reuseValueTests() throws InterruptedException, IOException {
-        final long startTime = 1000L;
-        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(startTime));
-
-        // The PresenceDetectionValue.getLowestLatency() should return the smallest latency
-        PresenceDetectionValue v = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 20);
-        PresenceDetectionValue v2 = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 19);
-        assertEquals(v, v2);
-        assertThat(v.getLowestLatency(), is(19.0));
-
-        // Advance in time but not expire the cache (1ms left)
-        final long almostExpire = startTime + CACHETIME - 1;
-        when(subject.cache.getCurrentNanoTime()).thenReturn(TimeUnit.MILLISECONDS.toNanos(almostExpire));
-
-        // Updating should reset the expire timer of the cache
-        v2 = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 28);
-        assertEquals(v, v2);
-        assertThat(v2.getLowestLatency(), is(19.0));
-        assertThat(ExpiringCacheHelper.expireTime(subject.cache),
-                is(TimeUnit.MILLISECONDS.toNanos(almostExpire + CACHETIME)));
-
-        // Cache expire. A new PresenceDetectionValue instance will be returned
-        when(subject.cache.getCurrentNanoTime())
-                .thenReturn(TimeUnit.MILLISECONDS.toNanos(almostExpire + CACHETIME + CACHETIME + 1));
-        v2 = subject.updateReachableValue(PresenceDetectionType.ICMP_PING, 25);
-        assertNotEquals(v, v2);
-        assertThat(v2.getLowestLatency(), is(25.0));
     }
 }

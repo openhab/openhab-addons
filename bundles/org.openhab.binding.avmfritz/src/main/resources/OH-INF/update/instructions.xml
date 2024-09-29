@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="avmfritz:FRITZ_Powerline_546E_Solo">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_210">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_200">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_Powerline_546E">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<update-channel id="energy">
+				<type>system:electric-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electric-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electric-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:Comet_DECT">
+		<instruction-set targetVersion="1">
+			<update-channel id="actual_temp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_302">
+		<instruction-set targetVersion="1">
+			<update-channel id="actual_temp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_301">
+		<instruction-set targetVersion="1">
+			<update-channel id="actual_temp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_300">
+		<instruction-set targetVersion="1">
+			<update-channel id="actual_temp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_GROUP_HEATING">
+		<instruction-set targetVersion="1">
+			<update-channel id="actual_temp">
+				<type>system:indoor-temperature</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_GROUP_SWITCH">
+		<instruction-set targetVersion="1">
+			<update-channel id="energy">
+				<type>system:electrical-energy</type>
+			</update-channel>
+			<update-channel id="power">
+				<type>system:electrical-power</type>
+			</update-channel>
+			<update-channel id="voltage">
+				<type>system:electrical-voltage</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:FRITZ_DECT_500">
+		<instruction-set targetVersion="1">
+			<add-channel id="color_temperature">
+				<type>system:color-temperature</type>
+			</add-channel>
+			<add-channel id="color_temperature_abs">
+				<type>system:color-temperature-abs</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="avmfritz:HAN_FUN_COLOR_BULB">
+		<instruction-set targetVersion="1">
+			<add-channel id="color_temperature">
+				<type>system:color-temperature</type>
+			</add-channel>
+			<add-channel id="color_temperature_abs">
+				<type>system:color-temperature-abs</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void initialize() {
-        // initialisation would take too long and show a warning during binding startup
+        // initialization would take too long and show a warning during binding startup
         // KNX secure is adding serious delay
         updateStatus(ThingStatus.UNKNOWN);
         initJob = scheduler.submit(this::initializeLater);
@@ -72,14 +72,25 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         boolean securityAvailable = false;
         try {
-            securityAvailable = initializeSecurity(config.getRouterBackboneKey(),
-                    config.getTunnelDeviceAuthentication(), config.getTunnelUserId(), config.getTunnelUserPassword());
+            securityAvailable = initializeSecurity(config.getKeyringFile(), config.getKeyringPassword(),
+                    config.getRouterBackboneKey(), config.getTunnelDeviceAuthentication(), config.getTunnelUserId(),
+                    config.getTunnelUserPassword(), config.getTunnelSourceAddress());
             if (securityAvailable) {
                 logger.debug("KNX secure: router backboneGroupKey is {} set",
                         ((secureRouting.backboneGroupKey.length == 16) ? "properly" : "not"));
                 boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
                         && (secureTunnel.userKey.length == 16));
                 logger.debug("KNX secure: tunnel keys are {} set", (tunnelOk ? "properly" : "not"));
+
+                if (keyring.isPresent()) {
+                    logger.debug("KNX secure available for {} devices, {} group addresses",
+                            openhabSecurity.deviceToolKeys().size(), openhabSecurity.groupKeys().size());
+
+                    logger.debug("Secure group addresses and associated devices: {}",
+                            secHelperGetSecureGroupAddresses(openhabSecurity));
+                } else {
+                    logger.debug("KNX secure: keyring is not available");
+                }
             } else {
                 logger.debug("KNX security not configured");
             }
@@ -154,7 +165,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 return;
             }
             if (secureRouting.backboneGroupKey.length != 16) {
-                // failed to read shared backbone group key from config
+                // failed to read shared backbone group key from config or keyring
                 logger.warn("Bridge {} invalid security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.knx-secure-routing-backbonegroupkey-invalid");
@@ -171,12 +182,13 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         if (!config.getLocalIp().isEmpty()) {
             localEndPoint = new InetSocketAddress(config.getLocalIp(), 0);
         } else {
-            if (networkAddressService == null) {
+            NetworkAddressService localNetworkAddressService = networkAddressService;
+            if (localNetworkAddressService == null) {
                 logger.debug("NetworkAddressService not available, cannot create bridge {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE);
                 return;
             } else {
-                localEndPoint = new InetSocketAddress(networkAddressService.getPrimaryIpv4HostAddress(), 0);
+                localEndPoint = new InetSocketAddress(localNetworkAddressService.getPrimaryIpv4HostAddress(), 0);
             }
         }
 
@@ -184,9 +196,10 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         client = new IPClient(ipConnectionType, ip, localSource, port, localEndPoint, useNAT, autoReconnectPeriod,
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
-                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), this);
+                config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
+                openhabSecurity, this);
 
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.initialize();
         }
@@ -196,9 +209,9 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
 
     @Override
     public void dispose() {
-        final var tmpInitJob = initJob;
+        Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
-            while (!tmpInitJob.isDone()) {
+            if (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
                 tmpInitJob.cancel(true);
                 try {
@@ -209,7 +222,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
             }
             initJob = null;
         }
-        final var tmpClient = client;
+        IPClient tmpClient = client;
         if (tmpClient != null) {
             tmpClient.dispose();
             client = null;

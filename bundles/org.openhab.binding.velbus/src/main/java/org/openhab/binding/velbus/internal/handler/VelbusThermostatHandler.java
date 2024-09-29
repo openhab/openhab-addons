@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -58,34 +59,44 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
     private static final byte DAY_MODE_MASK = (byte) 0x20;
     private static final byte NIGHT_MODE_MASK = (byte) 0x10;
 
-    private final ChannelUID currentTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "currentTemperatureSetpoint");
-    private final ChannelUID heatingModeComfortTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "heatingModeComfortTemperatureSetpoint");
-    private final ChannelUID heatingModeDayTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "heatingModeDayTemperatureSetpoint");
-    private final ChannelUID heatingModeNightTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "heatingModeNightTemperatureSetpoint");
+    private final ChannelUID currentTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_CURRENT_TEMPERATURE);
+    private final ChannelUID heatingModeComfortTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_HEATING_COMFORT);
+    private final ChannelUID heatingModeDayTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_HEATING_DAY);
+    private final ChannelUID heatingModeNightTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_HEATING_NIGHT);
     private final ChannelUID heatingModeAntifrostTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
-            "thermostat", "heatingModeAntiFrostTemperatureSetpoint");
-    private final ChannelUID coolingModeComfortTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "coolingModeComfortTemperatureSetpoint");
-    private final ChannelUID coolingModeDayTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "coolingModeDayTemperatureSetpoint");
-    private final ChannelUID coolingModeNightTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "coolingModeNightTemperatureSetpoint");
-    private final ChannelUID coolingModeSafeTemperatureSetpointChannel = new ChannelUID(thing.getUID(), "thermostat",
-            "coolingModeSafeTemperatureSetpoint");
-    private final ChannelUID operatingModeChannel = new ChannelUID(thing.getUID(), "thermostat", "operatingMode");
-    private final ChannelUID modeChannel = new ChannelUID(thing.getUID(), "thermostat", "mode");
-    private final ChannelUID heaterChannel = new ChannelUID(thing.getUID(), "thermostat", "heater");
-    private final ChannelUID boostChannel = new ChannelUID(thing.getUID(), "thermostat", "boost");
-    private final ChannelUID pumpChannel = new ChannelUID(thing.getUID(), "thermostat", "pump");
-    private final ChannelUID coolerChannel = new ChannelUID(thing.getUID(), "thermostat", "cooler");
-    private final ChannelUID alarm1Channel = new ChannelUID(thing.getUID(), "thermostat", "alarm1");
-    private final ChannelUID alarm2Channel = new ChannelUID(thing.getUID(), "thermostat", "alarm2");
-    private final ChannelUID alarm3Channel = new ChannelUID(thing.getUID(), "thermostat", "alarm3");
-    private final ChannelUID alarm4Channel = new ChannelUID(thing.getUID(), "thermostat", "alarm4");
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_HEATING_ANTI_FROST);
+    private final ChannelUID coolingModeComfortTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_COOLING_COMFORT);
+    private final ChannelUID coolingModeDayTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_COOLING_DAY);
+    private final ChannelUID coolingModeNightTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_COOLING_NIGHT);
+    private final ChannelUID coolingModeSafeTemperatureSetpointChannel = new ChannelUID(thing.getUID(),
+            CHANNEL_GROUP_THERMOSTAT, CHANNEL_THERMOSTAT_COOLING_SAFE);
+    private final ChannelUID operatingModeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_OPERATING_MODE);
+    private final ChannelUID modeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_MODE);
+    private final ChannelUID heaterChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_HEATER);
+    private final ChannelUID boostChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_BOOST);
+    private final ChannelUID pumpChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_PUMP);
+    private final ChannelUID coolerChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_COOLER);
+    private final ChannelUID alarm1Channel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_ALARM1);
+    private final ChannelUID alarm2Channel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_ALARM2);
+    private final ChannelUID alarm3Channel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_ALARM3);
+    private final ChannelUID alarm4Channel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_THERMOSTAT,
+            CHANNEL_THERMOSTAT_ALARM4);
 
     public VelbusThermostatHandler(Thing thing, int numberOfSubAddresses, ChannelUID temperatureChannel) {
         super(thing, numberOfSubAddresses, temperatureChannel);
@@ -110,8 +121,8 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
         } else if (isThermostatChannel(channelUID)
                 && (command instanceof QuantityType<?> || command instanceof DecimalType)) {
             byte temperatureVariable = determineTemperatureVariable(channelUID);
-            QuantityType<?> temperatureInDegreesCelcius = (command instanceof QuantityType<?>)
-                    ? ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS)
+            QuantityType<?> temperatureInDegreesCelcius = (command instanceof QuantityType<?> qt)
+                    ? qt.toUnit(SIUnits.CELSIUS)
                     : new QuantityType<>(((DecimalType) command), SIUnits.CELSIUS);
 
             if (temperatureInDegreesCelcius != null) {
@@ -124,8 +135,8 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
                 byte[] packetBytes = packet.getBytes();
                 velbusBridgeHandler.sendPacket(packetBytes);
             }
-        } else if (channelUID.equals(operatingModeChannel) && command instanceof StringType) {
-            byte commandByte = ((StringType) command).equals(OPERATING_MODE_HEATING) ? COMMAND_SET_HEATING_MODE
+        } else if (channelUID.equals(operatingModeChannel) && command instanceof StringType stringCommand) {
+            byte commandByte = stringCommand.equals(OPERATING_MODE_HEATING) ? COMMAND_SET_HEATING_MODE
                     : COMMAND_SET_COOLING_MODE;
 
             VelbusThermostatOperatingModePacket packet = new VelbusThermostatOperatingModePacket(
@@ -133,15 +144,13 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
-        } else if (channelUID.equals(modeChannel) && command instanceof StringType) {
+        } else if (channelUID.equals(modeChannel) && command instanceof StringType stringCommand) {
             byte commandByte = COMMAND_SWITCH_TO_SAFE_MODE;
-
-            StringType stringTypeCommand = (StringType) command;
-            if (stringTypeCommand.equals(MODE_COMFORT)) {
+            if (stringCommand.equals(MODE_COMFORT)) {
                 commandByte = COMMAND_SWITCH_TO_COMFORT_MODE;
-            } else if (stringTypeCommand.equals(MODE_DAY)) {
+            } else if (stringCommand.equals(MODE_DAY)) {
                 commandByte = COMMAND_SWITCH_TO_DAY_MODE;
-            } else if (stringTypeCommand.equals(MODE_NIGHT)) {
+            } else if (stringCommand.equals(MODE_NIGHT)) {
                 commandByte = COMMAND_SWITCH_TO_NIGHT_MODE;
             }
 
@@ -156,8 +165,10 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         logger.trace("onPacketReceived() was called");
 
@@ -240,14 +251,47 @@ public abstract class VelbusThermostatHandler extends VelbusTemperatureSensorHan
                         THERMOSTAT_TEMPERATURE_SETPOINT_RESOLUTION);
                 updateState(currentTemperatureSetpointChannel,
                         new QuantityType<>(targetTemperatureValue, SIUnits.CELSIUS));
-            } else if (address != this.getModuleAddress().getAddress() && command == COMMAND_PUSH_BUTTON_STATUS) {
-                byte outputChannelsJustActivated = packet[5];
-                byte outputChannelsJustDeactivated = packet[6];
+            } else if (command == COMMAND_PUSH_BUTTON_STATUS) {
+                ThingTypeUID thingTypeUID = this.thing.getThingTypeUID();
+                if (thingTypeUID.equals(THING_TYPE_VMBELO) || thingTypeUID.equals(THING_TYPE_VMBGPO)
+                        || thingTypeUID.equals(THING_TYPE_VMBGPOD) || thingTypeUID.equals(THING_TYPE_VMBGPOD_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGPO_20)) {
+                    // modules VMBELO, VMBGPO, VMBGPOD, VMBGPOD_2, VMBGPO_20 use sub-address 4 for sensor
+                    if (address == this.getModuleAddress().getSubAddresses()[3]) {
+                        byte outputChannelsJustActivated = packet[5];
+                        byte outputChannelsJustDeactivated = packet[6];
 
-                triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
-                triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                        triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
+                        triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                    }
+                    // modules VMBEL1, VMBEL2, VMBEL4, VMBELPIR, VMBGP1, VMBGP1-2, VMBGP2, VMBGP2-2, VMBGP4, VMBGP4-2,
+                    // VMBGP4PIR, VMBGP4PIR-2, VMBEL1-20, VMBEL2-20, VMBEL4-20, VMBELO-20, VMBGP1-20, VMBGP2-20,
+                    // VMBGP4-20, VMBEL4PIR-20, VMBGP4PIR-20 use sub-address 1 for sensor, wich is not usable as push
+                    // button
+                } else if (thingTypeUID.equals(THING_TYPE_VMBEL1) || thingTypeUID.equals(THING_TYPE_VMBEL2)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL4) || thingTypeUID.equals(THING_TYPE_VMBELPIR)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP1) || thingTypeUID.equals(THING_TYPE_VMBGP1_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP2) || thingTypeUID.equals(THING_TYPE_VMBGP2_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4) || thingTypeUID.equals(THING_TYPE_VMBGP4_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR) || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_2)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL1_20) || thingTypeUID.equals(THING_TYPE_VMBEL2_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBEL4_20) || thingTypeUID.equals(THING_TYPE_VMBELO_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP1_20) || thingTypeUID.equals(THING_TYPE_VMBGP2_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4_20) || thingTypeUID.equals(THING_TYPE_VMBEL4PIR_20)
+                        || thingTypeUID.equals(THING_TYPE_VMBGP4PIR_20)) {
+                    if (address != this.getModuleAddress().getAddress()) {
+                        byte outputChannelsJustActivated = packet[5];
+                        byte outputChannelsJustDeactivated = packet[6];
+
+                        triggerThermostatChannels(outputChannelsJustActivated, CommonTriggerEvents.PRESSED);
+                        triggerThermostatChannels(outputChannelsJustDeactivated, CommonTriggerEvents.RELEASED);
+                    }
+                }
+
             }
         }
+
+        return true;
     }
 
     private void triggerThermostatChannels(byte outputChannels, String event) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
@@ -33,9 +32,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RadoneyeHandler extends AbstractRadoneyeHandler {
 
-    private static final String SERVICE_UUID = "00001523-1212-efde-1523-785feabcd123";
-    private static final String TRIGGER_UID = "00001524-1212-efde-1523-785feabcd123";
-    private static final String DATA_UUID = "00001525-1212-efde-1523-785feabcd123";
+    private static final UUID SERVICE_UUID_V1 = UUID.fromString("00001523-1212-efde-1523-785feabcd123");
+    private static final UUID SERVICE_UUID_V2 = UUID.fromString("00001524-0000-1000-8000-00805f9b34fb");
+    private static final UUID TRIGGER_UID_V1 = UUID.fromString("00001524-1212-efde-1523-785feabcd123");
+    private static final UUID TRIGGER_UID_V2 = UUID.fromString("00001524-0000-1000-8000-00805f9b34fb");
+    private static final UUID DATA_UUID_V1 = UUID.fromString("00001525-1212-efde-1523-785feabcd123");
+    private static final UUID DATA_UUID_V2 = UUID.fromString("00001525-0000-1000-8000-00805f9b34fb");
+    private static final byte[] DATA_TRIGGER_V1 = new byte[] { 0x50 };
+    private static final byte[] DATA_TRIGGER_V2 = new byte[] { 0x50 };
 
     public RadoneyeHandler(Thing thing) {
         super(thing);
@@ -43,20 +47,16 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RadoneyeHandler.class);
 
-    private final UUID dataUuid = UUID.fromString(DATA_UUID);
-    private final UUID triggerUuid = UUID.fromString(TRIGGER_UID);
-    private final byte[] triggerData = new byte[] { 0x50 };
-
     @Override
     protected void updateChannels(int[] is) {
         Map<String, Number> data;
         try {
-            data = RadoneyeDataParser.parseRd200Data(is);
+            data = RadoneyeDataParser.parseRd200Data(getFwVersion(), is);
             logger.debug("Parsed data: {}", data);
             Number radon = data.get(RadoneyeDataParser.RADON);
             logger.debug("Parsed data radon number: {}", radon);
             if (radon != null) {
-                updateState(CHANNEL_ID_RADON, new QuantityType<Density>(radon, BECQUEREL_PER_CUBIC_METRE));
+                updateState(CHANNEL_ID_RADON, new QuantityType<>(radon, BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (RadoneyeParserException e) {
             logger.error("Failed to parse data received from Radoneye sensor: {}", e.getMessage());
@@ -65,16 +65,40 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
 
     @Override
     protected UUID getDataUUID() {
-        return dataUuid;
+        int fwVersion = getFwVersion();
+        switch (fwVersion) {
+            case 1:
+                return DATA_UUID_V1;
+            case 2:
+                return DATA_UUID_V2;
+            default:
+                throw new UnsupportedOperationException("fwVersion: " + fwVersion + " is not implemented");
+        }
     }
 
     @Override
     protected UUID getTriggerUUID() {
-        return triggerUuid;
+        int fwVersion = getFwVersion();
+        switch (fwVersion) {
+            case 1:
+                return TRIGGER_UID_V1;
+            case 2:
+                return TRIGGER_UID_V2;
+            default:
+                throw new UnsupportedOperationException("fwVersion: " + fwVersion + " is not implemented");
+        }
     }
 
     @Override
     protected byte[] getTriggerData() {
-        return triggerData;
+        int fwVersion = getFwVersion();
+        switch (fwVersion) {
+            case 1:
+                return DATA_TRIGGER_V1;
+            case 2:
+                return DATA_TRIGGER_V2;
+            default:
+                throw new UnsupportedOperationException("fwVersion: " + fwVersion + " is not implemented");
+        }
     }
 }

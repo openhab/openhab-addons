@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getProcessAction()).thenReturn(Collections.singletonList(ProcessAction.START));
+        when(actions.getProcessAction()).thenReturn(List.of(ProcessAction.START));
 
         // when:
         boolean canBeStarted = actionState.canBeStarted();
@@ -141,7 +141,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getProcessAction()).thenReturn(Collections.singletonList(ProcessAction.STOP));
+        when(actions.getProcessAction()).thenReturn(List.of(ProcessAction.STOP));
 
         // when:
         boolean canBeStarted = actionState.canBeStarted();
@@ -173,7 +173,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getProcessAction()).thenReturn(Collections.singletonList(ProcessAction.START_SUPERCOOLING));
+        when(actions.getProcessAction()).thenReturn(List.of(ProcessAction.START_SUPERCOOLING));
 
         // when:
         boolean canStartSupercooling = actionState.canStartSupercooling();
@@ -189,7 +189,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getProcessAction()).thenReturn(Collections.singletonList(ProcessAction.START_SUPERFREEZING));
+        when(actions.getProcessAction()).thenReturn(List.of(ProcessAction.START_SUPERFREEZING));
 
         // when:
         boolean canStartSuperfreezing = actionState.canStartSuperfreezing();
@@ -205,7 +205,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getLight()).thenReturn(Collections.singletonList(Light.ENABLE));
+        when(actions.getLight()).thenReturn(List.of(Light.ENABLE));
 
         // when:
         boolean canEnableLight = actionState.canEnableLight();
@@ -219,7 +219,7 @@ public class ActionsStateTest {
         // given:
         Actions actions = mock(Actions.class);
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
-        when(actions.getLight()).thenReturn(Collections.singletonList(Light.DISABLE));
+        when(actions.getLight()).thenReturn(List.of(Light.DISABLE));
 
         // when:
         boolean canDisableLight = actionState.canDisableLight();
@@ -232,7 +232,7 @@ public class ActionsStateTest {
     public void testCanControlLightReturnsTrueWhenLightCanBeEnabled() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getLight()).thenReturn(Collections.singletonList(Light.ENABLE));
+        when(actions.getLight()).thenReturn(List.of(Light.ENABLE));
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 
@@ -247,7 +247,7 @@ public class ActionsStateTest {
     public void testCanControlLightReturnsTrueWhenLightCanBeDisabled() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getLight()).thenReturn(Collections.singletonList(Light.DISABLE));
+        when(actions.getLight()).thenReturn(List.of(Light.DISABLE));
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 
@@ -277,7 +277,7 @@ public class ActionsStateTest {
     public void testCanControlLightReturnsFalseWhenNoLightOptionIsAvailable() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getLight()).thenReturn(new LinkedList<Light>());
+        when(actions.getLight()).thenReturn(new LinkedList<>());
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 
@@ -307,7 +307,7 @@ public class ActionsStateTest {
     public void testProgramIdCanBeSetWhenProgramIdIsPresent() {
         // given:
         Actions actions = mock(Actions.class);
-        when(actions.getProgramId()).thenReturn(Collections.singletonList(1));
+        when(actions.getProgramId()).thenReturn(List.of(1));
 
         ActionsState actionState = new ActionsState(DEVICE_IDENTIFIER, actions);
 

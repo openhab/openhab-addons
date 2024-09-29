@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -27,7 +29,7 @@ import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.generic.values.ValueFactory;
@@ -37,8 +39,13 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,21 +59,18 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     private final Logger logger = LoggerFactory.getLogger(GenericMQTTThingHandler.class);
     final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
     protected final MqttChannelStateDescriptionProvider stateDescProvider;
-    protected final TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Creates a new Thing handler for generic MQTT channels.
      *
      * @param thing The thing of this handler
      * @param stateDescProvider A channel state provider
-     * @param transformationServiceProvider The transformation service provider
      * @param subscribeTimeout The subscribe timeout
      */
     public GenericMQTTThingHandler(Thing thing, MqttChannelStateDescriptionProvider stateDescProvider,
-            TransformationServiceProvider transformationServiceProvider, int subscribeTimeout) {
+            int subscribeTimeout) {
         super(thing, subscribeTimeout);
         this.stateDescProvider = stateDescProvider;
-        this.transformationServiceProvider = transformationServiceProvider;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         clearAllAvailabilityTopics();
         initializeAvailabilityTopicsFromConfig();
         return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
-                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
+                .collect(FutureCollector.allOf()).thenRun(() -> calculateAndUpdateThingStatus(false));
     }
 
     @Override
@@ -122,19 +126,21 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      * @return
      */
     protected ChannelState createChannelState(ChannelConfig channelConfig, ChannelUID channelUID, Value valueState) {
-        ChannelState state = new ChannelState(channelConfig, channelUID, valueState, this);
-
-        // Incoming value transformations
-        state.addTransformation(channelConfig.transformationPattern, transformationServiceProvider);
-        // Outgoing value transformations
-        state.addTransformationOut(channelConfig.transformationPatternOut, transformationServiceProvider);
-
-        return state;
+        return new ChannelState(channelConfig, channelUID, valueState, this);
     }
 
     @Override
     public void initialize() {
         initializeAvailabilityTopicsFromConfig();
+
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
+            return;
+        }
+
+        ThingBuilder thingBuilder = editThing();
+        boolean modified = false;
 
         List<ChannelUID> configErrors = new ArrayList<>();
         for (Channel channel : thing.getChannels()) {
@@ -144,6 +150,31 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 continue;
             }
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
+
+            if (channelTypeUID
+                    .equals(new ChannelTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.NUMBER))) {
+                Unit<?> unit = UnitUtils.parseUnit(channelConfig.unit);
+                String dimension = unit == null ? null : UnitUtils.getDimensionName(unit);
+                String expectedItemType = dimension == null ? "Number" : "Number:" + dimension; // unknown dimension ->
+                // Number
+                String actualItemType = channel.getAcceptedItemType();
+                if (!expectedItemType.equals(actualItemType)) {
+                    ChannelBuilder channelBuilder = callback.createChannelBuilder(channel.getUID(), channelTypeUID)
+                            .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
+                    String label = channel.getLabel();
+                    if (label != null) {
+                        channelBuilder.withLabel(label);
+                    }
+                    String description = channel.getDescription();
+                    if (description != null) {
+                        channelBuilder.withDescription(description);
+                    }
+                    thingBuilder.withoutChannel(channel.getUID());
+                    thingBuilder.withChannel(channelBuilder.build());
+                    modified = true;
+                }
+            }
+
             try {
                 Value value = ValueFactory.createValueState(channelConfig, channelTypeUID.getId());
                 ChannelState channelState = createChannelState(channelConfig, channel.getUID(), value);
@@ -157,6 +188,10 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                 logger.warn("Configuration error for channel '{}'", channel.getUID(), e);
                 configErrors.add(channel.getUID());
             }
+        }
+
+        if (modified) {
+            updateThing(thingBuilder.build());
         }
 
         // If some channels could not start up, put the entire thing offline and display the channels
@@ -185,7 +220,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         if (availabilityTopic != null) {
             addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable,
-                    config.transformationPattern, transformationServiceProvider);
+                    new ChannelTransformation(config.transformationPattern));
         } else {
             clearAllAvailabilityTopics();
         }

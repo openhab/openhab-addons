@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,16 +61,15 @@ public class FlagHandler extends UnitHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_FLAG_VALUE:
-                if (command instanceof DecimalType) {
-                    sendOmnilinkCommand(CommandMessage.CMD_UNIT_SET_COUNTER, ((DecimalType) command).intValue(),
-                            thingID);
+                if (command instanceof DecimalType decimalCommand) {
+                    sendOmnilinkCommand(CommandMessage.CMD_UNIT_SET_COUNTER, decimalCommand.intValue(), thingID);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }
                 break;
             case CHANNEL_FLAG_SWITCH:
-                if (command instanceof OnOffType) {
-                    handleOnOff(channelUID, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleOnOff(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
                 }

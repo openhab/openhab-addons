@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ExceptionDetail;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Header;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroupStatus;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +72,7 @@ public class LeapMessageParser {
      * @param msg String containing the LEAP message
      */
     public void handleMessage(String msg) {
-        if (msg.trim().equals("")) {
+        if ("".equals(msg.trim())) {
             return; // Ignore empty lines
         }
         logger.trace("Received message: {}", msg);
@@ -95,6 +97,7 @@ public class LeapMessageParser {
                     handleReadResponseMessage(message);
                     break;
                 case "UpdateResponse":
+                    handleReadResponseMessage(message);
                     break;
                 case "SubscribeResponse":
                     // Subscribe responses can contain bodies with data
@@ -181,6 +184,15 @@ public class LeapMessageParser {
                 case "OneZoneStatus":
                     parseOneZoneStatus(body);
                     break;
+                case "OneProjectDefinition":
+                    parseOneProjectDefinition(body);
+                    break;
+                case "OneDeviceDefinition":
+                    parseOneDeviceDefinition(body);
+                    break;
+                case "OneButtonStatusEvent":
+                    parseOneButtonStatusEvent(body);
+                    break;
                 case "MultipleAreaDefinition":
                     parseMultipleAreaDefinition(body);
                     break;
@@ -197,6 +209,9 @@ public class LeapMessageParser {
                     parseMultipleOccupancyGroupStatus(body);
                     break;
                 case "MultipleVirtualButtonDefinition":
+                    break;
+                case "MultipleZoneStatus":
+                    parseMultipleZoneStatus(body);
                     break;
                 default:
                     logger.debug("Unknown MessageBodyType received: {}", messageBodyType);
@@ -228,7 +243,7 @@ public class LeapMessageParser {
 
     private <T extends AbstractMessageBody> List<T> parseBodyMultiple(JsonObject messageBody, String memberName,
             Class<T> type) {
-        List<T> objList = new LinkedList<T>();
+        List<T> objList = new LinkedList<>();
         try {
             if (messageBody.has(memberName)) {
                 JsonArray jsonArray = messageBody.get(memberName).getAsJsonArray();
@@ -260,6 +275,16 @@ public class LeapMessageParser {
         ZoneStatus zoneStatus = parseBodySingle(messageBody, "ZoneStatus", ZoneStatus.class);
         if (zoneStatus != null) {
             callback.handleZoneUpdate(zoneStatus);
+        }
+    }
+
+    /**
+     * Parses a OneButtonStatusEvent message body. Calls handleButtonStatusEvent() to dispatch button events.
+     */
+    private void parseOneButtonStatusEvent(JsonObject messageBody) {
+        ButtonStatus buttonStatus = parseBodySingle(messageBody, "ButtonStatus", ButtonStatus.class);
+        if (buttonStatus != null) {
+            callback.handleButtonStatus(buttonStatus);
         }
     }
 
@@ -297,13 +322,21 @@ public class LeapMessageParser {
         }
     }
 
+    private void parseMultipleZoneStatus(JsonObject messageBody) {
+        List<ZoneStatus> statusList = parseBodyMultiple(messageBody, "ZoneStatuses", ZoneStatus.class);
+        for (ZoneStatus status : statusList) {
+            logger.debug("Setting zone {} to level: {}", status.href, status.level);
+            callback.handleZoneUpdate(status);
+        }
+    }
+
     /**
      * Parses a MultipleDeviceDefinition message body and loads the zoneToDevice and deviceToZone maps. Also passes the
      * device data on to the discovery service and calls setBridgeProperties() with the hub's device entry.
      */
     private void parseMultipleDeviceDefinition(JsonObject messageBody) {
         List<Device> deviceList = parseBodyMultiple(messageBody, "Devices", Device.class);
-        callback.handleMultipleDeviceDefintion(deviceList);
+        callback.handleMultipleDeviceDefinition(deviceList);
     }
 
     /**
@@ -312,5 +345,19 @@ public class LeapMessageParser {
     private void parseMultipleButtonGroupDefinition(JsonObject messageBody) {
         List<ButtonGroup> buttonGroupList = parseBodyMultiple(messageBody, "ButtonGroups", ButtonGroup.class);
         callback.handleMultipleButtonGroupDefinition(buttonGroupList);
+    }
+
+    private void parseOneProjectDefinition(JsonObject messageBody) {
+        Project project = parseBodySingle(messageBody, "Project", Project.class);
+        if (project != null) {
+            callback.handleProjectDefinition(project);
+        }
+    }
+
+    private void parseOneDeviceDefinition(JsonObject messageBody) {
+        Device device = parseBodySingle(messageBody, "Device", Device.class);
+        if (device != null) {
+            callback.handleDeviceDefinition(device);
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,13 +40,12 @@ public class HaasSohnpelletstoveJSONCommunication {
     private HaasSohnpelletstoveConfiguration config;
 
     private Gson gson;
-    private @Nullable String xhspin;
+    private String xhspin = "";
     private @Nullable HaasSohnpelletstoveJsonDataDTO ovenData;
 
     public HaasSohnpelletstoveJSONCommunication() {
         gson = new Gson();
         ovenData = new HaasSohnpelletstoveJsonDataDTO();
-        xhspin = "";
         config = new HaasSohnpelletstoveConfiguration();
     }
 
@@ -160,7 +160,7 @@ public class HaasSohnpelletstoveJSONCommunication {
      */
     private Properties createHeader(@Nullable String postData) {
         Properties httpHeader = new Properties();
-        httpHeader.setProperty("Host", config.hostIP);
+        httpHeader.setProperty("Host", Objects.requireNonNull(config.hostIP));
         httpHeader.setProperty("Accept", "*/*");
         httpHeader.setProperty("Proxy-Connection", "keep-alive");
         httpHeader.setProperty("X-BACKEND-IP", "https://app.haassohn.com");
@@ -182,16 +182,16 @@ public class HaasSohnpelletstoveJSONCommunication {
      * Generate the valid encrypted string to communicate with the oven.
      *
      * @param ovenData
-     * @return
+     * @return XHSPIN or empty when it cannot be determined
      */
-    private @Nullable String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonDataDTO ovenData) {
+    private String getValidXHSPIN(@Nullable HaasSohnpelletstoveJsonDataDTO ovenData) {
         if (ovenData != null && config.hostPIN != null) {
             String nonce = ovenData.getNonce();
             String hostPIN = config.hostPIN;
             String ePin = MD5Utils.getMD5String(hostPIN);
             return MD5Utils.getMD5String(nonce + ePin);
         } else {
-            return null;
+            return "";
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -53,8 +52,8 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.ventaair")
 public class VentaDeviceDiscovery extends AbstractDiscoveryService {
     private static final String REPRESENTATION_PROPERTY = "macAddress";
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(VentaAirBindingConstants.THING_TYPE_LW60T);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(VentaAirBindingConstants.THING_TYPE_LW60T);
     // defined as int, because AbstractDiscoveryService wants and int and not long as provided by Duration.getSeconds()
     private static final int MANUAL_DISCOVERY_TIME = 30;
     private static final Duration TIME_BETWEEN_SCANS = Duration.ofSeconds(30);

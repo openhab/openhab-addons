@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.shelly.internal.manager;
+
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CONFIG_DEVICEIP;
 
 import java.nio.charset.StandardCharsets;
 
@@ -61,7 +63,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
 
-    public static final String TEMPLATE_PATH = "sniplets/";
     public static final String HEADER_HTML = "header.html";
     public static final String OVERVIEW_HTML = "overview.html";
     public static final String OVERVIEW_HEADER = "ov_header.html";
@@ -83,6 +84,7 @@ public class ShellyManagerConstants {
     public static final String ATTRIBUTE_MESSAGE = "message";
     public static final String ATTRIBUTE_TOTAL_DEV = "totalDevices";
     public static final String ATTRIBUTE_STATUS_ICON = "iconStatus";
+    public static final String ATTRIBUTE_DEVICEIP = CONFIG_DEVICEIP;
     public static final String ATTRIBUTE_DISPLAY_NAME = "displayName";
     public static final String ATTRIBUTE_DEV_STATUS = "deviceStatus";
     public static final String ATTRIBUTE_DEBUG_MODE = "debugMode";

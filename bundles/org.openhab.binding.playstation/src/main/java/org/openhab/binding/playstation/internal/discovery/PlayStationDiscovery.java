@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -254,7 +254,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, formatPS4Version(systemVersion));
         properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = hostType.equalsIgnoreCase("PS5") ? new ThingUID(THING_TYPE_PS5, hostId)
+        ThingUID uid = "PS5".equalsIgnoreCase(hostType) ? new ThingUID(THING_TYPE_PS5, hostId)
                 : new ThingUID(THING_TYPE_PS4, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
@@ -408,10 +408,10 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                     hwVersion = PS4HW_CUH1000;
                     break;
                 case "bc60a7": // Ethernet
-                    if (ethId.equals("7b")) {
+                    if ("7b".equals(ethId)) {
                         hwVersion = PS4HW_CUH2000;
                     }
-                    if (ethId.equals("8f")) {
+                    if ("8f".equals(ethId)) {
                         hwVersion = PS4HW_CUH7000;
                     }
                     break;
@@ -423,10 +423,10 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                     break;
                 case "40490f": // WiFi
                 case "5c9656": // WiFi
-                    if (ethId.equals("07")) {
+                    if ("07".equals(ethId)) {
                         hwVersion = PS4HW_CUH2000;
                     }
-                    if (ethId.equals("da")) {
+                    if ("da".equals(ethId)) {
                         hwVersion = PS4HW_CUH7000;
                     }
                     break;

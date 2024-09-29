@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.homeconnect.internal.client;
 
-import static java.util.Collections.singletonList;
 import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 import static org.openhab.binding.homeconnect.internal.client.HttpHelper.*;
 
@@ -880,7 +879,7 @@ public class HomeConnectApiClient {
     private void checkResponseCode(int desiredCode, Request request, ContentResponse response, @Nullable String haId,
             @Nullable String requestPayload)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        checkResponseCode(singletonList(desiredCode), request, response, haId, requestPayload);
+        checkResponseCode(List.of(desiredCode), request, response, haId, requestPayload);
     }
 
     private void checkResponseCode(List<Integer> desiredCodes, Request request, ContentResponse response,

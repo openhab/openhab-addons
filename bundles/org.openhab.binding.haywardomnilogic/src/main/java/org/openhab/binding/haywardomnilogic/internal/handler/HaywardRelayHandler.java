@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,21 +48,18 @@ public class HaywardRelayHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                systemIDs = bridgehandler.evaluateXPath("//Relay/@systemId", xmlResponse);
-                data = bridgehandler.evaluateXPath("//Relay/@relayState", xmlResponse);
-                String thingSystemID = getThing().getUID().getId();
-                for (int i = 0; i < systemIDs.size(); i++) {
-                    if (systemIDs.get(i).equals(thingSystemID)) {
-                        updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
-                    }
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            systemIDs = bridgehandler.evaluateXPath("//Relay/@systemId", xmlResponse);
+            data = bridgehandler.evaluateXPath("//Relay/@relayState", xmlResponse);
+            String thingSystemID = getThing().getUID().getId();
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    updateData(HaywardBindingConstants.CHANNEL_RELAY_STATE, data.get(i));
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -76,48 +73,44 @@ public class HaywardRelayHandler extends HaywardThingHandler {
         String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                String cmdString = this.cmdToString(command);
-                String cmdURL = null;
-                try {
-                    switch (channelUID.getId()) {
-                        case HaywardBindingConstants.CHANNEL_RELAY_STATE:
-                            cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
-                                    + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                                    + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
-                                    + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                                    + bridgehandler.account.mspSystemID + "</Parameter>"
-                                    + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                                    + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
-                                    + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
-                                    + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
-                            break;
-                        default:
-                            logger.warn("haywardCommand Unsupported type {}", channelUID);
-                            return;
-                    }
-
-                    // *****Send Command to Hayward server
-                    String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
-                    String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse)
-                            .get(0);
-
-                    if (!("0".equals(status))) {
-                        logger.debug("haywardCommand XML response: {}", xmlResponse);
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            String cmdString = this.cmdToString(command);
+            String cmdURL = null;
+            try {
+                switch (channelUID.getId()) {
+                    case HaywardBindingConstants.CHANNEL_RELAY_STATE:
+                        cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
+                                + "<Name>SetUIEquipmentCmd</Name><Parameters>"
+                                + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
+                                + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                                + bridgehandler.account.mspSystemID + "</Parameter>"
+                                + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                                + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                                + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
+                                + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
+                        break;
+                    default:
+                        logger.warn("haywardCommand Unsupported type {}", channelUID);
                         return;
-                    }
-                } catch (HaywardException e) {
-                    logger.debug("Unable to send command to Hayward's server {}:{}:{}",
-                            bridgehandler.config.endpointUrl, bridgehandler.config.username, e.getMessage());
-                } catch (InterruptedException e) {
+                }
+
+                // *****Send Command to Hayward server
+                String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
+                String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
+
+                if (!("0".equals(status))) {
+                    logger.debug("haywardCommand XML response: {}", xmlResponse);
                     return;
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            } catch (HaywardException e) {
+                logger.debug("Unable to send command to Hayward's server {}:{}:{}", bridgehandler.config.endpointUrl,
+                        bridgehandler.config.username, e.getMessage());
+            } catch (InterruptedException e) {
+                return;
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

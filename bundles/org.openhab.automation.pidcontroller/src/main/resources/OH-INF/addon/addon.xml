@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>automation</type>
-	<name>Groovy Scripting</name>
-	<description>This adds a Groovy script engine.</description>
+	<name>PID Controller</name>
+	<description>A PID controller for triggering rules.</description>
+	<connection>none</connection>
 
 </addon:addon>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,7 +109,7 @@ public class CameraServlet extends IpCameraServlet {
                 Ffmpeg localFfmpeg = handler.ffmpegHLS;
                 if (localFfmpeg == null) {
                     handler.setupFfmpegFormat(FFmpegFormat.HLS);
-                } else if (!localFfmpeg.getIsAlive()) {
+                } else if (!localFfmpeg.isAlive()) {
                     localFfmpeg.startConverting();
                 } else {
                     localFfmpeg.setKeepAlive(8);
@@ -212,6 +212,9 @@ public class CameraServlet extends IpCameraServlet {
                                 Ffmpeg localMjpeg = handler.ffmpegMjpeg;
                                 if (localMjpeg != null) {
                                     localMjpeg.stopConverting();
+                                    // Set reference to ffmpegMjpeg to null to prevent automatic reconnection
+                                    // in handler's pollCameraRunnable() check for frozen camera
+                                    handler.ffmpegMjpeg = null;
                                 }
                             } else {
                                 handler.closeChannel(handler.getTinyUrl(handler.mjpegUri));

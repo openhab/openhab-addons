@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -313,11 +312,11 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (stopping != null) {
                 stopping.complete(false);
             }
-            isStopping = new CompletableFuture<Boolean>(); // set this so we can check if stop confirmation has been
-                                                           // received
+            isStopping = new CompletableFuture<>(); // set this so we can check if stop confirmation has been
+                                                    // received
         }
 
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Stop", inputs);
     }
@@ -353,7 +352,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Pause on UPnP AV Transport.
      */
     protected void pause() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Pause", inputs);
     }
@@ -362,7 +361,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Next on UPnP AV Transport.
      */
     protected void next() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Next", inputs);
     }
@@ -371,7 +370,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Previous on UPnP AV Transport.
      */
     protected void previous() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "Previous", inputs);
     }
@@ -422,8 +421,8 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (settingURI != null) {
                 settingURI.complete(false);
             }
-            isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
-                                                             // setting URI
+            isSettingURI = new CompletableFuture<>(); // set this so we don't start playing when not finished
+                                                      // setting URI
         } else {
             logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
         }
@@ -456,7 +455,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getTransportState() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetTransportInfo", inputs);
     }
@@ -466,7 +465,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getPositionInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "GetPositionInfo", inputs);
     }
@@ -476,7 +475,7 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Result is received in {@link #onValueReceived}.
      */
     protected void getMediaInfo() {
-        Map<String, String> inputs = Collections.singletonMap(INSTANCE_ID, Integer.toString(avTransportId));
+        Map<String, String> inputs = Map.of(INSTANCE_ID, Integer.toString(avTransportId));
 
         invokeAction(AV_TRANSPORT, "smarthome:audio stream http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3", inputs);
     }
@@ -696,24 +695,24 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandVolume(Command command, String id) {
         if (command instanceof RefreshType) {
             getVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""));
-        } else if (command instanceof PercentType) {
-            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), (PercentType) command);
+        } else if (command instanceof PercentType percentCommand) {
+            setVolume("volume".equals(id) ? UPNP_MASTER : id.replace("volume", ""), percentCommand);
         }
     }
 
     private void handleCommandMute(Command command, String id) {
         if (command instanceof RefreshType) {
             getMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""));
-        } else if (command instanceof OnOffType) {
-            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setMute("mute".equals(id) ? UPNP_MASTER : id.replace("mute", ""), onOffCommand);
         }
     }
 
     private void handleCommandLoudness(Command command, String id) {
         if (command instanceof RefreshType) {
             getLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""));
-        } else if (command instanceof OnOffType) {
-            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), (OnOffType) command);
+        } else if (command instanceof OnOffType onOffCommand) {
+            setLoudness("loudness".equals(id) ? UPNP_MASTER : id.replace("loudness", ""), onOffCommand);
         }
     }
 
@@ -884,8 +883,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void handleCommandTrackPosition(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateState(channelUID, new QuantityType<>(trackPosition, Units.SECOND));
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> position = ((QuantityType<?>) command).toUnit(Units.SECOND);
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> position = quantityCommand.toUnit(Units.SECOND);
             if (position != null) {
                 int pos = Integer.min(trackDuration, position.intValue());
                 seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
@@ -897,8 +896,8 @@ public class UpnpRendererHandler extends UpnpHandler {
         if (command instanceof RefreshType) {
             int relPosition = (trackDuration != 0) ? (trackPosition * 100) / trackDuration : 0;
             updateState(channelUID, new PercentType(relPosition));
-        } else if (command instanceof PercentType) {
-            int pos = ((PercentType) command).intValue() * trackDuration / 100;
+        } else if (command instanceof PercentType percentCommand) {
+            int pos = percentCommand.intValue() * trackDuration / 100;
             seek(String.format("%02d:%02d:%02d", pos / 3600, (pos % 3600) / 60, pos % 60));
         }
     }
@@ -1126,16 +1125,14 @@ public class UpnpRendererHandler extends UpnpHandler {
     private void onValueReceivedMute(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Mute", "mute").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
     private void onValueReceivedLoudness(String variable, @Nullable String value) {
         if (value != null && !value.isEmpty()) {
             String upnpChannel = variable.replace("Loudness", "loudness").replace("Master", "");
-            updateState(upnpChannel,
-                    ("1".equals(value) || "true".equals(value.toLowerCase())) ? OnOffType.ON : OnOffType.OFF);
+            updateState(upnpChannel, OnOffType.from("1".equals(value) || "true".equalsIgnoreCase(value)));
         }
     }
 
@@ -1654,7 +1651,12 @@ public class UpnpRendererHandler extends UpnpHandler {
             if (media.getAlbumArtUri().isEmpty() || media.getAlbumArtUri().contains("DefaultAlbumCover")) {
                 updateState(ALBUM_ART, UnDefType.UNDEF);
             } else {
-                State albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                State albumArt = null;
+                try {
+                    albumArt = HttpUtil.downloadImage(media.getAlbumArtUri());
+                } catch (IllegalArgumentException e) {
+                    logger.debug("Invalid album art URI: {}", media.getAlbumArtUri(), e);
+                }
                 if (albumArt == null) {
                     logger.debug("Failed to download the content of album art from URL {}", media.getAlbumArtUri());
                     if (!isCurrent) {

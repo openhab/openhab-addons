@@ -127,7 +127,7 @@ The GlobalCache binding will automatically detect those devices, then add them t
 Background discovery is **enabled** by default.
 To disable background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
-```text
+```ini
 discovery.globalcache:background=false
 ```
 
@@ -186,7 +186,9 @@ Here's an example of the hex code format:
 ```
 
 The [Global Cache iConvert utility](https://www.globalcache.com/files/docs/gc_iconvert_relnotes.txt) can be used to convert between the two formats, if desired.
-The iConvert utility is available on the Windows platform only.
+The Global Cache iConvert utility is available on the Windows platform only.
+A third party macOS port, [iConvert GC](https://www.rmartijnr.eu/iconvert.html), is available.
+
 Global Cache also maintains an online [IR Control Tower database](https://irdb.globalcache.com/) of IR codes.
 There are numerous other sources of IR codes, such as iRule and RemoteCentral.
 
@@ -364,7 +366,7 @@ then
         Thread.sleep(750)
         ContactClosure1.sendCommand(OFF)
         isRunning = false
-    }      
+    }
 end
 ```
 

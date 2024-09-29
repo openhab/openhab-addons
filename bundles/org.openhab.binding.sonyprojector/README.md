@@ -94,8 +94,8 @@ This binding supports the following thing types:
 
 ## Discovery
 
-Discovery is not supported at the moment.
-You have to add all things manually.
+If the projector is connected via Ethernet and the 'Start SDDP Service' option is present and enabled in the projector Advanced Settings->Service page, the Thing using Ethernet connection and PJ Talk will be discovered automatically.
+Serial or Serial over IP connections must be configured manually.
 
 ## Binding Configuration
 
@@ -187,6 +187,128 @@ The following channels are available:
 | overscan          | Overscan                 | Switch    | RW          | Hide or not the edges of the picture                                    | ON, OFF                                                                                                                                            |
 | pictureposition   | Picture Position         | String    | RW          | Adjust the picture position                                             | 185, 235, Custom1, Custom2, Custom3, Position1, Position2, Position3, Position4, Position5                                                         |
 | lampusetime       | Lamp Use Time            | Number    | R           | Indicate how long the lamp has been turned on                           |                                                                                                                                                    |
+| ircommand         | IR Command               | String    | W           | Send an infrared remote command                                         |                                                                                                                                                    |
+
+Here is the list of infrared remote commands you can use, some of them will work only on particular models.
+
+| Command             | Description               |
+| ------------------- | ------------------------- |
+| POWER               | Power On/Off              |
+| POWER_ON            | Power On                  |
+| POWER_OFF           | Power Off                 |
+| INPUT               | Video Input               |
+| INPUT_DVI           | DVI                       |
+| INPUT_HDMI          | HDMI                      |
+| INPUT_HDMI1         | HDMI 1                    |
+| INPUT_HDMI2         | HDMI 2                    |
+| INPUT_COMPONENT     | Component                 |
+| INPUT_SVIDEO        | S-Video                   |
+| INPUT_VIDEO         | Video                     |
+| INPUT_INPUTA        | Input A                   |
+| CALIBRATION_PRESET  | Calibration preset        |
+| PRESET_REFERENCE    | Reference                 |
+| PRESET_TV           | TV                        |
+| PRESET_PHOTO        | Photo                     |
+| PRESET_GAME         | Game                      |
+| PRESET_DYNAMIC      | Dynamic                   |
+| PRESET_STANDARD     | Standard                  |
+| PRESET_CINEMA       | Cinema                    |
+| PRESET_CINEMA1      | Cinema 1                  |
+| PRESET_CINEMA2      | Cinema 2                  |
+| PRESET_CINEMA3      | Cinema 3                  |
+| PRESET_DIGITAL      | Cinema Digital            |
+| PRESET_FILM1        | Cinema Film 1             |
+| PRESET_FILM2        | Cinema Film 2             |
+| PRESET_BRTCINE      | Bright Cinema             |
+| PRESET_BRTTV        | Bright TV                 |
+| PRESET_USER         | User                      |
+| PRESET_USER1        | User 1                    |
+| PRESET_USER2        | User 2                    |
+| PRESET_USER3        | User 3                    |
+| CONTRAST_UP         | Contrast +                |
+| CONTRAST_DOWN       | Contrast -                |
+| BRIGHTNESS_UP       | Brightness +              |
+| BRIGHTNESS_DOWN     | Brightness -              |
+| COLOR_UP            | Color +                   |
+| COLOR_DOWN          | Color -                   |
+| HUE_UP              | Hue +                     |
+| HUE_DOWN            | Hue -                     |
+| SHARPNESS_UP        | Sharpness +               |
+| SHARPNESS_DOWN      | Sharpness -               |
+| CONTRAST_ENHANCER   | Contrast Enhancer         |
+| COLOR_TEMP          | Color Temperature         |
+| GAMMA_CORRECTION    | Gamma Correction          |
+| COLOR_SPACE         | Color Space               |
+| PICTURE_MUTING      | Picture Muting            |
+| REAL_COLOR          | Real Color Processing     |
+| REALITY_CREATION    | Reality Creation          |
+| FILM_PROJECTION     | Film Projection           |
+| MOTION_ENHANCER     | Motion Enhancer           |
+| IRIS_MODE           | Iris Mode                 |
+| ASPECT              | Aspect Ratio              |
+| ASPECT_NORMAL       | Normal                    |
+| ASPECT_FULL         | Full                      |
+| ASPECT_FULL1        | Full 1                    |
+| ASPECT_FULL2        | Full 2                    |
+| ASPECT_ZOOM         | Zoom                      |
+| ASPECT_WIDEZOOM     | Wide Zoom                 |
+| ASPECT_VSTRETCH     | V Stretch                 |
+| ASPECT_STRETCH      | Stretch                   |
+| ASPECT_SQUEEZE      | Squeeze                   |
+| ASPECT_185          | 1.85:1 Zoom               |
+| ASPECT_235          | 2.35:1 Zoom               |
+| ASPECT_ANAMORPHIC   | Anamorphic                |
+| ASPECT_SUBTITLE     | Subtitle                  |
+| PICTURE_POS_185     | Picture Position 1.85:1   |
+| PICTURE_POS_235     | Picture Position 2.35:1   |
+| PICTURE_POS_CUSTOM1 | Picture Position Custom 1 |
+| PICTURE_POS_CUSTOM2 | Picture Position Custom 2 |
+| PICTURE_POS_CUSTOM3 | Picture Position Custom 3 |
+| MENU                | Menu                      |
+| UP                  | Cursor UP                 |
+| DOWN                | Cursor DOWN               |
+| LEFT                | Cursor LEFT               |
+| RIGHT               | Cursor RIGHT              |
+| ENTER               | Enter                     |
+| RESET               | Reset                     |
+| MEMORY              | Memory                    |
+| STATUS_ON           | Status On                 |
+| STATUS_OFF          | Status Off                |
+| ADJUST_PICTURE      | Adjust Picture            |
+| COLOR_CORRECTION    | Color Correction          |
+| PITCH               | Screen Pitch              |
+| SHIFT               | Screen Shift              |
+| APA                 | APA                       |
+| DOT_PHASE           | Dot Phase                 |
+| V_KEYSTONE          | V Keystone                |
+| V_KEYSTONE_UP       | V Keystone +              |
+| V_KEYSTONE_DOWN     | V Keystone -              |
+| LENS_CONTROL        | Lens Control              |
+| LENS_SHIFT          | Lens Shift                |
+| LENS_SHIFT_LEFT     | Lens Shift LEFT           |
+| LENS_SHIFT_RIGHT    | Lens Shift RIGHT          |
+| LENS_SHIFT_UP       | Lens Shift UP             |
+| LENS_SHIFT_DOWN     | Lens Shift DOWN           |
+| LENS_ZOOM           | Lens Zoom                 |
+| LENS_ZOOM_LARGE     | Lens Zoom Large           |
+| LENS_ZOOM_SMALL     | Lens Zoom Small           |
+| LENS_FOCUS          | Lens Focus                |
+| LENS_FOCUS_FAR      | Lens Focus Far            |
+| LENS_FOCUS_NEAR     | Lens Focus Near           |
+| LENS_POSITION       | Lens Position             |
+| MODE_3D             | 3D                        |
+| OPTIONS             | Options                   |
+| EXIT                | Exit                      |
+| SYNC_MENU           | Sync Menu                 |
+| PLAY                | Play                      |
+| STOP                | Stop                      |
+| PAUSE               | Pause                     |
+| FAST_REWIND(        | Fast Rewind               |
+| FAST_FORWARD        | Fast Forward              |
+| PREVIOUS            | Previous                  |
+| NEXT                | Next                      |
+
+In case you know an infrared remote command not listed in this list and you know its hexadecimal code, you can send the hexadecimal value directly; it must be 4 characters started with either 17, 19 or 1B.
 
 ## Full Example
 

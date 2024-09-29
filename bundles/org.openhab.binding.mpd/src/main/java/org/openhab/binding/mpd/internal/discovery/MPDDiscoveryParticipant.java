@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.mpd.internal.discovery;
 
 import java.net.Inet4Address;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class MPDDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(MPDBindingConstants.THING_TYPE_MPD);
+        return Set.of(MPDBindingConstants.THING_TYPE_MPD);
     }
 
     @Override
@@ -76,9 +75,8 @@ public class MPDDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
         String name = service.getName();
 
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(name).withProperties(properties)
+        return DiscoveryResultBuilder.create(uid).withLabel(name).withProperties(properties)
                 .withRepresentationProperty(MPDBindingConstants.UNIQUE_ID).build();
-        return result;
     }
 
     @Nullable

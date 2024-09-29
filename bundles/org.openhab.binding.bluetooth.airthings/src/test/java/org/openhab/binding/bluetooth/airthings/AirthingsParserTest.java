@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,12 @@ package org.openhab.binding.bluetooth.airthings;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HexFormat;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.bluetooth.BluetoothUtils;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsDataParser;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsParserException;
 
@@ -59,6 +61,19 @@ public class AirthingsParserTest {
         assertEquals(993.5, result.get(AirthingsDataParser.PRESSURE));
         assertEquals(61, result.get(AirthingsDataParser.RADON_LONG_TERM_AVG));
         assertEquals(122, result.get(AirthingsDataParser.RADON_SHORT_TERM_AVG));
+    }
+
+    @Test
+    public void testParsingWaveRadon() throws AirthingsParserException {
+        // Testdata from
+        // https://github.com/Airthings/airthings-ble/blob/9d255808fa3add6d504649e40c8548ffcd356909/tests/test_wave_plus.py#L47
+        byte[] data = HexFormat.of().parseHex("013860f009001100a709ffffffffffff0000ffff");
+        Map<String, Number> result = AirthingsDataParser.parseWaveRadonData(BluetoothUtils.toIntArray(data));
+
+        assertEquals(28.0, result.get(AirthingsDataParser.HUMIDITY));
+        assertEquals(24.71, result.get(AirthingsDataParser.TEMPERATURE));
+        assertEquals(17, result.get(AirthingsDataParser.RADON_LONG_TERM_AVG));
+        assertEquals(9, result.get(AirthingsDataParser.RADON_SHORT_TERM_AVG));
     }
 
     @Test

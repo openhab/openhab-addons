@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.satel.internal.config.Ethm1Config.HOST;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ETHM1);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ETHM1);
 
     private final Logger logger = LoggerFactory.getLogger(Ethm1BridgeHandler.class);
 
@@ -71,8 +72,8 @@ public class Ethm1BridgeHandler extends SatelBridgeHandler {
 
         // Check whether an IP address is provided
         if (host.isBlank()) {
-            configStatusMessages = Collections.singletonList(ConfigStatusMessage.Builder.error(HOST)
-                    .withMessageKeySuffix("hostEmpty").withArguments(HOST).build());
+            configStatusMessages = List.of(ConfigStatusMessage.Builder.error(HOST).withMessageKeySuffix("hostEmpty")
+                    .withArguments(HOST).build());
         } else {
             configStatusMessages = Collections.emptyList();
         }

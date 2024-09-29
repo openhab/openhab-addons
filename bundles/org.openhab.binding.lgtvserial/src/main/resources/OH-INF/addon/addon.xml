@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>LG TV Serial Binding</name>
 	<description>Controlling LG TVs using serial (RS232C) protocol</description>
-
+	<connection>local</connection>
 
 </addon:addon>

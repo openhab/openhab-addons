@@ -6,6 +6,7 @@
 	<name>Xiaomi Wifi devices (Mi IO) Binding</name>
 	<description>Binding for Xiaomi wifi devices (Mi IO protocol) which are normally controlled by the mihome app like Mi
 		Robot Vacuums, Yeelights, Humidifiers, Fans etc.</description>
+	<connection>hybrid</connection>
 
 	<config-description>
 		<parameter name="username" type="text" required="false">

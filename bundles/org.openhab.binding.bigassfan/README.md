@@ -48,7 +48,7 @@ Background discovery polls the network every few minutes for devices.
 Background discovery is **enabled** by default.
 To **disable** background discovery, add the following line to the _conf/services/runtime.cfg_ file:
 
-```text
+```ini
 discovery.bigassfan:background=false
 ```
 

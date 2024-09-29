@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,7 @@ public class SensorEventDef {
             "TURNAROUND", "HOMEEMERGENCY", "TOILETFLUSH", "DORSALPOSITION", "ABDOMINALPOSITION", "LYINGLEFT",
             "LYINGRIGHT", "LYINGHALFLEFT", "LYINGHALFRIGHT", "MOVEMENT", "PRESENCE", "NUMBERPERSONS",
             "BRIGHTNESSZONE" };
-    private static ArrayList<String> sensorEventDefinition = new ArrayList<String>(
-            Arrays.asList(EVENT_DEFINITION_ARRAY));
+    private static ArrayList<String> sensorEventDefinition = new ArrayList<>(Arrays.asList(EVENT_DEFINITION_ARRAY));
 
     public static ArrayList<String> getSensorEventDefinition() {
         return sensorEventDefinition;

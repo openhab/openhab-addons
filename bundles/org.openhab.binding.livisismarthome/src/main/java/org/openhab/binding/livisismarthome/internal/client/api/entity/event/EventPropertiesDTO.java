@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ public class EventPropertiesDTO {
     /** Writable capability properties **/
     private Integer dimLevel;
     private Boolean onState;
+    private String activeChannel;
     private String operationMode;
     private String operationStatus;
     private Double pointTemperature;
@@ -126,6 +127,20 @@ public class EventPropertiesDTO {
      */
     public void setOnState(final Boolean onState) {
         this.onState = onState;
+    }
+
+    /**
+     * @return the activeChannel
+     */
+    public String getActiveChannel() {
+        return activeChannel;
+    }
+
+    /**
+     * @param activeChannel the activeChannel to set
+     */
+    public void setActiveChannel(final String activeChannel) {
+        this.activeChannel = activeChannel;
     }
 
     /**

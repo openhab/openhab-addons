@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
@@ -25,7 +26,6 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus;
-import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.HomeStatus;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 
@@ -43,12 +43,10 @@ public class HomeApi extends RestManager {
         super(apiClient, FeatureArea.NONE);
     }
 
-    public @Nullable HomeStatus getHomeStatus(String homeId) throws NetatmoException {
+    public Optional<NAHomeStatus> getHomeStatus(String homeId) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMESTATUS, PARAM_HOME_ID, homeId);
 
-        NAHomeStatusResponse response = get(uriBuilder, NAHomeStatusResponse.class);
-        NAHomeStatus body = response.getBody();
-        return body != null ? body.getHomeStatus().orElse(null) : null;
+        return Optional.ofNullable(get(uriBuilder, NAHomeStatusResponse.class).getBody());
     }
 
     public @Nullable HomeData getHomeData(String homeId) throws NetatmoException {

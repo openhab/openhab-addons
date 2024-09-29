@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,12 +36,16 @@ import org.openhab.binding.netatmo.internal.handler.capability.DeviceCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.DoorbellCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.MeasureCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PersonCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.PresenceCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshAutoCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RoomCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.WeatherCapability;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -75,15 +79,18 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final NADeserializer deserializer;
     private final HttpClient httpClient;
     private final HttpService httpService;
+    private final OAuthFactory oAuthFactory;
 
     @Activate
-    public NetatmoHandlerFactory(@Reference NetatmoDescriptionProvider stateDescriptionProvider,
-            @Reference HttpClientFactory factory, @Reference NADeserializer deserializer,
-            @Reference HttpService httpService, Map<String, @Nullable Object> config) {
+    public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
+            final @Reference HttpClientFactory factory, final @Reference NADeserializer deserializer,
+            final @Reference HttpService httpService, final @Reference OAuthFactory oAuthFactory,
+            Map<String, @Nullable Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
         this.deserializer = deserializer;
         this.httpService = httpService;
+        this.oAuthFactory = oAuthFactory;
         configChanged(config);
     }
 
@@ -109,7 +116,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private BaseThingHandler buildHandler(Thing thing, ModuleType moduleType) {
         if (ModuleType.ACCOUNT.equals(moduleType)) {
-            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService);
+            return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
+                    oAuthFactory);
         }
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
@@ -143,6 +151,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
                 newCap = new MeasureCapability(handler, helpers);
             } else if (capability == ChannelHelperCapability.class) {
                 newCap = new ChannelHelperCapability(handler, helpers);
+            } else if (capability == RefreshAutoCapability.class) {
+                newCap = new RefreshAutoCapability(handler);
+            } else if (capability == RefreshCapability.class) {
+                newCap = new RefreshCapability(handler);
+            } else if (capability == ParentUpdateCapability.class) {
+                newCap = new ParentUpdateCapability(handler);
             }
             if (newCap != null) {
                 handler.getCapabilities().put(newCap);

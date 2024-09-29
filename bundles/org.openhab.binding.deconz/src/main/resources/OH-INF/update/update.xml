@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="deconz:batterysensor">
+		<instruction-set targetVersion="1">
+			<update-channel id="battery_level">
+				<type>system:battery-level</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:colorcontrol">
+		<instruction-set targetVersion="1">
+			<update-channel id="color">
+				<type>system:color</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:colorlight">
+		<instruction-set targetVersion="1">
+			<update-channel id="color">
+				<type>system:color</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:colortemperaturelight">
+		<instruction-set targetVersion="1">
+			<update-channel id="brightness">
+				<type>system:brightness</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:dimmablelight">
+		<instruction-set targetVersion="1">
+			<update-channel id="brightness">
+				<type>system:brightness</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:extendedcolorlight">
+		<instruction-set targetVersion="1">
+			<update-channel id="color">
+				<type>system:color</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:lightgroup">
+		<instruction-set targetVersion="1">
+			<update-channel id="color">
+				<type>system:color</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:onofflight">
+		<instruction-set targetVersion="1">
+			<update-channel id="switch">
+				<type>system:power</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="deconz:presencesensor">
+		<instruction-set targetVersion="1">
+			<update-channel id="enabled">
+				<type>system:power</type>
+			</update-channel>
+			<update-channel id="presence">
+				<type>system:motion</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

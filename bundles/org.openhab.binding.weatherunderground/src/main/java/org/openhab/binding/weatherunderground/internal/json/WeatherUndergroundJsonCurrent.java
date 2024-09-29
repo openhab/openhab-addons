@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -179,7 +179,7 @@ public class WeatherUndergroundJsonCurrent {
      * @return the current relative humidity or null if not defined
      */
     public Integer getRelativeHumidity() {
-        if (relative_humidity != null && !relative_humidity.isEmpty() && !relative_humidity.equalsIgnoreCase("N/A")) {
+        if (relative_humidity != null && !relative_humidity.isEmpty() && !"N/A".equalsIgnoreCase(relative_humidity)) {
             return WeatherUndergroundJsonUtils.convertToInteger(relative_humidity.replace("%", ""));
         }
         return null;

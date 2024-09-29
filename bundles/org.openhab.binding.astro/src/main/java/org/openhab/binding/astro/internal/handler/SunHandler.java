@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
@@ -95,6 +96,16 @@ public class SunHandler extends AstroThingHandler {
                 thingConfig.useMeteorologicalSeason);
     }
 
+    private Sun getPositionedSunAt(ZonedDateTime date) {
+        Sun localSun = getSunAt(date);
+        Double latitude = thingConfig.latitude;
+        Double longitude = thingConfig.longitude;
+        Double altitude = thingConfig.altitude;
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
+        return localSun;
+    }
+
     public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
         Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
         if (eventRange != null) {
@@ -107,12 +118,12 @@ public class SunHandler extends AstroThingHandler {
 
     @Override
     public @Nullable Position getPositionAt(ZonedDateTime date) {
-        Sun localSun = getSunAt(date);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
-        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
+        Sun localSun = getPositionedSunAt(date);
         return localSun.getPosition();
+    }
+
+    public @Nullable Radiation getRadiationAt(ZonedDateTime date) {
+        Sun localSun = getPositionedSunAt(date);
+        return localSun.getRadiation();
     }
 }

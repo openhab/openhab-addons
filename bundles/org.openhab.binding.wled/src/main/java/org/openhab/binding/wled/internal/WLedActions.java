@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthew Skinner - Initial contribution
  */
 
+@Component(scope = ServiceScope.PROTOTYPE, service = WLedActions.class)
 @ThingActionsScope(name = "wled")
 @NonNullByDefault
 public class WLedActions implements ThingActions {
@@ -52,8 +55,8 @@ public class WLedActions implements ThingActions {
     }
 
     public static void savePreset(@Nullable ThingActions actions, int presetNumber) {
-        if (actions instanceof WLedActions) {
-            ((WLedActions) actions).savePreset(presetNumber, "");
+        if (actions instanceof WLedActions wLedActions) {
+            wLedActions.savePreset(presetNumber, "");
         } else {
             throw new IllegalArgumentException("Instance is not a WLED class.");
         }
@@ -70,8 +73,8 @@ public class WLedActions implements ThingActions {
     }
 
     public static void savePreset(@Nullable ThingActions actions, int presetNumber, String presetName) {
-        if (actions instanceof WLedActions) {
-            ((WLedActions) actions).savePreset(presetNumber, presetName);
+        if (actions instanceof WLedActions wLedActions) {
+            wLedActions.savePreset(presetNumber, presetName);
         } else {
             throw new IllegalArgumentException("Instance is not a WLED class.");
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,10 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -167,9 +167,8 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                     systemControl.setPartyModeMute(((OnOffType) command) == OnOffType.ON);
                     break;
                 case CHANNEL_PARTY_MODE_VOLUME:
-                    if (command instanceof IncreaseDecreaseType) {
-                        systemControl
-                                .setPartyModeVolume(((IncreaseDecreaseType) command) == IncreaseDecreaseType.INCREASE);
+                    if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                        systemControl.setPartyModeVolume(increaseDecreaseCommand == IncreaseDecreaseType.INCREASE);
                     } else {
                         logger.warn("Only {} and {} commands are supported for {}", IncreaseDecreaseType.DECREASE,
                                 IncreaseDecreaseType.DECREASE, id);
@@ -189,10 +188,10 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         // Might be extended in the future, therefore a switch statement
         switch (channelUID.getId()) {
             case CHANNEL_POWER:
-                updateState(channelUID, systemControlState.power ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(systemControlState.power));
                 break;
             case CHANNEL_PARTY_MODE:
-                updateState(channelUID, systemControlState.partyMode ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(systemControlState.partyMode));
                 break;
             case CHANNEL_PARTY_MODE_MUTE:
             case CHANNEL_PARTY_MODE_VOLUME:
@@ -317,7 +316,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ZoneDiscoveryService.class);
+        return Set.of(ZoneDiscoveryService.class);
     }
 
     /**
@@ -337,7 +336,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
                 bridgeConfig.getPort());
 
         Optional<String> host = bridgeConfig.getHostWithPort();
-        if (!host.isPresent()) {
+        if (host.isEmpty()) {
             String msg = "Host or port not set. Double check your thing settings.";
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             logger.warn(msg);
@@ -413,7 +412,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
         boolean needsCompleteRefresh = msg.power && !systemControlState.power;
         systemControlState = msg;
 
-        updateState(CHANNEL_POWER, systemControlState.power ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_POWER, OnOffType.from(systemControlState.power));
         if (needsCompleteRefresh) {
             updateAllZoneInformation();
         }

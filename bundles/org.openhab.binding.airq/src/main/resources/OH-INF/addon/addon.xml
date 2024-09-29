@@ -8,5 +8,6 @@
 	<description>This is the binding for air-Q devices. The air-Q device contains several sensors measuring gases in the
 		air and other ambiance parameters like noise or temperature. With this binding you can integrate those values into
 		your openHAB system and change parametrs of the air-Q device.</description>
+	<connection>local</connection>
 
 </addon:addon>

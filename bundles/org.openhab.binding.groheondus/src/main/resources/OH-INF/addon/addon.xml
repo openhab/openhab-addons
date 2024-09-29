@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>GROHE ONDUS Binding</name>
 	<description>Provides an integration for GROHE Appliances in openHAB</description>
+	<connection>cloud</connection>
 
 </addon:addon>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -177,10 +177,9 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     }
 
     @Override
-    public void handleReponseMessage(Message message) {
+    public void handleResponseMessage(Message message) {
         switch (message.getType()) {
-            case ACKNOWLEDGEMENT_V1:
-            case ACKNOWLEDGEMENT_V2:
+            case ACKNOWLEDGEMENT_V1, ACKNOWLEDGEMENT_V2:
                 handleAcknowledgement((AcknowledgementMessage) message);
                 break;
             case DEVICE_INFORMATION_RESPONSE:

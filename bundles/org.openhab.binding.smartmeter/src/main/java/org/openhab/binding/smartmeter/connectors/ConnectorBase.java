@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
 
     @Override
     public Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor) {
-        Flowable<T> itemPublisher = Flowable.<T> create((emitter) -> {
+        Flowable<T> itemPublisher = Flowable.create((emitter) -> {
             emitValues(initMessage, emitter);
         }, BackpressureStrategy.DROP);
 

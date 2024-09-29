@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,9 @@ public class StructureManagerImpl implements StructureManager {
     }
 
     /**
-     * Query to get all zone and group names. Can be executed with {@link DsAPI#query(String, String)} or
-     * {@link DsAPI#query2(String, String)}.
+     * Query to get all zone and group names. Can be executed with
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#query(String, String)} or
+     * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI#query2(String, String)}.
      */
     public static final String ZONE_GROUP_NAMES = "/apartment/zones/*(ZoneID,name)/groups/*(group,name)";
 

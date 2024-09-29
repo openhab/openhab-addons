@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,7 @@ public class Location {
         if (locations == null || locations.isEmpty()) {
             return null;
         }
-        return locations.stream().map(a -> String.valueOf(a.getName())).collect(Collectors.joining(NAME_SEPARATOR));
+        return locations.stream().map(a -> a.getName()).collect(Collectors.joining(NAME_SEPARATOR));
     }
 
     @Override

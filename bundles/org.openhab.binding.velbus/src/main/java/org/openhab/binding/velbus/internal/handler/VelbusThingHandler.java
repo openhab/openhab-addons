@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,6 +60,8 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
 
     private int numberOfSubAddresses;
 
+    private volatile boolean disposed = true;
+
     public VelbusThingHandler(Thing thing, int numberOfSubAddresses) {
         super(thing);
 
@@ -76,6 +78,14 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         initializeThing(bridge == null ? ThingStatus.OFFLINE : bridge.getStatus());
         initializeChannelNames();
         initializeChannelStates();
+        disposed = false;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        disposed = true;
     }
 
     @Override
@@ -152,7 +162,14 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 if (subAddress != null) {
                     subAddresses[i] = hexToByte(subAddress);
                 } else {
-                    subAddresses[i] = (byte) 0xFF;
+                    if (getConfig().get(propertyKey) != null) {
+                        subAddress = getConfig().get(propertyKey).toString();
+                        if (subAddress != null) {
+                            subAddresses[i] = hexToByte(subAddress);
+                        }
+                    } else {
+                        subAddresses[i] = (byte) 0xFF;
+                    }
                 }
             }
 
@@ -222,8 +239,7 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
                 return null;
             }
             ThingHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof VelbusBridgeHandler) {
-                VelbusBridgeHandler velbusBridgeHandler = (VelbusBridgeHandler) bridgeHandler;
+            if (bridgeHandler instanceof VelbusBridgeHandler velbusBridgeHandler) {
                 this.velbusBridgeHandler = velbusBridgeHandler;
 
                 if (velbusModuleAddress != null) {
@@ -237,5 +253,15 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
         }
 
         return this.velbusBridgeHandler;
+    }
+
+    @Override
+    public boolean onPacketReceived(byte[] packet) {
+        logger.trace("onPacketReceived() was called");
+
+        if (disposed) {
+            return false;
+        }
+        return true;
     }
 }

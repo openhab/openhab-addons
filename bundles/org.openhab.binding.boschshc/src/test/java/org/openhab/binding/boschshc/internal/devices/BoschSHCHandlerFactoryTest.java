@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,17 +33,17 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
-public class BoschSHCHandlerFactoryTest {
+class BoschSHCHandlerFactoryTest {
 
     private @NonNullByDefault({}) BoschSHCHandlerFactory fixture;
 
     @BeforeEach
     public void setUp() throws Exception {
-        fixture = new BoschSHCHandlerFactory();
+        fixture = new BoschSHCHandlerFactory(() -> ZoneId.systemDefault());
     }
 
     @Test
-    public void testSupportsThingType() {
+    void testSupportsThingType() {
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_SHC));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH));
         assertTrue(fixture.supportsThingType(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
@@ -60,7 +64,7 @@ public class BoschSHCHandlerFactoryTest {
     }
 
     @Test
-    public void testCreateHandler() {
+    void testCreateHandler() {
         Thing thing = mock(Thing.class);
         when(thing.getThingTypeUID()).thenReturn(BoschSHCBindingConstants.THING_TYPE_SMART_PLUG_COMPACT);
         assertTrue(fixture.createHandler(thing) instanceof PlugHandler);

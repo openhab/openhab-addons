@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.unifi.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link UniFiPoeThingConfig} encapsulates all the configuration options for an instance of the
- * {@link UniFiPoePortThingHandler}.
+ * The {@link UniFiPoePortThingConfig} encapsulates all the configuration options for an instance of the
+ * {@link org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler}.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */

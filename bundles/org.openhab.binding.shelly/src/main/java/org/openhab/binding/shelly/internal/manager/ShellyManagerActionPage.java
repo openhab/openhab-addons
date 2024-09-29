@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -376,23 +376,25 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
         boolean gen2 = profile.isGen2;
 
         list.put(ACTION_RES_STATS, "Reset Statistics");
-        list.put(ACTION_RESTART, "Reboot Device");
-        if (gen2) {
+        if (!profile.isBlu) {
+            list.put(ACTION_RESTART, "Reboot Device");
+        }
+        if (!gen2 || !profile.isBlu) {
             list.put(ACTION_PROTECT, "Protect Device");
         }
 
-        if ((profile.settings.coiot != null) && profile.settings.coiot.peer != null) {
+        if (profile.settings.coiot != null && profile.settings.coiot.peer != null) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
                     || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer) || profile.isMotion;
             list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }
         if (profile.isSensor && !profile.isMotion && profile.settings.wifiSta != null
-                && profile.settings.wifiSta.enabled) {
+                && getBool(profile.settings.wifiSta.enabled)) {
             // FW 1.10+: Reset STA list, force WiFi rescan and connect to stringest AP
             list.put(ACTION_RESSTA, "Reconnect WiFi");
         }
-        if (!gen2 && profile.settings.apRoaming != null) {
+        if (!gen2 && profile.settings.apRoaming != null && profile.settings.apRoaming.enabled != null) {
             list.put(!profile.settings.apRoaming.enabled ? ACTION_ENAPROAMING : ACTION_DISAPROAMING,
                     !profile.settings.apRoaming.enabled ? "Enable WiFi Roaming" : "Disable WiFi Roaming");
         }
@@ -413,10 +415,13 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     !profile.settings.bluetooth ? "Enable Bluetooth" : "Disable Bluetooth");
         }
 
-        boolean set = profile.settings.cloud != null && profile.settings.cloud.enabled;
-        list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
+        if (!profile.isBlu) {
+            boolean set = profile.settings.cloud != null && getBool(profile.settings.cloud.enabled);
+            list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
 
-        list.put(ACTION_RESET, "-Factory Reset");
+            list.put(ACTION_RESET, "-Factory Reset");
+        }
+
         if (!gen2 && profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
             boolean debug_enable = getBool(profile.settings.debugEnable);
@@ -437,7 +442,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     }
 
     private void setRestarted(ShellyManagerInterface th, String uid) {
-        th.setThingOffline(ThingStatusDetail.GONE, "offline.status-error-restarted");
+        th.setThingOfflineAndDisconnect(ThingStatusDetail.GONE, "offline.status-error-restarted");
         scheduleUpdate(th, uid + "_upgrade", 25); // wait 25s before refresh
     }
 }

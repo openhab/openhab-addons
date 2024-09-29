@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.elerotransmitterstick.internal.discovery;
 import static org.openhab.binding.elerotransmitterstick.internal.EleroTransmitterStickBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +44,7 @@ public class EleroChannelDiscoveryService extends AbstractDiscoveryService {
      * Creates the discovery service for the given handler and converter.
      */
     public EleroChannelDiscoveryService(EleroTransmitterStickHandler stickHandler) {
-        super(Collections.singleton(THING_TYPE_ELERO_CHANNEL), DISCOVER_TIMEOUT_SECONDS, true);
+        super(Set.of(THING_TYPE_ELERO_CHANNEL), DISCOVER_TIMEOUT_SECONDS, true);
 
         bridge = stickHandler;
     }

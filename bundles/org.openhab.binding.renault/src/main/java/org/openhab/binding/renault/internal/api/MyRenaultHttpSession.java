@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.renault.internal.api;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +27,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultAPIGatewayException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultActionException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
@@ -51,6 +53,7 @@ public class MyRenaultHttpSession {
 
     private static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
     private static final String CHARGING_MODE_ALWAYS = "always_charging";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private RenaultConfiguration config;
     private HttpClient httpClient;
@@ -191,19 +194,19 @@ public class MyRenaultHttpSession {
         if (responseJson != null) {
             JsonArray accounts = responseJson.getAsJsonArray("accounts");
             for (int i = 0; i < accounts.size(); i++) {
-                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals("MYRENAULT")) {
+                if (accounts.get(i).getAsJsonObject().get("accountType").getAsString().equals(config.accountType)) {
                     kamereonaccountId = accounts.get(i).getAsJsonObject().get("accountId").getAsString();
                     break;
                 }
             }
         }
         if (kamereonaccountId == null) {
-            throw new RenaultException("Can not get Kamereon MyRenault Account ID!");
+            throw new RenaultException("Can not get Kamereon " + config.accountType + " Account ID!");
         }
     }
 
-    public void getVehicle(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getVehicle(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId + "/vehicles/"
                 + config.vin + "/details?country=" + getCountry(config));
         if (responseJson != null) {
@@ -211,8 +214,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void getBatteryStatus(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getBatteryStatus(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/battery-status?country=" + getCountry(config));
         if (responseJson != null) {
@@ -220,8 +223,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void getHvacStatus(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getHvacStatus(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/hvac-status?country=" + getCountry(config));
         if (responseJson != null) {
@@ -229,17 +232,17 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void getCockpit(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getCockpit(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
-                + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
+                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
         if (responseJson != null) {
             car.setCockpit(responseJson);
         }
     }
 
-    public void getLocation(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getLocation(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/location?country=" + getCountry(config));
         if (responseJson != null) {
@@ -247,8 +250,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void getLockStatus(Car car)
-            throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
+    public void getLockStatus(Car car) throws RenaultForbiddenException, RenaultUpdateException,
+            RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/lock-status?country=" + getCountry(config));
         if (responseJson != null) {
@@ -256,8 +259,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void actionHvacOn(double hvacTargetTemperature)
-            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+    public void actionHvacOn(double hvacTargetTemperature) throws RenaultForbiddenException,
+            RenaultNotImplementedException, RenaultActionException, RenaultAPIGatewayException {
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/"
                 + config.vin + "/actions/hvac-start?country=" + getCountry(config);
         postKamereonRequest(path,
@@ -265,8 +268,8 @@ public class MyRenaultHttpSession {
                         + hvacTargetTemperature + "\"}}}");
     }
 
-    public void actionChargeMode(ChargingMode mode)
-            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+    public void actionChargeMode(ChargingMode mode) throws RenaultForbiddenException, RenaultNotImplementedException,
+            RenaultActionException, RenaultAPIGatewayException {
         final String apiMode = ChargingMode.SCHEDULE_MODE.equals(mode) ? CHARGING_MODE_SCHEDULE : CHARGING_MODE_ALWAYS;
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kca/car-adapter/v1/cars/"
                 + config.vin + "/actions/charge-mode?country=" + getCountry(config);
@@ -274,9 +277,8 @@ public class MyRenaultHttpSession {
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
-    public void actionPause(boolean mode)
-            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
-
+    public void actionPause(boolean mode) throws RenaultForbiddenException, RenaultNotImplementedException,
+            RenaultActionException, RenaultAPIGatewayException {
         final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);
@@ -284,10 +286,11 @@ public class MyRenaultHttpSession {
                 "{\"data\":{\"type\":\"ChargePauseResume\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}");
     }
 
-    private void postKamereonRequest(final String path, final String content)
-            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultActionException {
+    private void postKamereonRequest(final String path, final String content) throws RenaultForbiddenException,
+            RenaultNotImplementedException, RenaultActionException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.POST)
-                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt)
                 .content(new StringContentProvider(content, "utf-8"));
         try {
@@ -302,10 +305,11 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private @Nullable JsonObject getKamereonResponse(String path)
-            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultUpdateException {
+    private @Nullable JsonObject getKamereonResponse(String path) throws RenaultForbiddenException,
+            RenaultNotImplementedException, RenaultUpdateException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
-                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         try {
             ContentResponse response = request.send();
@@ -330,13 +334,13 @@ public class MyRenaultHttpSession {
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
-            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
-                    response.getReason(), response.getContentAsString());
+            logger.debug("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(),
+                    response.getStatus(), response.getReason(), response.getContentAsString());
         }
     }
 
     private void checkResponse(ContentResponse response)
-            throws RenaultForbiddenException, RenaultNotImplementedException {
+            throws RenaultForbiddenException, RenaultNotImplementedException, RenaultAPIGatewayException {
         switch (response.getStatus()) {
             case HttpStatus.FORBIDDEN_403:
                 throw new RenaultForbiddenException(
@@ -346,7 +350,7 @@ public class MyRenaultHttpSession {
             case HttpStatus.NOT_IMPLEMENTED_501:
                 throw new RenaultNotImplementedException("Kamereon request not implemented");
             case HttpStatus.BAD_GATEWAY_502:
-                throw new RenaultNotImplementedException("Kamereon request failed");
+                throw new RenaultAPIGatewayException("Kamereon request failed");
             default:
                 break;
         }

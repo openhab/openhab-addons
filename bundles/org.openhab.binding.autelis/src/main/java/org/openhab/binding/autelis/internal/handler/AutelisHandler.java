@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -60,17 +62,18 @@ import org.xml.sax.InputSource;
  * binding allows openHAB to both monitor and control a pool system through
  * these controllers.
  *
- * @see <a href="http://Autelis.com">http://autelis.com</a>
- * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference"</a> for Jandy API
- * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference"</a> for Pentair
- *      API
+ * The {@link AutelisHandler} is responsible for handling commands, which
+ * are sent to one of the channels.
  *
- *      The {@link AutelisHandler} is responsible for handling commands, which
- *      are sent to one of the channels.
+ * @see <a href="http://Autelis.com">http://autelis.com</a>
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_HTTP_Command_Reference">for Jandy API</a>
+ * @see <a href="http://www.autelis.com/wiki/index.php?title=Pool_Control_(PI)_HTTP_Command_Reference">for Pentair
+ *      API</a>
  *
  * @author Dan Cunningham - Initial contribution
  * @author Svilen Valkanov - Replaced Apache HttpClient with Jetty
  */
+@NonNullByDefault
 public class AutelisHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AutelisHandler.class);
@@ -111,11 +114,6 @@ public class AutelisHandler extends BaseThingHandler {
     private static final int THROTTLE_TIME_MILLISECONDS = 500;
 
     /**
-     * Autelis web port
-     */
-    private static final int WEB_PORT = 80;
-
-    /**
      * Pentair values for pump response
      */
     private static final String[] PUMP_TYPES = { "watts", "rpm", "gpm", "filer", "error" };
@@ -133,12 +131,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Constructed URL consisting of host and port
      */
-    private String baseURL;
-
-    /**
-     * Our poll rate
-     */
-    private int refresh;
+    private String baseURL = "";
 
     /**
      * The http client used for polling requests
@@ -153,7 +146,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Authentication for login
      */
-    private String basicAuthentication;
+    private String basicAuthentication = "";
 
     /**
      * Regex expression to match XML responses from the Autelis, this is used to
@@ -165,7 +158,7 @@ public class AutelisHandler extends BaseThingHandler {
     /**
      * Future to poll for updated
      */
-    private ScheduledFuture<?> pollFuture;
+    private @Nullable ScheduledFuture<?> pollFuture;
 
     public AutelisHandler(Thing thing) {
         super(thing);
@@ -221,8 +214,8 @@ public class AutelisHandler extends BaseThingHandler {
                         value = 0;
                     } else if (command == OnOffType.ON) {
                         value = 1;
-                    } else if (command instanceof DecimalType) {
-                        value = ((DecimalType) command).intValue();
+                    } else if (command instanceof DecimalType commandAsDecimalType) {
+                        value = commandAsDecimalType.intValue();
                         if (!isJandy() && value >= 3) {
                             // this is an autelis dim type. not sure what 2 does
                             cmd = "dim";
@@ -289,35 +282,25 @@ public class AutelisHandler extends BaseThingHandler {
         clearPolling();
 
         AutelisConfiguration configuration = getConfig().as(AutelisConfiguration.class);
-        Integer refreshOrNull = configuration.refresh;
-        Integer portOrNull = configuration.port;
+        int refresh = configuration.refresh;
+        int port = configuration.port;
         String host = configuration.host;
         String username = configuration.user;
         String password = configuration.password;
 
-        if (username == null || username.isBlank()) {
+        if (username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "username must not be empty");
             return;
         }
 
-        if (password == null || password.isBlank()) {
+        if (password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "password must not be empty");
             return;
         }
 
-        if (host == null || host.isBlank()) {
+        if (host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname must not be empty");
             return;
-        }
-
-        refresh = DEFAULT_REFRESH_SECONDS;
-        if (refreshOrNull != null) {
-            refresh = refreshOrNull.intValue();
-        }
-
-        int port = WEB_PORT;
-        if (portOrNull != null) {
-            port = portOrNull.intValue();
         }
 
         baseURL = "http://" + host + ":" + port;
@@ -347,6 +330,7 @@ public class AutelisHandler extends BaseThingHandler {
      * Stops/clears this thing's polling future
      */
     private void clearPolling() {
+        ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null && !pollFuture.isCancelled()) {
             logger.trace("Canceling future");
             pollFuture.cancel(false);
@@ -374,7 +358,7 @@ public class AutelisHandler extends BaseThingHandler {
             logger.trace("{}/{}.xml \n {}", baseURL, status, response);
             if (response == null) {
                 // all models and versions have the status.xml endpoint
-                if (status.equals("status")) {
+                if ("status".equals(status)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
                     return;
                 } else {
@@ -474,7 +458,7 @@ public class AutelisHandler extends BaseThingHandler {
      * @param timeout
      * @return
      */
-    private synchronized String getUrl(String url, int timeout) throws InterruptedException {
+    private synchronized @Nullable String getUrl(String url, int timeout) throws InterruptedException {
         // throttle commands for a very short time to avoid 'loosing' them
         long now = System.currentTimeMillis();
         long nextReq = lastRequestTime + THROTTLE_TIME_MILLISECONDS;
@@ -509,11 +493,11 @@ public class AutelisHandler extends BaseThingHandler {
      * @param value
      * @return {@link State}
      */
-    private State toState(String type, String value) throws NumberFormatException {
+    private State toState(@Nullable String type, String value) throws NumberFormatException {
         if ("Number".equals(type)) {
             return new DecimalType(value);
         } else if ("Switch".equals(type)) {
-            return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(Integer.parseInt(value) > 0);
         } else {
             return StringType.valueOf(value);
         }
@@ -539,7 +523,7 @@ public class AutelisHandler extends BaseThingHandler {
         }
     }
 
-    private void stopHttpClient(HttpClient client) {
+    private void stopHttpClient(@Nullable HttpClient client) {
         if (client != null) {
             client.getAuthenticationStore().clearAuthentications();
             client.getAuthenticationStore().clearAuthenticationResults();

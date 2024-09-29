@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,12 @@ import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +50,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -72,6 +76,7 @@ public class GardenaThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GardenaThingHandler.class);
     private TimeZoneProvider timeZoneProvider;
     private @Nullable ScheduledFuture<?> commandResetFuture;
+    private Map<String, Integer> commandDurations = new HashMap<>();
 
     public GardenaThingHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -132,14 +137,17 @@ public class GardenaThingHandler extends BaseThingHandler {
      */
     protected void updateChannel(ChannelUID channelUID) throws GardenaException, AccountHandlerNotAvailableException {
         String groupId = channelUID.getGroupId();
-        if (groupId != null) {
-            boolean isCommand = groupId.endsWith("_commands");
-            if (!isCommand || (isCommand && isLocalDurationCommand(channelUID))) {
-                Device device = getDevice();
-                State state = convertToState(device, channelUID);
-                if (state != null) {
-                    updateState(channelUID, state);
-                }
+        if (groupId == null) {
+            return;
+        }
+        if (isLocalDurationCommand(channelUID)) {
+            int commandDuration = getCommandDurationSeconds(getDeviceDataItemProperty(channelUID));
+            updateState(channelUID, new QuantityType<>(commandDuration, Units.SECOND));
+        } else if (!groupId.endsWith("_commands")) {
+            Device device = getDevice();
+            State state = convertToState(device, channelUID);
+            if (state != null) {
+                updateState(channelUID, state);
             }
         }
     }
@@ -148,60 +156,66 @@ public class GardenaThingHandler extends BaseThingHandler {
      * Converts a Gardena property value to an openHAB state.
      */
     private @Nullable State convertToState(Device device, ChannelUID channelUID) throws GardenaException {
-        if (isLocalDurationCommand(channelUID)) {
-            String dataItemProperty = getDeviceDataItemProperty(channelUID);
-            return new DecimalType(Math.round(device.getLocalService(dataItemProperty).commandDuration / 60.0));
-        }
-
         String propertyPath = channelUID.getGroupId() + ".attributes.";
         String propertyName = channelUID.getIdWithoutGroup();
+        String unitPropertyPath = propertyPath;
 
         if (propertyName.endsWith("_timestamp")) {
             propertyPath += propertyName.replace("_", ".");
         } else {
             propertyPath += propertyName + ".value";
+            unitPropertyPath += propertyName + "Unit";
         }
 
-        String acceptedItemType = null;
+        Channel channel = getThing().getChannel(channelUID.getId());
+        String acceptedItemType = channel != null ? channel.getAcceptedItemType() : null;
+        String baseItemType = StringUtils.substringBefore(acceptedItemType, ":");
+
+        boolean isNullPropertyValue = PropertyUtils.isNull(device, propertyPath);
+
+        if (isNullPropertyValue) {
+            return UnDefType.NULL;
+        }
+        if (baseItemType == null || acceptedItemType == null) {
+            return null;
+        }
+
         try {
-            Channel channel = getThing().getChannel(channelUID.getId());
-            if (channel != null) {
-                acceptedItemType = StringUtils.substringBefore(channel.getAcceptedItemType(), ":");
-
-                if (acceptedItemType != null) {
-                    boolean isNullPropertyValue = PropertyUtils.isNull(device, propertyPath);
-                    boolean isDurationProperty = "duration".equals(propertyName);
-
-                    if (isNullPropertyValue && !isDurationProperty) {
-                        return UnDefType.NULL;
-                    }
-                    switch (acceptedItemType) {
-                        case "String":
-                            return new StringType(PropertyUtils.getPropertyValue(device, propertyPath, String.class));
-                        case "Number":
-                            if (isNullPropertyValue) {
-                                return new DecimalType(0);
-                            } else {
-                                Number value = PropertyUtils.getPropertyValue(device, propertyPath, Number.class);
-                                // convert duration from seconds to minutes
-                                if (value != null) {
-                                    if (isDurationProperty) {
-                                        value = Math.round(value.longValue() / 60.0);
-                                    }
-                                    return new DecimalType(value.longValue());
-                                }
-                                return UnDefType.NULL;
-                            }
-                        case "DateTime":
-                            Date date = PropertyUtils.getPropertyValue(device, propertyPath, Date.class);
-                            if (date != null) {
-                                ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(),
-                                        timeZoneProvider.getTimeZone());
-                                return new DateTimeType(zdt);
-                            }
+            switch (baseItemType) {
+                case "String":
+                    return new StringType(PropertyUtils.getPropertyValue(device, propertyPath, String.class));
+                case "Number":
+                    if (isNullPropertyValue) {
+                        return new DecimalType(0);
+                    } else {
+                        Number value = PropertyUtils.getPropertyValue(device, propertyPath, Number.class);
+                        Unit<?> unit = PropertyUtils.getPropertyValue(device, unitPropertyPath, Unit.class);
+                        if (value == null) {
                             return UnDefType.NULL;
+                        } else {
+                            if ("rfLinkLevel".equals(propertyName)) {
+                                // Gardena gives us link level as 0..100%, while the system.signal-strength
+                                // channel type wants a 0..4 enum
+                                int percent = value.intValue();
+                                value = percent == 100 ? 4 : percent / 20;
+                                unit = null;
+                            }
+                            if (acceptedItemType.equals(baseItemType) || unit == null) {
+                                // No UoM or no unit found
+                                return new DecimalType(value);
+                            } else {
+                                return new QuantityType<>(value, unit);
+                            }
+                        }
                     }
-                }
+                case "DateTime":
+                    Date date = PropertyUtils.getPropertyValue(device, propertyPath, Date.class);
+                    if (date == null) {
+                        return UnDefType.NULL;
+                    } else {
+                        ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), timeZoneProvider.getTimeZone());
+                        return new DateTimeType(zdt);
+                    }
             }
         } catch (GardenaException e) {
             logger.warn("Channel '{}' cannot be updated as device does not contain propertyPath '{}'", channelUID,
@@ -217,14 +231,21 @@ public class GardenaThingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command received: {}", command);
         try {
-            boolean isOnCommand = command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON;
+            boolean isOnCommand = command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.ON;
             String dataItemProperty = getDeviceDataItemProperty(channelUID);
             if (RefreshType.REFRESH == command) {
                 logger.debug("Refreshing Gardena connection");
                 getGardenaSmart().restartWebsockets();
             } else if (isLocalDurationCommand(channelUID)) {
-                QuantityType<?> quantityType = (QuantityType<?>) command;
-                getDevice().getLocalService(dataItemProperty).commandDuration = quantityType.intValue() * 60;
+                QuantityType<?> commandInSeconds = null;
+                if (command instanceof QuantityType<?> timeCommand) {
+                    commandInSeconds = timeCommand.toUnit(Units.SECOND);
+                }
+                if (commandInSeconds != null) {
+                    commandDurations.put(dataItemProperty, commandInSeconds.intValue());
+                } else {
+                    logger.info("Invalid command '{}' for command duration channel, ignoring.", command);
+                }
             } else if (isOnCommand) {
                 GardenaCommand gardenaCommand = getGardenaCommand(dataItemProperty, channelUID);
                 logger.debug("Received Gardena command: {}, {}", gardenaCommand.getClass().getSimpleName(),
@@ -261,17 +282,15 @@ public class GardenaThingHandler extends BaseThingHandler {
         String commandName = channelUID.getIdWithoutGroup().toUpperCase();
         String groupId = channelUID.getGroupId();
         if (groupId != null) {
-            if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
-                return new ValveCommand(ValveControl.valueOf(commandName),
-                        getDevice().getLocalService(dataItemProperty).commandDuration);
-            } else if ("mower_commands".equals(groupId)) {
-                return new MowerCommand(MowerControl.valueOf(commandName),
-                        getDevice().getLocalService(dataItemProperty).commandDuration);
-            } else if ("valveSet_commands".equals(groupId)) {
+            int commandDuration = getCommandDurationSeconds(dataItemProperty);
+            if ("valveSet_commands".equals(groupId)) {
                 return new ValveSetCommand(ValveSetControl.valueOf(commandName));
+            } else if (groupId.startsWith("valve") && groupId.endsWith("_commands")) {
+                return new ValveCommand(ValveControl.valueOf(commandName), commandDuration);
+            } else if ("mower_commands".equals(groupId)) {
+                return new MowerCommand(MowerControl.valueOf(commandName), commandDuration);
             } else if ("powerSocket_commands".equals(groupId)) {
-                return new PowerSocketCommand(PowerSocketControl.valueOf(commandName),
-                        getDevice().getLocalService(dataItemProperty).commandDuration);
+                return new PowerSocketCommand(PowerSocketControl.valueOf(commandName), commandDuration);
             }
         }
         throw new GardenaException("Command " + channelUID.getId() + " not found or groupId null");
@@ -306,6 +325,11 @@ public class GardenaThingHandler extends BaseThingHandler {
             return dataItemProperty;
         }
         throw new GardenaException("Can't extract dataItemProperty from channel group " + channelUID.getGroupId());
+    }
+
+    private int getCommandDurationSeconds(String dataItemProperty) {
+        Integer duration = commandDurations.get(dataItemProperty);
+        return duration != null ? duration : 3600;
     }
 
     /**

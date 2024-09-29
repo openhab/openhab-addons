@@ -16,11 +16,17 @@ The following table lists the thing types of the supported LIFX devices:
 | Color 1000                   | colorlight    |
 | Color 1000 BR30              | colorlight    |
 | LIFX A19                     | colorlight    |
+| LIFX A21 1600lm              | colorlight    |
 | LIFX BR30                    | colorlight    |
 | LIFX Candle                  | colorlight    |
+| LIFX Ceiling                 | colorlight    |
 | LIFX Downlight               | colorlight    |
 | LIFX GU10                    | colorlight    |
 | LIFX Mini Color              | colorlight    |
+| LIFX PAR38                   | colorlight    |
+| LIFX Round Spot              | colorlight    |
+| LIFX Round Path              | colorlight    |
+| LIFX Square Path             | colorlight    |
 |                              |               |
 | LIFX Clean                   | colorhevlight |
 |                              |               |
@@ -28,6 +34,9 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX+ BR30                   | colorirlight  |
 |                              |               |
 | LIFX Beam                    | colormzlight  |
+| LIFX Neon                    | colormzlight  |
+| LIFX Outdoor Neon            | colormzlight  |
+| LIFX String                  | colormzlight  |
 | LIFX Z                       | colormzlight  |
 |                              |               |
 | LIFX Tile                    | tilelight     |

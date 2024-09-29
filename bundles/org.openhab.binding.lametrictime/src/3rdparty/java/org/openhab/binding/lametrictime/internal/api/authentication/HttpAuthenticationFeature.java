@@ -139,7 +139,7 @@ public class HttpAuthenticationFeature implements Feature {
     /**
      * Feature authentication mode.
      */
-    static enum Mode {
+    enum Mode {
         /**
          * Basic preemptive.
          **/

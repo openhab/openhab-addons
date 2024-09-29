@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>FlicButton Binding</name>
 	<description>This is the binding for Flic buttons by Shortcut Labs.</description>
+	<connection>local</connection>
 
 </addon:addon>

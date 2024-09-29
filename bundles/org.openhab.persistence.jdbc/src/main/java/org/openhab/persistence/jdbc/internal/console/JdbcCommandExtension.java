@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,8 +94,8 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
 
     private @Nullable JdbcPersistenceService getPersistenceService() {
         for (PersistenceService persistenceService : persistenceServiceRegistry.getAll()) {
-            if (persistenceService instanceof JdbcPersistenceService) {
-                return (JdbcPersistenceService) persistenceService;
+            if (persistenceService instanceof JdbcPersistenceService service) {
+                return service;
             }
         }
         return null;

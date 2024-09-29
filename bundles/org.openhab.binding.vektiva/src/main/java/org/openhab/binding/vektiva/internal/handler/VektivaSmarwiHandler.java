@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -241,7 +241,7 @@ public class VektivaSmarwiHandler extends BaseThingHandler {
             statusMessage = "Blocked";
         }
 
-        int position = values.getOrDefault("pos", NA).equals("o") ? 0 : 100;
+        int position = "o".equals(values.getOrDefault("pos", NA)) ? 0 : 100;
         if (position == 0 && lastPosition != -1) {
             position = lastPosition;
         }

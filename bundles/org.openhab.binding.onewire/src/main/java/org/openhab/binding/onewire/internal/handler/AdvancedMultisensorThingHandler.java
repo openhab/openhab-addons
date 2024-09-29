@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -227,8 +227,8 @@ public class AdvancedMultisensorThingHandler extends OwBaseThingHandler {
                 properties.put(PROPERTY_DS2438,
                         ds2438configuration.getAssociatedSensorIds(OwSensorType.MS_TV).get(0).getFullPath());
             }
-            default -> throw new OwException(
-                    "sensorType " + sensorType.toString() + " not supported by this thing handler");
+            default ->
+                throw new OwException("sensorType " + sensorType.toString() + " not supported by this thing handler");
         }
 
         updateProperties(properties);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,14 +17,14 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.neeo.internal.NeeoConstants;
 import org.openhab.binding.neeo.internal.discovery.NeeoDeviceDiscoveryService;
 import org.openhab.binding.neeo.internal.discovery.NeeoRoomDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -56,18 +56,17 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
     /** The {@link NetworkAddressService} used for ip lookup */
     private final NetworkAddressService networkAddressService;
 
-    /** The {@link ClientBuilder} used in HttpRequest */
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /** The discovery services created by this class (one per room and one for each device) */
     private final ConcurrentMap<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new ConcurrentHashMap<>();
 
     @Activate
     public NeeoHandlerFactory(@Reference HttpService httpService,
-            @Reference NetworkAddressService networkAddressService, @Reference ClientBuilder clientBuilder) {
+            @Reference NetworkAddressService networkAddressService, @Reference HttpClientFactory httpClientFactory) {
         this.httpService = httpService;
         this.networkAddressService = networkAddressService;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class NeeoHandlerFactory extends BaseThingHandlerFactory {
             final int port = HttpServiceUtil.getHttpServicePort(this.bundleContext);
             final NeeoBrainHandler handler = new NeeoBrainHandler((Bridge) thing,
                     port < 0 ? NeeoConstants.DEFAULT_BRAIN_HTTP_PORT : port, httpService, networkAddressService,
-                    clientBuilder);
+                    httpClient);
             registerRoomDiscoveryService(handler);
             return handler;
         } else if (thingTypeUID.equals(NeeoConstants.BRIDGE_TYPE_ROOM)) {

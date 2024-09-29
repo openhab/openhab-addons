@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +55,7 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
                     "No bridge handler initialized for " + type + " with id " + globalId + ".");
             return null;
         }
-        QbusCommunication qComm = qBridgeHandler.getCommunication();
-        return qComm;
+        return qBridgeHandler.getCommunication();
     }
 
     /**
@@ -73,8 +72,7 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
                     "No bridge initialized for " + type + " with ID " + globalId);
             return null;
         }
-        QbusBridgeHandler qBridgeHandler = (QbusBridgeHandler) qBridge.getHandler();
-        return qBridgeHandler;
+        return (QbusBridgeHandler) qBridge.getHandler();
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 
 /**
- * The {@link SensiboTemperatureUnitConverter} converts to/from Sensibo temperature symbols to Unit<Temperature>
+ * The {@link SensiboTemperatureUnitConverter} converts to/from Sensibo temperature symbols to {@code Unit<Temperature>}
  *
  * @author Arne Seime - Initial contribution
  */

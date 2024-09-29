@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Weather Company Binding</name>
 	<description>This is the binding for the Weather Company weather forecast API.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

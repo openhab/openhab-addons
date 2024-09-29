@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>WiFi LED Binding</name>
 	<description>Binding for WiFi LED devices. These are known as Magic Home RGBW LED, UFO LED, LED NET controller etc.</description>
+	<connection>local</connection>
 
 </addon:addon>

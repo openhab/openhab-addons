@@ -107,6 +107,8 @@
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="description" typeId="description"/>
+			<channel id="maxfreq" typeId="maxfreq"/>
+			<channel id="freq" typeId="freq"/>
 			<channel id="load" typeId="load"/>
 			<channel id="load1" typeId="loadAverage"/>
 			<channel id="load5" typeId="loadAverage"/>
@@ -308,6 +310,22 @@
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>
 
+	<channel-type id="maxfreq" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Maximum Frequency</label>
+		<description>CPU maximum frequency</description>
+		<state readOnly="true" pattern="%.0f MHz"/>
+		<config-description-ref uri="channel-type:systeminfo:lowpriority"/>
+	</channel-type>
+
+	<channel-type id="freq" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Current Frequency</label>
+		<description>Logical processor frequency</description>
+		<state readOnly="true" pattern="%.0f MHz"/>
+		<config-description-ref uri="channel-type:systeminfo:highpriority"/>
+	</channel-type>
+
 	<channel-type id="load">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Load</label>
@@ -327,7 +345,7 @@
 	<channel-type id="loadAverage" advanced="true">
 		<item-type>Number</item-type>
 		<label>Load Average</label>
-		<description>Load as a number of processes for the last 1,5 or 15 minutes</description>
+		<description>Load as a number of processes for the last 1, 5 or 15 minutes</description>
 		<state readOnly="true" pattern="%.1f"/>
 		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
 	</channel-type>

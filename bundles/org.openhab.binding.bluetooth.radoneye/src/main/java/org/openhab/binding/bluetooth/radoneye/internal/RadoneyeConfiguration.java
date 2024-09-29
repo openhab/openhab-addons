@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,18 @@ package org.openhab.binding.bluetooth.radoneye.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration class for {@link RadoneyeBinding} device.
+ * Configuration class for Radoneye device.
  *
  * @author Peter Obel - Initial contribution
  */
 @NonNullByDefault
 public class RadoneyeConfiguration {
     public String address = "";
-    public int refreshInterval;
+    public int fwVersion = 1;
+    public int refreshInterval = 300;
 
     @Override
     public String toString() {
-        return "[address=" + address + ", refreshInterval=" + refreshInterval + "]";
+        return "[address=" + address + ", fwVersion=" + fwVersion + ", refreshInterval=" + refreshInterval + "]";
     }
 }

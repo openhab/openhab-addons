@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,8 +78,8 @@ public class ThingsTemplateGenerator {
 
     private String getLocale(Bridge bridge) {
         var locale = bridge.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE);
-        if (locale instanceof String) {
-            return (String) locale;
+        if (locale instanceof String str) {
+            return str;
         } else {
             return "en";
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,9 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link WeatherSensorData} acts as container for the digitalSTROM json-method <i>getSensorValues</i>. The
- * {@link WeatherSensorData} contains all {@link CachedSensorValue}s and weather service information of the
- * digitalSTROM-server, if a weather service is set.
+ * {@link WeatherSensorData} contains all
+ * {@link org.openhab.binding.digitalstrom.internal.lib.climate.datatypes.CachedSensorValue}s and weather service
+ * information of the digitalSTROM-server, if a weather service is set.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

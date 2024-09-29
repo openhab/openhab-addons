@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,10 @@ package org.openhab.binding.automower.internal.discovery;
 
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.THING_TYPE_AUTOMOWER;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.automower.internal.AutomowerBindingConstants;
@@ -42,7 +42,7 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
     private final AutomowerBridgeHandler bridgeHandler;
 
     public AutomowerDiscoveryService(AutomowerBridgeHandler bridgeHandler) {
-        super(Collections.singleton(THING_TYPE_AUTOMOWER), 10, false);
+        super(Set.of(THING_TYPE_AUTOMOWER), 10, false);
         this.bridgeHandler = bridgeHandler;
     }
 

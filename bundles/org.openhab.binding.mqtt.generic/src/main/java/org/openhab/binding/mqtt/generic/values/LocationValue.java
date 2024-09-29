@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ public class LocationValue extends Value {
 
     @Override
     public PointType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof PointType) {
-            return ((PointType) command);
+        if (command instanceof PointType point) {
+            return point;
         } else {
             return PointType.valueOf(command.toString());
         }

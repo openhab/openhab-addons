@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface SleepIQConfigStatusMessage {
-    public static final String USERNAME_MISSING = "missing-username-configuration";
-    public static final String PASSWORD_MISSING = "missing-password-configuration";
+    static final String USERNAME_MISSING = "missing-username-configuration";
+    static final String PASSWORD_MISSING = "missing-password-configuration";
 }

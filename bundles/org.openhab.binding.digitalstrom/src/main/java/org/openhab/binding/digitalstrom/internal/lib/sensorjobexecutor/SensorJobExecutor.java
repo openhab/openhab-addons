@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,15 +19,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SensorJobExecutor} is the implementation of the {@link AbstractSensorJobExecutor} to execute
- * digitalSTROM-Device {@link SensorJob}'s e.g. {@link DeviceConsumptionSensorJob} and
- * {@link DeviceOutputValueSensorJob}.
+ * digitalSTROM-Device {@link SensorJob}'s e.g.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob} and
+ * {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceOutputValueSensorJob}.
  * <p>
  * In addition priorities can be assigned to jobs, but the following list shows the maximum evaluation of a
  * {@link SensorJob} per priority.
  * </p>
  * <ul>
- * <li>low priority: read cycles before execution is set in {@link Config}</li>
- * <li>medium priority: read cycles before execution is set in {@link Config}</li>
+ * <li>low priority: read cycles before execution is set in
+ * {@link org.openhab.binding.digitalstrom.internal.lib.config.Config}</li>
+ * <li>medium priority: read cycles before execution is set in
+ * {@link org.openhab.binding.digitalstrom.internal.lib.config.Config}</li>
  * <li>high priority: read cycles before execution 0</li>
  * </ul>
  *

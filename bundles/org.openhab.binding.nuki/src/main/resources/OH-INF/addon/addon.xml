@@ -7,5 +7,6 @@
 	<name>Nuki Binding</name>
 	<description>The Nuki Binding allows simple and fast integration of Nuki Smart Locks into openHAB. This binding needs
 		the Nuki Smart Lock(s) to be paired via Bluetooth with a Nuki Bridge to function correctly.</description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,12 @@ package org.openhab.binding.tesla.internal.protocol;
  */
 public class DriveState {
 
+    public String active_route_destination;
+    public double active_route_latitude;
+    public double active_route_longitude;
+    public double active_route_miles_to_arrival;
+    public double active_route_minutes_to_arrival;
+    public double active_route_traffic_minutes_delay;
     public double latitude;
     public double longitude;
     public double native_latitude;

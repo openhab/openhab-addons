@@ -235,10 +235,12 @@ The supported Channel and its associated channel type is shown below.
 
 ## Rain Sensor
 
-Unfortunately Velux has decided to closely integrate the rain sensor into the window device.
-The rain sensor is therefore not displayed in the device list.
-On the other hand, the 'limitMinimum' channel of a roof window provides information about rainy weather:
-If it is set internally by the Velux control unit to a value other than zero, it rains. (Joke!!)
+Unfortunately the rain sensor is closely integrated into the window device and it is therefore not possible to display its state via a channel.
+However, the 'limitMinimum' channel can provide information about rainy weather.
+The rain sensor, when triggered, overrides the window position so it cannot open more than the ventilation position.
+(Normally 5% .. 10% depending on the window type, resp. 90% .. 95% inverted).
+So if 'limitMinimum' changes from its normal value (usually 100% resp. 0% inverted) to this ventilation position value, it is an indication that the rain sensor has probably been triggered.
+
 
 ## Properties of the "bridge" Thing
 
@@ -437,21 +439,21 @@ For those who are interested in more detailed insight of the processing of this 
 
 With Karaf you can use the following command sequence:
 
-```text
+```shell
 log:set TRACE org.openhab.binding.velux
 log:tail
 ```
 
 This, of course, is possible on command line with the commands:
 
-```text
+```shell
 % openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
-```text
+```xml
     <logger name="org.openhab.binding.velux" level="TRACE">
         <appender-ref ref="FILE" />
     </logger>

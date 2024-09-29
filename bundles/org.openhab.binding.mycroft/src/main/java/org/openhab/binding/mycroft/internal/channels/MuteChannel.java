@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,7 @@ public class MuteChannel extends MycroftChannel<OnOffType> {
     }
 
     private boolean sendVolumeSetMessage(float volume) {
-        String messageToSend = VolumeChannel.VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME",
-                Float.valueOf(volume).toString());
+        String messageToSend = VolumeChannel.VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME", Float.toString(volume));
         return handler.sendMessage(messageToSend);
     }
 

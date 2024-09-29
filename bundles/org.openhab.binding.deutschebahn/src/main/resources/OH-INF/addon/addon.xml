@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Deutsche Bahn Binding</name>
 	<description>This binding provides timetable information for train stations of Deutsche Bahn.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

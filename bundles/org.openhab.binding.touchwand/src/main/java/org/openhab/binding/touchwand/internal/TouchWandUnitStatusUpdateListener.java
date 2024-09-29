@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 
 /**
- * Interface for a listener on the {@link TouchWandWebSocket}.
- * When it is registered on the socket, it gets called back when {@link TouchWandWebSocket} receives data.
+ * Interface for a listener on the {@link TouchWandWebSockets}.
+ * When it is registered on the socket, it gets called back when {@link TouchWandWebSockets} receives data.
  *
  * @author Roie Geron - Initial contribution
  */

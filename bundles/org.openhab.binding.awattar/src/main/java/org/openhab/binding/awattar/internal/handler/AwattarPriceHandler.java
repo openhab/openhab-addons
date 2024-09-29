@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,11 +55,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarPriceHandler extends BaseThingHandler {
-
+    private static final int THING_REFRESH_INTERVAL = 60;
     private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
 
-    private int thingRefreshInterval = 60;
-    private TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private @Nullable ScheduledFuture<?> thingRefresher;
 
     public AwattarPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
@@ -78,7 +77,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
 
     /**
      * Initialize the binding and start the refresh job.
-     * The refresh job runs once after initialization and afterwards every hour.
+     * The refresh job runs once after initialization and afterward every hour.
      */
 
     @Override
@@ -91,12 +90,14 @@ public class AwattarPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
+                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL * 1000,
+                        TimeUnit.MILLISECONDS);
             }
         }
         updateStatus(ThingStatus.UNKNOWN);
     }
 
+    @Override
     public void dispose() {
         ScheduledFuture<?> localRefresher = thingRefresher;
         if (localRefresher != null) {
@@ -140,9 +141,9 @@ public class AwattarPriceHandler extends BaseThingHandler {
         if (group.equals(CHANNEL_GROUP_CURRENT)) {
             target = ZonedDateTime.now(bridgeHandler.getTimeZone());
         } else if (group.startsWith("today")) {
-            target = getCalendarForHour(Integer.valueOf(group.substring(5)), bridgeHandler.getTimeZone());
+            target = getCalendarForHour(Integer.parseInt(group.substring(5)), bridgeHandler.getTimeZone());
         } else if (group.startsWith("tomorrow")) {
-            target = getCalendarForHour(Integer.valueOf(group.substring(8)), bridgeHandler.getTimeZone()).plusDays(1);
+            target = getCalendarForHour(Integer.parseInt(group.substring(8)), bridgeHandler.getTimeZone()).plusDays(1);
         } else {
             logger.warn("Unsupported channel group {}", group);
             updateState(channelUID, state);
@@ -156,21 +157,20 @@ public class AwattarPriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
-        double currentprice = price.getPrice();
 
         String channelId = channelUID.getIdWithoutGroup();
         switch (channelId) {
             case CHANNEL_MARKET_NET:
-                state = toDecimalType(currentprice);
+                state = toDecimalType(price.netPrice());
                 break;
             case CHANNEL_MARKET_GROSS:
-                state = toDecimalType(currentprice * bridgeHandler.getVatFactor());
+                state = toDecimalType(price.grossPrice());
                 break;
             case CHANNEL_TOTAL_NET:
-                state = toDecimalType(currentprice + bridgeHandler.getBasePrice());
+                state = toDecimalType(price.netTotal());
                 break;
             case CHANNEL_TOTAL_GROSS:
-                state = toDecimalType((currentprice + bridgeHandler.getBasePrice()) * bridgeHandler.getVatFactor());
+                state = toDecimalType(price.grossTotal());
                 break;
             default:
                 logger.warn("Unknown channel id {} for Thing type {}", channelUID, getThing().getThingTypeUID());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class ElroConnectsBindingConstants {
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey));
 
     // ELRO device types
-    public static enum ElroDeviceType {
+    public enum ElroDeviceType {
         ENTRY_SENSOR,
         CO_ALARM,
         CXSM_ALARM,
@@ -197,7 +197,7 @@ public class ElroConnectsBindingConstants {
             .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 
     // ELRO device status
-    public static enum ElroDeviceStatus {
+    public enum ElroDeviceStatus {
         NORMAL,
         TRIGGERED,
         TEST,

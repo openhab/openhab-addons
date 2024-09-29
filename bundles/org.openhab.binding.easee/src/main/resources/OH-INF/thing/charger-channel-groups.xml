@@ -6,9 +6,13 @@
 	<channel-group-type id="charger-state">
 		<label>Charger Status</label>
 		<channels>
-			<channel id="smartCharging" typeId="type-switch">
+			<channel id="smartCharging" typeId="rwtype-switch">
 				<label>Smart Charging</label>
 				<description>Smart Charging status of the wallbox.</description>
+				<properties>
+					<property name="writeCommand">ChangeConfiguration</property>
+					<property name="validationExpression">.*</property>
+				</properties>
 			</channel>
 			<channel id="cableLocked" typeId="type-switch">
 				<label>Cable Locked</label>
@@ -25,6 +29,18 @@
 			<channel id="sessionEnergy" typeId="type-energy">
 				<label>Session Energy</label>
 				<description>Energy for current session.</description>
+			</channel>
+			<channel id="energyPerHour" typeId="type-energy">
+				<label>Energy per Hour</label>
+				<description>Energy transferred per hour.</description>
+			</channel>
+			<channel id="wiFiRSSI" typeId="type-rssi">
+				<label>Wi-Fi RSSI</label>
+				<description>Wi-Fi signal quality.</description>
+			</channel>
+			<channel id="cellRSSI" typeId="type-rssi">
+				<label>Cell RSSI</label>
+				<description>Cell signal quality.</description>
 			</channel>
 			<channel id="dynamicCircuitCurrentP1" typeId="type-current">
 				<label>Dynamic Circuit Current P1</label>
@@ -46,13 +62,25 @@
 				<label>Current Firmware</label>
 				<description>Current Firmware of the wallbox.</description>
 			</channel>
-			<channel id="latestFirmware" typeId="type-integer">
-				<label>Latest Firmware</label>
-				<description>Latest Firmware which is available for the wallbox.</description>
-			</channel>
 			<channel id="voltage" typeId="type-volt">
 				<label>Voltage</label>
 				<description>Voltage</description>
+			</channel>
+			<channel id="inCurrentT2" typeId="type-current">
+				<label>Input Current T2</label>
+				<description>Input Current on phase T2</description>
+			</channel>
+			<channel id="inCurrentT3" typeId="type-current">
+				<label>Input Current T3</label>
+				<description>Input Current on phase T3</description>
+			</channel>
+			<channel id="inCurrentT4" typeId="type-current">
+				<label>Input Current T4</label>
+				<description>Input Current on phase T4</description>
+			</channel>
+			<channel id="inCurrentT5" typeId="type-current">
+				<label>Input Current T5</label>
+				<description>Input Current on phase T5</description>
 			</channel>
 			<channel id="outputCurrent" typeId="type-current">
 				<label>Output Current</label>
@@ -61,6 +89,54 @@
 			<channel id="isOnline" typeId="type-switch">
 				<label>Online</label>
 				<description>Online status of the wallbox.</description>
+			</channel>
+			<channel id="inVoltageT1T2" typeId="type-volt">
+				<label>Input Voltage T1T2</label>
+				<description>Input voltage between phase T1 and T2</description>
+			</channel>
+			<channel id="inVoltageT1T3" typeId="type-volt">
+				<label>Input Voltage T1T3</label>
+				<description>Input voltage between phase T1 and T3</description>
+			</channel>
+			<channel id="inVoltageT1T4" typeId="type-volt">
+				<label>Input Voltage T1T4</label>
+				<description>Input voltage between phase T1 and T4</description>
+			</channel>
+			<channel id="inVoltageT1T5" typeId="type-volt">
+				<label>Input Voltage T1T5</label>
+				<description>Input voltage between phase T1 and T5</description>
+			</channel>
+			<channel id="inVoltageT2T3" typeId="type-volt">
+				<label>Input Voltage T2T3</label>
+				<description>Input voltage between phase T2 and T3</description>
+			</channel>
+			<channel id="inVoltageT2T4" typeId="type-volt">
+				<label>Input Voltage T2T4</label>
+				<description>Input voltage between phase T2 and T4</description>
+			</channel>
+			<channel id="inVoltageT2T5" typeId="type-volt">
+				<label>Input Voltage T2T5</label>
+				<description>Input voltage between phase T2 and T5</description>
+			</channel>
+			<channel id="inVoltageT3T4" typeId="type-volt">
+				<label>Input Voltage T3T4</label>
+				<description>Input voltage between phase T3 and T4</description>
+			</channel>
+			<channel id="inVoltageT3T5" typeId="type-volt">
+				<label>Input Voltage T3T5</label>
+				<description>Input voltage between phase T3 and T5</description>
+			</channel>
+			<channel id="inVoltageT4T5" typeId="type-volt">
+				<label>Input Voltage T4T5</label>
+				<description>Input voltage between phase T4 and T5</description>
+			</channel>
+			<channel id="ledMode" typeId="type-integer">
+				<label>Led Mode</label>
+				<description>Led Mode.</description>
+			</channel>
+			<channel id="cableRating" typeId="type-current">
+				<label>Cable Rating</label>
+				<description>Rating of the connected cable.</description>
 			</channel>
 			<channel id="dynamicChargerCurrent" typeId="rwtype-current">
 				<label>Dynamic Charger Current</label>
@@ -85,6 +161,10 @@
 			<channel id="fatalErrorCode" typeId="type-integer">
 				<label>Fatal Error Code</label>
 				<description>Fatal Error Code.</description>
+			</channel>
+			<channel id="connectedToCloud" typeId="type-switch">
+				<label>Connected to Cloud</label>
+				<description>Cloud connection status of the wallbox.</description>
 			</channel>
 		</channels>
 	</channel-group-type>

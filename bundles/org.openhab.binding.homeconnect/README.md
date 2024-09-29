@@ -17,7 +17,7 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 
 #### experimental support
 
-| Home appliance | Thing Type ID    |
+| Home appliance | Thing Type ID |
 | --------------- | ------------ |
 | Dishwasher | dishwasher |
 | Washer | washer |
@@ -98,20 +98,22 @@ After the bridge has been added and authorized, devices are discovered automatic
 #### 2. Create Home Connect developer account
 
 1. Create an account at [https://developer.home-connect.com](https://developer.home-connect.com) and login.
-1. Please make sure you've added your associated Home Connect account email at <https://developer.home-connect.com/user/me/edit>. You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.  
+1. Please make sure you've added your associated Home Connect account email at <https://developer.home-connect.com/user/me/edit>. You should fill in your email address, which you use for the official Android or iOS app, at `Default Home Connect User Account for Testing`.
 ![Screenshot Home Connect profile page](doc/home_connect_profile.png "Screenshot Home Connect profile page")
 1. Register / Create an application at [https://developer.home-connect.com/applications](https://developer.home-connect.com/applications)
     - _Application ID_: e.g. `openhab-binding`
     - _OAuth Flow_: Authorization Code Grant Flow
-    - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)  
-       > **WARNING**: Please don't use your developer account username  
+    - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)
+       > **WARNING**: Please don't use your developer account username
 
-     **_Please don't use your developer account username_**
-    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`  
+    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
     - _Proof Key for Code Exchange_: keep unchecked
-1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.  
+
+       > **NOTE**: You might get an error (`403 - Forbidden`) in case you entered a bare IP of your local openHAB instance. In that case, use your instance's hostname instead (e.g. for openhabian `http://openhabian:8080/homeconnect`) and try again.
+
+1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.
 
 ![Screenshot Home Connect application page](doc/home_connect_application.png "Screenshot Home Connect application page")
 
@@ -127,16 +129,16 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
     - **client secret:** your application client secret
     - **simulator:** false
 1. Now navigate to the URL (`Redirct URI`) you've added to your Home Connect application in the previous step (2.3). For example `http://192.168.178.80:8080/homeconnect`.
-1. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.  
-![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")  
-![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")  
-![Screenshot Home Connect wizard page 3](doc/homeconnect_setup_3.png "Screenshot Home Connect wizard page 3")  
-![Screenshot Home Connect wizard page 4](doc/homeconnect_setup_4.png "Screenshot Home Connect wizard page 4")  
+1. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.
+![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")
+![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")
+![Screenshot Home Connect wizard page 3](doc/homeconnect_setup_3.png "Screenshot Home Connect wizard page 3")
+![Screenshot Home Connect wizard page 4](doc/homeconnect_setup_4.png "Screenshot Home Connect wizard page 4")
 1. That's it! Now you can use autodiscovery to add devices. Your devices should show up if you start a device scan in the openHAB UI.
 
 ## Examples: File based configuration
 
-If you prefer to configure everything via file instead of openHAB UI, here are some examples.
+If you prefer to configure everything via file instead of openHAB UI, here are some examples. In order to get your `haId` you might use the discover feature in UI, copy the appliance's ID and paste it into your `*.things`.
 
 ### things/homeconnect.things
 
@@ -162,15 +164,60 @@ The channel parameter uses the following syntax: `homeconnect:<thing type id>:<b
 
 ```java
 // dishwasher
-Switch                 Dishwasher_PowerState                  "Power State"                       {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state"}
-Contact                Dishwasher_DoorState                   "Door State"                        {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:door_state"}
-String                 Dishwasher_OperationState              "Operation State"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:operation_state"}
-Switch                 Dishwasher_RemoteStartAllowanceState   "Remote Start Allowance State"      {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_start_allowance_state"}
-Switch                 Dishwasher_RemoteControlActiveState    "Remote Control Activation State"   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
-String                 Dishwasher_SelectedProgramState        "Selected Program"                  {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
-String                 Dishwasher_ActiveProgramState          "Active Program"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
-Number:Time            Dishwasher_RemainingProgramTimeState   "Remaining program time"            {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
-Number:Dimensionless   Dishwasher_ProgramProgressState        "Progress State"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
+Switch                 Dishwasher_PowerState                              "Power State"                        {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state"}
+Contact                Dishwasher_DoorState                               "Door State"                         {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:door_state"}
+String                 Dishwasher_OperationState                          "Operation State"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:operation_state"}
+Switch                 Dishwasher_RemoteStartAllowanceState               "Remote Start Allowance State"       {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_start_allowance_state"}
+Switch                 Dishwasher_RemoteControlActiveState                "Remote Control Activation State"    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
+String                 Dishwasher_SelectedProgramState                    "Selected Program"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
+String                 Dishwasher_ActiveProgramState                      "Active Program"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
+Number:Time            Dishwasher_RemainingProgramTimeState               "Remaining Program Time"             {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
+Number:Dimensionless   Dishwasher_ProgramProgressState                    "Progress State"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
+String                 Dishwasher_BasicActionsState                       "Basic Control"                      {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:basic_actions_state"}
+
+// oven
+Switch                 Oven_PowerState                                    "Power State"                        {channel="homeconnect:oven:api_bridge_at_home:oven1:power_state"}
+Contact                Oven_DoorState                                     "Door State"                         {channel="homeconnect:oven:api_bridge_at_home:oven1:door_state"}
+String                 Oven_OperationState                                "Operation State"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:operation_state"}
+Switch                 Oven_RemoteStartAllowanceState                     "Remote Start Allowance State"       {channel="homeconnect:oven:api_bridge_at_home:oven1:remote_start_allowance_state"}
+Switch                 Oven_RemoteControlActiveState                      "Remote Control Activation State"    {channel="homeconnect:oven:api_bridge_at_home:oven1:remote_control_active_state"}
+String                 Oven_SelectedProgramState                          "Selected Program"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:selected_program_state"}
+String                 Oven_ActiveProgramState                            "Active Program"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:active_program_state"}
+Number:Time            Oven_RemainingProgramTimeState                     "Remaining Program Time"             {channel="homeconnect:oven:api_bridge_at_home:oven1:remaining_program_time_state"}
+Number:Dimensionless   Oven_ProgramProgressState                          "Progress State"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:program_progress_state"}
+Number:Time            Oven_ElapsedProgramTime                            "Elapsed Program Time"               {channel="homeconnect:oven:api_bridge_at_home:oven1:elapsed_program_time"}
+Number:Time            Oven_Duration                                      "Program Duration"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:duration"}
+Number:Temperature     Oven_CurrentCavityTemperature                     "Current Temperature"                {channel="homeconnect:oven:api_bridge_at_home:oven1:oven_current_cavity_temperature"}
+Number:Temperature     Oven_SetpointTemperature                          "Set Temperature"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:setpoint_temperature"}
+String                 Oven_BasicActionsState                            "Basic Control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1:basic_actions_state"}
+
+// washer
+Switch                 Washer_PowerState                                  "Power State"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:power_state"}
+Contact                Washer_DoorState                                   "Door State"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:door_state"}
+String                 Washer_OperationState                              "Operation State"                    {channel="homeconnect:washer:api_bridge_at_home:washer1:operation_state"}
+Switch                 Washer_RemoteStartAllowanceState                   "Remote Start Allowance State"       {channel="homeconnect:washer:api_bridge_at_home:washer1:remote_start_allowance_state"}
+Switch                 Washer_RemoteControlActiveState                    "Remote Control Activation State"    {channel="homeconnect:washer:api_bridge_at_home:washer1:remote_control_active_state"}
+String                 Washer_SelectedProgramState                        "Selected Program"                   {channel="homeconnect:washer:api_bridge_at_home:washer1:selected_program_state"}
+String                 Washer_ActiveProgramState                          "Active Program"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:active_program_state"}
+Number:Time            Washer_RemainingProgramTimeState                   "Remaining Program Time"             {channel="homeconnect:washer:api_bridge_at_home:washer1:remaining_program_time_state"}
+Number:Dimensionless   Washer_ProgramProgressState                        "Progress State"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:program_progress_state"}
+String                 Washer_LaundryCareWasherTemperature             "Temperature"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_temperature"}
+String                 Washer_LaundryCareWasherSpinSpeed              "Spin Speed"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_spin_speed"}
+String                 Washer_LaundryCareWasherIdos1Level             "i-Dos 1 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1_level"}
+String                 Washer_LaundryCareWasherIdos2Level             "i-Dos 2 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2_level"}
+Switch                 Washer_LaundryCareWasherIdos1                   "i-Dos 1 State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1"}
+Switch                 Washer_LaundryCareWasherIdos2                   "i-Dos 2 State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2"}
+Switch                 Washer_LaundryCareWasherVarioPerfect           "Vario Perfect State"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_vario_perfect"}
+Switch                 Washer_LaundryCareWasherLessIroning            "Ironing State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_less_ironing"}
+Switch                 Washer_LaundryCareWasherPreWash                "Prewash State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_pre_wash"}
+Switch                 Washer_LaundryCareWasherRinsePlus              "Amount Aadditional Rinses"           {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
+Switch                 Washer_LaundryCareWasherRinseHold              "Spin Hold"                          {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_hold"}
+Switch                 Washer_LaundryCareWasherSoak                    "Soaking State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_soak"}
+Number:Mass            Washer_LaundryCareWasherLoadRecommendation     "Load Recommendation"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_load_recommendation"}
+Number:Dimensionless   Washer_ProgramEnergy                              "Estimated Energy Consumption"       {channel="homeconnect:washer:api_bridge_at_home:washer1:program_energy"}
+Number:Dimensionless   Washer_ProgramWater                               "Estimated Water Consumption"        {channel="homeconnect:washer:api_bridge_at_home:washer1:program_water"}
+String                 Washer_BasicActionsState                         "Basic Control"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:basic_actions_state"}
+
 ```
 
 ## Home Connect Console
@@ -280,7 +327,7 @@ The channel of type `remote_start_allowance_state` is read only. You can only en
 
 ### In case of error...
 
-Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for help in the community forum or on github. Please provide request and event exports.  
+Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for help in the community forum or on github. Please provide request and event exports.
  ![Screenshot Home Connect wizard page 4](doc/export_button.png "Export button")
 
 ### Rate limit reached

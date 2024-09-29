@@ -77,7 +77,7 @@ This binding has two rule Actions `savePreset(int presetNumber)` and `savePreset
 
 In Xtend rules, you can use the Actions like this.
 
-```
+```java
 getActions("wled", "wled:json:XmasTree").savePreset(5,"Flashy Preset")
 ```
 
@@ -87,7 +87,7 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
 
 *.sitemap
 
-```
+```perl
         Text label="XmasLights" icon="rgb"{
             Switch item=XmasTree_MasterControls
             Slider item=XmasTree_SegmentBrightness
@@ -99,8 +99,8 @@ If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the
             Selection item=XmasTree_Palettes
             Selection item=XmasTree_Presets
             Default item=XmasTree_FXSpeed
-            Default item=XmasTree_FXIntensity            
+            Default item=XmasTree_FXIntensity
             Selection item=XmasTree_TransformTime mappings=[0='0 seconds', 2 ='2 seconds', 10='10 seconds', 30='30 seconds', 60='60 seconds']
         }
-        
+
 ```

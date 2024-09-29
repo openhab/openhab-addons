@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Robonect Binding</name>
 	<description>This is the binding for Robonect.</description>
+	<connection>local</connection>
 
 </addon:addon>

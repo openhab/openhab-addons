@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,8 @@ public class SeneyeStatus {
     }
 
     private String getTickAsDate(String tick) {
-        String date = new java.text.SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_ISO)
+        return new java.text.SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_ISO)
                 .format(new java.util.Date(Long.parseLong(tick) * 1000));
-        return date;
     }
 
     public String getWrong_slideString() {

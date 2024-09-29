@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,7 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandThermostatUnitData) {
-            TouchWandThermostatUnitData thermostat = (TouchWandThermostatUnitData) unitData;
+        if (unitData instanceof TouchWandThermostatUnitData thermostat) {
             updateThermostatState(thermostat);
             updateTargetTemperature(thermostat);
             updateRoomTemperature(thermostat);
@@ -56,12 +55,12 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
     void touchWandUnitHandleCommand(Command command) {
         TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
         if (touchWandBridgeHandler != null) {
-            if (command instanceof OnOffType) {
-                touchWandBridgeHandler.touchWandClient.cmdThermostatOnOff(unitId, (OnOffType) command);
+            if (command instanceof OnOffType onOffCommand) {
+                touchWandBridgeHandler.touchWandClient.cmdThermostatOnOff(unitId, onOffCommand);
                 return;
             }
-            if (command instanceof QuantityType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+            if (command instanceof QuantityType quantityCommand) {
+                final QuantityType<?> value = quantityCommand.toUnit(SIUnits.CELSIUS);
                 String targetTemperature = String.valueOf(value.intValue());
                 touchWandBridgeHandler.touchWandClient.cmdThermostatTargetTemperature(unitId, targetTemperature);
                 return;
@@ -97,13 +96,13 @@ public class TouchWandThermostatHandler extends TouchWandBaseUnitHandler {
 
     void updateTargetTemperature(TouchWandThermostatUnitData unitData) {
         int targetTemperature = unitData.getCurrStatus().getTargetTemperature();
-        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(targetTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<>(targetTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_TARGET_TEMPERATURE, temperatureValue);
     }
 
     void updateRoomTemperature(TouchWandThermostatUnitData unitData) {
         int roomTemperature = unitData.getCurrStatus().getRoomTemperature();
-        QuantityType<Temperature> temperatureValue = new QuantityType<Temperature>(roomTemperature, SIUnits.CELSIUS);
+        QuantityType<Temperature> temperatureValue = new QuantityType<>(roomTemperature, SIUnits.CELSIUS);
         updateState(CHANNEL_THERMOSTAT_ROOM_TEMPERATURE, temperatureValue);
     }
 

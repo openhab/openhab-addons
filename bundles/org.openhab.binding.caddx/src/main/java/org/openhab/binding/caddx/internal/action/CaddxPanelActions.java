@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = CaddxPanelActions.class)
 @ThingActionsScope(name = "caddx")
 @NonNullByDefault
 public class CaddxPanelActions implements ThingActions {
@@ -42,8 +45,8 @@ public class CaddxPanelActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ThingHandlerPanel) {
-            this.handler = (ThingHandlerPanel) handler;
+        if (handler instanceof ThingHandlerPanel panelHandler) {
+            this.handler = panelHandler;
         }
     }
 

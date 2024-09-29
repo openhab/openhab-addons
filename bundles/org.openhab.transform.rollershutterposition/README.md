@@ -14,6 +14,6 @@ The precision parameter can be used to specify the minimum movement that can be 
 This is useful when latencies in the system limit prevent very small movements and will reduce the accuracy of the position estimation.
 
 ```java
-Rollershutter <itemName> { channel="<channelUID>"[profile="rollershutter:position", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]]}
+Rollershutter <itemName> { channel="<channelUID>"[profile="transform:ROLLERSHUTTERPOSITION", uptime=<uptime>, downtime=<downtime>, precision=<minimun percent movement>]}
 ```
 

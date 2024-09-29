@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ public class CommonModelParser extends AbstractBaseParser implements SunspecPars
 
     @Override
     public CommonModelBlock parse(ModbusRegisterArray raw) {
-
         CommonModelBlock block = new CommonModelBlock();
 
         block.sunSpecDID = extractUInt16(raw, 0, 0);

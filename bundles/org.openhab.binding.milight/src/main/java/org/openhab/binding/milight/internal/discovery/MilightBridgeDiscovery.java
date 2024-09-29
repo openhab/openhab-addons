@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -221,9 +221,6 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
     /**
      * Send a discover message and resends the message until either a valid response
      * is received or the resend counter reaches the maximum attempts.
-     *
-     * @param scheduler The scheduler is used for resending.
-     * @throws SocketException
      */
     public void startDiscoveryService() {
         // Do nothing if there is already a discovery running
@@ -324,8 +321,7 @@ public class MilightBridgeDiscovery extends AbstractDiscoveryService implements 
         try (MilightV6SessionManager session = new MilightV6SessionManager(bridgeID, sessionState, addressOfBridge,
                 MilightBindingConstants.PORT_VER6, MilightV6SessionManager.TIMEOUT_MS, new byte[] { 0, 0 })) {
             session.start();
-            boolean success = s.tryAcquire(1, 1300, TimeUnit.MILLISECONDS);
-            return success;
+            return s.tryAcquire(1, 1300, TimeUnit.MILLISECONDS);
         } catch (IOException e) {
             logger.debug("checkForV6Bridge failed", e);
         }

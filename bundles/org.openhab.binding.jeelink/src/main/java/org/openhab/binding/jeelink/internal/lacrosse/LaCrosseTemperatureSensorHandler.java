@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.openhab.binding.jeelink.internal.JeeLinkSensorHandler;
 import org.openhab.binding.jeelink.internal.ReadingPublisher;
 import org.openhab.binding.jeelink.internal.RollingAveragePublisher;
 import org.openhab.binding.jeelink.internal.RollingReadingAverage;
 import org.openhab.binding.jeelink.internal.config.LaCrosseTemperatureSensorConfig;
-import org.openhab.binding.jeelink.internal.util.StringUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
 
     @Override
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisher() {
-        return new ReadingPublisher<LaCrosseTemperatureReading>() {
+        return new ReadingPublisher<>() {
             private final Map<Integer, ReadingPublisher<LaCrosseTemperatureReading>> channelPublishers = new HashMap<>();
 
             @Override
@@ -93,7 +94,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                         missingChannels.add(ChannelBuilder
                                 .create(new ChannelUID(getThing().getUID(), channelName + idSuffix), "Number")
                                 .withType(new ChannelTypeUID(getThing().getThingTypeUID().getBindingId(), channelName))
-                                .withLabel(StringUtils.capitalize(channelName + labelSuffix)).build());
+                                .withLabel(Objects.requireNonNull(StringUtils.capitalize(channelName + labelSuffix)))
+                                .build());
                     }
                 }
                 missingChannels.addAll(getThing().getChannels());
@@ -118,7 +120,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
     }
 
     public ReadingPublisher<LaCrosseTemperatureReading> createPublisherForChannel(int channelNo) {
-        ReadingPublisher<LaCrosseTemperatureReading> publisher = new ReadingPublisher<LaCrosseTemperatureReading>() {
+        ReadingPublisher<LaCrosseTemperatureReading> publisher = new ReadingPublisher<>() {
             @Override
             public void publish(LaCrosseTemperatureReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
@@ -131,8 +133,8 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
                                 reading.getHumidity(), reading.isBatteryNew(), reading.isBatteryLow());
                         updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temp, SIUnits.CELSIUS));
                         updateState(HUMIDITY_CHANNEL, new QuantityType<>(reading.getHumidity(), Units.PERCENT));
-                        updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
-                        updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                        updateState(BATTERY_NEW_CHANNEL, OnOffType.from(reading.isBatteryNew()));
+                        updateState(BATTERY_LOW_CHANNEL, OnOffType.from(reading.isBatteryLow()));
                     } else {
                         logger.debug("updating states for channel {} of thing {} ({}): temp={} ({}), humidity={}",
                                 reading.getChannel(), getThing().getLabel(), getThing().getUID().getId(), temp,
@@ -152,8 +154,7 @@ public class LaCrosseTemperatureSensorHandler extends JeeLinkSensorHandler<LaCro
 
         LaCrosseTemperatureSensorConfig cfg = getConfigAs(LaCrosseTemperatureSensorConfig.class);
         if (cfg.bufferSize > 1 && cfg.updateInterval > 0) {
-            publisher = new RollingAveragePublisher<LaCrosseTemperatureReading>(cfg.bufferSize, cfg.updateInterval,
-                    publisher, scheduler) {
+            publisher = new RollingAveragePublisher<>(cfg.bufferSize, cfg.updateInterval, publisher, scheduler) {
                 @Override
                 public RollingReadingAverage<LaCrosseTemperatureReading> createRollingReadingAverage(int bufferSize) {
                     return new LaCrosseRollingReadingAverage(bufferSize);

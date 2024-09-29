@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -552,7 +552,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
             } else if (acceptedItemType.startsWith(CoreItemFactory.NUMBER + ":")) {
                 // Item type Number with dimension
                 if (stateType == null || "Quantity".equals(stateType)) {
-                    List<Class<? extends State>> stateTypes = Collections.singletonList(QuantityType.class);
+                    List<Class<? extends State>> stateTypes = List.of(QuantityType.class);
                     channelState = TypeParser.parseState(stateTypes, state);
                 } else if ("Decimal".equals(stateType)) {
                     channelState = new DecimalType(state);
@@ -573,7 +573,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
                         break;
                     case CoreItemFactory.SWITCH:
                         if (checkStateType(itemName, stateType, "OnOff")) {
-                            channelState = "ON".equals(state) ? OnOffType.ON : OnOffType.OFF;
+                            channelState = OnOffType.from("ON".equals(state));
                         }
                         break;
                     case CoreItemFactory.CONTACT:
@@ -661,6 +661,6 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(RemoteopenhabDiscoveryService.class);
+        return Set.of(RemoteopenhabDiscoveryService.class);
     }
 }

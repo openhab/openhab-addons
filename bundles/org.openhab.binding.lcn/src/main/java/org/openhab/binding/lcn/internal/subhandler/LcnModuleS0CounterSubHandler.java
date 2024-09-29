@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +53,6 @@ public class LcnModuleS0CounterSubHandler extends AbstractLcnModuleVariableSubHa
 
     @Override
     public Collection<Pattern> getPckStatusMessagePatterns() {
-        return Collections.singleton(PATTERN);
+        return Set.of(PATTERN);
     }
 }

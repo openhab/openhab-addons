@@ -10,10 +10,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 == Source Code
 
-https://github.com/openhab/openhab-core
+https://github.com/openhab/openhab-addons
 
 == Third-party Content
- 
+
 io.github.givimad: rustpotter-java
 * License: Apache 2.0 License
 * Project: https://github.com/GiviMAD/rustpotter

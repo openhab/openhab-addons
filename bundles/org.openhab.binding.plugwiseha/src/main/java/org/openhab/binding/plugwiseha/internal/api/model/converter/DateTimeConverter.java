@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,8 +51,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
         }
 
         try {
-            ZonedDateTime dateTime = ZonedDateTime.parse(str, DateTimeConverter.FORMAT);
-            return dateTime;
+            return ZonedDateTime.parse(str, DateTimeConverter.FORMAT);
         } catch (DateTimeParseException e) {
             logger.debug("Invalid datetime format in {}", str);
             return null;

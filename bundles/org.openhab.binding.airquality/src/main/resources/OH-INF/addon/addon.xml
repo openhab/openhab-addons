@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Air Quality Binding</name>
 	<description>Measure Air Quality Index and details about pollution particles for a given location.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

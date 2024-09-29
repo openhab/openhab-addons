@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,8 +79,7 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
         // Handle the conversion case of BigDecimal to Float,Double,Long,Integer and the respective
         // primitive types
         String typeName = type.getSimpleName();
-        if (value instanceof BigDecimal && !type.equals(BigDecimal.class)) {
-            BigDecimal bdValue = (BigDecimal) value;
+        if (value instanceof BigDecimal bdValue && !type.equals(BigDecimal.class)) {
             if (type.equals(Float.class) || "float".equals(typeName)) {
                 result = bdValue.floatValue();
             } else if (type.equals(Double.class) || "double".equals(typeName)) {
@@ -93,8 +92,7 @@ public class SubscribeFieldToMQTTtopic implements MqttMessageSubscriber {
         } else
         // Handle the conversion case of String to Float,Double,Long,Integer,BigDecimal and the respective
         // primitive types
-        if (value instanceof String && !type.equals(String.class)) {
-            String bdValue = (String) value;
+        if (value instanceof String bdValue && !type.equals(String.class)) {
             if (type.equals(Float.class) || "float".equals(typeName)) {
                 result = Float.valueOf(bdValue);
             } else if (type.equals(Double.class) || "double".equals(typeName)) {

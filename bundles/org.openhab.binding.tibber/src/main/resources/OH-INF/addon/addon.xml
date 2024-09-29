@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Tibber Binding</name>
 	<description>This binding retrieves price and consumption data from Tibber API using queries and live subscription </description>
+	<connection>cloud</connection>
 
 </addon:addon>

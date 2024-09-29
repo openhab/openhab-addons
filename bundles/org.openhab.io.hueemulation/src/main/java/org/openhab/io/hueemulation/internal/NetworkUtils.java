@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,8 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -95,7 +95,7 @@ public class NetworkUtils {
     public static Response singleError(Gson gson, UriInfo uri, int type, @Nullable String message) {
         HueResponse e = new HueResponse(
                 new HueErrorMessage(type, uri.getPath().replace("/api", ""), message != null ? message : ""));
-        String str = gson.toJson(Collections.singleton(e), new TypeToken<List<?>>() {
+        String str = gson.toJson(Set.of(e), new TypeToken<List<?>>() {
         }.getType());
         int httpCode = 500;
         switch (type) {

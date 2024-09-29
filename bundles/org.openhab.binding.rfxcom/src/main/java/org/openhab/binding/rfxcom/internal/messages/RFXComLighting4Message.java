@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,8 @@ import org.openhab.core.types.Type;
  *
  * a Lighting4 Base command is composed of 24 bit DATA plus PULSE information
  *
+ * <p>
+ * {@code
  * DATA:
  * Code = 014554
  * S1- S24 = <0000 0001 0100 0101 0101> <0100>
@@ -46,16 +48,22 @@ import org.openhab.core.types.Type;
  *
  * PULSE:
  * default 350
- *
+ * }
+ * 
  * Tested on a PT2262 remote PlugIn module
  *
+ * <p>
  * Example:
  *
+ * <pre>
+ * {@code
  * Switch TESTout "TestOut" (All) {rfxcom=">83205.350:LIGHTING4.PT2262:Command"}
  * (SendCommand DeviceID(int).Pulse(int):LIGHTING4.Subtype:Command )
  *
  * Switch TESTin "TestIn" (All) {rfxcom="<83205:Command"}
  * (ReceiveCommand ON/OFF Command )
+ * }
+ * </pre>
  *
  * @author Alessandro Ballini (ITA) - Initial contribution
  * @author Pauli Anttila - Migrated to OH2
@@ -175,7 +183,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
                 // Deprecated if statement - to be removed in a future release
                 if (config.onCommandId == null && config.offCommandId == null) {
-                    return ON_COMMAND_IDS.contains(commandId) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(ON_COMMAND_IDS.contains(commandId));
                 }
                 throw new RFXComInvalidStateException(channelId, Integer.toString(commandId),
                         "Device not configured for received commandId");
@@ -267,8 +275,8 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 break;
 
             case CHANNEL_COMMAND_ID:
-                if (type instanceof DecimalType) {
-                    commandId = (byte) ((DecimalType) type).intValue();
+                if (type instanceof DecimalType decimalCommand) {
+                    commandId = (byte) decimalCommand.intValue();
                 } else {
                     throw new RFXComInvalidStateException(channelId, type.toString(),
                             "Channel only supports DecimalType");

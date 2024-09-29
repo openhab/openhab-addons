@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Doorbird Binding</name>
 	<description>This is the binding for Doorbird video doorbells.</description>
+	<connection>local</connection>
 
 </addon:addon>

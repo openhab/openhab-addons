@@ -8,7 +8,7 @@
 		<label>Velbus Serial Bridge</label>
 		<description>This bridge represents a Velbus Serial-interface</description>
 		<channel-groups>
-			<channel-group id="bridgeClockAlarm" typeId="clockAlarm"/>
+			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
 		</channel-groups>
 		<config-description-ref uri="bridge-type:velbus:bridge"/>
 	</bridge-type>
@@ -17,7 +17,7 @@
 		<label>Velbus Network Bridge</label>
 		<description>This bridge represents a Velbus connection over TCP/IP</description>
 		<channel-groups>
-			<channel-group id="bridgeClockAlarm" typeId="clockAlarm"/>
+			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
 		</channel-groups>
 		<config-description-ref uri="bridge-type:velbus:networkbridge"/>
 	</bridge-type>
@@ -204,6 +204,22 @@
 		<config-description-ref uri="thing-type:velbus:2channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmb2ble-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB2BLE-10</label>
+		<description>2-channel blind control module with extended possibilities</description>
+		<channels>
+			<channel id="CH1" typeId="rollershutter"/>
+			<channel id="CH2" typeId="rollershutter"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:2channelDevice"/>
+	</thing-type>
+
 	<thing-type id="vmb2pbn">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -293,6 +309,25 @@
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmb4ryld-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYLD-10</label>
+		<description>4-channel relay module with voltage outputs</description>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
 	<thing-type id="vmb4ryno">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -300,6 +335,25 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB4RYNO</label>
+		<description>4-channel relay module with potential-free contacts</description>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb4ryno-10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB4RYNO-10</label>
 		<description>4-channel relay module with potential-free contacts</description>
 		<channels>
 			<channel id="CH1" typeId="switch"/>
@@ -336,6 +390,24 @@
 
 		<label>VMB6PBN</label>
 		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
+		<channel-groups>
+			<channel-group id="input" typeId="8channelInputModule"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="6channelFeedbackModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmb6pbn-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB6PBN-20</label>
+		<description>6 button interface module</description>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -473,8 +545,35 @@
 			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel1-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL1-20</label>
+		<description>Edge-lit one touch button module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -492,8 +591,35 @@
 			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel2-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL2-20</label>
+		<description>Edge-lit two touch buttons module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -511,8 +637,35 @@
 			<channel-group id="button" typeId="8channelButtonModule"/>
 			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel4-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL4-20</label>
+		<description>Edge-lit four touch buttons module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -530,9 +683,37 @@
 			<channel-group id="button" typeId="32channelButtonModule"/>
 			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 			<channel-group id="oledDisplay" typeId="oledDisplay"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbelo-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBELO-20</label>
+		<description>Edge-lit touch panel with Oled display</description>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -550,8 +731,35 @@
 			<channel-group id="button" typeId="2channelButtonModule"/>
 			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
 			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbel4pir-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBEL4PIR-20</label>
+		<description>Edge-lit Motion detector with four touch button</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="4channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="output" typeId="1outputModule"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
@@ -563,6 +771,25 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGP1</label>
+		<description>Glass control module with 1 touch key</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="1channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp1-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP1-20</label>
 		<description>Glass control module with 1 touch key</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
@@ -601,6 +828,25 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGP2</label>
+		<description>Glass control module with 2 touch keys</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="2channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgp2-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP2-20</label>
 		<description>Glass control module with 2 touch keys</description>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
@@ -670,6 +916,25 @@
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
+	<thing-type id="vmbgp4-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4-20</label>
+		<description>Glass control module with 4 touch keys</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
 	<thing-type id="vmbgp4pir">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -708,6 +973,25 @@
 		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
+	<thing-type id="vmbgp4pir-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGP4PIR-20</label>
+		<description>Glass control module with 4 touch keys and built-in motion and twilight sensor</description>
+		<channel-groups>
+			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="8channelButtonModule"/>
+			<channel-group id="feedback" typeId="4channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:9channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
 	<thing-type id="vmbgpo">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -715,6 +999,26 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPO</label>
+		<description>Glass control module with oled display</description>
+		<channel-groups>
+			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="button" typeId="32channelButtonModule"/>
+			<channel-group id="feedback" typeId="32channelFeedbackModule"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+			<channel-group id="oledDisplay" typeId="oledDisplay"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:33channelDeviceWithTemperatureSensor"/>
+	</thing-type>
+
+	<thing-type id="vmbgpo-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBGPO-20</label>
 		<description>Glass control module with oled display</description>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -919,6 +1223,50 @@
 		<config-description-ref uri="thing-type:velbus:8channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmbdali">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDALI</label>
+		<description>DALI gateway module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="81channelInputModule"/>
+			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
+			<channel-group id="color" typeId="81channelColorModule"/>
+			<channel-group id="brightness" typeId="81channelBrightnessModule"/>
+			<channel-group id="white" typeId="81channelWhiteColorModule"/>
+			<channel-group id="scene" typeId="81channelSceneModule"/>
+			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbdali-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBDALI-20</label>
+		<description>DALI gateway module</description>
+		<channel-groups>
+			<channel-group id="input" typeId="81channelInputModule"/>
+			<channel-group id="feedback" typeId="81channelFeedbackModule"/>
+			<channel-group id="color" typeId="81channelColorModule"/>
+			<channel-group id="brightness" typeId="81channelBrightnessModule"/>
+			<channel-group id="white" typeId="81channelWhiteColorModule"/>
+			<channel-group id="scene" typeId="81channelSceneModule"/>
+			<channel-group id="virtual-light" typeId="16channelVirtualLight"/>
+			<channel-group id="clockAlarm" typeId="clockAlarm"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:81channelDevice"/>
+	</thing-type>
+
 	<channel-type id="heatingOperatingMode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
@@ -1085,7 +1433,8 @@
 		<label>Wind Speed</label>
 		<description>Currently measured wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
 	</channel-type>
 	<channel-type id="trigger-channel">
 		<kind>trigger</kind>
@@ -1108,6 +1457,14 @@
 			</options>
 		</event>
 	</channel-type>
+	<channel-type id="light-scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Scene options for DALI network</description>
+		<state readOnly="false" min="0" max="15" step="1">
+		</state>
+	</channel-type>
+
 	<channel-group-type id="1channelInputModuleWithTemperatureSensor">
 		<label>Input with Temperature Sensor</label>
 		<description>This is a generic module with 8 input channels and a temperature sensor.</description>
@@ -1268,6 +1625,102 @@
 			<channel id="CH33" typeId="temperature"/>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="81channelInputModule">
+		<label>Input</label>
+		<description>This is a generic module with 81 input channels.</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel"/>
+			<channel id="CH2" typeId="trigger-channel"/>
+			<channel id="CH3" typeId="trigger-channel"/>
+			<channel id="CH4" typeId="trigger-channel"/>
+			<channel id="CH5" typeId="trigger-channel"/>
+			<channel id="CH6" typeId="trigger-channel"/>
+			<channel id="CH7" typeId="trigger-channel"/>
+			<channel id="CH8" typeId="trigger-channel"/>
+			<channel id="CH9" typeId="trigger-channel"/>
+			<channel id="CH10" typeId="trigger-channel"/>
+			<channel id="CH11" typeId="trigger-channel"/>
+			<channel id="CH12" typeId="trigger-channel"/>
+			<channel id="CH13" typeId="trigger-channel"/>
+			<channel id="CH14" typeId="trigger-channel"/>
+			<channel id="CH15" typeId="trigger-channel"/>
+			<channel id="CH16" typeId="trigger-channel"/>
+			<channel id="CH17" typeId="trigger-channel"/>
+			<channel id="CH18" typeId="trigger-channel"/>
+			<channel id="CH19" typeId="trigger-channel"/>
+			<channel id="CH20" typeId="trigger-channel"/>
+			<channel id="CH21" typeId="trigger-channel"/>
+			<channel id="CH22" typeId="trigger-channel"/>
+			<channel id="CH23" typeId="trigger-channel"/>
+			<channel id="CH24" typeId="trigger-channel"/>
+			<channel id="CH25" typeId="trigger-channel"/>
+			<channel id="CH26" typeId="trigger-channel"/>
+			<channel id="CH27" typeId="trigger-channel"/>
+			<channel id="CH28" typeId="trigger-channel"/>
+			<channel id="CH29" typeId="trigger-channel"/>
+			<channel id="CH30" typeId="trigger-channel"/>
+			<channel id="CH31" typeId="trigger-channel"/>
+			<channel id="CH32" typeId="trigger-channel"/>
+			<channel id="CH33" typeId="trigger-channel"/>
+			<channel id="CH34" typeId="trigger-channel"/>
+			<channel id="CH35" typeId="trigger-channel"/>
+			<channel id="CH36" typeId="trigger-channel"/>
+			<channel id="CH37" typeId="trigger-channel"/>
+			<channel id="CH38" typeId="trigger-channel"/>
+			<channel id="CH39" typeId="trigger-channel"/>
+			<channel id="CH40" typeId="trigger-channel"/>
+			<channel id="CH41" typeId="trigger-channel"/>
+			<channel id="CH42" typeId="trigger-channel"/>
+			<channel id="CH43" typeId="trigger-channel"/>
+			<channel id="CH44" typeId="trigger-channel"/>
+			<channel id="CH45" typeId="trigger-channel"/>
+			<channel id="CH46" typeId="trigger-channel"/>
+			<channel id="CH47" typeId="trigger-channel"/>
+			<channel id="CH48" typeId="trigger-channel"/>
+			<channel id="CH49" typeId="trigger-channel"/>
+			<channel id="CH50" typeId="trigger-channel"/>
+			<channel id="CH51" typeId="trigger-channel"/>
+			<channel id="CH52" typeId="trigger-channel"/>
+			<channel id="CH53" typeId="trigger-channel"/>
+			<channel id="CH54" typeId="trigger-channel"/>
+			<channel id="CH55" typeId="trigger-channel"/>
+			<channel id="CH56" typeId="trigger-channel"/>
+			<channel id="CH57" typeId="trigger-channel"/>
+			<channel id="CH58" typeId="trigger-channel"/>
+			<channel id="CH59" typeId="trigger-channel"/>
+			<channel id="CH60" typeId="trigger-channel"/>
+			<channel id="CH61" typeId="trigger-channel"/>
+			<channel id="CH62" typeId="trigger-channel"/>
+			<channel id="CH63" typeId="trigger-channel"/>
+			<channel id="CH64" typeId="trigger-channel"/>
+			<channel id="CH65" typeId="trigger-channel"/>
+			<channel id="CH66" typeId="trigger-channel"/>
+			<channel id="CH67" typeId="trigger-channel"/>
+			<channel id="CH68" typeId="trigger-channel"/>
+			<channel id="CH69" typeId="trigger-channel"/>
+			<channel id="CH70" typeId="trigger-channel"/>
+			<channel id="CH71" typeId="trigger-channel"/>
+			<channel id="CH72" typeId="trigger-channel"/>
+			<channel id="CH73" typeId="trigger-channel"/>
+			<channel id="CH74" typeId="trigger-channel"/>
+			<channel id="CH75" typeId="trigger-channel"/>
+			<channel id="CH76" typeId="trigger-channel"/>
+			<channel id="CH77" typeId="trigger-channel"/>
+			<channel id="CH78" typeId="trigger-channel"/>
+			<channel id="CH79" typeId="trigger-channel"/>
+			<channel id="CH80" typeId="trigger-channel"/>
+			<channel id="CH81" typeId="trigger-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="1outputModule">
+		<label>Output</label>
+		<description>
+			This is a generic module with 1 output.
+		</description>
+		<channels>
+			<channel id="output" typeId="switch"/>
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="1channelFeedbackModule">
 		<label>Feedback</label>
 		<description>
@@ -1369,6 +1822,95 @@
 			<channel id="CH32" typeId="ledFeedback"/>
 		</channels>
 	</channel-group-type>
+	<channel-group-type id="81channelFeedbackModule">
+		<label>Feedback</label>
+		<description>
+			This is a generic module with 81 feedback channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="ledFeedback"/>
+			<channel id="CH2" typeId="ledFeedback"/>
+			<channel id="CH3" typeId="ledFeedback"/>
+			<channel id="CH4" typeId="ledFeedback"/>
+			<channel id="CH5" typeId="ledFeedback"/>
+			<channel id="CH6" typeId="ledFeedback"/>
+			<channel id="CH7" typeId="ledFeedback"/>
+			<channel id="CH8" typeId="ledFeedback"/>
+			<channel id="CH9" typeId="ledFeedback"/>
+			<channel id="CH10" typeId="ledFeedback"/>
+			<channel id="CH11" typeId="ledFeedback"/>
+			<channel id="CH12" typeId="ledFeedback"/>
+			<channel id="CH13" typeId="ledFeedback"/>
+			<channel id="CH14" typeId="ledFeedback"/>
+			<channel id="CH15" typeId="ledFeedback"/>
+			<channel id="CH16" typeId="ledFeedback"/>
+			<channel id="CH17" typeId="ledFeedback"/>
+			<channel id="CH18" typeId="ledFeedback"/>
+			<channel id="CH19" typeId="ledFeedback"/>
+			<channel id="CH20" typeId="ledFeedback"/>
+			<channel id="CH21" typeId="ledFeedback"/>
+			<channel id="CH22" typeId="ledFeedback"/>
+			<channel id="CH23" typeId="ledFeedback"/>
+			<channel id="CH24" typeId="ledFeedback"/>
+			<channel id="CH25" typeId="ledFeedback"/>
+			<channel id="CH26" typeId="ledFeedback"/>
+			<channel id="CH27" typeId="ledFeedback"/>
+			<channel id="CH28" typeId="ledFeedback"/>
+			<channel id="CH29" typeId="ledFeedback"/>
+			<channel id="CH30" typeId="ledFeedback"/>
+			<channel id="CH31" typeId="ledFeedback"/>
+			<channel id="CH32" typeId="ledFeedback"/>
+			<channel id="CH33" typeId="ledFeedback"/>
+			<channel id="CH34" typeId="ledFeedback"/>
+			<channel id="CH35" typeId="ledFeedback"/>
+			<channel id="CH36" typeId="ledFeedback"/>
+			<channel id="CH37" typeId="ledFeedback"/>
+			<channel id="CH38" typeId="ledFeedback"/>
+			<channel id="CH39" typeId="ledFeedback"/>
+			<channel id="CH40" typeId="ledFeedback"/>
+			<channel id="CH41" typeId="ledFeedback"/>
+			<channel id="CH42" typeId="ledFeedback"/>
+			<channel id="CH43" typeId="ledFeedback"/>
+			<channel id="CH44" typeId="ledFeedback"/>
+			<channel id="CH45" typeId="ledFeedback"/>
+			<channel id="CH46" typeId="ledFeedback"/>
+			<channel id="CH47" typeId="ledFeedback"/>
+			<channel id="CH48" typeId="ledFeedback"/>
+			<channel id="CH49" typeId="ledFeedback"/>
+			<channel id="CH50" typeId="ledFeedback"/>
+			<channel id="CH51" typeId="ledFeedback"/>
+			<channel id="CH52" typeId="ledFeedback"/>
+			<channel id="CH53" typeId="ledFeedback"/>
+			<channel id="CH54" typeId="ledFeedback"/>
+			<channel id="CH55" typeId="ledFeedback"/>
+			<channel id="CH56" typeId="ledFeedback"/>
+			<channel id="CH57" typeId="ledFeedback"/>
+			<channel id="CH58" typeId="ledFeedback"/>
+			<channel id="CH59" typeId="ledFeedback"/>
+			<channel id="CH60" typeId="ledFeedback"/>
+			<channel id="CH61" typeId="ledFeedback"/>
+			<channel id="CH62" typeId="ledFeedback"/>
+			<channel id="CH63" typeId="ledFeedback"/>
+			<channel id="CH64" typeId="ledFeedback"/>
+			<channel id="CH65" typeId="ledFeedback"/>
+			<channel id="CH66" typeId="ledFeedback"/>
+			<channel id="CH67" typeId="ledFeedback"/>
+			<channel id="CH68" typeId="ledFeedback"/>
+			<channel id="CH69" typeId="ledFeedback"/>
+			<channel id="CH70" typeId="ledFeedback"/>
+			<channel id="CH71" typeId="ledFeedback"/>
+			<channel id="CH72" typeId="ledFeedback"/>
+			<channel id="CH73" typeId="ledFeedback"/>
+			<channel id="CH74" typeId="ledFeedback"/>
+			<channel id="CH75" typeId="ledFeedback"/>
+			<channel id="CH76" typeId="ledFeedback"/>
+			<channel id="CH77" typeId="ledFeedback"/>
+			<channel id="CH78" typeId="ledFeedback"/>
+			<channel id="CH79" typeId="ledFeedback"/>
+			<channel id="CH80" typeId="ledFeedback"/>
+			<channel id="CH81" typeId="ledFeedback"/>
+		</channels>
+	</channel-group-type>
 	<channel-group-type id="2channelButtonModule">
 		<label>Button</label>
 		<description>
@@ -1377,6 +1919,18 @@
 		<channels>
 			<channel id="CH1" typeId="button-channel"/>
 			<channel id="CH2" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="4channelButtonModule">
+		<label>Button</label>
+		<description>
+			This is a generic module with 4 button channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="button-channel"/>
+			<channel id="CH2" typeId="button-channel"/>
+			<channel id="CH3" typeId="button-channel"/>
+			<channel id="CH4" typeId="button-channel"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="5SubchannelButtonModule">
@@ -1460,6 +2014,385 @@
 			<channel id="CH30" typeId="button-channel"/>
 			<channel id="CH31" typeId="button-channel"/>
 			<channel id="CH32" typeId="button-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="81channelColorModule">
+		<label>Color</label>
+		<description>
+			This is a generic module with 81 color channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="system.color"/>
+			<channel id="CH2" typeId="system.color"/>
+			<channel id="CH3" typeId="system.color"/>
+			<channel id="CH4" typeId="system.color"/>
+			<channel id="CH5" typeId="system.color"/>
+			<channel id="CH6" typeId="system.color"/>
+			<channel id="CH7" typeId="system.color"/>
+			<channel id="CH8" typeId="system.color"/>
+			<channel id="CH9" typeId="system.color"/>
+			<channel id="CH10" typeId="system.color"/>
+			<channel id="CH11" typeId="system.color"/>
+			<channel id="CH12" typeId="system.color"/>
+			<channel id="CH13" typeId="system.color"/>
+			<channel id="CH14" typeId="system.color"/>
+			<channel id="CH15" typeId="system.color"/>
+			<channel id="CH16" typeId="system.color"/>
+			<channel id="CH17" typeId="system.color"/>
+			<channel id="CH18" typeId="system.color"/>
+			<channel id="CH19" typeId="system.color"/>
+			<channel id="CH20" typeId="system.color"/>
+			<channel id="CH21" typeId="system.color"/>
+			<channel id="CH22" typeId="system.color"/>
+			<channel id="CH23" typeId="system.color"/>
+			<channel id="CH24" typeId="system.color"/>
+			<channel id="CH25" typeId="system.color"/>
+			<channel id="CH26" typeId="system.color"/>
+			<channel id="CH27" typeId="system.color"/>
+			<channel id="CH28" typeId="system.color"/>
+			<channel id="CH29" typeId="system.color"/>
+			<channel id="CH30" typeId="system.color"/>
+			<channel id="CH31" typeId="system.color"/>
+			<channel id="CH32" typeId="system.color"/>
+			<channel id="CH33" typeId="system.color"/>
+			<channel id="CH34" typeId="system.color"/>
+			<channel id="CH35" typeId="system.color"/>
+			<channel id="CH36" typeId="system.color"/>
+			<channel id="CH37" typeId="system.color"/>
+			<channel id="CH38" typeId="system.color"/>
+			<channel id="CH39" typeId="system.color"/>
+			<channel id="CH40" typeId="system.color"/>
+			<channel id="CH41" typeId="system.color"/>
+			<channel id="CH42" typeId="system.color"/>
+			<channel id="CH43" typeId="system.color"/>
+			<channel id="CH44" typeId="system.color"/>
+			<channel id="CH45" typeId="system.color"/>
+			<channel id="CH46" typeId="system.color"/>
+			<channel id="CH47" typeId="system.color"/>
+			<channel id="CH48" typeId="system.color"/>
+			<channel id="CH49" typeId="system.color"/>
+			<channel id="CH50" typeId="system.color"/>
+			<channel id="CH51" typeId="system.color"/>
+			<channel id="CH52" typeId="system.color"/>
+			<channel id="CH53" typeId="system.color"/>
+			<channel id="CH54" typeId="system.color"/>
+			<channel id="CH55" typeId="system.color"/>
+			<channel id="CH56" typeId="system.color"/>
+			<channel id="CH57" typeId="system.color"/>
+			<channel id="CH58" typeId="system.color"/>
+			<channel id="CH59" typeId="system.color"/>
+			<channel id="CH60" typeId="system.color"/>
+			<channel id="CH61" typeId="system.color"/>
+			<channel id="CH62" typeId="system.color"/>
+			<channel id="CH63" typeId="system.color"/>
+			<channel id="CH64" typeId="system.color"/>
+			<channel id="CH65" typeId="system.color"/>
+			<channel id="CH66" typeId="system.color"/>
+			<channel id="CH67" typeId="system.color"/>
+			<channel id="CH68" typeId="system.color"/>
+			<channel id="CH69" typeId="system.color"/>
+			<channel id="CH70" typeId="system.color"/>
+			<channel id="CH71" typeId="system.color"/>
+			<channel id="CH72" typeId="system.color"/>
+			<channel id="CH73" typeId="system.color"/>
+			<channel id="CH74" typeId="system.color"/>
+			<channel id="CH75" typeId="system.color"/>
+			<channel id="CH76" typeId="system.color"/>
+			<channel id="CH77" typeId="system.color"/>
+			<channel id="CH78" typeId="system.color"/>
+			<channel id="CH79" typeId="system.color"/>
+			<channel id="CH81" typeId="system.color"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="81channelBrightnessModule">
+		<label>Brightness</label>
+		<description>
+			This is a generic module with 81 brightness channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="system.brightness"/>
+			<channel id="CH2" typeId="system.brightness"/>
+			<channel id="CH3" typeId="system.brightness"/>
+			<channel id="CH4" typeId="system.brightness"/>
+			<channel id="CH5" typeId="system.brightness"/>
+			<channel id="CH6" typeId="system.brightness"/>
+			<channel id="CH7" typeId="system.brightness"/>
+			<channel id="CH8" typeId="system.brightness"/>
+			<channel id="CH9" typeId="system.brightness"/>
+			<channel id="CH10" typeId="system.brightness"/>
+			<channel id="CH11" typeId="system.brightness"/>
+			<channel id="CH12" typeId="system.brightness"/>
+			<channel id="CH13" typeId="system.brightness"/>
+			<channel id="CH14" typeId="system.brightness"/>
+			<channel id="CH15" typeId="system.brightness"/>
+			<channel id="CH16" typeId="system.brightness"/>
+			<channel id="CH17" typeId="system.brightness"/>
+			<channel id="CH18" typeId="system.brightness"/>
+			<channel id="CH19" typeId="system.brightness"/>
+			<channel id="CH20" typeId="system.brightness"/>
+			<channel id="CH21" typeId="system.brightness"/>
+			<channel id="CH22" typeId="system.brightness"/>
+			<channel id="CH23" typeId="system.brightness"/>
+			<channel id="CH24" typeId="system.brightness"/>
+			<channel id="CH25" typeId="system.brightness"/>
+			<channel id="CH26" typeId="system.brightness"/>
+			<channel id="CH27" typeId="system.brightness"/>
+			<channel id="CH28" typeId="system.brightness"/>
+			<channel id="CH29" typeId="system.brightness"/>
+			<channel id="CH30" typeId="system.brightness"/>
+			<channel id="CH31" typeId="system.brightness"/>
+			<channel id="CH32" typeId="system.brightness"/>
+			<channel id="CH33" typeId="system.brightness"/>
+			<channel id="CH34" typeId="system.brightness"/>
+			<channel id="CH35" typeId="system.brightness"/>
+			<channel id="CH36" typeId="system.brightness"/>
+			<channel id="CH37" typeId="system.brightness"/>
+			<channel id="CH38" typeId="system.brightness"/>
+			<channel id="CH39" typeId="system.brightness"/>
+			<channel id="CH40" typeId="system.brightness"/>
+			<channel id="CH41" typeId="system.brightness"/>
+			<channel id="CH42" typeId="system.brightness"/>
+			<channel id="CH43" typeId="system.brightness"/>
+			<channel id="CH44" typeId="system.brightness"/>
+			<channel id="CH45" typeId="system.brightness"/>
+			<channel id="CH46" typeId="system.brightness"/>
+			<channel id="CH47" typeId="system.brightness"/>
+			<channel id="CH48" typeId="system.brightness"/>
+			<channel id="CH49" typeId="system.brightness"/>
+			<channel id="CH50" typeId="system.brightness"/>
+			<channel id="CH51" typeId="system.brightness"/>
+			<channel id="CH52" typeId="system.brightness"/>
+			<channel id="CH53" typeId="system.brightness"/>
+			<channel id="CH54" typeId="system.brightness"/>
+			<channel id="CH55" typeId="system.brightness"/>
+			<channel id="CH56" typeId="system.brightness"/>
+			<channel id="CH57" typeId="system.brightness"/>
+			<channel id="CH58" typeId="system.brightness"/>
+			<channel id="CH59" typeId="system.brightness"/>
+			<channel id="CH60" typeId="system.brightness"/>
+			<channel id="CH61" typeId="system.brightness"/>
+			<channel id="CH62" typeId="system.brightness"/>
+			<channel id="CH63" typeId="system.brightness"/>
+			<channel id="CH64" typeId="system.brightness"/>
+			<channel id="CH65" typeId="system.brightness"/>
+			<channel id="CH66" typeId="system.brightness"/>
+			<channel id="CH67" typeId="system.brightness"/>
+			<channel id="CH68" typeId="system.brightness"/>
+			<channel id="CH69" typeId="system.brightness"/>
+			<channel id="CH70" typeId="system.brightness"/>
+			<channel id="CH71" typeId="system.brightness"/>
+			<channel id="CH72" typeId="system.brightness"/>
+			<channel id="CH73" typeId="system.brightness"/>
+			<channel id="CH74" typeId="system.brightness"/>
+			<channel id="CH75" typeId="system.brightness"/>
+			<channel id="CH76" typeId="system.brightness"/>
+			<channel id="CH77" typeId="system.brightness"/>
+			<channel id="CH78" typeId="system.brightness"/>
+			<channel id="CH79" typeId="system.brightness"/>
+			<channel id="CH80" typeId="system.brightness"/>
+			<channel id="CH81" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="81channelWhiteColorModule">
+		<label>White Color</label>
+		<description>
+			This is a generic module with 81 white color channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="system.brightness"/>
+			<channel id="CH2" typeId="system.brightness"/>
+			<channel id="CH3" typeId="system.brightness"/>
+			<channel id="CH4" typeId="system.brightness"/>
+			<channel id="CH5" typeId="system.brightness"/>
+			<channel id="CH6" typeId="system.brightness"/>
+			<channel id="CH7" typeId="system.brightness"/>
+			<channel id="CH8" typeId="system.brightness"/>
+			<channel id="CH9" typeId="system.brightness"/>
+			<channel id="CH10" typeId="system.brightness"/>
+			<channel id="CH11" typeId="system.brightness"/>
+			<channel id="CH12" typeId="system.brightness"/>
+			<channel id="CH13" typeId="system.brightness"/>
+			<channel id="CH14" typeId="system.brightness"/>
+			<channel id="CH15" typeId="system.brightness"/>
+			<channel id="CH16" typeId="system.brightness"/>
+			<channel id="CH17" typeId="system.brightness"/>
+			<channel id="CH18" typeId="system.brightness"/>
+			<channel id="CH19" typeId="system.brightness"/>
+			<channel id="CH20" typeId="system.brightness"/>
+			<channel id="CH21" typeId="system.brightness"/>
+			<channel id="CH22" typeId="system.brightness"/>
+			<channel id="CH23" typeId="system.brightness"/>
+			<channel id="CH24" typeId="system.brightness"/>
+			<channel id="CH25" typeId="system.brightness"/>
+			<channel id="CH26" typeId="system.brightness"/>
+			<channel id="CH27" typeId="system.brightness"/>
+			<channel id="CH28" typeId="system.brightness"/>
+			<channel id="CH29" typeId="system.brightness"/>
+			<channel id="CH30" typeId="system.brightness"/>
+			<channel id="CH31" typeId="system.brightness"/>
+			<channel id="CH32" typeId="system.brightness"/>
+			<channel id="CH33" typeId="system.brightness"/>
+			<channel id="CH34" typeId="system.brightness"/>
+			<channel id="CH35" typeId="system.brightness"/>
+			<channel id="CH36" typeId="system.brightness"/>
+			<channel id="CH37" typeId="system.brightness"/>
+			<channel id="CH38" typeId="system.brightness"/>
+			<channel id="CH39" typeId="system.brightness"/>
+			<channel id="CH40" typeId="system.brightness"/>
+			<channel id="CH41" typeId="system.brightness"/>
+			<channel id="CH42" typeId="system.brightness"/>
+			<channel id="CH43" typeId="system.brightness"/>
+			<channel id="CH44" typeId="system.brightness"/>
+			<channel id="CH45" typeId="system.brightness"/>
+			<channel id="CH46" typeId="system.brightness"/>
+			<channel id="CH47" typeId="system.brightness"/>
+			<channel id="CH48" typeId="system.brightness"/>
+			<channel id="CH49" typeId="system.brightness"/>
+			<channel id="CH50" typeId="system.brightness"/>
+			<channel id="CH51" typeId="system.brightness"/>
+			<channel id="CH52" typeId="system.brightness"/>
+			<channel id="CH53" typeId="system.brightness"/>
+			<channel id="CH54" typeId="system.brightness"/>
+			<channel id="CH55" typeId="system.brightness"/>
+			<channel id="CH56" typeId="system.brightness"/>
+			<channel id="CH57" typeId="system.brightness"/>
+			<channel id="CH58" typeId="system.brightness"/>
+			<channel id="CH59" typeId="system.brightness"/>
+			<channel id="CH60" typeId="system.brightness"/>
+			<channel id="CH61" typeId="system.brightness"/>
+			<channel id="CH62" typeId="system.brightness"/>
+			<channel id="CH63" typeId="system.brightness"/>
+			<channel id="CH64" typeId="system.brightness"/>
+			<channel id="CH65" typeId="system.brightness"/>
+			<channel id="CH66" typeId="system.brightness"/>
+			<channel id="CH67" typeId="system.brightness"/>
+			<channel id="CH68" typeId="system.brightness"/>
+			<channel id="CH69" typeId="system.brightness"/>
+			<channel id="CH70" typeId="system.brightness"/>
+			<channel id="CH71" typeId="system.brightness"/>
+			<channel id="CH72" typeId="system.brightness"/>
+			<channel id="CH73" typeId="system.brightness"/>
+			<channel id="CH74" typeId="system.brightness"/>
+			<channel id="CH75" typeId="system.brightness"/>
+			<channel id="CH76" typeId="system.brightness"/>
+			<channel id="CH77" typeId="system.brightness"/>
+			<channel id="CH78" typeId="system.brightness"/>
+			<channel id="CH79" typeId="system.brightness"/>
+			<channel id="CH80" typeId="system.brightness"/>
+			<channel id="CH81" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="81channelSceneModule">
+		<label>Scene</label>
+		<description>
+			This is a generic module with 81 scene channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="light-scene"/>
+			<channel id="CH2" typeId="light-scene"/>
+			<channel id="CH3" typeId="light-scene"/>
+			<channel id="CH4" typeId="light-scene"/>
+			<channel id="CH5" typeId="light-scene"/>
+			<channel id="CH6" typeId="light-scene"/>
+			<channel id="CH7" typeId="light-scene"/>
+			<channel id="CH8" typeId="light-scene"/>
+			<channel id="CH9" typeId="light-scene"/>
+			<channel id="CH10" typeId="light-scene"/>
+			<channel id="CH11" typeId="light-scene"/>
+			<channel id="CH12" typeId="light-scene"/>
+			<channel id="CH13" typeId="light-scene"/>
+			<channel id="CH14" typeId="light-scene"/>
+			<channel id="CH15" typeId="light-scene"/>
+			<channel id="CH16" typeId="light-scene"/>
+			<channel id="CH17" typeId="light-scene"/>
+			<channel id="CH18" typeId="light-scene"/>
+			<channel id="CH19" typeId="light-scene"/>
+			<channel id="CH20" typeId="light-scene"/>
+			<channel id="CH21" typeId="light-scene"/>
+			<channel id="CH22" typeId="light-scene"/>
+			<channel id="CH23" typeId="light-scene"/>
+			<channel id="CH24" typeId="light-scene"/>
+			<channel id="CH25" typeId="light-scene"/>
+			<channel id="CH26" typeId="light-scene"/>
+			<channel id="CH27" typeId="light-scene"/>
+			<channel id="CH28" typeId="light-scene"/>
+			<channel id="CH29" typeId="light-scene"/>
+			<channel id="CH30" typeId="light-scene"/>
+			<channel id="CH31" typeId="light-scene"/>
+			<channel id="CH32" typeId="light-scene"/>
+			<channel id="CH33" typeId="light-scene"/>
+			<channel id="CH34" typeId="light-scene"/>
+			<channel id="CH35" typeId="light-scene"/>
+			<channel id="CH36" typeId="light-scene"/>
+			<channel id="CH37" typeId="light-scene"/>
+			<channel id="CH38" typeId="light-scene"/>
+			<channel id="CH39" typeId="light-scene"/>
+			<channel id="CH40" typeId="light-scene"/>
+			<channel id="CH41" typeId="light-scene"/>
+			<channel id="CH42" typeId="light-scene"/>
+			<channel id="CH43" typeId="light-scene"/>
+			<channel id="CH44" typeId="light-scene"/>
+			<channel id="CH45" typeId="light-scene"/>
+			<channel id="CH46" typeId="light-scene"/>
+			<channel id="CH47" typeId="light-scene"/>
+			<channel id="CH48" typeId="light-scene"/>
+			<channel id="CH49" typeId="light-scene"/>
+			<channel id="CH50" typeId="light-scene"/>
+			<channel id="CH51" typeId="light-scene"/>
+			<channel id="CH52" typeId="light-scene"/>
+			<channel id="CH53" typeId="light-scene"/>
+			<channel id="CH54" typeId="light-scene"/>
+			<channel id="CH55" typeId="light-scene"/>
+			<channel id="CH56" typeId="light-scene"/>
+			<channel id="CH57" typeId="light-scene"/>
+			<channel id="CH58" typeId="light-scene"/>
+			<channel id="CH59" typeId="light-scene"/>
+			<channel id="CH60" typeId="light-scene"/>
+			<channel id="CH61" typeId="light-scene"/>
+			<channel id="CH62" typeId="light-scene"/>
+			<channel id="CH63" typeId="light-scene"/>
+			<channel id="CH64" typeId="light-scene"/>
+			<channel id="CH65" typeId="light-scene"/>
+			<channel id="CH66" typeId="light-scene"/>
+			<channel id="CH67" typeId="light-scene"/>
+			<channel id="CH68" typeId="light-scene"/>
+			<channel id="CH69" typeId="light-scene"/>
+			<channel id="CH70" typeId="light-scene"/>
+			<channel id="CH71" typeId="light-scene"/>
+			<channel id="CH72" typeId="light-scene"/>
+			<channel id="CH73" typeId="light-scene"/>
+			<channel id="CH74" typeId="light-scene"/>
+			<channel id="CH75" typeId="light-scene"/>
+			<channel id="CH76" typeId="light-scene"/>
+			<channel id="CH77" typeId="light-scene"/>
+			<channel id="CH78" typeId="light-scene"/>
+			<channel id="CH79" typeId="light-scene"/>
+			<channel id="CH80" typeId="light-scene"/>
+			<channel id="CH81" typeId="light-scene"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="16channelVirtualLight">
+		<label>Virtual light</label>
+		<description>
+			This is a generic module with 16 virtual light channels.
+		</description>
+		<channels>
+			<channel id="VL1" typeId="system.color"/>
+			<channel id="VL2" typeId="system.color"/>
+			<channel id="VL3" typeId="system.color"/>
+			<channel id="VL4" typeId="system.color"/>
+			<channel id="VL5" typeId="system.color"/>
+			<channel id="VL6" typeId="system.color"/>
+			<channel id="VL7" typeId="system.color"/>
+			<channel id="VL8" typeId="system.color"/>
+			<channel id="VL9" typeId="system.color"/>
+			<channel id="VL10" typeId="system.color"/>
+			<channel id="VL11" typeId="system.color"/>
+			<channel id="VL12" typeId="system.color"/>
+			<channel id="VL13" typeId="system.color"/>
+			<channel id="VL14" typeId="system.color"/>
+			<channel id="VL15" typeId="system.color"/>
+			<channel id="VL16" typeId="system.color"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="oledDisplay">

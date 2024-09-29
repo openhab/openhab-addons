@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,9 +62,8 @@ public class KonnectedUPnPServer implements UpnpDiscoveryParticipant {
             Map<String, Object> properties = new HashMap<>();
             properties.put(BASE_URL, device.getDetails().getBaseURL());
             properties.put(MAC_ADDR, device.getDetails().getSerialNumber());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+            return DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(device.getDetails().getFriendlyName()).withRepresentationProperty(MAC_ADDR).build();
-            return result;
         } else {
             return null;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,35 +12,34 @@
  */
 package org.openhab.binding.mybmw.internal.dto.vehicle;
 
-import org.openhab.binding.mybmw.internal.dto.properties.Properties;
-import org.openhab.binding.mybmw.internal.dto.status.Status;
-
 /**
  * The {@link Vehicle} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - refactored for v2 API
  */
 public class Vehicle {
-    public String vin;// ": "WBY1Z81040V905639",
-    public String model;// ": "i3 94 (+ REX)",
-    public int year;// ": 2017,
-    public String brand;// ": "BMW",
-    public String headUnit;// ": "ID5",
-    public boolean isLscSupported;// ": true,
-    public String driveTrain;// ": "ELECTRIC",
-    public String puStep;// ": "0321",
-    public String iStep;// ": "I001-21-03-530",
-    public String telematicsUnit;// ": "TCB1",
-    public String hmiVersion;// ": "ID4",
-    public String bodyType;// ": "I01",
-    public String a4aType;// ": "USB_ONLY",
-    public String exFactoryPUStep;// ": "0717",
-    public String exFactoryILevel;// ": "I001-17-07-500"
-    public Capabilities capabilities;
-    // "connectedDriveServices": [] currently no clue how to resolve,
-    public Properties properties;
-    public boolean isMappingPending;// ":false,"
-    public boolean isMappingUnconfirmed;// ":false,
-    public Status status;
-    public boolean valid = false;
+    private VehicleBase vehicleBase = new VehicleBase();
+    private VehicleStateContainer vehicleState = new VehicleStateContainer();
+
+    public VehicleBase getVehicleBase() {
+        return vehicleBase;
+    }
+
+    public void setVehicleBase(VehicleBase vehicleBase) {
+        this.vehicleBase = vehicleBase;
+    }
+
+    public VehicleStateContainer getVehicleState() {
+        return vehicleState;
+    }
+
+    public void setVehicleState(VehicleStateContainer vehicleState) {
+        this.vehicleState = vehicleState;
+    }
+
+    @Override
+    public String toString() {
+        return "Vehicle [vehicleBase=" + vehicleBase + ", vehicleState=" + vehicleState + "]";
+    }
 }

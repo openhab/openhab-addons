@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>BoschIndego Binding</name>
 	<description>This is the binding for Bosch Indego Connect lawn mowers.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

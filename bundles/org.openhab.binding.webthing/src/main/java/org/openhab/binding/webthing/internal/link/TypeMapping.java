@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,9 @@ import org.openhab.binding.webthing.internal.client.dto.Property;
 import org.openhab.core.library.CoreItemFactory;
 
 /**
- * The {@link TypeMapping} class defines the mapping of Item types <-> WebThing Property types.
+ * The {@link TypeMapping} class defines the mapping of Item types {@literal <->} WebThing Property types.
  *
- * Please consider that changes of 'Item types <-> WebThing Property types' mapping will break the
+ * Please consider that changes of 'Item types {@literal <->} WebThing Property types' mapping will break the
  * compatibility to former releases
  *
  * @author Gregor Roth - Initial contribution
@@ -96,7 +96,7 @@ public class TypeMapping {
                 break;
             case "LevelProperty":
                 if ((propertyMetadata.unit != null)
-                        && propertyMetadata.unit.toLowerCase(Locale.ENGLISH).equals("percent")) {
+                        && "percent".equals(propertyMetadata.unit.toLowerCase(Locale.ENGLISH))) {
                     type = CoreItemFactory.DIMMER;
                 } else {
                     type = CoreItemFactory.NUMBER;

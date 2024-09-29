@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 /**
  * The {@link RtspConnection} is a WIP and not currently used, but will talk directly to RTSP and collect information
  * about the camera and streams.
- *
  *
  * @author Matthew Skinner - Initial contribution
  */

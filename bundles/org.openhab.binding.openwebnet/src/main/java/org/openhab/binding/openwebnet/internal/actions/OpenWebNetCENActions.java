@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,15 +24,19 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.CEN;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetCENActions} defines CEN/CEN+ actions for the openwebnet binding.
+ * The {@link OpenWebNetCENActions} defines CEN/CEN+ actions for the openwebnet
+ * binding.
  *
  * @author Massimo Valla - Initial contribution
  */
 
+@Component(scope = ServiceScope.PROTOTYPE, service = OpenWebNetCENActions.class)
 @ThingActionsScope(name = "openwebnet")
 @NonNullByDefault
 public class OpenWebNetCENActions implements ThingActions {
@@ -50,10 +54,10 @@ public class OpenWebNetCENActions implements ThingActions {
         return scenarioHandler;
     }
 
-    @RuleAction(label = "virtualPress", description = "Virtual press of the push button")
+    @RuleAction(label = "virtualPress", description = "@text/action.virtualPress.desc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean virtualPress(
-            @ActionInput(name = "press", label = "press", description = "Type of press") @Nullable String press,
-            @ActionInput(name = "button", label = "button", description = "Button number") int button) {
+            @ActionInput(name = "press", label = "press", description = "@text/action.virtualPress.input.press.desc") @Nullable String press,
+            @ActionInput(name = "button", label = "button", description = "@text/action.virtualPress.input.button.desc") int button) {
         OpenWebNetScenarioHandler handler = scenarioHandler;
         if (handler == null) {
             logger.warn("openwebnet OpenWebNetCENActions: scenarioHandler is null!");
@@ -83,9 +87,9 @@ public class OpenWebNetCENActions implements ThingActions {
     }
 
     // legacy delegate methods
-    public static void virtualPress(@Nullable ThingActions actions, @Nullable String press, int button) {
-        if (actions instanceof OpenWebNetCENActions) {
-            ((OpenWebNetCENActions) actions).virtualPress(press, button);
+    public static Boolean virtualPress(@Nullable ThingActions actions, @Nullable String press, int button) {
+        if (actions instanceof OpenWebNetCENActions openWebNetCENActions) {
+            return openWebNetCENActions.virtualPress(press, button);
         } else {
             throw new IllegalArgumentException("Instance is not an OpenWebNetCENActions class.");
         }

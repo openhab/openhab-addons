@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.wolfsmartset.internal.handler;
 import static org.openhab.binding.wolfsmartset.internal.WolfSmartsetBindingConstants.CONFIG_SYSTEM_ID;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,7 +125,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(WolfSmartsetAccountDiscoveryService.class);
+        return Set.of(WolfSmartsetAccountDiscoveryService.class);
     }
 
     @Override
@@ -212,7 +211,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
 
                 var systemConfigs = systemHandlers.values().stream().map(s -> s.getSystemConfig())
                         .filter(s -> s != null).collect(Collectors.toSet());
-                if (systemConfigs != null && systemConfigs.size() > 0) {
+                if (systemConfigs != null && !systemConfigs.isEmpty()) {
                     var systemStates = api.getSystemState(systemConfigs);
                     if (systemStates != null) {
                         for (var systemState : systemStates) {

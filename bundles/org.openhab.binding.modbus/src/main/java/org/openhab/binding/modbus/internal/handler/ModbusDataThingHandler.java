@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,11 +32,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.CascadedValueTransformationImpl;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
-import org.openhab.binding.modbus.internal.SingleValueTransformation;
-import org.openhab.binding.modbus.internal.ValueTransformation;
+import org.openhab.binding.modbus.internal.ModbusTransformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
@@ -80,8 +78,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +96,6 @@ import org.slf4j.LoggerFactory;
 public class ModbusDataThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
-
-    private final BundleContext bundleContext;
 
     private static final Duration MIN_STATUS_INFO_UPDATE_INTERVAL = Duration.ofSeconds(1);
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
@@ -131,8 +125,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusDataConfiguration config;
     private volatile @Nullable ValueType readValueType;
     private volatile @Nullable ValueType writeValueType;
-    private volatile @Nullable CascadedValueTransformationImpl readTransformation;
-    private volatile @Nullable CascadedValueTransformationImpl writeTransformation;
+    private volatile @Nullable ModbusTransformation readTransformation;
+    private volatile @Nullable ModbusTransformation writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
     private volatile Optional<Integer> writeStart = Optional.empty();
@@ -158,7 +152,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
-        this.bundleContext = FrameworkUtil.getBundle(ModbusDataThingHandler.class).getBundleContext();
     }
 
     @Override
@@ -211,7 +204,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
 
-        if (!transformedCommand.isPresent()) {
+        if (transformedCommand.isEmpty()) {
             // transformation failed, return
             logger.warn("Cannot process command {} (of type {}) with channel {} since transformation was unsuccessful",
                     command, command.getClass().getSimpleName(), channelUID);
@@ -242,11 +235,11 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private @Nullable Optional<Command> transformCommandAndProcessJSON(ChannelUID channelUID, Command command) {
         String transformOutput;
         Optional<Command> transformedCommand;
-        ValueTransformation writeTransformation = this.writeTransformation;
+        ModbusTransformation writeTransformation = this.writeTransformation;
         if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
             transformedCommand = Optional.of(command);
         } else {
-            transformOutput = writeTransformation.transform(bundleContext, command.toString());
+            transformOutput = writeTransformation.transform(command.toString());
             if (transformOutput.contains("[")) {
                 processJsonTransform(command, transformOutput);
                 return null;
@@ -256,10 +249,12 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         command, channelUID));
                 return null;
             } else {
-                transformedCommand = SingleValueTransformation.tryConvertToCommand(transformOutput);
-                logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
-                        transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
-                        transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
+                transformedCommand = ModbusTransformation.tryConvertToCommand(transformOutput);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
+                            transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
+                            transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
+                }
             }
         }
         return transformedCommand;
@@ -277,7 +272,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         }
         if (writeType.equals(WRITE_TYPE_COIL)) {
             Optional<Boolean> commandAsBoolean = ModbusBitUtilities.translateCommand2Boolean(transformedCommand);
-            if (!commandAsBoolean.isPresent()) {
+            if (commandAsBoolean.isEmpty()) {
                 logger.warn(
                         "Cannot process command {} with channel {} since command is not OnOffType, OpenClosedType or Decimal trying to write to coil. Do not know how to convert to 0/1. Transformed command was '{}'",
                         origCommand, channelUID, transformedCommand);
@@ -328,7 +323,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 int writeStartRelative = writeStart - pollStart;
                 data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
                         allMutatedBytes[writeStartRelative * 2 + 1]);
-
             } else {
                 data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             }
@@ -417,16 +411,13 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         bridge.getLabel());
                 throw new ModbusConfigurationException(errmsg);
             }
-            if (bridgeHandler instanceof ModbusEndpointThingHandler) {
-                // Write-only thing, parent is endpoint
-                ModbusEndpointThingHandler endpointHandler = (ModbusEndpointThingHandler) bridgeHandler;
+            if (bridgeHandler instanceof ModbusEndpointThingHandler endpointHandler) {
                 slaveId = endpointHandler.getSlaveId();
                 comms = endpointHandler.getCommunicationInterface();
                 childOfEndpoint = true;
                 functionCode = null;
                 readRequest = null;
-            } else {
-                ModbusPollerThingHandler localPollerHandler = (ModbusPollerThingHandler) bridgeHandler;
+            } else if (bridgeHandler instanceof ModbusPollerThingHandler localPollerHandler) {
                 pollerHandler = localPollerHandler;
                 ModbusReadRequestBlueprint localReadRequest = localPollerHandler.getRequest();
                 if (localReadRequest == null) {
@@ -443,7 +434,12 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 comms = localPollerHandler.getCommunicationInterface();
                 pollStart = localReadRequest.getReference();
                 childOfEndpoint = false;
+            } else {
+                String errmsg = String.format("Thing %s is connected to an unsupported type of bridge.",
+                        getThing().getUID());
+                throw new ModbusConfigurationException(errmsg);
             }
+
             validateAndParseReadParameters(localConfig);
             validateAndParseWriteParameters(localConfig);
             validateMustReadOrWrite();
@@ -515,8 +511,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         if (childOfEndpoint && readRequest == null) {
             if (!readStartMissing || !readValueTypeMissing) {
                 String errmsg = String.format(
-                        "Thing %s readStart=%s, and readValueType=%s were specified even though the data thing is child of endpoint (that is, write-only)!",
-                        getThing().getUID(), config.getReadStart(), config.getReadValueType());
+                        "Thing %s was configured for reading (readStart and/or readValueType specified) but the parent is not a polling bridge. Consider using a bridge of type 'Regular Poll'.",
+                        getThing().getUID());
                 throw new ModbusConfigurationException(errmsg);
             }
         }
@@ -574,7 +570,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 throw new ModbusConfigurationException(errmsg);
             }
         }
-        readTransformation = new CascadedValueTransformationImpl(config.getReadTransform());
+        readTransformation = new ModbusTransformation(config.getReadTransform());
         validateReadIndex();
     }
 
@@ -582,8 +578,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         boolean writeTypeMissing = config.getWriteType() == null || config.getWriteType().isBlank();
         boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
         boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
-        boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
-        writeTransformation = new CascadedValueTransformationImpl(config.getWriteTransform());
+        boolean writeTransformationMissing = config.getWriteTransform() == null
+                || String.join("", Objects.requireNonNull(config.getWriteTransform())).isBlank();
+
+        writeTransformation = new ModbusTransformation(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
                 && !writeTransformationMissing);
@@ -691,7 +689,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         @Nullable
         ModbusReadRequestBlueprint readRequest = this.readRequest;
         ValueType readValueType = this.readValueType;
-        if (!readIndex.isPresent() || readRequest == null) {
+        if (readIndex.isEmpty() || readRequest == null) {
             return;
         }
         assert readValueType != null;
@@ -721,7 +719,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             String errmsg = String.format(
                     "readStart=X.Y notation is not allowed to be used with value types larger than 16bit! Use readStart=X instead.");
             throw new ModbusConfigurationException(errmsg);
-        } else if (!bitQuery && valueTypeBitCount < 16 && !readSubIndex.isPresent()) {
+        } else if (!bitQuery && valueTypeBitCount < 16 && readSubIndex.isEmpty()) {
             // User has specified value type which is less than register width (16 bits).
             // readStart=X.Y notation must be used to define which data to extract from the 16 bit register.
             String errmsg = String
@@ -753,7 +751,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private void validateWriteIndex() throws ModbusConfigurationException {
         @Nullable
         ModbusReadRequestBlueprint readRequest = this.readRequest;
-        if (!writeStart.isPresent() || !writeSubIndex.isPresent()) {
+        if (writeStart.isEmpty() || writeSubIndex.isEmpty()) {
             //
             // this validation is really about writeStart=X.Y validation
             //
@@ -786,15 +784,11 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     }
 
     private boolean containsOnOff(List<Class<? extends State>> channelAcceptedDataTypes) {
-        return channelAcceptedDataTypes.stream().anyMatch(clz -> {
-            return clz.equals(OnOffType.class);
-        });
+        return channelAcceptedDataTypes.stream().anyMatch(clz -> clz.equals(OnOffType.class));
     }
 
     private boolean containsOpenClosed(List<Class<? extends State>> acceptedDataTypes) {
-        return acceptedDataTypes.stream().anyMatch(clz -> {
-            return clz.equals(OpenClosedType.class);
-        });
+        return acceptedDataTypes.stream().anyMatch(clz -> clz.equals(OpenClosedType.class));
     }
 
     public synchronized void onReadResult(AsyncModbusReadResult result) {
@@ -959,7 +953,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
-        ValueTransformation localReadTransformation = readTransformation;
+        ModbusTransformation localReadTransformation = readTransformation;
         if (localReadTransformation == null) {
             // We should always have transformation available if thing is initalized properly
             logger.trace("No transformation available, aborting processUpdatedValue");
@@ -978,7 +972,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
             State boolLikeState;
             if (containsOnOff(acceptedDataTypes)) {
-                boolLikeState = boolValue ? OnOffType.ON : OnOffType.OFF;
+                boolLikeState = OnOffType.from(boolValue);
             } else if (containsOpenClosed(acceptedDataTypes)) {
                 boolLikeState = boolValue ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             } else {
@@ -994,20 +988,20 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     // Numeric states always go through transformation. This allows value of 17.5 to be
                     // converted to
                     // 17.5% with percent types (instead of raising error)
-                    transformedState = localReadTransformation.transformState(bundleContext, acceptedDataTypes,
-                            numericState);
+                    transformedState = localReadTransformation.transformState(acceptedDataTypes, numericState);
                 }
             } else {
-                transformedState = localReadTransformation.transformState(bundleContext, acceptedDataTypes,
-                        numericState);
+                transformedState = localReadTransformation.transformState(acceptedDataTypes, numericState);
             }
 
             if (transformedState != null) {
-                logger.trace(
-                        "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelId, transformedState, transformedState.getClass().getSimpleName(), numericState,
-                        readValueType, boolValue,
-                        localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                            channelId, transformedState, transformedState.getClass().getSimpleName(), numericState,
+                            readValueType, boolValue,
+                            localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
+                }
                 states.put(channelUID, transformedState);
             } else {
                 String types = String.join(", ",

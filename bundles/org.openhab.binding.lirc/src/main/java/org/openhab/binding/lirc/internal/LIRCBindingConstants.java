@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lirc.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link LIRCBinding} class defines common constants, which are
+ * The {@link LIRCBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Andrew Nagle - Initial contribution
@@ -39,8 +38,8 @@ public class LIRCBindingConstants {
     public static final String CHANNEL_TRANSMIT = "transmit";
 
     // List of all supported thing types
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES = Collections.singleton(THING_TYPE_REMOTE);
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_TYPES = Set.of(THING_TYPE_REMOTE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_TYPES = Set.of(THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_REMOTE, THING_TYPE_BRIDGE)
             .collect(Collectors.toSet());
 

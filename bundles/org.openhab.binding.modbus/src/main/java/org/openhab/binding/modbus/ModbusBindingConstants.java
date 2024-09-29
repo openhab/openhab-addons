@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.modbus;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ModbusBinding} class defines some constants
+ * The {@link ModbusBindingConstants} class defines some constants
  * public that might be used from other bundles as well.
  *
  * @author Sami Salonen - Initial contribution

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,7 +127,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
                 InetAddress currentIP = InetAddress.getByAddress(ByteBuffer.allocate(4).putInt(i).array());
                 // Try to reach each IP with a timeout of 500ms which is enough for local network
                 if (currentIP.isReachable(500)) {
-                    String host = currentIP.getHostAddress().toString();
+                    String host = currentIP.getHostAddress();
                     logger.debug("Unknown device was found at: {}", host);
                     discoverySearchPool.execute(new OpenSprinklerDiscoveryJob(this, host));
                 }

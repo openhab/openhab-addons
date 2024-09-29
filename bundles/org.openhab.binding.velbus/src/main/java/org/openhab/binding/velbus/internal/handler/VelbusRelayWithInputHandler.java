@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,17 +58,15 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
             return;
         }
 
-        if (isButtonChannel(channelUID) && command instanceof StringType) {
-            StringType stringTypeCommand = (StringType) command;
-
-            if (stringTypeCommand.equals(PRESSED) || stringTypeCommand.equals(LONG_PRESSED)) {
+        if (isButtonChannel(channelUID) && command instanceof StringType stringCommand) {
+            if (stringCommand.equals(PRESSED) || stringCommand.equals(LONG_PRESSED)) {
                 VelbusButtonPacket packet = new VelbusButtonPacket(getModuleAddress().getChannelIdentifier(channelUID));
 
                 packet.Pressed();
                 velbusBridgeHandler.sendPacket(packet.getBytes());
                 triggerChannel("CH6t", CommonTriggerEvents.PRESSED);
 
-                if (stringTypeCommand.equals(LONG_PRESSED)) {
+                if (stringCommand.equals(LONG_PRESSED)) {
                     packet.LongPressed();
                     velbusBridgeHandler.sendPacket(packet.getBytes());
                     triggerChannel("CH6t", CommonTriggerEvents.LONG_PRESSED);
@@ -95,8 +93,10 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -120,5 +120,7 @@ public class VelbusRelayWithInputHandler extends VelbusRelayHandler {
                 }
             }
         }
+
+        return true;
     }
 }

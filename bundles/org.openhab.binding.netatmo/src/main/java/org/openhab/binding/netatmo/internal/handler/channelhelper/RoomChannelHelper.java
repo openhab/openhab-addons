@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,7 @@ public class RoomChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetObject(String channelId, NAObject naObject) {
-        if (naObject instanceof Room) {
-            Room room = (Room) naObject;
+        if (naObject instanceof Room room) {
             switch (channelId) {
                 case CHANNEL_ROOM_WINDOW_OPEN:
                     return room.hasOpenedWindows();

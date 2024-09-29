@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,7 @@ public class GroupHandler extends AVMFritzBaseThingHandler {
 
     @Override
     protected void updateProperties(AVMFritzBaseModel device, Map<String, String> editProperties) {
-        if (device instanceof GroupModel) {
-            GroupModel groupModel = (GroupModel) device;
+        if (device instanceof GroupModel groupModel) {
             if (groupModel.getGroupinfo() != null) {
                 editProperties.put(PROPERTY_MASTER, groupModel.getGroupinfo().getMasterdeviceid());
                 editProperties.put(PROPERTY_MEMBERS, groupModel.getGroupinfo().getMembers());

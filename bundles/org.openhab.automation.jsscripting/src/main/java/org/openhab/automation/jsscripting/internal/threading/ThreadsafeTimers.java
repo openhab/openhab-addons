@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class ThreadsafeTimers {
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
     private AtomicLong lastId = new AtomicLong();
-    private String identifier = "noIdentifier";
+    private String identifier = "javascript";
 
     public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
         this.lock = lock;
@@ -99,21 +99,7 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay) {
-        return setTimeout(callback, delay, new Object());
-    }
-
-    /**
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setTimeout"><code>setTimeout()</code></a> polyfill.
-     * Sets a timer which executes a given function once the timer expires.
-     *
-     * @param callback function to run after the given delay
-     * @param delay time in milliseconds that the timer should wait before the callback is executed
-     * @param args
-     * @return Positive integer value which identifies the timer created; this value can be passed to
-     *         <code>clearTimeout()</code> to cancel the timeout.
-     */
-    public long setTimeout(Runnable callback, Long delay, @Nullable Object... args) {
+    public long setTimeout(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
@@ -127,6 +113,10 @@ public class ThreadsafeTimers {
         }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setTimeout(Runnable callback, double delay) {
+        return setTimeout(callback, Math.round(delay));
     }
 
     /**
@@ -152,21 +142,7 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay) {
-        return setInterval(callback, delay, new Object());
-    }
-
-    /**
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/API/setInterval"><code>setInterval()</code></a> polyfill.
-     * Repeatedly calls a function with a fixed time delay between each call.
-     *
-     * @param callback function to run
-     * @param delay time in milliseconds that the timer should delay in between executions of the callback
-     * @param args
-     * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
-     *         <code>clearInterval()</code> to cancel the interval.
-     */
-    public long setInterval(Runnable callback, Long delay, @Nullable Object... args) {
+    public long setInterval(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
@@ -179,6 +155,10 @@ public class ThreadsafeTimers {
         }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setInterval(Runnable callback, double delay) {
+        return setInterval(callback, Math.round(delay));
     }
 
     /**

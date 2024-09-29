@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fineoffsetweatherstation.internal.domain;
 
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_FREE_HEAP_SIZE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MAX_WIND_SPEED;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_MOISTURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_UV_INDEX;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -131,15 +133,20 @@ public enum Measurand {
     LEAK_CHX("water-leak-channel", new int[] { 0x58, 0x59, 0x5A, 0x5B }, "Leak", MeasureType.WATER_LEAK_DETECTION),
 
     // `LIGHTNING` is the name in the spec, so we keep it here as it
-    LIGHTNING("lightning-distance", 0x60, "lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE),
+    LIGHTNING("lightning-distance", 0x60, "Lightning distance 1~40KM", MeasureType.LIGHTNING_DISTANCE),
 
-    LIGHTNING_TIME("lightning-time", 0x61, "lightning happened time", MeasureType.LIGHTNING_TIME),
+    LIGHTNING_TIME("lightning-time", 0x61, "Lightning happened time", MeasureType.LIGHTNING_TIME),
 
     // `LIGHTNING_POWER` is the name in the spec, so we keep it here as it
     LIGHTNING_POWER("lightning-counter", 0x62, "lightning counter for the day", MeasureType.LIGHTNING_COUNTER),
 
-    TF_USRX("temperature-external-channel", new int[] { 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A },
-            "Soil or Water temperature", MeasureType.TEMPERATURE),
+    TF_USRX(new int[] { 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A },
+            new MeasurandParser("temperature-external-channel", "Soil or Water temperature", MeasureType.TEMPERATURE),
+            // skip battery-level, since it is read via Command.CMD_READ_SENSOR_ID_NEW
+            new Skip(1)),
+
+    // This is for heap : the available stack top. If it is reducing, it means the stack is using up.
+    ITEM_HEAP_FREE("free-heap-size", 0x6c, "Free Heap Size", MeasureType.MEMORY, CHANNEL_TYPE_FREE_HEAP_SIZE),
 
     ITEM_SENSOR_CO2(0x70,
             new MeasurandParser("sensor-co2-temperature", "Temperature (CO₂-Sensor)", MeasureType.TEMPERATURE),
@@ -240,18 +247,20 @@ public enum Measurand {
     }
 
     private int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-            @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+            @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+            DebugDetails debugDetails) {
         int subOffset = 0;
         for (Parser parser : parsers) {
             subOffset += parser.extractMeasuredValues(data, offset + subOffset, channel, context, customizationType,
-                    result);
+                    result, debugDetails);
         }
         return subOffset;
     }
 
     private interface Parser {
         int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result);
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails);
     }
 
     private static class Skip implements Parser {
@@ -263,7 +272,9 @@ public enum Measurand {
 
         @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
+            debugDetails.addDebugDetails(offset, skip, "skipped");
             return skip;
         }
     }
@@ -302,8 +313,14 @@ public enum Measurand {
         }
 
         public int extractMeasuredValues(byte[] data, int offset, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
-            return measurand.extractMeasuredValues(data, offset, channel, context, customizationType, result);
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
+            return measurand.extractMeasuredValues(data, offset, channel, context, customizationType, result,
+                    debugDetails);
+        }
+
+        public String getDebugString() {
+            return measurand.name() + (channel == null ? "" : " channel " + channel);
         }
     }
 
@@ -329,20 +346,25 @@ public enum Measurand {
             if (customizations.length == 0) {
                 this.customizations = null;
             } else {
-
                 this.customizations = Collections.unmodifiableMap(
                         Arrays.stream(customizations).collect(Collectors.toMap(ParserCustomization::getType,
                                 customization -> customization, (a, b) -> b, HashMap::new)));
             }
         }
 
+        @Override
         public int extractMeasuredValues(byte[] data, int offset, @Nullable Integer channel, ConversionContext context,
-                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result) {
+                @Nullable ParserCustomizationType customizationType, List<MeasuredValue> result,
+                DebugDetails debugDetails) {
             MeasureType measureType = getMeasureType(customizationType);
             State state = measureType.toState(data, offset, context);
             if (state != null) {
+                debugDetails.addDebugDetails(offset, measureType.getByteSize(),
+                        measureType.name() + ": " + state.toFullString());
                 ChannelTypeUID channelType = channelTypeUID == null ? measureType.getChannelTypeId() : channelTypeUID;
                 result.add(new MeasuredValue(measureType, channelPrefix, channel, channelType, state, name));
+            } else {
+                debugDetails.addDebugDetails(offset, measureType.getByteSize(), measureType.name() + ": null");
             }
             return measureType.getByteSize();
         }
@@ -351,8 +373,8 @@ public enum Measurand {
             if (customizationType == null) {
                 return measureType;
             }
-            return Optional.ofNullable(customizations).map(m -> m.get(customizationType))
-                    .map(ParserCustomization::getMeasureType).orElse(measureType);
+            return Objects.requireNonNull(Optional.ofNullable(customizations).map(m -> m.get(customizationType))
+                    .map(ParserCustomization::getMeasureType).orElse(measureType));
         }
     }
 }

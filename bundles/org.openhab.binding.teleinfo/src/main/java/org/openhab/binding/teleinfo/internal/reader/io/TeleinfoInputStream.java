@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,10 +87,8 @@ public class TeleinfoInputStream extends InputStream {
      * Returns the next frame.
      *
      * @return the next frame or null if end of stream
-     * @throws TimeoutException
      * @throws IOException
      * @throws InvalidFrameException
-     * @throws Exception
      */
     public synchronized @Nullable Frame readNextFrame() throws InvalidFrameException, IOException {
         // seek the next header frame

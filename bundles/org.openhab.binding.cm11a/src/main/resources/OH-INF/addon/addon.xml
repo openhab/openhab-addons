@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>CM11A Binding</name>
 	<description>This is the binding for the X10 Cm11a interface</description>
+	<connection>local</connection>
 
 </addon:addon>

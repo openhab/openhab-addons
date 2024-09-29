@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
@@ -99,7 +97,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.instance = instance;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices-" + instance, scheduler,
                 Duration.ofMillis(1000), Clock.systemUTC(), this::applyUpdates);
-        metadataChangeListener = new RegistryChangeListener<Metadata>() {
+        metadataChangeListener = new RegistryChangeListener<>() {
             @Override
             public void added(final Metadata metadata) {
                 final MetadataKey uid = metadata.getUID();
@@ -230,8 +228,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         /*
          * if metadata of a group item was changed, mark all group member as dirty.
          */
-        if (item instanceof GroupItem) {
-            ((GroupItem) item).getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
+        if (item instanceof GroupItem itemAsGroupItem) {
+            itemAsGroupItem.getMembers().forEach(groupMember -> pendingUpdates.add(groupMember.getName()));
         }
         applyUpdatesDebouncer.call();
     }
@@ -386,10 +384,9 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             @Nullable Map<String, Object> configuration) {
         if (accessoryTypes.size() > 1 && configuration != null) {
             final @Nullable Object value = configuration.get(HomekitTaggedItem.PRIMARY_SERVICE);
-            if (value instanceof String) {
-                return accessoryTypes.stream()
-                        .filter(aType -> ((String) value).equalsIgnoreCase(aType.getKey().getTag())).findAny()
-                        .orElse(accessoryTypes.get(0)).getKey();
+            if (value instanceof String valueAsString) {
+                return accessoryTypes.stream().filter(aType -> valueAsString.equalsIgnoreCase(aType.getKey().getTag()))
+                        .findAny().orElse(accessoryTypes.get(0)).getKey();
             }
         }
         // no primary accessory found or there is only one type, so return the first type from the list
@@ -477,20 +474,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         try {
                             final AbstractHomekitAccessoryImpl additionalAccessory = HomekitAccessoryFactory
                                     .create(additionalTaggedItem, metadataRegistry, updater, settings);
-                            // Secondary accessories that don't explicitly specify a name will implicitly
-                            // get a name characteristic based on the item's name
-                            if (!additionalAccessory.getCharacteristic(HomekitCharacteristicType.NAME).isPresent()) {
-                                try {
-                                    additionalAccessory.addCharacteristic(
-                                            new NameCharacteristic(() -> additionalAccessory.getName()));
-                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                    // This should never happen; all services should support NameCharacteristic as an
-                                    // optional Characteristic.
-                                    // If HAP-Java defined a service that doesn't support
-                                    // addOptionalCharacteristic(NameCharacteristic), then it's a bug there, and we're
-                                    // just going to ignore the exception here.
-                                }
-                            }
+                            additionalAccessory.promoteNameCharacteristic();
                             accessory.getServices().add(additionalAccessory.getPrimaryService());
                         } catch (HomekitException e) {
                             logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
@@ -499,7 +483,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             knownAccessories.put(taggedItem.getName(), accessory.toJson());
             accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
         } catch (HomekitException e) {
-            logger.warn("Cannot create accessory {}", taggedItem);
+            logger.warn("Cannot create accessory {}: {}", taggedItem, e.getMessage());
         }
     }
 
@@ -513,8 +497,8 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         if (value == null) {
             return (instance == 1);
         }
-        if (value instanceof Number) {
-            return (instance == ((Number) value).intValue());
+        if (value instanceof Number valueAsNumber) {
+            return (instance == valueAsNumber.intValue());
         }
         logger.warn("Unrecognized instance tag {} ({}) for item {}; assigning to default instance.", value,
                 value.getClass(), item.getName());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,9 @@ public interface IMeterReaderConnector<T> {
      * Establishes the connection against the device and reads native encoded SML informations.
      * Ensures that a connection is opened and notifies any attached listeners
      *
-     * @param serialParmeter
+     * @param initMessage
      * @param period hint for the connector to emit items in this time intervals.
+     * @param executor
      * @return native encoded SML informations from a device.
      */
     Publisher<T> getMeterValues(byte @Nullable [] initMessage, Duration period, ExecutorService executor);

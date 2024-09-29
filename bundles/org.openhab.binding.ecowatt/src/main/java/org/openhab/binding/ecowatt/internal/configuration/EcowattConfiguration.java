@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link EcowattConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - New parameter apiVersion
  */
 @NonNullByDefault
 public class EcowattConfiguration {
 
+    public int apiVersion = 4;
     public String idClient = "";
     public String idSecret = "";
 }

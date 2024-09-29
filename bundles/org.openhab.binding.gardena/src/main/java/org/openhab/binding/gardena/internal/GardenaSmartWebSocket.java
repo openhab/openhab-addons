@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class GardenaSmartWebSocket {
     private final Logger logger = LoggerFactory.getLogger(GardenaSmartWebSocket.class);
     private final GardenaSmartWebSocketListener socketEventListener;
-    private final int MAX_UNANSWERED_PINGS = 5;
+    private static final int MAX_UNANSWERED_PINGS = 5;
 
     private WebSocketSession session;
     private WebSocketClient webSocketClient;

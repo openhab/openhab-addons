@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,10 +146,10 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                             .getService(serviceReg.getReference());
                     serviceReg.unregister();
                     if (service != null) {
-                        if (service instanceof AmazonEchoDiscovery) {
-                            ((AmazonEchoDiscovery) service).deactivate();
-                        } else if (service instanceof SmartHomeDevicesDiscovery) {
-                            ((SmartHomeDevicesDiscovery) service).deactivate();
+                        if (service instanceof AmazonEchoDiscovery discovery) {
+                            discovery.deactivate();
+                        } else if (service instanceof SmartHomeDevicesDiscovery discovery) {
+                            discovery.deactivate();
                         } else {
                             logger.warn("Found unknown discovery-service instance: {}", service);
                         }

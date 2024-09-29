@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.verisure.internal.handler;
 
 import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureUserPresenceThingHandler extends VerisureThingHandler<VerisureUserPresencesDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_USERPRESENCE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_USERPRESENCE);
 
     public VerisureUserPresenceThingHandler(Thing thing) {
         super(thing);
@@ -60,7 +59,7 @@ public class VerisureUserPresenceThingHandler extends VerisureThingHandler<Veris
         if (!userTrackingList.isEmpty()) {
             UserTracking userTracking = userTrackingList.get(0);
             getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), userTracking);
                         updateState(channelUID, state);

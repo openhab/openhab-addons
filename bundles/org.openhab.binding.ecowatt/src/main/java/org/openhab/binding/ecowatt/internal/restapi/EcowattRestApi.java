@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,23 +46,25 @@ import com.google.gson.JsonSyntaxException;
  * The {@link EcowattRestApi} is responsible for handling all communication with the Ecowatt REST API
  *
  * @author Laurent Garnier - Initial contribution
+ * @author Laurent Garnier - Add support for different API versions
  */
 @NonNullByDefault
 public class EcowattRestApi {
 
     private static final String ECOWATT_API_TOKEN_URL = "https://digital.iservices.rte-france.com/token/oauth/";
-    private static final String ECOWATT_API_GET_SIGNALS_URL = "https://digital.iservices.rte-france.com/open_api/ecowatt/v4/signals";
+    private static final String ECOWATT_API_GET_SIGNALS_URL = "https://digital.iservices.rte-france.com/open_api/ecowatt/v%d/signals";
 
     private final Logger logger = LoggerFactory.getLogger(EcowattRestApi.class);
 
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final Gson gson;
+    private final String apiUrl;
     private OAuthClientService authService;
     private String authServiceHandle;
 
     public EcowattRestApi(OAuthFactory oAuthFactory, HttpClient httpClient, String authServiceHandle, String idClient,
-            String idSecret) {
+            String idSecret, int apiVersion) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -73,13 +75,14 @@ public class EcowattRestApi {
         this.authService = oAuthFactory.createOAuthClientService(authServiceHandle, ECOWATT_API_TOKEN_URL, null,
                 idClient, idSecret, null, true);
         this.authServiceHandle = authServiceHandle;
+        this.apiUrl = ECOWATT_API_GET_SIGNALS_URL.formatted(apiVersion);
     }
 
     public EcowattApiResponse getSignals() throws CommunicationException, EcowattApiLimitException {
-        logger.debug("API request signals");
+        logger.debug("API request {}", apiUrl);
         String token = authenticate().getAccessToken();
 
-        final Request request = httpClient.newRequest(ECOWATT_API_GET_SIGNALS_URL).method(HttpMethod.GET)
+        final Request request = httpClient.newRequest(apiUrl).method(HttpMethod.GET)
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + token).timeout(10, TimeUnit.SECONDS);
 
         ContentResponse response;

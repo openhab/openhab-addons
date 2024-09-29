@@ -6,4 +6,5 @@
 	<type>binding</type>
 	<name>Verisure Binding</name>
 	<description>This is the binding for Verisure Alarm System.</description>
+	<connection>cloud</connection>
 </addon:addon>

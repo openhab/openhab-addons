@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,113 +12,107 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import static java.time.temporal.ChronoUnit.*;
-
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.dto.NAThing;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link RefreshCapability} is the class used to embed the refreshing needs calculation for devices
+ * {@link RefreshCapability} is the base class used to define refreshing policies
+ * It implements of a fixed refresh rate strategy.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    private static final Duration DEFAULT_DELAY = Duration.of(20, SECONDS);
-    private static final Duration PROBING_INTERVAL = Duration.of(120, SECONDS);
-    private static final Duration OFFLINE_INTERVAL = Duration.of(15, MINUTES);
+    protected static final Duration ASAP = Duration.ofSeconds(2);
+    protected static final Duration OFFLINE_DELAY = Duration.ofMinutes(15);
+    protected static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
-    private final ScheduledExecutorService scheduler;
 
-    private Duration dataValidity;
-    private Instant dataTimeStamp = Instant.now();
-    private Instant dataTimeStamp0 = Instant.MIN;
+    protected Duration dataValidity = PROBING_INTERVAL;
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private final boolean refreshConfigured;
+    private boolean expiring = false;
 
-    public RefreshCapability(CommonInterface handler, ScheduledExecutorService scheduler, int refreshInterval) {
+    public RefreshCapability(CommonInterface handler) {
         super(handler);
-        this.scheduler = scheduler;
-        this.dataValidity = Duration.ofSeconds(Math.max(0, refreshInterval));
-        this.refreshConfigured = !probing();
-        freeJobAndReschedule(2);
+    }
+
+    public void setInterval(Duration dataValidity) {
+        if (dataValidity.isNegative() || dataValidity.isZero()) {
+            throw new IllegalArgumentException("refreshInterval must be positive");
+        }
+        this.dataValidity = dataValidity;
+        expireData();
     }
 
     @Override
     public void dispose() {
-        freeJobAndReschedule(0);
+        stopJob();
         super.dispose();
     }
 
     @Override
     public void expireData() {
-        dataTimeStamp = Instant.now().minus(dataValidity);
-        freeJobAndReschedule(1);
-    }
-
-    private Duration dataAge() {
-        return Duration.between(dataTimeStamp, Instant.now());
-    }
-
-    private boolean probing() {
-        return dataValidity.getSeconds() <= 0;
-    }
-
-    private void proceedWithUpdate() {
-        handler.proceedWithUpdate();
-        long delay;
-        if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
-            logger.debug("Module is not ONLINE; special refresh interval is used");
-            delay = OFFLINE_INTERVAL.toSeconds();
-            if (probing()) {
-                dataTimeStamp0 = Instant.MIN;
-            }
-        } else if (refreshConfigured) {
-            delay = dataValidity.getSeconds();
-        } else {
-            delay = (probing() ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY)).toSeconds();
+        if (!expiring) {
+            expiring = true;
+            rescheduleJob(ASAP);
         }
-        delay = delay < 2 ? PROBING_INTERVAL.toSeconds() : delay;
-        logger.debug("Module refreshed, next one in {} s", delay);
-        freeJobAndReschedule(delay);
     }
 
     @Override
-    protected void updateNAThing(NAThing newData) {
-        super.updateNAThing(newData);
-        newData.getLastSeen().ifPresent(timestamp -> {
-            Instant tsInstant = timestamp.toInstant();
-            if (probing()) {
-                if (Instant.MIN.equals(dataTimeStamp0)) {
-                    dataTimeStamp0 = tsInstant;
-                    logger.debug("First data timestamp is {}", dataTimeStamp0);
-                } else if (tsInstant.isAfter(dataTimeStamp0)) {
-                    dataValidity = Duration.between(dataTimeStamp0, tsInstant);
-                    logger.debug("Data validity period identified to be {}", dataValidity);
-                } else {
-                    logger.debug("Data validity period not yet found - data timestamp unchanged");
-                }
-            }
-            dataTimeStamp = tsInstant;
-        });
+    protected void afterNewData(@Nullable NAObject newData) {
+        expiring = false;
+        super.afterNewData(newData);
     }
 
-    private void freeJobAndReschedule(long delay) {
-        refreshJob.ifPresent(job -> job.cancel(false));
-        refreshJob = delay == 0 ? Optional.empty()
-                : Optional.of(scheduler.schedule(() -> proceedWithUpdate(), delay, TimeUnit.SECONDS));
+    protected Duration calcDelay() {
+        return dataValidity;
+    }
+
+    private void proceedWithUpdate() {
+        Duration delay;
+        handler.proceedWithUpdate();
+        if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+            delay = OFFLINE_DELAY;
+            logger.debug("Thing '{}' is not ONLINE, using special refresh interval", thingUID);
+        } else {
+            delay = calcDelay();
+        }
+        rescheduleJob(delay);
+    }
+
+    private void rescheduleJob(Duration delay) {
+        if (refreshJob.isPresent()) {
+            ScheduledFuture<?> job = refreshJob.get();
+            Instant now = Instant.now();
+            Instant expectedExecution = now.plus(delay);
+            Instant scheduledExecution = now.plusMillis(job.getDelay(TimeUnit.MILLISECONDS));
+            if (Math.abs(ChronoUnit.SECONDS.between(expectedExecution, scheduledExecution)) <= 3) {
+                logger.debug("'{}' refresh as already pending roughly as the same time, will not reschedule", thingUID);
+                return;
+            } else {
+                stopJob();
+            }
+        }
+        logger.debug("'{}' next refresh in {}", thingUID, delay);
+        refreshJob = handler.schedule(this::proceedWithUpdate, delay);
+    }
+
+    private void stopJob() {
+        refreshJob.ifPresent(job -> job.cancel(true));
+        refreshJob = Optional.empty();
     }
 }

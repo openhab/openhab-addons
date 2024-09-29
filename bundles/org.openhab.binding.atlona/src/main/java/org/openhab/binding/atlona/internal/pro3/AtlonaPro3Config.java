@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,8 @@ package org.openhab.binding.atlona.internal.pro3;
 public class AtlonaPro3Config {
 
     /**
-     * Constant field used in {@link AtlonaDiscovery} to set the config property during discovery. Value of this field
+     * Constant field used in {@link org.openhab.binding.atlona.internal.discovery.AtlonaDiscovery}
+     * to set the config property during discovery. Value of this field
      * needs to match {@link #ipAddress}
      */
     public static final String IP_ADDRESS = "ipAddress";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,7 +194,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * source type is not a tuner (however the {@link #lastUpdateTime} will be reset).
      *
      * @param sourceId a source identifier between 1 and 8
-     * @throws IllegalArgumentException if sourceId is < 1 or > 8
+     * @throws IllegalArgumentException if sourceId is {@code < 1} or {@code > 8}
      */
     public void refreshPresets(Integer sourceId) {
         if (sourceId < 1 || sourceId > 8) {
@@ -254,9 +254,9 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * @param zone a zone between 1 and 8
      * @param source a source between 1 and 8
      * @param presetJson the possibly empty, possibly null JSON representation of the preset
-     * @throws IllegalArgumentException if controller is < 1 or > 6
-     * @throws IllegalArgumentException if zone is < 1 or > 8
-     * @throws IllegalArgumentException if source is < 1 or > 8
+     * @throws IllegalArgumentException if controller is {@literal <} 1 or > 6
+     * @throws IllegalArgumentException if zone is {@literal <} 1 or > 8
+     * @throws IllegalArgumentException if source is {@literal <} 1 or > 8
      * @throws IllegalArgumentException if presetJson contains more than one preset
      */
     public void setZonePresets(int controller, int zone, int source, @Nullable String presetJson) {
@@ -436,7 +436,7 @@ public class RioPresetsProtocol extends AbstractRioProtocol {
      * Implements {@link SocketSessionListener#responseReceived(String)} to try to process the response from the
      * russound system. This response may be for other protocol handler - so ignore if we don't recognize the response.
      *
-     * @param a possibly null, possibly empty response
+     * @param response a possibly null, possibly empty response
      */
     @Override
     public void responseReceived(@Nullable String response) {

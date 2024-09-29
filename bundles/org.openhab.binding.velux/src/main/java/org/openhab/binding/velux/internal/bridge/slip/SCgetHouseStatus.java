@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,10 +38,8 @@ import org.slf4j.LoggerFactory;
  * <P>
  * Methods in addition to the mentioned interface:
  * <UL>
- * <LI>{@link #getNtfNodeID} to retrieve the node identifier which has been changed.</LI>
- * <LI>{@link #getNtfState} to retrieve the state of the node which has been changed.</LI>
- * <LI>{@link #getNtfCurrentPosition} to retrieve the actual position of this node.</LI>
- * <LI>{@link #getNtfTarget} to retrieve the target position of this node.</LI>
+ * <LI>{@link #getProduct} to retrieve product type.</LI>
+ * <LI>{@link #setCreatorCommand} to set the command id that identifies the API on which 'product' will be created.</LI>
  * </UL>
  * <P>
  * NOTE: the class does NOT define a request as it only works as receiver.

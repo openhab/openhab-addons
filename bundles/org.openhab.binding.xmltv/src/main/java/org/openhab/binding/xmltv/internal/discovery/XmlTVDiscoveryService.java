@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,18 +15,16 @@ package org.openhab.binding.xmltv.internal.discovery;
 import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
 import org.openhab.binding.xmltv.internal.handler.XmlTVHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,40 +34,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
-@Component(service = ThingHandlerService.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = XmlTVDiscoveryService.class)
 @NonNullByDefault
-public class XmlTVDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class XmlTVDiscoveryService extends AbstractThingHandlerDiscoveryService<XmlTVHandler> {
     private static final int SEARCH_TIME = 5;
 
     private final Logger logger = LoggerFactory.getLogger(XmlTVDiscoveryService.class);
-    private @Nullable XmlTVHandler handler;
 
     /**
      * Creates a XmlTVDiscoveryService with background discovery disabled.
      */
     @Activate
     public XmlTVDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(XmlTVHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting XmlTV discovery scan");
-        XmlTVHandler bridgeHandler = handler;
-        if (bridgeHandler != null && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-            bridgeHandler.getXmlFile().ifPresent(tv -> {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            thingHandler.getXmlFile().ifPresent(tv -> {
                 tv.getMediaChannels().stream().forEach(channel -> {
                     String channelId = channel.getId();
                     String uid = channelId.replaceAll("[^A-Za-z0-9_]", "_");
-                    ThingUID thingUID = new ThingUID(XMLTV_CHANNEL_THING_TYPE, bridgeHandler.getThing().getUID(), uid);
+                    ThingUID thingUID = new ThingUID(XMLTV_CHANNEL_THING_TYPE, thingHandler.getThing().getUID(), uid);
 
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                            .withBridge(bridgeHandler.getThing().getUID())
+                            .withBridge(thingHandler.getThing().getUID())
                             .withLabel(channel.getDisplayNames().get(0).getValue()).withRepresentationProperty(uid)
                             .withProperty(XmlChannelConfiguration.CHANNEL_ID, channelId).build();
 
@@ -77,17 +68,5 @@ public class XmlTVDiscoveryService extends AbstractDiscoveryService implements T
                 });
             });
         }
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof XmlTVHandler) {
-            this.handler = (XmlTVHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
     }
 }

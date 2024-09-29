@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,9 +81,7 @@ public class Influx2Database implements Database {
     @Override
     public CompletableFuture<QueryResult> executeQuery(Query query) {
         try {
-            if (query instanceof Influx2QueryFactory.Influx2Query) {
-                Influx2QueryFactory.Influx2Query influxQuery = (Influx2QueryFactory.Influx2Query) query;
-
+            if (query instanceof Influx2QueryFactory.Influx2Query influxQuery) {
                 CompletableFuture<QueryResult> asyncResult = new CompletableFuture<>();
                 List<FluxRecord> records = new ArrayList<>();
                 client.query(influxQuery.getQuery(), (cancellable, record) -> { // onNext

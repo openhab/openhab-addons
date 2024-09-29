@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         // update all channels that are linked
                         switch (channel.getUID().getId()) {
                             case CHANNEL_POWER:
-                                updateState(channel.getUID(), radioOn ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radioOn));
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
@@ -92,7 +92,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), radio.getMuted() ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore
@@ -200,8 +200,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof PercentType) {
-                        radio.setVolumePercent(((PercentType) command).intValue());
+                    } else if (command instanceof PercentType percentCommand) {
+                        radio.setVolumePercent(percentCommand.intValue());
                     }
                     // absolute value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
@@ -211,20 +211,20 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof DecimalType) {
-                        radio.setVolumeAbsolute(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        radio.setVolumeAbsolute(decimalCommand.intValue());
                     }
                     // percent value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof DecimalType) {
-                        radio.setMode(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setMode(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_PRESET:
-                    if (command instanceof DecimalType) {
-                        radio.setPreset(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setPreset(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_MUTE:

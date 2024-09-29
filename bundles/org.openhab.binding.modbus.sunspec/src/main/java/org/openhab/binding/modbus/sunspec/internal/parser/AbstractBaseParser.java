@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.modbus.sunspec.internal.parser;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,7 +51,7 @@ public class AbstractBaseParser {
      * @return the parsed value or the default if the field is not implemented
      */
     protected Short extractInt16(ModbusRegisterArray raw, int index, short def) {
-        return extractOptionalInt16(raw, index).orElse(def);
+        return Objects.requireNonNull(extractOptionalInt16(raw, index).orElse(def));
     }
 
     /**
@@ -74,7 +75,7 @@ public class AbstractBaseParser {
      * @return the parsed value or the default if the field is not implemented
      */
     protected Integer extractUInt16(ModbusRegisterArray raw, int index, int def) {
-        return extractOptionalUInt16(raw, index).orElse(def);
+        return Objects.requireNonNull(extractOptionalUInt16(raw, index).orElse(def));
     }
 
     /**
@@ -98,7 +99,7 @@ public class AbstractBaseParser {
      * @return the parsed value or default if the field is not implemented
      */
     protected Long extractAcc32(ModbusRegisterArray raw, int index, long def) {
-        return extractOptionalAcc32(raw, index).orElse(def);
+        return Objects.requireNonNull(extractOptionalAcc32(raw, index).orElse(def));
     }
 
     /**
@@ -121,6 +122,6 @@ public class AbstractBaseParser {
      * @return the parsed value or 1 if the field is not implemented
      */
     protected Short extractSunSSF(ModbusRegisterArray raw, int index) {
-        return extractOptionalSunSSF(raw, index).orElse((short) 0);
+        return Objects.requireNonNull(extractOptionalSunSSF(raw, index).orElse((short) 0));
     }
 }

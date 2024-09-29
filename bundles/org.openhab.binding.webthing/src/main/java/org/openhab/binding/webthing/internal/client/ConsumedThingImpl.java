@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class ConsumedThingImpl implements ConsumedThing {
         if (optionalProperty.isPresent()) {
             var propertyDescription = optionalProperty.get();
             for (var link : propertyDescription.links) {
-                if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
+                if ((link.rel != null) && (link.href != null) && "property".equals(link.rel)) {
                     return Optional.of(webThingURI.resolve(link.href));
                 }
             }

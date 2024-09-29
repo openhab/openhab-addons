@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.verisure.internal.DeviceStatusListener;
@@ -51,7 +52,7 @@ import com.google.gson.Gson;
  *
  */
 @NonNullByDefault
-public abstract class VerisureThingHandler<T extends VerisureThingDTO> extends BaseThingHandler
+public abstract class VerisureThingHandler<@NonNull T extends VerisureThingDTO> extends BaseThingHandler
         implements DeviceStatusListener<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(VerisureThingHandler.class);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -35,7 +34,7 @@ public class AirbaseZoneInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(AirbaseZoneInfo.class);
 
     public String zonenames = "";
-    public boolean zone[] = new boolean[8];
+    public boolean[] zone = new boolean[8];
 
     private AirbaseZoneInfo() {
     }
@@ -46,8 +45,8 @@ public class AirbaseZoneInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseZoneInfo info = new AirbaseZoneInfo();
-        info.zonenames = Optional.ofNullable(responseMap.get("zone_name")).orElse("");
-        String zoneinfo = Optional.ofNullable(responseMap.get("zone_onoff")).orElse("");
+        info.zonenames = responseMap.getOrDefault("zone_name", "");
+        String zoneinfo = responseMap.getOrDefault("zone_onoff", "");
 
         String[] zones = zoneinfo.split(";");
 

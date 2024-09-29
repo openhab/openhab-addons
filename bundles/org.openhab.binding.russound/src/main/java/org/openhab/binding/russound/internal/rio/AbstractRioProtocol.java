@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,8 +117,8 @@ public abstract class AbstractRioProtocol implements SocketSessionListener {
     }
 
     /**
-     * Implements the {@link SocketSessionListener#responseException(Exception)} to automatically take the thing offline
-     * via {@link RioHandlerCallback#statusChanged(ThingStatus, ThingStatusDetail, String)}
+     * Implements the {@link SocketSessionListener#responseException(IOException)} to automatically take the thing
+     * offline via {@link RioHandlerCallback#statusChanged(ThingStatus, ThingStatusDetail, String)}
      *
      * @param e the exception
      */

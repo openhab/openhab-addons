@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,12 +39,12 @@ import tuwien.auto.calimero.serial.spi.SerialCom;
  * The {@link SerialTransportAdapter} provides org.openhab.core.io.transport.serial
  * services to the Calimero library.
  * 
- * @ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
- *                  /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
- *                  to register SerialTransportAdapter to the service loader.
- *                  Additional attributes for SerialTansportAdapter can be specified as well, e.g.
- *                  attribute = { "position=1" }
- *                  and will be part of MANIFEST.MF
+ * {@literal @}ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
+ * /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
+ * to register SerialTransportAdapter to the service loader.
+ * Additional attributes for SerialTransportAdapter can be specified as well, e.g.
+ * attribute = { "position=1" }
+ * and will be part of MANIFEST.MF
  * 
  * @author Holger Friedrich - Initial contribution
  */
@@ -130,7 +130,7 @@ public class SerialTransportAdapter implements SerialCom {
             }
         }
         // should not throw, create a dummy return value
-        byte buf[] = {};
+        byte[] buf = {};
         return new ByteArrayInputStream(buf);
     }
 
@@ -156,7 +156,9 @@ public class SerialTransportAdapter implements SerialCom {
         if (tmpSerialPortManager == null) {
             return Collections.emptyList();
         }
-        return tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName).collect(Collectors.toList());
+        // typecast only required to avoid warning about less-annotated type
+        return (List<String>) tmpSerialPortManager.getIdentifiers().map(SerialPortIdentifier::getName)
+                .collect(Collectors.toList());
     }
 
     @Override

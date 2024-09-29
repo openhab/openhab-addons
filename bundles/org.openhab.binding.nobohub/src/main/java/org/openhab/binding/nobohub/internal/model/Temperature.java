@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public final class Temperature {
     }
 
     public static Temperature fromY02(String y02) throws NoboDataException {
-        String parts[] = y02.split(" ", 3);
+        String[] parts = y02.split(" ", 3);
         if (parts.length != 3) {
             throw new NoboDataException(
                     String.format("Unexpected number of parts from hub on Y02 call: %d", parts.length));

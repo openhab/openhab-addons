@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,6 +68,10 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private static final int MAX_TEMPERATURE_CELSIUS = 30;
     private static final String LONG_PRESS = "LongPress";
     private static final String SHORT_PRESS = "ShortPress";
+    private static final String SIREN_ALARM = "Alarm";
+    private static final String SIREN_NOTIFICATION = "Notification";
+    private static final String SIREN_FEEDBACK = "Feedback";
+    private static final String SIREN_NONE = "None";
 
     private final Logger logger = LoggerFactory.getLogger(LivisiDeviceHandler.class);
     private final Object lock = new Object();
@@ -120,6 +124,12 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             commandSetOperationMode(command, bridgeHandler);
         } else if (CHANNEL_ALARM.equals(channelUID.getId())) {
             commandSwitchAlarm(command, bridgeHandler);
+        } else if (CHANNEL_SIREN_ALARM.equals(channelUID.getId())) {
+            commandSwitchSiren(command, SIREN_ALARM, bridgeHandler);
+        } else if (CHANNEL_SIREN_NOTIFICATION.equals(channelUID.getId())) {
+            commandSwitchSiren(command, SIREN_NOTIFICATION, bridgeHandler);
+        } else if (CHANNEL_SIREN_FEEDBACK.equals(channelUID.getId())) {
+            commandSwitchSiren(command, SIREN_FEEDBACK, bridgeHandler);
         } else {
             logger.debug("UNSUPPORTED channel {} for device {}.", channelUID.getId(), deviceId);
         }
@@ -132,8 +142,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandSetDimLevel(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof DecimalType) {
-            final DecimalType dimLevel = (DecimalType) command;
+        if (command instanceof DecimalType dimLevel) {
             bridgeHandler.commandSetDimLevel(deviceId, dimLevel.intValue());
         } else if (command instanceof OnOffType) {
             if (OnOffType.ON.equals(command)) {
@@ -145,8 +154,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandRollerShutter(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof DecimalType) {
-            final DecimalType rollerShutterLevel = (DecimalType) command;
+        if (command instanceof DecimalType rollerShutterLevel) {
             bridgeHandler.commandSetRollerShutterLevel(deviceId,
                     invertRollerShutterValueIfConfigured(rollerShutterLevel.intValue()));
         } else if (command instanceof OnOffType) {
@@ -169,13 +177,13 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     }
 
     private void commandUpdatePointTemperature(Command command, LivisiBridgeHandler bridgeHandler) {
-        if (command instanceof QuantityType) {
-            final QuantityType<?> pointTemperatureCommand = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+        if (command instanceof QuantityType temperatureCommand) {
+            final QuantityType<?> pointTemperatureCommand = temperatureCommand.toUnit(SIUnits.CELSIUS);
             if (pointTemperatureCommand != null) {
                 commandUpdatePointTemperature(pointTemperatureCommand.doubleValue(), bridgeHandler);
             }
-        } else if (command instanceof DecimalType) {
-            commandUpdatePointTemperature(((DecimalType) command).doubleValue(), bridgeHandler);
+        } else if (command instanceof DecimalType temperatureCommand) {
+            commandUpdatePointTemperature(temperatureCommand.doubleValue(), bridgeHandler);
         }
     }
 
@@ -213,6 +221,14 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
     private void commandSwitchAlarm(Command command, LivisiBridgeHandler bridgeHandler) {
         if (command instanceof OnOffType) {
             bridgeHandler.commandSwitchAlarm(deviceId, OnOffType.ON.equals(command));
+        }
+    }
+
+    private void commandSwitchSiren(Command command, String notificationSound, LivisiBridgeHandler bridgeHandler) {
+        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+            bridgeHandler.commandSwitchSiren(deviceId, notificationSound);
+        } else {
+            bridgeHandler.commandSwitchSiren(deviceId, SIREN_NONE);
         }
     }
 
@@ -475,6 +491,10 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         } else if (capability.isTypeAlarmActuator()) {
             capabilityState.setAlarmActuatorState(event.getProperties().getOnState());
 
+            // SirenActuator
+        } else if (capability.isTypeSirenActuator()) {
+            capabilityState.setSirenActuatorState(event.getProperties().getActiveChannel());
+
             // MotionDetectionSensor
         } else if (capability.isTypeMotionDetectionSensor()) {
             capabilityState.setMotionDetectionSensorState(event.getProperties().getMotionDetectedCount());
@@ -639,6 +659,9 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 break;
             case CapabilityDTO.TYPE_ALARMACTUATOR:
                 updateAlarmActuatorChannels(capability);
+                break;
+            case CapabilityDTO.TYPE_SIRENACTUATOR:
+                updateSirenActuatorChannels(capability);
                 break;
             case CapabilityDTO.TYPE_MOTIONDETECTIONSENSOR:
                 updateMotionDetectionSensorChannels(capability);
@@ -809,6 +832,30 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
         final Boolean alarmState = capability.getCapabilityState().getAlarmActuatorState();
         if (alarmState != null) {
             updateState(CHANNEL_ALARM, OnOffType.from(alarmState));
+        } else {
+            logStateNull(capability);
+        }
+    }
+
+    private void updateSirenActuatorChannels(CapabilityDTO capability) {
+        final String sirenState = capability.getCapabilityState().getSirenActuatorState();
+        if (sirenState != null) {
+            switch (sirenState) {
+                case SIREN_ALARM:
+                    updateState(CHANNEL_SIREN_ALARM, OnOffType.ON);
+                    break;
+                case SIREN_NOTIFICATION:
+                    updateState(CHANNEL_SIREN_NOTIFICATION, OnOffType.ON);
+                    break;
+                case SIREN_FEEDBACK:
+                    updateState(CHANNEL_SIREN_FEEDBACK, OnOffType.ON);
+                    break;
+                default:
+                    // "None" and everything else switches the siren sound off
+                    updateState(CHANNEL_SIREN_ALARM, OnOffType.OFF);
+                    updateState(CHANNEL_SIREN_NOTIFICATION, OnOffType.OFF);
+                    updateState(CHANNEL_SIREN_FEEDBACK, OnOffType.OFF);
+            }
         } else {
             logStateNull(capability);
         }
@@ -991,8 +1038,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
                 @Nullable
                 final ThingHandler handler = bridge.getHandler();
-                if (handler instanceof LivisiBridgeHandler) {
-                    LivisiBridgeHandler bridgeHandler = (LivisiBridgeHandler) handler;
+                if (handler instanceof LivisiBridgeHandler bridgeHandler) {
                     bridgeHandler.registerDeviceStatusListener(deviceId, this);
                     this.bridgeHandler = bridgeHandler;
                 } else {

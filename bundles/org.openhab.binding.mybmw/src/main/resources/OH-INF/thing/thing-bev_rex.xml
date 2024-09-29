@@ -13,6 +13,7 @@
 		<description>Battery Electric Vehicle with Range Extender (BEV_REX)</description>
 
 		<channel-groups>
+			<channel-group id="update" typeId="ev-vehicle-update"/>
 			<channel-group id="status" typeId="ev-vehicle-status"/>
 			<channel-group id="doors" typeId="door-values"/>
 			<channel-group id="range" typeId="hybrid-range-values"/>
@@ -26,6 +27,10 @@
 			<channel-group id="tires" typeId="tire-pressures"/>
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">4</property>
+		</properties>
 
 		<representation-property>vin</representation-property>
 

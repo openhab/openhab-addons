@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void onItemStatusUpdate(TouchWandUnitData unitData) {
-        if (unitData.getStatus().equals("ALIVE")) {
+        if ("ALIVE".equals(unitData.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             // updateStatus(ThingStatus.OFFLINE); // comment - OFFLINE status is not accurate at the moment

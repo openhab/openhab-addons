@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +55,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoMakerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MAKER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MAKER);
 
     private final Object jobLock = new Object();
 
@@ -205,13 +204,13 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
                     switch (attributeName) {
                         case "Switch":
-                            State relayState = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            State relayState = OnOffType.from(!"0".equals(attributeValue));
                             logger.debug("New relayState '{}' for device '{}' received", relayState,
                                     getThing().getUID());
                             updateState(CHANNEL_RELAY, relayState);
                             break;
                         case "Sensor":
-                            State sensorState = "1".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                            State sensorState = OnOffType.from(!"1".equals(attributeValue));
                             logger.debug("New sensorState '{}' for device '{}' received", sensorState,
                                     getThing().getUID());
                             updateState(CHANNEL_SENSOR, sensorState);

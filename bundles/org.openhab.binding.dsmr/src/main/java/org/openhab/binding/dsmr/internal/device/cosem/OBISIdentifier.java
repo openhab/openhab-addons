@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -194,8 +194,8 @@ public class OBISIdentifier {
     @Override
     public boolean equals(@Nullable final Object other) {
         OBISIdentifier o;
-        if (other != null && other instanceof OBISIdentifier) {
-            o = (OBISIdentifier) other;
+        if (other != null && other instanceof OBISIdentifier identifier) {
+            o = identifier;
         } else {
             return false;
         }

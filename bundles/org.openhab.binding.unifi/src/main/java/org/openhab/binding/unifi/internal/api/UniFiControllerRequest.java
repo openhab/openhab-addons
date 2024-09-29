@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,13 +206,13 @@ class UniFiControllerRequest<T> {
             } else if (cause instanceof SSLException) {
                 // cannot establish ssl connection
                 throw new UniFiSSLException(cause);
-            } else if (cause instanceof HttpResponseException
-                    && ((HttpResponseException) cause).getResponse() instanceof ContentResponse) {
+            } else if (cause instanceof HttpResponseException httpResponseException
+                    && httpResponseException.getResponse() instanceof ContentResponse) {
                 // the UniFi controller violates the HTTP protocol
                 // - it returns 401 UNAUTHORIZED without the WWW-Authenticate response header
                 // - this causes an ExecutionException to be thrown
                 // - we unwrap the response from the exception for proper handling of the 401 status code
-                response = ((HttpResponseException) cause).getResponse();
+                response = httpResponseException.getResponse();
             } else {
                 // catch all
                 throw new UniFiException(cause);

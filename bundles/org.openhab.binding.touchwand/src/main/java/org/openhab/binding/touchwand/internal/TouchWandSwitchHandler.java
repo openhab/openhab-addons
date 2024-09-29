@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,9 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandShutterSwitchUnitData) {
+        if (unitData instanceof TouchWandShutterSwitchUnitData shutterSwitchUnitData) {
             OnOffType state;
-            int status = ((TouchWandShutterSwitchUnitData) unitData).getCurrStatus();
+            int status = shutterSwitchUnitData.getCurrStatus();
             String sStatus = Integer.toString(status);
 
             if (sStatus.equals(SWITCH_STATUS_OFF)) {
@@ -58,10 +58,10 @@ public class TouchWandSwitchHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void touchWandUnitHandleCommand(Command command) {
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
             if (touchWandBridgeHandler != null) {
-                touchWandBridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
+                touchWandBridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, onOffCommand);
             }
         }
     }

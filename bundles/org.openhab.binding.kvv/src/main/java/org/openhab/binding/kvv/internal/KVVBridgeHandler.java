@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,6 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      * @return the latest {@link DepartureResult}.
      */
     public synchronized @Nullable DepartureResult queryKVV(final KVVStopConfig stopConfig) {
-
         // is there an up-to-date value in the cache?
         final DepartureResult cr = this.cache.get(stopConfig.stopId);
         if (cr != null) {
@@ -131,7 +130,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
          */
         public Cache() {
             this.updateInterval = KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL;
-            this.cache = new HashMap<String, CacheLine>();
+            this.cache = new HashMap<>();
         }
 
         /*

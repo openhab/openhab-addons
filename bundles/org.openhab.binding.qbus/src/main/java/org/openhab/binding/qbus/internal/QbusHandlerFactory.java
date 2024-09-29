@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link qbusHandlerFactory} is responsible for creating things and thing
+ * The {@link QbusHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Koen Schockaert - Initial Contribution
@@ -49,8 +49,7 @@ public class QbusHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            QbusBridgeHandler handler = new QbusBridgeHandler((Bridge) thing);
-            return handler;
+            return new QbusBridgeHandler((Bridge) thing);
         } else if (SCENE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new QbusSceneHandler(thing);
         } else if (BISTABIEL_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,15 +93,14 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                 clear();
             }
         } else if (LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId()) && config != null) {
-            if (command instanceof Number) {
-                int level = ((Number) command).intValue();
+            if (command instanceof Number number) {
+                int level = number.intValue();
                 logger.trace("dimmer at address {} just setting dimmer level", getAddress());
                 dim(level);
-            } else if (command instanceof IncreaseDecreaseType) {
-                IncreaseDecreaseType s = (IncreaseDecreaseType) command;
+            } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                 int currentValue = lastLightLevel.get();
                 int newValue;
-                if (IncreaseDecreaseType.INCREASE.equals(s)) {
+                if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseCommand)) {
                     newValue = currentValue + config.stepPercentage;
                     // round down to step multiple
                     newValue = newValue - newValue % config.stepPercentage;

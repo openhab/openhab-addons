@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,12 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -145,7 +147,10 @@ public abstract class Value {
      * @param command The command to parse.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public Command parseMessage(Command command) throws IllegalArgumentException {
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
+        }
         return parseCommand(command);
     }
 
@@ -155,7 +160,7 @@ public abstract class Value {
      * @param data The binary payload to update the internal value.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public void update(byte data[]) throws IllegalArgumentException {
+    public void update(byte[] data) throws IllegalArgumentException {
         String mimeType = null;
 
         // URLConnection.guessContentTypeFromStream(input) is not sufficient to detect all JPEG files

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,10 +147,8 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
         String label = getScheduledEventName(referencedName, scheduledEvent);
         String description = translationProvider.getText("dynamic-channel.automation-enabled.description",
                 referencedName);
-        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(channelTypeUid)
-                .withLabel(label).withDescription(description).build();
-
-        return channel;
+        return ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(channelTypeUid).withLabel(label)
+                .withDescription(description).build();
     }
 
     private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent) {

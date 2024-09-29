@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>GPSTracker Binding</name>
 	<description>GPS tracking with OwnTracks and GPSLogger support over HTTP</description>
+	<connection>local</connection>
 
 </addon:addon>

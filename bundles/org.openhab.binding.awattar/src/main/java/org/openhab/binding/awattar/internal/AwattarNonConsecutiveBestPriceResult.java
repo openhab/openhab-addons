@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,44 +29,40 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult {
-
-    private List<AwattarPrice> members;
-    private ZoneId zoneId;
+    private final List<AwattarPrice> members;
+    private final ZoneId zoneId;
     private boolean sorted = true;
 
-    public AwattarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
+    public AwattarNonConsecutiveBestPriceResult(ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
-        members = new ArrayList<AwattarPrice>();
+        members = new ArrayList<>();
     }
 
     public void addMember(AwattarPrice member) {
         sorted = false;
         members.add(member);
-        updateStart(member.getStartTimestamp());
-        updateEnd(member.getEndTimestamp());
+        updateStart(member.timerange().start());
+        updateEnd(member.timerange().end());
     }
 
     @Override
     public boolean isActive() {
-        return members.stream().anyMatch(x -> x.contains(Instant.now().toEpochMilli()));
+        return members.stream().anyMatch(x -> x.timerange().contains(Instant.now().toEpochMilli()));
     }
 
+    @Override
     public String toString() {
         return String.format("NonConsecutiveBestpriceResult with %s", members.toString());
     }
 
     private void sort() {
         if (!sorted) {
-            members.sort(new Comparator<AwattarPrice>() {
-                @Override
-                public int compare(AwattarPrice o1, AwattarPrice o2) {
-                    return Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp());
-                }
-            });
+            members.sort(Comparator.comparingLong(p -> p.timerange().start()));
         }
     }
 
+    @Override
     public String getHours() {
         boolean second = false;
         sort();
@@ -75,7 +71,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
             if (second) {
                 res.append(',');
             }
-            res.append(getHourFrom(price.getStartTimestamp(), zoneId));
+            res.append(getHourFrom(price.timerange().start(), zoneId));
             second = true;
         }
         return res.toString();

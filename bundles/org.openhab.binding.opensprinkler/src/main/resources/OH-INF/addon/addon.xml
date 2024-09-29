@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>OpenSprinkler Binding</name>
 	<description>This is the binding for OpenSprinkler.</description>
+	<connection>local</connection>
 
 </addon:addon>

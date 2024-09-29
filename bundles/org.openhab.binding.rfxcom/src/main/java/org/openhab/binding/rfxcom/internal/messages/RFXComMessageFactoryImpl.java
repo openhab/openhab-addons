@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,7 @@ public enum RFXComMessageFactoryImpl implements RFXComMessageFactory {
 
     @SuppressWarnings("serial")
     private static final Map<PacketType, Class<? extends RFXComMessage>> MESSAGE_CLASSES = Collections
-            .unmodifiableMap(new HashMap<PacketType, Class<? extends RFXComMessage>>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put(PacketType.INTERFACE_CONTROL, RFXComInterfaceControlMessage.class);
                     put(PacketType.INTERFACE_MESSAGE, RFXComInterfaceMessage.class);

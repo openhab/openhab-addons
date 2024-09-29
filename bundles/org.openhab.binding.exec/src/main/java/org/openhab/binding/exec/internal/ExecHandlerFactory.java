@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.exec.internal;
 
 import static org.openhab.binding.exec.internal.ExecBindingConstants.THING_COMMAND;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.exec")
 public class ExecHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_COMMAND);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_COMMAND);
     private final Logger logger = LoggerFactory.getLogger(ExecHandlerFactory.class);
     private final ExecWhitelistWatchService execWhitelistWatchService;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ package org.openhab.binding.yamahareceiver.internal.protocol;
  * For example, AVRs when setting input 'AUDIO_X' (or HDMI_X) need the input to be sent in this form.
  * However, what comes back in the status update from the AVR is 'AUDIOX' (and 'HDMIX') respectively.
  *
- * @author Tomasz Maruszak
+ * @author Tomasz Maruszak - Initial contribution
  */
 public interface InputConverter {
 

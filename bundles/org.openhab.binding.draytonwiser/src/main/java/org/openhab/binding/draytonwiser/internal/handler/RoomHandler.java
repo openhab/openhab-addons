@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.draytonwiser.internal.handler;
 
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
-
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,8 +57,8 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     protected void handleCommand(final String channelId, final Command command) throws DraytonWiserApiException {
         switch (channelId) {
             case CHANNEL_CURRENT_SETPOINT:
-                if (command instanceof QuantityType) {
-                    setSetPoint((QuantityType<?>) command);
+                if (command instanceof QuantityType quantityCommand) {
+                    setSetPoint(quantityCommand);
                 }
                 break;
             case CHANNEL_MANUAL_MODE_STATE:
@@ -69,8 +67,8 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
                 }
                 break;
             case CHANNEL_ROOM_BOOST_DURATION:
-                if (command instanceof DecimalType) {
-                    setBoostDuration(Math.round((((DecimalType) command).floatValue() * 60)));
+                if (command instanceof DecimalType decimalCommand) {
+                    setBoostDuration(Math.round((decimalCommand.floatValue() * 60)));
                 }
                 break;
             case CHANNEL_ROOM_WINDOW_STATE_DETECTION:
@@ -167,9 +165,9 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
     private State getBoostRemainingState() {
         final Integer overrideTimeout = getData().getOverrideTimeoutUnixTime();
         if (overrideTimeout != null && !"NONE".equalsIgnoreCase(getData().getOverrideType())) {
-            return new QuantityType<Time>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
+            return new QuantityType<>(overrideTimeout - (System.currentTimeMillis() / 1000L), Units.SECOND);
         }
-        return new QuantityType<Time>(0, Units.SECOND);
+        return new QuantityType<>(0, Units.SECOND);
     }
 
     private void setBoostDuration(final int durationMinutes) throws DraytonWiserApiException {

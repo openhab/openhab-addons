@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,15 +28,14 @@ import org.openhab.binding.gardena.internal.handler.GardenaAccountHandler;
 import org.openhab.binding.gardena.internal.model.dto.Device;
 import org.openhab.binding.gardena.internal.util.PropertyUtils;
 import org.openhab.binding.gardena.internal.util.UidUtils;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,45 +44,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = GardenaDeviceDiscoveryService.class)
 @NonNullByDefault
-public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<GardenaAccountHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(GardenaDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
-
-    private @NonNullByDefault({}) GardenaAccountHandler accountHandler;
     private @Nullable Future<?> scanFuture;
 
     public GardenaDeviceDiscoveryService() {
-        super(Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
+        super(GardenaAccountHandler.class,
+                Collections.unmodifiableSet(Stream.of(new ThingTypeUID(BINDING_ID, "-")).collect(Collectors.toSet())),
                 DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof GardenaAccountHandler) {
-            this.accountHandler = (GardenaAccountHandler) handler;
-            this.accountHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return accountHandler;
-    }
-
-    /**
-     * Called on component activation.
-     */
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
@@ -108,13 +86,13 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
     private void loadDevices() {
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
-                GardenaSmart gardena = accountHandler.getGardenaSmart();
+                GardenaSmart gardena = thingHandler.getGardenaSmart();
                 if (gardena != null) {
                     for (Device device : gardena.getAllDevices()) {
                         deviceDiscovered(device);
                     }
 
-                    for (Thing thing : accountHandler.getThing().getThings()) {
+                    for (Thing thing : thingHandler.getThing().getThings()) {
                         try {
                             gardena.getDevice(UidUtils.getGardenaDeviceId(thing));
                         } catch (GardenaException ex) {
@@ -155,8 +133,8 @@ public class GardenaDeviceDiscoveryService extends AbstractDiscoveryService
      */
     public void deviceDiscovered(Device device) {
         if (device.active) {
-            ThingUID accountUID = accountHandler.getThing().getUID();
-            ThingUID thingUID = UidUtils.generateThingUID(device, accountHandler.getThing());
+            ThingUID accountUID = thingHandler.getThing().getUID();
+            ThingUID thingUID = UidUtils.generateThingUID(device, thingHandler.getThing());
 
             try {
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)

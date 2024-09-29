@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,8 +93,7 @@ public final class AnalogMessage extends Message {
     public AnalogValue getAnalogValue(int portNumber) {
         // Get the internal index for portNumber within the message
         int idx = (portNumber - 1) % 4;
-        AnalogValue value = new AnalogValue(this.getValue(idx), getMeasureType(idx));
-        return value;
+        return new AnalogValue(this.getValue(idx), getMeasureType(idx));
     }
 
     /**

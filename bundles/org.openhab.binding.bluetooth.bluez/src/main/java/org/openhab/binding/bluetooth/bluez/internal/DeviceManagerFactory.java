@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class DeviceManagerFactory {
                 // Exception caused by first call to the library
                 try {
                     return DeviceManager.createInstance(false);
-                } catch (DBusException ex) {
+                } catch (DBusException | UnsatisfiedLinkError ex) {
                     // we might be on a system without DBus, such as macOS or Windows
                     logger.debug("Failed to initialize DeviceManager: {}", ex.getMessage());
                     return null;

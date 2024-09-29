@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.meater.internal.api;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +35,7 @@ import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
 import org.openhab.binding.meater.internal.exceptions.MeaterAuthenticationException;
 import org.openhab.binding.meater.internal.exceptions.MeaterException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,11 +58,13 @@ public class MeaterRestAPI {
     private static final String LOGIN = "login";
     private static final String DEVICES = "devices";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(MeaterRestAPI.class);
     private final Gson gson;
     private final HttpClient httpClient;
     private final MeaterBridgeConfiguration configuration;
+    private final String userAgent;
     private String authToken = "";
     private LocaleProvider localeProvider;
 
@@ -70,41 +74,42 @@ public class MeaterRestAPI {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.localeProvider = localeProvider;
+        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
-    public boolean refresh(Map<String, MeaterProbeDTO.Device> meaterProbeThings) {
-        try {
-            MeaterProbeDTO dto = getDevices(MeaterProbeDTO.class);
-            if (dto != null) {
-                List<Device> devices = dto.getData().getDevices();
-                if (devices != null) {
-                    if (!devices.isEmpty()) {
-                        for (Device meaterProbe : devices) {
-                            meaterProbeThings.put(meaterProbe.id, meaterProbe);
-                        }
-                    } else {
-                        meaterProbeThings.clear();
+    public void refresh(Map<String, MeaterProbeDTO.Device> meaterProbeThings) throws MeaterException {
+        MeaterProbeDTO dto = getDevices(MeaterProbeDTO.class);
+        if (dto != null) {
+            List<Device> devices = dto.getData().getDevices();
+            if (devices != null) {
+                if (!devices.isEmpty()) {
+                    for (Device meaterProbe : devices) {
+                        meaterProbeThings.put(meaterProbe.id, meaterProbe);
                     }
-                    return true;
+                } else {
+                    meaterProbeThings.clear();
                 }
             }
-        } catch (MeaterException e) {
-            logger.warn("Failed to refresh! {}", e.getMessage());
         }
-        return false;
     }
 
     private void login() throws MeaterException {
         try {
             // Login
-            String json = "{ \"email\": \"" + configuration.email + "\",  \"password\": \"" + configuration.password
-                    + "\" }";
-            Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
-            request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-            request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-            request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
+            String json = """
+                    {
+                        "email": "%s",
+                        "password": "%s"
+                    }
+                    """.formatted(configuration.email, configuration.password);
+            Request request = httpClient.newRequest(API_ENDPOINT + LOGIN) //
+                    .method(HttpMethod.POST) //
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
+                    .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE) //
+                    .agent(userAgent) //
+                    .content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
-            logger.trace("{}.", request.toString());
+            logger.trace("{}", request.toString());
 
             ContentResponse httpResponse = request.send();
             if (!HttpStatus.isSuccess(httpResponse.getStatus())) {
@@ -132,23 +137,25 @@ public class MeaterRestAPI {
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
-                    Request request = httpClient.newRequest(API_ENDPOINT + uri).method(HttpMethod.GET);
-                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + authToken);
-                    request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-                    request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
-                    request.header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage());
+                    Request request = httpClient.newRequest(API_ENDPOINT + uri) //
+                            .method(HttpMethod.GET) //
+                            .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                            .header(HttpHeader.AUTHORIZATION, "Bearer " + authToken)
+                            .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE)
+                            .header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage())
+                            .agent(userAgent);
 
                     ContentResponse response = request.send();
                     String content = response.getContentAsString();
                     logger.trace("API response: {}", content);
 
-                    if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    int status = response.getStatus();
+                    if (status == HttpStatus.UNAUTHORIZED_401) {
                         // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                         logger.debug("getFromApi failed, authentication failed, HTTP status: 401");
                         throw new MeaterAuthenticationException("Authentication failed");
-                    } else if (!HttpStatus.isSuccess(response.getStatus())) {
-                        logger.debug("getFromApi failed, HTTP status: {}", response.getStatus());
-                        throw new MeaterException("Failed to fetch from API!");
+                    } else if (!HttpStatus.isSuccess(status)) {
+                        throw new MeaterException(HttpStatus.getCode(status).getMessage());
                     } else {
                         return content;
                     }
@@ -156,11 +163,11 @@ public class MeaterRestAPI {
                     logger.debug("TimeoutException error in get: {}", e.getMessage());
                 }
             }
-            throw new MeaterException("Failed to fetch from API!");
+            throw new MeaterException("Failed to fetch from API");
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException) {
-                Response response = ((HttpResponseException) cause).getResponse();
+            if (cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
                      * When contextId is not valid, the service will respond with HTTP code 401 without
@@ -197,7 +204,7 @@ public class MeaterRestAPI {
         }
 
         if (json.isEmpty()) {
-            throw new MeaterException("JSON from API is empty!");
+            throw new MeaterException("JSON from API is empty");
         } else {
             try {
                 return gson.fromJson(json, dto);

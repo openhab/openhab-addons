@@ -1,0 +1,213 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "695b7480-42bc-44cf-bd63-1911f98fee34",
+			"id_v1": "/sensors/110",
+			"owner": {
+				"rid": "112853f9-c4c4-4d65-ba96-b4c2ab26d94d",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 60
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "65833fc9-1d08-4d03-b5ae-a03e7eca559c",
+			"id_v1": "/sensors/236",
+			"owner": {
+				"rid": "cfecbbd0-e918-42a2-b714-2bad33061d95",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 69
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "0fb39897-aa8b-49b4-8215-4e27651eb2f1",
+			"id_v1": "/sensors/63",
+			"owner": {
+				"rid": "0e22f8de-eff5-440a-a9ed-06d547d125d7",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 20
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "025bf7ea-5ba4-457f-9fa9-50a9a7886b0f",
+			"id_v1": "/sensors/6",
+			"owner": {
+				"rid": "b56191ea-8d18-4257-b5d2-cfc3fc86a1ee",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 73
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "42fe582f-b3f9-4ee9-905b-38357d07d3a5",
+			"id_v1": "/sensors/24",
+			"owner": {
+				"rid": "b5fe0539-171c-4733-bf0b-244635a309be",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 57
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "15c0d166-8059-45fc-9f32-97e69e714a27",
+			"id_v1": "/sensors/118",
+			"owner": {
+				"rid": "a0509519-3ecb-47d0-9183-25db1e4ea2b2",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 100
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "995a0ef5-a3a0-41a7-aa25-e3c85539c540",
+			"id_v1": "/sensors/135",
+			"owner": {
+				"rid": "8c5b05ba-b4f4-47b2-8ba0-fc44363192bc",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 100
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "c656ed42-7ab1-43fe-a910-039bdd5681bf",
+			"id_v1": "/sensors/8",
+			"owner": {
+				"rid": "68ff07d0-6543-4967-9889-e0bc0bc16c31",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 77
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "45cf7847-bf65-4e68-831a-772d3c067d46",
+			"id_v1": "/sensors/18",
+			"owner": {
+				"rid": "96bec26d-d7c6-4c00-98cd-6f96733296a0",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 49
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "2ac49e3d-9437-4b6c-9c19-7570f4381d19",
+			"id_v1": "/sensors/4",
+			"owner": {
+				"rid": "81d9a9d5-228c-45df-828e-0d224929b3d1",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 100
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "2ec182bc-d727-478a-8cd5-45d9bcf178ee",
+			"id_v1": "/sensors/245",
+			"owner": {
+				"rid": "56b560bc-a127-4634-8d80-9946104a4028",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 30
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "e4de67d2-130b-42bc-891c-6c61905028bd",
+			"id_v1": "/sensors/12",
+			"owner": {
+				"rid": "a1155885-4bbe-469f-83bb-f964f8e13e82",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 71
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "e77d2083-8728-4382-a631-6a2706bb1a3d",
+			"id_v1": "/sensors/20",
+			"owner": {
+				"rid": "e130feac-3a5c-452e-a97d-5bca470783b3",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 71
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "e692545e-c085-401e-81c5-e865845e8d87",
+			"id_v1": "/sensors/26",
+			"owner": {
+				"rid": "e12b3d9c-0b23-4edd-a967-66f5b5cefa92",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 63
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "c5dafdfc-b096-4090-ba24-912440168c87",
+			"id_v1": "/sensors/14",
+			"owner": {
+				"rid": "431026fb-298c-4726-8ce4-47450fea13c4",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 70
+			},
+			"type": "device_power"
+		},
+		{
+			"id": "373b4f7c-4e3b-400b-bf34-831af5bdd0e8",
+			"id_v1": "/sensors/124",
+			"owner": {
+				"rid": "f78c5b4b-2f52-4bc3-8097-1ddf97949cc5",
+				"rtype": "device"
+			},
+			"power_state": {
+				"battery_state": "normal",
+				"battery_level": 100
+			},
+			"type": "device_power"
+		}
+	]
+}

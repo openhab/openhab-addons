@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class CreateTTSCache {
             usage();
             return RC_USAGE;
         }
-        if (!args[0].equalsIgnoreCase("--api-key")) {
+        if (!"--api-key".equalsIgnoreCase(args[0])) {
             usage();
             return RC_API_KEY_MISSING;
         }

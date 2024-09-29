@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,12 +41,14 @@ public class ExecTransformationWhitelistWatchService implements WatchService.Wat
     private final Logger logger = LoggerFactory.getLogger(ExecTransformationWhitelistWatchService.class);
     private final Set<String> commandWhitelist = new HashSet<>();
     private final WatchService watchService;
+    private final Path watchFile;
 
     @Activate
     public ExecTransformationWhitelistWatchService(
             final @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
         this.watchService = watchService;
-        watchService.registerListener(this, COMMAND_WHITELIST_FILE);
+        this.watchFile = watchService.getWatchPath().resolve(COMMAND_WHITELIST_FILE);
+        watchService.registerListener(this, COMMAND_WHITELIST_FILE, false);
 
         // read initial content
         processWatchEvent(WatchService.Kind.CREATE, COMMAND_WHITELIST_FILE);
@@ -59,9 +61,9 @@ public class ExecTransformationWhitelistWatchService implements WatchService.Wat
 
     @Override
     public void processWatchEvent(WatchService.Kind kind, Path path) {
-        if (path.endsWith(COMMAND_WHITELIST_FILE)) {
-            commandWhitelist.clear();
-            try (Stream<String> lines = Files.lines(path)) {
+        commandWhitelist.clear();
+        if (kind != WatchService.Kind.DELETE) {
+            try (Stream<String> lines = Files.lines(watchFile)) {
                 lines.filter(line -> !line.trim().startsWith("#")).forEach(commandWhitelist::add);
                 logger.debug("Updated command whitelist: {}", commandWhitelist);
             } catch (IOException e) {

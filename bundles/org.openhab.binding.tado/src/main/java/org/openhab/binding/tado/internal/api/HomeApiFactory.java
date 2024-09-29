@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,10 @@
 package org.openhab.binding.tado.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tado.internal.api.auth.Authorizer;
-import org.openhab.binding.tado.internal.api.auth.OAuthAuthorizer;
-import org.openhab.binding.tado.internal.api.client.HomeApi;
+import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
+import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
+import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
+import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 
 import com.google.gson.Gson;
 

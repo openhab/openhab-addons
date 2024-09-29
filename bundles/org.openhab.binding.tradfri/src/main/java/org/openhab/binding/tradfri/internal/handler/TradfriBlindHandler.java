@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -108,8 +108,8 @@ public class TradfriBlindHandler extends TradfriThingHandler {
     }
 
     private void handlePositionCommand(Command command) {
-        if (command instanceof PercentType) {
-            setPosition((PercentType) command);
+        if (command instanceof PercentType percentCommand) {
+            setPosition(percentCommand);
         } else if (command instanceof StopMoveType) {
             if (StopMoveType.STOP.equals(command)) {
                 triggerStop();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,19 @@
 package org.openhab.binding.sonyprojector.internal.handler;
 
 import static org.openhab.binding.sonyprojector.internal.SonyProjectorBindingConstants.*;
+import static org.openhab.binding.sonyprojector.internal.configuration.SonyProjectorEthernetConfiguration.MODEL_AUTO;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sonyprojector.internal.SonyProjectorCommandDescriptionOptionProvider;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorStateDescriptionOptionProvider;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorConnector;
+import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorStatusPower;
 import org.openhab.binding.sonyprojector.internal.communication.sdcp.SonyProjectorSdcpConnector;
 import org.openhab.binding.sonyprojector.internal.communication.sdcp.SonyProjectorSdcpSimuConnector;
@@ -60,16 +63,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Wehrle - Initial contribution
  * @author Laurent Garnier - Refactoring, poll thread for regular channels updates, new serial thing type, new channels
+ * @author Laurent Garnier - Add new channel "ircommand"
  */
 @NonNullByDefault
 public class SonyProjectorHandler extends BaseThingHandler {
 
-    private static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW520;
+    public static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW528;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(15);
 
     private final Logger logger = LoggerFactory.getLogger(SonyProjectorHandler.class);
 
     private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider;
     private final SerialPortManager serialPortManager;
     private final TranslationProvider i18nProvider;
 
@@ -79,6 +84,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
+    private boolean identifyMac;
     private boolean identifyProjector;
     private SonyProjectorModel projectorModel = DEFAULT_MODEL;
     private SonyProjectorConnector connector = new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL);
@@ -88,9 +94,11 @@ public class SonyProjectorHandler extends BaseThingHandler {
     private final Object commandLock = new Object();
 
     public SonyProjectorHandler(Thing thing, SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
+            SonyProjectorCommandDescriptionOptionProvider commandDescriptionProvider,
             SerialPortManager serialPortManager, TranslationProvider i18nProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.serialPortManager = serialPortManager;
         this.i18nProvider = i18nProvider;
         this.bundle = FrameworkUtil.getBundle(this.getClass());
@@ -156,46 +164,46 @@ public class SonyProjectorHandler extends BaseThingHandler {
                         refreshChannel(CHANNEL_XVCOLOR, true);
                         break;
                     case CHANNEL_CONTRAST:
-                        if (command instanceof DecimalType) {
-                            connector.setContrast(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setContrast(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setContrast(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand) {
+                            connector.setContrast(percentCommand.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
                         break;
                     case CHANNEL_BRIGHTNESS:
-                        if (command instanceof DecimalType) {
-                            connector.setBrightness(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setBrightness(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setBrightness(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand2) {
+                            connector.setBrightness(percentCommand2.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
                         break;
                     case CHANNEL_COLOR:
-                        if (command instanceof DecimalType) {
-                            connector.setColor(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setColor(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setColor(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand3) {
+                            connector.setColor(percentCommand3.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
                         break;
                     case CHANNEL_HUE:
-                        if (command instanceof DecimalType) {
-                            connector.setHue(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setHue(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setHue(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand4) {
+                            connector.setHue(percentCommand4.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
                         break;
                     case CHANNEL_SHARPNESS:
-                        if (command instanceof DecimalType) {
-                            connector.setSharpness(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setSharpness(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setSharpness(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand5) {
+                            connector.setSharpness(percentCommand5.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -208,10 +216,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
                         refreshChannel(CHANNEL_IRIS_MANUAL, true);
                         break;
                     case CHANNEL_IRIS_MANUAL:
-                        if (command instanceof DecimalType) {
-                            connector.setIrisManual(((DecimalType) command).intValue());
-                        } else if (command instanceof PercentType) {
-                            connector.setIrisManual(((PercentType) command).intValue());
+                        if (command instanceof DecimalType decimalCommand) {
+                            connector.setIrisManual(decimalCommand.intValue());
+                        } else if (command instanceof PercentType percentCommand6) {
+                            connector.setIrisManual(percentCommand6.intValue());
                         } else {
                             throw new SonyProjectorException("Invalid command value");
                         }
@@ -287,6 +295,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     case CHANNEL_PICTURE_POSITION:
                         connector.setPicturePosition(command.toString());
                         break;
+                    case CHANNEL_IR_COMMAND:
+                        connector.sendIrCommand(command.toString());
+                        break;
                     default:
                         throw new SonyProjectorException("Unexpected command");
                 }
@@ -312,10 +323,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Ethernet config port {}", config.port);
             logger.debug("Ethernet config model {}", configModel);
             logger.debug("Ethernet config community {}", config.community);
-            if (config.host == null || config.host.isEmpty()) {
+            if (config.host.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-host");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (config.port <= 0) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-invalid-port");
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -323,8 +337,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
                 connector = simu ? new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL)
                         : new SonyProjectorSdcpConnector(config.host, config.port, config.community, DEFAULT_MODEL);
-                identifyProjector = "AUTO".equals(configModel);
-                projectorModel = switchToModel("AUTO".equals(configModel) ? null : configModel, true);
+                identifyMac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS) == null;
+                identifyProjector = MODEL_AUTO.equals(configModel);
+                projectorModel = switchToModel(identifyProjector ? null : configModel, true);
 
                 updateStatus(ThingStatus.UNKNOWN);
             }
@@ -333,13 +348,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             String configModel = config.model;
             logger.debug("Serial config port {}", config.port);
             logger.debug("Serial config model {}", configModel);
-            if (config.port == null || config.port.isEmpty()) {
+            if (config.port.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-port");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-invalid-thing-type");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -347,6 +362,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
                 connector = simu ? new SonyProjectorSerialSimuConnector(serialPortManager, DEFAULT_MODEL)
                         : new SonyProjectorSerialConnector(serialPortManager, config.port, DEFAULT_MODEL);
+                identifyMac = false;
                 identifyProjector = false;
                 projectorModel = switchToModel(configModel, true);
 
@@ -358,16 +374,13 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial over IP config host {}", config.host);
             logger.debug("Serial over IP config port {}", config.port);
             logger.debug("Serial over IP config model {}", configModel);
-            if (config.host == null || config.host.isEmpty()) {
+            if (config.host.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-host");
-            } else if (config.port == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-port");
             } else if (config.port <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-invalid-port");
-            } else if (configModel == null || configModel.isEmpty()) {
+            } else if (configModel.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.config-error-unknown-model");
             } else {
@@ -376,6 +389,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 connector = simu ? new SonyProjectorSerialSimuConnector(serialPortManager, DEFAULT_MODEL)
                         : new SonyProjectorSerialOverIpConnector(serialPortManager, config.host, config.port,
                                 DEFAULT_MODEL);
+                identifyMac = false;
                 identifyProjector = false;
                 projectorModel = switchToModel(configModel, true);
 
@@ -423,6 +437,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
             boolean isOn = refreshPowerState();
             refreshModel();
+            refreshMacAddress();
             refreshChannel(CHANNEL_INPUT, isOn);
             refreshChannel(CHANNEL_CALIBRATION_PRESET, isOn);
             refreshChannel(CHANNEL_CONTRAST, isOn);
@@ -521,8 +536,24 @@ public class SonyProjectorHandler extends BaseThingHandler {
                     model.getAspectStateOptions());
             stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_PICTURE_POSITION),
                     model.getPicturePositionStateOptions());
+            commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), CHANNEL_IR_COMMAND),
+                    SonyProjectorItem.getIRCommandOptions(model.getInputCommandOptions(),
+                            model.getCalibrPresetCommandOptions(), model.getAspectCommandOptions()));
         }
         return model;
+    }
+
+    private void refreshMacAddress() {
+        if (identifyMac && getThing().getThingTypeUID().equals(THING_TYPE_ETHERNET)) {
+            try {
+                String mac = ((SonyProjectorSdcpConnector) connector).getMacAddress();
+                logger.debug("getMacAddress returned {}", mac);
+                getThing().setProperty(Thing.PROPERTY_MAC_ADDRESS, mac);
+                identifyMac = false;
+            } catch (SonyProjectorException e) {
+                logger.debug("getMacAddress failed: {}", e.getMessage());
+            }
+        }
     }
 
     private boolean refreshPowerState() {
@@ -536,7 +567,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
         } catch (SonyProjectorException e) {
             logger.debug("Get Status Power failed: {}", e.getMessage());
         }
-        updateChannelStateAndCache(CHANNEL_POWER, on ? OnOffType.ON : OnOffType.OFF);
+        updateChannelStateAndCache(CHANNEL_POWER, OnOffType.from(on));
         updateChannelStateAndCache(CHANNEL_POWERSTATE, state);
         return on;
     }
@@ -615,7 +646,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 try {
                     switch (channel) {
                         case CHANNEL_POWER:
-                            state = connector.getStatusPower().isOn() ? OnOffType.ON : OnOffType.OFF;
+                            state = OnOffType.from(connector.getStatusPower().isOn());
                             break;
                         case CHANNEL_POWERSTATE:
                             state = new StringType(connector.getStatusPower().name());

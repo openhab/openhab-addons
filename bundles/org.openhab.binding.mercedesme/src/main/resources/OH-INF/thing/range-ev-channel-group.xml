@@ -4,16 +4,16 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="range-ev-values">
-		<label>Range and Charge Data</label>
+		<label>Range and Battery Data</label>
 		<description>Provides Mileage, remaining range and charge level values</description>
 		<channels>
-			<channel id="mileage" typeId="mileage-channel"/>
-			<channel id="range-electric" typeId="range-electric-channel"/>
-			<channel id="radius-electric" typeId="radius-electric-channel"/>
-			<channel id="soc" typeId="soc-channel"/>
-			<channel id="charged" typeId="charged-channel"/>
-			<channel id="uncharged" typeId="uncharged-channel"/>
-			<channel id="last-update" typeId="last-range-update-channel"/>
+			<channel id="mileage" typeId="mileage"/>
+			<channel id="range-electric" typeId="range-electric"/>
+			<channel id="radius-electric" typeId="radius-electric"/>
+			<channel id="home-distance" typeId="home-distance"/>
+			<channel id="soc" typeId="soc"/>
+			<channel id="charged" typeId="charged"/>
+			<channel id="uncharged" typeId="uncharged"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

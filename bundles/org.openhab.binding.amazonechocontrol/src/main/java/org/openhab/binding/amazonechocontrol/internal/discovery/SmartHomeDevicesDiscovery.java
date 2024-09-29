@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     }
 
     public void activate() {
-        activate(new Hashtable<String, Object>());
+        activate(new Hashtable<>());
     }
 
     @Override
@@ -129,7 +129,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
         if (activateTimeStamp == null) {
             this.activateTimeStamp = new Date().getTime();
         }
-    };
+    }
 
     synchronized void setSmartHomeDevices(List<SmartHomeBaseDevice> deviceList) {
         int smartHomeDeviceDiscoveryMode = accountHandler.getSmartHomeDevicesDiscoveryMode();
@@ -143,8 +143,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
             String deviceName = null;
             Map<String, Object> props = new HashMap<>();
 
-            if (smartHomeDevice instanceof SmartHomeDevice) {
-                SmartHomeDevice shd = (SmartHomeDevice) smartHomeDevice;
+            if (smartHomeDevice instanceof SmartHomeDevice shd) {
                 logger.trace("Found SmartHome device: {}", shd);
 
                 String entityId = shd.entityId;
@@ -165,7 +164,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     // Connected through skill
                     continue;
                 }
-                if (!(smartHomeDeviceDiscoveryMode == 2) && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
+                if (smartHomeDeviceDiscoveryMode != 2 && "openHAB".equalsIgnoreCase(shd.manufacturerName)) {
                     // OpenHAB device
                     continue;
                 }
@@ -203,8 +202,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
                     deviceName = shd.friendlyName;
                 }
                 props.put(DEVICE_PROPERTY_ID, id);
-            } else if (smartHomeDevice instanceof SmartHomeGroup) {
-                SmartHomeGroup shg = (SmartHomeGroup) smartHomeDevice;
+            } else if (smartHomeDevice instanceof SmartHomeGroup shg) {
                 logger.trace("Found SmartHome device: {}", shg);
 
                 String id = shg.findId();

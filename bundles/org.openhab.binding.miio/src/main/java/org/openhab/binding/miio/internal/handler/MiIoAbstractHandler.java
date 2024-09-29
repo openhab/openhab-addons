@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return "id:" + ret;
         }
         return "failed";
-    });;
+    });
     protected static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
     protected static final long CACHE_EXPIRY_NETWORK = TimeUnit.SECONDS.toMillis(60);
 
@@ -275,7 +275,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * between [] brackets. This to allow for unimplemented commands to be executed
      *
      * @param commandString command to be executed
-     * @param cloud server to be used or empty string for direct sending to the device
+     * @param cloudServer server to be used or empty string for direct sending to the device
      * @return message id
      */
     protected int sendCommand(String commandString, String cloudServer) {
@@ -300,9 +300,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      * Sends commands to the {@link MiIoAsyncCommunication} for transmission to the Mi devices or cloud
      *
      * @param command (method) to be queued for execution
-     * @param parameters to be send with the command
-     * @param cloud server to be used or empty string for direct sending to the device
-     * @param sending subdevice or empty string for regular device
+     * @param params to be send with the command
+     * @param cloudServer server to be used or empty string for direct sending to the device
+     * @param sender subdevice or empty string for regular device
      * @return message id
      */
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
@@ -314,7 +314,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             final MiIoAsyncCommunication connection = getConnection();
             return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
-            logger.debug("Command {} for {} failed (type: {}): {}", command.toString(), getThing().getUID(),
+            logger.debug("Command {} for {} failed (type: {}): {}", command, getThing().getUID(),
                     getThing().getThingTypeUID(), e.getLocalizedMessage());
             disconnected(e.getMessage());
         }
@@ -327,7 +327,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         // simple and only have the option for cloud or direct.
         final MiIoBindingConfiguration configuration = this.configuration;
         if (configuration != null) {
-            return configuration.communication.equals("cloud") ? cloudServer : "";
+            return "cloud".equals(configuration.communication) ? cloudServer : "";
         }
         return "";
     }
@@ -526,7 +526,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             return cmd;
         }
         String returnCmd = cmd.replace("\"$", "$").replace("$\"", "$");
-        String cmdParts[] = cmd.split("\\$");
+        String[] cmdParts = cmd.split("\\$");
         if (logger.isTraceEnabled()) {
             logger.debug("processSubstitutions {} ", cmd);
             for (Entry<String, Object> e : deviceVariables.entrySet()) {

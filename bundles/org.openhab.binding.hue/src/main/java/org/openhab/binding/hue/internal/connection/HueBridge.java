@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,28 +48,28 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.hue.internal.dto.ApiVersion;
-import org.openhab.binding.hue.internal.dto.ApiVersionUtils;
-import org.openhab.binding.hue.internal.dto.Config;
-import org.openhab.binding.hue.internal.dto.ConfigUpdate;
-import org.openhab.binding.hue.internal.dto.CreateUserRequest;
-import org.openhab.binding.hue.internal.dto.ErrorResponse;
-import org.openhab.binding.hue.internal.dto.FullConfig;
-import org.openhab.binding.hue.internal.dto.FullGroup;
-import org.openhab.binding.hue.internal.dto.FullHueObject;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.FullSensor;
-import org.openhab.binding.hue.internal.dto.Group;
-import org.openhab.binding.hue.internal.dto.HueObject;
-import org.openhab.binding.hue.internal.dto.NewLightsResponse;
-import org.openhab.binding.hue.internal.dto.Scene;
-import org.openhab.binding.hue.internal.dto.Schedule;
-import org.openhab.binding.hue.internal.dto.ScheduleUpdate;
-import org.openhab.binding.hue.internal.dto.SearchForLightsRequest;
-import org.openhab.binding.hue.internal.dto.SetAttributesRequest;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
-import org.openhab.binding.hue.internal.dto.SuccessResponse;
-import org.openhab.binding.hue.internal.dto.Util;
+import org.openhab.binding.hue.internal.api.dto.clip1.ApiVersion;
+import org.openhab.binding.hue.internal.api.dto.clip1.ApiVersionUtils;
+import org.openhab.binding.hue.internal.api.dto.clip1.Config;
+import org.openhab.binding.hue.internal.api.dto.clip1.ConfigUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.CreateUserRequest;
+import org.openhab.binding.hue.internal.api.dto.clip1.ErrorResponse;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullConfig;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullHueObject;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullSensor;
+import org.openhab.binding.hue.internal.api.dto.clip1.Group;
+import org.openhab.binding.hue.internal.api.dto.clip1.HueObject;
+import org.openhab.binding.hue.internal.api.dto.clip1.NewLightsResponse;
+import org.openhab.binding.hue.internal.api.dto.clip1.Scene;
+import org.openhab.binding.hue.internal.api.dto.clip1.Schedule;
+import org.openhab.binding.hue.internal.api.dto.clip1.ScheduleUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.SearchForLightsRequest;
+import org.openhab.binding.hue.internal.api.dto.clip1.SetAttributesRequest;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.SuccessResponse;
+import org.openhab.binding.hue.internal.api.dto.clip1.Util;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.DeviceOffException;
 import org.openhab.binding.hue.internal.exceptions.EmptyResponseException;
@@ -996,7 +996,12 @@ public class HueBridge {
     // Methods that convert gson exceptions into ApiExceptions
     private <T> T safeFromJson(String json, Type typeOfT) throws ApiException {
         try {
-            return gson.fromJson(json, typeOfT);
+            @Nullable
+            T safe = gson.fromJson(json, typeOfT);
+            if (safe == null) {
+                throw new ApiException("JSON is null or empty");
+            }
+            return safe;
         } catch (JsonParseException e) {
             throw new ApiException("API returned unexpected result: " + e.getMessage());
         }
@@ -1004,7 +1009,12 @@ public class HueBridge {
 
     private <T> T safeFromJson(String json, Class<T> classOfT) throws ApiException {
         try {
-            return gson.fromJson(json, classOfT);
+            @Nullable
+            T safe = gson.fromJson(json, classOfT);
+            if (safe == null) {
+                throw new ApiException("JSON is null or empty");
+            }
+            return safe;
         } catch (JsonParseException e) {
             throw new ApiException("API returned unexpected result: " + e.getMessage());
         }
@@ -1086,6 +1096,11 @@ public class HueBridge {
 
     private HueResult doNetwork(String address, HttpMethod requestMethod, @Nullable String body)
             throws ConfigurationException, CommunicationException {
+        return doNetwork(address, requestMethod, body, requestMethod == HttpMethod.GET);
+    }
+
+    private HueResult doNetwork(String address, HttpMethod requestMethod, @Nullable String body, boolean retryOnTimeout)
+            throws ConfigurationException, CommunicationException {
         logger.trace("Hue request: {} - URL = '{}'", requestMethod, address);
         try {
             final Request request = httpClient.newRequest(address).method(requestMethod).timeout(timeout,
@@ -1113,9 +1128,14 @@ public class HueBridge {
                         e.getCause());
             }
         } catch (TimeoutException e) {
-            String message = e.getMessage();
-            logger.debug("TimeoutException occurred during execution: {}", message, e);
-            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
+            if (retryOnTimeout) {
+                logger.debug("TimeoutException occurred during execution, retry");
+                return doNetwork(address, requestMethod, body, false);
+            } else {
+                String message = e.getMessage();
+                logger.debug("TimeoutException occurred during execution: {}", message, e);
+                throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             String message = e.getMessage();

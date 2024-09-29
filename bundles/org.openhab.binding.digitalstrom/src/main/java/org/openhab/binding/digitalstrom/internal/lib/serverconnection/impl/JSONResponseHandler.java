@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class JSONResponseHandler {
      * @return jsonObject
      */
     public static JsonObject toJsonObject(String jsonResponse) {
-        if (jsonResponse != null && !jsonResponse.trim().equals("")) {
+        if (jsonResponse != null && !"".equals(jsonResponse.trim())) {
             try {
                 return (JsonObject) JsonParser.parseString(jsonResponse);
             } catch (JsonParseException e) {

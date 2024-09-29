@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,7 +126,6 @@ public class VeluxExistingProducts {
      * method may ignore the new product if it was created by certain originating commands, or if the new product has
      * certain actuator states.
      *
-     * @param requestingCommand the command that requested the data from the hub and so triggered calling this method.
      * @param newProduct the product containing new data.
      *
      * @return true if the product exists in the database.

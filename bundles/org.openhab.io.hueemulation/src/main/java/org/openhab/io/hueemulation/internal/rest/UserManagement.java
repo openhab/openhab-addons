@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.ws.rs.DELETE;
@@ -120,7 +120,7 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
             return;
         }
         logger.debug("APIKey {} added", apiKey);
-        String l[] = label.split("#");
+        String[] l = label.split("#");
         HueUserAuthWithSecrets hueUserAuth = new HueUserAuthWithSecrets(l[0], l.length == 2 ? l[1] : "openhab", apiKey,
                 clientKey);
         cs.ds.config.whitelist.put(apiKey, hueUserAuth);
@@ -172,7 +172,7 @@ public class UserManagement extends DefaultAbstractManagedProvider<HueUserAuthWi
         String clientKey = UUID.randomUUID().toString();
         addUser(apiKey, clientKey, userRequest.devicetype);
         HueSuccessResponseCreateUser h = new HueSuccessResponseCreateUser(apiKey, clientKey);
-        String result = cs.gson.toJson(Collections.singleton(new HueResponse(h)), new TypeToken<List<?>>() {
+        String result = cs.gson.toJson(Set.of(new HueResponse(h)), new TypeToken<List<?>>() {
         }.getType());
 
         return Response.ok(result).build();

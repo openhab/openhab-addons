@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 public class DSMRMeterDetectorTest {
 
     // @formatter:off
-    public static final List<Object[]> data() {
+    public static List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "ace4000", EnumSet.of(ELECTRICITY_ACE4000, GAS_ACE4000)},
             { "dsmr_40", EnumSet.of(DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},

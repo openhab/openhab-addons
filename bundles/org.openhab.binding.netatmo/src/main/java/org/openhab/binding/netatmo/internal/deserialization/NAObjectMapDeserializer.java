@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,10 +38,10 @@ class NAObjectMapDeserializer implements JsonDeserializer<NAObjectMap<?>> {
             throws JsonParseException {
         ParameterizedType parameterized = (ParameterizedType) clazz;
         Type[] typeArguments = parameterized.getActualTypeArguments();
-        if (typeArguments.length > 0 && json instanceof JsonArray) {
+        if (typeArguments.length > 0 && json instanceof JsonArray jsonArray) {
             Type objectType = typeArguments[0];
             NAObjectMap<NAObject> result = new NAObjectMap<>();
-            ((JsonArray) json).forEach(item -> {
+            jsonArray.forEach(item -> {
                 result.put(context.deserialize(item, objectType));
             });
             return result;

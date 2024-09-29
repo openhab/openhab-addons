@@ -51,6 +51,7 @@
 			<channel id="percent_source_pump" typeId="percent_source_pump"/>
 			<channel id="percent_compressor" typeId="percent_compressor"/>
 			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="hysteresis_warmwater" typeId="hysteresis_warmwater"/>
 			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
 			<channel id="nviNormAussen" typeId="nviNormAussen"/>
 			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
@@ -109,6 +110,10 @@
 			<channel id="manual_coolvalve" typeId="manual_coolvalve"/>
 			<channel id="manual_4wayvalve" typeId="manual_4wayvalve"/>
 			<channel id="manual_multiext" typeId="manual_multiext"/>
+			<channel id="percent_water_limit_min" typeId="percent_water_limit_min"/>
+			<channel id="percent_water_limit_max" typeId="percent_water_limit_max"/>
+			<channel id="percent_heating_limit_min" typeId="percent_heating_limit_min"/>
+			<channel id="percent_heating_limit_max" typeId="percent_heating_limit_max"/>
 
 			<channel id="ecovent_temp_exhaust_air" typeId="ecovent_temp_exhaust_air"/>
 			<channel id="ecovent_temp_exit_air" typeId="ecovent_temp_exit_air"/>
@@ -193,6 +198,7 @@
 			<channel id="percent_source_pump" typeId="percent_source_pump"/>
 			<channel id="percent_compressor" typeId="percent_compressor"/>
 			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="hysteresis_warmwater" typeId="hysteresis_warmwater"/>
 			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
 			<channel id="nviNormAussen" typeId="nviNormAussen"/>
 			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
@@ -255,6 +261,11 @@
 			<channel id="temperature_surrounding" typeId="temperature_surrounding"/>
 			<channel id="temperature_suction_air" typeId="temperature_suction_air"/>
 			<channel id="temperature_sump" typeId="temperature_sump"/>
+
+			<channel id="percent_water_limit_min" typeId="percent_water_limit_min"/>
+			<channel id="percent_water_limit_max" typeId="percent_water_limit_max"/>
+			<channel id="percent_heating_limit_min" typeId="percent_heating_limit_min"/>
+			<channel id="percent_heating_limit_max" typeId="percent_heating_limit_max"/>
 
 			<channel id="ecovent_temp_exhaust_air" typeId="ecovent_temp_exhaust_air"/>
 			<channel id="ecovent_temp_exit_air" typeId="ecovent_temp_exit_air"/>
@@ -537,6 +548,12 @@
 	<channel-type id="hysteresis_heating" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Hysteresis Heating</label>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hysteresis_warmwater" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hysteresis Warmwater</label>
 		<category>Temperature</category>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -888,7 +905,26 @@
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
+	<channel-type id="percent_water_limit_min" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Water Powerlimit Min</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_water_limit_max" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Water Powerlimit Max</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_heating_limit_min" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Heating Powerlimit Min</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_heating_limit_max" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Heating Powerlimit Max</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
 	<!-- The following tags are only available, if an Ecovent System is attached to the Ecotouch -->
 	<channel-type id="ecovent_temp_exhaust_air">
 		<item-type>Number:Temperature</item-type>

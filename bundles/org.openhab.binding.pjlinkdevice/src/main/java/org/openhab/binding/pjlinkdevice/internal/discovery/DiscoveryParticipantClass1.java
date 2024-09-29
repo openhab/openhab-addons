@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class DiscoveryParticipantClass1 extends AbstractDiscoveryParticipant {
     public DiscoveryParticipantClass1() throws IllegalArgumentException {
-        super(Collections.singleton(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
+        super(Set.of(PJLinkDeviceBindingConstants.THING_TYPE_PJLINK), 60, true);
 
         logger.trace("PJLinkProjectorDiscoveryParticipant constructor");
     }

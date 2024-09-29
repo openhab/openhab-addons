@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,9 +53,9 @@ public class StatusFileInterpreter {
 
     private Optional<Document> doc = Optional.empty();
 
-    public static enum StatusEntry {
+    public enum StatusEntry {
         VERSION,
-        CONFIG_MAC;
+        CONFIG_MAC
     }
 
     public StatusFileInterpreter(String hostname, Ipx800EventListener listener) {
@@ -104,8 +105,9 @@ public class StatusFileInterpreter {
     }
 
     public String getElement(StatusEntry entry) {
-        return getRoot().map(root -> root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent())
-                .orElse("");
+        return Objects.requireNonNull(
+                getRoot().map(root -> root.getElementsByTagName(entry.name().toLowerCase()).item(0).getTextContent())
+                        .orElse(""));
     }
 
     private List<Node> getMatchingNodes(NodeList nodeList, String criteria) {

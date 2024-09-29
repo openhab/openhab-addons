@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * The {@link BenqProjectorHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * Based on 'epsonprojector' originally by Pauli Anttila & Yannick Schaus
+ * Based on 'epsonprojector' originally by Pauli Anttila and Yannick Schaus
  *
  * @author Michael Lobstein - Initial contribution
  */
@@ -205,10 +205,10 @@ public class BenqProjectorHandler extends BaseThingHandler {
                     }
                 case FREEZE:
                     Switch freeze = remoteController.getFreeze();
-                    return freeze == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(freeze == Switch.ON);
                 case BLANK:
                     Switch blank = remoteController.getBlank();
-                    return blank == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(blank == Switch.ON);
                 case DIRECTCMD:
                     break;
                 case LAMP_TIME:

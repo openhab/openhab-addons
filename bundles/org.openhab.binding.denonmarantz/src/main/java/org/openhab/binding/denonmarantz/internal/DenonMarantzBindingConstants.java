@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,22 +13,25 @@
 package org.openhab.binding.denonmarantz.internal;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link DenonMarantzBinding} class defines common constants, which are
+ * The {@link DenonMarantzBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public class DenonMarantzBindingConstants {
 
     public static final String BINDING_ID = "denonmarantz";
+
+    public static final String VENDOR_DENON = "Denon";
+    public static final String VENDOR_MARANTZ = "Marantz";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AVR = new ThingTypeUID(BINDING_ID, "avr");
@@ -74,55 +77,28 @@ public class DenonMarantzBindingConstants {
     public static final String CHANNEL_ZONE4_INPUT = "zone4#input";
 
     // Map of Zone2 Channel Type UIDs (to be added to Thing later when needed)
-    public static final Map<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = new LinkedHashMap<>();
-    static {
-        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
-        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
-        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
-        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
-        ZONE2_CHANNEL_TYPES.put(CHANNEL_ZONE2_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
-    }
+    public static final Map<String, ChannelTypeUID> ZONE2_CHANNEL_TYPES = Map.ofEntries(
+            Map.entry(CHANNEL_ZONE2_POWER, new ChannelTypeUID(BINDING_ID, "zonePower")),
+            Map.entry(CHANNEL_ZONE2_VOLUME, new ChannelTypeUID(BINDING_ID, "volume")),
+            Map.entry(CHANNEL_ZONE2_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB")),
+            Map.entry(CHANNEL_ZONE2_MUTE, new ChannelTypeUID(BINDING_ID, "mute")),
+            Map.entry(CHANNEL_ZONE2_INPUT, new ChannelTypeUID(BINDING_ID, "input")));
 
     // Map of Zone3 Channel Type UIDs (to be added to Thing later when needed)
-    public static final Map<String, ChannelTypeUID> ZONE3_CHANNEL_TYPES = new LinkedHashMap<>();
-    static {
-        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
-        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
-        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
-        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
-        ZONE3_CHANNEL_TYPES.put(CHANNEL_ZONE3_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
-    }
+    public static final Map<String, ChannelTypeUID> ZONE3_CHANNEL_TYPES = Map.ofEntries(
+            Map.entry(CHANNEL_ZONE3_POWER, new ChannelTypeUID(BINDING_ID, "zonePower")),
+            Map.entry(CHANNEL_ZONE3_VOLUME, new ChannelTypeUID(BINDING_ID, "volume")),
+            Map.entry(CHANNEL_ZONE3_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB")),
+            Map.entry(CHANNEL_ZONE3_MUTE, new ChannelTypeUID(BINDING_ID, "mute")),
+            Map.entry(CHANNEL_ZONE3_INPUT, new ChannelTypeUID(BINDING_ID, "input")));
 
     // Map of Zone4 Channel Type UIDs (to be added to Thing later when needed)
-    public static final Map<String, ChannelTypeUID> ZONE4_CHANNEL_TYPES = new LinkedHashMap<>();
-    static {
-        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_POWER, new ChannelTypeUID(BINDING_ID, "zonePower"));
-        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_VOLUME, new ChannelTypeUID(BINDING_ID, "volume"));
-        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB"));
-        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_MUTE, new ChannelTypeUID(BINDING_ID, "mute"));
-        ZONE4_CHANNEL_TYPES.put(CHANNEL_ZONE4_INPUT, new ChannelTypeUID(BINDING_ID, "input"));
-    }
-
-    /**
-     * Static mapping of ChannelType-to-ItemType (workaround while waiting for
-     * https://github.com/eclipse/smarthome/issues/4950 as yet there is no convenient way to extract the item type from
-     * thing-types.xml)
-     * See https://github.com/eclipse/smarthome/pull/4787#issuecomment-362287430
-     */
-    public static final Map<String, String> CHANNEL_ITEM_TYPES = new HashMap<>();
-    static {
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_POWER, "Switch");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME, "Dimmer");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_VOLUME_DB, "Number");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_MUTE, "Switch");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE2_INPUT, "String");
-
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_POWER, "Switch");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_VOLUME, "Dimmer");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_VOLUME_DB, "Number");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_MUTE, "Switch");
-        CHANNEL_ITEM_TYPES.put(CHANNEL_ZONE3_INPUT, "String");
-    }
+    public static final Map<String, ChannelTypeUID> ZONE4_CHANNEL_TYPES = Map.ofEntries(
+            Map.entry(CHANNEL_ZONE4_POWER, new ChannelTypeUID(BINDING_ID, "zonePower")),
+            Map.entry(CHANNEL_ZONE4_VOLUME, new ChannelTypeUID(BINDING_ID, "volume")),
+            Map.entry(CHANNEL_ZONE4_VOLUME_DB, new ChannelTypeUID(BINDING_ID, "volumeDB")),
+            Map.entry(CHANNEL_ZONE4_MUTE, new ChannelTypeUID(BINDING_ID, "mute")),
+            Map.entry(CHANNEL_ZONE4_INPUT, new ChannelTypeUID(BINDING_ID, "input")));
 
     // Offset in dB from the actual dB value to the volume as presented by the AVR (0 == -80 dB)
     public static final BigDecimal DB_OFFSET = new BigDecimal("80");

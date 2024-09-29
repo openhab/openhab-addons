@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,18 @@ package org.openhab.transform.jsonpath.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class JSonPathTransformationServiceTest {
 
-    private JSonPathTransformationService processor;
+    private @NonNullByDefault({}) JSonPathTransformationService processor;
 
     @BeforeEach
     public void init() {
@@ -40,59 +42,59 @@ public class JSonPathTransformationServiceTest {
         assertEquals("Nigel Rees", transformedResponse);
     }
 
-    private static final String jsonArray = "[" + //
+    private static final String JSON_ARRAY = "[" + //
             "{ \"id\":1, \"name\":\"bob\", \"empty\":null }," + //
             "{ \"id\":2, \"name\":\"alice\" }" + //
             "]";
 
     @Test
     public void testValidPath1() throws TransformationException {
-        String transformedResponse = processor.transform("$[0].name", jsonArray);
+        String transformedResponse = processor.transform("$[0].name", JSON_ARRAY);
         assertEquals("bob", transformedResponse);
     }
 
     @Test
     public void testValidPath2() throws TransformationException {
-        String transformedResponse = processor.transform("$[1].id", jsonArray);
+        String transformedResponse = processor.transform("$[1].id", JSON_ARRAY);
         assertEquals("2", transformedResponse);
     }
 
     @Test
     public void testInvalidPathThrowsException() {
-        assertThrows(TransformationException.class, () -> processor.transform("$$", jsonArray));
+        assertThrows(TransformationException.class, () -> processor.transform("$$", JSON_ARRAY));
     }
 
     @Test
     public void testPathMismatchReturnNull() {
-        assertThrows(TransformationException.class, () -> processor.transform("$[5].id", jsonArray));
+        assertThrows(TransformationException.class, () -> processor.transform("$[5].id", JSON_ARRAY));
     }
 
     @Test
-    public void testInvalidJsonReturnNull() throws TransformationException {
+    public void testInvalidJsonReturnNull() {
         assertThrows(TransformationException.class, () -> processor.transform("$", "{id:"));
     }
 
     @Test
     public void testNullValue() throws TransformationException {
-        String transformedResponse = processor.transform("$[0].empty", jsonArray);
-        assertEquals(null, transformedResponse);
+        String transformedResponse = processor.transform("$[0].empty", JSON_ARRAY);
+        assertNull(transformedResponse);
     }
 
     @Test
-    public void testIndefinite_filteredToSingle() throws TransformationException {
-        String transformedResponse = processor.transform("$.*[?(@.name=='bob')].id", jsonArray);
+    public void testIndefiniteFilteredToSingle() throws TransformationException {
+        String transformedResponse = processor.transform("$.*[?(@.name=='bob')].id", JSON_ARRAY);
         assertEquals("1", transformedResponse);
     }
 
     @Test
-    public void testIndefinite_notFiltered() throws TransformationException {
-        String transformedResponse = processor.transform("$.*.id", jsonArray);
+    public void testIndefiniteNotFiltered() throws TransformationException {
+        String transformedResponse = processor.transform("$.*.id", JSON_ARRAY);
         assertEquals("[1, 2]", transformedResponse);
     }
 
     @Test
-    public void testIndefinite_noMatch() throws TransformationException {
-        String transformedResponse = processor.transform("$.*[?(@.name=='unknown')].id", jsonArray);
+    public void testIndefiniteNoMatch() throws TransformationException {
+        String transformedResponse = processor.transform("$.*[?(@.name=='unknown')].id", JSON_ARRAY);
         assertEquals("NULL", transformedResponse);
     }
 

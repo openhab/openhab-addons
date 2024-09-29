@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.airvisualnode.internal.discovery;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -37,7 +37,8 @@ import jcifs.netbios.NbtAddress;
 import jcifs.smb.SmbFile;
 
 /**
- * Autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name 'AVISUAL-<SerialNumber>'.
+ * Autodiscovery for AirVisual Node by searching for a host advertised with the NetBIOS name
+ * {@code 'AVISUAL-<SerialNumber>'}.
  *
  * @author Victor Antonovich - Initial contribution
  */
@@ -55,7 +56,7 @@ public class AirVisualNodeDiscoveryService extends AbstractDiscoveryService {
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     public AirVisualNodeDiscoveryService() {
-        super(Collections.singleton(AirVisualNodeBindingConstants.THING_TYPE_AVNODE), 600, true);
+        super(Set.of(AirVisualNodeBindingConstants.THING_TYPE_AVNODE), 600, true);
     }
 
     @Override

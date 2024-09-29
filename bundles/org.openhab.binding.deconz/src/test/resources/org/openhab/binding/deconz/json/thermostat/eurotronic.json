@@ -1,0 +1,27 @@
+{
+    "config": {
+        "battery": 85,
+        "displayflipped": null,
+        "heatsetpoint": 2500,
+        "locked": null,
+        "mode": "auto",
+        "offset": 0,
+        "on": true,
+        "reachable": true
+    },
+    "ep": 1,
+    "etag": "717549a99371f3ea1a5f0b40f1537094",
+    "lastseen": "2020-05-31T20:24:55.819",
+    "manufacturername": "Eurotronic",
+    "modelid": "SPZB0001",
+    "name": "Test Thermostat",
+    "state": {
+        "lastupdated": "2020-05-31T20:24:55.819",
+        "on": true,
+        "temperature": 1650,
+        "valve": 99
+    },
+    "swversion": "20191014",
+    "type": "ZHAThermostat",
+    "uniqueid": "00:15:8d:00:01:ff:8a:00-01-0201"
+}

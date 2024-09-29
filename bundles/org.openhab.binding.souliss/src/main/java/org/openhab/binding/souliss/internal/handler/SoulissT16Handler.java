@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,9 +126,7 @@ public class SoulissT16Handler extends SoulissGenericHandler {
                     break;
 
                 case SoulissBindingConstants.LED_COLOR_CHANNEL:
-                    if (command instanceof HSBType) {
-                        HSBType localHsbState = (HSBType) command;
-
+                    if (command instanceof HSBType localHsbState) {
                         updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL,
                                 PercentType.valueOf(hsbState.getBrightness().toString()));
                         commandSendRgb(SoulissProtocolConstants.SOULISS_T1N_SET,

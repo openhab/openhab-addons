@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,9 @@ public abstract class AbstractInputControlXML {
 
     /**
      * Wraps the XML message with the inputID tags. Example with inputID=NET_RADIO:
-     * <NET_RADIO>message</NET_RADIO>.
+     * {@code
+     * <NET_RADIO>message</NET_RADIO>
+     * }.
      *
      * @param message XML message
      * @return

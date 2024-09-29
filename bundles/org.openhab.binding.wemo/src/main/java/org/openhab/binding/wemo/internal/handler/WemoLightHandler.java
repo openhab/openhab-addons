@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,8 +126,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof WemoBridgeHandler) {
-            this.wemoBridgeHandler = (WemoBridgeHandler) handler;
+        if (handler instanceof WemoBridgeHandler wemoBridgeHandler) {
+            this.wemoBridgeHandler = wemoBridgeHandler;
         } else {
             logger.debug("No available bridge handler found for {} bridge {} .", wemoLightID, bridge.getUID());
             return null;
@@ -187,8 +187,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_BRIGHTNESS:
                     capability = "10008";
-                    if (command instanceof PercentType) {
-                        int newBrightness = ((PercentType) command).intValue();
+                    if (command instanceof PercentType percentCommand) {
+                        int newBrightness = percentCommand.intValue();
                         logger.trace("wemoLight received Value {}", newBrightness);
                         int value1 = Math.round(newBrightness * 255 / 100);
                         value = value1 + ":0";
@@ -239,11 +239,14 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             try {
                 if (capability != null && value != null) {
                     String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:SetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">"
-                            + "<DeviceStatusList>"
-                            + "&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;"
+                    String content = """
+                            <?xml version="1.0"?>\
+                            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                            <s:Body>\
+                            <u:SetDeviceStatus xmlns:u="urn:Belkin:service:bridge:1">\
+                            <DeviceStatusList>\
+                            &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;\
+                            """
                             + wemoLightID
                             + "&lt;/DeviceID&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;CapabilityID&gt;"
                             + capability + "&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;" + value
@@ -253,7 +256,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if ("10008".equals(capability)) {
                         OnOffType binaryState = null;
-                        binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                        binaryState = OnOffType.from(!"0".equals(value));
                         updateState(CHANNEL_STATE, binaryState);
                     }
                     updateStatus(ThingStatus.ONLINE);
@@ -289,9 +292,13 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         }
         try {
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:GetDeviceStatus xmlns:u="urn:Belkin:service:bridge:1">\
+                    <DeviceIDs>\
+                    """
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
@@ -301,11 +308,11 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             String[] splitResponse = response.split(",");
             if (splitResponse[0] != null) {
                 OnOffType binaryState = null;
-                binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
+                binaryState = OnOffType.from(!"0".equals(splitResponse[0]));
                 updateState(CHANNEL_STATE, binaryState);
             }
             if (splitResponse[1] != null) {
-                String splitBrightness[] = splitResponse[1].split(":");
+                String[] splitBrightness = splitResponse[1].split(":");
                 if (splitBrightness[0] != null) {
                     int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
                     int newBrightness = Math.round(newBrightnessValue * 100 / 255);
@@ -331,11 +338,11 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         switch (capabilityId) {
             case "10006":
                 OnOffType binaryState = null;
-                binaryState = "0".equals(newValue) ? OnOffType.OFF : OnOffType.ON;
+                binaryState = OnOffType.from(!"0".equals(newValue));
                 updateState(CHANNEL_STATE, binaryState);
                 break;
             case "10008":
-                String splitValue[] = newValue.split(":");
+                String[] splitValue = newValue.split(":");
                 if (splitValue[0] != null) {
                     int newBrightnessValue = Integer.valueOf(splitValue[0]);
                     int newBrightness = Math.round(newBrightnessValue * 100 / 255);

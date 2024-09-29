@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,21 +22,47 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Bernd Weymann - Initial contribution
- * @author Norbert Truchsess - edit & send of charge profile
+ * @author Norbert Truchsess - edit and send of charge profile
+ * @author Martin Grassl - updated enum values
  */
 @NonNullByDefault
-public class MyBMWConstants {
+public interface MyBMWConstants {
 
-    private static final String BINDING_ID = "mybmw";
+    static final String BINDING_ID = "mybmw";
 
-    public static final String VIN = "vin";
+    static final String VIN = "vin";
 
-    public static final int DEFAULT_IMAGE_SIZE_PX = 1024;
-    public static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
+    static final String REFRESH_INTERVAL = "refreshInterval";
+
+    static final String VEHICLE_BRAND = "vehicleBrand";
+
+    static final String REMOTE_SERVICES_DISABLED = "remoteServicesDisabled";
+
+    static final String REMOTE_SERVICES_ENABLED = "remoteServicesEnabled";
+
+    static final String SERVICES_DISABLED = "servicesDisabled";
+
+    static final String SERVICES_ENABLED = "servicesEnabled";
+
+    static final String SERVICES_UNSUPPORTED = "servicesUnsupported";
+
+    static final String SERVICES_SUPPORTED = "servicesSupported";
+
+    static final String VEHICLE_BODYTYPE = "vehicleBodytype";
+
+    static final String VEHICLE_CONSTRUCTION_YEAR = "vehicleConstructionYear";
+
+    static final String VEHICLE_DRIVE_TRAIN = "vehicleDriveTrain";
+
+    static final String VEHICLE_MODEL = "vehicleModel";
+
+    static final int DEFAULT_IMAGE_SIZE_PX = 1024;
+
+    static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 60;
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
-    public enum VehicleType {
+    enum VehicleType {
         CONVENTIONAL("conv"),
         PLUGIN_HYBRID("phev"),
         MILD_HYBRID("hybrid"),
@@ -56,150 +82,157 @@ public class MyBMWConstants {
         }
     }
 
-    public enum ChargingMode {
-        immediateCharging,
-        delayedCharging
+    enum ChargingMode {
+        IMMEDIATE_CHARGING,
+        DELAYED_CHARGING
     }
 
-    public enum ChargingPreference {
-        noPreSelection,
-        chargingWindow
+    enum ChargingPreference {
+        NO_PRESELECTION,
+        CHARGING_WINDOW
     }
 
-    public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
+    static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
             VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
-    public static final Set<String> ELECTRIC_VEHICLES = Set.of(VehicleType.ELECTRIC.toString(),
+    static final Set<String> ELECTRIC_VEHICLES = Set.of(VehicleType.ELECTRIC.toString(),
             VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID,
-            VehicleType.CONVENTIONAL.toString());
-    public static final ThingTypeUID THING_TYPE_PHEV = new ThingTypeUID(BINDING_ID,
-            VehicleType.PLUGIN_HYBRID.toString());
-    public static final ThingTypeUID THING_TYPE_BEV_REX = new ThingTypeUID(BINDING_ID,
-            VehicleType.ELECTRIC_REX.toString());
-    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, VehicleType.ELECTRIC.toString());
-    public static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(THING_TYPE_CONNECTED_DRIVE_ACCOUNT,
-            THING_TYPE_CONV, THING_TYPE_PHEV, THING_TYPE_BEV_REX, THING_TYPE_BEV);
+    static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID, VehicleType.CONVENTIONAL.toString());
+    static final ThingTypeUID THING_TYPE_PHEV = new ThingTypeUID(BINDING_ID, VehicleType.PLUGIN_HYBRID.toString());
+    static final ThingTypeUID THING_TYPE_BEV_REX = new ThingTypeUID(BINDING_ID, VehicleType.ELECTRIC_REX.toString());
+    static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, VehicleType.ELECTRIC.toString());
+    static final Set<ThingTypeUID> SUPPORTED_THING_SET = Set.of(THING_TYPE_CONNECTED_DRIVE_ACCOUNT, THING_TYPE_CONV,
+            THING_TYPE_PHEV, THING_TYPE_BEV_REX, THING_TYPE_BEV);
 
     // Thing Group definitions
-    public static final String CHANNEL_GROUP_STATUS = "status";
-    public static final String CHANNEL_GROUP_SERVICE = "service";
-    public static final String CHANNEL_GROUP_CHECK_CONTROL = "check";
-    public static final String CHANNEL_GROUP_DOORS = "doors";
-    public static final String CHANNEL_GROUP_RANGE = "range";
-    public static final String CHANNEL_GROUP_LOCATION = "location";
-    public static final String CHANNEL_GROUP_REMOTE = "remote";
-    public static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
-    public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "statistic";
-    public static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
-    public static final String CHANNEL_GROUP_TIRES = "tires";
-    public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+    static final String CHANNEL_GROUP_UPDATE = "update";
+    static final String CHANNEL_GROUP_STATUS = "status";
+    static final String CHANNEL_GROUP_SERVICE = "service";
+    static final String CHANNEL_GROUP_CHECK_CONTROL = "check";
+    static final String CHANNEL_GROUP_DOORS = "doors";
+    static final String CHANNEL_GROUP_RANGE = "range";
+    static final String CHANNEL_GROUP_LOCATION = "location";
+    static final String CHANNEL_GROUP_REMOTE = "remote";
+    static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
+    static final String CHANNEL_GROUP_CHARGE_STATISTICS = "statistic";
+    static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
+    static final String CHANNEL_GROUP_TIRES = "tires";
+    static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+
+    // types of updates
+    static final String STATE_UPDATE = "state-update";
+    static final String CHARGING_UPDATE = "charging-update";
+    static final String IMAGE_UPDATE = "image-update";
 
     // Charge Statistics & Sessions
-    public static final String SESSIONS = "sessions";
-    public static final String ENERGY = "energy";
-    public static final String TITLE = "title";
-    public static final String SUBTITLE = "subtitle";
-    public static final String ISSUE = "issue";
-    public static final String STATUS = "status";
+    static final String SESSIONS = "sessions";
+    static final String ENERGY = "energy";
+    static final String TITLE = "title";
+    static final String SUBTITLE = "subtitle";
+    static final String ISSUE = "issue";
+    static final String STATUS = "status";
 
     // Generic Constants for several groups
-    public static final String NAME = "name";
-    public static final String DETAILS = "details";
-    public static final String SEVERITY = "severity";
-    public static final String DATE = "date";
-    public static final String MILEAGE = "mileage";
-    public static final String GPS = "gps";
-    public static final String HEADING = "heading";
-    public static final String ADDRESS = "address";
-    public static final String HOME_DISTANCE = "home-distance";
+    static final String NAME = "name";
+    static final String DETAILS = "details";
+    static final String SEVERITY = "severity";
+    static final String DATE = "date";
+    static final String MILEAGE = "mileage";
+    static final String GPS = "gps";
+    static final String HEADING = "heading";
+    static final String ADDRESS = "address";
+    static final String HOME_DISTANCE = "home-distance";
 
     // Status
-    public static final String DOORS = "doors";
-    public static final String WINDOWS = "windows";
-    public static final String LOCK = "lock";
-    public static final String SERVICE_DATE = "service-date";
-    public static final String SERVICE_MILEAGE = "service-mileage";
-    public static final String CHECK_CONTROL = "check-control";
-    public static final String PLUG_CONNECTION = "plug-connection";
-    public static final String CHARGE_STATUS = "charge";
-    public static final String CHARGE_INFO = "charge-info";
-    public static final String MOTION = "motion";
-    public static final String LAST_UPDATE = "last-update";
-    public static final String RAW = "raw";
+    static final String DOORS = "doors";
+    static final String WINDOWS = "windows";
+    static final String LOCK = "lock";
+    static final String SERVICE_DATE = "service-date";
+    static final String SERVICE_MILEAGE = "service-mileage";
+    static final String CHECK_CONTROL = "check-control";
+    static final String PLUG_CONNECTION = "plug-connection";
+    static final String CHARGE_STATUS = "charge";
+    static final String CHARGE_REMAINING = "charge-remaining";
+    static final String LAST_UPDATE = "last-update";
+    static final String LAST_FETCHED = "last-fetched";
+    static final String RAW = "raw";
 
     // Door Details
-    public static final String DOOR_DRIVER_FRONT = "driver-front";
-    public static final String DOOR_DRIVER_REAR = "driver-rear";
-    public static final String DOOR_PASSENGER_FRONT = "passenger-front";
-    public static final String DOOR_PASSENGER_REAR = "passenger-rear";
-    public static final String HOOD = "hood";
-    public static final String TRUNK = "trunk";
-    public static final String WINDOW_DOOR_DRIVER_FRONT = "win-driver-front";
-    public static final String WINDOW_DOOR_DRIVER_REAR = "win-driver-rear";
-    public static final String WINDOW_DOOR_PASSENGER_FRONT = "win-passenger-front";
-    public static final String WINDOW_DOOR_PASSENGER_REAR = "win-passenger-rear";
-    public static final String WINDOW_REAR = "win-rear";
-    public static final String SUNROOF = "sunroof";
+    static final String DOOR_DRIVER_FRONT = "driver-front";
+    static final String DOOR_DRIVER_REAR = "driver-rear";
+    static final String DOOR_PASSENGER_FRONT = "passenger-front";
+    static final String DOOR_PASSENGER_REAR = "passenger-rear";
+    static final String HOOD = "hood";
+    static final String TRUNK = "trunk";
+    static final String WINDOW_DOOR_DRIVER_FRONT = "win-driver-front";
+    static final String WINDOW_DOOR_DRIVER_REAR = "win-driver-rear";
+    static final String WINDOW_DOOR_PASSENGER_FRONT = "win-passenger-front";
+    static final String WINDOW_DOOR_PASSENGER_REAR = "win-passenger-rear";
+    static final String WINDOW_REAR = "win-rear";
+    static final String SUNROOF = "sunroof";
 
     // Charge Profile
-    public static final String CHARGE_PROFILE_CLIMATE = "climate";
-    public static final String CHARGE_PROFILE_MODE = "mode";
-    public static final String CHARGE_PROFILE_PREFERENCE = "prefs";
-    public static final String CHARGE_PROFILE_CONTROL = "control";
-    public static final String CHARGE_PROFILE_TARGET = "target";
-    public static final String CHARGE_PROFILE_LIMIT = "limit";
-    public static final String CHARGE_WINDOW_START = "window-start";
-    public static final String CHARGE_WINDOW_END = "window-end";
-    public static final String CHARGE_TIMER1 = "timer1";
-    public static final String CHARGE_TIMER2 = "timer2";
-    public static final String CHARGE_TIMER3 = "timer3";
-    public static final String CHARGE_TIMER4 = "timer4";
-    public static final String CHARGE_DEPARTURE = "-departure";
-    public static final String CHARGE_ENABLED = "-enabled";
-    public static final String CHARGE_DAY_MON = "-day-mon";
-    public static final String CHARGE_DAY_TUE = "-day-tue";
-    public static final String CHARGE_DAY_WED = "-day-wed";
-    public static final String CHARGE_DAY_THU = "-day-thu";
-    public static final String CHARGE_DAY_FRI = "-day-fri";
-    public static final String CHARGE_DAY_SAT = "-day-sat";
-    public static final String CHARGE_DAY_SUN = "-day-sun";
+    static final String CHARGE_PROFILE_CLIMATE = "climate";
+    static final String CHARGE_PROFILE_MODE = "mode";
+    static final String CHARGE_PROFILE_PREFERENCE = "prefs";
+    static final String CHARGE_PROFILE_CONTROL = "control";
+    static final String CHARGE_PROFILE_TARGET = "target";
+    static final String CHARGE_PROFILE_LIMIT = "limit";
+    static final String CHARGE_WINDOW_START = "window-start";
+    static final String CHARGE_WINDOW_END = "window-end";
+    static final String CHARGE_TIMER1 = "timer1";
+    static final String CHARGE_TIMER2 = "timer2";
+    static final String CHARGE_TIMER3 = "timer3";
+    static final String CHARGE_TIMER4 = "timer4";
+    static final String CHARGE_DEPARTURE = "-departure";
+    static final String CHARGE_ENABLED = "-enabled";
+    static final String CHARGE_DAY_MON = "-day-mon";
+    static final String CHARGE_DAY_TUE = "-day-tue";
+    static final String CHARGE_DAY_WED = "-day-wed";
+    static final String CHARGE_DAY_THU = "-day-thu";
+    static final String CHARGE_DAY_FRI = "-day-fri";
+    static final String CHARGE_DAY_SAT = "-day-sat";
+    static final String CHARGE_DAY_SUN = "-day-sun";
 
     // Range
-    public static final String RANGE_ELECTRIC = "electric";
-    public static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
-    public static final String RANGE_FUEL = "fuel";
-    public static final String RANGE_RADIUS_FUEL = "radius-fuel";
-    public static final String RANGE_HYBRID = "hybrid";
-    public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
-    public static final String REMAINING_FUEL = "remaining-fuel";
-    public static final String SOC = "soc";
+    static final String RANGE_ELECTRIC = "electric";
+    static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
+    static final String RANGE_FUEL = "fuel";
+    static final String RANGE_RADIUS_FUEL = "radius-fuel";
+    static final String RANGE_HYBRID = "hybrid";
+    static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
+    static final String REMAINING_FUEL = "remaining-fuel";
+    static final String ESTIMATED_FUEL_L_100KM = "estimated-fuel-l-100km";
+    static final String ESTIMATED_FUEL_MPG = "estimated-fuel-mpg";
+    static final String SOC = "soc";
 
     // Image
-    public static final String IMAGE_FORMAT = "png";
-    public static final String IMAGE_VIEWPORT = "view";
+    static final String IMAGE_FORMAT = "png";
+    static final String IMAGE_VIEWPORT = "view";
 
     // Remote Services
-    public static final String REMOTE_SERVICE_LIGHT_FLASH = "light-flash";
-    public static final String REMOTE_SERVICE_VEHICLE_FINDER = "vehicle-finder";
-    public static final String REMOTE_SERVICE_DOOR_LOCK = "door-lock";
-    public static final String REMOTE_SERVICE_DOOR_UNLOCK = "door-unlock";
-    public static final String REMOTE_SERVICE_HORN = "horn-blow";
-    public static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
-    public static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
+    static final String REMOTE_SERVICE_LIGHT_FLASH = "light-flash";
+    static final String REMOTE_SERVICE_VEHICLE_FINDER = "vehicle-finder";
+    static final String REMOTE_SERVICE_DOOR_LOCK = "door-lock";
+    static final String REMOTE_SERVICE_DOOR_UNLOCK = "door-unlock";
+    static final String REMOTE_SERVICE_HORN = "horn-blow";
+    static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
+    static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
+    static final String REMOTE_SERVICE_START_CHARGING = "start-charging";
+    static final String REMOTE_SERVICE_STOP_CHARGING = "stop-charging";
 
-    public static final String REMOTE_SERVICE_COMMAND = "command";
-    public static final String REMOTE_STATE = "state";
+    static final String REMOTE_SERVICE_COMMAND = "command";
+    static final String REMOTE_STATE = "state";
 
     // TIRES
-    public static final String FRONT_LEFT_CURRENT = "fl-current";
-    public static final String FRONT_LEFT_TARGET = "fl-target";
-    public static final String FRONT_RIGHT_CURRENT = "fr-current";
-    public static final String FRONT_RIGHT_TARGET = "fr-target";
-    public static final String REAR_LEFT_CURRENT = "rl-current";
-    public static final String REAR_LEFT_TARGET = "rl-target";
-    public static final String REAR_RIGHT_CURRENT = "rr-current";
-    public static final String REAR_RIGHT_TARGET = "rr-target";
+    static final String FRONT_LEFT_CURRENT = "fl-current";
+    static final String FRONT_LEFT_TARGET = "fl-target";
+    static final String FRONT_RIGHT_CURRENT = "fr-current";
+    static final String FRONT_RIGHT_TARGET = "fr-target";
+    static final String REAR_LEFT_CURRENT = "rl-current";
+    static final String REAR_LEFT_TARGET = "rl-target";
+    static final String REAR_RIGHT_CURRENT = "rr-current";
+    static final String REAR_RIGHT_TARGET = "rr-target";
 }

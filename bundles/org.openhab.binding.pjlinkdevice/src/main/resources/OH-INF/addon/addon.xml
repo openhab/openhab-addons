@@ -10,5 +10,6 @@
 		The PJLink protocol was mainly standardized for digital
 		projectors, but some other types of devices also use it, in
 		particular TV screens.</description>
+	<connection>local</connection>
 
 </addon:addon>

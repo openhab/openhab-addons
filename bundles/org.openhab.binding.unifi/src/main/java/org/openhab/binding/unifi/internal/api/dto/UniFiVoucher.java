@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,8 +107,10 @@ public class UniFiVoucher implements HasId {
     @Override
     public String toString() {
         return String.format(
-                "UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', "
-                        + "qosRateMaxUp: '%s', qosRateMaxDown: '%s', qosOverwrite: '%s', note: '%s', status: '%s', site: %s}",
+                """
+                        UniFiVoucher{id: '%s', code: '%s', created: '%s', duration: '%s', quota: '%s', used: '%s', qosUsageQuota: '%s', \
+                        qosRateMaxUp: '%s', qosRateMaxDown: '%s', qosOverwrite: '%s', note: '%s', status: '%s', site: %s}\
+                        """,
                 id, code, createTime, duration, quota, used, qosUsageQuota, qosRateMaxUp, qosRateMaxDown, qosOverwrite,
                 note, status, getSite());
     }

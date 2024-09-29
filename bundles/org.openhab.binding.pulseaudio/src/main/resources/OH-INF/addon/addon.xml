@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>Pulseaudio Binding</name>
 	<description>This is the binding for Pulseaudio.</description>
+	<connection>local</connection>
 
 	<config-description>
 		<parameter name="sink" type="boolean">
@@ -29,5 +30,17 @@
 			<default>false</default>
 		</parameter>
 	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_pulse-server._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

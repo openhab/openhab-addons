@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,9 +53,8 @@ public final class SunPhaseJob extends AbstractJob {
             Channel phaseNameChannel = astroHandler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
             if (phaseNameChannel != null) {
                 Planet planet = astroHandler.getPlanet();
-                if (planet != null && planet instanceof Sun) {
-                    final Sun typedSun = (Sun) planet;
-                    typedSun.getPhase().setName(sunPhaseName);
+                if (planet instanceof Sun theSun) {
+                    theSun.getPhase().setName(sunPhaseName);
                     astroHandler.publishChannelIfLinked(phaseNameChannel.getUID());
                 }
             } else {

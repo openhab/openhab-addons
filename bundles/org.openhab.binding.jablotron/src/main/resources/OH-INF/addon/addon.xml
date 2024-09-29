@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Jablotron Binding</name>
 	<description>This is the binding for Jablotron Alarm Systems.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

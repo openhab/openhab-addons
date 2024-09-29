@@ -11,5 +11,6 @@
 		system and thus being able to connect your Ambient Assisted Living (AAL) or smart home environment to the
 		documentation software of your nursing service. Please note that a valid account is needed to access MCD and the
 		Sensor API.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

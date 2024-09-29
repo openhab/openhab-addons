@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.ojelectronics.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The configuration for {@link org.openhab.binding.ojelectronics.internal.OJElectronicsThermostatHandler}
+ * The configuration for {@link org.openhab.binding.ojelectronics.internal.ThermostatHandler}
  *
  * @author Christian Kittel - Initial contribution
  */

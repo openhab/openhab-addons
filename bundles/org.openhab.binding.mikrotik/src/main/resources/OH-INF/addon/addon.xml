@@ -9,5 +9,6 @@
 		This is the binding for integrating Mikrotik RouterOS powered devices (routers, access points, switches,
 		etc) to facilitate WiFi clients and network interface tracking.
 	</description>
+	<connection>local</connection>
 
 </addon:addon>

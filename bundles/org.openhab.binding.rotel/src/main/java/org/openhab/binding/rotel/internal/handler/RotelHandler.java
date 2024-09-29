@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,6 +90,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> powerOffJob;
+    private @Nullable ScheduledFuture<?> powerZonesJob;
     private @Nullable ScheduledFuture<?>[] powerOnZoneJobs = { null, null, null, null, null };
 
     private RotelModel model;
@@ -104,6 +105,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
 
     private int currentZone = 1;
     private boolean selectingRecord;
+    private @Nullable Boolean powerZones;
     private @Nullable Boolean[] powers = { null, false, false, false, false };
     private boolean powerControlPerZone;
     private @Nullable RotelSource recordSource;
@@ -218,6 +220,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 break;
             case THING_TYPE_ID_RSX1562:
                 model = RotelModel.RSX1562;
+                break;
+            case THING_TYPE_ID_RX1052:
+                model = RotelModel.RX1052;
                 break;
             case THING_TYPE_ID_A11:
                 model = RotelModel.A11;
@@ -435,8 +440,9 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             if (USE_SIMULATED_DEVICE) {
                 connector = new RotelSimuConnector(model, protocolHandler, sourcesLabels, readerThreadName);
             } else if (config.serialPort != null) {
-                connector = new RotelSerialConnector(serialPortManager, config.serialPort, model.getBaudRate(),
-                        protocolHandler, readerThreadName);
+                connector = new RotelSerialConnector(serialPortManager, config.serialPort,
+                        config.baudRate != null ? config.baudRate : model.getBaudRate(), protocolHandler,
+                        readerThreadName);
             } else {
                 connector = new RotelIpConnector(config.host, config.port, protocolHandler, readerThreadName);
             }
@@ -493,6 +499,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     public void dispose() {
         logger.debug("Disposing handler for thing {}", getThing().getUID());
         cancelPowerOffJob();
+        cancelCheckPowerZonesJob();
         for (int zone = 0; zone <= model.getNumberOfZones(); zone++) {
             cancelPowerOnZoneJob(zone);
         }
@@ -868,8 +875,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                             } else if (radioPreset > 0 && command instanceof IncreaseDecreaseType
                                     && command == IncreaseDecreaseType.DECREASE) {
                                 value = radioPreset - 1;
-                            } else if (command instanceof DecimalType) {
-                                value = ((DecimalType) command).intValue();
+                            } else if (command instanceof DecimalType decimalCommand) {
+                                value = decimalCommand.intValue();
                             }
                             if (value >= 1 && value <= 30) {
                                 RotelSource source = sources[0];
@@ -903,8 +910,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         } else if (!model.hasDimmerControl()) {
                             success = false;
                             logger.debug("Command {} from channel {} failed: unavailable feature", command, channel);
-                        } else if (command instanceof PercentType) {
-                            int dimmer = (int) Math.round(((PercentType) command).doubleValue() / 100.0
+                        } else if (command instanceof PercentType percentCommand) {
+                            int dimmer = (int) Math.round(percentCommand.doubleValue() / 100.0
                                     * (model.getDimmerLevelMax() - model.getDimmerLevelMin()))
                                     + model.getDimmerLevelMin();
                             sendCommand(RotelCommand.DIMMER_LEVEL_SET, dimmer);
@@ -946,6 +953,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_SPEAKER_A:
+                    case CHANNEL_MAIN_SPEAKER_A:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
@@ -955,6 +963,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         }
                         break;
                     case CHANNEL_SPEAKER_B:
+                    case CHANNEL_MAIN_SPEAKER_B:
                         if (!isPowerOn()) {
                             success = false;
                             logger.debug("Command {} from channel {} ignored: device in standby", command, channel);
@@ -1043,8 +1052,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             sendCommand(upCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             sendCommand(downCmd);
-        } else if (command instanceof DecimalType && setCmd == null) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand && setCmd == null) {
+            int value = decimalCommand.intValue();
             if (value >= minVolume && value <= maxVolume) {
                 if (value > current) {
                     sendCommand(upCmd);
@@ -1052,9 +1061,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     sendCommand(downCmd);
                 }
             }
-        } else if (command instanceof PercentType && setCmd != null) {
-            int value = (int) Math.round(((PercentType) command).doubleValue() / 100.0 * (maxVolume - minVolume))
-                    + minVolume;
+        } else if (command instanceof PercentType percentCommand && setCmd != null) {
+            int value = (int) Math.round(percentCommand.doubleValue() / 100.0 * (maxVolume - minVolume)) + minVolume;
             sendCommand(setCmd, value);
         } else {
             logger.debug("Command {} from channel {} failed: invalid command value", command, channel);
@@ -1110,8 +1118,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             selectToneControl(nbSelect);
             sendCommand(downCmd);
-        } else if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if (value >= minToneLevel && value <= maxToneLevel) {
                 if (protocol != RotelProtocol.HEX) {
                     sendCommand(setCmd, value);
@@ -1204,8 +1212,8 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
             sendCommand(rightCmd);
         } else if (command instanceof IncreaseDecreaseType && command == IncreaseDecreaseType.DECREASE) {
             sendCommand(leftCmd);
-        } else if (command instanceof DecimalType) {
-            int value = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int value = decimalCommand.intValue();
             if (value >= minBalanceLevel && value <= maxBalanceLevel) {
                 sendCommand(setCmd, value);
             }
@@ -1432,6 +1440,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         throw new RotelException("Invalid value");
                     }
                     break;
+                case KEY_POWER_ZONES:
+                    if (POWER_ON.equalsIgnoreCase(value) || STANDBY.equalsIgnoreCase(value)) {
+                        handlePowerZones(POWER_ON.equalsIgnoreCase(value));
+                    } else {
+                        throw new RotelException("Invalid value");
+                    }
+                    break;
                 case KEY_POWER_ZONE2:
                 case KEY_POWER_ZONE3:
                 case KEY_POWER_ZONE4:
@@ -1618,7 +1633,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                     break;
                 case KEY_TRACK:
                     source = sources[0];
-                    if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
+                    if (source != null && "CD".equals(source.getName()) && !model.hasSourceControl()) {
                         track = Integer.parseInt(value);
                         updateChannelState(CHANNEL_TRACK);
                     }
@@ -1748,21 +1763,29 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                         speakerb = false;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_SPEAKER_B.equalsIgnoreCase(value)) {
                         speakera = false;
                         speakerb = true;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_SPEAKER_AB.equalsIgnoreCase(value)) {
                         speakera = true;
                         speakerb = true;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else if (MSG_VALUE_OFF.equalsIgnoreCase(value)) {
                         speakera = false;
                         speakerb = false;
                         updateChannelState(CHANNEL_SPEAKER_A);
                         updateChannelState(CHANNEL_SPEAKER_B);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+                        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
                     } else {
                         throw new RotelException("Invalid value");
                     }
@@ -1865,9 +1888,28 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         updateChannelState(CHANNEL_MAIN_MUTE);
         updateChannelState(CHANNEL_MAIN_BASS);
         updateChannelState(CHANNEL_MAIN_TREBLE);
+        updateChannelState(CHANNEL_MAIN_SPEAKER_A);
+        updateChannelState(CHANNEL_MAIN_SPEAKER_B);
 
         updateChannelState(CHANNEL_ALL_POWER);
         updateChannelState(CHANNEL_ALL_BRIGHTNESS);
+    }
+
+    /**
+     * Handle the received information that at least one zone power is ON or all zones power is OFF
+     */
+    private void handlePowerZones(boolean power) {
+        Boolean prev = powerZones;
+        powerZones = power;
+        if (prev == null && power) {
+            // We know that at least one zone is ON but we don't know which ones
+            scheduleCheckPowerZonesJob();
+        } else if ((prev == null || prev.booleanValue() != power) && !power) {
+            cancelCheckPowerZonesJob();
+            for (int zone = 1; zone <= model.getNumberOfZones(); zone++) {
+                handlePowerOffZone(zone);
+            }
+        }
     }
 
     /**
@@ -2027,7 +2069,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 RotelSource source = sources[0];
                                 if (model != RotelModel.RCD1570 && model != RotelModel.RCD1572
                                         && (model != RotelModel.RCX1500 || source == null
-                                                || !source.getName().equals("CD"))) {
+                                                || !"CD".equals(source.getName()))) {
                                     sendCommand(RotelCommand.PLAY_STATUS);
                                     Thread.sleep(SLEEP_INTV);
                                 } else {
@@ -2094,7 +2136,7 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                                 sendCommand(RotelCommand.PLAY_STATUS);
                                 Thread.sleep(SLEEP_INTV);
                                 RotelSource source = sources[0];
-                                if (source != null && source.getName().equals("CD") && !model.hasSourceControl()) {
+                                if (source != null && "CD".equals(source.getName()) && !model.hasSourceControl()) {
                                     sendCommand(RotelCommand.TRACK);
                                     Thread.sleep(SLEEP_INTV);
                                     sendCommand(RotelCommand.RANDOM_MODE);
@@ -2176,6 +2218,41 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         if (powerOnZoneJob != null && !powerOnZoneJob.isCancelled()) {
             powerOnZoneJob.cancel(true);
             powerOnZoneJobs[numZone] = null;
+        }
+    }
+
+    /**
+     * Schedule the job to run with a few seconds delay
+     */
+    private void scheduleCheckPowerZonesJob() {
+        logger.debug("Schedule check power zones job");
+        cancelCheckPowerZonesJob();
+        powerZonesJob = scheduler.schedule(() -> {
+            synchronized (sequenceLock) {
+                logger.debug("Check power zones job");
+                try {
+                    selectZone(model.getNumberOfZones(), model.getZoneSelectCmd());
+                } catch (RotelException e) {
+                    logger.debug("Check power zones sequence failed: {}", e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.comm-error-check-power-zones-sequence");
+                    closeConnection();
+                } catch (InterruptedException e) {
+                    logger.debug("Check power zones sequence interrupted: {}", e.getMessage());
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }, 2500, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Cancel the job scheduled when the device power (main zone) or a zone power switched ON
+     */
+    private void cancelCheckPowerZonesJob() {
+        ScheduledFuture<?> job = powerZonesJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
+            powerZonesJob = null;
         }
     }
 
@@ -2444,11 +2521,13 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
                 }
                 break;
             case CHANNEL_SPEAKER_A:
+            case CHANNEL_MAIN_SPEAKER_A:
                 if (isPowerOn()) {
                     state = OnOffType.from(speakera);
                 }
                 break;
             case CHANNEL_SPEAKER_B:
+            case CHANNEL_MAIN_SPEAKER_B:
                 if (isPowerOn()) {
                     state = OnOffType.from(speakerb);
                 }
@@ -2537,7 +2616,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelCommand getVolumeUpCommand(int numZone) {
         switch (numZone) {
             case 0:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_UP : RotelCommand.VOLUME_UP;
+                // Spec for RX-1052 defines an unusual code for main zone volume up.
+                // An error in the spec is suspected. The general volume up code is preferred.
+                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052)
+                        ? RotelCommand.MAIN_ZONE_VOLUME_UP
+                        : RotelCommand.VOLUME_UP;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_UP;
             case 2:
@@ -2561,7 +2644,10 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
     private RotelCommand getVolumeDownCommand(int numZone) {
         switch (numZone) {
             case 0:
-                return model.hasOtherThanPrimaryCommands() ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
+                // Spec for RX-1052 defines an unusual code for main zone volume down.
+                // An error in the spec is suspected. The general volume down code is preferred.
+                return (model.hasOtherThanPrimaryCommands() && model != RotelModel.RX1052)
+                        ? RotelCommand.MAIN_ZONE_VOLUME_DOWN
                         : RotelCommand.VOLUME_DOWN;
             case 1:
                 return RotelCommand.ZONE1_VOLUME_DOWN;
@@ -2949,11 +3035,11 @@ public class RotelHandler extends BaseThingHandler implements RotelMessageEventL
         }
         connector.writeOutput(cmd, message);
 
-        if (connector instanceof RotelSimuConnector) {
+        if (connector instanceof RotelSimuConnector simuConnector) {
             if ((protocol == RotelProtocol.HEX && cmd.getHexType() != 0)
                     || (protocol == RotelProtocol.ASCII_V1 && cmd.getAsciiCommandV1() != null)
                     || (protocol == RotelProtocol.ASCII_V2 && cmd.getAsciiCommandV2() != null)) {
-                ((RotelSimuConnector) connector).buildFeedbackMessage(cmd, value);
+                simuConnector.buildFeedbackMessage(cmd, value);
             }
         }
     }

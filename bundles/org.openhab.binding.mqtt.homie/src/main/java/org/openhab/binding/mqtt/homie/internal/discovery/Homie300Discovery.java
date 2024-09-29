@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,9 @@
 package org.openhab.binding.mqtt.homie.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,7 +47,7 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
 
     @Activate
     public Homie300Discovery(@Reference MQTTTopicDiscoveryService discoveryService) {
-        super(Collections.singleton(MqttBindingConstants.HOMIE300_MQTT_THING), 3, true, "+/+/$homie");
+        super(Set.of(MqttBindingConstants.HOMIE300_MQTT_THING), 3, true, "+/+/$homie");
         this.discoveryService = discoveryService;
     }
 

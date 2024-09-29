@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,8 +189,7 @@ public class LifxLightCommunicationHandler {
                     new Object[] { logId, packet.getClass().getSimpleName(), address.toString(),
                             packet.getTarget().getHex(), packet.getSequence(), Long.toString(packet.getSource(), 16) });
 
-            if (packet instanceof StateServiceResponse) {
-                StateServiceResponse response = (StateServiceResponse) packet;
+            if (packet instanceof StateServiceResponse response) {
                 MACAddress discoveredAddress = response.getTarget();
                 if (packetFromConfiguredHost && macAddress == null) {
                     macAddress = discoveredAddress;

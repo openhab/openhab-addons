@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Backyard</label>
-		<description>The Hayward Backyard</description>
 		<channels>
 			<channel id="backyardAirTemp" typeId="airTemp"/>
 			<channel id="backyardStatus" typeId="backyardstatus"/>
@@ -32,14 +31,12 @@
 	<channel-type id="airTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Air Temp</label>
-		<description>Air Temp</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="backyardstatus">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>Status</description>
 		<state readOnly="true">
 			<options>
 				<option value="1">Normal</option>
@@ -54,7 +51,6 @@
 	<channel-type id="backyardstate">
 		<item-type>String</item-type>
 		<label>State</label>
-		<description>State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Powered Off</option>
@@ -69,8 +65,7 @@
 	<channel-type id="alarm">
 		<item-type>String</item-type>
 		<label>Alarm</label>
-		<description>Alarm</description>
-		<state readOnly="true"/>
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

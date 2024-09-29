@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.neohub.internal;
 
 import java.net.Inet4Address;
-import java.util.Collections;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -47,8 +46,7 @@ public class NeoHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private String getIpAddressIfValidNeoHub(ServiceInfo serviceInfo) {
         if (serviceInfo.getName().contains(HEATMISER_NEO_HUB)) {
             for (Inet4Address ipAddr : serviceInfo.getInet4Addresses()) {
-                String ipStr = ipAddr.getHostAddress();
-                return ipStr;
+                return ipAddr.getHostAddress();
             }
         }
         return "";
@@ -56,7 +54,7 @@ public class NeoHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(NeoHubBindingConstants.THING_TYPE_NEOHUB);
+        return Set.of(NeoHubBindingConstants.THING_TYPE_NEOHUB);
     }
 
     @Override
@@ -69,11 +67,9 @@ public class NeoHubDiscoveryParticipant implements MDNSDiscoveryParticipant {
         String ipStr = getIpAddressIfValidNeoHub(serviceInfo);
         if (!ipStr.isEmpty()) {
             ThingUID thingUID = new ThingUID(NeoHubBindingConstants.THING_TYPE_NEOHUB, ipStr.replace('.', '_'));
-            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                    .withProperty(NeoHubConfiguration.HOST_NAME, ipStr)
+            return DiscoveryResultBuilder.create(thingUID).withProperty(NeoHubConfiguration.HOST_NAME, ipStr)
                     .withRepresentationProperty(NeoHubConfiguration.HOST_NAME).withLabel("NeoHub (" + ipStr + ")")
                     .build();
-            return hub;
         }
         return null;
     }

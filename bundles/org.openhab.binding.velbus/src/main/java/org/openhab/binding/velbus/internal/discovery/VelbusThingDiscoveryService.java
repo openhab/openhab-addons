@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,12 @@ package org.openhab.binding.velbus.internal.discovery;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.VelbusFirstGenerationDeviceModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusModule;
@@ -29,12 +28,12 @@ import org.openhab.binding.velbus.internal.VelbusPacketListener;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusScanPacket;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,30 +43,27 @@ import org.slf4j.LoggerFactory;
  * is used to return Velbus Modules as things to the framework.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Review sub-addresses management, add VMB1RYS, VMBDALI
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = VelbusThingDiscoveryService.class)
 @NonNullByDefault
-public class VelbusThingDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, VelbusPacketListener {
+public class VelbusThingDiscoveryService extends AbstractThingHandlerDiscoveryService<VelbusBridgeHandler>
+        implements VelbusPacketListener {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
 
     private Map<Byte, VelbusModule> velbusModules = new HashMap<>();
 
-    private @Nullable VelbusBridgeHandler velbusBridgeHandler;
-
     public VelbusThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        super(VelbusBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
     }
 
     @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
-
-        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-        if (velbusBridgeHandler != null) {
-            velbusBridgeHandler.clearDefaultPacketListener();
-        }
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
+        thingHandler.clearDefaultPacketListener();
     }
 
     @Override
@@ -76,15 +72,12 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             VelbusScanPacket packet = new VelbusScanPacket((byte) i);
             byte[] packetBytes = packet.getBytes();
 
-            final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-            if (velbusBridgeHandler != null) {
-                velbusBridgeHandler.sendPacket(packetBytes);
-            }
+            thingHandler.sendPacket(packetBytes);
         }
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
+    public boolean onPacketReceived(byte[] packet) {
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte address = packet[2];
             byte length = packet[3];
@@ -99,12 +92,17 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             } else if (command == COMMAND_MODULE_NAME_PART3 && packet.length >= 4 + length) {
                 handleChannelNameCommand(packet, address, length, 3);
             } else if (command == COMMAND_SUBTYPE && packet.length >= 4 + length) {
-                handleModuleSubtypeCommand(packet, address);
+                handleModuleSubtypeCommand(packet, address, 1);
+            } else if (command == COMMAND_SUBTYPE_2 && packet.length >= 4 + length) {
+                handleModuleSubtypeCommand(packet, address, 2);
+            } else if (command == COMMAND_SUBTYPE_3 && packet.length >= 4 + length) {
+                handleModuleSubtypeCommand(packet, address, 3);
             } else {
                 logger.debug("Unknown command '{}' to address '{}'.", String.format("%02X", command),
                         String.format("%02X", address));
             }
         }
+        return true;
     }
 
     private void handleModuleTypeCommand(byte[] packet, byte address) {
@@ -163,6 +161,10 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB2BLE, 2);
                 break;
+            case MODULE_TYPE_VMB2BLE_10:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB2BLE_10, 2);
+                break;
             case MODULE_TYPE_VMB2PBN:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB2PBN, 8);
@@ -183,9 +185,17 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4RYLD, 5);
                 break;
+            case MODULE_TYPE_VMB4RYLD_10:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4RYLD_10, 5);
+                break;
             case MODULE_TYPE_VMB4RYNO:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4RYNO, 5);
+                break;
+            case MODULE_TYPE_VMB4RYNO_10:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4RYNO_10, 5);
                 break;
             case MODULE_TYPE_VMB6IN:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
@@ -194,6 +204,10 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             case MODULE_TYPE_VMB6PBN:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB6PBN, 8);
+                break;
+            case MODULE_TYPE_VMB6PB_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB6PB_20, 8);
                 break;
             case MODULE_TYPE_VMB7IN:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
@@ -224,56 +238,92 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDMIR, 1);
                 break;
             case MODULE_TYPE_VMBEL1:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL1, 9);
                 break;
+            case MODULE_TYPE_VMBEL1_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL1_20, 9);
+                break;
             case MODULE_TYPE_VMBEL2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL2, 9);
                 break;
+            case MODULE_TYPE_VMBEL2_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL2_20, 9);
+                break;
             case MODULE_TYPE_VMBEL4:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL4, 9);
+                break;
+            case MODULE_TYPE_VMBEL4_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL4_20, 9);
                 break;
             case MODULE_TYPE_VMBELO:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBELO, 33);
                 break;
-            case MODULE_TYPE_VMBELPIR:
+            case MODULE_TYPE_VMBELO_20:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBELO_20, 33);
+                break;
+            case MODULE_TYPE_VMBELPIR:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBELPIR, 9);
                 break;
+            case MODULE_TYPE_VMBEL4PIR_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBEL4PIR_20, 9);
+                break;
             case MODULE_TYPE_VMBGP1:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP1, 9);
                 break;
             case MODULE_TYPE_VMBGP1_2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP1_2, 9);
                 break;
+            case MODULE_TYPE_VMBGP1_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP1_20, 9);
+                break;
             case MODULE_TYPE_VMBGP2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP2, 9);
                 break;
             case MODULE_TYPE_VMBGP2_2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP2_2, 9);
                 break;
+            case MODULE_TYPE_VMBGP2_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP2_20, 9);
+                break;
             case MODULE_TYPE_VMBGP4:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4, 9);
                 break;
             case MODULE_TYPE_VMBGP4_2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4_2, 9);
                 break;
+            case MODULE_TYPE_VMBGP4_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4_20, 9);
+                break;
             case MODULE_TYPE_VMBGP4PIR:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4PIR, 9);
                 break;
             case MODULE_TYPE_VMBGP4PIR_2:
-                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4PIR_2, 9);
+                break;
+            case MODULE_TYPE_VMBGP4PIR_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 1), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGP4PIR_20, 9);
                 break;
             case MODULE_TYPE_VMBGPO:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
@@ -286,6 +336,10 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
             case MODULE_TYPE_VMBGPOD_2:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGPOD_2, 33);
+                break;
+            case MODULE_TYPE_VMBGPO_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 4), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBGPO_20, 33);
                 break;
             case MODULE_TYPE_VMBMETEO:
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
@@ -323,6 +377,14 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
                 velbusModule = new VelbusModule(new VelbusModuleAddress(address, 0), moduleType, highByteOfSerialNumber,
                         lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMB4PB, 8);
                 break;
+            case MODULE_TYPE_VMBDALI:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 9), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDALI, 81);
+                break;
+            case MODULE_TYPE_VMBDALI_20:
+                velbusModule = new VelbusModule(new VelbusModuleAddress(address, 9), moduleType, highByteOfSerialNumber,
+                        lowByteOfSerialNumber, memoryMapVersion, buildYear, buildWeek, THING_TYPE_VMBDALI_20, 81);
+                break;
         }
 
         if (velbusModule != null) {
@@ -330,14 +392,14 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void handleModuleSubtypeCommand(byte[] packet, byte address) {
+    private void handleModuleSubtypeCommand(byte[] packet, byte address, int subTypeNumber) {
         if (velbusModules.containsKey(address)) {
             VelbusModule velbusModule = velbusModules.get(address);
 
             byte[] subAddresses = new byte[4];
             System.arraycopy(packet, 8, subAddresses, 0, 4);
 
-            velbusModule.getModuleAddress().setSubAddresses(subAddresses);
+            velbusModule.getModuleAddress().setSubAddresses(subAddresses, subTypeNumber);
 
             for (int i = 0; i < subAddresses.length; i++) {
                 if (subAddresses[i] != (byte) 0xFF) {
@@ -352,7 +414,7 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
     protected void registerVelbusModule(byte address, VelbusModule velbusModule) {
         velbusModules.put(address, velbusModule);
         notifyDiscoveredVelbusModule(velbusModule);
-        velbusModule.sendChannelNameRequests(velbusBridgeHandler);
+        velbusModule.sendChannelNameRequests(thingHandler);
     }
 
     private void handleChannelNameCommand(byte[] packet, byte address, byte length, int namePartNumber) {
@@ -369,30 +431,18 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService
     }
 
     private void notifyDiscoveredVelbusModule(VelbusModule velbusModule) {
-        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
-        if (velbusBridgeHandler != null) {
-            ThingUID bridgeUID = velbusBridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
-                    .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
-                    .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel())
-                    .build();
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
+                .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
+                .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel()).build();
 
-            thingDiscovered(discoveryResult);
-        }
+        thingDiscovered(discoveryResult);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VelbusBridgeHandler) {
-            final VelbusBridgeHandler velbusBridgeHandler = (VelbusBridgeHandler) handler;
-            this.velbusBridgeHandler = velbusBridgeHandler;
-            velbusBridgeHandler.setDefaultPacketListener(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return this.velbusBridgeHandler;
+    public void initialize() {
+        thingHandler.setDefaultPacketListener(this);
+        super.initialize();
     }
 }

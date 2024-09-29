@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,8 @@ public class NestedNumberPoint extends BasePoint {
     @Override
     public void refreshValueFrom(BasePoint from) {
         super.refreshValueFrom(from);
-        if (from instanceof NestedNumberPoint) {
-            NestedNumberValue fromInner = ((NestedNumberPoint) from).inner;
+        if (from instanceof NestedNumberPoint point) {
+            NestedNumberValue fromInner = point.inner;
             NestedNumberValue thisInner = this.inner;
             if (thisInner != null && fromInner != null) {
                 thisInner.value = fromInner.value;

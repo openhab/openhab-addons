@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mielecloud.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,11 +59,11 @@ public final class ThingInformationExtractor {
     }
 
     private static String getSerialNumber(DeviceState deviceState) {
-        return deviceState.getFabNumber().orElse(deviceState.getDeviceIdentifier());
+        return Objects.requireNonNull(deviceState.getFabNumber().orElse(deviceState.getDeviceIdentifier()));
     }
 
     private static String getModelId(DeviceState deviceState) {
-        return getDeviceAndTechType(deviceState).orElse("Unknown");
+        return Objects.requireNonNull(getDeviceAndTechType(deviceState).orElse("Unknown"));
     }
 
     /**
@@ -82,10 +83,10 @@ public final class ThingInformationExtractor {
         if (deviceType.isPresent() && techType.isPresent()) {
             return Optional.of(deviceType.get() + " " + techType.get());
         }
-        if (!deviceType.isPresent() && techType.isPresent()) {
+        if (deviceType.isEmpty() && techType.isPresent()) {
             return techType;
         }
-        if (deviceType.isPresent() && !techType.isPresent()) {
+        if (deviceType.isPresent() && techType.isEmpty()) {
             return deviceType;
         }
         return Optional.empty();
