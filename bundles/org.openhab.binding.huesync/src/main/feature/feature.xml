@@ -5,17 +5,6 @@
 	<feature name="openhab-binding-huesync" description="Hue HDMI Sync Box Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mdns</feature>
-		<!--
-			00 - OSGi framework has been started.
-			10 - OSGi application start level has been reached, i.e. bundles are activated.
-			20 - Model entities (items, things, links, persist config) have been loaded, both from db as well as files.
-			30 - Item states have been restored from persistence service, where applicable.
-			40 - Rules are loaded and parsed, both from db as well as dsl and script files.
-			50 - Rule engine has executed all "system started" rules and is active.
-			70 - User interface is up and running. (planned, not included yet)
-			80 - All things have been initialized. (planned, not included yet)
-			100 - Startup is fully complete.
-		-->
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.huesync/${project.version}</bundle>
 	</feature>
 </features>
