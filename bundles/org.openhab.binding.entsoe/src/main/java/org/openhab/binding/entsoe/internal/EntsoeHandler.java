@@ -12,33 +12,26 @@
  */
 package org.openhab.binding.entsoe.internal;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.entsoe.internal.client.Client;
+import org.openhab.binding.entsoe.internal.client.EntsoeTimeSerie;
 import org.openhab.binding.entsoe.internal.client.Request;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseMapException;
-import org.openhab.core.library.dimension.Currency;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.CurrencyUnit;
-import org.openhab.core.library.unit.CurrencyUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -46,7 +39,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +58,7 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private Unit<Currency> baseUnit = CurrencyUnits.BASE_CURRENCY;
-    private Unit<Currency> fromUnit = new CurrencyUnit(EntsoeBindingConstants.ENTSOE_CURRENCY, null);
-
-    private Map<ZonedDateTime, Double> responseMap;
+    private List<EntsoeTimeSerie> entsoeTimeSeries;
 
     // Use region-based ZoneId instead of CET to handle transition to CEST automatically
     private final ZoneId cetZoneId = ZoneId.of("Europe/Paris");
@@ -81,8 +70,8 @@ public class EntsoeHandler extends BaseThingHandler {
 
     public EntsoeHandler(Thing thing) {
         super(thing);
-        config = getConfigAs(EntsoeConfiguration.class);
-        responseMap = new TreeMap<>();
+        config = new EntsoeConfiguration();
+        entsoeTimeSeries = new ArrayList<>();
     }
 
     @Override
@@ -91,7 +80,7 @@ public class EntsoeHandler extends BaseThingHandler {
         String channelID = channelUID.getId();
 
         if (EntsoeBindingConstants.CHANNEL_SPOT_PRICE.equals(channelID)) {
-            if (responseMap.isEmpty()) {
+            if (entsoeTimeSeries.isEmpty()) {
                 refreshPrices();
             }
             updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
@@ -124,7 +113,13 @@ public class EntsoeHandler extends BaseThingHandler {
         if (historicDaysInitially == 0) {
             historicDaysInitially = config.historicDays;
         }
-        updateStatus(ThingStatus.UNKNOWN);
+
+        if (isLinked(EntsoeBindingConstants.CHANNEL_SPOT_PRICE)) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         refreshJob = scheduler.schedule(this::refreshPrices, 0, TimeUnit.SECONDS);
     }
 
@@ -140,25 +135,23 @@ public class EntsoeHandler extends BaseThingHandler {
         return currentUtcTime().truncatedTo(ChronoUnit.HOURS);
     }
 
-    private BigDecimal getCurrentHourKwhPrice() throws EntsoeResponseMapException {
-        if (responseMap.isEmpty()) {
+    private EntsoeTimeSerie getCurrentHourEntsoeTimeSerie() throws EntsoeResponseMapException {
+        if (entsoeTimeSeries.isEmpty()) {
             throw new EntsoeResponseMapException("responseMap is empty");
         }
         var currentUtcTime = currentUtcTime();
         Integer currentHour = currentUtcTime.getHour();
         Integer currentDayInYear = currentUtcTime.getDayOfYear();
-        var result = responseMap.entrySet().stream()
-                .filter(x -> x.getKey().getHour() == currentHour && x.getKey().getDayOfYear() == currentDayInYear)
+        var result = entsoeTimeSeries.stream()
+                .filter(x -> x.getTime().getHour() == currentHour && x.getTime().getDayOfYear() == currentDayInYear)
                 .findFirst();
-        if (result.isEmpty()) {
+        if (result.isEmpty() || result == null || result.get() == null) {
             throw new EntsoeResponseMapException(
                     String.format("Could not find a value for hour {} and day in year {} in responseMap", currentHour,
                             currentDayInYear));
+        } else {
+            return result.get();
         }
-
-        double eurMwhPrice = result.get().getValue();
-        BigDecimal kwhPrice = BigDecimal.valueOf(eurMwhPrice).divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
-        return kwhPrice;
     }
 
     private boolean needToFetchHistoricDays() {
@@ -189,7 +182,7 @@ public class EntsoeHandler extends BaseThingHandler {
 
         config = getConfigAs(EntsoeConfiguration.class);
 
-        if (responseMap.isEmpty()) {
+        if (entsoeTimeSeries.isEmpty()) {
             fetchNewPrices();
             return;
         }
@@ -197,8 +190,8 @@ public class EntsoeHandler extends BaseThingHandler {
         boolean needsInitialUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, cetZoneId))
                 || needToFetchHistoricDays(true);
 
-        boolean hasNextDayValue = responseMap.entrySet().stream()
-                .anyMatch(x -> x.getKey().getDayOfYear() == currentUtcTime().plusDays(1).getDayOfYear());
+        boolean hasNextDayValue = entsoeTimeSeries.stream()
+                .anyMatch(x -> x.getTime().getDayOfYear() == currentUtcTime().plusDays(1).getDayOfYear());
 
         boolean readyForNextDayValue = currentCetTime()
                 .isAfter(currentCetTime().withHour(config.spotPricesAvailableCetHour));
@@ -222,18 +215,19 @@ public class EntsoeHandler extends BaseThingHandler {
         boolean success = false;
 
         try {
-            responseMap = client.doGetRequest(request, 30000);
+            entsoeTimeSeries = client.doGetRequest(request, 30000);
+
             TimeSeries baseTimeSeries = new TimeSeries(EntsoeBindingConstants.TIMESERIES_POLICY);
-            for (Map.Entry<ZonedDateTime, Double> entry : responseMap.entrySet()) {
-                BigDecimal kwhPrice = BigDecimal.valueOf(entry.getValue()).divide(new BigDecimal(1000), 10,
-                        RoundingMode.HALF_UP);
-                baseTimeSeries.add(entry.getKey().toInstant(), getPriceState(kwhPrice));
+            for (EntsoeTimeSerie entsoeTimeSerie : entsoeTimeSeries) {
+                baseTimeSeries.add(entsoeTimeSerie.getTime().toInstant(),
+                        entsoeTimeSerie.getState(Units.KILOWATT_HOUR));
             }
+
             updateStatus(ThingStatus.ONLINE);
             lastDayAheadReceived = currentCetTime();
             sendTimeSeries(EntsoeBindingConstants.CHANNEL_SPOT_PRICE, baseTimeSeries);
             updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
-            scheduler.schedule(this::triggerChannelSpotPricesReceived, 0, TimeUnit.SECONDS);
+            triggerChannel(EntsoeBindingConstants.CHANNEL_TRIGGER_PRICES_RECEIVED);
             success = true;
         } catch (EntsoeResponseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -241,19 +235,6 @@ public class EntsoeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } finally {
             schedule(success);
-        }
-    }
-
-    private State getPriceState(BigDecimal kwhPrice) {
-        if (baseUnit == null || fromUnit == null) {
-            logger.trace("Currency is unknown. Falling back to DecimalType");
-            return new DecimalType(kwhPrice);
-        }
-        try {
-            return new QuantityType<>(kwhPrice + " " + EntsoeBindingConstants.ENTSOE_CURRENCY + "/kWh");
-        } catch (IllegalArgumentException e) {
-            logger.trace("Unable to create QuantityType, falling back to DecimalType", e);
-            return new DecimalType(kwhPrice);
         }
     }
 
@@ -269,15 +250,10 @@ public class EntsoeHandler extends BaseThingHandler {
         }
     }
 
-    private void triggerChannelSpotPricesReceived() {
-        triggerChannel(EntsoeBindingConstants.CHANNEL_TRIGGER_PRICES_RECEIVED);
-    }
-
     private void updateCurrentHourState(String channelID) {
         logger.trace("Updating current hour");
         try {
-            BigDecimal kwhPrice = getCurrentHourKwhPrice();
-            updateState(channelID, getPriceState(kwhPrice));
+            updateState(channelID, getCurrentHourEntsoeTimeSerie().getState(Units.KILOWATT_HOUR));
         } catch (EntsoeConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

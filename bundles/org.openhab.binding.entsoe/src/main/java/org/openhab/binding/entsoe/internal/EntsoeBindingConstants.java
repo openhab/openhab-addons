@@ -32,8 +32,6 @@ public class EntsoeBindingConstants {
 
     public static final Policy TIMESERIES_POLICY = Policy.REPLACE;
 
-    public static final String ENTSOE_CURRENCY = "EUR";
-
     public static final String CHANNEL_SPOT_PRICE = "spot-price";
 
     public static final String CHANNEL_TRIGGER_PRICES_RECEIVED = "prices-received";
