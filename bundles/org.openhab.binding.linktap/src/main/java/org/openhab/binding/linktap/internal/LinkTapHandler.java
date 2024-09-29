@@ -22,7 +22,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linktap.protocol.frames.*;
+import org.openhab.binding.linktap.protocol.frames.AlertStateReq;
+import org.openhab.binding.linktap.protocol.frames.DeviceCmdReq;
+import org.openhab.binding.linktap.protocol.frames.DismissAlertReq;
+import org.openhab.binding.linktap.protocol.frames.EndpointDeviceResponse;
+import org.openhab.binding.linktap.protocol.frames.LockReq;
+import org.openhab.binding.linktap.protocol.frames.PauseWateringPlanReq;
+import org.openhab.binding.linktap.protocol.frames.StartWateringReq;
+import org.openhab.binding.linktap.protocol.frames.WaterMeterStatus;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
