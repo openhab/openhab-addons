@@ -14,7 +14,7 @@ The binding has no configuration options, all configuration is done at Bridge an
 
 ## Bridge Configuration
 
-The bridge has only one configuration parameter :
+The bridge has only one configuration parameter:
 
 | Parameter | Description                                                  |
 |-----------|--------------------------------------------------------------|
@@ -24,7 +24,7 @@ Will accept a Refresh command in order to reinitiate connexion (eg in case of Qu
 
 ## Thing Configuration
 
-The thing has a few configuration parameters :
+The thing has a few configuration parameters:
 
 | Parameter | Description                                                  |
 |-----------|--------------------------------------------------------------|

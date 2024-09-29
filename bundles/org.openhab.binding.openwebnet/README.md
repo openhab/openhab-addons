@@ -103,10 +103,10 @@ sudo usermod -a -G dialout openhab
 
 Configuration parameters are:
 
-- `host` : IP address / hostname of the BUS/SCS gateway (`String`, _mandatory_)
+- `host`: IP address / hostname of the BUS/SCS gateway (`String`, _mandatory_)
   - Example: `192.168.1.35`
-- `port` : port (`int`, _optional_, default: `20000`)
-- `passwd` : gateway password (`String`, _required_ for gateways that have a password. Default: `12345`)
+- `port`: port (`int`, _optional_, default: `20000`)
+- `passwd`: gateway password (`String`, _required_ for gateways that have a password. Default: `12345`)
   - Example: `abcde` or `12345`
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
@@ -119,7 +119,7 @@ Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.t
 
 Configuration parameters are:
 
-- `serialPort` : the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
+- `serialPort`: the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
 Alternatively the MyHOME Radio - Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
