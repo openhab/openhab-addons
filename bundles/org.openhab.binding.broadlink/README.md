@@ -184,4 +184,4 @@ else:
 
 - [Cato Sognen](https://community.openhab.org/u/cato_sognen)
 - [JAD](http://www.javadecompilers.com/jad) (Java Decompiler)
-- [Ricardo] (ricardol)
+- [Ricardo] (https://github.com/rlarranaga)
