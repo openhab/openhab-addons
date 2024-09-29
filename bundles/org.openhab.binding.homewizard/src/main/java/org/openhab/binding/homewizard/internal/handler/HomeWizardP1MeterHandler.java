@@ -13,12 +13,12 @@
 package org.openhab.binding.homewizard.internal.handler;
 
 import java.time.DateTimeException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.dto.DataPayload;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -38,17 +38,17 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
 
     private String meterModel = "";
     private int meterVersion = 0;
-    private ZoneId zoneId;
+    private TimeZoneProvider timeZoneProvider;
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
-     * @param zoneId The time zone id
+     * @param timeZoneProvider The TimeZoneProvider
      */
-    public HomeWizardP1MeterHandler(Thing thing, ZoneId zoneId) {
+    public HomeWizardP1MeterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.zoneId = zoneId;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -117,7 +117,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
 
         ZonedDateTime gasTimestamp;
         try {
-            gasTimestamp = payload.getGasTimestamp(zoneId);
+            gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
         } catch (DateTimeException e) {
             logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
             gasTimestamp = null;

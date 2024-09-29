@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -97,8 +98,9 @@ public class HomeWizardP1MeterHandlerTest {
 
     private static HomeWizardP1MeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
-        final HomeWizardP1MeterHandlerMock handler = spy(
-                new HomeWizardP1MeterHandlerMock(thing, ZoneId.systemDefault()));
+        final TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
+        doReturn(ZoneId.systemDefault()).when(timeZoneProvider).getTimeZone();
+        final HomeWizardP1MeterHandlerMock handler = spy(new HomeWizardP1MeterHandlerMock(thing, timeZoneProvider));
 
         try {
             doReturn(DataUtil.fromFile("response.json")).when(handler).getData();

@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.homewizard.internal.handler;
 
-import java.time.ZoneId;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.dto.DataPayload;
 import org.openhab.binding.homewizard.internal.dto.StatePayload;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -39,9 +38,10 @@ public class HomeWizardEnergySocketHandler extends HomeWizardStatefulDeviceHandl
      * Constructor
      *
      * @param thing The thing to handle
+     * @param timeZoneProvider The TimeZoneProvider
      */
-    public HomeWizardEnergySocketHandler(Thing thing, ZoneId zoneId) {
-        super(thing, zoneId);
+    public HomeWizardEnergySocketHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     /**

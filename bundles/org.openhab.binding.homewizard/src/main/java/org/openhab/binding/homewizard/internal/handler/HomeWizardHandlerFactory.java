@@ -58,15 +58,15 @@ public class HomeWizardHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_P1_METER.equals(thingTypeUID)) {
-            return new HomeWizardP1MeterHandler(thing, timeZoneProvider.getTimeZone());
+            return new HomeWizardP1MeterHandler(thing, timeZoneProvider);
         }
 
         if (THING_TYPE_ENERGY_SOCKET.equals(thingTypeUID)) {
-            return new HomeWizardEnergySocketHandler(thing, timeZoneProvider.getTimeZone());
+            return new HomeWizardEnergySocketHandler(thing, timeZoneProvider);
         }
 
         if (THING_TYPE_WATERMETER.equals(thingTypeUID)) {
-            return new HomeWizardWaterMeterHandler(thing, timeZoneProvider.getTimeZone());
+            return new HomeWizardWaterMeterHandler(thing, timeZoneProvider);
         }
 
         return null;
