@@ -22,14 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LinkTapDeviceMetadata {
 
-    public LinkTapDeviceMetadata(final String deviceId, final String deviceName) {
-        this.deviceId = deviceId;
-        this.deviceName = deviceName;
-    }
-
     /**
      * The ID of the device as stored in the relevant Gateway Device.
-     *
      */
     public final String deviceId;
 
@@ -37,4 +31,9 @@ public class LinkTapDeviceMetadata {
      * The human-readable name of the device as stored in the relevant Gateway Device.
      */
     public final String deviceName;
+
+    public LinkTapDeviceMetadata(final String deviceId, final String deviceName) {
+        this.deviceId = deviceId;
+        this.deviceName = deviceName;
+    }
 }

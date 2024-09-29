@@ -22,14 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.linktap.protocol.frames.AlertStateReq;
-import org.openhab.binding.linktap.protocol.frames.DeviceCmdReq;
-import org.openhab.binding.linktap.protocol.frames.DismissAlertReq;
-import org.openhab.binding.linktap.protocol.frames.EndpointDeviceResponse;
-import org.openhab.binding.linktap.protocol.frames.LockReq;
-import org.openhab.binding.linktap.protocol.frames.PauseWateringPlanReq;
-import org.openhab.binding.linktap.protocol.frames.StartWateringReq;
-import org.openhab.binding.linktap.protocol.frames.WaterMeterStatus;
+import org.openhab.binding.linktap.protocol.frames.*;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -59,19 +52,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LinkTapHandler extends PollingDeviceHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(LinkTapHandler.class);
-
     private static final String DEFAULT_INST_WATERING_VOL_LIMIT = "0";
     private static final String DEFAULT_INST_WATERING_TIME_LIMIT = "15";
-
-    private final Storage<String> strStore;
-
     private static final List<String> READBACK_DISABLED_CHANNELS = List.of(DEVICE_CHANNEL_OH_VOLUME_LIMIT,
             DEVICE_CHANNEL_OH_DURATION_LIMIT);
 
-    private @Nullable ScheduledFuture<?> pausePlanFuture = null;
+    private final Logger logger = LoggerFactory.getLogger(LinkTapHandler.class);
+    private final Storage<String> strStore;
     private final Object pausePlanLock = new Object();
+
     private volatile boolean pausePlanActive = false;
+
+    private @Nullable ScheduledFuture<?> pausePlanFuture = null;
 
     public LinkTapHandler(Thing thing, Storage<String> strStore, TranslationProvider translationProvider,
             LocaleProvider localeProvider) {

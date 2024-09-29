@@ -45,6 +45,14 @@ public final class Utils {
         return stBldr.toString();
     }
 
+    /**
+     * Return the localized error message if available otherwise the
+     * message. Should they both (either be null or empty) then return the
+     * class name of the throwable.
+     *
+     * @param t - The throwable to extract the data from
+     * @return The most representative text for the message
+     */
     public static String getMessage(final @Nullable Throwable t) {
         if (t == null) {
             return "?";

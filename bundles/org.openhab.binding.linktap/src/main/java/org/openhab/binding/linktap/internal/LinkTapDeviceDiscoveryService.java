@@ -40,7 +40,6 @@ public class LinkTapDeviceDiscoveryService extends AbstractThingHandlerDiscovery
         implements DeviceMetaDataUpdatedHandler {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GATEWAY);
-
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
     private @NonNullByDefault({}) ThingUID bridgeUID;

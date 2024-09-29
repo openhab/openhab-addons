@@ -61,7 +61,11 @@ public final class TransactionProcessor {
     // App->Broker->GW. These are sent via a POST request, to the relevant Gateway.
     // As the Gateway is an embedded device,
 
+    private static final WebServerApi API = WebServerApi.getInstance();
+    private static final int MAX_COMMAND_RETRIES = 3;
     private static final TransactionProcessor INSTANCE = new TransactionProcessor();
+
+    private final Logger logger = LoggerFactory.getLogger(TransactionProcessor.class);
 
     private @Nullable TranslationProvider translationProvider;
     private @Nullable LocaleProvider localeProvider;
@@ -84,18 +88,12 @@ public final class TransactionProcessor {
         return Objects.nonNull(result) ? result : key;
     }
 
-    private static final WebServerApi API = WebServerApi.getInstance();
-
-    private static final int MAX_COMMAND_RETRIES = 3;
-
     private TransactionProcessor() {
     }
 
     public static TransactionProcessor getInstance() {
         return INSTANCE;
     }
-
-    private final Logger logger = LoggerFactory.getLogger(TransactionProcessor.class);
 
     public String processGwRequest(final String sourceHost, int command, final String payload) {
         final UUID uid = UUID.randomUUID();

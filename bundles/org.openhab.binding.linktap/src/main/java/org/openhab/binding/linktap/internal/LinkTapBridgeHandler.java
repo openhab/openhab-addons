@@ -47,13 +47,7 @@ import org.openhab.binding.linktap.protocol.frames.GatewayConfigResp;
 import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.binding.linktap.protocol.frames.ValidationError;
-import org.openhab.binding.linktap.protocol.http.CommandNotSupportedException;
-import org.openhab.binding.linktap.protocol.http.DeviceIdException;
-import org.openhab.binding.linktap.protocol.http.GatewayIdException;
-import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
-import org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException;
-import org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException;
-import org.openhab.binding.linktap.protocol.http.WebServerApi;
+import org.openhab.binding.linktap.protocol.http.*;
 import org.openhab.binding.linktap.protocol.servers.BindingServlet;
 import org.openhab.binding.linktap.protocol.servers.IHttpClientProvider;
 import org.openhab.core.cache.ExpiringCache;
@@ -85,28 +79,30 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeHandler.class);
-    private String bridgeKey = "";
-    private volatile String currentGwId = "";
-    private IHttpClientProvider httpClientProvider;
     public static final LookupWrapper<@Nullable LinkTapBridgeHandler> ADDR_LOOKUP = new LookupWrapper<>();
     public static final LookupWrapper<@Nullable LinkTapBridgeHandler> GW_ID_LOOKUP = new LookupWrapper<>();
     public static final LookupWrapper<@Nullable LinkTapHandler> DEV_ID_LOOKUP = new LookupWrapper<>();
     public static final LookupWrapper<@Nullable String> MDNS_LOOKUP = new LookupWrapper<>();
+    private static final long MIN_TIME_BETWEEN_MDNS_SCANS_MS = 600000;
+
+    private final DiscoveryServiceRegistry discoverySrvReg;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+    private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeHandler.class);
     private final Object schedulerLock = new Object();
-    private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
-    private volatile LinkTapBridgeConfiguration config = new LinkTapBridgeConfiguration();
-
-    private @Nullable ScheduledFuture<?> connectRepair = null;
     private final Object reconnectFutureLock = new Object();
-
-    private volatile long lastGwCommandRecvTs = 0L;
-
     private final Object getConfigLock = new Object();
 
+    private volatile String currentGwId = "";
+    private volatile LinkTapBridgeConfiguration config = new LinkTapBridgeConfiguration();
+    private volatile long lastGwCommandRecvTs = 0L;
     private volatile long lastMdnsScanMillis = -1L;
 
-    private static final long MIN_TIME_BETWEEN_MDNS_SCANS_MS = 600000;
+    private String bridgeKey = "";
+    private IHttpClientProvider httpClientProvider;
+    private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
+    private @Nullable ScheduledFuture<?> connectRepair = null;
 
     protected ExpiringCache<String> lastGetConfigCache = new ExpiringCache<>(Duration.ofSeconds(10),
             LinkTapBridgeHandler::expireCacheContents);
@@ -114,12 +110,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     private static @Nullable String expireCacheContents() {
         return null;
     }
-
-    private final DiscoveryServiceRegistry discoverySrvReg;
-
-    private final TranslationProvider translationProvider;
-    private final LocaleProvider localeProvider;
-    private final Bundle bundle;
 
     @Activate
     public LinkTapBridgeHandler(final Bridge bridge, IHttpClientProvider httpClientProvider,

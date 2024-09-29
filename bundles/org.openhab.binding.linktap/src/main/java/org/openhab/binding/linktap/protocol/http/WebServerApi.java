@@ -64,15 +64,37 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class WebServerApi {
 
+    public static final String URI_SCHEME = "http";
+    public static final String URI_HOST_PREFIX = URI_SCHEME + "://";
+
+    /**
+     * Headers
+     */
+    public static final String HEADER_SERVER = "Server";
+    public static final String HEADER_GW_SERVER_NAME = "LinkTap Gateway";
+
+    /**
+     * HTML title field mappings to use cases
+     */
+    private static final String TITLE_API_RESPONSE = "api";
+    private static final String TITLE_API_CONFIG_PAGE = "LinkTap Gateway";
+    private static final String TITLE_API_LOGIN_PAGE = "LinkTap Gateway Login";
+
+    /**
+     * Field names for form submission API's
+     */
+    private static final String FIELD_ADMIN_USER = "admin";
+    private static final String FIELD_ADMIN_USER_PWD = "adminpwd";
+
+    private static final int REQ_TIMEOUT_SECONDS = 3;
+    private static final WebServerApi INSTANCE = new WebServerApi();
+    private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
     private final Logger logger = LoggerFactory.getLogger(WebServerApi.class);
 
     private @NonNullByDefault({}) HttpClient httpClient;
-
-    private static final int REQ_TIMEOUT_SECONDS = 3;
-
-    private static final WebServerApi INSTANCE = new WebServerApi();
-
-    private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
+    private @Nullable TranslationProvider translationProvider;
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable Bundle bundle;
 
     private WebServerApi() {
     }
@@ -80,10 +102,6 @@ public final class WebServerApi {
     public static WebServerApi getInstance() {
         return INSTANCE;
     }
-
-    private @Nullable TranslationProvider translationProvider;
-    private @Nullable LocaleProvider localeProvider;
-    private @Nullable Bundle bundle;
 
     public void setTranslationProviderInfo(TranslationProvider translationProvider, LocaleProvider localeProvider,
             Bundle bundle) {
@@ -551,26 +569,4 @@ public final class WebServerApi {
             }
         }
     }
-
-    public static final String URI_SCHEME = "http";
-    public static final String URI_HOST_PREFIX = URI_SCHEME + "://";
-
-    /**
-     * Headers
-     */
-    public static final String HEADER_SERVER = "Server";
-    public static final String HEADER_GW_SERVER_NAME = "LinkTap Gateway";
-
-    /**
-     * HTML title field mappings to use cases
-     */
-    private static final String TITLE_API_RESPONSE = "api";
-    private static final String TITLE_API_CONFIG_PAGE = "LinkTap Gateway";
-    private static final String TITLE_API_LOGIN_PAGE = "LinkTap Gateway Login";
-
-    /**
-     * Field names for form submission API's
-     */
-    private static final String FIELD_ADMIN_USER = "admin";
-    private static final String FIELD_ADMIN_USER_PWD = "adminpwd";
 }

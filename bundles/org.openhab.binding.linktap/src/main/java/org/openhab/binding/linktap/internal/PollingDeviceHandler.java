@@ -56,27 +56,24 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class PollingDeviceHandler extends BaseThingHandler implements IBridgeData {
 
-    private final Logger logger = LoggerFactory.getLogger(PollingDeviceHandler.class);
-
     protected static final String MARKER_INVALID_DEVICE_KEY = "---INVALID---";
-    protected String registeredDeviceId = EMPTY_STRING;
 
+    private final Logger logger = LoggerFactory.getLogger(PollingDeviceHandler.class);
     private final Object pollLock = new Object();
-
-    protected ExpiringCache<String> lastPollResultCache = new ExpiringCache<>(Duration.ofSeconds(5),
-            PollingDeviceHandler::expireCacheContents);
-
     private final Object schedulerLock = new Object();
-    private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
-
     private final Object readBackPollLock = new Object();
-    private @Nullable ScheduledFuture<?> readBackPollSf = null;
-
-    protected volatile LinkTapDeviceConfiguration config = new LinkTapDeviceConfiguration();
-
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+
+    protected volatile LinkTapDeviceConfiguration config = new LinkTapDeviceConfiguration();
+    private volatile long lastStatusCommandRecvTs = 0L;
+
+    protected String registeredDeviceId = EMPTY_STRING;
+    protected ExpiringCache<String> lastPollResultCache = new ExpiringCache<>(Duration.ofSeconds(5),
+            PollingDeviceHandler::expireCacheContents);
+    private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
+    private @Nullable ScheduledFuture<?> readBackPollSf = null;
 
     protected void requestReadbackPoll() {
         synchronized (readBackPollLock) {
@@ -96,8 +93,6 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             }
         }
     }
-
-    private volatile long lastStatusCommandRecvTs = 0L;
 
     public PollingDeviceHandler(final Thing thing, TranslationProvider translationProvider,
             LocaleProvider localeProvider) {

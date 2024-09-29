@@ -48,15 +48,19 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BindingServlet extends HttpServlet {
+
+    public static final BindingServlet INSTANCE = new BindingServlet();
+    public static final String SERVLET_URL_WITHOUT_ROOT = "linktap";
+    private static final String SERVLET_URL = "/" + SERVLET_URL_WITHOUT_ROOT;
     private static final long serialVersionUID = -23L;
 
     private final Logger logger = LoggerFactory.getLogger(BindingServlet.class);
+    private final Object registerLock = new Object();
 
-    public static final String SERVLET_URL_WITHOUT_ROOT = "linktap";
-    private static final String SERVLET_URL = "/" + SERVLET_URL_WITHOUT_ROOT;
+    private volatile boolean registered;
+
     @Nullable
     HttpService httpService;
-
     private @Nullable TranslationProvider translationProvider;
     private @Nullable LocaleProvider localeProvider;
     private @Nullable Bundle bundle;
@@ -67,11 +71,6 @@ public class BindingServlet extends HttpServlet {
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
     }
-
-    volatile boolean registered;
-    final Object registerLock = new Object();
-
-    public static final BindingServlet INSTANCE = new BindingServlet();
 
     public static final BindingServlet getInstance() {
         return INSTANCE;

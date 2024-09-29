@@ -64,12 +64,8 @@ import org.slf4j.event.Level;
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "discovery.linktap")
 public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeDiscoveryService.class);
-
     private static final String SERVICE_TYPE = "_http._tcp.local.";
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GATEWAY);
-
     private static final String RAW_MODEL = "model";
     private static final String RAW_ID = "ID";
     private static final String RAW_MAC = "MAC";
@@ -83,7 +79,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
     private static final String TEXT_CHARSET = StandardCharsets.UTF_8.name();
 
     protected final ThingRegistry thingRegistry;
-
+    private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeDiscoveryService.class);
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
