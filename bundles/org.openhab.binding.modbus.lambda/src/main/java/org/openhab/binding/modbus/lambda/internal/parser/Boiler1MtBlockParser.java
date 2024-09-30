@@ -13,30 +13,27 @@
 package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.lambda.internal.dto.AmbientBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.Boiler1MtBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses inverter modbus data into an Ambient Block
+ * Parses inverter modbus data into an Boiler1Mt Block -
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 @NonNullByDefault
-public class AmbientBlockParser extends AbstractBaseParser {
-    private final Logger logger = LoggerFactory.getLogger(AmbientBlockParser.class);
+public class Boiler1MtBlockParser extends AbstractBaseParser {
+    private final Logger logger = LoggerFactory.getLogger(Boiler1MtBlockParser.class);
 
-    public AmbientBlock parse(ModbusRegisterArray raw) {
-        logger.trace("AmbientBlockParser");
-        AmbientBlock block = new AmbientBlock();
-        block.ambientErrorNumber = extractUInt16(raw, 0, (short) 0);
-        block.ambientOperatorState = extractUInt16(raw, 1, (short) 0);
-        block.actualAmbientTemperature = extractUInt16(raw, 2, (short) 0);
-        block.averageAmbientTemperature = extractUInt16(raw, 3, (short) 0);
-        block.calculatedAmbientTemperature = extractUInt16(raw, 4, (short) 0);
+    public Boiler1MtBlock parse(ModbusRegisterArray raw) {
+        logger.trace("Boiler1MtBlockParser");
+        Boiler1MtBlock block = new Boiler1MtBlock();
+
+        block.boiler1MaximumBoilerTemperature = extractUInt16(raw, 0, (short) 0);
         return block;
     }
 }

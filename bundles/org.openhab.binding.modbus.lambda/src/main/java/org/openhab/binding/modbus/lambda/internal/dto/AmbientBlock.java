@@ -13,13 +13,16 @@
 package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the Energy Block
+ * Dto class for the Ambient Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 public class AmbientBlock {
-
+    public int ambientErrorNumber;
+    public int ambientOperatorState;
     public int actualAmbientTemperature;
+    public int averageAmbientTemperature;
+    public int calculatedAmbientTemperature;
 }
