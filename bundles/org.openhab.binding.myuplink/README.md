@@ -45,7 +45,8 @@ If manual configuration is preferred you need to specify configuration as below.
 
 ## Channels
 
-The binding only supports all channels which are explicitely exposed by the myUplink API.
+The binding only supports channels which are explicitely exposed by the myUplink API.
+
 Depending on your model and additional hardware the channels might be different. 
 Thus no list is provided here.
 
