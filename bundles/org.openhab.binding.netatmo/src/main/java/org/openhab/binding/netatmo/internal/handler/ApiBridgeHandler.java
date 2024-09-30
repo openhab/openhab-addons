@@ -182,10 +182,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-
-        // getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
-        // .filter(CommonInterface.class::isInstance).map(CommonInterface.class::cast)
-        // .forEach(CommonInterface::expireData);
     }
 
     private boolean authenticate(@Nullable String code, @Nullable String redirectUri) {

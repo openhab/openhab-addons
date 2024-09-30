@@ -81,8 +81,8 @@ public class SecurityApi extends RestManager {
         List<HomeEvent> events = getEvents(PARAM_HOME_ID, homeId);
 
         // we have to rewind to the latest event just after freshestEventTime
-        String oldestId = "";
         if (!events.isEmpty()) {
+            String oldestId = "";
             HomeEvent oldestRetrieved = events.get(events.size() - 1);
             while (oldestRetrieved.getTime().isAfter(freshestEventTime) && !oldestId.equals(oldestRetrieved.getId())) {
                 oldestId = oldestRetrieved.getId();
