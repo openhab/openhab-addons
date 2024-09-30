@@ -72,7 +72,6 @@ public class GenericResponseTransformer implements ResponseTransformer {
             var dcp = dynamicChannelProvider;
             if (dcp != null) {
                 channel = getOrCreateChannel(dcp, channelId, channelData.getAsJsonObject());
-
             } else {
                 channel = channelProvider.getChannel(group, channelId);
             }
