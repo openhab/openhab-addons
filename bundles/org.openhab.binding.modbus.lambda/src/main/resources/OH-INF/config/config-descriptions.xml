@@ -9,7 +9,7 @@
 		<parameter name="refresh" type="integer" min="1" unit="s">
 			<label>Polling Interval</label>
 			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
-			<default>10</default>
+			<default>20</default>
 			<unitLabel>s</unitLabel>
 		</parameter>
 

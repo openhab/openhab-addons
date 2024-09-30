@@ -13,14 +13,15 @@
 package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the System Information Block
+ * Dto class for the EManager Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 public class EManagerBlock {
-
+    public int emanagerErrorNumber;
+    public int emanagerOperatorState;
     public int actualPower;
     public int actualPowerConsumption;
 }

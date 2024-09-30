@@ -24,18 +24,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
-
 import org.openhab.binding.modbus.lambda.internal.LambdaConfiguration;
-import org.openhab.binding.modbus.lambda.internal.dto.EManagerBlock;
 import org.openhab.binding.modbus.lambda.internal.dto.AmbientBlock;
 import org.openhab.binding.modbus.lambda.internal.dto.Boiler1Block;
-import org.openhab.binding.modbus.lambda.internal.dto.Boiler150Block;
-
+import org.openhab.binding.modbus.lambda.internal.dto.Boiler1MtBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.Buffer1Block;
+import org.openhab.binding.modbus.lambda.internal.dto.Buffer1MtBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.EManagerBlock;
 import org.openhab.binding.modbus.lambda.internal.parser.AmbientBlockParser;
-import org.openhab.binding.modbus.lambda.internal.parser.EManagerBlockParser;
 import org.openhab.binding.modbus.lambda.internal.parser.Boiler1BlockParser;
-import org.openhab.binding.modbus.lambda.internal.parser.Boiler150BlockParser;
-
+import org.openhab.binding.modbus.lambda.internal.parser.Boiler1MtBlockParser;
+import org.openhab.binding.modbus.lambda.internal.parser.Buffer1BlockParser;
+import org.openhab.binding.modbus.lambda.internal.parser.Buffer1MtBlockParser;
+import org.openhab.binding.modbus.lambda.internal.parser.EManagerBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
@@ -143,7 +144,9 @@ public class LambdaHandler extends BaseThingHandler {
     private final AmbientBlockParser ambientBlockParser = new AmbientBlockParser();
     private final EManagerBlockParser emanagerBlockParser = new EManagerBlockParser();
     private final Boiler1BlockParser boiler1BlockParser = new Boiler1BlockParser();
-    private final Boiler150BlockParser boiler150BlockParser = new Boiler150BlockParser();
+    private final Boiler1MtBlockParser boiler1mtBlockParser = new Boiler1MtBlockParser();
+    private final Buffer1BlockParser buffer1BlockParser = new Buffer1BlockParser();
+    private final Buffer1MtBlockParser buffer1mtBlockParser = new Buffer1MtBlockParser();
 
     /**
      * These are the tasks used to poll the device
@@ -151,7 +154,9 @@ public class LambdaHandler extends BaseThingHandler {
     private volatile @Nullable AbstractBasePoller ambientPoller = null;
     private volatile @Nullable AbstractBasePoller emanagerPoller = null;
     private volatile @Nullable AbstractBasePoller boiler1Poller = null;
-    private volatile @Nullable AbstractBasePoller boiler150Poller = null;
+    private volatile @Nullable AbstractBasePoller boiler1mtPoller = null;
+    private volatile @Nullable AbstractBasePoller buffer1Poller = null;
+    private volatile @Nullable AbstractBasePoller buffer1mtPoller = null;
     /**
      * Communication interface to the slave endpoint we're connecting to
      */
@@ -249,9 +254,9 @@ public class LambdaHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("237 handleCommand, channelUID: {} command {} ", channelUID, command);
+        logger.trace("249 handleCommand, channelUID: {} command {} ", channelUID, command);
         if (RefreshType.REFRESH == command) {
-            logger.trace("239 handleCommand: Es wird geschrieben, GroupID: {}", channelUID.getGroupId());
+            logger.trace("239 handleCommand: Es wird gelesen ?, GroupID: {}", channelUID.getGroupId());
             String groupId = channelUID.getGroupId();
             if (groupId != null) {
                 logger.trace("242 }");
@@ -262,19 +267,29 @@ public class LambdaHandler extends BaseThingHandler {
                         break;
                     case GROUP_GENERAL_EMANAGER:
                         poller = emanagerPoller;
-                        logger.trace("250 emanager");
                         break;
                     case GROUP_BOILER1:
+                        logger.trace("264 boiler1Poller }");
                         poller = boiler1Poller;
                         break;
-                    case GROUP_BOILER150:
-                        poller = boiler150Poller;
+                    case GROUP_BOILER1MT:
+                        logger.trace("267 boiler1mtPoller }");
+                        poller = boiler1mtPoller;
+                        break;
+                    case GROUP_BUFFER1:
+                        logger.trace("280 buffer1Poller }");
+                        poller = buffer1Poller;
+                        break;
+                    case GROUP_BUFFER1MT:
+                        logger.trace("284 buffer1mtPoller }");
+                        poller = buffer1mtPoller;
                         break;
                     default:
                         poller = null;
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("276 Es wird gepollt }");
                     poller.poll();
                 }
             }
@@ -284,16 +299,16 @@ public class LambdaHandler extends BaseThingHandler {
             try {
                 // logger.trace("266 handleCommand: Es wird geschrieben, GroupID: {}, command: {}",
                 // channelUID.getGroupId(), getInt16Value(command));
-                logger.trace("269 ");
+                logger.trace("302 ");
                 if (GROUP_GENERAL_EMANAGER.equals(channelUID.getGroupId())) {
 
-                    logger.trace("271 channelUID {} ", channelUID.getIdWithoutGroup());
+                    logger.trace("305 channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_ACTUAL_POWER:
 
-                            logger.trace("279 command: {}", command);
+                            logger.trace("311 command: {}", command);
                             // String teststr = command.replaceAll("[^0-9,-]", "");
                             // logger.trace("testsstr: {}, ", teststr);
                             // writeInt16(102, getInt16Value(teststr));
@@ -393,20 +408,45 @@ public class LambdaHandler extends BaseThingHandler {
             };
 
             poller.registerPollTask(2000, 4, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            // logger.trace("Poller Boiler1 erzeugt");
+            logger.trace("Poller Boiler1 erzeugt");
             boiler1Poller = poller;
         }
-        if (boiler150Poller == null) {
+        if (boiler1mtPoller == null) {
             AbstractBasePoller poller = new AbstractBasePoller() {
                 @Override
                 protected void handlePolledData(ModbusRegisterArray registers) {
-                    handlePolledBoiler150Data(registers);
+                    handlePolledBoiler1MtData(registers);
                 }
             };
 
             poller.registerPollTask(2050, 1, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            // logger.trace("Poller Boiler150 erzeugt");
-            boiler150Poller = poller;
+            logger.trace("Poller BoilerMt1 erzeugt");
+            boiler1mtPoller = poller;
+        }
+
+        if (buffer1Poller == null) {
+            AbstractBasePoller poller = new AbstractBasePoller() {
+                @Override
+                protected void handlePolledData(ModbusRegisterArray registers) {
+                    handlePolledBuffer1Data(registers);
+                }
+            };
+
+            poller.registerPollTask(3000, 4, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            logger.trace("Poller Buffer1 erzeugt");
+            buffer1Poller = poller;
+        }
+        if (buffer1mtPoller == null) {
+            AbstractBasePoller poller = new AbstractBasePoller() {
+                @Override
+                protected void handlePolledData(ModbusRegisterArray registers) {
+                    handlePolledBuffer1MtData(registers);
+                }
+            };
+
+            poller.registerPollTask(3050, 1, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
+            logger.trace("Poller BufferMt1 erzeugt");
+            buffer1mtPoller = poller;
         }
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -449,12 +489,28 @@ public class LambdaHandler extends BaseThingHandler {
             boiler1Poller = null;
         }
 
-        poller = boiler150Poller;
+        poller = boiler1mtPoller;
         if (poller != null) {
-            logger.debug("Unregistering boiler150Poller from ModbusManager");
+            logger.debug("Unregistering boiler1mtPoller from ModbusManager");
             poller.unregisterPollTask();
 
-            boiler150Poller = null;
+            boiler1mtPoller = null;
+        }
+
+        poller = buffer1Poller;
+        if (poller != null) {
+            logger.debug("Unregistering buffer1Poller from ModbusManager");
+            poller.unregisterPollTask();
+
+            buffer1Poller = null;
+        }
+
+        poller = buffer1mtPoller;
+        if (poller != null) {
+            logger.debug("Unregistering buffer1mtPoller from ModbusManager");
+            poller.unregisterPollTask();
+
+            buffer1mtPoller = null;
         }
 
         comms = null;
@@ -503,7 +559,9 @@ public class LambdaHandler extends BaseThingHandler {
      * @param value the value to alter
      * @return the scaled value as a DecimalType
      */
+
     protected State getScaled(Number value, Unit<?> unit) {
+        // logger.trace("505 value: {}", value.intValue());
         return QuantityType.valueOf(value.doubleValue() / 10, unit);
     }
 
@@ -533,46 +591,80 @@ public class LambdaHandler extends BaseThingHandler {
     protected void handlePolledAmbientData(ModbusRegisterArray registers) {
         // logger.trace("Ambient block received, size: {}", registers.size());
 
+        // Ambient group
         AmbientBlock block = ambientBlockParser.parse(registers);
 
-        // Ambient group
-        updateState(channelUID(GROUP_GENERAL_AMBIENT, CHANNEL_ACTUAL_AMBIENT_TEMPERATURE),
-                getScaled(block.actualAmbientTemperature, CELSIUS));
+        updateState(channelUID(GROUP_GENERAL_AMBIENT, CHANNEL_AMBIENT_ERROR_NUMBER),
+                new DecimalType(block.ambientErrorNumber));
+        updateState(channelUID(GROUP_GENERAL_AMBIENT, CHANNEL_AMBIENT_OPERATOR_STATE),
+                new DecimalType(block.ambientOperatorState));
+        updateState(channelUID(GROUP_GENERAL_AMBIENT, CHANNEL_AVERAGE_AMBIENT_TEMPERATURE),
+                getScaled(block.averageAmbientTemperature, CELSIUS));
+        updateState(channelUID(GROUP_GENERAL_AMBIENT, CHANNEL_CALCULATED_AMBIENT_TEMPERATURE),
+                getScaled(block.calculatedAmbientTemperature, CELSIUS));
         resetCommunicationError();
     }
 
     protected void handlePolledEManagerData(ModbusRegisterArray registers) {
         // logger.trace("EManager block received, size: {}", registers.size());
 
-        EManagerBlock block = emanagerBlockParser.parse(registers);
-
         // EManager group
+        EManagerBlock block = emanagerBlockParser.parse(registers);
+        updateState(channelUID(GROUP_GENERAL_EMANAGER, CHANNEL_EMANAGER_ERROR_NUMBER),
+                new DecimalType(block.emanagerErrorNumber));
+        updateState(channelUID(GROUP_GENERAL_EMANAGER, CHANNEL_EMANAGER_OPERATOR_STATE),
+                new DecimalType(block.emanagerOperatorState));
         updateState(channelUID(GROUP_GENERAL_EMANAGER, CHANNEL_ACTUAL_POWER_CONSUMPTION),
                 getUnscaled(block.actualPowerConsumption, WATT));
-
         updateState(channelUID(GROUP_GENERAL_EMANAGER, CHANNEL_ACTUAL_POWER), getUnscaled(block.actualPower, WATT));
         resetCommunicationError();
     }
 
     protected void handlePolledBoiler1Data(ModbusRegisterArray registers) {
-        // logger.trace("Boiler1 block received, size: {}", registers.size());
+        logger.trace("Boiler1 block received, size: {}", registers.size());
 
         Boiler1Block block = boiler1BlockParser.parse(registers);
 
         // Boiler1 group
         updateState(channelUID(GROUP_BOILER1, CHANNEL_BOILER1_ACTUAL_HIGH_TEMPERATURE),
                 getScaled(block.boiler1ActualHighTemperature, CELSIUS));
+        updateState(channelUID(GROUP_BOILER1, CHANNEL_BOILER1_ACTUAL_LOW_TEMPERATURE),
+                getScaled(block.boiler1ActualLowTemperature, CELSIUS));
         resetCommunicationError();
     }
 
-    protected void handlePolledBoiler150Data(ModbusRegisterArray registers) {
-        // logger.trace("Boiler150 block received, size: {}", registers.size());
+    protected void handlePolledBoiler1MtData(ModbusRegisterArray registers) {
+        logger.trace("Boiler1Mt block received, size: {}", registers.size());
 
-        Boiler1Block block = boiler150BlockParser.parse(registers);
+        Boiler1MtBlock block = boiler1mtBlockParser.parse(registers);
 
-        // Boiler1 group
-        updateState(channelUID(GROUP_BOILER150, CHANNEL_BOILER150_MAXIMUM_BOILER_TEMPERATURE),
-                getScaled(block.boiler150MaximumBoilerTemperature, CELSIUS));
+        // Boiler1Mt group
+        updateState(channelUID(GROUP_BOILER1MT, CHANNEL_BOILER1_MAXIMUM_BOILER_TEMPERATURE),
+                getScaled(block.boiler1MaximumBoilerTemperature, CELSIUS));
+        resetCommunicationError();
+    }
+
+    protected void handlePolledBuffer1Data(ModbusRegisterArray registers) {
+        logger.trace("Buffer1 block received, size: {}", registers.size());
+
+        Buffer1Block block = buffer1BlockParser.parse(registers);
+
+        // Buffer1 group
+        updateState(channelUID(GROUP_BUFFER1, CHANNEL_BUFFER1_ACTUAL_HIGH_TEMPERATURE),
+                getScaled(block.buffer1ActualHighTemperature, CELSIUS));
+        updateState(channelUID(GROUP_BUFFER1, CHANNEL_BUFFER1_ACTUAL_LOW_TEMPERATURE),
+                getScaled(block.buffer1ActualLowTemperature, CELSIUS));
+        resetCommunicationError();
+    }
+
+    protected void handlePolledBuffer1MtData(ModbusRegisterArray registers) {
+        logger.trace("Buffer1Mt block received, size: {}", registers.size());
+
+        Buffer1MtBlock block = buffer1mtBlockParser.parse(registers);
+
+        // Buffer1Mt group
+        updateState(channelUID(GROUP_BUFFER1MT, CHANNEL_BUFFER1_MAXIMUM_BOILER_TEMPERATURE),
+                getScaled(block.buffer1MaximumBufferTemperature, CELSIUS));
         resetCommunicationError();
     }
 

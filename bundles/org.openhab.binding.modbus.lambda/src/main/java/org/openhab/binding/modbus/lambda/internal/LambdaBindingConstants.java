@@ -34,19 +34,36 @@ public class LambdaBindingConstants {
     // Channel group ids
     public static final String GROUP_GENERAL_AMBIENT = "generalAmbient";
     public static final String GROUP_GENERAL_EMANAGER = "generalEManager";
-    public static final String GROUP_BOILER1 = "boiler1";
-    public static final String GROUP_BOILER150 = "boiler150";
+    public static final String GROUP_HEATPUMP1 = "Heatpump1";
+    public static final String GROUP_BOILER1 = "Boiler1";
+    public static final String GROUP_BOILER1MT = "Boiler1Mt";
+    public static final String GROUP_BUFFER1 = "Buffer1";
+    public static final String GROUP_BUFFER1MT = "Buffer1Mt";
 
-    /**
-     * public static final String GROUP_HEAT_PUMP1 = "HeatPump1";
-     * public static final String GROUP_BUFFER1 = "Buffer1";
-     * public static final String GROUP_SOLAR1 = "Solar1";
-     * public static final String GROUP_HEATING_CIRCUIT1 = "HeatingCircuit1";
-     */
     // List of all Channel ids in device information group
+    // General Ambient
+    public static final String CHANNEL_AMBIENT_ERROR_NUMBER = "ambient-error-number";
+    public static final String CHANNEL_AMBIENT_OPERATOR_STATE = "ambient-operator-state";
     public static final String CHANNEL_ACTUAL_AMBIENT_TEMPERATURE = "actual-ambient-temperature";
+    public static final String CHANNEL_AVERAGE_AMBIENT_TEMPERATURE = "average-ambient-temperature";
+    public static final String CHANNEL_CALCULATED_AMBIENT_TEMPERATURE = "calculated-ambient-temperature";
+
+    // General E-manager
+    public static final String CHANNEL_EMANAGER_ERROR_NUMBER = "emanager-error-number";
+    public static final String CHANNEL_EMANAGER_OPERATOR_STATE = "emanager-operator-state";
     public static final String CHANNEL_ACTUAL_POWER = "actual-power";
     public static final String CHANNEL_ACTUAL_POWER_CONSUMPTION = "actual-power-consumption";
+
+    // Heatpump 1
+    public static final String CHANNEL_HEATPUMP1_TFLOW = "heatpump1-t-flow";
+
+    // Boiler 1
     public static final String CHANNEL_BOILER1_ACTUAL_HIGH_TEMPERATURE = "boiler1-actual-high-temperature";
-    public static final String CHANNEL_BOILER150_MAXIMUM_BOILER_TEMPERATURE = "boiler150-maximum-boiler-temperature";
+    public static final String CHANNEL_BOILER1_ACTUAL_LOW_TEMPERATURE = "boiler1-actual-low-temperature";
+    public static final String CHANNEL_BOILER1_MAXIMUM_BOILER_TEMPERATURE = "boiler1-maximum-boiler-temperature";
+
+    // Buffer 1
+    public static final String CHANNEL_BUFFER1_ACTUAL_HIGH_TEMPERATURE = "buffer1-actual-high-temperature";
+    public static final String CHANNEL_BUFFER1_ACTUAL_LOW_TEMPERATURE = "buffer1-actual-low-temperature";
+    public static final String CHANNEL_BUFFER1_MAXIMUM_BOILER_TEMPERATURE = "buffer1-maximum-boiler-temperature";
 }
