@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.lambda.internal.dto.EManagerBlock;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 
 /**
- * Parses inverter modbus data into a SystemB Information lock
+ * Parses inverter modbus data into an EManger Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
@@ -28,7 +28,8 @@ public class EManagerBlockParser extends AbstractBaseParser {
 
     public EManagerBlock parse(ModbusRegisterArray raw) {
         EManagerBlock block = new EManagerBlock();
-
+        block.emanagerErrorNumber = extractUInt16(raw, 0, (short) 0);
+        block.emanagerOperatorState = extractUInt16(raw, 1, (short) 0);
         block.actualPower = extractUInt16(raw, 2, (short) 0);
         block.actualPowerConsumption = extractUInt16(raw, 3, (short) 0);
 

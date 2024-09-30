@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses inverter modbus data into an Energy Block
+ * Parses inverter modbus data into a Boiler Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
@@ -30,10 +30,11 @@ public class Boiler1BlockParser extends AbstractBaseParser {
     private final Logger logger = LoggerFactory.getLogger(Boiler1BlockParser.class);
 
     public Boiler1Block parse(ModbusRegisterArray raw) {
-        // logger.trace("Boiler1BlockParser");
+        logger.trace("Boiler1BlockParser");
         Boiler1Block block = new Boiler1Block();
 
         block.boiler1ActualHighTemperature = extractUInt16(raw, 2, (short) 0);
+        block.boiler1ActualLowTemperature = extractUInt16(raw, 3, (short) 0);
         return block;
     }
 }

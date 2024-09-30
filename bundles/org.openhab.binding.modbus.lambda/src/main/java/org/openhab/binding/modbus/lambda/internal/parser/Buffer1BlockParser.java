@@ -13,30 +13,28 @@
 package org.openhab.binding.modbus.lambda.internal.parser;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.lambda.internal.dto.AmbientBlock;
+import org.openhab.binding.modbus.lambda.internal.dto.Buffer1Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses inverter modbus data into an Ambient Block
+ * Parses inverter modbus data into a Buffer Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
 @NonNullByDefault
-public class AmbientBlockParser extends AbstractBaseParser {
-    private final Logger logger = LoggerFactory.getLogger(AmbientBlockParser.class);
+public class Buffer1BlockParser extends AbstractBaseParser {
+    private final Logger logger = LoggerFactory.getLogger(Buffer1BlockParser.class);
 
-    public AmbientBlock parse(ModbusRegisterArray raw) {
-        logger.trace("AmbientBlockParser");
-        AmbientBlock block = new AmbientBlock();
-        block.ambientErrorNumber = extractUInt16(raw, 0, (short) 0);
-        block.ambientOperatorState = extractUInt16(raw, 1, (short) 0);
-        block.actualAmbientTemperature = extractUInt16(raw, 2, (short) 0);
-        block.averageAmbientTemperature = extractUInt16(raw, 3, (short) 0);
-        block.calculatedAmbientTemperature = extractUInt16(raw, 4, (short) 0);
+    public Buffer1Block parse(ModbusRegisterArray raw) {
+        logger.trace("Buffer1BlockParser");
+        Buffer1Block block = new Buffer1Block();
+
+        block.buffer1ActualHighTemperature = extractUInt16(raw, 2, (short) 0);
+        block.buffer1ActualLowTemperature = extractUInt16(raw, 3, (short) 0);
         return block;
     }
 }

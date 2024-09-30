@@ -4,10 +4,70 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+
+	<channel-type id="ambient-error-number-type">
+		<item-type>Number</item-type>
+		<label>Ambient Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ambient-operator-state-type">
+		<item-type>Number</item-type>
+		<label>Ambient Operator State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="actual-ambient-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Actual Ambient Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="average-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Ambient Temperature 1h</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="calculated-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Calculated Ambient Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-error-number-type">
+		<item-type>Number</item-type>
+		<label>E-Manager Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="emanager-operator-state-type">
+		<item-type>Number</item-type>
+		<label>E-Manager Operator State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+				<option value="4">OFFLINE</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="actual-power-type">
@@ -22,15 +82,47 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+
+	<channel-type id="heatpump1-t-flow-type">
+		<item-type unitHint="%">Number:Temperature</item-type>
+		<label>Heatpump 1 T-Flow</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
 	<channel-type id="boiler1-actual-high-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler 1 Actual High Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="boiler150-maximum-boiler-temperature-type">
+	<channel-type id="boiler1-actual-low-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler 1 Actual Low Temperature</label>
+		<state readOnly="f" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler1-maximum-boiler-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler 1 Maximum Boiler Temperature</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
+
+	<channel-type id="buffer1-actual-high-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer 1 Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer1-actual-low-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer 1 Actual Low Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer1-maximum-buffer-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Buffer 1 Maximum Buffer Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
 </thing:thing-descriptions>
