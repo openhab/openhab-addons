@@ -21,7 +21,8 @@ This binding provides two thing types:
 
 ## Discovery
 
-Auto-discovery is supported and will discover all heatpumps within an account and also detect the specific channels supported by the model.
+When the `account` bridge is setup, the binding will discover all heatpumps within that account and also detect the specific channels supported by the model.
+
 
 ## Bridge Configuration
 
