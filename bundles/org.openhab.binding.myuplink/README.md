@@ -26,7 +26,7 @@ When the `account` bridge is setup, the binding will discover all heatpumps with
 
 ## Bridge Configuration
 
-The following configuration parameters are available for the binding/bridge:
+The following configuration parameters are available for the bridge:
 
 | Configuration Parameter | Required | Description                                                                                                                                                                                 |
 |-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
