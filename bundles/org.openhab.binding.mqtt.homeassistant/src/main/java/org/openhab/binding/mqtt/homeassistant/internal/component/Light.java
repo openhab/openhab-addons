@@ -292,6 +292,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         colorTempValue = new NumberValue(min, max, BigDecimal.ONE, Units.MIRED);
 
         buildChannels();
+        finalizeChannels();
     }
 
     protected abstract void buildChannels();

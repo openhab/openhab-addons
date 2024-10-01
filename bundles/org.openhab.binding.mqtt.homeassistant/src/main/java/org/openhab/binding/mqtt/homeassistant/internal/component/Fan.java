@@ -184,6 +184,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
                     .build();
         }
+        finalizeChannels();
     }
 
     private boolean handlePercentageCommand(Command command) {

@@ -155,7 +155,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         // and add the types to the channelTypeProvider, like in the real Thing handler.
         final CountDownLatch latch = new CountDownLatch(1);
         ComponentDiscovered cd = (haID, c) -> {
-            haComponents.put(c.getGroupId(), c);
+            haComponents.put(c.getComponentId(), c);
             latch.countDown();
         };
 
