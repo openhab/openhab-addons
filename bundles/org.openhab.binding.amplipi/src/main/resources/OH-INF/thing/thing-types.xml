@@ -51,10 +51,15 @@
 		<description>A zone of the AmpliPi system</description>
 
 		<channels>
+			<channel typeId="system.power" id="power"/>
 			<channel typeId="system.volume" id="volume"/>
 			<channel typeId="system.mute" id="mute"/>
 			<channel typeId="source" id="source"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="id" type="integer" required="true">
@@ -79,10 +84,15 @@
 		<description>A group of the AmpliPi system</description>
 
 		<channels>
+			<channel typeId="system.power" id="power"/>
 			<channel typeId="system.volume" id="volume"/>
 			<channel typeId="system.mute" id="mute"/>
 			<channel typeId="source" id="source"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="id" type="integer" required="true">

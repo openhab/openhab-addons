@@ -1,0 +1,154 @@
+{
+    "state": {
+        "isLeftSteering": true,
+        "lastFetched": "2023-01-18T18:07:59.076Z",
+        "lastUpdatedAt": "2023-01-18T17:50:01Z",
+        "isLscSupported": true,
+        "range": 101,
+        "doorsState": {
+            "combinedSecurityState": "SECURED",
+            "leftFront": "CLOSED",
+            "leftRear": "CLOSED",
+            "rightFront": "CLOSED",
+            "rightRear": "CLOSED",
+            "combinedState": "CLOSED",
+            "hood": "CLOSED",
+            "trunk": "CLOSED"
+        },
+        "windowsState": {
+            "leftFront": "CLOSED",
+            "rightFront": "CLOSED",
+            "combinedState": "CLOSED"
+        },
+        "roofState": {
+            "roofState": "CLOSED",
+            "roofStateType": "SUN_ROOF"
+        },
+        "location": {
+            "coordinates": {
+                "latitude": 1.1,
+                "longitude": 2.2
+            },
+            "address": {
+                "formatted": "anonymousAddress"
+            },
+            "heading": -1
+        },
+        "currentMileage": 129898,
+        "requiredServices": [
+            {
+                "dateTime": "2024-07-01T00:00:00.000Z",
+                "type": "BRAKE_FLUID",
+                "status": "OK",
+                "description": "Next service due by the specified date."
+            },
+            {
+                "dateTime": "2024-07-01T00:00:00.000Z",
+                "type": "VEHICLE_CHECK",
+                "status": "OK",
+                "description": "Next vehicle check due after the specified distance or date."
+            }
+        ],
+        "checkControlMessages": [],
+        "chargingProfile": {
+            "chargingControlType": "WEEKLY_PLANNER",
+            "reductionOfChargeCurrent": {
+                "start": {
+                    "hour": 0,
+                    "minute": 0
+                },
+                "end": {
+                    "hour": 8,
+                    "minute": 0
+                }
+            },
+            "chargingMode": "IMMEDIATE_CHARGING",
+            "chargingPreference": "CHARGING_WINDOW",
+            "departureTimes": [
+                {
+                    "id": 1,
+                    "timeStamp": {
+                        "hour": 8,
+                        "minute": 0
+                    },
+                    "action": "DEACTIVATE",
+                    "timerWeekDays": []
+                },
+                {
+                    "id": 2,
+                    "timeStamp": {
+                        "hour": 3,
+                        "minute": 10
+                    },
+                    "action": "DEACTIVATE",
+                    "timerWeekDays": []
+                },
+                {
+                    "id": 3,
+                    "timeStamp": {
+                        "hour": 0,
+                        "minute": 0
+                    },
+                    "action": "DEACTIVATE",
+                    "timerWeekDays": []
+                },
+                {
+                    "id": 4,
+                    "action": "DEACTIVATE",
+                    "timerWeekDays": []
+                }
+            ],
+            "climatisationOn": false,
+            "chargingSettings": {
+                "targetSoc": 100,
+                "idcc": "NO_ACTION",
+                "hospitality": "NO_ACTION"
+            }
+        },
+        "electricChargingState": {
+            "chargingLevelPercent": 73,
+            "range": 101,
+            "isChargerConnected": false,
+            "chargingConnectionType": "CONDUCTIVE",
+            "chargingStatus": "INVALID",
+            "chargingTarget": 100
+        },
+        "combustionFuelLevel": null,
+        "driverPreferences": {
+            "lscPrivacyMode": "OFF"
+        },
+        "climateTimers": [
+            {
+                "isWeeklyTimer": false,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            }
+        ]
+    }
+}

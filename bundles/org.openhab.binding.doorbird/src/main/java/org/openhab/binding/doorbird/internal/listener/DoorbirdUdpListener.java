@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.doorbird.internal.api.DoorbirdSession;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +67,11 @@ public class DoorbirdUdpListener extends Thread {
     }
 
     public void shutdown() {
+        DatagramSocket socket = this.socket;
         if (socket != null) {
             socket.close();
             logger.debug("Listener closing listener socket");
-            socket = null;
+            this.socket = null;
         }
     }
 
@@ -112,6 +114,8 @@ public class DoorbirdUdpListener extends Thread {
             return;
         }
 
+        DoorbirdSession session = thingHandler.getSession();
+        String v2DecryptionKey = (session != null ? session.getDecryptionKey() : null);
         String userId = thingHandler.getUserId();
         String userPassword = thingHandler.getUserPassword();
         if (userId == null || userPassword == null) {
@@ -119,7 +123,7 @@ public class DoorbirdUdpListener extends Thread {
             return;
         }
         try {
-            event.decrypt(packet, userPassword);
+            event.decrypt(packet, userPassword, v2DecryptionKey);
         } catch (RuntimeException e) {
             // The libsodium library might generate a runtime exception if the packet is malformed
             logger.info("DoorbirdEvent got unhandled exception: {}", e.getMessage(), e);

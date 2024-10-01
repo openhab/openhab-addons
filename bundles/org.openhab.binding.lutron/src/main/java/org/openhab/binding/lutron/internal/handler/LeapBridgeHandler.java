@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -54,6 +57,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.config.LeapBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LeapDeviceDiscoveryService;
+import org.openhab.binding.lutron.internal.protocol.DeviceCommand;
 import org.openhab.binding.lutron.internal.protocol.FanSpeedType;
 import org.openhab.binding.lutron.internal.protocol.GroupCommand;
 import org.openhab.binding.lutron.internal.protocol.LutronCommandNew;
@@ -64,8 +68,10 @@ import org.openhab.binding.lutron.internal.protocol.leap.LeapMessageParserCallba
 import org.openhab.binding.lutron.internal.protocol.leap.Request;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Area;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.ButtonStatus;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.Device;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.OccupancyGroup;
+import org.openhab.binding.lutron.internal.protocol.leap.dto.Project;
 import org.openhab.binding.lutron.internal.protocol.leap.dto.ZoneStatus;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
 import org.openhab.core.library.types.StringType;
@@ -94,6 +100,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private static final long KEEPALIVE_TIMEOUT_SECONDS = 30;
 
     private static final String STATUS_INITIALIZING = "Initializing";
+    private static final String LUTRON_RADIORA_3_PROJECT = "Lutron RadioRA 3 Project";
 
     private final Logger logger = LoggerFactory.getLogger(LeapBridgeHandler.class);
 
@@ -101,6 +108,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private int reconnectInterval;
     private int heartbeatInterval;
     private int sendDelay;
+    private boolean isRadioRA3 = false;
 
     private @NonNullByDefault({}) SSLSocketFactory sslsocketfactory;
     private @Nullable SSLSocket sslsocket;
@@ -126,6 +134,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     private final Object zoneMapsLock = new Object();
 
     private @Nullable Map<Integer, List<Integer>> deviceButtonMap;
+    private Map<Integer, Integer> buttonToDevice = new HashMap<>();
     private final Object deviceButtonMapLock = new Object();
 
     private volatile boolean deviceDataLoaded = false;
@@ -305,9 +314,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         senderThread.start();
         this.senderThread = senderThread;
 
-        sendCommand(new LeapCommand(Request.getButtonGroups()));
-        queryDiscoveryData();
-        sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
+        sendCommand(new LeapCommand(Request.getProject()));
 
         logger.debug("Starting keepalive job with interval {}", heartbeatInterval);
         keepAliveJob = scheduler.scheduleWithFixedDelay(this::sendKeepAlive, heartbeatInterval, heartbeatInterval,
@@ -318,7 +325,11 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Called by connect() and discovery service to request fresh discovery data
      */
     public void queryDiscoveryData() {
-        sendCommand(new LeapCommand(Request.getDevices()));
+        if (!isRadioRA3) {
+            sendCommand(new LeapCommand(Request.getDevices()));
+        } else {
+            sendCommand(new LeapCommand(Request.getDevices(false)));
+        }
         sendCommand(new LeapCommand(Request.getAreas()));
         sendCommand(new LeapCommand(Request.getOccupancyGroups()));
     }
@@ -469,6 +480,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         logger.debug("No content in button group definition. Creating empty deviceButtonMap.");
         Map<Integer, List<Integer>> deviceButtonMap = new HashMap<>();
         synchronized (deviceButtonMapLock) {
+            buttonToDevice.clear();
             this.deviceButtonMap = deviceButtonMap;
             buttonDataLoaded = true;
         }
@@ -576,22 +588,52 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     @Override
     public void handleMultipleButtonGroupDefinition(List<ButtonGroup> buttonGroupList) {
         Map<Integer, List<Integer>> deviceButtonMap = new HashMap<>();
+        Map<Integer, Integer> buttonToDevice = new HashMap<>();
 
         for (ButtonGroup buttonGroup : buttonGroupList) {
             int parentDevice = buttonGroup.getParentDevice();
             logger.trace("Found ButtonGroup: {} parent device: {}", buttonGroup.getButtonGroup(), parentDevice);
             List<Integer> buttonList = buttonGroup.getButtonList();
             deviceButtonMap.put(parentDevice, buttonList);
+            for (Integer buttonId : buttonList) {
+                buttonToDevice.put(buttonId, parentDevice);
+                sendCommand(new LeapCommand(Request.subscribeButtonStatus(buttonId)));
+            }
         }
         synchronized (deviceButtonMapLock) {
             this.deviceButtonMap = deviceButtonMap;
+            this.buttonToDevice = buttonToDevice;
             buttonDataLoaded = true;
         }
         checkInitialized();
     }
 
     @Override
-    public void handleMultipleDeviceDefintion(List<Device> deviceList) {
+    public void handleDeviceDefinition(Device device) {
+        synchronized (zoneMapsLock) {
+            int deviceId = device.getDevice();
+            int zoneId = device.getZone();
+
+            if (zoneId > 0 && deviceId > 0) {
+                zoneToDevice.put(zoneId, deviceId);
+                deviceToZone.put(deviceId, zoneId);
+            }
+
+            if (deviceId == 1 || device.isThisDevice) {
+                setBridgeProperties(device);
+            }
+        }
+
+        checkInitialized();
+
+        LeapDeviceDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.processDeviceDefinitions(Arrays.asList(device));
+        }
+    }
+
+    @Override
+    public void handleMultipleDeviceDefinition(List<Device> deviceList) {
         synchronized (zoneMapsLock) {
             zoneToDevice.clear();
             deviceToZone.clear();
@@ -603,7 +645,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                     zoneToDevice.put(zoneid, deviceid);
                     deviceToZone.put(deviceid, zoneid);
                 }
-                if (deviceid == 1) { // ID 1 is the bridge
+                if (deviceid == 1 || device.isThisDevice) { // ID 1 is the bridge
                     setBridgeProperties(device);
                 }
             }
@@ -634,6 +676,69 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
     }
 
     @Override
+    public void handleProjectDefinition(Project project) {
+        isRadioRA3 = LUTRON_RADIORA_3_PROJECT.equals(project.productType);
+
+        if (project.masterDeviceList.devices.length > 0 && project.masterDeviceList.devices[0].href != null) {
+            sendCommand(new LeapCommand(Request.getDevices(true)));
+        }
+
+        sendCommand(new LeapCommand(Request.getButtonGroups()));
+        queryDiscoveryData();
+
+        if (!isRadioRA3) {
+            logger.debug("Caseta Bridge Detected: {}", project.productType);
+        } else {
+            logger.debug("Detected a RadioRA 3 System: {}", project.productType);
+            sendCommand(new LeapCommand(Request.subscribeZoneStatus()));
+        }
+        sendCommand(new LeapCommand(Request.subscribeOccupancyGroupStatus()));
+    }
+
+    /**
+     * Notify child thing handler of a button update.
+     */
+    @Override
+    public void handleButtonStatus(ButtonStatus buttonStatus) {
+        int buttonId = buttonStatus.getButton();
+        logger.trace("Button: {} eventType: {}", buttonId, buttonStatus.buttonEvent.eventType);
+        Entry<Integer, Integer> entry = buttonToDeviceAndIndex(buttonId);
+
+        if (entry == null) {
+            logger.debug("Unable to map button {} to device", buttonId);
+            return;
+        }
+        int integrationId = entry.getKey();
+        int index = entry.getValue();
+        logger.trace("Button {} mapped to device id {}, index {}", buttonId, integrationId, index);
+
+        int action;
+        if ("Press".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_PRESS;
+        } else if ("Release".equals(buttonStatus.buttonEvent.eventType)) {
+            action = DeviceCommand.ACTION_RELEASE;
+        } else {
+            logger.warn("Unrecognized button event {} for button {} on device {}", buttonStatus.buttonEvent.eventType,
+                    index, integrationId);
+            return;
+        }
+
+        // dispatch update to proper thing handler
+        LutronHandler handler = findThingHandler(integrationId);
+        if (handler != null) {
+            try {
+                handler.handleUpdate(LutronCommandType.DEVICE, String.valueOf(index), String.valueOf(action));
+            } catch (NumberFormatException e) {
+                logger.warn("Number format exception parsing update");
+            } catch (RuntimeException e) {
+                logger.warn("Runtime exception while processing update");
+            }
+        } else {
+            logger.debug("No thing configured for integration ID {}", integrationId);
+        }
+    }
+
+    @Override
     public void validMessageReceived(String communiqueType) {
         reconnectTaskCancel(true); // Got a good message, so cancel reconnect task.
     }
@@ -642,7 +747,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
      * Set informational bridge properties from the Device entry for the hub/repeater
      */
     private void setBridgeProperties(Device device) {
-        if (device.getDevice() == 1 && device.repeaterProperties != null) {
+        if ((device.getDevice() == 1 && device.repeaterProperties != null) || (device.isThisDevice)) {
             Map<String, String> properties = editProperties();
             if (device.name != null) {
                 properties.put(PROPERTY_PRODTYP, device.name);
@@ -724,6 +829,22 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
         }
         synchronized (zoneMapsLock) {
             return deviceToZone.get(device);
+        }
+    }
+
+    private @Nullable Entry<Integer, Integer> buttonToDeviceAndIndex(int buttonId) {
+        synchronized (deviceButtonMapLock) {
+            Integer deviceId = buttonToDevice.get(buttonId);
+            if (deviceId == null) {
+                return null;
+            }
+            List<Integer> buttonList = deviceButtonMap.get(deviceId);
+            int buttonIndex = buttonList.indexOf(buttonId);
+            if (buttonIndex == -1) {
+                return null;
+            }
+
+            return new SimpleEntry(deviceId, buttonIndex + 1);
         }
     }
 

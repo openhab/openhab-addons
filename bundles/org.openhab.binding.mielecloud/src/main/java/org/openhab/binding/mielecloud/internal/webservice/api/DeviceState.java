@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,7 +181,7 @@ public class DeviceState {
         Optional<Integer> targetTemperature = getTargetTemperature(0);
         Optional<Integer> currentTemperature = getTemperature(0);
 
-        if (!targetTemperature.isPresent() || !currentTemperature.isPresent()) {
+        if (targetTemperature.isEmpty() || currentTemperature.isEmpty()) {
             return Optional.empty();
         }
 
@@ -452,7 +452,7 @@ public class DeviceState {
         Optional<Boolean> doorState = getDoorState();
         Optional<Boolean> failure = device.flatMap(Device::getState).flatMap(State::getSignalFailure);
 
-        if (!doorState.isPresent() || !failure.isPresent()) {
+        if (doorState.isEmpty() || failure.isEmpty()) {
             return Optional.empty();
         }
 
@@ -518,8 +518,8 @@ public class DeviceState {
      * @return The raw device type.
      */
     public DeviceType getRawType() {
-        return device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
-                .orElse(DeviceType.UNKNOWN);
+        return Objects.requireNonNull(device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
+                .orElse(DeviceType.UNKNOWN));
     }
 
     /**

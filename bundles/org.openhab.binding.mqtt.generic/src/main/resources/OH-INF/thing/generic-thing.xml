@@ -29,7 +29,7 @@
 				<description>Payload of the 'Availability Topic', when the device is *not* available. Default: 'OFF'</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="transformationPattern" type="text">
+			<parameter name="transformationPattern" type="text" multiple="true">
 				<label>Availability Payload Transformations</label>
 				<description>
 					<![CDATA[
@@ -37,7 +37,8 @@
 					A transformation example for a received JSON would be "JSONPATH:$.status" for
 					a json {status: "Online"}.
 
-					You can chain transformations by separating them with the intersection character ∩.
+					You can chain transformations by listing each transformation on a separate line, or
+					by separating them with the intersection character ∩.
 					]]>
 				</description>
 				<advanced>true</advanced>

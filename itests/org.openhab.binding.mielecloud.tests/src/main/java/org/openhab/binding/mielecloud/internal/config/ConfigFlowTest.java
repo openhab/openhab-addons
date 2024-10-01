@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,8 +61,8 @@ public class ConfigFlowTest extends AbstractConfigFlowTest {
             Thing bridge = getThingRegistry().get(MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID);
             assertNotNull(bridge);
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof MieleBridgeHandler) {
-                ((MieleBridgeHandler) handler).onConnectionAlive();
+            if (handler instanceof MieleBridgeHandler mieleBridgeHandler) {
+                mieleBridgeHandler.onConnectionAlive();
             }
             return null;
         }).when(webservice).addConnectionStatusListener(any());

@@ -26,26 +26,36 @@
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
 		<item-type>Number:Volume</item-type>
 		<label>Remaining Fuel</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="estimated-fuel-l-100km-channel">
+		<item-type>Number</item-type>
+		<label>Estimated Fuel Consumption l/100km</label>
+		<state pattern="%.2f l/100km" readOnly="true"/>
+	</channel-type>
+	<channel-type id="estimated-fuel-mpg-channel">
+		<item-type>Number</item-type>
+		<label>Estimated Fuel Consumption mpg</label>
+		<state pattern="%.2f mpg" readOnly="true"/>
+	</channel-type>
 	<channel-type id="range-radius-electric-channel">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range Radius</label>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-radius-fuel-channel">
 		<item-type>Number:Length</item-type>
 		<label>Fuel Range Radius</label>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-radius-hybrid-channel">
 		<item-type>Number:Length</item-type>
 		<label>Hybrid Range Radius</label>
-		<state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

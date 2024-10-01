@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -156,7 +156,9 @@ public class CircuitScheduler {
     }
 
     /**
-     * Removes all {@link SensorJob} of a specific {@link Device} with the given {@link DSID}.
+     * Removes all {@link org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.SensorJob}
+     * of a specific {@link org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device} with the
+     * given {@link DSID}.
      *
      * @param dSID of the device
      */

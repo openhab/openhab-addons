@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class LxUuid {
     private final String uuid;
     private final String uuidOriginal;
 
-    public static final JsonDeserializer<LxUuid> DESERIALIZER = new JsonDeserializer<LxUuid>() {
+    public static final JsonDeserializer<LxUuid> DESERIALIZER = new JsonDeserializer<>() {
         @Override
         public LxUuid deserialize(JsonElement json, Type type, JsonDeserializationContext context)
                 throws JsonParseException {
@@ -56,7 +56,7 @@ public class LxUuid {
         this.uuid = init(uuid);
     }
 
-    public LxUuid(byte data[], int offset) {
+    public LxUuid(byte[] data, int offset) {
         String id = String.format("%08x-%04x-%04x-%02x%02x%02x%02x%02x%02x%02x%02x",
                 ByteBuffer.wrap(data, offset, 4).order(ByteOrder.LITTLE_ENDIAN).getInt(),
                 ByteBuffer.wrap(data, offset + 4, 2).order(ByteOrder.LITTLE_ENDIAN).getShort(),

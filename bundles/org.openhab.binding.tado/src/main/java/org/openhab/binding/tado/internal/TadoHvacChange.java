@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,15 +21,15 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
-import org.openhab.binding.tado.internal.api.model.Overlay;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
 import org.openhab.binding.tado.internal.builder.TerminationConditionBuilder;
 import org.openhab.binding.tado.internal.builder.ZoneSettingsBuilder;
 import org.openhab.binding.tado.internal.builder.ZoneStateProvider;
 import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.Overlay;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,8 +74,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     private static final String THING_TYPE_UID = "upnpcontrol:upnprenderer";
     private static final String THING_UID = THING_TYPE_UID + ":mockrenderer";
 
-    private static final String LAST_CHANGE_HEADER = "<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/AVT/\">"
-            + "<InstanceID val=\"0\">";
+    private static final String LAST_CHANGE_HEADER = """
+            <Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">\
+            <InstanceID val="0">\
+            """;
     private static final String LAST_CHANGE_FOOTER = "</InstanceID></Event>";
     private static final String AV_TRANSPORT_URI = "<AVTransportURI val=\"";
     private static final String AV_TRANSPORT_URI_METADATA = "<AVTransportURIMetaData val=\"";
@@ -363,7 +365,7 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
         // Register a media queue
         expectLastChangeOnSetAVTransportURI(true, 2);
-        List<UpnpEntry> startList = new ArrayList<UpnpEntry>();
+        List<UpnpEntry> startList = new ArrayList<>();
         startList.add(requireNonNull(upnpEntryQueue.get(2)));
         UpnpEntryQueue startQueue = new UpnpEntryQueue(startList, "54321");
         handler.registerQueue(requireNonNull(startQueue));

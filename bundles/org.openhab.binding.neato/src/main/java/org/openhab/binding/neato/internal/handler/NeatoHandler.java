@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,10 +153,10 @@ public class NeatoHandler extends BaseThingHandler {
         Details details = neatoState.getDetails();
         if (details != null) {
             updateState(CHANNEL_BATTERY, new DecimalType(details.getCharge()));
-            updateState(CHANNEL_DOCKHASBEENSEEN, details.getDockHasBeenSeen() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_ISCHARGING, details.getIsCharging() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_ISSCHEDULED, details.getIsScheduleEnabled() ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_ISDOCKED, details.getIsDocked() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_DOCKHASBEENSEEN, OnOffType.from(details.getDockHasBeenSeen()));
+            updateState(CHANNEL_ISCHARGING, OnOffType.from(details.getIsCharging()));
+            updateState(CHANNEL_ISSCHEDULED, OnOffType.from(details.getIsScheduleEnabled()));
+            updateState(CHANNEL_ISDOCKED, OnOffType.from(details.getIsDocked()));
         }
 
         Cleaning cleaning = neatoState.getCleaning();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,8 @@ public class FineOffsetWeatherStationBindingConstants {
     public static final ChannelTypeUID CHANNEL_TYPE_LIGHTNING_TIME = new ChannelTypeUID(BINDING_ID, "lightning-time");
     public static final ChannelTypeUID CHANNEL_TYPE_LIGHTNING_DISTANCE = new ChannelTypeUID(BINDING_ID,
             "lightning-distance");
+
+    public static final ChannelTypeUID CHANNEL_TYPE_FREE_HEAP_SIZE = new ChannelTypeUID(BINDING_ID, "free-heap-size");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY, THING_TYPE_SENSOR);
 

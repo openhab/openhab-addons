@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,9 +81,9 @@ public final class HttpUtil {
     private static String getHttpErrorMessageFromCloudResponse(Response response) {
         String exceptionMessage = "HTTP error " + response.getStatus() + ": " + response.getReason();
 
-        if (response instanceof ContentResponse) {
+        if (response instanceof ContentResponse contentResponse) {
             try {
-                ErrorMessage errorMessage = ErrorMessage.fromJson(((ContentResponse) response).getContentAsString());
+                ErrorMessage errorMessage = ErrorMessage.fromJson(contentResponse.getContentAsString());
                 exceptionMessage += "\nCloud returned message: " + errorMessage.getMessage();
             } catch (MieleSyntaxException e) {
                 exceptionMessage += "\nCloud returned invalid message.";

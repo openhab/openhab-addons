@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.lightcontrol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerWithPowerMeter;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -22,7 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author Stefan Kästle - Initial contribution
  */
 @NonNullByDefault
-public class LightControlHandler extends AbstractPowerSwitchHandler {
+public class LightControlHandler extends AbstractPowerSwitchHandlerWithPowerMeter {
 
     public LightControlHandler(Thing thing) {
         super(thing);

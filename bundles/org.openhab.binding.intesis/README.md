@@ -19,11 +19,12 @@ Intesis devices do not support auto discovery.
 
 The binding uses the following configuration parameters.
 
-| Parameter | Valid for ThingType | Description                                                    |
-|-----------|---------------------|----------------------------------------------------------------|
-| ipAddress | Both                | IP-Address of the device                                       |
-| password  | IntesisHome         | Password to login to the local webserver of IntesisHome device |
-| port      | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
+| Parameter        | Valid for ThingType | Description                                                    |
+|------------------|---------------------|----------------------------------------------------------------|
+| ipAddress        | Both                | IP-Address of the device                                       |
+| password         | IntesisHome         | Password to login to the local webserver of IntesisHome device |
+| port             | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
+| pollingInterval  | Both                | Interval to retrieve updates from the connected devices        |
 
 ## Channels
 
@@ -90,12 +91,12 @@ sitemap intesishome label="My AC control" {
           Switch item=acVanesUpDown    icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
           Switch item=acVanesLeftRight icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
           Setpoint item=acSetPoint     icon="temperature"      minValue=16 maxValue=28 step=1
-          Text item=acAmbientTemp      icon="temperature" 
+          Text item=acAmbientTemp      icon="temperature"
           Text item=acOutdoorTemp      icon="temperature"
           Text item=acErrorStatus
           Text item=acErrorCode
           Text item=acWifiSignal       icon="qualityofservice"
-           
+
     }
 }
 ```

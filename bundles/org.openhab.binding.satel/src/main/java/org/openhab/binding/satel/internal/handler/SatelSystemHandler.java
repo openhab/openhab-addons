@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.satel.internal.handler;
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SatelSystemHandler extends SatelStateThingHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SYSTEM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SYSTEM);
 
     private static final Set<String> STATUS_CHANNELS = Stream
             .of(CHANNEL_DATE_TIME, CHANNEL_SERVICE_MODE, CHANNEL_TROUBLES, CHANNEL_TROUBLES_MEMORY,
@@ -82,8 +82,9 @@ public class SatelSystemHandler extends SatelStateThingHandler {
             return;
         }
         updateState(CHANNEL_DATE_TIME,
-                event.getIntegraTime().map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
-                        .orElse(UnDefType.UNDEF));
+                Objects.requireNonNull(event.getIntegraTime()
+                        .map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
+                        .orElse(UnDefType.UNDEF)));
         updateSwitch(CHANNEL_SERVICE_MODE, event.inServiceMode());
         updateSwitch(CHANNEL_TROUBLES, event.troublesPresent());
         updateSwitch(CHANNEL_TROUBLES_MEMORY, event.troublesMemory());
@@ -112,8 +113,8 @@ public class SatelSystemHandler extends SatelStateThingHandler {
                 DateTimeType dateTime = null;
                 if (command instanceof StringType) {
                     dateTime = DateTimeType.valueOf(command.toString());
-                } else if (command instanceof DateTimeType) {
-                    dateTime = (DateTimeType) command;
+                } else if (command instanceof DateTimeType dateTimeCommand) {
+                    dateTime = dateTimeCommand;
                 }
                 if (dateTime != null) {
                     return Optional.of(new SetClockCommand(dateTime.getZonedDateTime()

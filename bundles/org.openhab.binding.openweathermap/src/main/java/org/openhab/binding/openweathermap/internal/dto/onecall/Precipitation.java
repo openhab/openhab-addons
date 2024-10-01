@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,12 +15,7 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
- * Settings:
- * Annotation Style: GSON
- * Use primitive types
- * Use double numbers
- * allow additional properties
+ * Holds the data from the <code>rain</code> and <code>snow</code> object of the JSON response of the One Call APIs.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -30,9 +25,5 @@ public class Precipitation {
 
     public double get1h() {
         return oneHour;
-    }
-
-    public void set1h(double oneHour) {
-        this.oneHour = oneHour;
     }
 }

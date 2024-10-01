@@ -21,6 +21,10 @@
 			<channel id="emeter_tariff_indicator" typeId="tariffIndicatorType"/>
 			<channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
 			<channel id="emeter_actual_production" typeId="actualProductionType"/>
+			<channel id="emeter_actual_demand" typeId="actualDeliveryBelgiumType"/>
+			<channel id="emeter_maximum_demand_current_month" typeId="actualDeliveryBelgiumType">
+				<label>Power Demand Current Month</label>
+			</channel>
 			<channel id="emeter_switch_position" typeId="switchPositionType"/>
 			<channel id="emeter_fuse_threshold_a" typeId="actualFuseThresholdAType"/>
 			<channel id="emeter_treshold_kw" typeId="actualTresholdkWType"/>
@@ -37,6 +41,11 @@
 			<channel id="emeter_instant_voltage_l2" typeId="instantVoltageL2Type"/>
 			<channel id="emeter_instant_voltage_l3" typeId="instantVoltageL3Type"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

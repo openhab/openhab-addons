@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         if (!name.contains("wled")) {
             return null;
         }
-        String address[] = service.getURLs();
+        String[] address = service.getURLs();
         if ((address == null) || address.length < 1) {
             logger.debug("WLED discovered with empty IP address-{}", service);
             return null;

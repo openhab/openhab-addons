@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,7 +92,7 @@ public interface MieleWebservice extends AutoCloseable {
      * Performs a PUT operation setting the active program.
      *
      * @param deviceId ID of the device to trigger the action for.
-     * @param program The program to activate.
+     * @param programId The program to activate.
      * @throws MieleWebserviceException if an error occurs during webservice requests or content parsing.
      * @throws AuthorizationFailedException if the authorization against the webservice failed.
      * @throws TooManyRequestsException if too many requests have been made against the webservice recently.

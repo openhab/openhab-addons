@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     private String preset;
 
     @XStreamImplicit(itemFieldName = "appliance")
-    private List<String> locationAppliances = new ArrayList<String>();
+    private List<String> locationAppliances = new ArrayList<>();
 
     @XStreamImplicit(itemFieldName = "point_log", keyFieldName = "type")
     private Logs pointLogs;

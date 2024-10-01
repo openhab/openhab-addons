@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,14 +21,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NikoHomeControlCommunication} class is an abstract class representing the communication objects with the
- * Niko Home Control System. {@link NikoHomeControlCommunication1} or {@link NikoHomeControlCommunication2} should be
+ * Niko Home Control System.
+ * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1} or
+ * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2} should be
  * used for the respective version of Niko Home Control.
  * <ul>
  * <li>Start and stop communication with the Niko Home Control System.
@@ -46,7 +46,10 @@ public abstract class NikoHomeControlCommunication {
 
     protected final Map<String, NhcAction> actions = new ConcurrentHashMap<>();
     protected final Map<String, NhcThermostat> thermostats = new ConcurrentHashMap<>();
-    protected final Map<String, NhcEnergyMeter> energyMeters = new ConcurrentHashMap<>();
+    protected final Map<String, NhcMeter> meters = new ConcurrentHashMap<>();
+    protected final Map<String, NhcAccess> accessDevices = new ConcurrentHashMap<>();
+    protected final Map<String, NhcVideo> videoDevices = new ConcurrentHashMap<>();
+    protected final Map<String, NhcAlarm> alarmDevices = new ConcurrentHashMap<>();
 
     protected final NhcControllerEvent handler;
 
@@ -96,8 +99,6 @@ public abstract class NikoHomeControlCommunication {
      */
     public synchronized void restartCommunication() {
         resetCommunication();
-
-        logger.debug("restart communication from thread {}", Thread.currentThread().getId());
 
         startCommunication();
     }
@@ -150,7 +151,7 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Return all actions in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcAction}></code>
+     * @return <code>Map&lt;String, {@link NhcAction}></code>
      */
     public Map<String, NhcAction> getActions() {
         return actions;
@@ -159,19 +160,46 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Return all thermostats in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcThermostat}></code>
+     * @return <code>Map&lt;String, {@link NhcThermostat}></code>
      */
     public Map<String, NhcThermostat> getThermostats() {
         return thermostats;
     }
 
     /**
-     * Return all energyMeters meters in the Niko Home Control Controller.
+     * Return all meters in the Niko Home Control Controller.
      *
-     * @return <code>Map&ltString, {@link NhcEnergyMeter}></code>
+     * @return <code>Map&ltString, {@link NhcMeter}></code>
      */
-    public Map<String, NhcEnergyMeter> getEnergyMeters() {
-        return energyMeters;
+    public Map<String, NhcMeter> getMeters() {
+        return meters;
+    }
+
+    /**
+     * Return all access devices in the Niko Home Control Controller.
+     *
+     * @return <code>Map&ltString, {@link NhcAccess}></code>
+     */
+    public Map<String, NhcAccess> getAccessDevices() {
+        return accessDevices;
+    }
+
+    /**
+     * Return all video devices in the Niko Home Control Controller.
+     *
+     * @return <code>Map&ltString, {@link NhcVideo}></code>
+     */
+    public Map<String, NhcVideo> getVideoDevices() {
+        return videoDevices;
+    }
+
+    /**
+     * Return all alarm devices in the Niko Home Control Controller.
+     *
+     * @return <code>Map&lt;String, {@link NhcAlarm}></code>
+     */
+    public Map<String, NhcAlarm> getAlarmDevices() {
+        return alarmDevices;
     }
 
     /**
@@ -200,16 +228,129 @@ public abstract class NikoHomeControlCommunication {
     public abstract void executeThermostat(String thermostatId, int overruleTemp, int overruleTime);
 
     /**
-     * Start retrieving energy meter data from Niko Home Control.
+     * Query meter for energy, gas consumption or water production/consumption data. The query will update the total
+     * production/consumption and production/consumption from the start of the day through the meterReadingEvent
+     * callback in {@link NhcMeterEvent}.
      *
+     * @param meterId
      */
-    public void startEnergyMeter(String energyMeterId) {
+    public abstract void executeMeter(String meterId);
+
+    /**
+     * Start retrieving energy meter data from Niko Home Control. The method is used to regularly retrigger the
+     * information flow. It can be left empty in concrete classes if the power data is flowing continuously.
+     *
+     * @param meterId
+     */
+    public void startMeterLive(String meterId) {
+        NhcMeter meter = getMeters().get(meterId);
+        if (meter != null) {
+            meter.startMeterLive();
+        }
+    }
+
+    /**
+     * Retrigger retrieving energy meter data from Niko Home Control. This is used if the power data does not continue
+     * flowing automatically and needs to be retriggered at regular intervals.
+     *
+     * @param meterId
+     */
+    public abstract void retriggerMeterLive(String meterId);
+
+    /**
+     * Stop retrieving energy meter data from Niko Home Control. This method can be used to stop a scheduled retrigger
+     * of the information flow, as scheduled in {{@link #startMeterLive(String)}.
+     *
+     * @param meterId
+     */
+    public void stopMeterLive(String meterId) {
+        NhcMeter meter = getMeters().get(meterId);
+        if (meter != null) {
+            meter.stopMeterLive();
+        }
     };
 
     /**
-     * Stop retrieving energy meter data from Niko Home Control.
+     * Start retrieving meter data from Niko Home Control at a regular interval.
      *
+     * @param meterId
+     * @param refresh reading frequency in minutes
      */
-    public void stopEnergyMeter(String energyMeterId) {
-    };
+    public void startMeter(String meterId, int refresh) {
+        NhcMeter meter = getMeters().get(meterId);
+        if (meter != null) {
+            meter.startMeter(refresh);
+        }
+    }
+
+    /**
+     * Stop retrieving meter data from Niko Home Control at a regular interval.
+     */
+    public void stopMeter(String meterId) {
+        NhcMeter meter = getMeters().get(meterId);
+        if (meter != null) {
+            meter.stopMeter();
+        }
+    }
+
+    /**
+     * Stop retrieving meter data from Niko Home Control at a regular interval for all meters.
+     */
+    public void stopAllMeters() {
+        for (String meterId : getMeters().keySet()) {
+            stopMeter(meterId);
+            stopMeterLive(meterId);
+        }
+    }
+
+    /**
+     * Execute a bell command on an access control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeAccessBell(String accessId) {
+    }
+
+    /**
+     * Execute a bell command on video control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     * @param buttonIndex
+     */
+    public void executeVideoBell(String accessId, int buttonIndex) {
+    }
+
+    /**
+     * Switches state ring and come on access control device (turns on if off and off if on) by sending it to Niko Home
+     * Control.
+     *
+     * @param accessId
+     * @param ringAndComeIn status
+     */
+    public void executeAccessRingAndComeIn(String accessId, boolean ringAndComeIn) {
+    }
+
+    /**
+     * Execute an unlock command on an access control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeAccessUnlock(String accessId) {
+    }
+
+    /**
+     * Execute an arm command on an alarm control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeArm(String alarmId) {
+    }
+
+    /**
+     * Execute an disarm command on an alarm control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeDisarm(String alarmId) {
+    }
 }

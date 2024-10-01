@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,6 @@ public class GatewayPayloadParser {
                 // below
                 // The payload length (might depend on format version ) is validated by parser.parse call
                 throw new IllegalArgumentException("Manufacturerer data is too short");
-
             }
             if ((bytes[4] & 0xff) != 0xff) {
                 logger.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",
@@ -170,7 +169,6 @@ public class GatewayPayloadParser {
         if (payloadIntermediate == null) {
             throw new JsonSyntaxException("JSON parsing failed");
         }
-        GatewayPayload payload = new GatewayPayload(payloadIntermediate);
-        return payload;
+        return new GatewayPayload(payloadIntermediate);
     }
 }

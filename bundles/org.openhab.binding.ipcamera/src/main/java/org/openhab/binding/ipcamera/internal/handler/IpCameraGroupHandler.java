@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,14 +50,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Matthew Skinner - Initial contribution
  */
-
 @NonNullByDefault
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpService httpService;
     public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
-    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
+    public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<>(2);
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
     private @Nullable ScheduledFuture<?> pollCameraGroupJob = null;
     private @Nullable GroupServlet servlet;

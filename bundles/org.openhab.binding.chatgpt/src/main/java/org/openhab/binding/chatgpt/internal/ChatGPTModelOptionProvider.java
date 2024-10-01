@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.chatgpt.internal;
+
+import static org.openhab.binding.chatgpt.internal.ChatGPTBindingConstants.CHANNEL_TYPE_UID_CHAT;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ import org.openhab.core.config.core.ConfigOptionProvider;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link ChatGPTModelOptionProvider} provides the available models from OpenAI as options for the channel
@@ -31,6 +35,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChatGPTModelOptionProvider.class, ConfigOptionProvider.class })
 @NonNullByDefault
 public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOptionProvider {
 
@@ -39,15 +44,16 @@ public class ChatGPTModelOptionProvider implements ThingHandlerService, ConfigOp
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        if ("model".equals(param)) {
-            List<ParameterOption> options = new ArrayList<>();
-            if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
-                chatGPTHandler.getModels().forEach(model -> options.add(new ParameterOption(model, model)));
+        if (CHANNEL_TYPE_UID_CHAT.getAsString().equals(uri.toString())) {
+            if ("model".equals(param)) {
+                List<ParameterOption> options = new ArrayList<>();
+                if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
+                    chatGPTHandler.getModels().forEach(model -> options.add(new ParameterOption(model, model)));
+                }
+                return options;
             }
-            return options;
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override

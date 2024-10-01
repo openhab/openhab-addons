@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ public interface VelbusPacketListener {
      * This method is called whenever the state of the given relay has changed.
      *
      * @param packet The bytes of the received packet.
+     * @return false if handler is disposed, otherwise true.
      */
-    void onPacketReceived(byte[] packet);
+    boolean onPacketReceived(byte[] packet);
 }

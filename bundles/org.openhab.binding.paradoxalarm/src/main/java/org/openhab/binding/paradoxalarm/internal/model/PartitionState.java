@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,16 @@ package org.openhab.binding.paradoxalarm.internal.model;
  */
 public class PartitionState {
 
+    private static final String ARMED = "Armed";
+    private static final String DISARMED = "Disarmed";
+    private static final String IN_ALARM = "InAlarm";
+
+    private static final String ARMED_IN_NO_ENTRY = "NoEntry Armed";
+    private static final String ARMED_IN_STAY = "Stay Armed";
+    private static final String ARMED_IN_AWAY = "Away Armed";
+    private static final String FIRE_ALARM = "Fire Alarm";
+    private static final String AUDIBLE_ALARM = "Audible Alarm";
+    private static final String SILENT_ALARM = "Silent Alarm";
     private boolean isArmed;
     private boolean isArmedInAway;
     private boolean isArmedInStay;
@@ -47,11 +57,35 @@ public class PartitionState {
     private boolean areAllZoneclosed;
 
     public String getMainState() {
-        if (isInAlarm) {
-            return "InAlarm";
+        if (isInAlarm || isInSilentAlarm || isInAudibleAlarm || isInFireAlarm) {
+            return IN_ALARM;
         } else {
-            return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? "Armed" : "Disarmed";
+            return isArmed || isArmedInAway || isArmedInStay || isArmedInNoEntry ? ARMED : DISARMED;
         }
+    }
+
+    public String getDetailedState() {
+        if (isInAlarm) {
+            if (isInSilentAlarm) {
+                return SILENT_ALARM;
+            } else if (isInAudibleAlarm) {
+                return AUDIBLE_ALARM;
+            } else if (isInFireAlarm) {
+                return FIRE_ALARM;
+            }
+            return IN_ALARM;
+        } else if (isArmed) {
+            if (isArmedInAway) {
+                return ARMED_IN_AWAY;
+            } else if (isArmedInStay) {
+                return ARMED_IN_STAY;
+            } else if (isArmedInNoEntry) {
+                return ARMED_IN_NO_ENTRY;
+            }
+            return ARMED;
+        }
+
+        return DISARMED;
     }
 
     @Override

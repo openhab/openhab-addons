@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 public class P1TelegramParserTest {
 
     // @formatter:off
-    public static final List<Object[]> data() {
+    public static List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "ace4000", 59, 0},
             { "dsmr_40", 39, 0},

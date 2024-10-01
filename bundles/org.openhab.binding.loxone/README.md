@@ -73,7 +73,7 @@ There can be following reasons why Miniserver status is `OFFLINE`:
   - _Internal error_
     - Probably a code defect, collect debug data and submit an issue. Binding will try to reconnect, but with unknown chance for success.
   - _Other_
-    - An exception occured and its details will be displayed
+    - An exception occurred and its details will be displayed
 - **Communication Error**
   - _Error communicating with Miniserver_
     - I/O error occurred during established communication with the Miniserver, most likely due to network connectivity issues, Miniserver going offline or Loxone Config is uploading a new configuration. A reconnect attempt will be made soon. Please consult detailed message against one of the following:
@@ -84,7 +84,7 @@ There can be following reasons why Miniserver status is `OFFLINE`:
   - _Timeout due to no activity_
     - Miniserver closed connection because there was no activity from binding. It should not occur under normal conditions, as it is prevented by sending keep-alive messages from the binding to the Miniserver. By default Miniserver's timeout is 5 minutes and period between binding's keep-alive messages is 4 minutes. If you see this error, try changing the keep-alive period in binding's configuration to a smaller value.
   - _Other_
-    - An exception occured and its details will be displayed
+    - An exception occurred and its details will be displayed
 
 ### Security
 
@@ -200,7 +200,7 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-```text
+```ini
 keepAlivePeriod=120
 ```
 

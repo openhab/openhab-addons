@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,58 +69,55 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         String option;
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                // Set Filter Speed % min and max speeds
-                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT);
-                if (ch != null) {
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED)))
-                            .withMaximum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED)))
-                            .build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            // Set Filter Speed % min and max speeds
+            Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT);
+            if (ch != null) {
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINSPEED)))
+                        .withMaximum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXSPEED)))
+                        .withPattern("%d %%").withStep(new BigDecimal(5)).withReadOnly(false).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+            }
+
+            // Set Filter Speed RPM min and max speeds
+            ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM);
+            if (ch != null) {
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINRPM)))
+                        .withMaximum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM)))
+                        .withPattern("%d rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+            }
+
+            // Set Filter Speed States
+            ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT);
+            if (ch != null) {
+                options.add(new StateOption("0", "Off"));
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_LOWSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Low"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MEDSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Medium"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_HIGHSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "High"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_CUSTOMSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Custom"));
                 }
 
-                // Set Filter Speed RPM min and max speeds
-                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM);
-                if (ch != null) {
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MINRPM)))
-                            .withMaximum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM)))
-                            .build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
-                }
-
-                // Set Filter Speed States
-                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT);
-                if (ch != null) {
-                    options.add(new StateOption("0", "Off"));
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_LOWSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Low"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_MEDSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Medium"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_HIGHSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "High"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_FILTER_CUSTOMSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Custom"));
-                    }
-
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withOptions(options).build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
-                }
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withOptions(options).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
             }
         }
     }
@@ -131,53 +128,50 @@ public class HaywardFilterHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
-                String thingSystemID = getThing().getUID().getId();
-                for (int i = 0; i < systemIDs.size(); i++) {
-                    if (systemIDs.get(i).equals(thingSystemID)) {
-                        // Valve Position
-                        data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            systemIDs = bridgehandler.evaluateXPath("//Filter/@systemId", xmlResponse);
+            String thingSystemID = getThing().getUID().getId();
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Valve Position
+                    data = bridgehandler.evaluateXPath("//Filter/@valvePosition", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_VALVEPOSITION, data.get(i));
 
-                        // Speed percent
-                        data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT, data.get(i));
+                    // Speed percent
+                    data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT, data.get(i));
 
-                        // Speed rpm
-                        String filterMaxRpm = getThing().getProperties()
-                                .get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM);
-                        if (filterMaxRpm != null) {
-                            Integer rpmSpeed = (Integer.parseInt(data.get(i))) * (Integer.parseInt(filterMaxRpm)) / 100;
-                            updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM, rpmSpeed.toString());
-                        }
-
-                        if (data.get(i).equals("0")) {
-                            updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
-                        } else {
-                            updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
-                        }
-
-                        // Speed Select
-                        data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT, data.get(i));
-
-                        // State
-                        data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(i));
-
-                        // lastSpeed
-                        data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
-                        channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i)));
+                    // Speed rpm
+                    String filterMaxRpm = getThing().getProperties()
+                            .get(HaywardBindingConstants.PROPERTY_FILTER_MAXRPM);
+                    if (filterMaxRpm != null) {
+                        Integer rpmSpeed = (Integer.parseInt(data.get(i))) * (Integer.parseInt(filterMaxRpm)) / 100;
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM, rpmSpeed.toString());
                     }
+
+                    if ("0".equals(data.get(i))) {
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "0");
+                    } else {
+                        updateData(HaywardBindingConstants.CHANNEL_FILTER_ENABLE, "1");
+                    }
+
+                    // Speed Select
+                    data = bridgehandler.evaluateXPath("//Filter/@filterSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_SPEEDSELECT, data.get(i));
+
+                    // State
+                    data = bridgehandler.evaluateXPath("//Filter/@filterState", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_STATE, data.get(i));
+
+                    // lastSpeed
+                    data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
+                    channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i)));
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

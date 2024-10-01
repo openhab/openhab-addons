@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +49,7 @@ public class PushoverActionsTest {
     private static final String URL = "https://www.test.com";
     private static final String URL_TITLE = "Some Link";
     private static final String RECEIPT = "12345";
+    private static final Duration TTL = Duration.ofSeconds(15);
 
     private final ThingActions thingActionsStub = new ThingActions() {
         @Override
@@ -85,16 +88,23 @@ public class PushoverActionsTest {
     }
 
     @Test
-    public void testSendMessageWithoutTitle() {
+    public void testSendMessage() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
-        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, null);
+        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE);
         assertThat(sent, is(true));
     }
 
     @Test
-    public void testSendMessage() {
+    public void testSendMessageWithTitle() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
         boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, TITLE);
+        assertThat(sent, is(true));
+    }
+
+    @Test
+    public void testSendMessageWithTitleAndTTL() {
+        pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
+        boolean sent = PushoverActions.sendMessage(pushoverThingActions, MESSAGE, TITLE, TTL);
         assertThat(sent, is(true));
     }
 
@@ -129,6 +139,13 @@ public class PushoverActionsTest {
     public void testSendURLMessage() {
         pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
         boolean sent = PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE);
+        assertThat(sent, is(true));
+    }
+
+    @Test
+    public void testSendURLMessageWithTTL() {
+        pushoverThingActions.setThingHandler(mockPushoverAccountHandler);
+        boolean sent = PushoverActions.sendURLMessage(pushoverThingActions, MESSAGE, TITLE, URL, URL_TITLE, TTL);
         assertThat(sent, is(true));
     }
 

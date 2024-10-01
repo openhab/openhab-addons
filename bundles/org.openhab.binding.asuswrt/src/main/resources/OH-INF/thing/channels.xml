@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- ####################### GLOBAL CHANNEL GROUPS ########################## -->
+
+	<!-- Traffic -->
+	<channel-group-type id="traffic-group">
+		<label>Traffic</label>
+		<description>Traffic Monitoring</description>
+		<channels>
+			<channel id="cur-rx" typeId="current-traffic-type">
+				<label>Current Traffic Received</label>
+			</channel>
+			<channel id="cur-tx" typeId="current-traffic-type">
+				<label>Current Traffic Sent</label>
+			</channel>
+			<channel id="today-rx" typeId="today-taffic-type">
+				<label>Today Traffic Received</label>
+			</channel>
+			<channel id="today-tx" typeId="today-taffic-type">
+				<label>Today Traffic Sent</label>
+			</channel>
+			<channel id="total-rx" typeId="total-traffic-type">
+				<label>Total Traffic Received</label>
+			</channel>
+			<channel id="total-tx" typeId="total-traffic-type">
+				<label>Total Traffic Sent</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- ############################### CHANNELS ############################### -->
+
+	<!-- Product Id -->
+	<channel-type id="productid">
+		<item-type>String</item-type>
+		<label>Router Model</label>
+		<description>Model/ProductID of your Router</description>
+	</channel-type>
+
+	<!-- Usage -->
+	<channel-type id="usage-data-type">
+		<item-type>Number:DataAmount</item-type>
+		<label>Usage in MB</label>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="usage-type-percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+
+
+	<!-- LAN/WAN INFO -->
+	<channel-type id="dns-name-type">
+		<item-type>String</item-type>
+		<label>DNS Name</label>
+		<description>DNS name</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dns-server-type">
+		<item-type>String</item-type>
+		<label>DNS Server</label>
+		<description>Used DNS Servers</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ip-address-type">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP address of interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ip-proto-type">
+		<item-type>String</item-type>
+		<label>IP Protocol</label>
+		<description>IP address protocol (DHCP/Static)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="mac-address-type">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of device (LAN)</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ip-netmask-type">
+		<item-type>String</item-type>
+		<label>Subnet</label>
+		<description>Subnet mask of interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ip-gateway-type">
+		<item-type>String</item-type>
+		<label>Gateway</label>
+		<description>Gateway of interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ip-connection-state">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Connection state of interface</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="connection-event-type">
+		<kind>Trigger</kind>
+		<label>ConnectionState Changed Event</label>
+		<description>Event is fired connection state changes ('connected'/'disconnected')</description>
+	</channel-type>
+
+	<!-- CLIENTS -->
+	<channel-type id="clients-online-type">
+		<item-type>String</item-type>
+		<label>Online Clients</label>
+		<description>List of online clients</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clients-online-mac-type">
+		<item-type>String</item-type>
+		<label>Online MAC Addresses</label>
+		<description>List with MAC addresses of online clients</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="clients-online-count-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Online Clients Count</label>
+		<description>number online clients</description>
+		<state pattern="%.0f" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="client-nick-name">
+		<item-type>String</item-type>
+		<label>Nickname</label>
+		<description>Nickname of client</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="is-online-type">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Client is online</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="interne-state-type">
+		<item-type>Switch</item-type>
+		<label>Internet Connected</label>
+		<description>Client is connected to Internet</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="client-online-event-type">
+		<kind>Trigger</kind>
+		<label>Online State Changed Trigger</label>
+		<description>Event is fired if client leaves ('gone') or enters ('connected') the network</description>
+	</channel-type>
+
+
+	<!-- Traffic -->
+	<channel-type id="current-traffic-type">
+		<item-type>Number:DataTransferRate</item-type>
+		<label>Current Traffic</label>
+		<description>Current traffic in MBit/s</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="today-taffic-type">
+		<item-type>Number:DataAmount</item-type>
+		<label>Today Traffic</label>
+		<description>Total traffic in MB since 0:00 a clock</description>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="total-traffic-type">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Traffic</label>
+		<description>Total traffic in MB since reboot</description>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

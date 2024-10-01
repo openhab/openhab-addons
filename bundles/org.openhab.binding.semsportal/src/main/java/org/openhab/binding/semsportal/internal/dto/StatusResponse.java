@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.semsportal.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * POJO containing (a small subset of) the data received from the portal when issuing a {@link StationRequest)
+ * POJO containing (a small subset of) the data received from the portal when issuing a {@link StatusRequest}
  *
  * @author Iwan Bron - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,14 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public class A5_10_19 extends A5_10 {
+public class A5_10_19 extends A5_10_18 {
 
     public A5_10_19(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected double getHumidityValue() {
+        return getDB3Value();
     }
 }

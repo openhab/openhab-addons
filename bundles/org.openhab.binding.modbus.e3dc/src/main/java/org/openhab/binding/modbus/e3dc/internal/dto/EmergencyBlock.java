@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class EmergencyBlock implements Data {
             EP_POSSIBLE, EP_SWITCH };
 
     /**
-     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 & 15
+     * For decoding see Modbus Register Mapping Chapter 3.1.2 page 14 &amp; 15
      *
      * @param bArray - Modbus Registers as bytes from 40084 to 40085
      */

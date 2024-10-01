@@ -90,24 +90,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="uvindex">
-		<label>Current UV Index</label>
-		<description>This is the current UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="uvindex"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="uvindexForecast">
-		<label>Forecasted UV Index</label>
-		<description>This is the forecasted UV Index.</description>
-		<channels>
-			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
-			<channel id="uvindex" typeId="forecasted-uvindex"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="airPollution">
 		<label>Current Air Pollution</label>
 		<description>This is the current air pollution.</description>
@@ -169,12 +151,44 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallMinutelyTimeSeries">
+		<label>One Call API Minutely Forecast</label>
+		<description>Minutely precipitation delivered by the One Call API.</description>
+		<channels>
+			<channel id="precipitation" typeId="precipitation"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="oneCallMinutely">
 		<label>One Call API Minutely Forecast</label>
 		<description>Minutely precipitation delivered by the One Call API.</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="precipitation" typeId="precipitation"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallHourlyTimeSeries">
+		<label>One Call API Hourly Forecast</label>
+		<description>Hourly weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
 		</channels>
 	</channel-group-type>
 
@@ -203,6 +217,43 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallDailyTimeSeries">
+		<label>One Call API Daily Forecast</label>
+		<description>Daily weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset"/>
+			<channel id="moonrise" typeId="moonrise"/>
+			<channel id="moonset" typeId="moonset"/>
+			<channel id="moon-phase" typeId="moon-phase"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="morning-temperature" typeId="morning-temperature"/>
+			<channel id="day-temperature" typeId="day-temperature"/>
+			<channel id="evening-temperature" typeId="evening-temperature"/>
+			<channel id="night-temperature" typeId="night-temperature"/>
+			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature"/>
+			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature"/>
+			<channel id="apparent-morning" typeId="apparent-morning"/>
+			<channel id="apparent-day" typeId="apparent-day"/>
+			<channel id="apparent-evening" typeId="apparent-evening"/>
+			<channel id="apparent-night" typeId="apparent-night"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="oneCallDaily">
 		<label>One Call API Daily Forecast</label>
 		<description>Daily weather forecast delivered by the One Call API.</description>
@@ -210,6 +261,9 @@
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
 			<channel id="sunset" typeId="sunset"/>
+			<channel id="moonrise" typeId="moonrise"/>
+			<channel id="moonset" typeId="moonset"/>
+			<channel id="moon-phase" typeId="moon-phase"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -339,6 +393,32 @@
 		<description>Time of sunset for the given day.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moonrise">
+		<item-type>DateTime</item-type>
+		<label>Moonrise Time</label>
+		<description>Time of moonrise for the given day.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moonset">
+		<item-type>DateTime</item-type>
+		<label>Moonset Time</label>
+		<description>Time of moonset for the given day.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="moon-phase">
+		<item-type>Number</item-type>
+		<label>Moon Phase</label>
+		<description>Moon phase for the given day. 0 and 1 are 'new moon', 0.25 is 'first quarter moon', 0.5 is 'full moon'
+			and 0.75 is 'last quarter moon'. The periods in between are called 'waxing crescent', 'waxing gibous', 'waning
+			gibous', and 'waning crescent', respectively.</description>
+		<category>Moon</category>
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="hourly-forecast-time-stamp">
@@ -523,7 +603,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-atmospheric-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Forecasted Humidity</label>
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class for devices provided by the MAX! protocol.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - OH2 update + enhancements
  */
 public abstract class Device {
@@ -84,7 +84,7 @@ public abstract class Device {
     /**
      * Creates a new device
      *
-     * @param DeviceConfiguration
+     * @param c
      * @return Device
      */
     public static Device create(DeviceConfiguration c) {
@@ -246,7 +246,7 @@ public abstract class Device {
     }
 
     public final OnOffType getBatteryLow() {
-        return (this.batteryLow ? OnOffType.ON : OnOffType.OFF);
+        return OnOffType.from(batteryLow);
     }
 
     public final String getRFAddress() {

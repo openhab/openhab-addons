@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,7 +113,7 @@ public class SatelMessage {
      * @return the message as array of bytes
      */
     public byte[] getBytes() {
-        byte buffer[] = new byte[this.payload.length + 3];
+        byte[] buffer = new byte[this.payload.length + 3];
         buffer[0] = this.command;
         if (this.payload.length > 0) {
             System.arraycopy(this.payload, 0, buffer, 1, this.payload.length);

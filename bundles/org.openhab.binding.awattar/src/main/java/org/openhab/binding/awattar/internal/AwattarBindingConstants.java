@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.awattar.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
 /**
  * The {@link AwattarBindingConstants} class defines common constants, which are
@@ -24,18 +23,12 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
  */
 @NonNullByDefault
 public class AwattarBindingConstants {
-
     public static final String BINDING_ID = "awattar";
-    public static final String API = "api";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_PRICE = new ThingTypeUID(BINDING_ID, "prices");
     public static final ThingTypeUID THING_TYPE_BESTPRICE = new ThingTypeUID(BINDING_ID, "bestprice");
-    public static final ThingTypeUID THING_TYPE_BESTNEXT = new ThingTypeUID(BINDING_ID, "bestnext");
-
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_HOURLY_PRICES = new ChannelGroupTypeUID(BINDING_ID,
-            "hourly-prices");
 
     public static final String CHANNEL_GROUP_CURRENT = "current";
 
@@ -51,7 +44,4 @@ public class AwattarBindingConstants {
     public static final String CHANNEL_COUNTDOWN = "countdown";
     public static final String CHANNEL_REMAINING = "remaining";
     public static final String CHANNEL_HOURS = "hours";
-    public static final String CHANNEL_DURATION = "rangeDuration";
-    public static final String CHANNEL_LOOKUP_HOURS = "lookupHours";
-    public static final String CHANNEL_CONSECUTIVE = "consecutive";
 }

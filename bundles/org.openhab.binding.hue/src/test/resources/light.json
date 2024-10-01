@@ -1,0 +1,852 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "c42f8220-f232-4400-910c-943547513827",
+			"id_v1": "/lights/5",
+			"owner": {
+				"rid": "01de467b-29a0-48fc-b711-fd9c079bd429",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Wall Lamp",
+				"archetype": "wall_shade"
+			},
+			"on": {
+				"on": true
+			},
+			"dimming": {
+				"brightness": 100.0,
+				"min_dim_level": 2.0
+			},
+			"dimming_delta": null,
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": null,
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "29e37aaf-abf6-4e5d-8018-37ba8048cfec",
+			"id_v1": "/lights/16",
+			"owner": {
+				"rid": "18212397-8c4d-4373-8f59-c047b80994ac",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Worktop (L)",
+				"archetype": "wall_washer"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 50.0
+			},
+			"dimming_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "cd4a1b1d-aac0-4006-a5d3-5dea7a4e4043",
+			"id_v1": "/lights/20",
+			"owner": {
+				"rid": "0b4c9bdb-3f46-485b-8337-e5649c03b9e2",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Aquarium Light",
+				"archetype": "recessed_floor"
+			},
+			"on": {
+				"on": false
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": []
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "ba38af49-4206-47fb-b05a-b54887c12b4c",
+			"id_v1": "/lights/10",
+			"owner": {
+				"rid": "adeb3425-6a6b-49a0-8262-129126de7941",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Table Lamp A",
+				"archetype": "table_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 56.69,
+				"min_dim_level": 1.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "7b4038f8-4311-46e6-bdcf-c560eaa65a12",
+			"id_v1": "/lights/15",
+			"owner": {
+				"rid": "2cf59d54-8624-445f-9a01-aac19682b954",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Cabinet lights",
+				"archetype": "wall_washer"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 72.83
+			},
+			"dimming_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "09837085-7c06-45e1-92de-a2fa76dbbccb",
+			"id_v1": "/lights/18",
+			"owner": {
+				"rid": "d8da96f0-0637-40bc-a89d-65ac47bceb0a",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Table Lamp E",
+				"archetype": "table_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 56.69,
+				"min_dim_level": 0.20000000298023225
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"effects": {
+				"status_values": [
+					"no_effect",
+					"candle"
+				],
+				"status": "no_effect",
+				"effect_values": [
+					"no_effect",
+					"candle"
+				]
+			},
+			"type": "light"
+		},
+		{
+			"id": "bcad47a0-3f1f-498c-a8aa-3cf389965219",
+			"id_v1": "/lights/3",
+			"owner": {
+				"rid": "7bf2175d-0bb8-48dc-a7b4-775d3af3dfc9",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Bay Window Lamp",
+				"archetype": "pendant_round"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 93.0,
+				"min_dim_level": 2.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": null,
+				"mirek_valid": false,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 500
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"color": {
+				"xy": {
+					"x": 0.6367,
+					"y": 0.3503
+				},
+				"gamut": {
+					"red": {
+						"x": 0.675,
+						"y": 0.322
+					},
+					"green": {
+						"x": 0.409,
+						"y": 0.518
+					},
+					"blue": {
+						"x": 0.167,
+						"y": 0.04
+					}
+				},
+				"gamut_type": "B"
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none",
+					"dynamic_palette"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "3bec6abf-3831-4852-8eb9-d2a227d219f2",
+			"id_v1": "/lights/6",
+			"owner": {
+				"rid": "37c25501-53e4-4e01-b1bb-2f5ee6e7e258",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Downlight 1",
+				"archetype": "recessed_ceiling"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 55.12,
+				"min_dim_level": 1.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "d2ce3e24-a5d0-499b-9a5a-f53e3ce349df",
+			"id_v1": "/lights/21",
+			"owner": {
+				"rid": "78c2c794-7bdd-4a95-a7e8-4ee7b9af28bd",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Polar Bear Light",
+				"archetype": "table_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": []
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "e18446bf-36d1-4cda-aafe-1940bbb8f23b",
+			"id_v1": "/lights/8",
+			"owner": {
+				"rid": "346a2c5a-b736-497e-aed2-0dd7a7daff52",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Downlight 3",
+				"archetype": "recessed_ceiling"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 55.12,
+				"min_dim_level": 1.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "632baee1-623d-4a31-b1f1-f87e94ac81b7",
+			"id_v1": "/lights/17",
+			"owner": {
+				"rid": "9680e1fa-3b1d-4979-94ba-1a0a0e7a47b8",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Worktop (R)",
+				"archetype": "wall_washer"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 50.0
+			},
+			"dimming_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "d3bf7a57-b3e6-45f5-833d-00fb5491b67b",
+			"id_v1": "/lights/9",
+			"owner": {
+				"rid": "055f6ba3-0354-4765-b23e-287b505f2cd2",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Downlight 4",
+				"archetype": "recessed_ceiling"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 54.72,
+				"min_dim_level": 1.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "3366722b-48b1-4682-a648-607915873c40",
+			"id_v1": "/lights/7",
+			"owner": {
+				"rid": "266759fc-aaac-4eea-af5d-f226a146c119",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Downlight 2",
+				"archetype": "recessed_ceiling"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 54.72,
+				"min_dim_level": 1.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "c43e95e6-b268-4e9c-8fc6-cb092e5100d0",
+			"id_v1": "/lights/4",
+			"owner": {
+				"rid": "0d47bd3d-d82b-4a21-893c-299bff18e22a",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Table Lamp",
+				"archetype": "table_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 100.0,
+				"min_dim_level": 2.0
+			},
+			"dimming_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "7f077235-0130-4a0a-95f9-107cf83639a3",
+			"id_v1": "/lights/2",
+			"owner": {
+				"rid": "e0aafa22-59ab-4467-b603-632d92d2c15b",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Standard Lamp R",
+				"archetype": "floor_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 56.69,
+				"min_dim_level": 2.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 500
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"color": {
+				"xy": {
+					"x": 0.5017,
+					"y": 0.4152
+				},
+				"gamut": {
+					"red": {
+						"x": 0.675,
+						"y": 0.322
+					},
+					"green": {
+						"x": 0.409,
+						"y": 0.518
+					},
+					"blue": {
+						"x": 0.167,
+						"y": 0.04
+					}
+				},
+				"gamut_type": "B"
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none",
+					"dynamic_palette"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		},
+		{
+			"id": "c8ec2639-cc81-4316-af05-59d705f4babe",
+			"id_v1": "/lights/19",
+			"owner": {
+				"rid": "7da8bcc7-6e69-46c4-a2e1-e0c2de8e2270",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Wall Lamp",
+				"archetype": "wall_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 100.0,
+				"min_dim_level": 0.20000000298023225
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 454
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"effects": {
+				"status_values": [
+					"no_effect",
+					"candle"
+				],
+				"status": "no_effect",
+				"effect_values": [
+					"no_effect",
+					"candle"
+				]
+			},
+			"type": "light"
+		},
+		{
+			"id": "cb77dbcb-f67b-4e9a-b287-e35a046b4288",
+			"id_v1": "/lights/1",
+			"owner": {
+				"rid": "e41beec5-0340-4700-9094-8244f9a8ed0d",
+				"rtype": "device"
+			},
+			"metadata": {
+				"name": "Standard Lamp L",
+				"archetype": "floor_shade"
+			},
+			"on": {
+				"on": false
+			},
+			"dimming": {
+				"brightness": 56.69,
+				"min_dim_level": 2.0
+			},
+			"dimming_delta": {
+				
+			},
+			"color_temperature": {
+				"mirek": 443,
+				"mirek_valid": true,
+				"mirek_schema": {
+					"mirek_minimum": 153,
+					"mirek_maximum": 500
+				}
+			},
+			"color_temperature_delta": {
+				
+			},
+			"color": {
+				"xy": {
+					"x": 0.5017,
+					"y": 0.4152
+				},
+				"gamut": {
+					"red": {
+						"x": 0.675,
+						"y": 0.322
+					},
+					"green": {
+						"x": 0.409,
+						"y": 0.518
+					},
+					"blue": {
+						"x": 0.167,
+						"y": 0.04
+					}
+				},
+				"gamut_type": "B"
+			},
+			"dynamics": {
+				"status": "none",
+				"status_values": [
+					"none",
+					"dynamic_palette"
+				],
+				"speed": 0.0,
+				"speed_valid": false
+			},
+			"alert": {
+				"action_values": [
+					"breathe"
+				]
+			},
+			"signaling": {
+				
+			},
+			"mode": "normal",
+			"type": "light"
+		}
+	]
+}

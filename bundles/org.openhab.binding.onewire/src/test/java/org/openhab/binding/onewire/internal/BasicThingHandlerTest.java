@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,9 +83,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS2401;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS2401).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
 
@@ -101,9 +99,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS18B20;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS18B20).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));
@@ -125,9 +121,7 @@ public class BasicThingHandlerTest extends AbstractThingHandlerTest {
             return;
         }
 
-        Mockito.doAnswer(answer -> {
-            return OwSensorType.DS2408;
-        }).when(secondBridgeHandler).getType(any());
+        Mockito.doAnswer(answer -> OwSensorType.DS2408).when(secondBridgeHandler).getType(any());
 
         thingHandler.initialize();
         waitForAssert(() -> assertEquals(ThingStatus.UNKNOWN, thingHandler.getThing().getStatusInfo().getStatus()));

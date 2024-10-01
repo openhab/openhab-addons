@@ -1,0 +1,420 @@
+syntax = "proto3";
+package proto;
+
+//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "gogo.proto";
+
+
+option (gogoproto.goproto_enum_prefix_all) = true;
+option java_package = "com.daimler.mbcarkit.proto";
+
+message VVA {
+    enum CommandState {
+        UNKNOWN_COMMAND_STATE = 0;
+        CREATED = 1010;
+        ENQUEUED = 1016;
+        PROCESSING = 1012;
+        SUSPENDED = 1017;
+        FINISHED = 1018;
+    }
+
+    enum CommandCondition {
+        UNKNWON_COMMAND_CONDITION = 0;
+        NONE = 1000;
+        ACCEPTED = 1001;
+        REJECTED = 1002;
+        TERMINATE = 1003;
+        SUCCESS = 1011;
+        FAILED = 1013;
+        OVERWRITTEN = 1014;
+        TIMEOUT = 1015;
+    }
+}
+
+message VehicleAPI {
+    enum CommandState {
+        UNKNOWN_COMMAND_STATE = 0;
+        // Command execution request is accepted and an asynchronous process is
+        // being initialized.
+        INITIATION = 1;
+        // Another process for the same vehicle and queue is active, the request has
+        // been queued for later execution.
+        ENQUEUED = 2;
+        // The process is currently being processed by the backend.
+        PROCESSING = 3;
+        // The backend currently waits for the vehicle to respond to the request.
+        WAITING = 4;
+        // The process has finished successfully.
+        FINISHED = 5;
+        // There was an error while executing the command process.
+        FAILED = 6;
+    }
+
+    enum AttributeStatus {
+        // Value is set and valid
+        VALUE_SET = 0;
+        // Value has not yet been retrieved from vehicle (but sensor etc. should be available)
+        VALUE_NOT_SET = 1;
+        // Value has been retrieved from vehicle but is invalid (marked as invalid by DaiVB backend)
+        INVALID = 3;
+        // Vehicle does not support this attribute (e.g. does not have the sensor etc.)
+        NOT_AVAILABLE = 4;
+    }
+
+    enum QueueType {
+
+        // the JSON enum values are lowercase, but lowercase values are not exported in golang, so
+        // we allow aliasing all values.
+        option allow_alias = true;
+
+        UNKNOWNCOMMANDQUEUETYPE = 0;
+        DOORS = 10;
+        AUXHEAT = 11;
+        PRECOND = 12;
+        CHARGEOPT = 13;
+        MAINTENANCE = 14;
+        TCU = 15;
+        FEED = 16;
+        SERVICEACTIVATION = 17;
+        ATP = 18;
+        ASSISTANCE = 19;
+        RACP = 20;
+        WEEKPROFILE = 21;
+        REMOTEDIAGNOSIS = 22;
+        FLSH = 23; //(ALSO USED BY SIGPOS/RVF)
+        TEMPERATURE = 24;
+        TRIPCOMP = 25;
+        ENGINE = 26;
+        THEFTALARM = 27;
+        WINDOW = 28;
+        HEADUNIT = 29;
+        MECALL = 31;
+        IMMOBILIZER = 32;
+        RENTALSIGNAL = 33;
+        BCF = 34; //(BLACKCHANNEL)
+        PLUGANDCHARGE = 35;
+        CARSHARINGMODULE = 36;
+        BATTERY = 37;
+        ONBOARDFENCES = 38;
+        SPEEDFENCES = 39;
+        CHARGINGTARIFFS = 40;
+        RTMCONFIG = 41;
+        MAINTENANCECOMPUTER = 42;
+        MECALL2 = 43;
+        AUTOMATEDVALETPARKING = 44;
+        CHARGECONTROL = 45;
+        SPEEDALERT = 46;
+
+        unknowncommandqueuetype = 0;
+        doors = 10;
+        auxheat = 11;
+        precond = 12;
+        chargeopt = 13;
+        maintenance = 14;
+        tcu = 15;
+        feed = 16;
+        serviceactivation = 17;
+        atp = 18;
+        assistance = 19;
+        racp = 20;
+        weekprofile = 21;
+        remotediagnosis = 22;
+        flsh = 23; //(also used by sigpos/RVF)
+        temperature = 24;
+        tripcomp = 25;
+        engine = 26;
+        theftalarm = 27;
+        window = 28;
+        headunit = 29;
+        mecall = 31;
+        immobilizer = 32;
+        rentalsignal = 33;
+        bcf = 34; //(blackchannel)
+        plugandcharge = 35;
+        carsharingmodule = 36;
+        battery = 37;
+        onboardfences = 38;
+        speedfences = 39;
+        chargingtariffs = 40;
+        rtmconfig = 41;
+        maintenancecomputer = 42;
+        mecall2 = 43;
+        automatedvaletparking = 44;
+        chargecontrol = 45;
+        speedalert = 46;
+    }
+}
+
+message ACP {
+
+    enum CommandType {
+
+        // the JSON enum values are lowercase, but lowercase values are not exported in golang, so
+        // we allow aliasing all values.
+        option allow_alias = true;
+
+        UNKNOWNCOMMANDTYPE = 0;
+        DOORSLOCK = 100;
+        DOORSUNLOCK = 110;
+        TRUNKUNLOCK = 115;
+        FUELFLAPUNLOCK = 116;
+        CHARGEFLAPUNLOCK = 117;
+        CHARGECOUPLERUNLOCK = 118;
+        DOORSPREPARERENTAL = 120;
+        DOORSSECUREVEHICLE = 130;
+        AUXHEATSTART = 300;
+        AUXHEATSTOP = 310;
+        AUXHEATCONFIGURE = 320;
+        TEMPERATURECONFIGURE = 350;
+        WEEKPROFILECONFIGURE = 360;
+        WEEKPROFILEV2CONFIGURE = 370;
+        PRECONDSTART = 400;
+        PRECONDSTOP = 410;
+        PRECONDCONFIGURE = 420;
+        PRECONDCONFIGURESEATS = 425;
+        CHARGEOPTCONFIGURE = 430;
+        CHARGEOPTSTART = 440;
+        CHARGEOPTSTOP = 450;
+        FEEDPOI = 500;
+        FEEDFREETEXT = 510;
+        ENGINESTART = 550;
+        ENGINESTOP = 560;
+        ENGINEAVPSTART = 570;
+        TCUWAKEUP = 600;
+        TCUSWUPDATE = 610;
+        TCURCSRESET = 620;
+        TCUINTERROGATION = 630;
+        SPEEDALERTSTART = 710;
+        SPEEDALERTSTOP = 720;
+        FLSHSTART = 750; // (DEPRECATED)
+        FLSHSTOP = 760; // (DEPRECATED)
+        SIGPOSSTART = 770;
+        CONTRACTCONFIGURE = 800;
+        CONTRACTREMOVE = 810;
+        ROOTCONFIGURE = 820;
+        ROOTREMOVE = 830;
+        TRIPCOMP = 850; // RESET TRIPCOMP
+        MAINTENANCECONFIGURE = 930;
+        MAINTENANCECOMPUTEROFFSET = 931;
+        SHORTTESTEXECUTE = 935;
+        SERVICEACTIVATIONCONFIGURE = 940;
+        DC2SERVICEACTIVATIONCONFIGURE = 945;
+        DC2RAWDOWNLOAD = 950; //(TEST COMMAND)
+        APPLICATIONCONFIGURATION = 955; // (DC2+)
+        DC2STARTTRACKING = 960; // (TEST COMMAND)
+        ATPSEQUENCE = 990;
+        THEFTALARMTOGGLEINTERIOR = 1000;
+        THEFTALARMTOGGLETOW = 1010;
+        THEFTALARMSELECTINTERIORTOW = 1020;
+        THEFTALARMDESELECTINTERIORTOW = 1030;
+        THEFTALARMSTOP = 1040;
+        WINDOWOPEN = 1100;
+        WINDOWCLOSE = 1110;
+        WINDOWVENTILATE = 1120;
+        WINDOWMOVE = 1121;
+        ROOFOPEN = 1130;
+        ROOFCLOSE = 1140;
+        ROOFLIFT = 1150;
+        ROOFMOVE = 1151;
+        BATTERYMAXSOC = 2000;
+        BATTERYCHARGEPROGRAM = 2010;
+        CHARGEPROGRAMCONFIGURE = 2020;
+        ONBOARDFENCESCREATE = 2100;
+        ONBOARDFENCESUPDATE = 2110;
+        ONBOARDFENCESDELETE = 2120;
+        SPEEDFENCESCREATE = 2200;
+        SPEEDFENCESUPDATE = 2210;
+        SPEEDFENCESDELETE = 2220;
+        CHARGINGTARIFFSCREATE = 2300;
+        CHARGINGTARIFFSUPDATE = 2310;
+        CHARGINGTARIFFSDELETE = 2320;
+        THEFTALARMSTART = 2500;
+        THEFTALARMSELECTINTERIOR = 2510;
+        THEFTALARMDESELECTINTERIOR = 2520;
+        THEFTALARMSELECTTOW = 2530;
+        THEFTALARMDESELECTTOW = 2540;
+        THEFTALARMSELECTDAMAGEDETECTION = 2550;
+        THEFTALARMDESELECTDAMAGEDETECTION = 2560;
+        THEFTALARMCONFIRMDAMAGEDETECTION = 2570;
+        MECALL2START = 2600;
+        UDXTRIGGERSYNCHRONIZATION = 1200;
+        UDXACTIVEUSERPROFILE = 1210;
+        UDXRESETUSERDATA = 1220;
+        USERPROFSYNCH = 1230;
+        USERDATARESET = 1240;
+        PROFACTIVATIONSNAP = 1250;
+        PROFACTIVATIONDIRECT = 1255;
+        SOFTWAREUPDATE = 1260;
+        PUSHNOTIFICATION = 1270;
+        MECALLCOMMAND = 1310;
+        PRECONDSTARTRCS = 1400;
+        PRECONDSTOPRCS = 1410;
+        PRECONDCONFIGURERCS = 1420;
+        TCUCONFIGURE = 1430;
+        EDISONSERVICEACTIVATION = 1431;
+        TESTSEQUENCE = 1432;
+        PRECONDCONFIGURERACP = 1433;
+        CHARGEOPTCONFIGURERACP = 1434;
+        TARIFFTABLEDOWNLOAD = 1435;
+        PRECONDSTARTRACP = 1436;
+        PRECONDSTOPRACP = 1437;
+        ROOTCERTIFICATEREMOVE = 1438;
+        ONREQUESTPROBEUPLOAD = 1439;
+        ROOTCERTIFICATEDOWNLOAD = 1440;
+        CONTRACTCERTIFICATEREMOVE = 1441;
+        CONTRACTCERTIFICATEDOWNLOAD = 1442;
+        PROBECONFIGURATIONUPDATE = 1443;
+        RDIAGDELETEECU = 1500;
+        RDIAGSTATUSREPORT = 1501;
+        RDIAGEXECUTION = 1502;
+        IMMOBILIZERCHALLENGE = 1600;
+        IMMOBILIZERSEARCHKEYLINE = 1610;
+        IMMOBILIZERRELEASEKEYLINE = 1620;
+        IMMOBILIZERLOCKKEYLINE = 1630;
+        IMMOBILIZERLOCKVEHICLE = 1631;
+        IMMOBILIZERRELEASEVEHICLE = 1621;
+        SETRENTALSIGNAL = 1700;
+        BLACKCHANNELDOWNLOAD = 1800;
+        BLACKCHANNELUPLOAD = 1810;
+        CONFIGURECSM = 1900;
+        UPDATEVEHICLEINFO = 1901;
+        RELAYMESSAGETOCSM = 1902;
+        RELAYRENTALREQUESTTOCSB = 1903;
+        RTMDOWNLOADCONFIG = 2400;
+        RTMREADCONFIG = 2410;
+        AVPACTIVATE = 2700;
+        CHARGECONTROLCONFIGURE = 2800;
+
+        unknownCommandType = 0;
+        doorsLock = 100;
+        doorsUnlock = 110;
+        trunkUnlock = 115;
+        fuelflapUnlock = 116;
+        chargeflapUnlock = 117;
+        chargecouplerUnlock = 118;
+        doorsPrepareRental = 120;
+        doorsSecureVehicle = 130;
+        auxheatStart = 300;
+        auxheatStop = 310;
+        auxheatConfigure = 320;
+        temperatureConfigure = 350;
+        weekprofileConfigure = 360;
+        weekprofileV2Configure = 370;
+        precondStart = 400;
+        precondStop = 410;
+        precondConfigure = 420;
+        precondConfigureSeats = 425;
+        chargeoptConfigure = 430;
+        chargeoptStart = 440;
+        chargeoptStop = 450;
+        feedPoi = 500;
+        feedFreetext = 510;
+        engineStart = 550;
+        engineStop = 560;
+        engineAvpstart = 570;
+        tcuWakeup = 600;
+        tcuSwUpdate = 610;
+        tcuRcsReset = 620;
+        tcuInterrogation = 630;
+        speedalertStart = 710;
+        speedalertStop = 720;
+        flshStart = 750; // (DEPRECATED)
+        flshStop = 760; // (DEPRECATED)
+        sigposStart = 770;
+        contractConfigure = 800;
+        contractRemove = 810;
+        rootConfigure = 820;
+        rootRemove = 830;
+        tripcomp = 850; // reset tripcomp
+        maintenanceConfigure = 930;
+        maintenanceComputerOffset = 931;
+        shorttestExecute = 935;
+        serviceactivationConfigure = 940;
+        dc2ServiceactivationConfigure = 945;
+        dc2RawDownload = 950; //(test command)
+        applicationConfiguration = 955; // (DC2+)
+        dc2StartTracking = 960; // (test command)
+        atpSequence = 990;
+        theftalarmToggleInterior = 1000;
+        theftalarmToggleTow = 1010;
+        theftalarmSelectInteriorTow = 1020;
+        theftalarmDeselectInteriorTow = 1030;
+        theftalarmStop = 1040;
+        windowOpen = 1100;
+        windowClose = 1110;
+        windowVentilate = 1120;
+        windowMove = 1121;
+        roofOpen = 1130;
+        roofClose = 1140;
+        roofLift = 1150;
+        roofMove = 1151;
+        batteryMaxsoc = 2000;
+        batteryChargeprogram = 2010;
+        chargeprogramconfigure = 2020;
+        onboardfencesCreate = 2100;
+        onboardfencesUpdate = 2110;
+        onboardfencesDelete = 2120;
+        speedfencesCreate = 2200;
+        speedfencesUpdate = 2210;
+        speedfencesDelete = 2220;
+        chargingtariffsCreate = 2300;
+        chargingtariffsUpdate = 2310;
+        chargingtariffsDelete = 2320;
+        theftalarmstart = 2500;
+        theftalarmselectinterior = 2510;
+        theftalarmdeselectinterior = 2520;
+        theftalarmselecttow = 2530;
+        theftalarmdeselecttow = 2540;
+        theftalarmselectdamagedetection = 2550;
+        theftalarmdeselectdamagedetection = 2560;
+        theftalarmconfirmdamagedetection = 2570;
+        mecall2start = 2600;
+        udxTriggerSynchronization = 1200;
+        udxActiveUserProfile = 1210;
+        udxResetUserData = 1220;
+        userProfSynch = 1230;
+        userDataReset = 1240;
+        profActivationSnap = 1250;
+        profActivationDirect = 1255;
+        softwareUpdate = 1260;
+        pushNotification = 1270;
+        mecallcommand = 1310;
+        precondStartRcs = 1400;
+        precondStopRcs = 1410;
+        precondConfigureRcs = 1420;
+        tcuConfigure = 1430;
+        edisonServiceActivation = 1431;
+        testSequence = 1432;
+        precondConfigureRacp = 1433;
+        chargeoptConfigureRacp = 1434;
+        tariffTableDownload = 1435;
+        precondStartRacp = 1436;
+        precondStopRacp = 1437;
+        rootCertificateRemove = 1438;
+        onRequestProbeUpload = 1439;
+        rootCertificateDownload = 1440;
+        contractCertificateRemove = 1441;
+        contractCertificateDownload = 1442;
+        probeConfigurationUpdate = 1443;
+        rdiagDeleteEcu = 1500;
+        rdiagStatusReport = 1501;
+        rdiagExecution = 1502;
+        immobilizerChallenge = 1600;
+        immobilizerSearchKeyline = 1610;
+        immobilizerReleaseKeyline = 1620;
+        immobilizerLockKeyline = 1630;
+        immobilizerLockVehicle = 1631;
+        immobilizerReleaseVehicle = 1621;
+        setRentalSignal = 1700;
+        blackchannelDownload = 1800;
+        blackchannelUpload = 1810;
+        configurecsm = 1900;
+        updatevehicleinfo = 1901;
+        relaymessagetocsm = 1902;
+        relayrentalrequesttocsb = 1903;
+        rtmDownloadConfig = 2400;
+        rtmReadConfig = 2410;
+        avpActivate = 2700;
+        chargecontrolconfigure = 2800;
+    }
+}

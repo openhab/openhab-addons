@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -405,7 +405,7 @@ public class KeContactTransceiver {
     private void establishConnection(KeContactHandler handler) {
         String ipAddress = handler.getIPAddress();
         if (handler.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR
-                && !ipAddress.equals("")) {
+                && !"".equals(ipAddress)) {
             logger.debug("Establishing the connection to the KEBA KeContact '{}'", handler.getThing().getUID());
 
             DatagramChannel datagramChannel = null;

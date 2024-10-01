@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,12 +26,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HttpUtils {
-    public static String urlEncode(String url, boolean keepPathSlash) {
+    public static String urlEncode(String url, boolean keepPathSlash) throws HttpUtilException {
         String encoded;
         try {
             encoded = URLEncoder.encode(url, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("UTF-8 encoding is not supported.", e);
+            throw new HttpUtilException("UTF-8 encoding is not supported.", e);
         }
         if (keepPathSlash) {
             encoded = encoded.replace("%2F", "/");

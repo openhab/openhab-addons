@@ -6,5 +6,6 @@
 	<type>transformation</type>
 	<name>BIN2JSON transformation</name>
 	<description>Transforms the input by Java Binary Block Parser syntax.</description>
+	<connection>none</connection>
 
 </addon:addon>

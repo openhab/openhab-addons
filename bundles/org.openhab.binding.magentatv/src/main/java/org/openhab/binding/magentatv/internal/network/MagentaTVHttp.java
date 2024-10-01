@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,8 +66,9 @@ public class MagentaTVHttp {
      * Given a URL and a set parameters, send a HTTP POST request to the URL
      * location created by the URL and parameters.
      *
+     * @param host
      * @param url The URL to send a POST request to.
-     * @param urlParameters List of parameters to use in the URL for the POST
+     * @param postData List of parameters to use in the URL for the POST
      *            request. Null if no parameters.
      * @param soapAction Header attribute for SOAP ACTION: xxx
      * @param connection Header attribut for CONNECTION: xxx
@@ -107,10 +108,9 @@ public class MagentaTVHttp {
      * @param remotePort destination port
      * @param data data to send
      * @return received response
-     * @throws IOException
+     * @throws MagentaTVException
      */
     public String sendData(String remoteIp, String remotePort, String data) throws MagentaTVException {
-
         String errorMessage = "";
         StringBuffer response = new StringBuffer();
         try (Socket socket = new Socket()) {

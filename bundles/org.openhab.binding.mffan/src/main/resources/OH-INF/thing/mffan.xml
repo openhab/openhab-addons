@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mffan"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mffan">
+
+		<label>Modern Forms Fan</label>
+		<description>Modern Forms and WAC Lighting Smart Ceiling Fans</description>
+
+		<channels>
+			<channel id="fan-on" typeId="fan-on"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="fan-direction" typeId="fan-direction"/>
+			<channel id="wind-on" typeId="wind-on"/>
+			<channel id="wind-level" typeId="wind-level"/>
+			<channel id="light-on" typeId="light-on"/>
+			<channel id="light-intensity" typeId="light-intensity"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>IP or Host</label>
+				<description>IP address or host name of the fan.</description>
+			</parameter>
+
+			<parameter name="pollingPeriod" type="integer" unit="s" min="10">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in seconds.</description>
+				<default>120</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="fan-on">
+		<item-type>Switch</item-type>
+		<label>Fan</label>
+		<description>Fan on/off.</description>
+	</channel-type>
+	<channel-type id="fan-speed">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>The fan's rotational rate.</description>
+		<state readOnly="false" pattern="Fan %s">
+			<options>
+				<option value="1">Speed 1</option>
+				<option value="2">Speed 2</option>
+				<option value="3">Speed 3</option>
+				<option value="4">Speed 4</option>
+				<option value="5">Speed 5</option>
+				<option value="6">Speed 6</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fan-direction">
+		<item-type>String</item-type>
+		<label>Fan Direction</label>
+		<description>The fan's direction of rotation: Forward (Summer), Reverse (Winter).</description>
+		<state readOnly="false" pattern="Direction %s">
+			<options>
+				<option value="forward">Forward</option>
+				<option value="reverse">Reverse</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="wind-on">
+		<item-type>Switch</item-type>
+		<label>Wind</label>
+		<description>Wind (sometimes referred to as "Breeze Mode") on/off.</description>
+	</channel-type>
+	<channel-type id="wind-level">
+		<item-type>String</item-type>
+		<label>Wind Level</label>
+		<description>The amount of the wind being produced.</description>
+		<state readOnly="false" pattern="Wind %s">
+			<options>
+				<option value="1">Level 1</option>
+				<option value="2">Level 2</option>
+				<option value="3">Level 3</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="light-on">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>Light on/off.</description>
+	</channel-type>
+	<channel-type id="light-intensity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Light Intensity</label>
+		<description>The light intensity.</description>
+		<state readOnly="false" min="1" max="100" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

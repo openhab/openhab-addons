@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmartSpeakerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.television.CurrentMediaStateEnum;
 import io.github.hapjava.characteristics.impl.television.TargetMediaStateEnum;
@@ -34,15 +36,21 @@ import io.github.hapjava.services.impl.SmartSpeakerService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implements SmartSpeakerAccessory {
-    private final Map<CurrentMediaStateEnum, String> currentMediaState;
-    private final Map<TargetMediaStateEnum, String> targetMediaState;
+    private final Map<CurrentMediaStateEnum, Object> currentMediaState;
+    private final Map<TargetMediaStateEnum, Object> targetMediaState;
 
     public HomekitSmartSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         currentMediaState = createMapping(CURRENT_MEDIA_STATE, CurrentMediaStateEnum.class);
         targetMediaState = createMapping(TARGET_MEDIA_STATE, TargetMediaStateEnum.class);
-        getServices().add(new SmartSpeakerService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SmartSpeakerService(this));
     }
 
     @Override

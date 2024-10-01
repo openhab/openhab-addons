@@ -37,23 +37,28 @@
 					multiple
 					regular expressions (separator is ###).</description>
 			</parameter>
-			<parameter name="simpleProtocolSinkPort" type="integer" required="false">
-				<label>Simple Protocol Port</label>
-				<description>Default Port to allocate for use by module-simple-protocol-tcp on the pulseaudio server</description>
-				<default>4711</default>
-			</parameter>
-			<parameter name="simpleProtocolSinkIdleTimeout" type="integer" required="false">
-				<label>Idle Timeout</label>
-				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
-					your speaker is not on all the time and the pulseaudio sink can go to idle mode. -1 for no disconnection.
-				</description>
-				<default>30000</default>
+			<parameter name="simpleProtocolIdleModules" type="integer" required="false">
+				<label>Simple Protocol Idle Modules</label>
+				<description>Number of Simple Protocol TCP Socket modules to keep loaded in the server</description>
+				<default>2</default>
 			</parameter>
 			<parameter name="simpleProtocolSOTimeout" type="integer" min="250" max="2000">
 				<label>Simple Protocol SO Timeout</label>
 				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune
 					this option if the socket disconnect frequently.</description>
 				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMinPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Min Port</label>
+				<description>Min port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMaxPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Max Port</label>
+				<description>Max port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>64512</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

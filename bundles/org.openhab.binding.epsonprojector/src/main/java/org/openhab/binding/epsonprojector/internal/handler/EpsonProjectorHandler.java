@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,7 +191,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             switch (commandType) {
                 case AKEYSTONE:
                     Switch autoKeystone = remoteController.getAutoKeystone();
-                    return autoKeystone == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(autoKeystone == Switch.ON);
                 case ASPECT_RATIO:
                     AspectRatio aspectRatio = remoteController.getAspectRatio();
                     return new StringType(aspectRatio.toString());
@@ -224,7 +224,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(fleshColor);
                 case FREEZE:
                     Switch freeze = remoteController.getFreeze();
-                    return freeze == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(freeze == Switch.ON);
                 case GAMMA:
                     Gamma gamma = remoteController.getGamma();
                     return new StringType(gamma.toString());
@@ -236,7 +236,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(hPosition);
                 case HREVERSE:
                     Switch hReverse = remoteController.getHorizontalReverse();
-                    return hReverse == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(hReverse == Switch.ON);
                 case KEY_CODE:
                     break;
                 case LAMP_TIME:
@@ -247,7 +247,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new StringType(luminance.toString());
                 case MUTE:
                     Switch mute = remoteController.getMute();
-                    return mute == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(mute == Switch.ON);
                 case POWER:
                     PowerStatus powerStatus = remoteController.getPowerStatus();
                     if (isLinked(CHANNEL_TYPE_POWERSTATE)) {
@@ -288,7 +288,7 @@ public class EpsonProjectorHandler extends BaseThingHandler {
                     return new DecimalType(vPosition);
                 case VREVERSE:
                     Switch vReverse = remoteController.getVerticalReverse();
-                    return vReverse == Switch.ON ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(vReverse == Switch.ON);
                 default:
                     logger.warn("Unknown '{}' command!", commandType);
                     return UnDefType.UNDEF;

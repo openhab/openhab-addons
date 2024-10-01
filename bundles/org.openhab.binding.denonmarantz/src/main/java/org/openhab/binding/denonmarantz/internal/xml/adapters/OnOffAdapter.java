@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,24 +14,28 @@ package org.openhab.binding.denonmarantz.internal.xml.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Maps 'On' and 'Off' string values to a boolean
  *
  * @author Jeroen Idserda - Initial contribution
  */
-public class OnOffAdapter extends XmlAdapter<String, Boolean> {
+@NonNullByDefault
+public class OnOffAdapter extends XmlAdapter<@Nullable String, @Nullable Boolean> {
 
     @Override
-    public Boolean unmarshal(String v) throws Exception {
+    public @Nullable Boolean unmarshal(@Nullable String v) throws Exception {
         if (v != null) {
-            return Boolean.valueOf(v.toLowerCase().equals("on"));
+            return Boolean.valueOf("on".equals(v.toLowerCase()));
         }
 
         return Boolean.FALSE;
     }
 
     @Override
-    public String marshal(Boolean v) throws Exception {
+    public @Nullable String marshal(@Nullable Boolean v) throws Exception {
         return v ? "On" : "Off";
     }
 }

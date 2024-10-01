@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,7 +141,7 @@ public class GroupePSAHandlerTest {
         bridgeHandler.initialize();
 
         // check that the bridge is online
-        verify(bridgeCallback, timeout(2000)).statusUpdated(eq(bridge),
+        verify(bridgeCallback, timeout(10000)).statusUpdated(eq(bridge),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
         // Initialize the thing
@@ -149,7 +149,7 @@ public class GroupePSAHandlerTest {
 
         // check that the thing is offline without detail (last update time is not
         // within 15 minutes)
-        verify(thingCallback, timeout(2000)).statusUpdated(eq(thing),
+        verify(thingCallback, timeout(10000)).statusUpdated(eq(thing),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)
                         && arg.getStatusDetail().equals(ThingStatusDetail.NONE)));
 

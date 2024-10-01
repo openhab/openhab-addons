@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,10 @@ public class Pitmaster {
 
     @SerializedName("type")
     @Expose
-    private List<String> type = new ArrayList<String>();
+    private List<String> type = new ArrayList<>();
     @SerializedName("pm")
     @Expose
-    private List<Pm> pm = new ArrayList<Pm>();
+    private List<Pm> pm = new ArrayList<>();
 
     /**
      * No args constructor for use in serialization

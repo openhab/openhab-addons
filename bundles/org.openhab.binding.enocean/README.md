@@ -89,7 +89,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | occupancySensor                 | A5-07             | 0x01-03                 | illumination, batteryVoltage, motionDetection               | NodON PIR-2-1-01        | Discovery |
 | lightTemperatureOccupancySensor | A5-08             | 0x01-03                 | illumination, temperature, occupancy, motionDetection       | Eltako FABH             | Discovery |
 | lightSensor                     | A5-06             | 0x01                    | illumination                                                | Eltako TF-AHDSB         | Discovery |
-| roomOperatingPanel              | A5-10             | 0x01-23                 | temperature, setPoint, fanSpeedStage, occupancy             | Thermokon SR04          | Discovery |
+| roomOperatingPanel              | A5-10             | 0x01-23                 | temperature, setPoint, fanSpeedStage, occupancy, dayNightModeState, conntact, humidity, illumination, batteryLevel, batteryLow             | Thermokon SR04          | Discovery |
 | automatedMeterSensor            | A5-12             | 0x00-03                 | counter, currentNumber, instantpower, totalusage, amrLitre, amrCubicMetre | FWZ12     | Discovery |
 | environmentalSensor             | A5-13             | 0x01-02                 | temperature, windspeed, illumination, rainStatus            | FWS61                   | Discovery |
 | centralCommand                  | A5-38             | 0x08                    | dimmer, generalSwitch                                       | Eltako FUD14, FSR14     | Teach-in  |
@@ -107,7 +107,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 ³ Note that the soda handles potentially contain a wide range of different sensors and buttons.
 However the amount of built-in sensors and buttons may vary between different models.
 In case your particular device does not contain one of the potentially supported features the corresponding channel will never trigger an update.
-Please see the manual of your particular model to check which channels should be supported before opening an issue.  
+Please see the manual of your particular model to check which channels should be supported before opening an issue.
 
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
@@ -297,7 +297,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | occupancy                         | Switch                    | Occupancy button pressed (ON) or released (OFF) |
 | motionDetection                   | Switch                    | On=Motion detected, Off=not |
 | setPoint                          | Number                    | linear set point |
-| fanSpeedStage                     | String                    | Fan speed: -1 (Auto), 0, 1, 2, 3 |
+| fanSpeedStage                     | Number                    | Fan speed: -1 (Auto), 0, 1, 2, 3, 4, 5, 6 |
 | dimmer                            | Dimmer                    | Dimmer value in percent |
 | generalSwitch(/A/B)               | Switch                    | Switch something (channel A/B) ON/OFF |
 | rollershutter                     | Rollershutter             | Shut time (shutTime) in seconds can be configured |
@@ -350,6 +350,7 @@ The channels of a thing are determined automatically based on the chosen EEP.
 | windowBreachEvent                 | Trigger                   | Emits event 'ALARM' |
 | protectionPlusEvent               | Trigger                   | Emits event 'ALARM' |
 | vacationModeToggleEvent           | Trigger                   | Emits events 'ACTIVATED', 'DEACTIVATED' |
+| dayNightModeState                 | Number                    | 0 = Night mode on, 1 = day mode on |
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
@@ -415,12 +416,12 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
    Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanId="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
    Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanId="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
    Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanId="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
-   Thing classicDevice cd01 "Garage_Light" @ "Garage" [ 
-        senderIdOffset=5, 
-        sendingEEPId="F6_02_01", 
-        broadcastMessages=true, 
+   Thing classicDevice cd01 "Garage_Light" @ "Garage" [
+        senderIdOffset=5,
+        sendingEEPId="F6_02_01",
+        broadcastMessages=true,
         receivingEEPId="F6_02_01",
-        suppressRepeating=false 
+        suppressRepeating=false
    ] {
         Type virtualSwitchA             : virtualSwitchA              [duration=300, switchMode="rockerSwitch"]
         Type rockerswitchListenerSwitch : Listener1 "Schalter links"  [enoceanId="aabbcc08", channel="channelA", switchMode="toggleButtonDir1"]
@@ -435,8 +436,8 @@ Switch Light_Switch { channel="enocean:rockerSwitch:gtwy:rs01:rockerSwitchAction
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
 Rollershutter Kitchen_Rollershutter "Roller shutter" <blinds> (Kitchen) {channel="enocean:rollershutter:gtwy:r01:rollershutter", autoupdate="false"}
 Switch Garage_Light "Switch" {
-        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA", 
-        channel="enocean:classicDevice:gtwy:cd01:Listener1", 
+        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA",
+        channel="enocean:classicDevice:gtwy:cd01:Listener1",
         channel="enocean:classicDevice:gtwy:cd01:Listener2"
 }
 ```

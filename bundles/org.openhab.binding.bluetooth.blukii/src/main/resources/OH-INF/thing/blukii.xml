@@ -44,7 +44,7 @@
 	</channel-type>
 
 	<channel-type id="blukii_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>

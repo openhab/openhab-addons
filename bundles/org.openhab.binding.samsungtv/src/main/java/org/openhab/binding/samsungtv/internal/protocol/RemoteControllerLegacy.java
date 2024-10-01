@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,11 +23,10 @@ import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.samsungtv.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Renamed and reworked to use RemoteController base class, to allow different protocols
+ * @author Nick Waterton - moved Sendkeys to RemoteController, reworked sendkey, sendKeyData
  */
 @NonNullByDefault
 public class RemoteControllerLegacy extends RemoteController {
@@ -85,16 +85,22 @@ public class RemoteControllerLegacy extends RemoteController {
      *
      * @throws RemoteControllerException
      */
-    @Override
     public void openConnection() throws RemoteControllerException {
-        logger.debug("Open connection to host '{}:{}'", host, port);
+        if (isConnected()) {
+            return;
+        }
+        logger.debug("{}: Open connection to host '{}:{}'", host, host, port);
 
         Socket localsocket = new Socket();
         socket = localsocket;
         try {
-            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            if (socket != null) {
+                socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            } else {
+                throw new IOException("no Socket");
+            }
         } catch (IOException e) {
-            logger.debug("Cannot connect to Legacy Remote Controller: {}", e.getMessage());
+            logger.debug("{}: Cannot connect to Legacy Remote Controller: {}", host, e.getMessage());
             throw new RemoteControllerException("Connection failed", e);
         }
 
@@ -106,7 +112,7 @@ public class RemoteControllerLegacy extends RemoteController {
             InputStreamReader localreader = new InputStreamReader(inputStream);
             reader = localreader;
 
-            logger.debug("Connection successfully opened...querying access");
+            logger.debug("{}: Connection successfully opened...querying access", host);
             writeInitialInfo(localwriter, localsocket);
             readInitialInfo(localreader);
 
@@ -172,7 +178,7 @@ public class RemoteControllerLegacy extends RemoteController {
             char[] result = readCharArray(reader);
 
             if (Arrays.equals(result, ACCESS_GRANTED_RESP)) {
-                logger.debug("Access granted");
+                logger.debug("{}: Access granted", host);
             } else if (Arrays.equals(result, ACCESS_DENIED_RESP)) {
                 throw new RemoteControllerException("Access denied");
             } else if (Arrays.equals(result, ACCESS_TIMEOUT_RESP)) {
@@ -190,15 +196,47 @@ public class RemoteControllerLegacy extends RemoteController {
     /**
      * Close connection to Samsung TV.
      *
-     * @throws RemoteControllerException
      */
-    public void closeConnection() throws RemoteControllerException {
+    public void closeConnection() {
         try {
             if (socket != null) {
                 socket.close();
             }
         } catch (IOException e) {
-            throw new RemoteControllerException(e);
+            // ignore error
+        }
+    }
+
+    public void sendUrl(String command) {
+        logger.warn("{}: Remote control legacy: unsupported command: {}", host, command);
+    }
+
+    public void sendSourceApp(String command) {
+        logger.warn("{}: Remote control legacy: unsupported command: {}", host, command);
+    }
+
+    public void updateCurrentApp() {
+    }
+
+    public void getArtmodeStatus(String... optionalRequests) {
+    }
+
+    public boolean closeApp() {
+        return false;
+    }
+
+    public void getAppStatus(String id) {
+    }
+
+    public boolean noApps() {
+        return false;
+    }
+
+    private void logResult(String msg, Throwable cause) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: {}: ", host, msg, cause);
+        } else {
+            logger.debug("{}: {}: {}", host, msg, cause.getMessage());
         }
     }
 
@@ -206,86 +244,35 @@ public class RemoteControllerLegacy extends RemoteController {
      * Send key code to Samsung TV.
      *
      * @param key Key code to send.
-     * @throws RemoteControllerException
      */
-    @Override
-    public void sendKey(KeyCode key) throws RemoteControllerException {
-        logger.debug("Try to send command: {}", key);
-
-        if (!isConnected()) {
-            openConnection();
+    public void sendKey(Object key) {
+        if (!(key instanceof KeyCode)) {
+            logger.warn("{}: Remote control legacy: unsupported command: {}", host, key);
+            return;
         }
-
-        try {
-            sendKeyData(key);
-        } catch (RemoteControllerException e) {
-            logger.debug("Couldn't send command", e);
-            logger.debug("Retry one time...");
-
-            closeConnection();
-            openConnection();
-
-            sendKeyData(key);
-        }
-
-        logger.debug("Command successfully sent");
-    }
-
-    /**
-     * Send sequence of key codes to Samsung TV.
-     *
-     * @param keys List of key codes to send.
-     * @throws RemoteControllerException
-     */
-    @Override
-    public void sendKeys(List<KeyCode> keys) throws RemoteControllerException {
-        sendKeys(keys, 300);
-    }
-
-    /**
-     * Send sequence of key codes to Samsung TV.
-     *
-     * @param keys List of key codes to send.
-     * @param sleepInMs Sleep between key code sending in milliseconds.
-     * @throws RemoteControllerException
-     */
-    public void sendKeys(List<KeyCode> keys, int sleepInMs) throws RemoteControllerException {
-        logger.debug("Try to send sequence of commands: {}", keys);
-
-        if (!isConnected()) {
-            openConnection();
-        }
-
-        for (int i = 0; i < keys.size(); i++) {
-            KeyCode key = keys.get(i);
+        logger.trace("{}: Try to send command: {}", host, key);
+        for (int i = 0; i < 2; i++) {
             try {
-                sendKeyData(key);
-            } catch (RemoteControllerException e) {
-                logger.debug("Couldn't send command", e);
-                logger.debug("Retry one time...");
-
-                closeConnection();
                 openConnection();
-
-                sendKeyData(key);
-            }
-
-            if ((keys.size() - 1) != i) {
-                // Sleep a while between commands
-                try {
-                    Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
+                if (sendKeyData((KeyCode) key)) {
+                    logger.trace("{}: Command successfully sent", host);
                     return;
                 }
+            } catch (RemoteControllerException e) {
+                logResult("Couldn't send command", e);
             }
+            closeConnection();
+            logger.debug("{}: Retry send command {} attempt {}...", host, key, i);
         }
-
-        logger.debug("Command(s) successfully sent");
+        logger.warn("{}: Command Retrys failed", host);
     }
 
-    @Override
+    public void sendKeyPress(KeyCode key, int duration) {
+        sendKey(key);
+    }
+
     public boolean isConnected() {
-        return socket != null && !socket.isClosed() && socket != null && socket.isConnected();
+        return socket != null && !socket.isClosed() && socket.isConnected();
     }
 
     private String createRegistrationPayload(String ip) throws IOException {
@@ -321,13 +308,11 @@ public class RemoteControllerLegacy extends RemoteController {
     }
 
     private void writeBase64String(Writer writer, String str) throws IOException {
-        String tmp = Base64.getEncoder().encodeToString(str.getBytes());
-        writeString(writer, tmp);
+        writeString(writer, Utils.b64encode(str));
     }
 
     private String readString(Reader reader) throws IOException {
-        char[] buf = readCharArray(reader);
-        return new String(buf);
+        return new String(readCharArray(reader));
     }
 
     private char[] readCharArray(Reader reader) throws IOException {
@@ -344,13 +329,13 @@ public class RemoteControllerLegacy extends RemoteController {
         }
     }
 
-    private void sendKeyData(KeyCode key) throws RemoteControllerException {
-        logger.debug("Sending key code {}", key.getValue());
+    private boolean sendKeyData(KeyCode key) {
+        logger.debug("{}: Sending key code {}", host, key.getValue());
 
         Writer localwriter = writer;
         Reader localreader = reader;
         if (localwriter == null || localreader == null) {
-            return;
+            return false;
         }
         /* @formatter:off
          *
@@ -378,8 +363,10 @@ public class RemoteControllerLegacy extends RemoteController {
             readString(localreader);
             readCharArray(localreader);
         } catch (IOException e) {
-            throw new RemoteControllerException(e);
+            logResult("Couldn't send command", e);
+            return false;
         }
+        return true;
     }
 
     private String createKeyDataPayload(KeyCode key) throws IOException {

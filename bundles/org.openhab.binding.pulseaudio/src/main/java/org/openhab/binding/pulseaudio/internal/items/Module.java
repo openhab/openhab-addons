@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,22 +21,20 @@ import org.eclipse.jdt.annotation.Nullable;
  * be able to remove sinks from the pulseaudio server.
  *
  * @author Tobias Bräutigam - Initial contribution
+ * @author Miguel Álvarez Díez - Make arguments final
  */
 @NonNullByDefault
 public class Module extends AbstractDeviceConfig {
 
-    private @Nullable String argument;
+    private final @Nullable String argument;
 
-    public Module(int id, String name) {
+    public Module(int id, String name, @Nullable String argument) {
         super(id, name);
+        this.argument = argument;
     }
 
     public @Nullable String getArgument() {
         return argument;
-    }
-
-    public void setArgument(String argument) {
-        this.argument = argument;
     }
 
     @Override

@@ -76,6 +76,7 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | Channel               | Type                      | Description                                                       |
 |-----------------------|---------------------------|-------------------------------------------------------------------|
 | `server`              | `String`                  | The remote server that the Speedtest was run against              |
+| `timestamp`           | `DateTime`                | Timestamp of the Speedtest run                                    |
 | `pingJitter`          | `Number:Time`             | Ping Jitter - the variation in the response time                  |
 | `pingLatency`         | `Number:Time`             | Ping Latency - the reaction time of your internet connection      |
 | `downloadBandwidth`   | `Number:DataTransferRate` | Download bandwidth, e.g. in Mbit/s                                |
@@ -88,6 +89,7 @@ Ensure that the user that openHAB is running with, has the permissions to access
 | `interfaceInternalIp` | `String`                  | IP address of the internal interface that was used for the test   |
 | `interfaceExternalIp` | `String`                  | IP address of the external interface that was used for the test   |
 | `resultUrl`           | `String`                  | The URL to the Speedtest results in HTML on the Ookla webserver   |
+| `resultImage`         | `Image `                  | The Speedtest results as image                                    |
 | `triggerTest`         | `Switch`                  | Trigger in order to run Speedtest manually                        |
 
 ## Full Example
@@ -102,17 +104,19 @@ Thing   speedtest:speedtest:myspeedtest   "Ookla Speedtest"    [ execPath="/usr/
 
 ```java
 String                    Speedtest_Server                "Server"                { channel="speedtest:speedtest:myspeedtest:server" }
+DateTime                  Speedtest_Timestamp             "Timestamp"             { channel="speedtest:speedtest:myspeedtest:timestamp" }
 Number:Time               Speedtest_Ping_Jitter           "Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
 Number:Time               Speedtest_Ping_Latency          "Ping Latency"          { channel="speedtest:speedtest:myspeedtest:pingLatency" }
-Number:DataTransferRate   Speedtest_Download_Bandwith     "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
+Number:DataTransferRate   Speedtest_Download_Bandwidth    "Download Bandwidth"    { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
 Number:DataAmount         Speedtest_Download_Bytes        "Download Bytes"        { channel="speedtest:speedtest:myspeedtest:downloadBytes" }
 Number:Time               Speedtest_Download_Elapsed      "Download Elapsed"      { channel="speedtest:speedtest:myspeedtest:downloadElapsed" }
-Number:DataTransferRate   Speedtest_Upload_Bandwith       "Upload Bandwith"       { channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
+Number:DataTransferRate   Speedtest_Upload_Bandwidth      "Upload Bandwidth"      { channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
 Number:DataAmount         Speedtest_Upload_Bytes          "Upload Bytes"          { channel="speedtest:speedtest:myspeedtest:uploadBytes" }
 Number:Time               Speedtest_Upload_Elapsed        "Upload Elapsed"        { channel="speedtest:speedtest:myspeedtest:uploadElapsed" }
 String                    Speedtest_ISP                   "ISP"                   { channel="speedtest:speedtest:myspeedtest:isp" }
 String                    Speedtest_Interface_InternalIP  "Internal IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceInternalIp" }
 String                    Speedtest_Interface_ExternalIP  "External IP Address"   { channel="speedtest:speedtest:myspeedtest:interfaceExternalIp" }
 String                    Speedtest_ResultURL             "Result URL"            { channel="speedtest:speedtest:myspeedtest:resultUrl" }
+Image                     Speedtest_ResultImage           "Result Image"          { channel="speedtest:speedtest:myspeedtest:resultImage" }
 Switch                    Speedtest_TriggerTest           "Trigger Test"          { channel="speedtest:speedtest:myspeedtest:triggerTest" }
 ```

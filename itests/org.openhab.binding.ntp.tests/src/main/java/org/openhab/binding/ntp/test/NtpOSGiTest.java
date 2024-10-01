@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.AfterAll;
@@ -105,6 +105,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     private static final String ACCEPTED_ITEM_TYPE_DATE_TIME = "DateTime";
     private static final String TEST_HOSTNAME = "127.0.0.1";
     private static final int TEST_PORT = 9002;
+    private static final String WRONG_HOSTNAME = "wrong.hostname";
     static SimpleNTPServer timeServer;
     private ChannelTypeUID channelTypeUID;
 
@@ -465,7 +466,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     private void assertCommunicationError(String acceptedItemType) {
         Configuration configuration = new Configuration();
-        final String WRONG_HOSTNAME = "wrong.hostname";
         if (acceptedItemType.equals(ACCEPTED_ITEM_TYPE_DATE_TIME)) {
             initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null,
                     WRONG_HOSTNAME);
@@ -483,7 +483,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         initialize(configuration, channelID, acceptedItemType, null, null);
 
         EventSubscriber eventSubscriberMock = mock(EventSubscriber.class);
-        when(eventSubscriberMock.getSubscribedEventTypes()).thenReturn(Collections.singleton(ItemStateEvent.TYPE));
+        when(eventSubscriberMock.getSubscribedEventTypes()).thenReturn(Set.of(ItemStateEvent.TYPE));
         registerService(eventSubscriberMock);
 
         if (updateEventType.equals(UpdateEventType.HANDLE_COMMAND)) {

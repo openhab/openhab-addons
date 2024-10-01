@@ -53,25 +53,28 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustCnt02_5           | Number:Dimensionless |    | Fine Dust >2,5 µm                                                   |
 | fineDustCnt05             | Number:Dimensionless |    | Fine Dust >5 µm                                                     |
 | fineDustCnt10             | Number:Dimensionless |    | Fine Dust >10 µm                                                    |
-| co                        | Number               |    | CO concentration                                                    |
-| co2                       | Number:Dimensionless |    | CO₂ concentration                                                   |
+| co                        | Number:Density       |    | Carbon monoxide (CO) concentration                                  |
+| co2                       | Number:Dimensionless |    | Carbon dioxide (CO₂) concentration                                  |
 | dCO2dt                    | Number               |    | Change of CO₂ concentration                                         |
 | dHdt                      | Number               |    | Change of Humidity                                                  |
 | dewpt                     | Number:Temperature   |    | Dew Point                                                           |
 | doorEvent                 | Number               |    | Door Event (experimental, might not work reliably)                  |
+| h2s                       | Number:Density       |    | Hydrogen sulfide (H₂S)                                              |
+| healthIndex               | Number:Dimensionless |    | Health Index in percent                                             |
 | health                    | Number:Dimensionless |    | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)   |
 | humidityRelative          | Number:Dimensionless |    | Humidity in percent                                                 |
-| humidityAbsolute          | Number               |    | Absolute Humidity                                                   |
+| humidityAbsolute          | Number:Density       |    | Absolute Humidity                                                   |
 | measureTime               | Number:Time          |    | Milliseconds needed for measurement                                 |
-| no2                       | Number               |    | NO₂ concentration                                                   |
-| o3                        | Number               |    | Ozone (O₃) concentration                                            |
+| no2                       | Number:Density       |    | Nitrogen Dioxide (NO₂) concentration                                |
+| o3                        | Number:Density       |    | Ozone (O₃) concentration                                            |
 | o2                        | Number:Dimensionless |    | Oxygen (O₂) concentration                                           |
+| performanceIndex          | Number:Dimensionless |    | Performance Index in percent                                        |
 | performance               | Number:Dimensionless |    | Performance Index (0 to 1000)                                       |
 | fineDustConc01            | Number               |    | Fine Dust concentration >1 µm                                       |
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
-| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm             fni                      |
-| pressure                  | Number:Pressure      |    | Pressure                                                            |
-| so2                       | Number               |    | SO₂ concentration                                                   |
+| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
+| pressure                  | Number:Pressure      |    | Barometric Pressure                                                 |
+| so2                       | Number               |    | Sulfur dioxide (SO₂) concentration                                  |
 | sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
 | timestamp                 | DateTime             |    | Timestamp of measurement                                            |
@@ -115,6 +118,12 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | averaging                 | Switch               | rw | Do an average                                                       |
 | errorBars                 | Switch               | rw | Calculate Maximum Errors                                            |
 | warmupPhase               | Switch               | rw | Output data as Warmup Phase                                         |
+
+## Usage with Docker
+
+This binding requires the JVM cryptographic strength policy to be set to "unlimited".
+Otherwise the connection to the device will fail.
+See the [openHAB Docker image documentation](https://github.com/openhab/openhab-docker/blob/main/README.md#java-cryptographic-strength-policy) for details.
 
 ## Example
 

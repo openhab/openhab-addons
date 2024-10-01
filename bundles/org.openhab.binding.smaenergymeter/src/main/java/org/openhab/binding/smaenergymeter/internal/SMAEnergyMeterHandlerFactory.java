@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,18 @@ package org.openhab.binding.smaenergymeter.internal;
 
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.handler.SMAEnergyMeterHandler;
+import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SMAEnergyMeterHandlerFactory} is responsible for creating things and thing
@@ -28,8 +33,16 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.smaenergymeter")
 public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
+
+    private final PacketListenerRegistry packetListenerRegistry;
+
+    @Activate
+    public SMAEnergyMeterHandlerFactory(@Reference PacketListenerRegistry packetListenerRegistry) {
+        this.packetListenerRegistry = packetListenerRegistry;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -37,11 +50,11 @@ public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ENERGY_METER)) {
-            return new SMAEnergyMeterHandler(thing);
+            return new SMAEnergyMeterHandler(thing, packetListenerRegistry);
         }
 
         return null;

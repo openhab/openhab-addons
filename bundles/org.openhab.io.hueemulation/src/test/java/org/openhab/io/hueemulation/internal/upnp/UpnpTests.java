@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
 
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.grizzly.osgi.httpservice.HttpServiceImpl;
 import org.glassfish.grizzly.osgi.httpservice.OSGiMainHandler;
 import org.glassfish.grizzly.osgi.httpservice.util.Logger;
@@ -102,8 +102,8 @@ public class UpnpTests {
     }
 
     @Test
-    public void descriptionWithoutAddress() {
-        Response response = commonSetup.client.target(descriptionPath).request().get();
+    public void descriptionWithoutAddress() throws Exception {
+        ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
         assertEquals(404, response.getStatus());
     }
 
@@ -113,9 +113,9 @@ public class UpnpTests {
         HueEmulationConfigWithRuntime r = subject.createConfiguration(null);
         r = subject.performAddressTest(r);
         subject.applyConfiguration(r);
-        Response response = commonSetup.client.target(descriptionPath).request().get();
+        ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
         assertEquals(200, response.getStatus());
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
         assertThat(body, is(subject.xmlDocWithAddress));
 
         if (r == null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.sonyprojector.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.sonyprojector.internal.handler.SonyProjectorHandler;
 
 /**
  * The {@link SonyProjectorSerialConfiguration} class contains fields mapping thing configuration parameters.
@@ -21,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SonyProjectorSerialConfiguration {
-
-    public @NonNullByDefault({}) String port;
-    public @NonNullByDefault({}) String model;
+    public String port = "";
+    public String model = SonyProjectorHandler.DEFAULT_MODEL.getName();
 }

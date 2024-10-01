@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,13 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
-import org.openhab.binding.tado.internal.api.model.HeatingZoneSetting;
-import org.openhab.binding.tado.internal.api.model.Power;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.TemperatureObject;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.HeatingZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.Power;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.TemperatureObject;
 
 /**
  * Builder for incremental creation of heating zone settings.

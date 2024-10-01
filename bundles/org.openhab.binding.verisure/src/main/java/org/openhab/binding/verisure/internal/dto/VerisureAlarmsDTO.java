@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
         private @Nullable String changedVia;
         private boolean allowedForFirstLine;
         private boolean allowed;
-        private List<Object> errorCodes = new ArrayList<>();
+        private @Nullable List<Object> errorCodes = new ArrayList<>();
         private @Nullable String typename;
 
         public @Nullable String getType() {
@@ -102,7 +102,7 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
             return allowed;
         }
 
-        public List<Object> getErrorCodes() {
+        public @Nullable List<Object> getErrorCodes() {
             return errorCodes;
         }
 
@@ -120,7 +120,7 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
             result = prime * result + ((localChangedVia == null) ? 0 : localChangedVia.hashCode());
             String localDate = date;
             result = prime * result + ((localDate == null) ? 0 : localDate.hashCode());
-            result = prime * result + errorCodes.hashCode();
+            result = prime * result + ((errorCodes == null) ? 0 : errorCodes.hashCode());
             String localName = name;
             result = prime * result + ((localName == null) ? 0 : localName.hashCode());
             String localStatusType = statusType;
@@ -166,7 +166,11 @@ public class VerisureAlarmsDTO extends VerisureBaseThingDTO {
             } else if (!localdate.equals(other.date)) {
                 return false;
             }
-            if (!errorCodes.equals(other.errorCodes)) {
+            if (this.errorCodes == null) {
+                if (other.errorCodes != null) {
+                    return false;
+                }
+            } else if (this.errorCodes != null && !this.errorCodes.equals(other.errorCodes)) {
                 return false;
             }
             String localName = name;

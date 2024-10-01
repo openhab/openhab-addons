@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
  * @author Davy Wong - Added Airthings Wave Gen 1 support
+ * @author Arne Seime - Added Airthings Wave Radon / Wave 2 support
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airthings")
@@ -48,6 +49,9 @@ public class AirthingsHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_GEN1)) {
             return new AirthingsWaveGen1Handler(thing);
+        }
+        if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_RADON)) {
+            return new AirthingsWaveRadonHandler(thing);
         }
         return null;
     }

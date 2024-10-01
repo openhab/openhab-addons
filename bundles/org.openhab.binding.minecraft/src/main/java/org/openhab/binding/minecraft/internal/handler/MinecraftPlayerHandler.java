@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
                     break;
                 }
             }
-            State onlineState = playerOnline ? OnOffType.ON : OnOffType.OFF;
+            State onlineState = OnOffType.from(playerOnline);
             updateState(MinecraftBindingConstants.CHANNEL_PLAYER_ONLINE, onlineState);
         }).flatMap(players -> Observable.from(players)).filter(player -> config.getName().equals(player.getName()))
                 .subscribe(player -> updatePlayerState(player));
@@ -141,8 +141,8 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof MinecraftServerHandler) {
-            bridgeHandler = (MinecraftServerHandler) handler;
+        if (handler instanceof MinecraftServerHandler serverHandler) {
+            bridgeHandler = serverHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;

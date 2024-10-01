@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ public class VelbusPacketInputStream {
 
     public InputStream inputStream;
 
-    private ArrayList<Byte> currentData = new ArrayList<Byte>();
+    private ArrayList<Byte> currentData = new ArrayList<>();
     private @Nullable Byte currentSTX = null;
     private @Nullable Byte currentPriority = null;
     private @Nullable Byte currentAddress = null;

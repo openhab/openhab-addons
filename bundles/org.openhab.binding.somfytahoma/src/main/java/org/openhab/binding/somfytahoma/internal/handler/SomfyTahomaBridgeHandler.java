@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,11 +19,12 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -120,7 +121,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> loginFuture;
 
     // List of futures used for command retries
-    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<>();
 
     /**
      * List of executions
@@ -138,6 +139,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     // Cloud fallback
     private boolean cloudFallback = false;
+
+    // Communication errors counter
+    private int errorsCounter = 0;
+
+    // Last login timestamp
+    private Instant lastLoginTimestamp = Instant.MIN;
 
     /**
      * Our configuration
@@ -195,7 +202,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.debug("Cannot start http client for: {}", thing.getBridgeUID().getId(), e);
+            logger.debug("Cannot start http client for: {}", thing.getUID(), e);
             return;
         }
         // Remove the WWWAuth protocol handler since Tahoma is not fully compliant
@@ -240,8 +247,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (tooManyRequests) {
-            logger.debug("Skipping login due to too many requests");
+        if (tooManyRequests || Instant.now().minusSeconds(LOGIN_LIMIT_TIME).isBefore(lastLoginTimestamp)) {
+            logger.debug("Postponing login to avoid throttling");
             return;
         }
 
@@ -277,6 +284,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
                     SomfyTahomaLoginResponse.class);
 
+            lastLoginTimestamp = Instant.now();
+
             if (data == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Received invalid data (login)");
@@ -298,8 +307,15 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                             isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
                 } else {
                     logger.debug("Events id error: {}", id);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "unable to register events");
+                    if (!thingConfig.isDevMode()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "unable to register events");
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "LAN mode is not properly configured");
+                        logger.debug("Forcing the gateway discovery");
+                        discoverGateway();
+                    }
                 }
             }
         } catch (JsonSyntaxException e) {
@@ -457,7 +473,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(SomfyTahomaItemDiscoveryService.class);
+        return Set.of(SomfyTahomaItemDiscoveryService.class);
     }
 
     @Override
@@ -668,7 +684,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private void unregisterExecution(String execId) {
         if (executions.containsValue(execId)) {
-            executions.values().removeAll(Collections.singleton(execId));
+            executions.values().removeAll(Set.of(execId));
         } else {
             logger.debug("Cannot remove execution id: {}, because it is not registered", execId);
         }
@@ -844,7 +860,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private Request sendRequestBuilderLocal(String subUrl, HttpMethod method) {
         return httpClient.newRequest(getApiFullUrl(subUrl)).method(method).accept("application/json")
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).header(HttpHeader.AUTHORIZATION, "Bearer " + localToken);
     }
 
     /**
@@ -1123,6 +1139,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     response = sendDeleteToTahomaWithCookie(url);
                 default:
             }
+            errorsCounter = 0;
             return classOfT != null ? gson.fromJson(response, classOfT) : null;
         } catch (JsonSyntaxException e) {
             logger.debug("Received data: {} is not JSON", response, e);
@@ -1132,14 +1149,27 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Temporarily banned");
                 setTooManyRequests();
             } else if (isEventListenerTimeout(e)) {
+                logger.debug("Event listener timeout occurred", e);
                 reLogin();
+            } else if (isDevModeReady()) {
+                // the local gateway is unreachable
+                errorsCounter++;
+                logger.debug("Local gateway communication error", e);
+                discoverGateway();
+                if (errorsCounter > MAX_ERRORS) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Too many communication errors");
+                }
             } else {
                 logger.debug("Cannot call url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (TimeoutException e) {
+            errorsCounter++;
             logger.debug("Timeout when calling url: {} with params: {}!", getApiFullUrl(url), urlParameters, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (errorsCounter > MAX_ERRORS) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Too many timeouts");
+            }
         } catch (InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             Thread.currentThread().interrupt();

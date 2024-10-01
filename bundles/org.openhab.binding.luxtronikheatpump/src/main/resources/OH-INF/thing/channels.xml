@@ -1572,9 +1572,8 @@
 	</channel-type>
 
 	<channel-type id="controlSignalCirculatingPump" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Control Signal Circulating Pump</label>
-		<category>Energy</category>
+		<item-type>Number:Dimensionless</item-type>
+		<label>Heating Circulating Pump Power</label>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
 
@@ -2058,6 +2057,13 @@
 		<label>Hot Water Target Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingFixedReturnTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Fixed Heating Target Return Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="comfortCoolingMode">

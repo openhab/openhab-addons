@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -251,37 +251,36 @@ public class DeviceManager {
                     device.decreaseCt(action.intDuration());
                     break;
                 case background_color:
-                    if (device instanceof DeviceWithAmbientLight) {
+                    if (device instanceof DeviceWithAmbientLight light) {
                         final String[] split = action.strValue().split(",");
 
-                        ((DeviceWithAmbientLight) device).setBackgroundColor(Integer.parseInt(split[0]),
-                                Integer.parseInt(split[1]), action.intDuration());
-                    }
-                    break;
-                case background_brightness:
-                    if (device instanceof DeviceWithAmbientLight) {
-                        ((DeviceWithAmbientLight) device).setBackgroundBrightness(action.intValue(),
+                        light.setBackgroundColor(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
                                 action.intDuration());
                     }
                     break;
+                case background_brightness:
+                    if (device instanceof DeviceWithAmbientLight light) {
+                        light.setBackgroundBrightness(action.intValue(), action.intDuration());
+                    }
+                    break;
                 case background_on:
-                    if (device instanceof DeviceWithAmbientLight) {
-                        ((DeviceWithAmbientLight) device).setBackgroundPower(true, action.intDuration());
+                    if (device instanceof DeviceWithAmbientLight light) {
+                        light.setBackgroundPower(true, action.intDuration());
                     }
                     break;
                 case background_off:
-                    if (device instanceof DeviceWithAmbientLight) {
-                        ((DeviceWithAmbientLight) device).setBackgroundPower(false, action.intDuration());
+                    if (device instanceof DeviceWithAmbientLight light) {
+                        light.setBackgroundPower(false, action.intDuration());
                     }
                     break;
                 case nightlight_off:
-                    if (device instanceof DeviceWithNightlight) {
-                        ((DeviceWithNightlight) device).toggleNightlightMode(false);
+                    if (device instanceof DeviceWithNightlight nightlight) {
+                        nightlight.toggleNightlightMode(false);
                     }
                     break;
                 case nightlight_on:
-                    if (device instanceof DeviceWithNightlight) {
-                        ((DeviceWithNightlight) device).toggleNightlightMode(true);
+                    if (device instanceof DeviceWithNightlight nightlight) {
+                        nightlight.toggleNightlightMode(true);
                     }
                     break;
                 default:
@@ -327,7 +326,7 @@ public class DeviceManager {
     }
 
     public static String getDefaultName(DeviceBase device) {
-        if (device.getDeviceModel() != null && !device.getDeviceName().equals("")) {
+        if (device.getDeviceModel() != null && !"".equals(device.getDeviceName())) {
             return device.getDeviceName();
         }
         switch (device.getDeviceType()) {

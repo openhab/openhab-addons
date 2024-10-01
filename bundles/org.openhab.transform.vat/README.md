@@ -15,10 +15,39 @@ Number CurrentSpotPrice "Current Spot Price incl. VAT [VAT(12.5):%s]" <price>
 
 Add Danish VAT to price:
 
+:::: tabs
+
+::: tab DSL
+
 ```java
 var Number price = 499
 logInfo("Price", "Price incl. VAT: " + transform("VAT", "DK", price.toString))
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var price = 499;
+console.log("Price incl. VAT: " + actions.Transformation.transform("VAT", "DK", price.toString()));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+price = 499
+# The currency name can be either a Symbol or a String
+# The input value doesn't need to be converted to string, however, the return value is a String
+price_incl_vat = transform(:vat, :DK, price)
+logger.info "Price incl. VAT: #{price_incl_vat}"
+```
+
+:::
+
+::::
 
 ## Usage as a Profile
 

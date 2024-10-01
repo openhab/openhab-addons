@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.tr064.internal.util.Util.getSOAPElement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import javax.xml.soap.SOAPPart;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
@@ -151,8 +153,8 @@ public class SOAPConnector {
             return soapMessage;
         } catch (IllegalArgumentException e) {
             Throwable cause = e.getCause();
-            if (cause instanceof Tr064CommunicationException) {
-                throw (Tr064CommunicationException) cause;
+            if (cause instanceof Tr064CommunicationException tr064CommunicationException) {
+                throw tr064CommunicationException;
             } else {
                 throw e;
             }
@@ -177,7 +179,11 @@ public class SOAPConnector {
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 // retry once if authentication expired
                 logger.trace("Re-Auth needed.");
-                httpClient.getAuthenticationStore().clearAuthenticationResults();
+                Authentication.Result authResult = httpClient.getAuthenticationStore()
+                        .findAuthenticationResult(URI.create(endpointBaseURL));
+                if (authResult != null) {
+                    httpClient.getAuthenticationStore().removeAuthenticationResult(authResult);
+                }
                 request = prepareSOAPRequest(soapRequest).timeout(timeout, TimeUnit.SECONDS);
                 response = request.send();
             }
@@ -186,7 +192,8 @@ public class SOAPConnector {
 
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage(null, is);
                 if (soapMessage.getSOAPBody().hasFault()) {
-                    String soapError = getSOAPElement(soapMessage, "errorCode").orElse("unknown");
+                    String soapError = Objects
+                            .requireNonNull(getSOAPElement(soapMessage, "errorCode").orElse("unknown"));
                     String soapReason = getSOAPElement(soapMessage, "errorDescription").orElse("unknown");
                     String error = String.format("HTTP-Response-Code %d (%s), SOAP-Fault: %s (%s)",
                             response.getStatus(), response.getReason(), soapError, soapReason);

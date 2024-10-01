@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ public class NetatmoBindingConstants {
     public static final String PROPERTY_COUNTRY = "country";
     public static final String PROPERTY_TIMEZONE = "timezone";
     public static final String PROPERTY_FEATURE = "feature";
+    public static final String PROPERTY_THING_TYPE_VERSION = "thingTypeVersion";
 
     // Channel group ids
     public static final String GROUP_LAST_EVENT = "last-event";
@@ -113,6 +114,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_SUM_RAIN24 = "sum-24";
     public static final String CHANNEL_WIND_ANGLE = "angle";
     public static final String CHANNEL_STATUS = GROUP_CAM_STATUS;
+    public static final String CHANNEL_SIREN = GROUP_SIREN;
     public static final String CHANNEL_WIND_STRENGTH = "strength";
     public static final String CHANNEL_MAX_WIND_STRENGTH = "max-strength";
     public static final String CHANNEL_DATE_MAX_WIND_STRENGTH = "max-strength-date";

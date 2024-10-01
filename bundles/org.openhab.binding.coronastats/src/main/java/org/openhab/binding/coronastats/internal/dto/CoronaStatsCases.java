@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,6 @@ import static org.openhab.binding.coronastats.internal.CoronaStatsBindingConstan
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
@@ -58,7 +56,7 @@ public class CoronaStatsCases {
         if (count == -1) {
             return UnDefType.NULL;
         } else {
-            return new QuantityType<Dimensionless>(count, Units.ONE);
+            return new QuantityType<>(count, Units.ONE);
         }
     }
 }

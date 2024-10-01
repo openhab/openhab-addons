@@ -1,0 +1,63 @@
+ {
+  "id": "TapoStrip_6DlumDwO2NdfHppy50vJtu",
+  "name": "Bubbling Cauldron",
+  "brightness": 100,
+  "display_colors": [
+    [
+      100,
+      100,
+      100
+    ],
+    [
+      270,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [
+    50,
+    100
+  ],
+  "backgrounds": [
+    [
+      270,
+      40,
+      50
+    ]
+  ],
+  "custom": 0,
+  "direction": null,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": 1000,
+  "hue_range": [
+    100,
+    270
+  ],
+  "init_states": [
+    [
+      270,
+      100,
+      100
+    ]
+  ],
+  "random_seed": 24,
+  "repeat_times": null,
+  "saturation_range": [
+    80,
+    100
+  ],
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": null,
+  "spread": null,
+  "transition": 200,
+  "transition_range": null,
+  "type": "random",
+  "trans_sequence": null,
+  "run_time": null
+}

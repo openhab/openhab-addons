@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Monitors <openHAB-conf>/automation/ruby for Ruby files, but not libraries in lib or gems
+ * Monitors {@code <openHAB-conf>/automation/ruby} for Ruby files, but not libraries in lib or gems
  *
  * @author Cody Cutrer - Initial contribution
  * @author Jan N. Klug - Refactored to new WatchService

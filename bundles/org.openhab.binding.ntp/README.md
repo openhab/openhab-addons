@@ -33,7 +33,7 @@ The ntp binding has two channels:
 - `dateTime` which provides the data in a dateTime type
 - `string` which provides the data in a string type. The string channel can be configured with the formatting of the date & time. This also allows proper representation of timezones other than the java machine default one.
 
-See the [java documentation](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) for the detailed information on the formatting
+See the [Java documentation](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) for the detailed information on the formatting
 
 ## Full Example
 

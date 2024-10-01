@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -180,8 +180,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         }
 
         if (id.equals(RioConstants.CHANNEL_SYSLANG)) {
-            if (command instanceof StringType) {
-                getProtocolHandler().setSystemLanguage(((StringType) command).toString());
+            if (command instanceof StringType stringCommand) {
+                getProtocolHandler().setSystemLanguage(stringCommand.toString());
             } else {
                 logger.debug("Received a SYSTEM LANGUAGE channel command with a non StringType: {}", command);
             }
@@ -462,7 +462,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the sources/controllers names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the sources/controllers names
      */
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
@@ -470,7 +470,7 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     }
 
     /**
-     * Overrides the base to call {@link #childChanged(ThingHandler)} to recreate the sources/controllers names
+     * Overrides the base to call {@link #childChanged(ThingHandler, boolean)} to recreate the sources/controllers names
      */
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
@@ -489,8 +489,8 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         if (childHandler == null) {
             throw new IllegalArgumentException("childHandler cannot be null");
         }
-        if (childHandler instanceof RioSourceHandler) {
-            final RioHandlerCallback callback = ((RioSourceHandler) childHandler).getRioHandlerCallback();
+        if (childHandler instanceof RioSourceHandler sourceHandler) {
+            final RioHandlerCallback callback = sourceHandler.getRioHandlerCallback();
             if (callback != null) {
                 if (added) {
                     callback.addListener(RioConstants.CHANNEL_SOURCENAME, handlerCallbackListener);

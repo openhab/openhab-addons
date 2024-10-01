@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,7 @@ public class SmartthingsServlet extends HttpServlet {
             return;
         }
         try {
-            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            Dictionary<String, String> servletParams = new Hashtable<>();
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
@@ -133,7 +133,7 @@ public class SmartthingsServlet extends HttpServlet {
                 break;
             case "error":
                 // This is an error message from smartthings
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 map = gson.fromJson(s, map.getClass());
                 logger.warn("Error message from Smartthings: {}", map.get("message"));
                 break;
@@ -162,7 +162,7 @@ public class SmartthingsServlet extends HttpServlet {
     }
 
     private void publishEvent(String topic, String name, String data) {
-        Dictionary<String, String> props = new Hashtable<String, String>();
+        Dictionary<String, String> props = new Hashtable<>();
         props.put(name, data);
         Event event = new Event(topic, props);
         if (eventAdmin != null) {

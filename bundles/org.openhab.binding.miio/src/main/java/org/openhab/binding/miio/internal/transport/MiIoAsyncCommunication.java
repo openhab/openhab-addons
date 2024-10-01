@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -415,9 +415,8 @@ public class MiIoAsyncCommunication {
                 sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             }
             clientSocket.receive(receivePacket);
-            byte[] response = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+            return Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                     receivePacket.getOffset() + receivePacket.getLength());
-            return response;
         } catch (SocketTimeoutException e) {
             logger.debug("Communication error for Mi device at {}: {}", ip, e.getMessage());
             needPing = true;

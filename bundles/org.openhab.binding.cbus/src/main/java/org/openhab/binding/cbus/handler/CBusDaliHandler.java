@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,9 +72,8 @@ public class CBusDaliHandler extends CBusGroupHandler {
                         } else if (command == OnOffType.OFF) {
                             group.off();
                         }
-                    } else if (command instanceof PercentType) {
-                        PercentType value = (PercentType) command;
-                        group.ramp((int) Math.round(value.doubleValue() / 100 * 255), 0);
+                    } else if (command instanceof PercentType percentCommand) {
+                        group.ramp((int) Math.round(percentCommand.doubleValue() / 100 * 255), 0);
                     } else if (command instanceof IncreaseDecreaseType) {
                         int level = group.getLevel();
                         if (command == IncreaseDecreaseType.DECREASE) {
@@ -93,6 +92,7 @@ public class CBusDaliHandler extends CBusGroupHandler {
         }
     }
 
+    @Override
     public void updateGroup(int updateApplicationId, int updateGroupId, String value) {
         if (updateGroupId == groupId && updateApplicationId == applicationId) {
             Thing thing = getThing();

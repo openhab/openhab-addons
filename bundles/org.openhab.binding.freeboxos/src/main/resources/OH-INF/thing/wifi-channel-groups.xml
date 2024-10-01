@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freeboxos"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="wifi">
+		<label>Wifi Related Information</label>
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="wifi-quality" typeId="system.signal-strength"/>
+			<channel id="ssid" typeId="ssid"/>
+			<channel id="wifi-host" typeId="wifi-host"/>
+			<channel id="rate-up" typeId="transfer-rate-bps">
+				<label>Tx Rate</label>
+				<description>Current TX Rate</description>
+			</channel>
+			<channel id="rate-down" typeId="transfer-rate-bps">
+				<label>Rx Rate</label>
+				<description>Current RX rate</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

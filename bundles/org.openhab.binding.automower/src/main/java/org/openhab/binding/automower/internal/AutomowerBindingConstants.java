@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner & calendar data
+ * @author Marcin Czeczko - Added support for planner and calendar data
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
@@ -54,7 +54,7 @@ public class AutomowerBindingConstants {
                                                      // introduce
     // this in a future release
     public static final String LAST_POSITION = GROUP_POSITIONS + "last-position";
-    public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<String>(
+    public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<>(
             List.of(GROUP_POSITIONS + "position01", GROUP_POSITIONS + "position02", GROUP_POSITIONS + "position03",
                     GROUP_POSITIONS + "position04", GROUP_POSITIONS + "position05", GROUP_POSITIONS + "position06",
                     GROUP_POSITIONS + "position07", GROUP_POSITIONS + "position08", GROUP_POSITIONS + "position09",

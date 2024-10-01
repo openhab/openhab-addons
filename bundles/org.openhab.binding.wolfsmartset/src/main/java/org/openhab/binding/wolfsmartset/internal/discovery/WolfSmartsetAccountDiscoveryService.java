@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,14 +24,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wolfsmartset.internal.dto.GetSystemListDTO;
 import org.openhab.binding.wolfsmartset.internal.handler.WolfSmartsetAccountBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,39 +41,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bo Biene - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = WolfSmartsetAccountDiscoveryService.class)
 @NonNullByDefault
-public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class WolfSmartsetAccountDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<WolfSmartsetAccountBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(WolfSmartsetAccountDiscoveryService.class);
-
-    private @NonNullByDefault({}) WolfSmartsetAccountBridgeHandler bridgeHandler;
 
     private @Nullable Future<?> discoveryJob;
 
     public WolfSmartsetAccountDiscoveryService() {
-        super(SUPPORTED_SYSTEM_AND_UNIT_THING_TYPES_UIDS, 8, true);
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof WolfSmartsetAccountBridgeHandler) {
-            this.bridgeHandler = (WolfSmartsetAccountBridgeHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        super(WolfSmartsetAccountBridgeHandler.class, SUPPORTED_SYSTEM_AND_UNIT_THING_TYPES_UIDS, 8, true);
     }
 
     @Override
@@ -109,14 +87,14 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
     }
 
     private void backgroundDiscover() {
-        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+        if (!thingHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
         discover();
     }
 
     private void discover() {
-        if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("WolfSmartsetDiscovery: Skipping discovery because Account Bridge thing is not ONLINE");
             return;
         }
@@ -126,7 +104,7 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
 
     private synchronized void discoverSystems() {
         logger.debug("WolfSmartsetDiscovery: Discovering systems");
-        var registeredSytems = bridgeHandler.getRegisteredSystems();
+        var registeredSytems = thingHandler.getRegisteredSystems();
         if (registeredSytems != null) {
             for (GetSystemListDTO system : registeredSytems) {
                 String name = system.getName();
@@ -135,7 +113,7 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
                     identifier = system.getId().toString();
                 }
                 if (identifier != null && name != null) {
-                    ThingUID thingUID = new ThingUID(UID_SYSTEM_BRIDGE, bridgeHandler.getThing().getUID(), identifier);
+                    ThingUID thingUID = new ThingUID(UID_SYSTEM_BRIDGE, thingHandler.getThing().getUID(), identifier);
                     thingDiscovered(createSystemDiscoveryResult(thingUID, identifier, name));
                     logger.debug("WolfSmartsetDiscovery: System '{}' and name '{}' added with UID '{}'", identifier,
                             name, thingUID);
@@ -148,7 +126,7 @@ public class WolfSmartsetAccountDiscoveryService extends AbstractDiscoveryServic
         Map<String, Object> properties = new HashMap<>();
         properties.put(CONFIG_SYSTEM_ID, identifier);
         return DiscoveryResultBuilder.create(systemUID).withProperties(properties)
-                .withRepresentationProperty(CONFIG_SYSTEM_ID).withBridge(bridgeHandler.getThing().getUID())
+                .withRepresentationProperty(CONFIG_SYSTEM_ID).withBridge(thingHandler.getThing().getUID())
                 .withLabel(String.format("WolfSmartset System %s", name)).build();
     }
 }

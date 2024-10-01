@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,18 +103,19 @@ public abstract class OceanicThingHandler extends BaseThingHandler {
         } else {
             bufferSize = ((BigDecimal) getConfig().get(BUFFER_SIZE)).intValue();
         }
-
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob == null || pollingJob.isCancelled()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1,
+            this.pollingJob = scheduler.scheduleWithFixedDelay(pollingRunnable, 1,
                     ((BigDecimal) getConfig().get(INTERVAL)).intValue(), TimeUnit.SECONDS);
         }
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 

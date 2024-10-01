@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.lcn.internal.subhandler;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
@@ -72,16 +71,16 @@ public class LcnModuleThresholdSubHandler extends AbstractLcnModuleVariableSubHa
     @Override
     public void handleStatusMessage(Matcher matcher) {
         IntStream stream;
-        Optional<String> groupSuffix;
+        String groupSuffix;
         int registerNumber;
         if (matcher.pattern() == PATTERN) {
             int thresholdId = Integer.parseInt(matcher.group("thresholdId")) - 1;
             registerNumber = Integer.parseInt(matcher.group("registerId")) - 1;
             stream = IntStream.rangeClosed(thresholdId, thresholdId);
-            groupSuffix = Optional.of("");
+            groupSuffix = "";
         } else if (matcher.pattern() == PATTERN_BEFORE_2013) {
             stream = IntStream.range(0, LcnDefs.THRESHOLD_COUNT_BEFORE_2013);
-            groupSuffix = Optional.empty();
+            groupSuffix = null;
             registerNumber = 0;
         } else {
             logger.warn("Unexpected pattern: {}", matcher.pattern());
@@ -90,7 +89,7 @@ public class LcnModuleThresholdSubHandler extends AbstractLcnModuleVariableSubHa
 
         stream.forEach(i -> {
             try {
-                fireUpdateAndReset(matcher, groupSuffix.orElse(String.valueOf(i)),
+                fireUpdateAndReset(matcher, groupSuffix != null ? groupSuffix : String.valueOf(i),
                         Variable.thrsIdToVar(registerNumber, i));
             } catch (LcnException e) {
                 logger.warn("Parse error: {}", e.getMessage());

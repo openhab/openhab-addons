@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.mielecloud.internal.config.servlet;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,9 +68,9 @@ public final class PairAccountServlet extends AbstractShowPageServlet {
     }
 
     private String renderClientIdAndClientSecret(HttpServletRequest request, String skeleton) {
-        String prefilledClientId = Optional.ofNullable(request.getParameter(CLIENT_ID_PARAMETER_NAME)).orElse("");
-        String prefilledClientSecret = Optional.ofNullable(request.getParameter(CLIENT_SECRET_PARAMETER_NAME))
-                .orElse("");
+        String prefilledClientId = Objects.requireNonNullElse(request.getParameter(CLIENT_ID_PARAMETER_NAME), "");
+        String prefilledClientSecret = Objects.requireNonNullElse(request.getParameter(CLIENT_SECRET_PARAMETER_NAME),
+                "");
         return skeleton.replace(CLIENT_ID_PLACEHOLDER, prefilledClientId).replace(CLIENT_SECRET_PLACEHOLDER,
                 prefilledClientSecret);
     }

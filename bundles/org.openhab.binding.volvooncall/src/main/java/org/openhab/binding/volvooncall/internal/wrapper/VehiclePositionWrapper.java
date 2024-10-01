@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.volvooncall.internal.wrapper;
 
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,18 +34,18 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class VehiclePositionWrapper {
-    private final Optional<PositionData> position;
+    private final @Nullable PositionData position;
     private boolean isCalculated;
 
     public VehiclePositionWrapper(Position vehicle) {
         if (vehicle.calculatedPosition != null && vehicle.position.latitude != null) {
-            position = Optional.of(vehicle.position);
+            position = vehicle.position;
             isCalculated = false;
         } else if (vehicle.calculatedPosition != null && vehicle.calculatedPosition.latitude != null) {
-            position = Optional.of(vehicle.calculatedPosition);
+            position = vehicle.calculatedPosition;
             isCalculated = true;
         } else {
-            position = Optional.empty();
+            position = null;
         }
     }
 
@@ -56,15 +57,17 @@ public class VehiclePositionWrapper {
     }
 
     public State getPosition() {
-        return position.map(pos -> getPositionAsState(pos)).orElse(UnDefType.UNDEF);
+        PositionData position = this.position;
+        return position != null ? getPositionAsState(position) : UnDefType.UNDEF;
     }
 
     public @Nullable String getPositionAsJSon() {
-        if (getPosition() != UnDefType.UNDEF) {
+        PositionData position = this.position;
+        if (position != null) {
             StringBuilder json = new StringBuilder("{\"clientLatitude\":");
-            json.append(position.get().latitude);
+            json.append(position.latitude);
             json.append(",\"clientLongitude\":");
-            json.append(position.get().longitude);
+            json.append(position.longitude);
             json.append(",\"clientAccuracy\":0}");
 
             return json.toString();
@@ -73,16 +76,17 @@ public class VehiclePositionWrapper {
     }
 
     public State isCalculated() {
-        return position.map(pos -> isCalculated ? (State) OnOffType.ON : OnOffType.OFF).orElse(UnDefType.UNDEF);
+        return position != null ? (State) OnOffType.from(isCalculated) : UnDefType.UNDEF;
     }
 
     public State isHeading() {
-        return position.map(pos -> pos.isHeading() ? (State) OnOffType.ON : OnOffType.OFF).orElse(UnDefType.UNDEF);
+        PositionData position = this.position;
+        return position != null ? (State) OnOffType.from(position.isHeading()) : UnDefType.UNDEF;
     }
 
     public State getTimestamp() {
-        return position.flatMap(pos -> pos.getTimestamp())
+        return Objects.requireNonNull(Optional.ofNullable(this.position).flatMap(pos -> pos.getTimestamp())
                 .map(dt -> (State) new DateTimeType(dt.withZoneSameInstant(ZoneId.systemDefault())))
-                .orElse(UnDefType.NULL);
+                .orElse(UnDefType.NULL));
     }
 }

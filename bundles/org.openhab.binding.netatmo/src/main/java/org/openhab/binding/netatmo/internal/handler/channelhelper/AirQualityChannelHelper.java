@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,12 +39,10 @@ public class AirQualityChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
-        switch (channelId) {
-            case CHANNEL_CO2:
-                return toQuantityType(dashboard.getCo2(), MeasureClass.CO2);
-            case CHANNEL_HEALTH_INDEX:
-                return new DecimalType(dashboard.getHealthIdx());
-        }
-        return null;
+        return switch (channelId) {
+            case CHANNEL_CO2 -> toQuantityType(dashboard.getCo2(), MeasureClass.CO2);
+            case CHANNEL_HEALTH_INDEX -> new DecimalType(dashboard.getHealthIdx());
+            default -> null;
+        };
     }
 }

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pentair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="controller">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip_bridge"/>
+			<bridge-type-ref id="serial_bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Controller</label>
+		<description>A Pentair Controller such as EasyTouch or IntelliTouch.</description>
+
+		<channel-groups>
+			<channel-group id="poolheat" typeId="heat">
+				<label>Pool Temperature</label>
+			</channel-group>
+			<channel-group id="spaheat" typeId="heat">
+				<label>Spa Temperature</label>
+			</channel-group>
+			<channel-group id="pool" typeId="circuit">
+				<label>Pool Circuit</label>
+			</channel-group>
+			<channel-group id="spa" typeId="circuit">
+				<label>Spa Circuit</label>
+			</channel-group>
+			<channel-group id="aux1" typeId="circuit">
+				<label>Aux 1 Circuit</label>
+			</channel-group>
+			<channel-group id="aux2" typeId="circuit">
+				<label>Aux 2 Circuit</label>
+			</channel-group>
+			<channel-group id="aux3" typeId="circuit">
+				<label>Aux 3 Circuit</label>
+			</channel-group>
+			<channel-group id="aux4" typeId="circuit">
+				<label>Aux 4 Circuit</label>
+			</channel-group>
+			<channel-group id="aux5" typeId="circuit">
+				<label>Aux 5 Circuit</label>
+			</channel-group>
+			<channel-group id="aux6" typeId="circuit">
+				<label>Aux 6 Circuit</label>
+			</channel-group>
+			<channel-group id="aux7" typeId="circuit">
+				<label>Aux 7 Circuit</label>
+			</channel-group>
+			<channel-group id="aux8" typeId="circuit">
+				<label>Aux 8 Circuit</label>
+			</channel-group>
+
+			<channel-group id="feature1" typeId="feature">
+				<label>Feature 1</label>
+			</channel-group>
+			<channel-group id="feature2" typeId="feature">
+				<label>Feature 2</label>
+			</channel-group>
+			<channel-group id="feature3" typeId="feature">
+				<label>Feature 3</label>
+			</channel-group>
+			<channel-group id="feature4" typeId="feature">
+				<label>Feature 4</label>
+			</channel-group>
+			<channel-group id="feature5" typeId="feature">
+				<label>Feature 5</label>
+			</channel-group>
+			<channel-group id="feature6" typeId="feature">
+				<label>Feature 6</label>
+			</channel-group>
+			<channel-group id="feature7" typeId="feature">
+				<label>Feature 7</label>
+			</channel-group>
+			<channel-group id="feature8" typeId="feature">
+				<label>Feature 8</label>
+			</channel-group>
+
+			<channel-group id="schedule1" typeId="schedule">
+				<label>Schedule 1</label>
+			</channel-group>
+			<channel-group id="schedule2" typeId="schedule">
+				<label>Schedule 2</label>
+			</channel-group>
+			<channel-group id="schedule3" typeId="schedule">
+				<label>Schedule 3</label>
+			</channel-group>
+			<channel-group id="schedule4" typeId="schedule">
+				<label>Schedule 4</label>
+			</channel-group>
+			<channel-group id="schedule5" typeId="schedule">
+				<label>Schedule 5</label>
+			</channel-group>
+			<channel-group id="schedule6" typeId="schedule">
+				<label>Schedule 6</label>
+			</channel-group>
+			<channel-group id="schedule7" typeId="schedule">
+				<label>Schedule 7</label>
+			</channel-group>
+			<channel-group id="schedule8" typeId="schedule">
+				<label>Schedule 8</label>
+			</channel-group>
+			<channel-group id="schedule9" typeId="schedule">
+				<label>Schedule 9</label>
+			</channel-group>
+			<channel-group id="status" typeId="status"/>
+		</channel-groups>
+
+		<properties>
+			<property name="firmwareVersion">Firmware Version</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer">
+				<label>ID</label>
+				<description>The ID of the device (in decimal, not hex)</description>
+				<default>16</default>
+			</parameter>
+
+			<parameter name="synctime" type="boolean">
+				<label>Synchronize Time</label>
+				<description>Enables automatic synchronization of the pool controller clock with the system clock</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="circuit">
+		<label>Circuit</label>
+		<description>Circuit</description>
+		<channels>
+			<channel id="switch" typeId="auxSwitch"/>
+			<channel id="name" typeId="circuitName"/>
+			<channel id="function" typeId="circuitFunction"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="feature">
+		<label>Feature</label>
+		<description>Features</description>
+		<channels>
+			<channel id="switch" typeId="auxSwitch"/>
+			<channel id="name" typeId="circuitName"/>
+			<channel id="function" typeId="circuitFunction"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="heat">
+		<label>Heat</label>
+		<description>Heat</description>
+		<channels>
+			<channel id="heatmode" typeId="heatMode"/>
+			<channel id="setpoint" typeId="heatSetPoint"/>
+			<channel id="temperature" typeId="heatTemperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="schedule">
+		<label>Schedule</label>
+		<description>schedule</description>
+		<channels>
+			<channel id="schedule" typeId="scheduleString"/>
+			<channel id="type" typeId="scheduleType"/>
+			<channel id="start" typeId="scheduleStart"/>
+			<channel id="end" typeId="scheduleEnd"/>
+			<channel id="circuit" typeId="scheduleCircuit"/>
+			<channel id="days" typeId="scheduleDays"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Status</label>
+		<description>General status channels for controller</description>
+		<channels>
+			<channel id="lightmode" typeId="lightMode"/>
+			<channel id="solartemperature" typeId="solarTemp"/>
+			<channel id="airtemperature" typeId="airTemp"/>
+			<channel id="heaterdelay" typeId="heaterDelay"/>
+			<channel id="servicemode" typeId="serviceMode"/>
+			<channel id="solaron" typeId="solarState"/>
+			<channel id="heateron" typeId="heaterState"/>
+		</channels>
+
+	</channel-group-type>
+
+	<channel-type id="heatTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Temperature</label>
+		<description>The temperature of the water. Only valid when pool pump is running.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="solarTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Temperature</label>
+		<description>The temperature of the solar sensor.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="airTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Air Temperature</label>
+		<description>The temperature of the air.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="auxSwitch">
+		<item-type>Switch</item-type>
+		<label>Auxillary Switch</label>
+		<description>The on/off control for this circuit.</description>
+	</channel-type>
+
+	<channel-type id="circuitName">
+		<item-type>String</item-type>
+		<label>Circuit Name</label>
+		<description>The name of this circuit.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="circuitFunction">
+		<item-type>String</item-type>
+		<label>Circuit Function</label>
+		<description>The function this circuit controls.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMode">
+		<item-type>String</item-type>
+		<label>Heat Mode</label>
+		<description>The current head mode (None, Heater, Solar Preferred, Solar).</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="HEATER">Heater</option>
+				<option value="SOLARPREFERRED">Solar Preferred</option>
+				<option value="SOLAR">Solar</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatSetPoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Set Point</label>
+		<description>The set point temperature for this mode.</description>
+		<state pattern="%d %unit%" min="15" max="105" step="1"/>
+	</channel-type>
+
+	<channel-type id="lightMode">
+		<item-type>String</item-type>
+		<label>Light Mode</label>
+		<description>The current light mode.</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ON">On</option>
+				<option value="COLORSYNC">Color Sync</option>
+				<option value="COLORSWIM">Color Swim</option>
+				<option value="COLORSET">Color Set</option>
+				<option value="PARTY">Party</option>
+				<option value="ROMANCE">Romance</option>
+				<option value="CARIBBEAN">Caribbean</option>
+				<option value="AMERICAN">American</option>
+				<option value="SUNSET">Sunset</option>
+				<option value="ROYAL">Royal</option>
+				<option value="BLUE">Blue</option>
+				<option value="GREEN">Green</option>
+				<option value="RED">Red</option>
+				<option value="WHITE">White</option>
+				<option value="MAGENTA">Magenta</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="scheduleType">
+		<item-type>String</item-type>
+		<label>Schedule Type</label>
+		<description>Type of schedule (None, Normal, EggTimer, OnceOnly).</description>
+		<state>
+			<options>
+				<option value="NONE">None</option>
+				<option value="NORMAL">Normal</option>
+				<option value="EGGTIMER">Egg Timer</option>
+				<option value="ONCEONLY">Once Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scheduleString">
+		<item-type>String</item-type>
+		<label>Schedule</label>
+		<description>String format of schedule.</description>
+	</channel-type>
+
+	<channel-type id="scheduleStart">
+		<item-type>Number:Time</item-type>
+		<label>Start Time</label>
+		<description>The start time for this schedule.</description>
+		<state min="0" max="1440"/>
+	</channel-type>
+
+	<channel-type id="scheduleEnd">
+		<item-type>Number:Time</item-type>
+		<label>End Time</label>
+		<description>The end time (or duration for Egg Timer) of this schedule.</description>
+		<state min="0" max="1440"/>
+	</channel-type>
+
+	<channel-type id="scheduleCircuit">
+		<item-type>Number</item-type>
+		<label>Circuit</label>
+		<description>The circuit number for the schedule.</description>
+	</channel-type>
+
+	<channel-type id="scheduleDays">
+		<item-type>String</item-type>
+		<label>Days</label>
+		<description>A string containing the days the schedule will run (SMTWRFY).</description>
+	</channel-type>
+
+	<channel-type id="serviceMode">
+		<item-type>Switch</item-type>
+		<label>Service Mode</label>
+		<description>Controller is in service mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heaterDelay">
+		<item-type>Switch</item-type>
+		<label>Heater Delay</label>
+		<description>Pump is continuing to run to allow the heater to cool.</description>
+	</channel-type>
+
+	<channel-type id="solarState">
+		<item-type>Switch</item-type>
+		<label>Solar Heater State</label>
+		<description>The state of the solar heater (on, off)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heaterState">
+		<item-type>Switch</item-type>
+		<label>Heater State</label>
+		<description>The state of the heater (on, off)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

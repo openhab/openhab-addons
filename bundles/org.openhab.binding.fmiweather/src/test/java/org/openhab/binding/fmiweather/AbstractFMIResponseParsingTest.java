@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class AbstractFMIResponseParsingTest {
     }
 
     protected static Matcher<Data> deeplyEqualTo(long start, int intervalMinutes, String... values) {
-        return new TypeSafeMatcher<Data>() {
+        return new TypeSafeMatcher<>() {
 
             private TimestampMatcher timestampMatcher = new TimestampMatcher(start, intervalMinutes, values.length);
             private ValuesMatcher valuesMatcher = new ValuesMatcher(values);

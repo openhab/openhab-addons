@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,27 +12,36 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import static org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.LinkedHashMap;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.component.LifeCycle.Listener;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
+import org.openhab.binding.samsungtv.internal.SamsungTvAppWatchService;
+import org.openhab.binding.samsungtv.internal.Utils;
+import org.openhab.binding.samsungtv.internal.service.RemoteControllerService;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link RemoteControllerWebSocket} is responsible for sending key codes to the
@@ -40,6 +49,7 @@ import com.google.gson.Gson;
  *
  * @author Arjan Mels - Initial contribution
  * @author Arjan Mels - Moved websocket inner classes to standalone classes
+ * @author Nick Waterton - added Action enum, manual app handling and some refactoring
  */
 @NonNullByDefault
 public class RemoteControllerWebSocket extends RemoteController implements Listener {
@@ -55,37 +65,33 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
     private final WebSocketArt webSocketArt;
     private final WebSocketV2 webSocketV2;
 
+    // refresh limit for current app update (in seconds)
+    private static final long UPDATE_CURRENT_APP_REFRESH_SECONDS = 10;
+    private Instant previousUpdateCurrentApp = Instant.MIN;
+
     // JSON parser class. Also used by WebSocket handlers.
-    final Gson gson = new Gson();
+    public final Gson gson = new Gson();
 
     // Callback class. Also used by WebSocket handlers.
-    final RemoteControllerWebsocketCallback callback;
+    final RemoteControllerService callback;
 
     // Websocket client class shared by WebSocket handlers.
     final WebSocketClient client;
 
-    // temporary storage for source app. Will be used as value for the sourceApp channel when information is complete.
-    // Also used by Websocket handlers.
-    @Nullable
-    String currentSourceApp = null;
+    // App File servicce
+    private final SamsungTvAppWatchService samsungTvAppWatchService;
 
-    // last app in the apps list: used to detect when status information is complete in WebSocketV2.
-    @Nullable
-    String lastApp = null;
-
-    // timeout for status information search
-    private static final long UPDATE_CURRENT_APP_TIMEOUT = 5000;
-    private long previousUpdateCurrentApp = 0;
+    // list instaled apps after 2 updates
+    public int updateCount = 0;
 
     // UUID used for data exchange via websockets
     final UUID uuid = UUID.randomUUID();
 
     // Description of Apps
-    @NonNullByDefault()
-    class App {
-        String appId;
-        String name;
-        int type;
+    public class App {
+        public String appId;
+        public String name;
+        public int type;
 
         App(String appId, String name, int type) {
             this.appId = appId;
@@ -97,10 +103,58 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         public String toString() {
             return this.name;
         }
+
+        public String getAppId() {
+            return appId != null ? appId : "";
+        }
+
+        public String getName() {
+            return name != null ? name : "";
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getType() {
+            return Optional.ofNullable(type).orElse(2);
+        }
     }
 
     // Map of all available apps
-    Map<String, App> apps = new LinkedHashMap<>();
+    public Map<String, App> apps = new ConcurrentHashMap<>();
+    // manually added apps (from File)
+    public Map<String, App> manApps = new ConcurrentHashMap<>();
+
+    /**
+     * The {@link Action} presents available actions for keys with Samsung TV.
+     *
+     */
+    public static enum Action {
+
+        CLICK("Click"),
+        PRESS("Press"),
+        RELEASE("Release"),
+        MOVE("Move"),
+        END("End"),
+        TEXT("Text"),
+        MOUSECLICK("MouseClick");
+
+        private final String value;
+
+        Action() {
+            value = "Click";
+        }
+
+        Action(String newvalue) {
+            this.value = newvalue;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
 
     /**
      * Create and initialize remote controller instance.
@@ -109,22 +163,25 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
      * @param port TCP port of the remote controller protocol.
      * @param appName Application name used to send key codes.
      * @param uniqueId Unique Id used to send key codes.
-     * @param remoteControllerWebsocketCallback callback
+     * @param callback RemoteControllerService callback
      * @throws RemoteControllerException
      */
     public RemoteControllerWebSocket(String host, int port, String appName, String uniqueId,
-            RemoteControllerWebsocketCallback remoteControllerWebsocketCallback) throws RemoteControllerException {
+            RemoteControllerService callback) throws RemoteControllerException {
         super(host, port, appName, uniqueId);
+        this.callback = callback;
 
-        this.callback = remoteControllerWebsocketCallback;
-
-        WebSocketFactory webSocketFactory = remoteControllerWebsocketCallback.getWebSocketFactory();
+        WebSocketFactory webSocketFactory = callback.getWebSocketFactory();
         if (webSocketFactory == null) {
             throw new RemoteControllerException("No WebSocketFactory available");
         }
 
-        client = webSocketFactory.createWebSocketClient("samsungtv");
+        this.samsungTvAppWatchService = new SamsungTvAppWatchService(host, this);
 
+        SslContextFactory sslContextFactory = new SslContextFactory.Client( /* trustall= */ true);
+        /* remove extra filters added by jetty on cipher suites */
+        sslContextFactory.setExcludeCipherSuites();
+        client = webSocketFactory.createWebSocketClient("samsungtv", sslContextFactory);
         client.addLifeCycleListener(this);
 
         webSocketRemote = new WebSocketRemote(this);
@@ -132,67 +189,73 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         webSocketV2 = new WebSocketV2(this);
     }
 
-    @Override
     public boolean isConnected() {
+        if (callback.getArtModeSupported()) {
+            return webSocketRemote.isConnected() && webSocketArt.isConnected();
+        }
         return webSocketRemote.isConnected();
     }
 
-    @Override
     public void openConnection() throws RemoteControllerException {
-        logger.trace("openConnection()");
+        logger.trace("{}: openConnection()", host);
 
         if (!(client.isStarted() || client.isStarting())) {
-            logger.debug("RemoteControllerWebSocket start Client");
+            logger.debug("{}: RemoteControllerWebSocket start Client", host);
             try {
                 client.start();
-                client.setMaxBinaryMessageBufferSize(1000000);
+                client.setMaxBinaryMessageBufferSize(1024 * 1024);
                 // websocket connect will be done in lifetime handler
                 return;
             } catch (Exception e) {
-                logger.warn("Cannot connect to websocket remote control interface: {}", e.getMessage(), e);
+                logger.warn("{}: Cannot connect to websocket remote control interface: {}", host, e.getMessage());
                 throw new RemoteControllerException(e);
             }
         }
         connectWebSockets();
     }
 
-    private void connectWebSockets() {
-        logger.trace("connectWebSockets()");
-
-        String encodedAppName = Base64.getUrlEncoder().encodeToString(appName.getBytes());
-
-        String protocol;
-
-        if (SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET
-                .equals(callback.getConfig(SamsungTvConfiguration.PROTOCOL))) {
-            protocol = "wss";
+    private void logResult(String msg, Throwable cause) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}: {}: ", host, msg, cause);
         } else {
-            protocol = "ws";
+            logger.warn("{}: {}: {}", host, msg, cause.getMessage());
         }
+    }
 
+    private void connectWebSockets() {
+        logger.trace("{}: connectWebSockets()", host);
+
+        String encodedAppName = Utils.b64encode(appName);
+
+        String protocol = PROTOCOL_SECUREWEBSOCKET.equals(callback.handler.configuration.getProtocol()) ? "wss" : "ws";
         try {
-            String token = (String) callback.getConfig(SamsungTvConfiguration.WEBSOCKET_TOKEN);
+            String token = callback.handler.configuration.getWebsocketToken();
+            if ("wss".equals(protocol) && token.isBlank()) {
+                logger.warn(
+                        "{}: WebSocketRemote connecting without Token, please accept the connection on the TV within 30 seconds",
+                        host);
+            }
             webSocketRemote.connect(new URI(protocol, null, host, port, WS_ENDPOINT_REMOTE_CONTROL,
-                    "name=" + encodedAppName + (StringUtil.isNotBlank(token) ? "&token=" + token : ""), null));
+                    "name=" + encodedAppName + (token.isBlank() ? "" : "&token=" + token), null));
         } catch (RemoteControllerException | URISyntaxException e) {
-            logger.warn("Problem connecting to remote websocket", e);
+            logResult("Problem connecting to remote websocket", e);
         }
 
         try {
             webSocketArt.connect(new URI(protocol, null, host, port, WS_ENDPOINT_ART, "name=" + encodedAppName, null));
         } catch (RemoteControllerException | URISyntaxException e) {
-            logger.warn("Problem connecting to artmode websocket", e);
+            logResult("Problem connecting to artmode websocket", e);
         }
 
         try {
             webSocketV2.connect(new URI(protocol, null, host, port, WS_ENDPOINT_V2, "name=" + encodedAppName, null));
         } catch (RemoteControllerException | URISyntaxException e) {
-            logger.warn("Problem connecting to V2 websocket", e);
+            logResult("Problem connecting to V2 websocket", e);
         }
     }
 
     private void closeConnection() throws RemoteControllerException {
-        logger.debug("RemoteControllerWebSocket closeConnection");
+        logger.debug("{}: RemoteControllerWebSocket closeConnection", host);
 
         try {
             webSocketRemote.close();
@@ -206,177 +269,227 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
 
     @Override
     public void close() throws RemoteControllerException {
-        logger.debug("RemoteControllerWebSocket close");
+        logger.debug("{}: RemoteControllerWebSocket close", host);
         closeConnection();
+    }
+
+    public boolean noApps() {
+        return apps.isEmpty();
+    }
+
+    public void listApps() {
+        Stream<Map.Entry<String, App>> st = (noApps()) ? manApps.entrySet().stream() : apps.entrySet().stream();
+        logger.debug("{}: Installed Apps: {}", host,
+                st.map(entry -> entry.getValue().appId + " = " + entry.getKey()).collect(Collectors.joining(", ")));
     }
 
     /**
      * Retrieve app status for all apps. In the WebSocketv2 handler the currently running app will be determined
      */
-    void updateCurrentApp() {
+    public synchronized void updateCurrentApp() {
+        // limit noApp refresh rate
+        if (noApps()
+                && Instant.now().isBefore(previousUpdateCurrentApp.plusSeconds(UPDATE_CURRENT_APP_REFRESH_SECONDS))) {
+            return;
+        }
+        previousUpdateCurrentApp = Instant.now();
         if (webSocketV2.isNotConnected()) {
-            logger.warn("Cannot retrieve current app webSocketV2 is not connected");
+            logger.warn("{}: Cannot retrieve current app webSocketV2 is not connected", host);
             return;
         }
-
-        // update still running and not timed out
-        if (lastApp != null && System.currentTimeMillis() < previousUpdateCurrentApp + UPDATE_CURRENT_APP_TIMEOUT) {
-            return;
+        // if noapps by this point, start file app service
+        if (updateCount >= 1 && noApps() && !samsungTvAppWatchService.getStarted()) {
+            samsungTvAppWatchService.start();
         }
-
-        lastApp = null;
-        previousUpdateCurrentApp = System.currentTimeMillis();
-
-        currentSourceApp = null;
-
-        // retrieve last app (don't merge with next loop as this might run asynchronously
-        for (App app : apps.values()) {
-            lastApp = app.appId;
+        // list apps
+        if (updateCount++ == 2) {
+            listApps();
         }
-
-        for (App app : apps.values()) {
-            webSocketV2.getAppStatus(app.appId);
+        for (App app : (noApps()) ? manApps.values() : apps.values()) {
+            webSocketV2.getAppStatus(app.getAppId());
+            // prevent being called again if this takes a while
+            previousUpdateCurrentApp = Instant.now();
         }
+    }
+
+    /**
+     * Update manual App list from file (called from SamsungTvAppWatchService)
+     */
+    public void updateAppList(List<String> fileApps) {
+        previousUpdateCurrentApp = Instant.now();
+        manApps.clear();
+        fileApps.forEach(line -> {
+            try {
+                App app = gson.fromJson(line, App.class);
+                if (app != null) {
+                    manApps.put(app.getName(), new App(app.getAppId(), app.getName(), app.getType()));
+                    logger.debug("{}: Added app: {}/{}", host, app.getName(), app.getAppId());
+                }
+            } catch (JsonSyntaxException e) {
+                logger.warn("{}: cannot add app, wrong format {}: {}", host, line, e.getMessage());
+            }
+        });
+        addKnownAppIds();
+        updateCount = 0;
+    }
+
+    /**
+     * Add all know app id's to manApps
+     */
+    public void addKnownAppIds() {
+        KnownAppId.stream().filter(id -> !manApps.values().stream().anyMatch(a -> a.getAppId().equals(id)))
+                .forEach(id -> {
+                    previousUpdateCurrentApp = Instant.now();
+                    manApps.put(id, new App(id, id, 2));
+                    logger.debug("{}: Added Known appId: {}", host, id);
+                });
     }
 
     /**
      * Send key code to Samsung TV.
      *
      * @param key Key code to send.
-     * @throws RemoteControllerException
      */
-    @Override
-    public void sendKey(KeyCode key) throws RemoteControllerException {
-        sendKey(key, false);
-    }
-
-    public void sendKeyPress(KeyCode key) throws RemoteControllerException {
-        sendKey(key, true);
-    }
-
-    public void sendKey(KeyCode key, boolean press) throws RemoteControllerException {
-        logger.debug("Try to send command: {}", key);
-
-        if (!isConnected()) {
-            openConnection();
+    public void sendKey(Object key) {
+        if (key instanceof KeyCode keyAsKeyCode) {
+            sendKey(keyAsKeyCode, Action.CLICK);
+        } else if (key instanceof String) {
+            sendKey((String) key);
         }
+    }
 
+    public void sendKey(String value) {
         try {
-            sendKeyData(key, press);
+            if (value.startsWith("{")) {
+                sendKeyData(value, Action.MOVE);
+            } else if ("LeftClick".equals(value) || "RightClick".equals(value)) {
+                sendKeyData(value, Action.MOUSECLICK);
+            } else if (value.isEmpty()) {
+                sendKeyData("", Action.END);
+            } else {
+                sendKeyData(value, Action.TEXT);
+            }
         } catch (RemoteControllerException e) {
-            logger.debug("Couldn't send command", e);
-            logger.debug("Retry one time...");
-
-            closeConnection();
-            openConnection();
-
-            sendKeyData(key, press);
+            logger.debug("{}: Couldn't send Text/Mouse move {}", host, e.getMessage());
         }
     }
 
-    /**
-     * Send sequence of key codes to Samsung TV.
-     *
-     * @param keys List of key codes to send.
-     * @throws RemoteControllerException
-     */
-    @Override
-    public void sendKeys(List<KeyCode> keys) throws RemoteControllerException {
-        sendKeys(keys, 300);
+    public void sendKey(KeyCode key, Action action) {
+        try {
+            sendKeyData(key, action);
+        } catch (RemoteControllerException e) {
+            logger.debug("{}: Couldn't send command {}", host, e.getMessage());
+        }
     }
 
-    /**
-     * Send sequence of key codes to Samsung TV.
-     *
-     * @param keys List of key codes to send.
-     * @param sleepInMs Sleep between key code sending in milliseconds.
-     * @throws RemoteControllerException
-     */
-    public void sendKeys(List<KeyCode> keys, int sleepInMs) throws RemoteControllerException {
-        logger.debug("Try to send sequence of commands: {}", keys);
-
-        if (!isConnected()) {
-            openConnection();
-        }
-
-        for (int i = 0; i < keys.size(); i++) {
-            KeyCode key = keys.get(i);
-            try {
-                sendKeyData(key, false);
-            } catch (RemoteControllerException e) {
-                logger.debug("Couldn't send command", e);
-                logger.debug("Retry one time...");
-
-                closeConnection();
-                openConnection();
-
-                sendKeyData(key, false);
-            }
-
-            if ((keys.size() - 1) != i) {
-                // Sleep a while between commands
-                try {
-                    Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
+    public void sendKeyPress(KeyCode key, int duration) {
+        sendKey(key, Action.PRESS);
+        // send key release in duration milliseconds
+        @Nullable
+        ScheduledExecutorService scheduler = callback.getScheduler();
+        if (scheduler != null) {
+            scheduler.schedule(() -> {
+                if (isConnected()) {
+                    sendKey(key, Action.RELEASE);
                 }
+            }, duration, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void sendKeyData(Object key, Action action) throws RemoteControllerException {
+        logger.debug("{}: Try to send Key: {}, Action: {}", host, key, action);
+        webSocketRemote.sendKeyData(action.toString(), key.toString());
+    }
+
+    public void sendSourceApp(String appName) {
+        if (appName.toLowerCase().contains("slideshow")) {
+            webSocketArt.setSlideshow(appName);
+        } else {
+            sendSourceApp(appName, null);
+        }
+    }
+
+    public void sendSourceApp(final String appName, @Nullable String url) {
+        Stream<Map.Entry<String, App>> st = (noApps()) ? manApps.entrySet().stream() : apps.entrySet().stream();
+        boolean found = st.filter(a -> a.getKey().equals(appName) || a.getValue().name.equals(appName))
+                .map(a -> sendSourceApp(a.getValue().appId, a.getValue().type == 2, url)).findFirst().orElse(false);
+        if (!found) {
+            // treat appName as appId with optional type number eg "3201907018807, 2"
+            String[] appArray = (url == null) ? appName.trim().split(",") : "org.tizen.browser,4".split(",");
+            sendSourceApp(appArray[0].trim(), (appArray.length > 1) ? "2".equals(appArray[1].trim()) : true, url);
+        }
+    }
+
+    public boolean sendSourceApp(String appId, boolean type, @Nullable String url) {
+        if (noApps()) {
+            // 2020 TV's and later use webSocketV2 for app launch
+            webSocketV2.sendSourceApp(appId, type, url);
+        } else {
+            if (webSocketV2.isConnected() && url == null) {
+                // it seems all Tizen TV's can use webSocketV2 if it connects
+                webSocketV2.sendSourceApp(appId, type, url);
+            } else {
+                webSocketRemote.sendSourceApp(appId, type, url);
             }
         }
-
-        logger.debug("Command(s) successfully sent");
-    }
-
-    private void sendKeyData(KeyCode key, boolean press) throws RemoteControllerException {
-        webSocketRemote.sendKeyData(press, key.toString());
-    }
-
-    public void sendSourceApp(String app) {
-        String appName = app;
-        App appVal = apps.get(app);
-        boolean deepLink = false;
-        appName = appVal.appId;
-        deepLink = appVal.type == 2;
-
-        webSocketRemote.sendSourceApp(appName, deepLink);
+        return true;
     }
 
     public void sendUrl(String url) {
         String processedUrl = url.replace("/", "\\/");
-        webSocketRemote.sendSourceApp("org.tizen.browser", false, processedUrl);
+        sendSourceApp("Internet", processedUrl);
     }
 
-    public List<String> getAppList() {
-        ArrayList<String> appList = new ArrayList<>();
-        for (App app : apps.values()) {
-            appList.add(app.name);
+    public boolean closeApp() {
+        return webSocketV2.closeApp();
+    }
+
+    /**
+     * Get app status after 3 second delay (apps take 3s to launch)
+     */
+    public void getAppStatus(String id) {
+        @Nullable
+        ScheduledExecutorService scheduler = callback.getScheduler();
+        if (scheduler != null) {
+            scheduler.schedule(() -> {
+                if (webSocketV2.isConnected()) {
+                    if (!id.isBlank()) {
+                        webSocketV2.getAppStatus(id);
+                    } else {
+                        updateCurrentApp();
+                    }
+                }
+            }, 3000, TimeUnit.MILLISECONDS);
         }
-        return appList;
+    }
+
+    public void getArtmodeStatus(String... optionalRequests) {
+        webSocketArt.getArtmodeStatus(optionalRequests);
     }
 
     @Override
     public void lifeCycleStarted(@Nullable LifeCycle arg0) {
-        logger.trace("WebSocketClient started");
+        logger.trace("{}: WebSocketClient started", host);
         connectWebSockets();
     }
 
     @Override
     public void lifeCycleFailure(@Nullable LifeCycle arg0, @Nullable Throwable throwable) {
-        logger.warn("WebSocketClient failure: {}", throwable != null ? throwable.toString() : null);
+        logger.warn("{}: WebSocketClient failure: {}", host, throwable != null ? throwable.toString() : null);
     }
 
     @Override
     public void lifeCycleStarting(@Nullable LifeCycle arg0) {
-        logger.trace("WebSocketClient starting");
+        logger.trace("{}: WebSocketClient starting", host);
     }
 
     @Override
     public void lifeCycleStopped(@Nullable LifeCycle arg0) {
-        logger.trace("WebSocketClient stopped");
+        logger.trace("{}: WebSocketClient stopped", host);
     }
 
     @Override
     public void lifeCycleStopping(@Nullable LifeCycle arg0) {
-        logger.trace("WebSocketClient stopping");
+        logger.trace("{}: WebSocketClient stopping", host);
     }
 }

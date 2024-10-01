@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ModbusBinding} class defines common constants, which are
+ * The {@link ModbusBindingConstantsInternal} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Sami Salonen - Initial contribution

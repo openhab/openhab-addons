@@ -1,0 +1,28 @@
+{
+    "errors": [],
+    "data": [
+        {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "id_v1": "/sensors/5",
+            "owner": {
+                "rid": "00000000-0000-0000-0000-000000000000",
+                "rtype": "device"
+            },
+            "enabled": true,
+            "motion": {
+                "motion": false,
+                "motion_valid": true,
+                "motion_report": {
+                    "changed": "2020-04-01T20:04:30.395Z",
+                    "motion": true
+                }
+            },
+            "sensitivity": {
+                "status": "set",
+                "sensitivity": 2,
+                "sensitivity_max": 4
+            },
+            "type": "camera_motion"
+        }
+    ]
+}

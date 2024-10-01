@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,7 +55,7 @@ public class LutronMcastBridgeDiscoveryService extends AbstractDiscoveryService 
     private static final int SCAN_INTERVAL_MINUTES = 30;
     private static final int SCAN_TIMEOUT_MS = 2000;
 
-    private static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Collections.singleton(THING_TYPE_IPBRIDGE);
+    private static final Set<ThingTypeUID> BRIDGE_TYPE_UID = Set.of(THING_TYPE_IPBRIDGE);
 
     private static final String GROUP_ADDRESS = "224.0.37.42";
     private static final byte[] QUERY_DATA = "<LUTRON=1>".getBytes(StandardCharsets.US_ASCII);

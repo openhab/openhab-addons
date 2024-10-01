@@ -14,10 +14,49 @@
 		<description>Tapo Smart LED-Lightstrip</description>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightStrip"/>
+			<channel-group id="effects" typeId="lightEffectL900"/>
 			<channel-group id="device" typeId="deviceState"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:tapo:device"/>
 	</thing-type>
+
+	<!-- Lightning Effect -->
+	<channel-group-type id="lightEffectL900">
+		<label>Lightning Effect</label>
+		<description>Tapo Lightning Effects</description>
+		<channels>
+			<channel id="fxName" typeId="l900fxList"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- effect name -->
+	<channel-type id="l900fxList">
+		<item-type>String</item-type>
+		<label>Light Effect Theme</label>
+		<description>Name of lightning effect</description>
+		<state readOnly="false">
+			<options>
+				<option value="off">None (No FX)</option>
+				<option value="aurora">Aurora</option>
+				<option value="bubbling_calderon">Bubbling Calderon</option>
+				<option value="christmas">Christmas</option>
+				<option value="christmas_light">Christmas Light</option>
+				<option value="candy_cane">Candy</option>
+				<option value="flicker">Flicker</option>
+				<option value="hanukkah">Hanukkah</option>
+				<option value="haunted_mansion">Haunted Mansion</option>
+				<option value="icicle">Icicle</option>
+				<option value="lightning">Lightning</option>
+				<option value="ocean">Ocean</option>
+				<option value="rainbow">Rainbow</option>
+				<option value="raindrop">Raindrop</option>
+				<option value="spring">Spring</option>
+				<option value="sunrise">Sunrise</option>
+				<option value="sunset">Sunset</option>
+				<option value="valentines">Valentines</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

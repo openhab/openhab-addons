@@ -338,7 +338,7 @@
 	</channel-type>
 
 	<channel-type id="humidityControlSetValue" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Control Set Value</label>
 		<description>Humidity control set value (in percent)</description>
 		<category>Humidity</category>
@@ -346,7 +346,7 @@
 	</channel-type>
 
 	<channel-type id="humidityControlSteps" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Control Steps</label>
 		<description>Humidity control steps (in percent)</description>
 		<category>Humidity</category>

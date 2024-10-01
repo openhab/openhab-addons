@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,11 +65,9 @@ public class MinecraftHandlerFactory extends BaseThingHandlerFactory {
             minecraftServers.add(serverHandler);
             return serverHandler;
         } else if (thingTypeUID.equals(MinecraftBindingConstants.THING_TYPE_PLAYER)) {
-            MinecraftPlayerHandler playerHandler = new MinecraftPlayerHandler(thing);
-            return playerHandler;
+            return new MinecraftPlayerHandler(thing);
         } else if (thingTypeUID.equals(MinecraftBindingConstants.THING_TYPE_SIGN)) {
-            MinecraftSignHandler signHandler = new MinecraftSignHandler(thing);
-            return signHandler;
+            return new MinecraftSignHandler(thing);
         }
 
         return null;

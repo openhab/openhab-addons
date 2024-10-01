@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.chatgpt.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ChatGPTBindingConstants} class defines common constants, which are
@@ -32,6 +33,5 @@ public class ChatGPTBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_CHAT = "chat";
 
-    public static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-    public static final String OPENAI_MODELS_URL = "https://api.openai.com/v1/models";
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_CHAT = new ChannelTypeUID(BINDING_ID, CHANNEL_CHAT);
 }

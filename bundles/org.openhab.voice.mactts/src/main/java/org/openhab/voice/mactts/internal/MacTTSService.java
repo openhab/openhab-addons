@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,10 +24,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.voice.AbstractCachedTTSService;
+import org.openhab.core.voice.TTSCache;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +39,20 @@ import org.slf4j.LoggerFactory;
  * This is a TTS service implementation for Mac OS, which simply uses the "say" command from the OS.
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Pauli Antilla
- * @author Kelly Davis
+ * @author Pauli Antilla - Improvements
+ * @author Kelly Davis - Improvements
+ * @author Laurent Garnier - Implement TTS LRU cache
  */
-@Component
+@Component(service = TTSService.class)
 @NonNullByDefault
-public class MacTTSService implements TTSService {
+public class MacTTSService extends AbstractCachedTTSService {
 
     private final Logger logger = LoggerFactory.getLogger(MacTTSService.class);
+
+    @Activate
+    public MacTTSService(final @Reference TTSCache ttsCache) {
+        super(ttsCache);
+    }
 
     /**
      * Set of supported voices
@@ -66,7 +76,7 @@ public class MacTTSService implements TTSService {
     }
 
     @Override
-    public AudioStream synthesize(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
+    public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat requestedFormat) throws TTSException {
         // Validate arguments
         if (text.isEmpty()) {
             throw new TTSException("The passed text is null or empty");

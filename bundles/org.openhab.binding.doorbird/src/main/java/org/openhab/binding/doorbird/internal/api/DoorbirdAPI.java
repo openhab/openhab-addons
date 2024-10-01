@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,7 @@ public final class DoorbirdAPI {
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(DoorbirdAPI.class);
+    private static final int CHUNK_SIZE = 256;
 
     private @Nullable Authorization authorization;
     private @Nullable HttpClient httpClient;
@@ -92,13 +93,28 @@ public final class DoorbirdAPI {
             logger.debug("Doorbird returned json response: {}", infoResponse);
             doorbirdInfo = new DoorbirdInfo(infoResponse);
         } catch (IOException e) {
-            logger.info("Unable to communicate with Doorbird: {}", e.getMessage());
+            logger.warn("Unable to communicate with Doorbird: {}", e.getMessage());
         } catch (JsonSyntaxException e) {
-            logger.info("Unable to parse Doorbird response: {}", e.getMessage());
+            logger.warn("Unable to parse Doorbird response: {}", e.getMessage());
         } catch (DoorbirdUnauthorizedException e) {
             logAuthorizationError("getDoorbirdName");
         }
         return doorbirdInfo;
+    }
+
+    public @Nullable DoorbirdSession getSession() {
+        DoorbirdSession doorbirdSession = null;
+        try {
+            String sessionResponse = executeGetRequest("/bha-api/getsession.cgi");
+            doorbirdSession = new DoorbirdSession(sessionResponse);
+        } catch (IOException e) {
+            logger.warn("Unable to communicate with Doorbird: {}", e.getMessage());
+        } catch (JsonSyntaxException e) {
+            logger.warn("Unable to parse Doorbird response: {}", e.getMessage());
+        } catch (DoorbirdUnauthorizedException e) {
+            logAuthorizationError("getDoorbirdName");
+        }
+        return doorbirdSession;
     }
 
     public @Nullable SipStatus getSipStatus() {
@@ -108,9 +124,9 @@ public final class DoorbirdAPI {
             logger.debug("Doorbird returned json response: {}", statusResponse);
             sipStatus = new SipStatus(statusResponse);
         } catch (IOException e) {
-            logger.info("Unable to communicate with Doorbird: {}", e.getMessage());
+            logger.warn("Unable to communicate with Doorbird: {}", e.getMessage());
         } catch (JsonSyntaxException e) {
-            logger.info("Unable to parse Doorbird response: {}", e.getMessage());
+            logger.warn("Unable to parse Doorbird response: {}", e.getMessage());
         } catch (DoorbirdUnauthorizedException e) {
             logAuthorizationError("getSipStatus");
         }
@@ -122,7 +138,7 @@ public final class DoorbirdAPI {
             String response = executeGetRequest("/bha-api/light-on.cgi");
             logger.debug("Response={}", response);
         } catch (IOException e) {
-            logger.debug("IOException turning on light: {}", e.getMessage());
+            logger.warn("IOException turning on light: {}", e.getMessage());
         } catch (DoorbirdUnauthorizedException e) {
             logAuthorizationError("lightOn");
         }
@@ -133,7 +149,7 @@ public final class DoorbirdAPI {
             String response = executeGetRequest("/bha-api/restart.cgi");
             logger.debug("Response={}", response);
         } catch (IOException e) {
-            logger.debug("IOException restarting device: {}", e.getMessage());
+            logger.warn("IOException restarting device: {}", e.getMessage());
         } catch (DoorbirdUnauthorizedException e) {
             logAuthorizationError("restart");
         }
@@ -144,7 +160,7 @@ public final class DoorbirdAPI {
             String response = executeGetRequest("/bha-api/sip.cgi?action=hangup");
             logger.debug("Response={}", response);
         } catch (IOException e) {
-            logger.debug("IOException hanging up SIP call: {}", e.getMessage());
+            logger.warn("IOException hanging up SIP call: {}", e.getMessage());
         } catch (DoorbirdUnauthorizedException e) {
             logAuthorizationError("sipHangup");
         }
@@ -191,7 +207,6 @@ public final class DoorbirdAPI {
             // It is crucial to send data in small chunks to not overload the doorbird
             // It means that we have to wait the appropriate amount of time between chunk to send
             // real time data, as if it were live spoken.
-            int CHUNK_SIZE = 256;
             int nbByteRead = -1;
             long nextChunkSendTimeStamp = 0;
             do {
@@ -320,6 +335,6 @@ public final class DoorbirdAPI {
     }
 
     private void logAuthorizationError(String operation) {
-        logger.info("Authorization info is not set or is incorrect on call to '{}' API", operation);
+        logger.warn("Authorization info is not set or is incorrect on call to '{}' API", operation);
     }
 }

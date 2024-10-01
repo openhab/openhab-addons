@@ -10,6 +10,8 @@
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="fuel" typeId="range-fuel-channel"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
+			<channel id="estimated-fuel-l-100km" typeId="estimated-fuel-l-100km-channel"/>
+			<channel id="estimated-fuel-mpg" typeId="estimated-fuel-mpg-channel"/>
 			<channel id="radius-fuel" typeId="range-radius-fuel-channel"/>
 		</channels>
 	</channel-group-type>

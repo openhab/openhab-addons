@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public enum SilentModeState {
     MODE_NORMAL,
     MODE_SILENT;
 
-    public static SilentModeState fromOnOffType(OnOffType onOffType) {
-        return onOffType == OnOffType.ON ? SilentModeState.MODE_SILENT : SilentModeState.MODE_NORMAL;
+    public static SilentModeState fromOnOffType(OnOffType onOffCommand) {
+        return onOffCommand == OnOffType.ON ? SilentModeState.MODE_SILENT : SilentModeState.MODE_NORMAL;
     }
 }

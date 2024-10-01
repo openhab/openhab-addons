@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.dsmr.internal.device.connector;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -125,7 +125,7 @@ class DSMRBaseConnector {
             }
         } catch (final IOException e) {
             dsmrConnectorListener.handleError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNullElse(e.getMessage(), ""));
             logger.debug("Exception on read data", e);
         }
     }

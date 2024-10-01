@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.CarbonMonoxideSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxideDetectedEnum;
 import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
@@ -33,14 +35,19 @@ import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
  */
 public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl
         implements CarbonMonoxideSensorAccessory {
-    private final Map<CarbonMonoxideDetectedEnum, String> mapping;
+    private final Map<CarbonMonoxideDetectedEnum, Object> mapping;
 
     public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
-            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
-            throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         mapping = createMapping(CARBON_MONOXIDE_DETECTED_STATE, CarbonMonoxideDetectedEnum.class);
-        getServices().add(new CarbonMonoxideSensorService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new CarbonMonoxideSensorService(this));
     }
 
     @Override

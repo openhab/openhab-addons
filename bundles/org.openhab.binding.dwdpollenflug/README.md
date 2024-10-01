@@ -177,7 +177,7 @@ Text label="Pollenflugindex" {
                                 =="2"="#ff9900",
                                 =="1-2"="#ff9900",
                                 =="1"="#ffff00",
-                                =="0-1"="#00c83c"] 
+                                =="0-1"="#00c83c"]
 
                 Text item=pollenTomorrowEsche
                     valuecolor=[=="3"="#f00014",

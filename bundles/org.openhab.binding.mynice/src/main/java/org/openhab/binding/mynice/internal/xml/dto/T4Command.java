@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.mynice.internal.xml.dto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +60,6 @@ public enum T4Command {
     }
 
     public static List<T4Command> fromBitmask(int bitmask) {
-        return Stream.of(T4Command.values()).filter(command -> ((1 << command.bitPosition) & bitmask) != 0)
-                .collect(Collectors.toList());
+        return Stream.of(T4Command.values()).filter(command -> ((1 << command.bitPosition) & bitmask) != 0).toList();
     }
 }

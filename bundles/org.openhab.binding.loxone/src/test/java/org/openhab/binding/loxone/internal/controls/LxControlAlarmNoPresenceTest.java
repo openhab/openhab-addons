@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class LxControlAlarmNoPresenceTest extends LxControlTest {
     static final String SENSORS_CHANNEL = " / Sensors";
     static final String QUIT_CHANNEL = " / Acknowledge";
 
-    private static final String NUMBER_CHANNELS[] = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
+    private static final String[] NUMBER_CHANNELS = { NEXT_LEVEL_CHANNEL, NEXT_LEVEL_DELAY_CHANNEL,
             NEXT_LEVEL_DELAY_TOTAL_CHANNEL, LEVEL_CHANNEL, ARMED_DELAY_CHANNEL, ARMED_TOTAL_DELAY_CHANNEL };
 
     @BeforeEach

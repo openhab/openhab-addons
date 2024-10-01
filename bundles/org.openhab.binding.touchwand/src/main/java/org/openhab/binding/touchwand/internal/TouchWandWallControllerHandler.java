@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,8 +48,8 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandUnitDataWallController) {
-            Csc status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
+        if (unitData instanceof TouchWandUnitDataWallController unitDataWallController) {
+            Csc status = unitDataWallController.getCurrStatus();
             long ts = status.getTs();
             long timeDiff = ts - timeLastEventMs;
             if ((timeDiff) > ADJACENT_EVENT_FILTER_TIME_MILLISEC) {

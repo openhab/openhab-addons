@@ -123,8 +123,8 @@ Bridge vesync:bridge:vesyncServers [username="<USERNAME>", password="<PASSWORD>"
 #### Air Purifier Core 400S / 600S Model
 
 ```java
-Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                 { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
-Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                               { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
+Switch               LoungeAPPower                 "Lounge Air Purifier Power"                                  { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:enabled" }
+Switch               LoungeAPDisplay               "Lounge Air Purifier Display"                                { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:display" }
 Switch               LoungeAPControlsLock          "Lounge Air Purifier Controls Locked"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:childLock" }
 Number:Dimensionless LoungeAPFilterRemainingUse    "Lounge Air Purifier Filter Remaining [%.0f %unit%]"         { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:filterLifePercentage" }
 String               LoungeAPMode                  "Lounge Air Purifier Mode [%s]"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:fanMode" }
@@ -133,7 +133,6 @@ Number:Density       LoungeAPAirQuality            "Lounge Air Purifier Air Qual
 Number               LoungeAPErrorCode             "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
 String               LoungeAPAutoMode              "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
 Number               LoungeAPAutoRoomSize          "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft             "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount        "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
@@ -152,7 +151,6 @@ Number:Density       LoungeAPAirQuality            "Lounge Air Purifier Air Qual
 Number               LoungeAPErrorCode             "Lounge Air Purifier Error Code"                             { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:errorCode" }
 String               LoungeAPAutoMode              "Lounge Air Purifier Auto Mode"                              { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoMode" }
 Number               LoungeAPAutoRoomSize          "Lounge Air Purifier Auto Room Size [%.0f% sqft]"            { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:configAutoRoomSize" }
-Number:Time          LoungeAPTimerLeft             "Lounge Air Purifier Timer Left [%1$Tp]"                     { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerRemain" }	
 DateTime             LoungeAPTimerExpiry           "Lounge Air Purifier Timer Expiry [%1$tA %1$tI:%1$tM %1$Tp]" { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:timerExpiry" }
 Number               LoungeAPSchedulesCount        "Lounge Air Purifier Schedules Count"                        { channel="vesync:airPurifier:vesyncServers:loungeAirFilter:schedulesCount" }
 ```
@@ -177,7 +175,7 @@ Number:Dimensionless LoungeAHMistLevel         "Lounge Air Humidifier Mist Level
 ```java
 Switch               LoungeAHPower             "Lounge Air Humidifier Power"                                  { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:enabled" }
 Switch               LoungeAHDisplay           "Lounge Air Humidifier Display"                                { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:display" }
-String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:nightLightMode }
+String               LoungeAHNightLightMode    "Lounge Air Humidifier Night Light Mode"                       { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:nightLightMode" }
 String               LoungeAHMode              "Lounge Air Humidifier Mode"                                   { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidifierMode" }
 Switch               LoungeAHWaterLacking      "Lounge Air Humidifier Water Lacking"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:waterLacking" }
 Switch               LoungeAHHighHumidity      "Lounge Air Humidifier High Humidity"                          { channel="vesync:airHumidifier:vesyncServers:loungeHumidifier:humidityHigh" }
@@ -227,12 +225,12 @@ Frame {
    Switch item=LoungeAPPower label="Power"
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
    Switch item=LoungeAPDisplay label="Display"
-   Text   item=LoungeAPAirQuality label="Air Quality [%.0f (PM2.5)]"                
+   Text   item=LoungeAPAirQuality label="Air Quality [%.0f (PM2.5)]"
    Switch item=LoungeAPControlsLock label="Controls Locked"
    Text   item=LoungeAPTimerExpiry label="Timer Shutdown @" icon="clock"
    Switch item=LoungeAPMode label="Mode" mappings=[auto="Auto", manual="Manual Fan Control", sleep="Sleeping"] icon="settings"
    Text   item=LoungeAPErrorCode label="Error Code [%.0f]"
-   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3", 4="4"] icon="settings"                               
+   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3", 4="4"] icon="settings"
 }
 ```
 
@@ -244,12 +242,12 @@ Frame {
    Text   item=LoungeAPFilterRemainingUse label="Filter Remaining"
    Switch item=LoungeAPDisplay label="Display"
    Switch item=LoungeAPNightLightMode label="Night Light Mode" mappings=[on="On", dim="Dimmed", off="Off"] icon="settings"
-   Text   item=LoungeAPAirQuality label="Air Quality [%.0f]"                
+   Text   item=LoungeAPAirQuality label="Air Quality [%.0f]"
    Switch item=LoungeAPControlsLock label="Controls Locked"
    Text   item=LoungeAPTimerExpiry label="Timer Shutdown @" icon="clock"
    Switch item=LoungeAPMode label="Mode" mappings=[manual="Manual Fan Control", sleep="Sleeping"] icon="settings"
    Text   item=LoungeAPErrorCode label="Error Code [%.0f]"
-   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3"] icon="settings"                               
+   Switch item=LoungeAPManualFanSpeed label="Manual Fan Speed [%.0f]" mappings=[1="1", 2="2", 3="3"] icon="settings"
 }
 ```
 

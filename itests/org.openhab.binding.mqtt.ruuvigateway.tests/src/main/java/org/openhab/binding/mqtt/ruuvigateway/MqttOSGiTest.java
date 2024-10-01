@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,18 +113,5 @@ public class MqttOSGiTest extends JavaOSGiTest {
 
     protected CompletableFuture<Boolean> publish(String topic, String message) {
         return brokerConnection.publish(topic, message.getBytes(StandardCharsets.UTF_8), 1, true);
-    }
-
-    /**
-     * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
-     *
-     * Travis CI is detected using CI environment variable, see https://docs.travis-ci.com/us>
-     * Jenkins CI is detected using JENKINS_HOME environment variable
-     *
-     * @return
-     */
-    protected boolean isRunningInCI() {
-        String jenkinsHome = System.getenv("JENKINS_HOME");
-        return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
     }
 }

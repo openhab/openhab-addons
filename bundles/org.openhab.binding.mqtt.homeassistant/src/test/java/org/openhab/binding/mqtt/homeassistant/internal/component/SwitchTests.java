@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,26 +34,40 @@ public class SwitchTests extends AbstractComponentTests {
     @SuppressWarnings("null")
     @Test
     public void testSwitchWithStateAndCommand() {
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
-                        + "    }\n" + "  ],\n" + "  \"command_topic\": \"zigbee2mqtt/th1/set/auto_lock\",\n"
-                        + "  \"device\": {\n" + "    \"identifiers\": [\n"
-                        + "      \"zigbee2mqtt_0x847127fffe11dd6a\"\n" + "    ],\n"
-                        + "    \"manufacturer\": \"TuYa\",\n"
-                        + "    \"model\": \"Radiator valve with thermostat (TS0601_thermostat)\",\n"
-                        + "    \"name\": \"th1\",\n" + "    \"sw_version\": \"Zigbee2MQTT 1.18.2\"\n" + "  },\n"
-                        + "  \"json_attributes_topic\": \"zigbee2mqtt/th1\",\n" + "  \"name\": \"th1 auto lock\",\n"
-                        + "  \"payload_off\": \"MANUAL\",\n" + "  \"payload_on\": \"AUTO\",\n"
-                        + "  \"state_off\": \"MANUAL\",\n" + "  \"state_on\": \"AUTO\",\n"
-                        + "  \"state_topic\": \"zigbee2mqtt/th1\",\n"
-                        + "  \"unique_id\": \"0x847127fffe11dd6a_auto_lock_zigbee2mqtt\",\n"
-                        + "  \"value_template\": \"{{ value_json.auto_lock }}\"\n" + "}");
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {
+                  "availability": [
+                    {
+                      "topic": "zigbee2mqtt/bridge/state"
+                    }
+                  ],
+                  "command_topic": "zigbee2mqtt/th1/set/auto_lock",
+                  "device": {
+                    "identifiers": [
+                      "zigbee2mqtt_0x847127fffe11dd6a"
+                    ],
+                    "manufacturer": "TuYa",
+                    "model": "Radiator valve with thermostat (TS0601_thermostat)",
+                    "name": "th1",
+                    "sw_version": "Zigbee2MQTT 1.18.2"
+                  },
+                  "json_attributes_topic": "zigbee2mqtt/th1",
+                  "name": "th1 auto lock",
+                  "payload_off": "MANUAL",
+                  "payload_on": "AUTO",
+                  "state_off": "MANUAL",
+                  "state_on": "AUTO",
+                  "state_topic": "zigbee2mqtt/th1",
+                  "unique_id": "0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
+                  "value_template": "{{ value_json.auto_lock }}"
+                }\
+                """);
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
-                OnOffValue.class);
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock",
+                "th1 auto lock", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
@@ -68,23 +82,36 @@ public class SwitchTests extends AbstractComponentTests {
 
     @Test
     public void testSwitchWithState() {
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
-                        + "    }\n" + "  ],\n" + "  \"device\": {\n" + "    \"identifiers\": [\n"
-                        + "      \"zigbee2mqtt_0x847127fffe11dd6a\"\n" + "    ],\n"
-                        + "    \"manufacturer\": \"TuYa\",\n"
-                        + "    \"model\": \"Radiator valve with thermostat (TS0601_thermostat)\",\n"
-                        + "    \"name\": \"th1\",\n" + "    \"sw_version\": \"Zigbee2MQTT 1.18.2\"\n" + "  },\n"
-                        + "  \"json_attributes_topic\": \"zigbee2mqtt/th1\",\n" + "  \"name\": \"th1 auto lock\",\n"
-                        + "  \"state_off\": \"MANUAL\",\n" + "  \"state_on\": \"AUTO\",\n"
-                        + "  \"state_topic\": \"zigbee2mqtt/th1\",\n"
-                        + "  \"unique_id\": \"0x847127fffe11dd6a_auto_lock_zigbee2mqtt\",\n"
-                        + "  \"value_template\": \"{{ value_json.auto_lock }}\"\n" + "}");
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {
+                  "availability": [
+                    {
+                      "topic": "zigbee2mqtt/bridge/state"
+                    }
+                  ],
+                  "device": {
+                    "identifiers": [
+                      "zigbee2mqtt_0x847127fffe11dd6a"
+                    ],
+                    "manufacturer": "TuYa",
+                    "model": "Radiator valve with thermostat (TS0601_thermostat)",
+                    "name": "th1",
+                    "sw_version": "Zigbee2MQTT 1.18.2"
+                  },
+                  "json_attributes_topic": "zigbee2mqtt/th1",
+                  "name": "th1 auto lock",
+                  "state_off": "MANUAL",
+                  "state_on": "AUTO",
+                  "state_topic": "zigbee2mqtt/th1",
+                  "unique_id": "0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
+                  "value_template": "{{ value_json.auto_lock }}"
+                }\
+                """);
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "", "th1 auto lock", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
         assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
@@ -95,23 +122,36 @@ public class SwitchTests extends AbstractComponentTests {
     @SuppressWarnings("null")
     @Test
     public void testSwitchWithCommand() {
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "" + "{\n" + "  \"availability\": [\n" + "    {\n" + "      \"topic\": \"zigbee2mqtt/bridge/state\"\n"
-                        + "    }\n" + "  ],\n" + "  \"command_topic\": \"zigbee2mqtt/th1/set/auto_lock\",\n"
-                        + "  \"device\": {\n" + "    \"identifiers\": [\n"
-                        + "      \"zigbee2mqtt_0x847127fffe11dd6a\"\n" + "    ],\n"
-                        + "    \"manufacturer\": \"TuYa\",\n"
-                        + "    \"model\": \"Radiator valve with thermostat (TS0601_thermostat)\",\n"
-                        + "    \"name\": \"th1\",\n" + "    \"sw_version\": \"Zigbee2MQTT 1.18.2\"\n" + "  },\n"
-                        + "  \"json_attributes_topic\": \"zigbee2mqtt/th1\",\n" + "  \"name\": \"th1 auto lock\",\n"
-                        + "  \"payload_off\": \"MANUAL\",\n" + "  \"payload_on\": \"AUTO\",\n"
-                        + "  \"unique_id\": \"0x847127fffe11dd6a_auto_lock_zigbee2mqtt\",\n"
-                        + "  \"value_template\": \"{{ value_json.auto_lock }}\"\n" + "}");
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                {
+                  "availability": [
+                    {
+                      "topic": "zigbee2mqtt/bridge/state"
+                    }
+                  ],
+                  "command_topic": "zigbee2mqtt/th1/set/auto_lock",
+                  "device": {
+                    "identifiers": [
+                      "zigbee2mqtt_0x847127fffe11dd6a"
+                    ],
+                    "manufacturer": "TuYa",
+                    "model": "Radiator valve with thermostat (TS0601_thermostat)",
+                    "name": "th1",
+                    "sw_version": "Zigbee2MQTT 1.18.2"
+                  },
+                  "json_attributes_topic": "zigbee2mqtt/th1",
+                  "name": "th1 auto lock",
+                  "payload_off": "MANUAL",
+                  "payload_on": "AUTO",
+                  "unique_id": "0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
+                  "value_template": "{{ value_json.auto_lock }}"
+                }\
+                """);
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/th1/set/auto_lock", "th1 auto lock",
                 OnOffValue.class);
 
         component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);

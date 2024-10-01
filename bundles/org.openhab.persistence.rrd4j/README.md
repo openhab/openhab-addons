@@ -3,7 +3,7 @@
 The [rrd4j](https://github.com/rrd4j/rrd4j) persistence service is based on a round-robin database.
 
 In contrast to a "normal" database such as db4o, a round-robin database does not grow in size - it has a fixed allocated size.
-This is accomplished by saving a fixed amount of datapoints and by doing data compression, which means that the older the data is, the less values are available. 
+This is accomplished by saving a fixed amount of datapoints and by doing data compression, which means that the older the data is, the less values are available.
 The data is kept in several "archives", each holding the data for its set timeframe at a defined level of granularity.
 The starting point for all archives is the actually saved data sample (Item value).
 So while you might store a sample value every minute for the last 8 hours, you might store the average per day for the last year.
@@ -101,7 +101,7 @@ The time interval (seconds) between reading consecutive samples from the OpenHAB
 
 It must be a positive integer value.
 
-Relation between the sample intervall and openHABs persistence strategy. 
+Relation between the sample intervall and openHABs persistence strategy.
 The persistence strategy determines on which events (time, change, startUp) a new value is provided to the persistence service, the sample intervall determines at which time steps the actually provided value is being read (i.e an everyMinute strategy provides a new value at every full minute, a sample intervall of 10 seconds would use such a provided value 6 times).
 
 ### `<consolidationFunction>` (Consolidation Function)
@@ -173,7 +173,7 @@ This means that any Item with an allocated strategy in the `rrd4j.persist` file 
 
 #### default_numeric
 
-This datasource is used for plain `Number` items. 
+This datasource is used for plain `Number` items.
 It does not build averages over values, so that it is ensured that discrete values are kept when being read (e.g. an Item which has only states 0 and 1 will not be set to 0.5).
 
 ```
@@ -258,7 +258,7 @@ Items {
 ```
 
 **IMPORTANT:**
-When creating a custom datasource in the `rrd4j.cfg` file the used [sample interval](#sampleinterval-sample-interval) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.  
+When creating a custom datasource in the `rrd4j.cfg` file the used [sample interval](#sampleinterval-sample-interval) should be 20 seconds or less in order to keep the granularity. The selection of the used strategy has no effect on the granularity.
 
 ## Troubleshooting
 

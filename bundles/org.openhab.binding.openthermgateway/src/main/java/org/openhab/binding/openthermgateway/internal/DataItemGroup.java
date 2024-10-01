@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,37 +41,23 @@ public class DataItemGroup {
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "ch2_enable", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "ch2_enablerequested", CodeType.T),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "ch2_enableoverride", CodeType.R),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "0x00:5", CodeType.B),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "0x00:6", CodeType.B),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "0x00:7", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 0, "fault", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 1, "ch_mode", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 2, "dhw_mode", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 3, "flame", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 4, "cooling", CodeType.B),
                 new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 5, "ch2E", CodeType.B),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 6, "diag", CodeType.B),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 7, "0x00:7", CodeType.B) });
+                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 6, "diag", CodeType.B) });
         g.put(1, new DataItem[] { new FloatDataItem(Msg.WRITE, "controlsetpoint", SIUnits.CELSIUS, CodeType.B),
                 new FloatDataItem(Msg.WRITE, "controlsetpointrequested", SIUnits.CELSIUS, CodeType.T),
                 new FloatDataItem(Msg.WRITE, "controlsetpointoverride", SIUnits.CELSIUS, CodeType.R) });
-        g.put(2, new DataItem[] { new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 0, "0x02:0"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 1, "0x02:1"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 2, "0x02:2"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 3, "0x02:3"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 4, "0x02:4"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 5, "0x02:5"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 6, "0x02:6"),
-                new FlagDataItem(Msg.WRITE, ByteType.HIGHBYTE, 7, "0x02:7"),
-                new UIntDataItem(Msg.WRITE, ByteType.LOWBYTE, "mastermemberid") });
+        g.put(2, new DataItem[] { new UIntDataItem(Msg.WRITE, ByteType.LOWBYTE, "mastermemberid") });
         g.put(3, new DataItem[] { new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 0, "dhwpresent"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 1, "controltype"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 2, "coolingsupport"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 3, "dhwconfig"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "masterlowoff"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "ch2present"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "0x03:6"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "0x03:7"),
                 new UIntDataItem(Msg.READ, ByteType.LOWBYTE, "slavememberid") });
         g.put(4, new DataItem[] { new UIntDataItem(Msg.WRITE, ByteType.HIGHBYTE, "commandcode"),
                 new UIntDataItem(Msg.READ, ByteType.LOWBYTE, "commandresponse") });
@@ -81,25 +67,7 @@ public class DataItemGroup {
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 3, "gasflamefault"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "airpressfault"),
                 new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "waterovtemp"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "0x05:6"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "0x05:7"),
                 new IntDataItem(Msg.READ, ByteType.LOWBYTE, "oemfaultcode") });
-        g.put(6, new DataItem[] { new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 0, "0x06:h0"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 1, "0x06:h1"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 2, "0x06:h2"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 3, "0x06:h3"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "0x06:h4"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "0x06:h5"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "0x06:h6"),
-                new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "0x06:h7"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 0, "0x06:l0"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 1, "0x06:l1"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 2, "0x06:l2"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 3, "0x06:l3"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 4, "0x06:l4"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 5, "0x06:l5"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 6, "0x06:l6"),
-                new FlagDataItem(Msg.READ, ByteType.LOWBYTE, 7, "0x06:l7") });
         g.put(7, new DataItem[] { new FloatDataItem(Msg.WRITE, "coolingcontrolsignal") });
         g.put(8, new DataItem[] { new FloatDataItem(Msg.WRITE, "controlsetpoint2", SIUnits.CELSIUS, CodeType.B),
                 new FloatDataItem(Msg.WRITE, "controlsetpoint2requested", SIUnits.CELSIUS, CodeType.T),

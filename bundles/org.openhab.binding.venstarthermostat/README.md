@@ -153,7 +153,7 @@ sitemap demo label="Venstar Color Thermostat Demo"
     Text item=Guest_aux1RuntimeDay0
     Text item=Guest_aux2RuntimeDay0
     Text item=Guest_freeCoolRuntimeDay0
-    
+
    }
 }
 ```

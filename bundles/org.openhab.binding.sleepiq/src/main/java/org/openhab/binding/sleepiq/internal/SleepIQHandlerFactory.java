@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class SleepIQHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void removeHandler(final ThingHandler thingHandler) {
         logger.debug("Removing SleepIQ thing handler");
-        if (thingHandler instanceof SleepIQCloudHandler) {
-            unregisterBedDiscoveryService((SleepIQCloudHandler) thingHandler);
+        if (thingHandler instanceof SleepIQCloudHandler sleepIQCloudHandler) {
+            unregisterBedDiscoveryService(sleepIQCloudHandler);
         }
     }
 

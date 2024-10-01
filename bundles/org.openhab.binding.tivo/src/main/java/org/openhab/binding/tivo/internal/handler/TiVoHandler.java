@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class TiVoHandler extends BaseThingHandler {
         // Handles the commands from the various TiVo channel objects
         logger.debug("handleCommand '{}', parameter: {}", channelUID, command);
 
-        if (!isInitialized() || !tivoConnection.isPresent()) {
+        if (!isInitialized() || tivoConnection.isEmpty()) {
             logger.debug("handleCommand '{}' device is not initialized yet, command '{}' will be ignored.",
                     getThing().getUID(), channelUID + " " + command);
             return;
@@ -122,7 +122,7 @@ public class TiVoHandler extends BaseThingHandler {
 
     private void sendCommand(String commandKeyword, String commandParameter, TivoStatusData currentStatus)
             throws InterruptedException {
-        if (!tivoConnection.isPresent()) {
+        if (tivoConnection.isEmpty()) {
             return;
         }
 
@@ -299,8 +299,7 @@ public class TiVoHandler extends BaseThingHandler {
             }
 
         } catch (NumberFormatException e) {
-            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(),
-                    command.toString());
+            logger.warn("TiVo'{}' unable to parse channel integer, value sent was: '{}'", getThing().getUID(), command);
         }
         return tmpStatus;
     }
@@ -308,7 +307,8 @@ public class TiVoHandler extends BaseThingHandler {
     /**
      * {@link updateTivoStatus} populates the items with the status / channel information.
      *
-     * @param tivoStatusData the {@link TivoStatusData}
+     * @param oldStatusData the {@link TivoStatusData}
+     * @param newStatusData the {@link TivoStatusData}
      */
     public void updateTivoStatus(TivoStatusData oldStatusData, TivoStatusData newStatusData) {
         if (newStatusData.getConnectionStatus() != ConnectionStatus.INIT) {
@@ -333,7 +333,7 @@ public class TiVoHandler extends BaseThingHandler {
                                     newStatusData.getChannelNum() + "." + newStatusData.getSubChannelNum()));
                         }
                     }
-                    updateState(CHANNEL_TIVO_IS_RECORDING, newStatusData.isRecording() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(CHANNEL_TIVO_IS_RECORDING, OnOffType.from(newStatusData.isRecording()));
                 }
 
                 // Now set the pubToUI flag to false, as we have already published this status

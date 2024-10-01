@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,20 @@
  */
 package org.openhab.binding.boschshc.internal.services.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Test class
@@ -48,10 +55,10 @@ class TestState2 extends BoschSHCServiceState {
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class BoschSHCServiceStateTest {
+class BoschSHCServiceStateTest {
 
     @Test
-    public void fromJsonNullStateForDifferentType() {
+    void fromJsonNullStateForDifferentType() {
         var state = BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"differentState\"}", JsonObject.class),
                 TestState.class);
@@ -59,7 +66,7 @@ public class BoschSHCServiceStateTest {
     }
 
     @Test
-    public void fromJsonStateObjectForValidJson() {
+    void fromJsonStateObjectForValidJson() {
         var state = BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
@@ -70,7 +77,7 @@ public class BoschSHCServiceStateTest {
      * This checks for a bug we had where the expected type stayed the same for different state classes
      */
     @Test
-    public void fromJsonStateObjectForValidJsonAfterOtherState() {
+    void fromJsonStateObjectForValidJsonAfterOtherState() {
         BoschSHCServiceState.fromJson(
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState\"}", JsonObject.class),
                 TestState.class);
@@ -78,5 +85,14 @@ public class BoschSHCServiceStateTest {
                 GsonUtils.DEFAULT_GSON_INSTANCE.fromJson("{\"@type\":\"testState2\"}", JsonObject.class),
                 TestState2.class);
         assertNotEquals(null, state2);
+    }
+
+    @Test
+    void fromJsonReturnsUserStateServiceStateForValidJson() {
+        var state = BoschSHCServiceState.fromJson(new JsonPrimitive("false"), UserStateServiceState.class);
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(state);
+        assertThat(state, instanceOf(UserStateServiceState.class));
+        assertThat(state.isState(), is(false));
     }
 }

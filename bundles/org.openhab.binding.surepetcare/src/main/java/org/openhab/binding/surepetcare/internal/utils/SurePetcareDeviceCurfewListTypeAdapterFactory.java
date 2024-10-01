@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,9 @@ import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
 
 /**
- * The {@link GsonColonDateTypeAdapter} class is a custom TypeAdapter factory to ensure deserialization always returns a
- * list even if the Json document contains only a single curfew object and not an array.
+ * The {@link SurePetcareDeviceCurfewListTypeAdapterFactory} class is a custom TypeAdapter factory to ensure
+ * deserialization always returns a list even if the Json document contains only a single curfew object and
+ * not an array.
  *
  * See https://stackoverflow.com/questions/43412261/make-gson-accept-single-objects-where-it-expects-arrays
  *

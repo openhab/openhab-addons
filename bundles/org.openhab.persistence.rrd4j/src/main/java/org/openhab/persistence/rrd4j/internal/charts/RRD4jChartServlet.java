@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -267,8 +267,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             String[] groupNames = groups.split(",");
             for (String groupName : groupNames) {
                 Item item = itemUIRegistry.getItem(groupName);
-                if (item instanceof GroupItem) {
-                    GroupItem groupItem = (GroupItem) item;
+                if (item instanceof GroupItem groupItem) {
                     for (Item member : groupItem.getMembers()) {
                         addLine(graphDef, member, seriesCounter++);
                     }

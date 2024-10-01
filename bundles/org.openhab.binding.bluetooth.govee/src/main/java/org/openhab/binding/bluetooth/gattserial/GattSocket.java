@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -38,14 +39,14 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
 
     private final Deque<MessageProcessor> messageProcessors = new ConcurrentLinkedDeque<>();
 
-    public void registerMessageHandler(MessageHandler<T, R> messageHandler) {
+    public void registerMessageHandler(MessageHandler<@NonNull T, @NonNull R> messageHandler) {
         // we need to use a dummy future since ConcurrentHashMap doesn't allow null values
         messageProcessors.addFirst(new MessageProcessor(messageHandler, COMPLETED_FUTURE));
     }
 
     protected abstract ScheduledExecutorService getScheduler();
 
-    public void sendMessage(MessageServicer<T, R> messageServicer) {
+    public void sendMessage(MessageServicer<@NonNull T, @NonNull R> messageServicer) {
         T message = messageServicer.createMessage();
 
         CompletableFuture<@Nullable Void> messageFuture = sendMessage(message);
@@ -106,10 +107,10 @@ public abstract class GattSocket<T extends GattMessage, R extends GattMessage> {
     }
 
     private class MessageProcessor {
-        private MessageHandler<T, R> messageHandler;
+        private MessageHandler<@NonNull T, @NonNull R> messageHandler;
         private Future<?> timeoutFuture;
 
-        public MessageProcessor(MessageHandler<T, R> messageHandler, Future<?> timeoutFuture) {
+        public MessageProcessor(MessageHandler<@NonNull T, @NonNull R> messageHandler, Future<?> timeoutFuture) {
             this.messageHandler = messageHandler;
             this.timeoutFuture = timeoutFuture;
         }

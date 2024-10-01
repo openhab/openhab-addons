@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,7 @@ public class MagentaTVGsonDTO {
      */
     public static class OauthCredentials {
         public String epghttpsurl = "";
-        public ArrayList<OauthKeyValue> sam3Para = new ArrayList<OauthKeyValue>();
+        public ArrayList<OauthKeyValue> sam3Para = new ArrayList<>();
     }
 
     public static class OauthCredentialsInstanceCreator implements InstanceCreator<OauthCredentials> {

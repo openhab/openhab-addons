@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,8 +53,13 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.venstarthermostat")
 public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
-    private static final String COLOR_TOUCH_DISCOVERY_MESSAGE = "M-SEARCH * HTTP/1.1\r\n"
-            + "Host: 239.255.255.250:1900\r\n" + "Man: ssdp:discover\r\n" + "ST: colortouch:ecp\r\n" + "\r\n";
+    private static final String COLOR_TOUCH_DISCOVERY_MESSAGE = """
+            M-SEARCH * HTTP/1.1
+            Host: 239.255.255.250:1900
+            Man: ssdp:discover
+            ST: colortouch:ecp
+
+            """;
     private static final Pattern USN_PATTERN = Pattern
             .compile("^(colortouch:)?ecp((?::[0-9a-fA-F]{2}){6}):name:(.+)(?::type:(\\w+))");
     private static final String SSDP_MATCH = "colortouch:ecp";

@@ -1,0 +1,709 @@
+# SUN-8/12K-SG04LP3-EU | 8/12KW | Three Phase | 2 MPPT | Hybrid Inverter | Low Voltage Battery
+# tested with LSW3_15_FFFF_1.0.91R + LSW3_15_FFFF_1.0.84
+
+requests:
+  - start: 0x0003
+    end: 0x0059
+    mb_functioncode: 0x03
+  - start: 0x0063
+    end: 0x006D
+    mb_functioncode: 0x03
+  - start: 0x0085
+    end: 0x0085
+    mb_functioncode: 0x03
+  - start: 0x0202
+    end: 0x022E
+    mb_functioncode: 0x03
+  - start: 0x0218
+    end: 0x021A
+    mb_functioncode: 0x03
+  - start: 0x024A
+    end: 0x024F
+    mb_functioncode: 0x03
+  - start: 0x0256
+    end: 0x027C
+    mb_functioncode: 0x03
+  - start: 0x0284
+    end: 0x028D
+    mb_functioncode: 0x03
+  - start: 0x0295
+    end: 0x029F
+    mb_functioncode: 0x03
+  - start: 0x02A0
+    end: 0x02A7
+    mb_functioncode: 0x03
+
+parameters:
+  - group: solar
+    items:
+      - name: "PV1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x02A0]
+        icon: "mdi:solar-power"
+
+      - name: "PV2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x02A1]
+        icon: "mdi:solar-power"
+
+      - name: "PV1 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x02A4]
+        icon: "mdi:solar-power"
+
+      - name: "PV2 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x02A6]
+        icon: "mdi:solar-power"
+
+      - name: "PV1 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x02A5]
+        icon: "mdi:solar-power"
+
+      - name: "PV2 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [0x02A7]
+        icon: "mdi:solar-power"
+
+      - name: "Daily Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x0211]
+        icon: "mdi:solar-power"
+        validation:
+          max: 100
+          invalidate_all:
+
+      - name: "Total Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0216, 0x0217]
+        icon: "mdi:solar-power"
+
+  - group: Battery
+    items:
+      - name: "Battery Equalization V"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [0x0063]
+        icon: "mdi:battery"
+
+      - name: "Battery Absorption V"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [0x0064]
+        icon: "mdi:battery"
+
+      - name: "Battery Float V"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [0x0065]
+        icon: "mdi:battery"
+
+      - name: "Battery Capacity"
+        class: "battery"
+        state_class: "measurement"
+        uom: "Ah"
+        scale: 1
+        rule: 1
+        registers: [0x0066]
+        icon: "mdi:battery"
+
+      - name: "Battery Empty V"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [0x0066]
+        icon: "mdi:battery"
+
+      - name: "Battery Max A Charge"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 1
+        rule: 1
+        registers: [0x006C]
+        icon: "mdi:battery"
+
+      - name: "Battery Max A Discharge"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 1
+        rule: 1
+        registers: [0x006D]
+        icon: "mdi:battery"
+
+      - name: "Daily Battery Charge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x0202]
+        icon: "mdi:battery-plus"
+
+      - name: "Daily Battery Discharge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x0203]
+        icon: "mdi:battery-plus"
+
+      - name: "Total Battery Charge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0204, 0x0205]
+        icon: "mdi:battery-plus"
+
+      - name: "Total Battery Discharge"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0206, 0x0207]
+        icon: "mdi:battery-minus"
+
+      - name: "Battery Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x024E]
+        icon: "mdi:battery"
+
+      - name: "Battery Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.01
+        rule: 1
+        registers: [0x024B]
+        icon: "mdi:battery"
+
+      - name: "Battery SOC"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        registers: [0x024C]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 101
+
+      - name: "Battery Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [0x024F]
+        icon: "mdi:battery"
+
+      - name: "Battery Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 1
+        offset: 1000
+        registers: [0x024A]
+        icon: "mdi:battery"
+        validation:
+          min: 1
+          max: 99
+
+  - group: Grid
+    items:
+      - name: "Total Grid Power"
+        class: "measurement"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0271]
+        icon: "mdi:transmission-tower"
+
+      - name: "Grid Voltage L1"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0256]
+        icon: "mdi:transmission-tower"
+
+      - name: "Grid Voltage L2"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0257]
+        icon: "mdi:transmission-tower"
+
+      - name: "Grid Voltage L3"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0258]
+        icon: "mdi:transmission-tower"
+
+      - name: "Internal CT L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x025C]
+        icon: "mdi:transmission-tower"
+
+      - name: "Internal CT L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x025D]
+        icon: "mdi:transmission-tower"
+
+      - name: "Internal CT L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x025E]
+        icon: "mdi:transmission-tower"
+
+      - name: "External CT L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0268]
+        icon: "mdi:transmission-tower"
+
+      - name: "External CT L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0269]
+        icon: "mdi:transmission-tower"
+
+      - name: "External CT L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x026A]
+        icon: "mdi:transmission-tower"
+
+      - name: "Daily Energy Bought"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x0208]
+        icon: "mdi:transmission-tower-export"
+
+      - name: "Total Energy Bought"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x020A, 0x020B]
+        icon: "mdi:transmission-tower-export"
+
+      - name: "Daily Energy Sold"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x0209]
+        icon: "mdi:transmission-tower-import"
+
+      - name: "Total Energy Sold"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x020C, 0x020D]
+        icon: "mdi:transmission-tower-import"
+
+      - name: "Total Grid Production"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 4
+        registers: [0x020C, 0x020D]
+        icon: "mdi:transmission-tower"
+
+  - group: Upload
+    items:
+      - name: "Total Load Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x028D]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x028A]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x028B]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x028C]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load Voltage L1"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0284]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load Voltage L2"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0285]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Load Voltage L3"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0286]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Daily Load Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 1
+        registers: [0x020E]
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Total Load Consumption"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x020F, 0x0210]
+        icon: "mdi:lightning-bolt-outline"
+
+  - group: Inverter
+    items:
+      - name: "Current L1"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [0x0276]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Current L2"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [0x0277]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Current L3"
+        class: "current"
+        uom: "A"
+        scale: 0.01
+        rule: 2
+        registers: [0x0278]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Inverter L1 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x0279]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Inverter L2 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x027A]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Inverter L3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 2
+        registers: [0x027B]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "DC Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        offset: 1000
+        registers: [0x021C]
+        icon: "mdi:thermometer"
+
+      - name: "AC Temperature"
+        class: "temperature"
+        state_class: "measurement"
+        uom: "°C"
+        scale: 0.1
+        rule: 2
+        offset: 1000
+        registers: [0x021D]
+        icon: "mdi:thermometer"
+
+      - name: "Inverter ID"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 5
+        registers: [0x0003, 0x0004, 0x0005, 0x0006, 0x0007]
+        isstr: true
+
+      - name: "Communication Board Version No."
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x0011]
+        isstr: true
+
+      - name: "Control Board Version No."
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x000D]
+        isstr: true
+
+  - group: SmartLoad
+    items:
+      - name: "SmartLoad Enable Status"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x0085]
+        isstr: true
+        lookup:
+          - key: 0
+            value: "GEN Use"
+          - key: 1
+            value: "SMART Load output"
+          - key: 2
+            value: "Microinverter"
+        icon: "mdi:lightning-bolt-outline"
+
+      - name: "Phase voltage of Gen port A"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0295]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Phase voltage of Gen port B"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0296]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Phase voltage of Gen port C"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [0x0297]
+        icon: "mdi:home-lightning-bolt"
+
+      - name: "Phase power of Gen port A"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x0298, 0x029C]
+        icon: "mdi:home-lightning-bolt"
+        validation:
+          min: 0
+          max: 12000
+
+      - name: "Phase power of Gen port B"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x0299, 0x029D]
+        icon: "mdi:home-lightning-bolt"
+        validation:
+          min: 0
+          max: 12000
+
+      - name: "Phase power of Gen port C"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x029A, 0x029E]
+        icon: "mdi:home-lightning-bolt"
+        validation:
+          min: 0
+          max: 12000
+
+      - name: "Total Power of Gen port"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        registers: [0x029B, 0x029F]
+        icon: "mdi:home-l1ghtning-bolt"
+        validation:
+          min: 0
+          max: 12000
+
+      - name: "Generator daily power generation"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0218]
+        icon: "mdi:transmission-tower-import"
+
+      - name: "Generator total power generation"
+        class: "energy"
+        state_class: "total_increasing"
+        uom: "kWh"
+        scale: 0.1
+        rule: 3
+        registers: [0x0219, 0x021A]
+        icon: "mdi:transmission-tower-import"
+
+  - group: Alert
+    items:
+      - name: "Alert"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 6
+        registers: [0x0229, 0x022A, 0x22B, 0x022C, 0x022D, 0x022E]

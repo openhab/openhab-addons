@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.rotel.internal.communication;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rotel.internal.RotelException;
 
@@ -23,174 +27,77 @@ import org.openhab.binding.rotel.internal.RotelException;
 @NonNullByDefault
 public class RotelFlagsMapping {
 
-    public static final RotelFlagsMapping MAPPING1 = new RotelFlagsMapping(3, 1, 5, 0, -1, -1, -1, -1, 8, 6, 8, 4, 8,
-            3);
-    public static final RotelFlagsMapping MAPPING2 = new RotelFlagsMapping(-1, -1, 4, 7, -1, -1, -1, -1, 5, 6, 5, 4, 5,
-            3);
-    public static final RotelFlagsMapping MAPPING3 = new RotelFlagsMapping(4, 7, 1, 7, 2, 7, 6, 2, 5, 6, 5, 4, 5, 3);
-    public static final RotelFlagsMapping MAPPING4 = new RotelFlagsMapping(3, 1, 1, 7, 2, 7, 6, 2, 8, 6, 8, 4, 8, 3);
-    public static final RotelFlagsMapping MAPPING5 = new RotelFlagsMapping(-1, -1, 3, 2, 4, 2, 4, 1, 5, 6, 5, 4, 5, 3);
-    public static final RotelFlagsMapping NO_MAPPING = new RotelFlagsMapping(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1);
+    public static final RotelFlagsMapping MAPPING1 = new RotelFlagsMapping(
+            List.of(new RotelFlagInfo(RotelFlagInfoType.MULTI_INPUT, 3, 1), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE2, 5, 0), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 8, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 8, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 8, 3)));
+    public static final RotelFlagsMapping MAPPING2 = new RotelFlagsMapping(
+            List.of(new RotelFlagInfo(RotelFlagInfoType.ZONE2, 4, 7), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 5, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 5, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 5, 3)));
+    public static final RotelFlagsMapping MAPPING3 = new RotelFlagsMapping(
+            List.of(new RotelFlagInfo(RotelFlagInfoType.ZONE2, 3, 2), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE3, 4, 2), //
+                    new RotelFlagInfo(RotelFlagInfoType.ZONE4, 4, 1), //
+                    new RotelFlagInfo(RotelFlagInfoType.CENTER, 5, 6), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_LEFT, 5, 4), //
+                    new RotelFlagInfo(RotelFlagInfoType.SURROUND_RIGHT, 5, 3)));
 
-    private int multiInputFlagNumber;
-    private int multiInputBitNumber;
-    private int zone2FlagNumber;
-    private int zone2BitNumber;
-    private int zone3FlagNumber;
-    private int zone3BitNumber;
-    private int zone4FlagNumber;
-    private int zone4BitNumber;
-    private int centerFlagNumber;
-    private int centerBitNumber;
-    private int surroundLeftFlagNumber;
-    private int surroundLeftBitNumber;
-    private int surroundRightFlagNumber;
-    private int surroundRightBitNumber;
+    private Map<RotelFlagInfoType, RotelFlagInfo> infoMap;
 
-    /**
-     * Constructor
-     *
-     * For each flag number, value 1 means the first flag; a negative value is used for an undefined indicator.
-     * For each bit number, value is from 0 to 7; a negative value is used for an undefined indicator.
-     *
-     * @param multiInputFlagNumber the flag number in the standard feedback message in which to find the multi input
-     *            indicator
-     * @param multiInputBitNumber the bit number in the flag in which to find the multi input indicator
-     * @param zone2FlagNumber the flag number in the standard feedback message in which to find the zone 2 indicator
-     * @param zone2BitNumber the bit number in the flag in which to find the zone 2 indicator
-     * @param zone3FlagNumber the flag number in the standard feedback message in which to find the zone 3 indicator
-     * @param zone3BitNumber the bit number in the flag in which to find the zone 3 indicator
-     * @param zone4FlagNumber the flag number in the standard feedback message in which to find the zone 4 indicator
-     * @param zone4BitNumber the bit number in the flag in which to find the zone 4 indicator
-     * @param centerFlagNumber the flag number in the standard feedback message in which to find the center channel
-     *            indicator
-     * @param centerBitNumber the bit number in the flag in which to find the center channel indicator
-     * @param surroundLeftFlagNumber the flag number in the standard feedback message in which to find the surround left
-     *            channel indicator
-     * @param surroundLeftBitNumber the bit number in the flag in which to find the surround left channel indicator
-     * @param surroundRightFlagNumber the flag number in the standard feedback message in which to find the surround
-     *            right channel indicator
-     * @param surroundRightBitNumber the bit number in the flag in which to find the surround right channel indicator
-     */
-    private RotelFlagsMapping(int multiInputFlagNumber, int multiInputBitNumber, int zone2FlagNumber,
-            int zone2BitNumber, int zone3FlagNumber, int zone3BitNumber, int zone4FlagNumber, int zone4BitNumber,
-            int centerFlagNumber, int centerBitNumber, int surroundLeftFlagNumber, int surroundLeftBitNumber,
-            int surroundRightFlagNumber, int surroundRightBitNumber) {
-        this.multiInputFlagNumber = multiInputFlagNumber;
-        this.multiInputBitNumber = multiInputBitNumber;
-        this.zone2FlagNumber = zone2FlagNumber;
-        this.zone2BitNumber = zone2BitNumber;
-        this.zone3FlagNumber = zone3FlagNumber;
-        this.zone3BitNumber = zone3BitNumber;
-        this.zone4FlagNumber = zone4FlagNumber;
-        this.zone4BitNumber = zone4BitNumber;
-        this.centerFlagNumber = centerFlagNumber;
-        this.centerBitNumber = centerBitNumber;
-        this.surroundLeftFlagNumber = surroundLeftFlagNumber;
-        this.surroundLeftBitNumber = surroundLeftBitNumber;
-        this.surroundRightFlagNumber = surroundRightFlagNumber;
-        this.surroundRightBitNumber = surroundRightBitNumber;
+    public RotelFlagsMapping() {
+        this.infoMap = new HashMap<>();
+    }
+
+    public RotelFlagsMapping(List<RotelFlagInfo> infos) {
+        this.infoMap = new HashMap<>();
+        for (RotelFlagInfo info : infos) {
+            this.infoMap.put(info.infoType(), info);
+        }
     }
 
     /**
-     * Get the multi input indicator
+     * Get the availability of the information
      *
-     * @param flags the table of flags
-     *
-     * @return true if the indicator is ON in the flags or false if OFF
-     *
-     * @throws RotelException in case the multi input indicator is undefined
+     * @return true if the information is available
      */
-    public boolean isMultiInputOn(byte[] flags) throws RotelException {
-        return RotelFlagsMapping.isBitFlagOn(flags, multiInputFlagNumber, multiInputBitNumber);
+    public boolean isInfoPresent(RotelFlagInfoType infoType) {
+        return infoMap.get(infoType) != null;
     }
 
     /**
-     * Set the multi input indicator
+     * Get the information
      *
+     * @param infoType the type of information
      * @param flags the table of flags
-     * @param on true to set the indicator to ON or false to set it to OFF
      *
-     * @throws RotelException in case the multi input indicator is undefined
+     * @return true if the information is ON in the flags or false if OFF
+     *
+     * @throws RotelException in case the information is undefined
      */
-    public void setMultiInput(byte[] flags, boolean on) throws RotelException {
-        RotelFlagsMapping.setBitFlag(flags, multiInputFlagNumber, multiInputBitNumber, on);
+    public boolean isInfoOn(RotelFlagInfoType infoType, byte[] flags) throws RotelException {
+        RotelFlagInfo info = infoMap.get(infoType);
+        if (info == null || info.flagNumber() > flags.length) {
+            throw new RotelException("Info " + infoType.name() + " not available in flags");
+        }
+        return RotelFlagsMapping.isBitFlagOn(flags, info.flagNumber(), info.bitNumber());
     }
 
     /**
-     * Get the zone 2 indicator
+     * Set the information
      *
+     * @param infoType the type of information
      * @param flags the table of flags
+     * @param on true to set the information to ON or false to set it to OFF
      *
-     * @return true if the indicator is ON in the flags or false if OFF
-     *
-     * @throws RotelException in case the zone 2 indicator is undefined
+     * @return true if the information was updated, false if not
      */
-    public boolean isZone2On(byte[] flags) throws RotelException {
-        return RotelFlagsMapping.isBitFlagOn(flags, zone2FlagNumber, zone2BitNumber);
-    }
-
-    /**
-     * Set the zone 2 indicator
-     *
-     * @param flags the table of flags
-     * @param on true to set the indicator to ON or false to set it to OFF
-     *
-     * @throws RotelException in case the zone 2 indicator is undefined
-     */
-    public void setZone2(byte[] flags, boolean on) throws RotelException {
-        RotelFlagsMapping.setBitFlag(flags, zone2FlagNumber, zone2BitNumber, on);
-    }
-
-    /**
-     * Get the zone 3 indicator
-     *
-     * @param flags the table of flags
-     *
-     * @return true if the indicator is ON in the flags or false if OFF
-     *
-     * @throws RotelException in case the zone 3 indicator is undefined
-     */
-    public boolean isZone3On(byte[] flags) throws RotelException {
-        return RotelFlagsMapping.isBitFlagOn(flags, zone3FlagNumber, zone3BitNumber);
-    }
-
-    /**
-     * Set the zone 3 indicator
-     *
-     * @param flags the table of flags
-     * @param on true to set the indicator to ON or false to set it to OFF
-     *
-     * @throws RotelException in case the zone 3 indicator is undefined
-     */
-    public void setZone3(byte[] flags, boolean on) throws RotelException {
-        RotelFlagsMapping.setBitFlag(flags, zone3FlagNumber, zone3BitNumber, on);
-    }
-
-    /**
-     * Get the zone 4 indicator
-     *
-     * @param flags the table of flags
-     *
-     * @return true if the indicator is ON in the flags or false if OFF
-     *
-     * @throws RotelException in case the zone 4 indicator is undefined
-     */
-    public boolean isZone4On(byte[] flags) throws RotelException {
-        return RotelFlagsMapping.isBitFlagOn(flags, zone4FlagNumber, zone4BitNumber);
-    }
-
-    /**
-     * Set the zone 4 indicator
-     *
-     * @param flags the table of flags
-     * @param on true to set the indicator to ON or false to set it to OFF
-     *
-     * @throws RotelException in case the zone 4 indicator is undefined
-     */
-    public void setZone4(byte[] flags, boolean on) throws RotelException {
-        RotelFlagsMapping.setBitFlag(flags, zone4FlagNumber, zone4BitNumber, on);
+    public boolean setInfo(RotelFlagInfoType infoType, byte[] flags, boolean on) {
+        RotelFlagInfo info = infoMap.get(infoType);
+        return info == null ? false : RotelFlagsMapping.setBitFlag(flags, info.flagNumber(), info.bitNumber(), on);
     }
 
     /**
@@ -203,12 +110,15 @@ public class RotelFlagsMapping {
      * @throws RotelException in case the center or surround channel indicators are undefined
      */
     public boolean isMoreThan2Channels(byte[] flags) throws RotelException {
-        return (centerFlagNumber >= 1 && centerFlagNumber <= flags.length
-                && RotelFlagsMapping.isBitFlagOn(flags, centerFlagNumber, centerBitNumber))
-                || (surroundLeftFlagNumber >= 1 && surroundLeftFlagNumber <= flags.length
-                        && RotelFlagsMapping.isBitFlagOn(flags, surroundLeftFlagNumber, surroundLeftBitNumber))
-                || (surroundRightFlagNumber >= 1 && surroundRightFlagNumber <= flags.length
-                        && RotelFlagsMapping.isBitFlagOn(flags, surroundRightFlagNumber, surroundRightBitNumber));
+        RotelFlagInfo center = infoMap.get(RotelFlagInfoType.CENTER);
+        RotelFlagInfo surroundLeft = infoMap.get(RotelFlagInfoType.SURROUND_LEFT);
+        RotelFlagInfo surroundRight = infoMap.get(RotelFlagInfoType.SURROUND_RIGHT);
+        return (center != null && center.flagNumber() <= flags.length
+                && RotelFlagsMapping.isBitFlagOn(flags, center.flagNumber(), center.bitNumber()))
+                || (surroundLeft != null && surroundLeft.flagNumber() <= flags.length
+                        && RotelFlagsMapping.isBitFlagOn(flags, surroundLeft.flagNumber(), surroundLeft.bitNumber()))
+                || (surroundRight != null && surroundRight.flagNumber() <= flags.length
+                        && RotelFlagsMapping.isBitFlagOn(flags, surroundRight.flagNumber(), surroundRight.bitNumber()));
     }
 
     /**
@@ -241,19 +151,17 @@ public class RotelFlagsMapping {
      * @param bitNumber the bit number in the flag to consider
      * @param on true to set the bit value to 1 or false to set it to 0
      *
-     * @throws RotelException in case of out of bounds value for the flag number or the bit number
+     * @return true if the flag was updated, false if not
      */
-    private static void setBitFlag(byte[] flags, int flagNumber, int bitNumber, boolean on) throws RotelException {
-        if (flagNumber < 1 || flagNumber > flags.length) {
-            throw new RotelException("Flag number out of bounds");
-        }
-        if (bitNumber < 0 || bitNumber > 7) {
-            throw new RotelException("Bit number out of bounds");
+    private static boolean setBitFlag(byte[] flags, int flagNumber, int bitNumber, boolean on) {
+        if (flagNumber < 1 || flagNumber > flags.length || bitNumber < 0 || bitNumber > 7) {
+            return false;
         }
         if (on) {
             flags[flagNumber - 1] |= (1 << bitNumber);
         } else {
             flags[flagNumber - 1] &= ~(1 << bitNumber);
         }
+        return true;
     }
 }

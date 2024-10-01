@@ -28,7 +28,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: sensor 3 of zone 2 --> where=302. Sensor 5 of external zone 00 --> where=500</description>
+				<description>Example: sensor 3 of zone 2 --> where="302". Sensor 5 of external zone 00 --> where="500"</description>
 			</parameter>
 		</config-description>
 

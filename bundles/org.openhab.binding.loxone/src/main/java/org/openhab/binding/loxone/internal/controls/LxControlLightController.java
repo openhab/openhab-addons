@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,20 +105,20 @@ class LxControlLightController extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(CMD_ON);
             } else {
                 sendAction(CMD_OFF);
             }
-        } else if (command instanceof UpDownType) {
-            if ((UpDownType) command == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 sendAction(CMD_NEXT_SCENE);
             } else {
                 sendAction(CMD_PREVIOUS_SCENE);
             }
-        } else if (command instanceof DecimalType) {
-            int scene = ((DecimalType) command).intValue();
+        } else if (command instanceof DecimalType decimalCommand) {
+            int scene = decimalCommand.intValue();
             if (scene == SCENE_ALL_ON) {
                 sendAction(CMD_ON);
             } else if (scene >= 0 && scene < NUM_OF_SCENES) {
@@ -142,11 +142,11 @@ class LxControlLightController extends LxControl {
     public void onStateChange(LxState state) {
         if (STATE_SCENE_LIST.equals(state.getName()) && channelId != null) {
             Object value = state.getStateValue();
-            if (value instanceof String) {
+            if (value instanceof String str) {
                 sceneNames.clear();
-                String[] scenes = ((String) value).split(",");
+                String[] scenes = str.split(",");
                 for (String line : scenes) {
-                    line = line.replaceAll("\"", "");
+                    line = line.replace("\"", "");
                     String[] params = line.split("=");
                     if (params.length == 2) {
                         sceneNames.add(new StateOption(params[0], params[1]));

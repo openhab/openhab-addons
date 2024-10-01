@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class Converter {
     /**
      * Converts a human readable value into LCN native value.
      *
-     * @param humanReadable value to convert
+     * @param quantityType value to convert
      * @return the native LCN value
      * @throws LcnException when the value could not be converted to the base unit
      */

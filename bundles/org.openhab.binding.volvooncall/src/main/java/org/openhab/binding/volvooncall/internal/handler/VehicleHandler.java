@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -207,8 +208,9 @@ public class VehicleHandler extends BaseThingHandler {
                 // We will update trips only if car position has changed to save server queries
                 updateTrips(service);
             }
-            if (!vehicleStatus.getEngineRunning().equals(newVehicleStatus.getEngineRunning())
-                    && newVehicleStatus.getEngineRunning().get() == OnOffType.ON) {
+            OnOffType newEngineRunning = newVehicleStatus.getEngineRunning();
+            if (newEngineRunning != null && !newEngineRunning.equals(vehicleStatus.getEngineRunning())
+                    && newEngineRunning == OnOffType.ON) {
                 triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_STARTED);
             }
             vehicleStatus = newVehicleStatus;
@@ -272,8 +274,7 @@ public class VehicleHandler extends BaseThingHandler {
             if (api != null) {
                 queryApiAndUpdateChannels(api);
             }
-        } else if (command instanceof OnOffType) {
-            OnOffType onOffCommand = (OnOffType) command;
+        } else if (command instanceof OnOffType onOffCommand) {
             if (ENGINE_START.equals(channelID) && onOffCommand == OnOffType.ON) {
                 actionStart(5);
             } else if (REMOTE_HEATER.equals(channelID) || PRECLIMATIZATION.equals(channelID)) {
@@ -287,9 +288,9 @@ public class VehicleHandler extends BaseThingHandler {
     private State getTripValue(String channelId, TripDetail tripDetails) {
         switch (channelId) {
             case TRIP_CONSUMPTION:
-                return tripDetails.getFuelConsumption()
+                return Objects.requireNonNull(tripDetails.getFuelConsumption()
                         .map(value -> (State) new QuantityType<>(value.floatValue() / 100, LITRE))
-                        .orElse(UnDefType.UNDEF);
+                        .orElse(UnDefType.UNDEF));
             case TRIP_DISTANCE:
                 return new QuantityType<>((double) tripDetails.distance / 1000, KILO(METRE));
             case TRIP_START_TIME:
@@ -297,8 +298,8 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_END_TIME:
                 return tripDetails.getEndTime();
             case TRIP_DURATION:
-                return tripDetails.getDurationInMinutes().map(value -> (State) new QuantityType<>(value, MINUTE))
-                        .orElse(UnDefType.UNDEF);
+                return Objects.requireNonNull(tripDetails.getDurationInMinutes()
+                        .map(value -> (State) new QuantityType<>(value, MINUTE)).orElse(UnDefType.UNDEF));
             case TRIP_START_ODOMETER:
                 return new QuantityType<>((double) tripDetails.startOdometer / 1000, KILO(METRE));
             case TRIP_STOP_ODOMETER:
@@ -436,9 +437,9 @@ public class VehicleHandler extends BaseThingHandler {
             case CAR_LOCKED:
                 // Warning : carLocked is in the Doors group but is part of general status informations.
                 // Did not change it to avoid breaking change for users
-                return status.getCarLocked().map(State.class::cast).orElse(UnDefType.UNDEF);
+                return Objects.requireNonNullElse((State) status.getCarLocked(), UnDefType.UNDEF);
             case ENGINE_RUNNING:
-                return status.getEngineRunning().map(State.class::cast).orElse(UnDefType.UNDEF);
+                return Objects.requireNonNullElse((State) status.getEngineRunning(), UnDefType.UNDEF);
             case BRAKE_FLUID_LEVEL:
                 return fluidLevelToState(status.brakeFluidLevel);
             case WASHER_FLUID_LEVEL:
@@ -449,10 +450,11 @@ public class VehicleHandler extends BaseThingHandler {
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
             case BULB_FAILURE:
-                return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.aFailedBulb());
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
-                return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
+                Heater heater = status.getHeater();
+                return heater != null ? getHeaterValue(channelId, heater) : UnDefType.NULL;
         }
         switch (groupId) {
             case GROUP_TANK:
@@ -462,14 +464,17 @@ public class VehicleHandler extends BaseThingHandler {
             case GROUP_POSITION:
                 return getPositionValue(channelId, position);
             case GROUP_DOORS:
-                return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
+                DoorsStatus doors = status.getDoors();
+                return doors != null ? getDoorsValue(channelId, doors) : UnDefType.NULL;
             case GROUP_WINDOWS:
-                return status.getWindows().map(windows -> getWindowsValue(channelId, windows)).orElse(UnDefType.NULL);
+                WindowsStatus windows = status.getWindows();
+                return windows != null ? getWindowsValue(channelId, windows) : UnDefType.NULL;
             case GROUP_TYRES:
-                return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres)).orElse(UnDefType.NULL);
+                TyrePressure tyres = status.getTyrePressure();
+                return tyres != null ? getTyresValue(channelId, tyres) : UnDefType.NULL;
             case GROUP_BATTERY:
-                return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
-                        .orElse(UnDefType.NULL);
+                HvBattery batteries = status.getHvBattery();
+                return batteries != null ? getBatteryValue(channelId, batteries) : UnDefType.NULL;
         }
         return UnDefType.NULL;
     }
@@ -492,7 +497,7 @@ public class VehicleHandler extends BaseThingHandler {
                 return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
                         : UnDefType.UNDEF;
             case FUEL_ALERT:
-                return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(status.distanceToEmpty < 100);
         }
         return UnDefType.UNDEF;
     }
@@ -549,7 +554,7 @@ public class VehicleHandler extends BaseThingHandler {
         VocHttpApi api = bridgeHandler.getApi();
         if (api != null) {
             try {
-                PostResponse postResponse = api.postURL(url.toString(), param);
+                PostResponse postResponse = api.postURL(url, param);
                 if (postResponse != null) {
                     pendingActions
                             .add(scheduler.schedule(new ActionResultController(api, postResponse, scheduler, this),
@@ -560,13 +565,12 @@ public class VehicleHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-        ;
         pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     public void actionOpenClose(String action, OnOffType controlState) {
         if (activeOptions.containsKey(action)) {
-            if (!vehicleStatus.getCarLocked().isPresent() || vehicleStatus.getCarLocked().get() != controlState) {
+            if (vehicleStatus.getCarLocked() == null || vehicleStatus.getCarLocked() != controlState) {
                 post(String.format("vehicles/%s/%s", configuration.vin, action), "{}");
             } else {
                 logger.info("The car {} is already {}ed", configuration.vin, action);
@@ -599,6 +603,6 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(VolvoOnCallActions.class);
+        return List.of(VolvoOnCallActions.class);
     }
 }

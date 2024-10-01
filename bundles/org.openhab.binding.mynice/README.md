@@ -42,18 +42,22 @@ Once done, you can also create your things via *.things file.
 
 There is no channel associated with the bridge.
 
-Channels available for the gates are :
+Channels available for the gates are:
 
 | Channel   | Type   | Read/Write | Description                                              |
 |-----------|--------|------------|----------------------------------------------------------|
-| status    | String | R          | Description of the current status of the door (1)        |
+| status    | String | R/W (1)    | Description of the current status of the door (2)        |
 | obstruct  | Switch | R          | Flags an obstruction, blocking the door                  |
 | moving    | Switch | R          | Indicates if the device is currently operating a command |
-| command   | String | W          | Send a given command to the gate (2)                     |
+| command   | String | W          | Send a given command to the gate (3)                     |
 | t4command | String | W          | Send a T4 Command to the gate                            |
+| courtesy  | Switch | R/W        | Status of the courtesy light (4)                         |
 
-(1) : can be open, closed, opening, closing, stopped.
-(2) : must be "stop","open","close"
+(1) : Accepted commands are : STOP, MOVE
+(2) : Valid status are : OPEN, CLOSED, OPENING, CLOSING, STOPPED
+(3) : Accepted commands are : "stop","open","close"
+(4) : There is no way to retrieve the current status of the courtesy light. It is supposed to be ON when the gate is moving and turned OFF once done.
+The delay between the moving end and light being turned off is a configuration parameter of the `courtesy` channel.
 
 ### T4 Commands
 
@@ -61,7 +65,7 @@ Depending upon your gate model and motor capabilities, some T4 commands can be u
 The list of available commands for your model will be automatically discovered by the binding.
 This information is stored in the `allowedT4` property held by the gate Thing itself.
 
-Complete list of T4 Commands :
+Complete list of T4 Commands:
 
 | Command | Action                     |
 |---------|----------------------------|
@@ -110,5 +114,6 @@ String   NiceIT4WIFI_GateStatus    "Gate Status" <gate>   (gMyniceSwing) ["Statu
 String   NiceIT4WIFI_Obstruction   "Obstruction" <none>   (gMyniceSwing)                          {channel="mynice:swing:83eef09166:1:obstruct"}
 Switch   NiceIT4WIFI_Moving        "Moving"      <motion> (gMyniceSwing) ["Status","Vibration"]   {channel="mynice:swing:83eef09166:1:moving"}
 String   NiceIT4WIFI_Command       "Command"     <none>   (gMyniceSwing)                          {channel="mynice:swing:83eef09166:1:command"}
+Switch   NiceIT4WIFI_Command       "Courtesy Light" <light> (gMyniceSwing)                        {channel="mynice:swing:83eef09166:1:courtesy"}
 
 ```

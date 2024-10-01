@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * Supported meters
  *
  * @author M. Volaart - Initial contribution
+ * @author Lennert Coopman - Added capacity tariff channels for Belgium: actual and current month
  */
 @NonNullByDefault
 public enum DSMRMeterType {
@@ -341,7 +342,8 @@ public enum DSMRMeterType {
                     CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L2, CosemObjectType.EMETER_INSTANT_POWER_PRODUCTION_L3,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L1, CosemObjectType.EMETER_INSTANT_CURRENT_L2,
                     CosemObjectType.EMETER_INSTANT_CURRENT_L3, CosemObjectType.EMETER_INSTANT_VOLTAGE_L1,
-                    CosemObjectType.EMETER_INSTANT_VOLTAGE_L2, CosemObjectType.EMETER_INSTANT_VOLTAGE_L3
+                    CosemObjectType.EMETER_INSTANT_VOLTAGE_L2, CosemObjectType.EMETER_INSTANT_VOLTAGE_L3,
+                    CosemObjectType.EMETER_ACTUAL_DEMAND, CosemObjectType.EMETER_MAXIMUM_DEMAND_CURRENT_MONTH
     }),
 
     /** Belgium Smart Gas Meter for the e-MUCS specification */

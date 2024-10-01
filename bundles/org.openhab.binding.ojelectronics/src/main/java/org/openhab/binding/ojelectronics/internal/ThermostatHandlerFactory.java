@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link ThermostatHandlerFactory} is responsible for creating {@link OJElectronicsThermostatHandler}.
+ * The {@link ThermostatHandlerFactory} is responsible for creating {@link ThermostatHandler}.
  *
  * @author Christian Kittel - Initial contribution
  */
@@ -43,7 +43,7 @@ public class ThermostatHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Creates a new factory
      *
-     * @param httpClientFactory Factory for HttpClient
+     * @param timeZoneProvider
      */
     @Activate
     public ThermostatHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {

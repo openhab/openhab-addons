@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
     private ScheduledFuture<?> refreshJob;
 
     private int currentRadioStation = 0;
-    private final Map<Integer, String> input_zone = new HashMap<>();
+    private final Map<Integer, String> inputZone = new HashMap<>();
 
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toMillis(5);
 
@@ -252,9 +252,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 updateState(channelUID, new StringType(result.get("soundField")));
             }
         }
-        if (command instanceof StringType) {
+        if (command instanceof StringType stringCommand) {
             logger.debug("handleSoundSettings set {}", command);
-            connection.setSoundSettings("soundField", ((StringType) command).toString());
+            connection.setSoundSettings("soundField", stringCommand.toString());
         }
     }
 
@@ -266,9 +266,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 updateState(channelUID, new StringType(result.get("nightMode")));
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleNightMode set {}", command);
-            connection.setSoundSettings("nightMode", ((OnOffType) command) == OnOffType.ON ? "on" : "off");
+            connection.setSoundSettings("nightMode", onOffCommand == OnOffType.ON ? "on" : "off");
         }
     }
 
@@ -281,14 +281,14 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
             try {
                 logger.debug("handlePowerCommand RefreshType {}", zone);
                 Boolean result = powerCache[zone].getValue();
-                updateState(channelUID, result ? OnOffType.ON : OnOffType.OFF);
+                updateState(channelUID, OnOffType.from(result));
             } catch (CompletionException ex) {
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handlePowerCommand set {} {}", zone, command);
-            connection.setPower(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setPower(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -303,13 +303,13 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 SonyAudioConnection.SonyAudioInput result = inputCache[zone].getValue();
                 if (result != null) {
                     if (zone > 0) {
-                        input_zone.put(zone, result.input);
+                        inputZone.put(zone, result.input);
                     }
                     updateState(channelUID, inputSource(result.input));
 
-                    if (result.radio_freq.isPresent()) {
+                    if (result.radioFrequency.isPresent()) {
                         updateState(SonyAudioBindingConstants.CHANNEL_RADIO_FREQ,
-                                new DecimalType(result.radio_freq.get() / 1000000.0));
+                                new DecimalType(result.radioFrequency.get() / 1000000.0));
                     }
                 }
             } catch (CompletionException ex) {
@@ -338,18 +338,18 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof PercentType) {
+        if (command instanceof PercentType percentCommand) {
             logger.debug("handleVolumeCommand PercentType set {} {}", zone, command);
-            connection.setVolume(((PercentType) command).intValue(), zone);
+            connection.setVolume(percentCommand.intValue(), zone);
         }
         if (command instanceof IncreaseDecreaseType) {
             logger.debug("handleVolumeCommand IncreaseDecreaseType set {} {}", zone, command);
             String change = command == IncreaseDecreaseType.INCREASE ? "+1" : "-1";
             connection.setVolume(change, zone);
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleVolumeCommand OnOffType set {} {}", zone, command);
-            connection.setMute(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setMute(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -363,15 +363,15 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 logger.debug("handleMuteCommand RefreshType {}", zone);
                 SonyAudioConnection.SonyAudioVolume result = volumeCache[zone].getValue();
                 if (result != null) {
-                    updateState(channelUID, result.mute ? OnOffType.ON : OnOffType.OFF);
+                    updateState(channelUID, OnOffType.from(result.mute));
                 }
             } catch (CompletionException ex) {
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof OnOffType) {
+        if (command instanceof OnOffType onOffCommand) {
             logger.debug("handleMuteCommand set {} {}", zone, command);
-            connection.setMute(((OnOffType) command) == OnOffType.ON, zone);
+            connection.setMute(onOffCommand == OnOffType.ON, zone);
         }
     }
 
@@ -382,12 +382,12 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         if (command instanceof RefreshType) {
             updateState(channelUID, new DecimalType(currentRadioStation));
         }
-        if (command instanceof DecimalType) {
-            currentRadioStation = ((DecimalType) command).intValue();
+        if (command instanceof DecimalType decimalCommand) {
+            currentRadioStation = decimalCommand.intValue();
             String radioCommand = "radio:fm?contentId=" + currentRadioStation;
 
             for (int i = 1; i <= 4; i++) {
-                String input = input_zone.get(i);
+                String input = inputZone.get(i);
                 if (input != null && input.startsWith("radio:fm")) {
                     connection.setInput(radioCommand, i);
                 }
@@ -399,8 +399,8 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         if (command instanceof RefreshType) {
             updateState(channelUID, new StringType(""));
         }
-        if (command instanceof StringType) {
-            switch (((StringType) command).toString()) {
+        if (command instanceof StringType stringCommand) {
+            switch (stringCommand.toString()) {
                 case "fwdSeeking":
                     connection.radioSeekFwd();
                     break;
@@ -418,20 +418,20 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         Configuration config = getThing().getConfiguration();
         String ipAddress = (String) config.get(SonyAudioBindingConstants.HOST_PARAMETER);
         String path = (String) config.get(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER);
-        Object port_o = config.get(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER);
+        Object portO = config.get(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER);
         int port = 10000;
-        if (port_o instanceof BigDecimal) {
-            port = ((BigDecimal) port_o).intValue();
-        } else if (port_o instanceof Integer) {
-            port = (int) port_o;
+        if (portO instanceof BigDecimal decimalValue) {
+            port = decimalValue.intValue();
+        } else if (portO instanceof Integer) {
+            port = (int) portO;
         }
 
-        Object refresh_o = config.get(SonyAudioBindingConstants.REFRESHINTERVAL);
+        Object refreshO = config.get(SonyAudioBindingConstants.REFRESHINTERVAL);
         int refresh = 0;
-        if (refresh_o instanceof BigDecimal) {
-            refresh = ((BigDecimal) refresh_o).intValue();
-        } else if (refresh_o instanceof Integer) {
-            refresh = (int) refresh_o;
+        if (refreshO instanceof BigDecimal decimalValue) {
+            refresh = decimalValue.intValue();
+        } else if (refreshO instanceof Integer) {
+            refresh = (int) refreshO;
         }
 
         try {
@@ -509,9 +509,9 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 break;
         }
 
-        if (input.radio_freq.isPresent()) {
+        if (input.radioFrequency.isPresent()) {
             updateState(SonyAudioBindingConstants.CHANNEL_RADIO_FREQ,
-                    new DecimalType(input.radio_freq.get() / 1000000.0));
+                    new DecimalType(input.radioFrequency.get() / 1000000.0));
         }
     }
 
@@ -534,23 +534,23 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         switch (zone) {
             case 0:
                 updateState(SonyAudioBindingConstants.CHANNEL_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_MUTE, OnOffType.from(volume.mute));
                 break;
             case 1:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_MUTE, OnOffType.from(volume.mute));
                 break;
             case 2:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_MUTE, OnOffType.from(volume.mute));
                 break;
             case 3:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_MUTE, OnOffType.from(volume.mute));
                 break;
             case 4:
                 updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_VOLUME, new PercentType(volume.volume));
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_MUTE, volume.mute ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_MUTE, OnOffType.from(volume.mute));
                 break;
         }
     }
@@ -560,20 +560,20 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         powerCache[zone].invalidateValue();
         switch (zone) {
             case 0:
-                updateState(SonyAudioBindingConstants.CHANNEL_POWER, power ? OnOffType.ON : OnOffType.OFF);
-                updateState(SonyAudioBindingConstants.CHANNEL_MASTER_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_POWER, OnOffType.from(power));
+                updateState(SonyAudioBindingConstants.CHANNEL_MASTER_POWER, OnOffType.from(power));
                 break;
             case 1:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE1_POWER, OnOffType.from(power));
                 break;
             case 2:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE2_POWER, OnOffType.from(power));
                 break;
             case 3:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE3_POWER, OnOffType.from(power));
                 break;
             case 4:
-                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_POWER, power ? OnOffType.ON : OnOffType.OFF);
+                updateState(SonyAudioBindingConstants.CHANNEL_ZONE4_POWER, OnOffType.from(power));
                 break;
         }
     }

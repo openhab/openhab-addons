@@ -41,6 +41,7 @@ public interface SerialPort extends Closeable {
      * @throws IOException
      *             if an I/O error occurred.
      */
+    @Override
     void close() throws IOException;
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus
 import static org.openhab.binding.mielecloud.internal.webservice.api.ProgramStatus.*;
 import static org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction.*;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -80,7 +81,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
         }
 
         BridgeHandler handler = bridge.getHandler();
-        if (handler == null || !(handler instanceof MieleBridgeHandler)) {
+        if (!(handler instanceof MieleBridgeHandler)) {
             return Optional.empty();
         }
 
@@ -88,8 +89,8 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     }
 
     protected MieleWebservice getWebservice() {
-        return getMieleBridgeHandler().map(MieleBridgeHandler::getWebservice)
-                .orElse(UnavailableMieleWebservice.INSTANCE);
+        return Objects.requireNonNull(getMieleBridgeHandler().map(MieleBridgeHandler::getWebservice)
+                .orElse(UnavailableMieleWebservice.INSTANCE));
     }
 
     @Override
@@ -282,7 +283,7 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     /**
      * Updates the device action state channels.
      *
-     * @param action The {@link ActionsChannelState} information to update the action channel states with.
+     * @param actions The {@link ActionsChannelState} information to update the action channel states with.
      */
     protected abstract void updateActionState(ActionsChannelState actions);
 }

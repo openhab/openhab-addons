@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,28 @@ public class Helper {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
             return defaultValue;
+        }
+    }
+
+    /**
+     * Scales the given value
+     * 
+     * @param value Value to be scaled
+     * @param minUnscaled Value for min value in unscaled dimension
+     * @param maxUnscaled Value for max value in unscaled dimension
+     * @param minValue
+     * @param maxValue
+     * @return
+     */
+    public static double scaleValue(double value, double minUnscaled, double maxUnscaled, double minValue,
+            double maxValue) {
+        double range = maxValue - minValue;
+        double unscaledRange = maxUnscaled - minUnscaled;
+
+        if (maxUnscaled > minUnscaled) {
+            return minValue + (value * range / unscaledRange);
+        } else {
+            return maxValue + (value * range / unscaledRange);
         }
     }
 }

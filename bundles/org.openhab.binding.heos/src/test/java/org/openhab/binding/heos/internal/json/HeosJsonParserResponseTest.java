@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -138,9 +138,11 @@ public class HeosJsonParserResponseTest {
     @Test
     public void get_players() {
         HeosResponseObject<Player[]> response = subject.parseResponse(
-                "{\"heos\": {\"command\": \"player/get_players\", \"result\": \"success\", \"message\": \"\"}, \"payload\": ["
-                        + "{\"name\": \"Kantoor HEOS 3\", \"pid\": -831584083, \"model\": \"HEOS 3\", \"version\": \"1.520.200\", \"ip\": \"192.168.1.230\", \"network\": \"wired\", \"lineout\": 0, \"serial\": \"ACNG9180110887\"}, "
-                        + "{\"name\": \"HEOS Bar\", \"pid\": 1958912779, \"model\": \"HEOS Bar\", \"version\": \"1.520.200\", \"ip\": \"192.168.1.195\", \"network\": \"wired\", \"lineout\": 0, \"serial\": \"ADAG9180917029\"}]}",
+                """
+                        {"heos": {"command": "player/get_players", "result": "success", "message": ""}, "payload": [\
+                        {"name": "Kantoor HEOS 3", "pid": -831584083, "model": "HEOS 3", "version": "1.520.200", "ip": "192.168.1.230", "network": "wired", "lineout": 0, "serial": "ACNG9180110887"}, \
+                        {"name": "HEOS Bar", "pid": 1958912779, "model": "HEOS Bar", "version": "1.520.200", "ip": "192.168.1.195", "network": "wired", "lineout": 0, "serial": "ADAG9180917029"}]}\
+                        """,
                 Player[].class);
 
         assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
@@ -194,8 +196,10 @@ public class HeosJsonParserResponseTest {
     @Test
     public void get_now_playing_media() {
         HeosResponseObject<Media> response = subject.parseResponse(
-                "{\"heos\": {\"command\": \"player/get_now_playing_media\", \"result\": \"success\", \"message\": \"pid=1958912779\"}, \"payload\": "
-                        + "{\"type\": \"song\", \"song\": \"Solo (feat. Demi Lovato)\", \"album\": \"What Is Love? (Deluxe)\", \"artist\": \"Clean Bandit\", \"image_url\": \"http://192.168.1.230:8015//m-browsableMediaUri/getImageFromTag/mnt/326C72A3E307501E47DE2B0F47D90EB8/Clean%20Bandit/What%20Is%20Love_%20(Deluxe)/03%20Solo%20(feat.%20Demi%20Lovato).m4a\", \"album_id\": \"\", \"mid\": \"http://192.168.1.230:8015/m-1c176905-f6c7-d168-dc35-86b4735c5976/Clean+Bandit/What+Is+Love_+(Deluxe)/03+Solo+(feat.+Demi+Lovato).m4a\", \"qid\": 1, \"sid\": 1024}, \"options\": []}\n",
+                """
+                        {"heos": {"command": "player/get_now_playing_media", "result": "success", "message": "pid=1958912779"}, "payload": \
+                        {"type": "song", "song": "Solo (feat. Demi Lovato)", "album": "What Is Love? (Deluxe)", "artist": "Clean Bandit", "image_url": "http://192.168.1.230:8015//m-browsableMediaUri/getImageFromTag/mnt/326C72A3E307501E47DE2B0F47D90EB8/Clean%20Bandit/What%20Is%20Love_%20(Deluxe)/03%20Solo%20(feat.%20Demi%20Lovato).m4a", "album_id": "", "mid": "http://192.168.1.230:8015/m-1c176905-f6c7-d168-dc35-86b4735c5976/Clean+Bandit/What+Is+Love_+(Deluxe)/03+Solo+(feat.+Demi+Lovato).m4a", "qid": 1, "sid": 1024}, "options": []}
+                        """,
                 Media.class);
 
         assertEquals(HeosCommandGroup.PLAYER, response.heosCommand.commandGroup);
@@ -222,13 +226,15 @@ public class HeosJsonParserResponseTest {
     @Test
     public void browse_playlist() {
         HeosResponseObject<BrowseResult[]> response = subject.parseResponse(
-                "{\"heos\": {\"command\": \"browse/browse\", \"result\": \"success\", \"message\": \"sid=1025&returned=6&count=6\"}, \"payload\": ["
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"132562\", \"playable\": \"yes\", \"name\": \"Maaike Ouboter - En hoe het dan ook weer dag wordt\", \"image_url\": \"\"}, "
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"132563\", \"playable\": \"yes\", \"name\": \"Maaike Ouboter - Vanaf nu is het van jou\", \"image_url\": \"\"}, "
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"162887\", \"playable\": \"yes\", \"name\": \"Easy listening\", \"image_url\": \"\"}, "
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"174461\", \"playable\": \"yes\", \"name\": \"Nieuwe muziek 5-2019\", \"image_url\": \"\"}, "
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"194000\", \"playable\": \"yes\", \"name\": \"Nieuwe muziek 2019-05\", \"image_url\": \"\"}, "
-                        + "{\"container\": \"yes\", \"type\": \"playlist\", \"cid\": \"194001\", \"playable\": \"yes\", \"name\": \"Clean Bandit\", \"image_url\": \"\"}]}",
+                """
+                        {"heos": {"command": "browse/browse", "result": "success", "message": "sid=1025&returned=6&count=6"}, "payload": [\
+                        {"container": "yes", "type": "playlist", "cid": "132562", "playable": "yes", "name": "Maaike Ouboter - En hoe het dan ook weer dag wordt", "image_url": ""}, \
+                        {"container": "yes", "type": "playlist", "cid": "132563", "playable": "yes", "name": "Maaike Ouboter - Vanaf nu is het van jou", "image_url": ""}, \
+                        {"container": "yes", "type": "playlist", "cid": "162887", "playable": "yes", "name": "Easy listening", "image_url": ""}, \
+                        {"container": "yes", "type": "playlist", "cid": "174461", "playable": "yes", "name": "Nieuwe muziek 5-2019", "image_url": ""}, \
+                        {"container": "yes", "type": "playlist", "cid": "194000", "playable": "yes", "name": "Nieuwe muziek 2019-05", "image_url": ""}, \
+                        {"container": "yes", "type": "playlist", "cid": "194001", "playable": "yes", "name": "Clean Bandit", "image_url": ""}]}\
+                        """,
                 BrowseResult[].class);
 
         assertEquals(HeosCommandGroup.BROWSE, response.heosCommand.commandGroup);
@@ -252,11 +258,13 @@ public class HeosJsonParserResponseTest {
     @Test
     public void browse_favorites() {
         HeosResponseObject<BrowseResult[]> response = subject.parseResponse(
-                "{\"heos\": {\"command\": \"browse/browse\", \"result\": \"success\", \"message\": \"sid=1028&returned=3&count=3\"}, \"payload\": ["
-                        + "{\"container\": \"no\", \"mid\": \"s6707\", \"type\": \"station\", \"playable\": \"yes\", \"name\": \"NPO 3FM 96.8 (Top 40 %26 Pop Music)\", \"image_url\": \"http://cdn-profiles.tunein.com/s6707/images/logoq.png?t=636268\"}, "
-                        + "{\"container\": \"no\", \"mid\": \"s2967\", \"type\": \"station\", \"playable\": \"yes\", \"name\": \"Classic FM Nederland (Classical Music)\", \"image_url\": \"http://cdn-radiotime-logos.tunein.com/s2967q.png\"}, "
-                        + "{\"container\": \"no\", \"mid\": \"s1993\", \"type\": \"station\", \"playable\": \"yes\", \"name\": \"BNR Nieuwsradio\", \"image_url\": \"http://cdn-radiotime-logos.tunein.com/s1993q.png\"}], "
-                        + "\"options\": [{\"browse\": [{\"id\": 20, \"name\": \"Remove from HEOS Favorites\"}]}]}",
+                """
+                        {"heos": {"command": "browse/browse", "result": "success", "message": "sid=1028&returned=3&count=3"}, "payload": [\
+                        {"container": "no", "mid": "s6707", "type": "station", "playable": "yes", "name": "NPO 3FM 96.8 (Top 40 %26 Pop Music)", "image_url": "http://cdn-profiles.tunein.com/s6707/images/logoq.png?t=636268"}, \
+                        {"container": "no", "mid": "s2967", "type": "station", "playable": "yes", "name": "Classic FM Nederland (Classical Music)", "image_url": "http://cdn-radiotime-logos.tunein.com/s2967q.png"}, \
+                        {"container": "no", "mid": "s1993", "type": "station", "playable": "yes", "name": "BNR Nieuwsradio", "image_url": "http://cdn-radiotime-logos.tunein.com/s1993q.png"}], \
+                        "options": [{"browse": [{"id": 20, "name": "Remove from HEOS Favorites"}]}]}\
+                        """,
                 BrowseResult[].class);
 
         assertEquals(HeosCommandGroup.BROWSE, response.heosCommand.commandGroup);
@@ -282,9 +290,11 @@ public class HeosJsonParserResponseTest {
     @Test
     public void get_groups() {
         HeosResponseObject<Group[]> response = subject.parseResponse(
-                "{\"heos\": {\"command\": \"group/get_groups\", \"result\": \"success\", \"message\": \"\"}, \"payload\": [ "
-                        + "{\"name\": \"Group 1\", \"gid\": \"214243242\", \"players\": [ {\"name\": \"HEOS 1\", \"pid\": \"2142443242\", \"role\": \"leader\"}, {\"name\": \"HEOS 3\", \"pid\": \"32432423432\", \"role\": \"member\"}, {\"name\": \"HEOS 5\", \"pid\": \"342423564\", \"role\": \"member\"}]}, "
-                        + "{\"name\": \"Group 2\", \"gid\": \"2142432342\", \"players\": [ {\"name\": \"HEOS 3\", \"pid\": \"32432423432\", \"role\": \"member\"}, {\"name\": \"HEOS 5\", \"pid\": \"342423564\", \"role\": \"member\"}]}]}",
+                """
+                        {"heos": {"command": "group/get_groups", "result": "success", "message": ""}, "payload": [ \
+                        {"name": "Group 1", "gid": "214243242", "players": [ {"name": "HEOS 1", "pid": "2142443242", "role": "leader"}, {"name": "HEOS 3", "pid": "32432423432", "role": "member"}, {"name": "HEOS 5", "pid": "342423564", "role": "member"}]}, \
+                        {"name": "Group 2", "gid": "2142432342", "players": [ {"name": "HEOS 3", "pid": "32432423432", "role": "member"}, {"name": "HEOS 5", "pid": "342423564", "role": "member"}]}]}\
+                        """,
                 Group[].class);
 
         assertEquals(HeosCommandGroup.GROUP, response.heosCommand.commandGroup);

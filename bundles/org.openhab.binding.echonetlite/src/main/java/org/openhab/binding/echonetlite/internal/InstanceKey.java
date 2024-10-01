@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class InstanceKey {
         this.instance = instance;
     }
 
+    @Override
     public String toString() {
         return "InstanceKey{" + "address=" + address + ", klass=" + klass + ", instance=" + instance + '}';
     }
@@ -45,6 +46,7 @@ public class InstanceKey {
                 + hex(instance);
     }
 
+    @Override
     public boolean equals(@Nullable final Object o) {
         if (this == o) {
             return true;
@@ -56,6 +58,7 @@ public class InstanceKey {
         return instance == that.instance && address.equals(that.address) && klass == that.klass;
     }
 
+    @Override
     public int hashCode() {
         return Objects.hash(address, klass, instance);
     }

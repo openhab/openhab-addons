@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -296,13 +296,11 @@ public class EvohomeAccountBridgeHandler extends BaseBridgeHandler {
         for (Thing handler : getThing().getThings()) {
             ThingHandler thingHandler = handler.getHandler();
 
-            if (thingHandler instanceof EvohomeTemperatureControlSystemHandler) {
-                EvohomeTemperatureControlSystemHandler tcsHandler = (EvohomeTemperatureControlSystemHandler) thingHandler;
+            if (thingHandler instanceof EvohomeTemperatureControlSystemHandler tcsHandler) {
                 tcsHandler.update(tcsIdToGatewayMap.get(tcsHandler.getId()), idToTcsMap.get(tcsHandler.getId()));
                 idToTcsThingsStatusMap.put(tcsHandler.getId(), tcsHandler.getThing().getStatus());
             }
-            if (thingHandler instanceof EvohomeHeatingZoneHandler) {
-                EvohomeHeatingZoneHandler zoneHandler = (EvohomeHeatingZoneHandler) thingHandler;
+            if (thingHandler instanceof EvohomeHeatingZoneHandler zoneHandler) {
                 zoneHandler.update(idToTcsThingsStatusMap.get(zoneIdToTcsIdMap.get(zoneHandler.getId())),
                         idToZoneMap.get(zoneHandler.getId()));
             }

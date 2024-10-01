@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,8 @@ package org.openhab.binding.boschshc.internal.devices.camera;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -26,9 +27,8 @@ import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
-import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationState;
 import org.openhab.binding.boschshc.internal.services.cameranotification.dto.CameraNotificationServiceState;
-import org.openhab.binding.boschshc.internal.services.privacymode.PrivacyModeState;
+import org.openhab.binding.boschshc.internal.services.dto.EnabledDisabledState;
 import org.openhab.binding.boschshc.internal.services.privacymode.dto.PrivacyModeServiceState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -44,7 +44,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
-public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraHandler> {
+class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<PrivacyModeServiceState> privacyModeServiceStateCaptor;
 
@@ -66,25 +66,25 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testHandleCommandPrivacyMode()
+    void testHandleCommandPrivacyMode()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("PrivacyMode"),
                 privacyModeServiceStateCaptor.capture());
         PrivacyModeServiceState state = privacyModeServiceStateCaptor.getValue();
-        assertSame(PrivacyModeState.ENABLED, state.value);
+        assertSame(EnabledDisabledState.ENABLED, state.value);
 
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PRIVACY_MODE),
                 OnOffType.OFF);
         verify(getBridgeHandler(), times(2)).putState(eq(getDeviceID()), eq("PrivacyMode"),
                 privacyModeServiceStateCaptor.capture());
         state = privacyModeServiceStateCaptor.getValue();
-        assertSame(PrivacyModeState.DISABLED, state.value);
+        assertSame(EnabledDisabledState.DISABLED, state.value);
     }
 
     @Test
-    public void testHandleCommandCameraNotification()
+    void testHandleCommandCameraNotification()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION),
@@ -92,7 +92,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("CameraNotification"),
                 cameraNotificationServiceStateCaptor.capture());
         CameraNotificationServiceState state = cameraNotificationServiceStateCaptor.getValue();
-        assertSame(CameraNotificationState.ENABLED, state.value);
+        assertSame(EnabledDisabledState.ENABLED, state.value);
 
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CAMERA_NOTIFICATION),
@@ -100,11 +100,11 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
         verify(getBridgeHandler(), times(2)).putState(eq(getDeviceID()), eq("CameraNotification"),
                 cameraNotificationServiceStateCaptor.capture());
         state = cameraNotificationServiceStateCaptor.getValue();
-        assertSame(CameraNotificationState.DISABLED, state.value);
+        assertSame(EnabledDisabledState.DISABLED, state.value);
     }
 
     @Test
-    public void testUpdateChannelsPrivacyModeState() {
+    void testUpdateChannelsPrivacyModeState() {
         JsonElement jsonObject = JsonParser.parseString("{\"@type\":\"privacyModeState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("PrivacyMode", jsonObject);
         verify(getCallback()).stateUpdated(
@@ -117,7 +117,7 @@ public class CameraHandlerTest extends AbstractBoschSHCDeviceHandlerTest<CameraH
     }
 
     @Test
-    public void testUpdateChannelsCameraNotificationState() {
+    void testUpdateChannelsCameraNotificationState() {
         JsonElement jsonObject = JsonParser
                 .parseString("{\"@type\":\"cameraNotificationState\",\"value\":\"ENABLED\"}");
         getFixture().processUpdate("CameraNotification", jsonObject);

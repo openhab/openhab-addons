@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,7 +144,7 @@ public class AnelUdpConnectorTest {
 
         // toggle state of switch 1
         final String auth = AnelAuthentication.getUserPasswordString(USER, PASSWORD, AuthMethod.of(status));
-        final String command = "Sw_" + (switch1state ? "off" : "on") + String.valueOf(switchNr) + auth;
+        final String command = "Sw_" + (switch1state ? "off" : "on") + switchNr + auth;
         final String status2 = sendAndReceiveSingle(command);
 
         // assert new state of switch 1

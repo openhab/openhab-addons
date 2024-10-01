@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,11 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 
 /**
- * The {@link T_CubeCommand} is used to unlink MAX! devices from the Cube.
+ * The {@link TCommand} is used to unlink MAX! devices from the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
@@ -49,9 +48,13 @@ public class TCommand extends CubeCommand {
     @Override
     public String getCommandString() {
         final int updateForced = forceUpdate ? FORCE_UPDATE : NO_FORCE_UPDATE;
-        byte[] commandArray = null;
+        byte[] commandArray = new byte[0];
         for (String rfAddress : rfAddresses) {
-            commandArray = ArrayUtils.addAll(Utils.hexStringToByteArray(rfAddress), commandArray);
+            byte[] rfAddressArray = Utils.hexStringToByteArray(rfAddress);
+            byte[] tnmpArray = new byte[rfAddressArray.length + commandArray.length];
+            System.arraycopy(rfAddressArray, 0, tnmpArray, 0, rfAddressArray.length);
+            System.arraycopy(commandArray, 0, tnmpArray, rfAddressArray.length, commandArray.length);
+            commandArray = tnmpArray;
         }
         String encodedString = Base64.getEncoder().encodeToString(commandArray);
 

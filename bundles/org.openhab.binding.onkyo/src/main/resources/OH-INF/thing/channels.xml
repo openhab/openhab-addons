@@ -103,6 +103,18 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="audysseyeq" advanced="true">
+		<item-type>Number</item-type>
+		<label>Audyssey EQ Mode</label>
+		<description>Choose between Audyssey 2EQ/MultiEQ Equalizer curves</description>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Movie</option>
+				<option value="2">Music</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="playuri" advanced="true">
 		<item-type>String</item-type>
 		<label>Play URI</label>

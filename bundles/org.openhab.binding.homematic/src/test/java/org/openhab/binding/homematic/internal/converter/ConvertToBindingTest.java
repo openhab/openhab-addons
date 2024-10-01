@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,15 +17,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.DecimalTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.QuantityTypeConverter;
-import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 
 /**
- * Tests for {@link AbstractTypeConverter#convertToBinding(org.openhab.core.types.Type, HmDatapoint)}.
+ * Tests for
+ * {@link org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter#convertToBinding(org.openhab.core.types.Type, HmDatapoint)}.
  *
  * @author Michael Reitler - Initial Contribution
  *

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public class F470 {
 
     @SuppressWarnings("serial")
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F470 = Collections
-            .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
             // @formatter:off
                     put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor Temperature"));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public abstract class IpCameraServlet extends HttpServlet {
             httpService.registerServlet("/ipcamera/" + handler.getThing().getUID().getId(), this, initParameters,
                     httpService.createDefaultHttpContext());
         } catch (Exception e) {
-            logger.warn("Registering servlet failed:{}", e.getMessage());
+            logger.warn("Registering servlet failed: {}", e.getMessage());
         }
     }
 

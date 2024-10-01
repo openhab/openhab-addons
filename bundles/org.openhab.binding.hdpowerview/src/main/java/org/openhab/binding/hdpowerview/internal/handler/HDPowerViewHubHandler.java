@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,7 +174,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private void initializeChannels() {
         // Rebuild dynamic channels and synchronize with cache.
-        updateThing(editThing().withChannels(new ArrayList<Channel>()).build());
+        updateThing(editThing().withChannels(new ArrayList<>()).build());
         sceneCache.clear();
         sceneCollectionCache.clear();
         scheduledEventCache.clear();
@@ -465,7 +465,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene channels, changes detected");
-        sceneCache = new CopyOnWriteArrayList<Scene>(scenes);
+        sceneCache = new CopyOnWriteArrayList<>(scenes);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
@@ -504,7 +504,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene group channels, changes detected");
-        sceneCollectionCache = new CopyOnWriteArrayList<SceneCollection>(sceneCollections);
+        sceneCollectionCache = new CopyOnWriteArrayList<>(sceneCollections);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
@@ -543,7 +543,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all automation channels, changes detected");
-        scheduledEventCache = new CopyOnWriteArrayList<ScheduledEvent>(scheduledEvents);
+        scheduledEventCache = new CopyOnWriteArrayList<>(scheduledEvents);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
@@ -564,7 +564,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             String scheduledEventId = Integer.toString(scheduledEvent.id);
             ChannelUID channelUid = new ChannelUID(channelGroupUid, scheduledEventId);
-            updateState(channelUid, scheduledEvent.enabled ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUid, OnOffType.from(scheduledEvent.enabled));
         }
     }
 
@@ -601,8 +601,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadePosition();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
@@ -620,8 +620,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadeBatteryLevel();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);

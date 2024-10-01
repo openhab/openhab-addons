@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     protected List<KeypadComponent> cciList = new ArrayList<>();
 
     Map<Integer, Integer> leapButtonMap;
+    Map<Integer, Integer> leapButtonInverseMap;
 
     protected int integrationId;
     protected String model;
@@ -359,6 +360,11 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             } catch (NumberFormatException e) {
                 logger.error("Invalid component {} in keypad update event message", parameters[0]);
                 return;
+            }
+
+            // LEAP buttons need to be translated back from their index to component id
+            if (leapButtonInverseMap != null) {
+                component = leapButtonInverseMap.get(component);
             }
 
             ChannelUID channelUID = channelFromComponent(component);

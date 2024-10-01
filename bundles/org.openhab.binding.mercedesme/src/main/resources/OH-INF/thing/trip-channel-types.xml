@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="distance">
+		<item-type>Number:Length</item-type>
+		<label>Trip Distance</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="driven-time">
+		<item-type>String</item-type>
+		<label>Trip String Time</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="avg-speed">
+		<item-type>Number:Speed</item-type>
+		<label>Trip Average Speed</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-ev">
+		<item-type>Number</item-type>
+		<label>Trip Avg Cons EV</label>
+		<description>Last Trip Average Consumption Electric</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-conv">
+		<item-type>Number</item-type>
+		<label>Trip Avg Cons Fuel</label>
+		<description>Last Trip Average Consumption Fuel</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="distance-reset">
+		<item-type>Number:Length</item-type>
+		<label>Rst Distance</label>
+		<description>Distance since last Reset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="driven-time-reset">
+		<item-type>String</item-type>
+		<label>Rst Driving Time</label>
+		<description>Driving time since last Reset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="avg-speed-reset">
+		<item-type>Number:Speed</item-type>
+		<label>Rst Average Speed</label>
+		<description>Average speed since last Reset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-ev-reset">
+		<item-type>Number</item-type>
+		<label>Avg Cons Rst EV</label>
+		<description>Average consumption since last reset electric</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-conv-reset">
+		<item-type>Number</item-type>
+		<label>Avg Cons Rst Fuel</label>
+		<description>Average consumption since last reset fuel</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-ev-unit">
+		<item-type>String</item-type>
+		<label>Avg Cons Unit EV</label>
+		<description>Average consumption unit electric</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption-conv-unit">
+		<item-type>String</item-type>
+		<label>Avg Cons Unit Fuel</label>
+		<description>Average consumption unit fuel</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

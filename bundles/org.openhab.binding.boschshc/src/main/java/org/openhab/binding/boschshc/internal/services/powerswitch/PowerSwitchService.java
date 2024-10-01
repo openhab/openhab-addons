@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,9 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitc
 @NonNullByDefault
 public class PowerSwitchService extends BoschSHCService<PowerSwitchServiceState> {
 
+    public static final String POWER_SWITCH_SERVICE_NAME = "PowerSwitch";
+
     public PowerSwitchService() {
-        super("PowerSwitch", PowerSwitchServiceState.class);
+        super(POWER_SWITCH_SERVICE_NAME, PowerSwitchServiceState.class);
     }
 }

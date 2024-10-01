@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,8 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link DaikinHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  * 
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.daikin")

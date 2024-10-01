@@ -13,8 +13,8 @@
 		</parameter>
 		<parameter name="apiVersion" type="text">
 			<label>One Call API Version</label>
-			<description>One Call API version (defaults to 2.5, version 3.0 is available, but needs different subscription).</description>
-			<default>2.5</default>
+			<description>One Call API version (defaults to 3.0, version 2.5 is to be closed in June 2024).</description>
+			<default>3.0</default>
 			<options>
 				<option value="2.5">2.5</option>
 				<option value="3.0">3.0</option>
@@ -97,19 +97,6 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:openweathermap:uvindex">
-		<parameter name="location" type="text" required="true">
-			<context>location</context>
-			<label>Location of Weather</label>
-			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
-		</parameter>
-		<parameter name="forecastDays" type="integer" min="1" max="8" step="1">
-			<label>Number of Days</label>
-			<description>Number of days for UV Index forecast.</description>
-			<default>6</default>
-		</parameter>
-	</config-description>
-
 	<config-description uri="thing-type:openweathermap:air-pollution">
 		<parameter name="location" type="text" required="true">
 			<context>location</context>
@@ -130,18 +117,20 @@
 			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
 		</parameter>
 		<parameter name="forecastDays" type="integer" min="0" max="8" step="1">
-			<label>Number of Days</label>
-			<description>Number of days for daily forecast, including the current day.</description>
+			<label>Number of Daily Forecast Channels</label>
+			<description>Number of days for daily forecast, including the current day and determining how many daily channels are
+				created.</description>
 			<default>6</default>
 		</parameter>
 		<parameter name="forecastHours" type="integer" min="0" max="48" step="1">
-			<label>Number of Hours</label>
-			<description>Number of hours for hourly forecast.</description>
+			<label>Number of Hourly Forecast Channels</label>
+			<description>Number of hours for hourly forecast, determining how many hourly channels are created.</description>
 			<default>12</default>
 		</parameter>
 		<parameter name="forecastMinutes" type="integer" min="0" max="60" step="1">
-			<label>Number of Minutes</label>
-			<description>Number of minutes for minutely precipitation forecast.</description>
+			<label>Number of Minutely Forecast Channels</label>
+			<description>Number of minutes for minutely precipitation forecast, determining how many minutely channels are
+				created.</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="numberOfAlerts" type="integer" min="0" max="5" step="1">

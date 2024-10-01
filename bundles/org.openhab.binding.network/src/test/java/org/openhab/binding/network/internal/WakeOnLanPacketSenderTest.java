@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,7 +118,7 @@ public class WakeOnLanPacketSenderTest {
         }
 
         try {
-            WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port);
+            WakeOnLanPacketSender sender = new WakeOnLanPacketSender("6f70656e4841", hostname, port, Set.of());
             sender.sendWakeOnLanPacketViaIp();
 
             // This Test is only applicable for IP Requests

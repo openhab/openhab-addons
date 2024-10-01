@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:time-range-command">
+		<parameter name="inRangeValue" type="integer" min="0" max="100" step="1">
+			<label>In Range Value</label>
+			<description>The value which will be send when the profile detects ON and current time is between start time and end
+				time.</description>
+			<default>100</default>
+		</parameter>
+		<parameter name="outOfRangeValue" type="integer" min="0" max="100" step="1">
+			<label>Out Of Range Value</label>
+			<description>The value which will be send when the profile detects ON and current time is NOT between start time and
+				end time.</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="start" type="text" pattern="^([0-1][0-9]|2[0-3])(:[0-5][0-9])$" required="true">
+			<label>Start Time</label>
+			<description>The start time of the day (hh:mm).</description>
+			<context>time</context>
+		</parameter>
+		<parameter name="end" type="text" pattern="^([0-1][0-9]|2[0-3])(:[0-5][0-9])$" required="true">
+			<label>End Time</label>
+			<description>The end time of the day (hh:mm).</description>
+			<context>time</context>
+		</parameter>
+		<parameter name="restoreValue" type="text">
+			<advanced>true</advanced>
+			<label>Restore Value</label>
+			<description>Select what should happen when the profile detects OFF again.</description>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="PREVIOUS">Return to previous value</option>
+				<option value="NOTHING">Do nothing</option>
+			</options>
+			<limitToOptions>false</limitToOptions>
+			<default>OFF</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

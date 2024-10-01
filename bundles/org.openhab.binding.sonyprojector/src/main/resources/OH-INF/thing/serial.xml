@@ -40,7 +40,12 @@
 			<channel id="overscan" typeId="overscan"/>
 			<channel id="pictureposition" typeId="pictureposition"/>
 			<channel id="lampusetime" typeId="lampusetime"/>
+			<channel id="ircommand" typeId="ircommand"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="port" type="text" required="true">

@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="profile:rollershutter:position">
+	<config-description uri="profile:transform:ROLLERSHUTTERPOSITION">
 		<parameter name="uptime" type="decimal" required="true">
 			<label>Up Time</label>
 			<description>Time it takes for roller shutter to fully open (in seconds).</description>

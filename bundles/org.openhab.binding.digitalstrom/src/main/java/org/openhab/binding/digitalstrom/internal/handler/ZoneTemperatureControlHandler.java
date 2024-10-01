@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,8 +28,8 @@ import org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlSt
 import org.openhab.binding.digitalstrom.internal.lib.climate.jsonresponsecontainer.impl.TemperatureControlStatus;
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
+import org.openhab.binding.digitalstrom.internal.lib.manager.impl.TemperatureControlManager;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.providers.DsChannelTypeProvider;
 import org.openhab.core.config.core.Configuration;
@@ -257,8 +257,8 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             }
             ThingHandler handler = bridge.getHandler();
 
-            if (handler instanceof BridgeHandler) {
-                dssBridgeHandler = (BridgeHandler) handler;
+            if (handler instanceof BridgeHandler bridgeHandler) {
+                dssBridgeHandler = bridgeHandler;
             } else {
                 return null;
             }
@@ -281,13 +281,13 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                                 || !currentChannelID.contains(DsChannelTypeProvider.TEMPERATURE_CONTROLLED))
                         && !controlState.equals(ControlStates.EMERGENCY)) {
                     currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(ApplicationGroup.Color.BLUE,
-                            OutputModeEnum.TEMPRETURE_PWM, new ArrayList<OutputChannelEnum>());
+                            OutputModeEnum.TEMPRETURE_PWM, new ArrayList<>());
                     loadChannel();
                     currentValue = tempControlStatus.getNominalValue();
                     updateState(currentChannelID, new DecimalType(currentValue.doubleValue()));
                 } else if (!controlMode.equals(ControlModes.PID_CONTROL) && !controlMode.equals(ControlModes.OFF)) {
                     currentChannelID = DsChannelTypeProvider.getOutputChannelTypeID(ApplicationGroup.Color.BLUE,
-                            OutputModeEnum.HEATING_PWM, new ArrayList<OutputChannelEnum>());
+                            OutputModeEnum.HEATING_PWM, new ArrayList<>());
                     loadChannel();
                     currentValue = tempControlStatus.getControlValue();
                     updateState(currentChannelID, new PercentType(fixPercent(currentValue.intValue())));

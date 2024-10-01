@@ -1,0 +1,48 @@
+[
+    {
+        "vin": "anonymousBEV",
+        "mappingInfo": {
+            "isAssociated": true,
+            "isLmmEnabled": true,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2023-01-16T15:41:26.664Z",
+            "model": "iX xDrive40",
+            "year": 2022,
+            "color": 4282345065,
+            "brand": "BMW_I",
+            "driveTrain": "ELECTRIC",
+            "headUnitType": "MGU",
+            "headUnitRaw": "HU_MGU",
+            "hmiVersion": "ID8",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 7,
+                    "year": 22
+                },
+                "iStep": 545,
+                "seriesCluster": "I020"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 7,
+                    "year": 22
+                },
+                "iStep": 545,
+                "seriesCluster": "I020"
+            },
+            "telematicsUnit": "WAVE11",
+            "bodyType": "I20",
+            "countryOfOrigin": "BE",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]

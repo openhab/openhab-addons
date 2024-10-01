@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class MaxCubeBridgeDiscovery extends AbstractDiscoveryService {
                     logger.trace("Msg Valid : {}", msgValidid);
                     logger.trace("Msg Type  : {}", requestType);
 
-                    if (requestType.equals("I")) {
+                    if ("I".equals(requestType)) {
                         rfAddress = Utils.getHex(Arrays.copyOfRange(messageBuf, 21, 24)).replace(" ", "").toLowerCase();
                         String firmwareVersion = Utils.getHex(Arrays.copyOfRange(messageBuf, 24, 26)).replace(" ", ".");
                         logger.debug("RF Address: {}", rfAddress);

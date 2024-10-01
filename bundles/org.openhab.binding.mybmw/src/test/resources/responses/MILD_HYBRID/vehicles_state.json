@@ -1,0 +1,264 @@
+{
+    "state": {
+        "isLeftSteering": true,
+        "lastFetched": "2022-12-21T17:31:26.560Z",
+        "lastUpdatedAt": "2022-12-21T15:41:23Z",
+        "isLscSupported": true,
+        "range": 435,
+        "doorsState": {
+            "combinedSecurityState": "SECURED",
+            "leftFront": "CLOSED",
+            "leftRear": "CLOSED",
+            "rightFront": "CLOSED",
+            "rightRear": "CLOSED",
+            "combinedState": "CLOSED",
+            "hood": "CLOSED",
+            "trunk": "CLOSED"
+        },
+        "windowsState": {
+            "leftFront": "CLOSED",
+            "leftRear": "CLOSED",
+            "rightFront": "CLOSED",
+            "rightRear": "CLOSED",
+            "rear": "CLOSED",
+            "combinedState": "CLOSED"
+        },
+        "roofState": {
+            "roofState": "CLOSED",
+            "roofStateType": "SUN_ROOF"
+        },
+        "tireState": {
+            "frontLeft": {
+                "details": {
+                    "dimension": "225/45 R18 95V XL",
+                    "treadDesign": "Winter Contact TS 860 S SSR",
+                    "manufacturer": "Continental",
+                    "manufacturingWeek": 5299,
+                    "isOptimizedForOemBmw": true,
+                    "partNumber": "2471558",
+                    "speedClassification": {
+                        "speedRating": 240,
+                        "atLeast": false
+                    },
+                    "mountingDate": "2022-10-06T00:00:00.000Z",
+                    "season": 4,
+                    "identificationInProgress": false
+                },
+                "status": {
+                    "currentPressure": 280,
+                    "targetPressure": 290
+                }
+            },
+            "frontRight": {
+                "details": {
+                    "dimension": "225/45 R18 95V XL",
+                    "treadDesign": "Winter Contact TS 860 S SSR",
+                    "manufacturer": "Continental",
+                    "manufacturingWeek": 5299,
+                    "isOptimizedForOemBmw": true,
+                    "partNumber": "2471558",
+                    "speedClassification": {
+                        "speedRating": 240,
+                        "atLeast": false
+                    },
+                    "mountingDate": "2022-10-06T00:00:00.000Z",
+                    "season": 4,
+                    "identificationInProgress": false
+                },
+                "status": {
+                    "currentPressure": 280,
+                    "targetPressure": 290
+                }
+            },
+            "rearLeft": {
+                "details": {
+                    "dimension": "255/40 R18 99V XL",
+                    "treadDesign": "Winter Contact TS 860 S SSR",
+                    "manufacturer": "Continental",
+                    "manufacturingWeek": 5299,
+                    "isOptimizedForOemBmw": true,
+                    "partNumber": "2471559",
+                    "speedClassification": {
+                        "speedRating": 240,
+                        "atLeast": false
+                    },
+                    "mountingDate": "2022-10-06T00:00:00.000Z",
+                    "season": 4,
+                    "identificationInProgress": false
+                },
+                "status": {
+                    "currentPressure": 280,
+                    "targetPressure": 290
+                }
+            },
+            "rearRight": {
+                "details": {
+                    "dimension": "255/40 R18 99V XL",
+                    "treadDesign": "Winter Contact TS 860 S SSR",
+                    "manufacturer": "Continental",
+                    "manufacturingWeek": 5299,
+                    "isOptimizedForOemBmw": true,
+                    "partNumber": "2471559",
+                    "speedClassification": {
+                        "speedRating": 240,
+                        "atLeast": false
+                    },
+                    "mountingDate": "2022-10-06T00:00:00.000Z",
+                    "season": 4,
+                    "identificationInProgress": false
+                },
+                "status": {
+                    "currentPressure": 280,
+                    "targetPressure": 290
+                }
+            }
+        },
+        "location": {
+            "coordinates": {
+				"latitude": 1.234,
+				"longitude": 5.678
+            },
+            "address": {
+                "formatted": "Leopoldstraße 25, 80333 München"
+            },
+            "heading": 180
+        },
+        "currentMileage": 4376,
+        "climateControlState": {
+            "activity": "INACTIVE"
+        },
+        "requiredServices": [
+            {
+                "dateTime": "2024-06-01T00:00:00.000Z",
+                "mileage": 29000,
+                "type": "OIL",
+                "status": "OK",
+                "description": "Next service due after the specified distance or date."
+            },
+            {
+                "dateTime": "2025-06-01T00:00:00.000Z",
+                "type": "BRAKE_FLUID",
+                "status": "OK",
+                "description": "Next service due by the specified date."
+            },
+            {
+                "dateTime": "2025-07-01T00:00:00.000Z",
+                "type": "VEHICLE_TUV",
+                "status": "OK",
+                "description": "Next state inspection due by the specified date."
+            },
+            {
+                "dateTime": "2026-06-01T00:00:00.000Z",
+                "mileage": 60000,
+                "type": "VEHICLE_CHECK",
+                "status": "OK",
+                "description": "Next visual inspection due by specified date or, if shown, when stated distance has been reached."
+            }
+        ],
+        "checkControlMessages": [
+            {
+                "type": "TIRE_PRESSURE",
+                "severity": "LOW"
+            },
+            {
+                "type": "ENGINE_OIL",
+                "severity": "LOW"
+            }
+        ],
+        "combustionFuelLevel": {
+            "remainingFuelPercent": 65,
+            "remainingFuelLiters": 34,
+            "range": 435
+        },
+        "driverPreferences": {
+            "lscPrivacyMode": "OFF"
+        },
+        "isDeepSleepModeActive": false,
+        "climateTimers": [
+            {
+                "isWeeklyTimer": false,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            },
+            {
+                "isWeeklyTimer": true,
+                "timerAction": "DEACTIVATE",
+                "timerWeekDays": [
+                    "MONDAY"
+                ],
+                "departureTime": {
+                    "hour": 7,
+                    "minute": 0
+                }
+            }
+        ]
+    },
+    "capabilities": {
+        "a4aType": "NOT_SUPPORTED",
+        "climateNow": true,
+        "isClimateTimerSupported": true,
+        "climateTimerTrigger": "DEPARTURE_TIMER",
+        "climateFunction": "VENTILATION",
+        "horn": true,
+        "isBmwChargingSupported": false,
+        "isCarSharingSupported": false,
+        "isChargeNowForBusinessSupported": false,
+        "isChargingHistorySupported": false,
+        "isChargingHospitalityEnabled": false,
+        "isChargingLoudnessEnabled": false,
+        "isChargingPlanSupported": false,
+        "isChargingPowerLimitEnabled": false,
+        "isChargingSettingsEnabled": false,
+        "isChargingTargetSocEnabled": false,
+        "isCustomerEsimSupported": false,
+        "isDataPrivacyEnabled": false,
+        "isDCSContractManagementSupported": false,
+        "isEasyChargeEnabled": false,
+        "isMiniChargingSupported": false,
+        "isEvGoChargingSupported": false,
+        "isRemoteHistoryDeletionSupported": false,
+        "isRemoteEngineStartSupported": false,
+        "isRemoteServicesActivationRequired": false,
+        "isRemoteServicesBookingRequired": false,
+        "isScanAndChargeSupported": false,
+        "lastStateCallState": "ACTIVATED",
+        "lights": true,
+        "lock": true,
+        "remoteSoftwareUpgrade": true,
+        "sendPoi": true,
+        "speechThirdPartyAlexa": true,
+        "speechThirdPartyAlexaSDK": false,
+        "unlock": true,
+        "vehicleFinder": true,
+        "vehicleStateSource": "LAST_STATE_CALL",
+        "isRemoteHistorySupported": true,
+        "isWifiHotspotServiceSupported": true,
+        "isNonLscFeatureEnabled": false,
+        "isSustainabilitySupported": false,
+        "isSustainabilityAccumulatedViewEnabled": false,
+        "checkSustainabilityDPP": false,
+        "specialThemeSupport": [],
+        "isRemoteParkingSupported": false,
+        "remoteChargingCommands": {},
+        "isClimateTimerWeeklyActive": true,
+        "digitalKey": {
+            "bookedServicePackage": "NONE",
+            "state": "NOT_AVAILABLE"
+        }
+    }
+}

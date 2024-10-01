@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -261,9 +261,9 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
+        if (command instanceof State stateCommand) {
             itemChangedListenerMap.getOrDefault(channelUID, EMPTY_ITEM_CHANGED_LISTENER).onItemStateChanged(channelUID,
-                    (State) command);
+                    stateCommand);
         } else if (command instanceof RefreshType) {
             tryReconnect();
         }

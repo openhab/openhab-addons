@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Pump</label>
-		<description>Pump</description>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>
@@ -33,6 +32,7 @@
 			<property name="mediumPumpSpeed"></property>
 			<property name="highPumpSpeed"></property>
 			<property name="customPumpSpeed"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
@@ -40,22 +40,21 @@
 
 	<channel-type id="pumpSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Pump Speed %</label>
-		<description>Pump Speed (%)</description>
-		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
+		<label>Pump Speed</label>
+		<description>Pump speed in percentage</description>
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedRpm">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Pump Speed RPM</label>
-		<description>Pump Speed (RPM)</description>
-		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
+		<item-type>Number:Frequency</item-type>
+		<label>Pump Speed</label>
+		<description>Pump speed in rpm</description>
+		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedSelect">
 		<item-type>String</item-type>
 		<label>Pump Speed States</label>
-		<description>Pump Speed States</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -70,7 +69,6 @@
 	<channel-type id="pumpState">
 		<item-type>String</item-type>
 		<label>Pump State</label>
-		<description>Pump State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -92,8 +90,8 @@
 	<channel-type id="pumpLastSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
-		<description>Last Speed (%)</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<description>Last pump speed in percentage</description>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

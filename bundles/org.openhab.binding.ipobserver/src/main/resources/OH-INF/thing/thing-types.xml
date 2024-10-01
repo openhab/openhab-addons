@@ -97,7 +97,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidityIndoor">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Indoor Humidity</label>
 		<description>Current Humidity Indoors</description>
 		<category>Humidity</category>

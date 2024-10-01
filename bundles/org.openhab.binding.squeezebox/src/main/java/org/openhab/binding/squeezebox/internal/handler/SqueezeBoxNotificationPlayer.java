@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,10 +77,6 @@ class SqueezeBoxNotificationPlayer implements Closeable {
 
     private void setupPlayerForNotification() throws InterruptedException, SqueezeBoxTimeoutException {
         logger.debug("Setting up player for notification");
-        if (!playerState.isPoweredOn()) {
-            logger.debug("Powering on the player");
-            squeezeBoxServerHandler.powerOn(mac);
-        }
         if (playerState.isShuffling()) {
             logger.debug("Turning off shuffle");
             squeezeBoxServerHandler.setShuffleMode(mac, 0);

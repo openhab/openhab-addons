@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -295,6 +295,14 @@ public class LivisiClient {
     public void setAlarmActuatorState(final String capabilityId, final boolean alarmState) throws IOException {
         executePost(createActionURL(),
                 new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_ALARMACTUATOR, alarmState));
+    }
+
+    /**
+     * Sets the siren state.
+     */
+    public void setSirenActuatorState(final String capabilityId, final String activeChannel) throws IOException {
+        executePost(createActionURL(),
+                new StateActionSetterDTO(capabilityId, CapabilityDTO.TYPE_SIRENACTUATOR, activeChannel));
     }
 
     /**

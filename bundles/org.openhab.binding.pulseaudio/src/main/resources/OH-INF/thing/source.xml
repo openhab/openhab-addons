@@ -36,18 +36,6 @@
 					pulseaudio server)</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="simpleProtocolSourcePort" type="integer" required="false">
-				<label>Simple Protocol Port</label>
-				<description>Default Port to allocate to be used by module-simple-protocol-tcp on the pulseaudio server</description>
-				<default>4710</default>
-			</parameter>
-			<parameter name="simpleProtocolSourceIdleTimeout" type="integer" required="false">
-				<label>Idle Timeout</label>
-				<description>Timeout in ms after which the connection will be closed when no stream is running. This ensures that
-					your speaker is not on all the time and the pulseaudio source can go to idle mode. -1 for no disconnection.
-				</description>
-				<default>30000</default>
-			</parameter>
 			<parameter name="simpleProtocolSourceFormat" type="text">
 				<label>Simple Protocol Format</label>
 				<description>The audio format to be used by module-simple-protocol-tcp on the pulseaudio server</description>
@@ -62,6 +50,12 @@
 					<option value="s32le">PCM signed 32-bit little-endian</option>
 					<option value="s32be">PCM signed 32-bit big-endian</option>
 				</options>
+			</parameter>
+			<parameter name="simpleProtocolIdleModules" type="integer" required="false">
+				<label>Simple Protocol Idle Modules</label>
+				<description>Number of Simple Protocol TCP Socket modules to keep loaded in the server to reuse</description>
+				<default>1</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="simpleProtocolSourceRate" type="integer" min="0">
 				<label>Simple Protocol Rate</label>
@@ -80,6 +74,18 @@
 				<description>Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp. You can tune
 					this option if the socket disconnect frequently.</description>
 				<default>500</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMinPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Min Port</label>
+				<description>Min port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>1024</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="simpleProtocolMaxPort" type="integer" min="1024" max="64512">
+				<label>Simple Protocol Max Port</label>
+				<description>Max port used by simple protocol module instances created by the binding on the pulseaudio host.</description>
+				<default>64512</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

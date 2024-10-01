@@ -1,0 +1,12 @@
+[
+    {
+       "id":"L1",
+       "name":"Party",
+       "enable":true
+    },
+    {
+       "id":"L2",
+       "name":"Relax",
+       "enable":true
+    }
+ ]

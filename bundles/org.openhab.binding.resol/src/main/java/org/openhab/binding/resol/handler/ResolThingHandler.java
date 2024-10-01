@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,8 +113,8 @@ public class ResolThingHandler extends ResolBaseThingHandler {
         ResolBridgeHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof ResolBridgeHandler) {
-            bridgeHandler = (ResolBridgeHandler) handler;
+        if (handler instanceof ResolBridgeHandler resolBridgeHandler) {
+            bridgeHandler = resolBridgeHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,8 @@ public enum DeviceCapability {
     VOICE_REPORTING,
     @SerializedName("spot_area_cleaning")
     SPOT_AREA_CLEANING,
+    @SerializedName("free_clean_command")
+    FREE_CLEAN_FOR_SPOT_AREA,
     @SerializedName("custom_area_cleaning")
     CUSTOM_AREA_CLEANING,
     @SerializedName("single_room_cleaning")
@@ -45,6 +47,8 @@ public enum DeviceCapability {
     TRUE_DETECT_3D,
     @SerializedName("unit_care_lifespan")
     UNIT_CARE_LIFESPAN,
+    @SerializedName("uses_clean_results_log_api")
+    USES_CLEAN_RESULTS_LOG_API,
     // implicit capabilities added in code
     EDGE_CLEANING,
     SPOT_CLEANING,

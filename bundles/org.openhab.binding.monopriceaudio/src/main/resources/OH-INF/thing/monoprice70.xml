@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="monopriceaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Monoprice 31028/PAM1270 Amplifier Thing -->
+	<thing-type id="monoprice70">
+		<label>Monoprice 31028 70V Amplifier</label>
+		<description>
+			A Multi-zone Whole House Amplifier System
+		</description>
+
+		<channel-groups>
+			<channel-group id="all" typeId="monoprice70-all">
+				<label>All Zones</label>
+				<description>Control All Zones Simultaneously</description>
+			</channel-group>
+			<channel-group id="zone1" typeId="monoprice70-zone">
+				<label>Zone 1</label>
+				<description>The Controls for Zone 1</description>
+			</channel-group>
+			<channel-group id="zone2" typeId="monoprice70-zone">
+				<label>Zone 2</label>
+				<description>The Controls for Zone 2</description>
+			</channel-group>
+			<channel-group id="zone3" typeId="monoprice70-zone">
+				<label>Zone 3</label>
+				<description>The Controls for Zone 3</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="monoprice70-zone">
+				<label>Zone 4</label>
+				<description>The Controls for Zone 4</description>
+			</channel-group>
+			<channel-group id="zone5" typeId="monoprice70-zone">
+				<label>Zone 5</label>
+				<description>The Controls for Zone 5</description>
+			</channel-group>
+			<channel-group id="zone6" typeId="monoprice70-zone">
+				<label>Zone 6</label>
+				<description>The Controls for Zone 6</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
+				<label>Serial Port</label>
+				<description>Serial Port to Use for Connecting to the Monoprice Amplifier</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host Name or IP Address of the Machine Connected to the Monoprice Amplifier (Serial over IP)</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
+				<label>Port</label>
+				<description>Communication Port for Serial over IP connection to the Monoprice Amplifier</description>
+			</parameter>
+			<parameter name="numZones" type="integer" min="1" max="6" required="true">
+				<label>Number of Zones</label>
+				<description>Number of Zones on the Amplifier to Utilize in the Binding</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
+				<label>Polling Interval</label>
+				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 30)</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="ignoreZones" type="text" required="false">
+				<label>Ignore Zones</label>
+				<description>(Optional) A Comma Seperated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
+					Commands (ie: 1,5,6)</description>
+			</parameter>
+			<parameter name="initialAllVolume" type="integer" min="1" max="30" required="false">
+				<label>Initial All Volume</label>
+				<description>When 'All' Zones Are Activated, the Volume Will Reset to This Value (1-30; default 10) to Prevent
+					Excessive Blaring of Sound ;)</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="inputLabel1" type="text" required="false">
+				<label>Source 0 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 0 - Bus</default>
+			</parameter>
+			<parameter name="inputLabel2" type="text" required="false">
+				<label>Source 1 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 1 - Line</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="monoprice70-all">
+		<label>All Zones</label>
+		<description>Control All Zones Simultaneously</description>
+		<channels>
+			<channel id="allpower" typeId="monoprice70-allpower"/>
+			<channel id="allsource" typeId="monoprice70-source"/>
+			<channel id="allvolume" typeId="system.volume"/>
+			<channel id="allmute" typeId="system.mute"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="monoprice70-zone">
+		<label>Zone Controls</label>
+		<description>The Controls for the Zone</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="monoprice70-source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="treble" typeId="monoprice70-treble"/>
+			<channel id="bass" typeId="monoprice70-bass"/>
+			<channel id="balance" typeId="monoprice70-balance"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="monoprice70-allpower">
+		<item-type>Switch</item-type>
+		<label>All On</label>
+		<description>Turn All Zones On or Off</description>
+	</channel-type>
+
+	<channel-type id="monoprice70-source">
+		<item-type>Number</item-type>
+		<label>Source Input</label>
+		<description>Select the Source Input</description>
+		<state min="0" max="1"/>
+	</channel-type>
+
+	<channel-type id="monoprice70-treble">
+		<item-type>Number</item-type>
+		<label>Treble Adjustment</label>
+		<description>Adjust the Treble</description>
+		<state min="-7" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="monoprice70-bass">
+		<item-type>Number</item-type>
+		<label>Bass Adjustment</label>
+		<description>Adjust the Bass</description>
+		<state min="-7" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="monoprice70-balance">
+		<item-type>Number</item-type>
+		<label>Balance Adjustment</label>
+		<description>Adjust the Balance</description>
+		<state min="-32" max="31" step="1" pattern="%d"/>
+	</channel-type>
+
+</thing:thing-descriptions>

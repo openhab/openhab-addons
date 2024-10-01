@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorMot
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorMpegNr;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorNr;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorPicturePosition;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.StateOption;
 
 /**
@@ -240,6 +241,15 @@ public enum SonyProjectorModel {
     }
 
     /**
+     * Get the list of {@link CommandOption} associated to the available calibration presets
+     *
+     * @return the list of {@link CommandOption} associated to the available calibration presets
+     */
+    public List<CommandOption> getCalibrPresetCommandOptions() {
+        return SonyProjectorCalibrationPreset.getCommandOptions(calibrPresetsCategory);
+    }
+
+    /**
      * Get the calibration preset associated to a name
      *
      * @param name the name used to identify the calibration preset
@@ -248,8 +258,8 @@ public enum SonyProjectorModel {
      *
      * @throws SonyProjectorException - If no calibration preset is associated to the searched name
      */
-    public byte[] getCalibrPresetDataCodeFromName(String name) throws SonyProjectorException {
-        return SonyProjectorCalibrationPreset.getFromName(calibrPresetsCategory, name).getDataCode();
+    public SonyProjectorCalibrationPreset getCalibrPresetFromName(String name) throws SonyProjectorException {
+        return SonyProjectorCalibrationPreset.getFromName(calibrPresetsCategory, name);
     }
 
     /**
@@ -275,6 +285,15 @@ public enum SonyProjectorModel {
     }
 
     /**
+     * Get the list of {@link CommandOption} associated to the available video inputs
+     *
+     * @return the list of {@link CommandOption} associated to the available video inputs
+     */
+    public List<CommandOption> getInputCommandOptions() {
+        return SonyProjectorInput.getCommandOptions(inputCategory);
+    }
+
+    /**
      * Get the video input associated to a name
      *
      * @param name the name used to identify the video input
@@ -283,8 +302,8 @@ public enum SonyProjectorModel {
      *
      * @throws SonyProjectorException - If no video input is associated to the searched name
      */
-    public byte[] getInputDataCodeFromName(String name) throws SonyProjectorException {
-        return SonyProjectorInput.getFromName(inputCategory, name).getDataCode();
+    public SonyProjectorInput getInputFromName(String name) throws SonyProjectorException {
+        return SonyProjectorInput.getFromName(inputCategory, name);
     }
 
     /**
@@ -451,6 +470,15 @@ public enum SonyProjectorModel {
     }
 
     /**
+     * Get the list of {@link CommandOption} associated to the available aspect modes
+     *
+     * @return the list of {@link CommandOption} associated to the available aspect modes
+     */
+    public List<CommandOption> getAspectCommandOptions() {
+        return SonyProjectorAspect.getCommandOptions(aspectCategory);
+    }
+
+    /**
      * Get the aspect mode associated to a name
      *
      * @param name the name used to identify the aspect mode
@@ -459,8 +487,8 @@ public enum SonyProjectorModel {
      *
      * @throws SonyProjectorException - If no aspect mode is associated to the searched name
      */
-    public byte[] getAspectCodeFromName(String name) throws SonyProjectorException {
-        return SonyProjectorAspect.getFromName(aspectCategory, name).getDataCode();
+    public SonyProjectorAspect getAspectFromName(String name) throws SonyProjectorException {
+        return SonyProjectorAspect.getFromName(aspectCategory, name);
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Dynamic provider of state options for {@link HueBridgeHandler} while leaving other state description fields as
- * original.
+ * Dynamic provider of state options for {@link org.openhab.binding.hue.internal.handler.HueBridgeHandler}
+ * while leaving other state description fields as original.
  *
  * @author Matt Myers - Initial contribution
  */

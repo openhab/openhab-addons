@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.luxom.internal.protocol;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -55,8 +56,8 @@ public enum LuxomAction {
     }
 
     public static LuxomAction of(String command) {
-        return Arrays.stream(LuxomAction.values()).filter(a -> a.getCommand().equals(command)).findFirst()
-                .orElse(INVALID_ACTION);
+        return Objects.requireNonNull(Arrays.stream(LuxomAction.values()).filter(a -> a.getCommand().equals(command))
+                .findFirst().orElse(INVALID_ACTION));
     }
 
     public String getCommand() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.modbus.sunspec.internal.handler;
 
 import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 import static org.openhab.core.library.unit.Units.*;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sunspec.internal.dto.MeterModelBlock;
@@ -92,7 +94,7 @@ public class MeterHandler extends AbstractSunSpecHandler {
                 getScaled(block.acVoltageLineToLineAverage, block.acVoltageSF, VOLT));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_FREQUENCY),
-                getScaled(block.acFrequency, block.acFrequencySF.orElse((short) 1), HERTZ));
+                getScaled(block.acFrequency, Objects.requireNonNull(block.acFrequencySF.orElse((short) 1)), HERTZ));
 
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_REAL_POWER),
                 getScaled(block.acRealPowerTotal, block.acRealPowerSF, WATT));

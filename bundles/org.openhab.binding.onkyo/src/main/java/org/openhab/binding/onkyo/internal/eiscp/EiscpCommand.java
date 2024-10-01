@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,10 @@ public enum EiscpCommand {
     LISTEN_MODE_QUERY("LMD", "QSTN"),
     LISTEN_MODE_SET("LMD", "%02X"),
     LISTEN_MODE("LMD", ""),
+
+    AUDYSSEYEQ_QUERY("ADY", "QSTN"),
+    AUDYSSEYEQ_SET("ADY", "%02X"),
+    AUDYSSEYEQ("ADY", ""),
 
     INFO_QUERY("NRI", "QSTN"),
     INFO("NRI", ""),
@@ -162,7 +166,7 @@ public enum EiscpCommand {
     ZONE3_SOURCE_SET("SL3", "%02X"),
     ZONE3_SOURCE("SL3", "");
 
-    public static enum Zone {
+    public enum Zone {
         MAIN,
         ZONE1,
         ZONE2,

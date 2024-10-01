@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mielecloud.internal.config.servlet;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -148,7 +149,7 @@ public class SuccessServlet extends AbstractShowPageServlet {
 
     private String renderBridgeConfigurationTemplate(String skeleton, ThingUID bridgeUid, String email) {
         String bridgeTemplate = templateGenerator.createBridgeConfigurationTemplate(bridgeUid.getId(), email,
-                languageProvider.getLanguage().orElse("en"));
+                Objects.requireNonNull(languageProvider.getLanguage().orElse("en")));
         return skeleton.replace(THINGS_TEMPLATE_CODE_PLACEHOLDER, bridgeTemplate);
     }
 

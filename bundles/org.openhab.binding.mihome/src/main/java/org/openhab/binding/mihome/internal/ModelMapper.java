@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Patrick Boos - Initial contribution
  * @author Kuba Wolanin - Renamed labels
  * @author Dieter Schmidt - Refactor
- * @author Daniel Walters - Add Xiaomi Aqara Temperature, Humidity & Pressure sensor and Xiaomi Aqara Door/Window sensor
+ * @author Daniel Walters - Add Xiaomi Aqara Temperature, Humidity &amp; Pressure sensor and Xiaomi Aqara Door/Window
+ *         sensor
  */
 public class ModelMapper {
 

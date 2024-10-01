@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,8 @@ import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.*;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -87,8 +87,8 @@ public class Enigma2Handler extends BaseThingHandler {
             boolean online = client.refresh();
             if (online) {
                 updateStatus(ThingStatus.ONLINE);
-                updateState(CHANNEL_POWER, client.isPower() ? OnOffType.ON : OnOffType.OFF);
-                updateState(CHANNEL_MUTE, client.isMute() ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_POWER, OnOffType.from(client.isPower()));
+                updateState(CHANNEL_MUTE, OnOffType.from(client.isMute()));
                 updateState(CHANNEL_VOLUME, new PercentType(client.getVolume()));
                 updateState(CHANNEL_CHANNEL, new StringType(client.getChannel()));
                 updateState(CHANNEL_TITLE, new StringType(client.getTitle()));
@@ -155,10 +155,10 @@ public class Enigma2Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             client.refreshVolume();
             updateState(channelUID, new PercentType(client.getVolume()));
-        } else if (command instanceof PercentType) {
-            client.setVolume(((PercentType) command).intValue());
-        } else if (command instanceof DecimalType) {
-            client.setVolume(((DecimalType) command).intValue());
+        } else if (command instanceof PercentType percentCommand) {
+            client.setVolume(percentCommand.intValue());
+        } else if (command instanceof DecimalType decimalCommand) {
+            client.setVolume(decimalCommand.intValue());
         } else {
             logger.info("Channel {} only accepts PercentType, DecimalType, RefreshType. Type was {}.", channelUID,
                     command.getClass());
@@ -168,7 +168,7 @@ public class Enigma2Handler extends BaseThingHandler {
     private void handleMute(ChannelUID channelUID, Command command, Enigma2Client client) {
         if (command instanceof RefreshType) {
             client.refreshVolume();
-            updateState(channelUID, client.isMute() ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(client.isMute()));
         } else if (OnOffType.ON.equals(command)) {
             client.setMute(true);
         } else if (OnOffType.OFF.equals(command)) {
@@ -250,7 +250,7 @@ public class Enigma2Handler extends BaseThingHandler {
     private void handlePower(ChannelUID channelUID, Command command, Enigma2Client client) {
         if (RefreshType.REFRESH == command) {
             client.refreshPower();
-            updateState(channelUID, client.isPower() ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUID, OnOffType.from(client.isPower()));
         } else if (OnOffType.ON == command) {
             client.setPower(true);
         } else if (OnOffType.OFF == command) {
@@ -293,7 +293,7 @@ public class Enigma2Handler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(Enigma2Actions.class);
+        return Set.of(Enigma2Actions.class);
     }
 
     /**

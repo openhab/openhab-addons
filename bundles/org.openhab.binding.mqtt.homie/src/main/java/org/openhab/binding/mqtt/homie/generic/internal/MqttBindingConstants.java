@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,15 @@ public class MqttBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID HOMIE300_MQTT_THING = new ThingTypeUID(BINDING_ID, "homie300");
 
-    public static final String CONFIG_HOMIE_CHANNEL = "channel-type:mqtt:homie-channel";
+    public static final String CHANNEL_TYPE_HOMIE_PREFIX = "homie-";
+    public static final String CHANNEL_TYPE_HOMIE_STRING = "homie-string";
+    public static final String CHANNEL_TYPE_HOMIE_TRIGGER = "homie-trigger";
+
+    public static final String CHANNEL_PROPERTY_DATATYPE = "datatype";
+    public static final String CHANNEL_PROPERTY_SETTABLE = "settable";
+    public static final String CHANNEL_PROPERTY_RETAINED = "retained";
+    public static final String CHANNEL_PROPERTY_FORMAT = "format";
+    public static final String CHANNEL_PROPERTY_UNIT = "unit";
 
     public static final String HOMIE_PROPERTY_VERSION = "homieversion";
     public static final String HOMIE_PROPERTY_HEARTBEAT_INTERVAL = "heartbeat_interval";

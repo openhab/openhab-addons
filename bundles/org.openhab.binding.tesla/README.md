@@ -90,6 +90,11 @@ Additionally, these advanced channels are available (not all are available on al
 
 | Channel ID                | Item Type                | Label                         | Description                                                                                                      |
 |---------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
+| destinationname           | String                   | Route destination             | Name of the destination                                                                                          |
+| destinationlocation       | Location                 | Route location                | Location of the destination                                                                                      |
+| distancetoarrival         | Number:Length            | Distance to arrival           | Distance to drive to the destination (in miles)                                                                  |
+| minutestoarrival          | Number:Time              | Minutes to arrival            | Minutes to drive to the destination                                                                              |
+| trafficminutesdelay       | Number:Time              | Traffic delay                 | Minutes of delay due to traffic                                                                                  |
 | autoparkstate             | String                   | Autopark State                | Undocumented / To be defined                                                                                     |
 | autoparkstyle             | String                   | Autopark Style                | Undocumented / To be defined                                                                                     |
 | batterycurrent            | Number:ElectricCurrent   | Battery Current               | Current (Ampere) floating into (+) or out (-) of the battery                                                     |
@@ -139,7 +144,7 @@ Additionally, these advanced channels are available (not all are available on al
 | idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                      |
 | lefttempdirection         | Number                   | Left Temperature Direction    | Not documented / To be defined                                                                                   |
 | lastautoparkerror         | String                   | Last Autopark Error           | Not documented / To be defined                                                                                   |
-| location" advanced="false | Location                 | Location                      | The actual position of the vehicle                                                                               |
+| location                  | Location                 | Location                      | The actual position of the vehicle                                                                               |
 | leftseatheater            | Switch                   | Left Seat Heater              | Indicates if the left seat heater is switched on                                                                 |
 | leftrearseatheater        | Switch                   | Left Rear Seat Heater         | Indicates if the left rear seat heater is switched on                                                            |
 | leftrearbackseatheater    | Number                   | Left Rear Backseat Heater     | Indicates the level (0, 1, 2, or 3) of the left rear backseat heater                                             |
@@ -177,9 +182,12 @@ Additionally, these advanced channels are available (not all are available on al
 | shiftstate                | String                   | Shift State                   | Indicates the state of the transmission, “P”, “D”, “R”, or “N”                                                   |
 | sidemirrorheaters         | Switch                   | Side Mirror Heaters           | Indicates if the side mirror heaters are switched on                                                             |
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
+| softwareupdateavailable   | Switch                   | Update Available              | Car software or map update available, automatically generated on non-empty "update version"                      |
+| softwareupdatestatus      | String                   | Update Status                 | Car software or map update status, e.g. "downloading_wifi_wait", "installing"                                    |
+| softwareupdateversion     | String                   | Update Version                | Car software or map version to update to, e.g. "2023.32.9", "EU-2023.32-14783" for map updates, or empty         |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
-| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                      |
+| steeringwheelheater       | Switch                   | Steering Wheel Heater         | Turns On/Off the steering wheel heater                                                                           |
 | sunroofstate              | String                   | Sunroof State                 | Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".            |
 | sunroof                   | Dimmer                   | Sunroof                       | Indicates the opening state of the sunroof (0% closed, 100% fully open)                                          |
 | temperature               | Number:Temperature       | Temperature                   | Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced. |
@@ -200,24 +208,24 @@ demo.Things:
 Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
     model3 mycar "My favorite car" [ vin="5YJSA7H25FFP53736"]
 }
-```
 
 demo.items:
 
 ```java
+
 DateTime            TeslaEventstamp             {channel="account:model3:myaccount:mycar:eventstamp"}
 String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
 String              TeslaShiftState             {channel="account:model3:myaccount:mycar:shiftstate"}
-Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer"}
+Number:Length       TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer", unit="km"}
 Number              TeslaRange                  {channel="account:model3:myaccount:mycar:range"}
 
 Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
 Number              TeslaPower                  {channel="account:model3:myaccount:mycar:power"}
 Number              TeslaBatteryCurrent         {channel="account:model3:myaccount:mycar:batterycurrent"}
-Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange"}
-Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange"}
-Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange"}
+Number:Length       TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange", unit="km"}
+Number:Length       TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange", unit="km"}
+Number:Length       TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange", unit="km"}
 Number              TeslaUsableBatteryLevel     {channel="account:model3:myaccount:mycar:usablebatterylevel"}
 Switch              TeslaPreconditioning        {channel="account:model3:myaccount:mycar:preconditioning"}
 
@@ -263,6 +271,12 @@ Number:Temperature  TeslaTemperature            {channel="account:model3:myaccou
 Number:Temperature  TeslaTemperatureCombined    {channel="account:model3:myaccount:mycar:combinedtemp"}
 Number:Temperature  TeslaInsideTemperature      {channel="account:model3:myaccount:mycar:insidetemp"}
 Number:Temperature  TeslaOutsideTemperature     {channel="account:model3:myaccount:mycar:outsidetemp"}
+
+String              TeslaDestinationName        {channel="account:model3:myaccount:mycar:destinationname"}
+Location            TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
+Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival", unit="min"}
+Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
+
 ```
 
 demo.sitemap:
@@ -272,7 +286,7 @@ sitemap main label="Main"
 {
     Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
     {
-        Frame 
+        Frame
         {
             Text item=TeslaEventstamp icon="time"
             Text item=TeslaState label="State [%s]" icon=""
@@ -280,16 +294,16 @@ sitemap main label="Main"
             Text item=TeslaDistance
             Text item=TeslaSpeed label="Speed [%.1f]"
             Text item=TeslaShiftState label="Shift State [%s]" icon=""
-            Text item=nTeslaShiftState 
-            Text item=TeslaOdometer label="Odometer [%.1f miles]"
-            Text item=TeslaRange 
+            Text item=nTeslaShiftState
+            Text item=TeslaOdometer label="Odometer [%.1f %unit%]"
+            Text item=TeslaRange
         }
         Frame
         {
             Switch item=TeslaAutoconditioning label="Enable Heat or AC"
-            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f °F]"
-            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
-            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
+            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f %unit%]"
+            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
+            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
         }
         Frame
         {
@@ -297,9 +311,9 @@ sitemap main label="Main"
             Text item=TeslaUsableBatteryLevel
             Text item=TeslaPower
             Text item=TeslaBatteryCurrent label="Current [%.1f]"
-            Text item=TeslaBatteryRange label="Battery Range [%.1f miles]"
-            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f miles]"
-            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f miles]"
+            Text item=TeslaBatteryRange label="Battery Range [%.1f %unit%]"
+            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f %unit%]"
+            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f %unit%]"
         }
         Frame
         {
@@ -323,21 +337,28 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaDoorLock label="Doorlock"
-            Switch item=TeslaHorn label="Horn" 
+            Switch item=TeslaHorn label="Horn"
             Switch item=TeslaLights label="Lights"
             Switch item=TeslaStart label="Remote Start"
             Switch item=TeslaValet label="Valet Mode"
             Switch item=TeslaSentry label="Sentry Mode"
 
-            Switch item=TeslaBatteryHeater label="Battery Heater"   
-            Switch item=TeslaFrontDefrost label="Defrost Front"     
-            Switch item=TeslaRearDefrost label="Defrost Rear"                                               
-            Switch item=TeslaLeftSeatHeater label="Seat Heat Left" 
-            Switch item=TeslaRightSeatHeater label="Seat Heat Right" 
+            Switch item=TeslaBatteryHeater label="Battery Heater"
+            Switch item=TeslaFrontDefrost label="Defrost Front"
+            Switch item=TeslaRearDefrost label="Defrost Rear"
+            Switch item=TeslaLeftSeatHeater label="Seat Heat Left"
+            Switch item=TeslaRightSeatHeater label="Seat Heat Right"
         }
         Frame
         {
             Mapview item=TeslaLocation height=10
+        }
+        Frame
+        {
+            Default item=TeslaDestinationName
+            Default item=TeslaMinutesToArrival
+            Default item=TeslaDistanceToArrival
+            Mapview item=TeslaDestinationLocation height=10
         }
     }
 }

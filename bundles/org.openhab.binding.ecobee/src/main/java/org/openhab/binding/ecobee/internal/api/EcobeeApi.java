@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,13 +46,14 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.summary.SummaryRespons
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
 import org.openhab.binding.ecobee.internal.handler.EcobeeAccountBridgeHandler;
 import org.openhab.binding.ecobee.internal.util.ExceptionUtils;
-import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Mark Hilbush - Initial contribution
  */
 @NonNullByDefault
-public class EcobeeApi implements AccessTokenRefreshListener {
+public class EcobeeApi {
 
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
@@ -82,6 +83,8 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     private static final int ECOBEE_TOKEN_EXPIRED = 14;
     private static final int ECOBEE_DEAUTHORIZED_TOKEN = 16;
     private static final int TOKEN_EXPIRES_IN_BUFFER_SECONDS = 120;
+    private static final boolean FORCE_TOKEN_REFRESH = true;
+    private static final boolean DONT_FORCE_TOKEN_REFRESH = false;
 
     public static final Properties HTTP_HEADERS;
     static {
@@ -124,7 +127,6 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         logger.debug("API: Creating OAuth Client Service for {}", bridgeUID);
         OAuthClientService service = oAuthFactory.createOAuthClientService(bridgeUID, ECOBEE_TOKEN_URL, null, apiKey,
                 "", ECOBEE_SCOPE, false);
-        service.addAccessTokenRefreshListener(this);
         ecobeeAuth = new EcobeeAuth(bridgeHandler, apiKey, apiTimeout, service, httpClient);
         oAuthClientService = service;
     }
@@ -132,14 +134,12 @@ public class EcobeeApi implements AccessTokenRefreshListener {
     public void deleteOAuthClientService() {
         String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
         logger.debug("API: Deleting OAuth Client Service for {}", bridgeUID);
-        oAuthClientService.removeAccessTokenRefreshListener(this);
         oAuthFactory.deleteServiceAndAccessToken(bridgeUID);
     }
 
     public void closeOAuthClientService() {
         String bridgeUID = bridgeHandler.getThing().getUID().getAsString();
         logger.debug("API: Closing OAuth Client Service for {}", bridgeUID);
-        oAuthClientService.removeAccessTokenRefreshListener(this);
         oAuthFactory.ungetOAuthService(bridgeUID);
     }
 
@@ -149,14 +149,15 @@ public class EcobeeApi implements AccessTokenRefreshListener {
      * response, then assume that the Ecobee authorization process is complete. Otherwise,
      * start the Ecobee authorization process.
      */
-    private boolean isAuthorized() {
+    private boolean isAuthorized(boolean forceTokenRefresh) {
         boolean isAuthorized = false;
         try {
             AccessTokenResponse localAccessTokenResponse = oAuthClientService.getAccessTokenResponse();
             if (localAccessTokenResponse != null) {
                 logger.trace("API: Got AccessTokenResponse from OAuth service: {}", localAccessTokenResponse);
-                if (localAccessTokenResponse.isExpired(Instant.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
-                    logger.debug("API: Token is expiring soon. Refresh it now");
+                if (forceTokenRefresh
+                        || localAccessTokenResponse.isExpired(Instant.now(), TOKEN_EXPIRES_IN_BUFFER_SECONDS)) {
+                    logger.debug("API: Refreshing access token");
                     localAccessTokenResponse = oAuthClientService.refreshToken();
                 }
                 ecobeeAuth.setState(EcobeeAuthState.COMPLETE);
@@ -189,6 +190,10 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         return isAuthorized;
     }
 
+    private boolean isAuthorized() {
+        return isAuthorized(DONT_FORCE_TOKEN_REFRESH);
+    }
+
     private void handleOAuthException(OAuthResponseException e) {
         if ("invalid_grant".equalsIgnoreCase(e.getError())) {
             // Usually indicates that the refresh token is no longer valid and will require reauthorization
@@ -200,10 +205,6 @@ public class EcobeeApi implements AccessTokenRefreshListener {
             logger.debug("API: Exception getting access token: error='{}', description='{}'", e.getError(),
                     e.getErrorDescription());
         }
-    }
-
-    @Override
-    public void onAccessTokenResponse(AccessTokenResponse accessTokenResponse) {
     }
 
     public @Nullable SummaryResponseDTO performThermostatSummaryQuery() {
@@ -245,8 +246,10 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         if (response != null) {
             try {
                 ThermostatResponseDTO thermostatsResponse = GSON.fromJson(response, ThermostatResponseDTO.class);
-                if (isSuccess(thermostatsResponse)) {
-                    return thermostatsResponse.thermostatList;
+                if (thermostatsResponse != null && isSuccess(thermostatsResponse)) {
+                    if (thermostatsResponse.thermostatList != null) {
+                        return thermostatsResponse.thermostatList;
+                    }
                 }
             } catch (JsonSyntaxException e) {
                 logJSException(e, response);
@@ -343,15 +346,24 @@ public class EcobeeApi implements AccessTokenRefreshListener {
                 deleteOAuthClientService();
                 createOAuthClientService();
             } else if (response.status.code == ECOBEE_TOKEN_EXPIRED) {
-                // Check isAuthorized again to see if we can get a valid token
-                logger.debug("API: Unable to complete API call because token is expired");
-                if (isAuthorized()) {
+                logger.debug("API: Unable to complete API call because token is expired. Try to refresh the token...");
+                // Log some additional debug information about the current AccessTokenResponse
+                AccessTokenResponse localAccessTokenResponse = accessTokenResponse;
+                if (localAccessTokenResponse != null) {
+                    logger.debug("API: AccessTokenResponse created on: {}", localAccessTokenResponse.getCreatedOn());
+                    logger.debug("API: AccessTokenResponse expires in: {}", localAccessTokenResponse.getExpiresIn());
+                }
+                logger.debug("API: Ecobee API attempting to force an access token refresh");
+                if (isAuthorized(FORCE_TOKEN_REFRESH)) {
                     return true;
                 } else {
-                    logger.debug("API: isAuthorized was NOT successful on second try");
+                    logger.warn("API: isAuthorized was NOT successful forcing the access token refresh");
+                    bridgeHandler.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to force refresh the access token");
                 }
             }
         } else {
+            bridgeHandler.updateBridgeStatus(ThingStatus.ONLINE);
             return true;
         }
         return false;

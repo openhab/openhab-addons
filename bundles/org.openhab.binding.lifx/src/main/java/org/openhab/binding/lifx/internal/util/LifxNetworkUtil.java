@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,9 +131,7 @@ public final class LifxNetworkUtil {
     }
 
     public static int getNewBroadcastPort() {
-        int offset = BROADCAST_PORT_COUNTER.getAndUpdate((value) -> {
-            return (value + 1) % Integer.MAX_VALUE;
-        });
+        int offset = BROADCAST_PORT_COUNTER.getAndUpdate((value) -> (value + 1) % Integer.MAX_VALUE);
         return BROADCAST_PORT + (offset % (PORT_MAX - BROADCAST_PORT));
     }
 }

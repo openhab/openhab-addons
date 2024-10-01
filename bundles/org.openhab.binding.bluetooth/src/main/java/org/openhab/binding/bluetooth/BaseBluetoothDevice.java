@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      * Construct a Bluetooth device taking the Bluetooth address
      *
      * @param adapter
-     * @param sender
+     * @param address
      */
     public BaseBluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         super(adapter, address);
@@ -170,7 +170,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     /**
      * Sets the device transmit power
      *
-     * @param power the current transmitter power in dBm
+     * @param txPower the current transmitter power in dBm
      */
     public void setTxPower(int txPower) {
         this.txPower = txPower;

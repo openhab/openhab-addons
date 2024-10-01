@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -196,7 +196,7 @@ public class NeeoRoomProtocol {
         final NeeoRecipe recipe = neeoRoom.getRecipes().getRecipe(recipeKey);
         if (recipe != null) {
             callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_RECIPE_ID,
-                    NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey), recipe.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, recipeKey), OnOffType.from(recipe.isEnabled()));
         }
     }
 
@@ -241,8 +241,7 @@ public class NeeoRoomProtocol {
         final NeeoScenario scenario = neeoRoom.getScenarios().getScenario(scenarioKey);
         if (scenario != null) {
             callback.stateChanged(UidUtils.createChannelId(NeeoConstants.ROOM_GROUP_SCENARIO_ID,
-                    NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey),
-                    scenario.isConfigured() ? OnOffType.ON : OnOffType.OFF);
+                    NeeoConstants.ROOM_CHANNEL_ENABLED, scenarioKey), OnOffType.from(scenario.isConfigured()));
         }
     }
 

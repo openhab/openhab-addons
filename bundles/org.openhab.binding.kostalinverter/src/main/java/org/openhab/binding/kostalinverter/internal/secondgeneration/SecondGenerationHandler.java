@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,10 +103,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
                             valueConfiguration);
                     break;
                 case SecondGenerationBindingConstants.CHANNEL_SMARTBATTERYCONTROLSET:
-                    if (command.toString().equals("ON")) {
+                    if ("ON".equals(command.toString())) {
                         valueConfiguration = "true";
                     }
-                    if (command.toString().equals("OFF")) {
+                    if ("OFF".equals(command.toString())) {
                         valueConfiguration = "false";
                     }
                     dxsEntriesConf = "33556484";
@@ -288,10 +288,10 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 String channel = cConfig.id;
                 String value = channelPostsConfigurable[channelValuesCounterConfigurable];
                 int dxsEntriesCheckCounter = 3;
-                if (cConfig.dxsEntries.equals("33556484")) {
+                if ("33556484".equals(cConfig.dxsEntries)) {
                     dxsEntriesCheckCounter = 1;
                 }
-                if (cConfig.dxsEntries.equals("33556482")) {
+                if ("33556482".equals(cConfig.dxsEntries)) {
                     dxsEntriesCheckCounter = 2;
                 }
                 switch (dxsEntriesCheckCounter) {

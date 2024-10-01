@@ -2,7 +2,7 @@
 
 The openHAB ChatGPT Binding allows openHAB to communicate with the ChatGPT language model provided by OpenAI.
 
-ChatGPT is a powerful natural language processing (NLP) tool that can be used to understand and respond to a wide range of text-based commands and questions. 
+ChatGPT is a powerful natural language processing (NLP) tool that can be used to understand and respond to a wide range of text-based commands and questions.
 With this binding, you can use ChatGPT to formulate proper sentences for any kind of information that you would like to output.
 
 ## Supported Things
@@ -14,9 +14,13 @@ The binding supports a single thing type `account`, which corresponds to the Ope
 The `account` thing requires a single configuration parameter, which is the API key that allows accessing the account.
 API keys can be created and managed under <https://platform.openai.com/account/api-keys>.
 
-| Name            | Type    | Description                             | Default | Required | Advanced |
-|-----------------|---------|-----------------------------------------|---------|----------|----------|
-| apiKey          | text    | The API key to be used for the requests | N/A     | yes      | no       |
+| Name            | Type    | Description                                               | Default                                    | Required | Advanced |
+|-----------------|---------|-----------------------------------------------------------|--------------------------------------------|----------|----------|
+| apiKey          | text    | The API key to be used for the requests                   | N/A                                        | yes      | no       |
+| apiUrl          | text    | The server API where to reach the AI service              | https://api.openai.com/v1/chat/completions | no       | yes      |
+| modelUrl        | text    | The model url where to retrieve the available models from | https://api.openai.com/v1/models           | no       | yes      |
+
+The advanced parameters `apiUrl` and `modelUrl` can be used, if any other ChatGPT-compatible service is used, e.g. a local installation of [LocalAI](https://github.com/go-skynet/LocalAI).
 
 ## Channels
 
@@ -73,7 +77,7 @@ Number Temperature_Forecast_High
 ```java
 rule "Weather forecast update"
 when
-  Item Temperature_Forecast_High changed 
+  Item Temperature_Forecast_High changed
 then
     Weather_Announcement.sendCommand("High: " + Temperature_Forecast_High.state + "°C, Low: " + Temperature_Forecast_Low.state + "°C")
 end

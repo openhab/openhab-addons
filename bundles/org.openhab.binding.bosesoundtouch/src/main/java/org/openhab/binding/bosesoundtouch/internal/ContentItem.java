@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,8 +79,7 @@ public class ContentItem {
      */
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj instanceof ContentItem) {
-            ContentItem other = (ContentItem) obj;
+        if (obj instanceof ContentItem other) {
             return Objects.equals(other.source, this.source) || Objects.equals(other.sourceAccount, this.sourceAccount)
                     || other.presetable == this.presetable || Objects.equals(other.location, this.location)
                     || Objects.equals(other.itemName, this.itemName);
@@ -188,11 +187,11 @@ public class ContentItem {
      * ' - &apos;
      */
     private String escapeXml(String xml) {
-        xml = xml.replaceAll("&", "&amp;");
-        xml = xml.replaceAll("<", "&lt;");
-        xml = xml.replaceAll(">", "&gt;");
-        xml = xml.replaceAll("\"", "&quot;");
-        xml = xml.replaceAll("'", "&apos;");
+        xml = xml.replace("&", "&amp;");
+        xml = xml.replace("<", "&lt;");
+        xml = xml.replace(">", "&gt;");
+        xml = xml.replace("\"", "&quot;");
+        xml = xml.replace("'", "&apos;");
         return xml;
     }
 
@@ -251,7 +250,7 @@ public class ContentItem {
     }
 
     public StateOption toStateOption() {
-        String stateOptionLabel = String.valueOf(presetID) + ": " + itemName;
+        String stateOptionLabel = presetID + ": " + itemName;
         return new StateOption(String.valueOf(presetID), stateOptionLabel);
     }
 

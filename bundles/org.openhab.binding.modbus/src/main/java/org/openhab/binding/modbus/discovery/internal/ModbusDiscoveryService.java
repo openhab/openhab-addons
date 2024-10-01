@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -135,7 +135,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
      * Running bridges have a ModbusThingHandlerDiscoveryService connected
      * which will be responsible for the discovery
      *
-     * @param handler the Modbus bridge handler
+     * @param service discovery service
      */
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void addModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
@@ -146,7 +146,7 @@ public class ModbusDiscoveryService extends AbstractDiscoveryService {
     /**
      * Remove an already registered thing handler discovery component
      *
-     * @param handler the handler that has been removed
+     * @param service discovery service
      */
     protected void removeModbusEndpoint(ModbusThingHandlerDiscoveryService service) {
         logger.trace("Removed handler: {}", service);

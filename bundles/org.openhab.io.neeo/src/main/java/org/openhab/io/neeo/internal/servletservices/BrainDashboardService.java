@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,9 +68,9 @@ public class BrainDashboardService extends DefaultServletService {
      */
     @Override
     public boolean canHandleRoute(String[] paths) {
-        return paths.length >= 1 && (paths[0].equalsIgnoreCase("brainstatus") || paths[0].equalsIgnoreCase("addbrain")
-                || paths[0].equalsIgnoreCase("removebrain") || paths[0].equalsIgnoreCase("getlog")
-                || paths[0].equalsIgnoreCase("blinkled"));
+        return paths.length >= 1 && ("brainstatus".equalsIgnoreCase(paths[0]) || "addbrain".equalsIgnoreCase(paths[0])
+                || "removebrain".equalsIgnoreCase(paths[0]) || "getlog".equalsIgnoreCase(paths[0])
+                || "blinkled".equalsIgnoreCase(paths[0]));
     }
 
     /**
@@ -85,13 +85,13 @@ public class BrainDashboardService extends DefaultServletService {
         Objects.requireNonNull(resp, "resp cannot be null");
 
         try {
-            if (paths[0].equalsIgnoreCase("brainstatus")) {
+            if ("brainstatus".equalsIgnoreCase(paths[0])) {
                 final List<BrainStatus> status = new ArrayList<>();
                 for (NeeoBrainServlet servlet : service.getServlets()) {
                     status.add(servlet.getBrainStatus());
                 }
                 NeeoUtil.write(resp, gson.toJson(status));
-            } else if (paths[0].equalsIgnoreCase("blinkled")) {
+            } else if ("blinkled".equalsIgnoreCase(paths[0])) {
                 final String brainId = req.getParameter("brainid");
                 if (brainId == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
@@ -109,7 +109,7 @@ public class BrainDashboardService extends DefaultServletService {
                         }
                     }
                 }
-            } else if (paths[0].equalsIgnoreCase("getlog")) {
+            } else if ("getlog".equalsIgnoreCase(paths[0])) {
                 final String brainId = req.getParameter("brainid");
                 if (brainId == null) {
                     NeeoUtil.write(resp, gson.toJson(new ReturnStatus("BrainID is null")));
@@ -151,7 +151,7 @@ public class BrainDashboardService extends DefaultServletService {
         }
 
         try {
-            if (paths[0].equalsIgnoreCase("removebrain")) {
+            if ("removebrain".equalsIgnoreCase(paths[0])) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
                 final String brainId = info.getBrainId();
                 if (brainId == null) {
@@ -162,7 +162,7 @@ public class BrainDashboardService extends DefaultServletService {
                     NeeoUtil.write(resp,
                             gson.toJson(new ReturnStatus("BrainID (" + brainId + ") could not be removed")));
                 }
-            } else if (paths[0].equalsIgnoreCase("addbrain")) {
+            } else if ("addbrain".equalsIgnoreCase(paths[0])) {
                 final BrainInfo info = gson.fromJson(req.getReader(), BrainInfo.class);
                 final String brainIp = info.getBrainIp();
                 if (brainIp == null) {

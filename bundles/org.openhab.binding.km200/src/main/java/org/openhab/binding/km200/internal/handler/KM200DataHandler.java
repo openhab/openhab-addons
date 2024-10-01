@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -150,7 +150,7 @@ public class KM200DataHandler {
             }
             switch (type) {
                 case DATA_TYPE_STRING_VALUE: /* Check whether the type is a single value containing a string value */
-                    logger.debug("parseJSONData type string value: {} Type: {}", nodeRoot, itemType.toString());
+                    logger.debug("parseJSONData type string value: {} Type: {}", nodeRoot, itemType);
                     String sVal = nodeRoot.get("value").getAsString();
                     object.setValue(sVal);
                     /* Switch Binding */

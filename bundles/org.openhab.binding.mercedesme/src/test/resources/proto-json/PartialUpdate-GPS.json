@@ -1,0 +1,17 @@
+{
+    "positionLat": {
+        "timestamp_in_ms": 1694723552000,
+        "double_value": 1.23,
+        "timestamp": 1694723552
+    },
+    "positionLong": {
+        "timestamp_in_ms": 1694723552000,
+        "double_value": 4.56,
+        "timestamp": 1694723552
+    },
+    "positionHeading": {
+        "timestamp_in_ms": 1694723552000,
+        "double_value": 41.9,
+        "timestamp": 1694723552
+    }
+}

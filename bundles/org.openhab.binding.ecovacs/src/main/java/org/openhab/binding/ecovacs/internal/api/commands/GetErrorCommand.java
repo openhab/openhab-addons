@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,12 +42,10 @@ public class GetErrorCommand extends IotDeviceCommand<Optional<Integer>> {
     @Override
     public Optional<Integer> convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version,
             Gson gson) throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            ErrorReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, ErrorReport.class);
-            if (resp.errorCodes.isEmpty()) {
-                return Optional.empty();
-            }
-            return Optional.of(resp.errorCodes.get(0));
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            ErrorReport resp = jsonResponse.getResponsePayloadAs(gson, ErrorReport.class);
+            int responseCode = resp.errorCodes.isEmpty() ? 0 : resp.errorCodes.get(0);
+            return Optional.of(responseCode);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return DeviceInfo.parseErrorInfo(payload);

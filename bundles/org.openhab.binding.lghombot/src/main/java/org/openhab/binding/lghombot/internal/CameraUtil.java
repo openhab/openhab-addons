@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CameraUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(CameraUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CameraUtil.class);
 
     private CameraUtil() {
         // No need to instance this class.
@@ -68,10 +68,10 @@ public class CameraUtil {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             if (!ImageIO.write(image, "jpg", baos)) {
-                logger.debug("Couldn't find JPEG writer.");
+                LOGGER.debug("Couldn't find JPEG writer.");
             }
         } catch (IOException e) {
-            logger.info("IOException creating JPEG image.", e);
+            LOGGER.info("IOException creating JPEG image.", e);
         }
         byte[] byteArray = baos.toByteArray();
         if (byteArray != null && byteArray.length > 0) {

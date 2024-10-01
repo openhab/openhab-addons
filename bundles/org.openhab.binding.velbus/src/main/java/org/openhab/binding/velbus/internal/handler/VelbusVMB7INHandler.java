@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,6 +85,7 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        super.dispose();
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -131,10 +132,10 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -175,5 +176,7 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
                 }
             }
         }
+
+        return true;
     }
 }

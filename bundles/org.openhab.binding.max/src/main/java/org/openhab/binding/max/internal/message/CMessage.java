@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,17 +25,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CMessage} contains configuration about a MAX! device.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
+ * @author Andreas Heil - Initial contribution
  * @author Marcel Verpaalen - Detailed parsing, OH2 Update
  */
 @NonNullByDefault
@@ -109,11 +109,7 @@ public final class CMessage extends Message {
 
     private String getSerialNumber(byte[] bytes) {
         byte[] sn = new byte[10];
-
-        for (int i = 0; i < 10; i++) {
-            sn[i] = bytes[i + 8];
-        }
-
+        System.arraycopy(bytes, 8, sn, 0, sn.length);
         return new String(sn, StandardCharsets.UTF_8);
     }
 
@@ -124,10 +120,8 @@ public final class CMessage extends Message {
         try {
             int dataStart = 18;
             byte[] sn = new byte[bytes.length - dataStart];
+            System.arraycopy(bytes, dataStart, sn, 0, sn.length);
 
-            for (int i = 0; i < sn.length; i++) {
-                sn[i] = bytes[i + dataStart];
-            }
             logger.trace("DataBytes: {}", Utils.getHex(sn));
             return new String(sn, StandardCharsets.UTF_8);
         } catch (Exception e) {
@@ -278,7 +272,7 @@ public final class CMessage extends Message {
         logger.debug("RoomID:                   {}", roomId);
         for (String key : properties.keySet()) {
             if (!key.startsWith("Unknown")) {
-                String propertyName = String.join(" ", StringUtils.splitByCharacterTypeCamelCase(key));
+                String propertyName = String.join(" ", StringUtils.splitByCharacterType(key));
                 logger.debug("{}: {}", propertyName, properties.get(key));
             } else {
                 logger.debug("{}: {}", key, properties.get(key));

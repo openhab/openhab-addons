@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,18 +13,18 @@
 package org.openhab.binding.network.internal.discovery;
 
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
-import java.util.Collections;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.network")
 public class NetworkDiscoveryService extends AbstractDiscoveryService implements PresenceDetectionListener {
-    static final int PING_TIMEOUT_IN_MS = 500;
+    static final Duration PING_TIMEOUT = Duration.ofMillis(500);
     static final int MAXIMUM_IPS_PER_INTERFACE = 255;
     private static final long DISCOVERY_RESULT_TTL = TimeUnit.MINUTES.toSeconds(10);
     private final Logger logger = LoggerFactory.getLogger(NetworkDiscoveryService.class);
@@ -64,16 +64,16 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     // TCP port 548 (Apple Filing Protocol (AFP))
     // TCP port 554 (Windows share / Linux samba)
     // TCP port 1025 (Xbox / MS-RPC)
-    private Set<Integer> tcpServicePorts = Collections
-            .unmodifiableSet(Stream.of(80, 548, 554, 1025).collect(Collectors.toSet()));
+    private Set<Integer> tcpServicePorts = Set.of(80, 548, 554, 1025);
     private AtomicInteger scannedIPcount = new AtomicInteger(0);
     private @Nullable ExecutorService executorService = null;
     private final NetworkBindingConfiguration configuration = new NetworkBindingConfiguration();
     private final NetworkUtils networkUtils = new NetworkUtils();
 
     public NetworkDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, (int) Math.round(
-                new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size() * (PING_TIMEOUT_IN_MS / 1000.0)),
+        super(SUPPORTED_THING_TYPES_UIDS,
+                (int) Math.round(new NetworkUtils().getNetworkIPs(MAXIMUM_IPS_PER_INTERFACE).size()
+                        * (durationToMillis(PING_TIMEOUT) / 1000.0)),
                 false);
     }
 
@@ -108,8 +108,8 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         final String ip = value.getHostAddress();
         if (value.isPingReachable()) {
             newPingDevice(ip);
-        } else if (value.isTCPServiceReachable()) {
-            List<Integer> tcpServices = value.getReachableTCPports();
+        } else if (value.isTcpServiceReachable()) {
+            List<Integer> tcpServices = value.getReachableTcpPorts();
             for (int port : tcpServices) {
                 newServiceDevice(ip, port);
             }
@@ -139,20 +139,24 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         scannedIPcount.set(0);
 
         for (String ip : networkIPs) {
-            final PresenceDetection s = new PresenceDetection(this, 2000);
-            s.setHostname(ip);
-            s.setIOSDevice(true);
-            s.setUseDhcpSniffing(false);
-            s.setTimeout(PING_TIMEOUT_IN_MS);
+            final PresenceDetection pd = new PresenceDetection(this, scheduler, Duration.ofSeconds(2));
+            pd.setHostname(ip);
+            pd.setIOSDevice(true);
+            pd.setUseDhcpSniffing(false);
+            pd.setTimeout(PING_TIMEOUT);
             // Ping devices
-            s.setUseIcmpPing(true);
-            s.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
+            pd.setUseIcmpPing(true);
+            pd.setUseArpPing(true, configuration.arpPingToolPath, configuration.arpPingUtilMethod);
             // TCP devices
-            s.setServicePorts(tcpServicePorts);
+            pd.setServicePorts(tcpServicePorts);
 
             service.execute(() -> {
                 Thread.currentThread().setName("Discovery thread " + ip);
-                s.performPresenceDetection(true);
+                try {
+                    pd.getValue();
+                } catch (ExecutionException | InterruptedException e) {
+                    stopScan();
+                }
                 int count = scannedIPcount.incrementAndGet();
                 if (count == networkIPs.size()) {
                     logger.trace("Scan of {} IPs successful", scannedIPcount);
@@ -171,7 +175,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         }
 
         try {
-            service.awaitTermination(PING_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+            service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Reset interrupt flag
         }
@@ -181,11 +185,11 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     public static ThingUID createServiceUID(String ip, int tcpPort) {
         // uid must not contains dots
-        return new ThingUID(SERVICE_DEVICE, ip.replace('.', '_') + "_" + String.valueOf(tcpPort));
+        return new ThingUID(SERVICE_DEVICE, ip.replace('.', '_') + "_" + tcpPort);
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      * @param tcpPort The TCP port
@@ -193,26 +197,16 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     public void newServiceDevice(String ip, int tcpPort) {
         logger.trace("Found reachable service for device with IP address {} on port {}", ip, tcpPort);
 
-        String label;
         // TCP port 548 (Apple Filing Protocol (AFP))
         // TCP port 554 (Windows share / Linux samba)
         // TCP port 1025 (Xbox / MS-RPC)
-        switch (tcpPort) {
-            case 80:
-                label = "Device providing a Webserver";
-                break;
-            case 548:
-                label = "Device providing the Apple AFP Service";
-                break;
-            case 554:
-                label = "Device providing Network/Samba Shares";
-                break;
-            case 1025:
-                label = "Device providing Xbox/MS-RPC Capability";
-                break;
-            default:
-                label = "Network Device";
-        }
+        String label = switch (tcpPort) {
+            case 80 -> "Device providing a Webserver";
+            case 548 -> "Device providing the Apple AFP Service";
+            case 554 -> "Device providing Network/Samba Shares";
+            case 1025 -> "Device providing Xbox/MS-RPC Capability";
+            default -> "Network Device";
+        };
         label += " (" + ip + ":" + tcpPort + ")";
 
         Map<String, Object> properties = new HashMap<>();
@@ -228,15 +222,14 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     }
 
     /**
-     * Submit newly discovered devices. This method is called by the spawned threads in {@link startScan}.
+     * Submit newly discovered devices. This method is called by the spawned threads in {@link #startScan()}.
      *
      * @param ip The device IP
      */
     public void newPingDevice(String ip) {
         logger.trace("Found pingable network device with IP address {}", ip);
 
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PARAMETER_HOSTNAME, ip);
+        Map<String, Object> properties = Map.of(PARAMETER_HOSTNAME, ip);
         thingDiscovered(DiscoveryResultBuilder.create(createPingUID(ip)).withTTL(DISCOVERY_RESULT_TTL)
                 .withProperties(properties).withLabel("Network Device (" + ip + ")").build());
     }

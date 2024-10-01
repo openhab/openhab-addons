@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.denonmarantz.internal.connector;
 
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
@@ -26,11 +27,13 @@ import org.openhab.binding.denonmarantz.internal.connector.telnet.DenonMarantzTe
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public class DenonMarantzConnectorFactory {
 
     public DenonMarantzConnector getConnector(DenonMarantzConfiguration config, DenonMarantzState state,
             ScheduledExecutorService scheduler, HttpClient httpClient, String thingUID) {
-        if (config.isTelnet()) {
+        Boolean isTelnet = config.isTelnet();
+        if (isTelnet != null && isTelnet) {
             return new DenonMarantzTelnetConnector(config, state, scheduler, thingUID);
         } else {
             return new DenonMarantzHttpConnector(config, state, scheduler, httpClient);

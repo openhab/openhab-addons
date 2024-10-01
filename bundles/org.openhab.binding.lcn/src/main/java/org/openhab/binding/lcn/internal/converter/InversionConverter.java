@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ public class InversionConverter extends Converter {
         if (state instanceof OpenClosedType) {
             convertedState = state.equals(OpenClosedType.OPEN) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
         } else if (state instanceof OnOffType) {
-            convertedState = state.equals(OnOffType.ON) ? OnOffType.OFF : OnOffType.ON;
+            convertedState = OnOffType.from(!state.equals(OnOffType.ON));
         } else if (state instanceof UpDownType) {
             convertedState = state.equals(UpDownType.UP) ? UpDownType.DOWN : UpDownType.UP;
         }

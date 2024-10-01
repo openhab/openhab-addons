@@ -14,9 +14,10 @@
 		<command>
 			<options>
 				<option value="VehicleStatus">Front Side View</option>
-				<option value="VehicleInfo">Front View</option>
-				<option value="ChargingHistory">Side View</option>
-				<option value="Default">Default View</option>
+				<option value="FrontView">Front View</option>
+				<option value="FrontLeft">Left Side View</option>
+				<option value="FrontRight">Right Side View</option>
+				<option value="RearView">Rear View</option>
 			</options>
 		</command>
 	</channel-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,15 +48,15 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
 
     @Override
     public ReadingPublisher<Tx22Reading> createPublisher() {
-        ReadingPublisher<Tx22Reading> publisher = new ReadingPublisher<Tx22Reading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(Tx22Reading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {
                     logger.debug("updating states for thing {} ({}): {}", getThing().getLabel(),
                             getThing().getUID().getId(), reading);
 
-                    updateState(BATTERY_NEW_CHANNEL, reading.isBatteryNew() ? OnOffType.ON : OnOffType.OFF);
-                    updateState(BATTERY_LOW_CHANNEL, reading.isBatteryLow() ? OnOffType.ON : OnOffType.OFF);
+                    updateState(BATTERY_NEW_CHANNEL, OnOffType.from(reading.isBatteryNew()));
+                    updateState(BATTERY_LOW_CHANNEL, OnOffType.from(reading.isBatteryLow()));
 
                     if (reading.hasTemperature()) {
                         BigDecimal temp = new BigDecimal(reading.getTemperature()).setScale(1, RoundingMode.HALF_UP);
@@ -90,7 +90,5 @@ public class Tx22SensorHandler extends JeeLinkSensorHandler<Tx22Reading> {
             public void dispose() {
             }
         };
-
-        return publisher;
     }
 }

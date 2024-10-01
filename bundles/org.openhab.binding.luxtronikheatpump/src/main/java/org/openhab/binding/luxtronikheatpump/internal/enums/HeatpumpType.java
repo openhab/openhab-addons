@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,21 +102,21 @@ public enum HeatpumpType {
 
     private final String name;
     private final Integer code;
-    private static final Logger logger = LoggerFactory.getLogger(HeatpumpType.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HeatpumpType.class);
 
     private HeatpumpType(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
 
-    public static final HeatpumpType fromCode(Integer code) {
+    public static HeatpumpType fromCode(Integer code) {
         for (HeatpumpType error : HeatpumpType.values()) {
             if (error.code.equals(code)) {
                 return error;
             }
         }
 
-        logger.warn("Unknown heatpump type code {}", code);
+        LOGGER.warn("Unknown heatpump type code {}", code);
 
         return TYPE_UNKNOWN;
     }

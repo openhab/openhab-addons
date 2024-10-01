@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,7 @@ public class MinecraftSignHandler extends BaseThingHandler {
      * @param sign the sign to update
      */
     private void updateSignState(SignData sign) {
-        State activeState = sign.getState() ? OnOffType.ON : OnOffType.OFF;
+        State activeState = OnOffType.from(sign.getState());
         updateState(MinecraftBindingConstants.CHANNEL_SIGN_ACTIVE, activeState);
     }
 
@@ -113,8 +113,8 @@ public class MinecraftSignHandler extends BaseThingHandler {
         MinecraftServerHandler bridgeHandler = null;
 
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof MinecraftServerHandler) {
-            bridgeHandler = (MinecraftServerHandler) handler;
+        if (handler instanceof MinecraftServerHandler serverHandler) {
+            bridgeHandler = serverHandler;
         } else {
             logger.debug("No available bridge handler found yet. Bridge: {} .", bridge.getUID());
             bridgeHandler = null;

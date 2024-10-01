@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
     // Thread management
     protected @Nullable Future<?> readingTask = null;
-    private @Nullable Future<?> timeOut = null;
+    private @Nullable Future<?> timeOutTask = null;
 
     protected Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
 
@@ -121,14 +121,14 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                                     localOutPutStream.write(b);
                                     localOutPutStream.flush();
                                 }
-                                Future<?> localTimeOut = timeOut;
-                                if (localTimeOut != null) {
-                                    localTimeOut.cancel(true);
+                                Future<?> localTimeOutTask = timeOutTask;
+                                if (localTimeOutTask != null) {
+                                    localTimeOutTask.cancel(true);
                                 }
 
                                 // slowdown sending of message to avoid hickups at receivers
                                 // Todo tweak sending intervall (250 ist just a first try)
-                                timeOut = scheduler.schedule(() -> {
+                                timeOutTask = scheduler.schedule(() -> {
                                     try {
                                         sendNext();
                                     } catch (IOException e) {
@@ -180,7 +180,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         this.path = path;
     }
 
-    public void initilize()
+    public void initialize()
             throws UnsupportedCommOperationException, PortInUseException, IOException, TooManyListenersException {
         SerialPortManager localSerialPortManager = serialPortManager;
         if (localSerialPortManager == null) {
@@ -222,9 +222,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
     public void startReceiving(ScheduledExecutorService scheduler) {
         @Nullable
-        Future<?> localReadingTask = readingTask;
-        if (localReadingTask == null || localReadingTask.isCancelled()) {
-            localReadingTask = scheduler.submit(new Runnable() {
+        Future<?> readingTask = this.readingTask;
+        if (readingTask == null || readingTask.isCancelled()) {
+            this.readingTask = scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
                     receivePackets();
@@ -238,14 +238,15 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.debug("shutting down transceiver");
         logger.debug("Interrupt rx Thread");
 
-        Future<?> localTimeOut = timeOut;
-        if (localTimeOut != null) {
-            localTimeOut.cancel(true);
+        Future<?> timeOutTask = this.timeOutTask;
+        if (timeOutTask != null) {
+            timeOutTask.cancel(true);
+            this.timeOutTask = null;
         }
 
-        Future<?> localReadingTask = readingTask;
-        if (localReadingTask != null) {
-            localReadingTask.cancel(true);
+        Future<?> readingTask = this.readingTask;
+        if (readingTask != null) {
+            readingTask.cancel(true);
 
             InputStream localInputStream = inputStream;
             if (localInputStream != null) {
@@ -255,10 +256,9 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                     logger.debug("IOException occured while closing the stream", e);
                 }
             }
+            this.readingTask = null;
         }
 
-        readingTask = null;
-        timeOut = null;
         listeners.clear();
         eventListeners.clear();
         teachInListener = null;
@@ -298,8 +298,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     private void receivePackets() {
         byte[] buffer = new byte[1];
 
-        Future<?> localReadingTask = readingTask;
-        while (localReadingTask != null && !localReadingTask.isCancelled()) {
+        Future<?> readingTask = this.readingTask;
+        while (readingTask != null && !readingTask.isCancelled()) {
             int bytesRead = read(buffer, 1);
             if (bytesRead > 0) {
                 processMessage(buffer[0]);
@@ -313,13 +313,24 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         InputStream localInputStream = inputStream;
         if (localInputStream != null) {
             try {
-                localInputStream.read(buffer, 0, length);
+                return localInputStream.read(buffer, 0, length);
             } catch (IOException e) {
                 logger.debug("IOException occured while reading the input stream", e);
                 return 0;
             }
+        } else {
+            logger.warn("Cannot read from null stream");
+            Future<?> readingTask = this.readingTask;
+            if (readingTask != null) {
+                readingTask.cancel(true);
+                this.readingTask = null;
+            }
+            TransceiverErrorListener localListener = errorListener;
+            if (localListener != null) {
+                localListener.errorOccured(new IOException("Cannot read from null stream"));
+            }
+            return 0;
         }
-        return 0;
     }
 
     protected void informListeners(BasePacket packet) {

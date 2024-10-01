@@ -8,4 +8,20 @@
 	<description>This is the binding for MagentaTV receivers</description>
 	<connection>hybrid</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)HUAWEI.*</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>(?i).*(DMS_TPB|MR401B|MR601|MR201).*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

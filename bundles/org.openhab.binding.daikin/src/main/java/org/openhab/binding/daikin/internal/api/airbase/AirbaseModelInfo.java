@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class AirbaseModelInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ret = responseMap.getOrDefault("ret", "");
         info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(0);
         info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))

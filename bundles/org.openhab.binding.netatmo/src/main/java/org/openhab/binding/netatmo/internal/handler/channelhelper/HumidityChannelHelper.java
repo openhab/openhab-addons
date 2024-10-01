@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,14 +40,12 @@ public class HumidityChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
-        switch (channelId) {
-            case CHANNEL_HUMIDEX:
-                return new DecimalType(humidex(dashboard.getTemperature(), dashboard.getHumidity()));
-            case CHANNEL_HUMIDEX_SCALE:
-                return new DecimalType(humidexScale(humidex(dashboard.getTemperature(), dashboard.getHumidity())));
-            case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY);
-        }
-        return null;
+        return switch (channelId) {
+            case CHANNEL_HUMIDEX -> new DecimalType(humidex(dashboard.getTemperature(), dashboard.getHumidity()));
+            case CHANNEL_HUMIDEX_SCALE ->
+                new DecimalType(humidexScale(humidex(dashboard.getTemperature(), dashboard.getHumidity())));
+            case CHANNEL_VALUE -> toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY);
+            default -> null;
+        };
     }
 }

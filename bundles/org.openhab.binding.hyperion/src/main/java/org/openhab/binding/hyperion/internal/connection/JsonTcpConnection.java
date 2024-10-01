@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,8 +68,6 @@ public class JsonTcpConnection {
             outToServer.writeBytes(json + System.lineSeparator());
             outToServer.flush();
             response = inFromServer.readLine();
-        } catch (IOException e) {
-            throw e;
         }
         logger.debug("Received: {}", response);
         return response;

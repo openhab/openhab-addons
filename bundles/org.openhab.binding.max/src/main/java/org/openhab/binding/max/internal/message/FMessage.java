@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
- * The {@link: FMessage} contains information about the Cube NTP Configuration
+ * The {@link FMessage} contains information about the Cube NTP Configuration
  * This is the response to a f: command
  *
  * @author Marcel Verpaalen - Initial contribution
@@ -28,7 +28,7 @@ public final class FMessage extends Message {
     private String ntpServer2 = "";
 
     /**
-     * The {@link: FMessage} contains information about the Cube NTP Configuration
+     * The {@link FMessage} contains information about the Cube NTP Configuration
      *
      * @param raw String with raw message
      */

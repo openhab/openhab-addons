@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public final class ClimateControlHandler extends BoschSHCDeviceHandler {
         super.handleCommand(channelUID, command);
         switch (channelUID.getId()) {
             case CHANNEL_SETPOINT_TEMPERATURE:
-                if (command instanceof QuantityType<?>) {
-                    updateSetpointTemperature((QuantityType<?>) command);
+                if (command instanceof QuantityType<?> temperature) {
+                    updateSetpointTemperature(temperature);
                 }
                 break;
         }

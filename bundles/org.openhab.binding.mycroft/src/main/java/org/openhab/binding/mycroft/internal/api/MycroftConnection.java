@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,7 @@ public class MycroftConnection {
     public void registerListener(MessageType messageType, MycroftMessageListener<? extends BaseMessage> listener) {
         Set<MycroftMessageListener<? extends BaseMessage>> messageTypeListeners = listeners.get(messageType);
         if (messageTypeListeners == null) {
-            messageTypeListeners = new HashSet<MycroftMessageListener<? extends BaseMessage>>();
+            messageTypeListeners = new HashSet<>();
             listeners.put(messageType, messageTypeListeners);
         }
         messageTypeListeners.add(listener);
@@ -190,7 +190,6 @@ public class MycroftConnection {
                     listeners.getOrDefault(mycroftMessage.type, new HashSet<>()).stream()).forEach(listener -> {
                         listener.baseMessageReceived(finalMessage);
                     });
-
         } catch (RuntimeException e) {
             // we need to catch all processing exceptions, otherwise they could affect the connection
             logger.debug("{} encountered an error while processing the message {}: {}", socketName, message,
@@ -200,7 +199,6 @@ public class MycroftConnection {
 
     @OnWebSocketError
     public void onError(@Nullable Session session, Throwable cause) {
-
         if (session == null || !session.equals(this.session)) {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;

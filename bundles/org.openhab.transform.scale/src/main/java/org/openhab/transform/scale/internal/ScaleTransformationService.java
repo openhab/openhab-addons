@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * The implementation of {@link TransformationService} which transforms the
  * input by matching it between limits of ranges in a scale file
  *
- * @author Gaël L'hopital
+ * @author Gaël L'hopital - Initial contribution
  * @author Markus Rathgeb - drop usage of Guava
  */
 @Component(service = { TransformationService.class, ConfigOptionProvider.class }, property = {
@@ -134,7 +135,7 @@ public class ScaleTransformationService
         }
 
         @Override
-        public @Nullable Object put(@Nullable Object key, @Nullable Object value) {
+        public @Nullable Object put(Object key, Object value) {
             keys.add(key);
             return super.put(key, value);
         }
@@ -207,12 +208,12 @@ public class ScaleTransformationService
                 properties.load(new StringReader(function));
 
                 for (Object orderedKey : properties.orderedKeys()) {
-                    final String entry = (String) orderedKey;
-                    final String value = properties.getProperty(entry);
+                    final String entry = Objects.requireNonNull((String) orderedKey);
+                    final String value = Objects.requireNonNull(properties.getProperty(entry));
                     final Matcher matcher = LIMITS_PATTERN.matcher(entry);
                     if (matcher.matches() && (matcher.groupCount() == 4)) {
-                        final boolean lowerInclusive = matcher.group(1).equals("[");
-                        final boolean upperInclusive = matcher.group(4).equals("]");
+                        final boolean lowerInclusive = "[".equals(matcher.group(1));
+                        final boolean upperInclusive = "]".equals(matcher.group(4));
 
                         final String lowLimit = matcher.group(2);
                         final String highLimit = matcher.group(3);

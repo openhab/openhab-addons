@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,11 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +34,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Provide a custom channel type for available inputs
@@ -41,33 +43,39 @@ import org.openhab.core.types.StateOption;
  * @author David Graeff - Initial contribution
  * @author Tomasz Maruszak - Refactoring the input source names.
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = { ChannelsTypeProviderAvailableInputs.class,
+        ChannelTypeProvider.class })
 @NonNullByDefault
 public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider, ThingHandlerService {
-    private @NonNullByDefault({}) ChannelType channelType;
-    private @NonNullByDefault({}) ChannelTypeUID channelTypeUID;
-    private @NonNullByDefault({}) YamahaZoneThingHandler handler;
+    private @Nullable ChannelType channelType;
+    private @Nullable ChannelTypeUID channelTypeUID;
+    private @Nullable YamahaZoneThingHandler handler;
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return Collections.singleton(channelType);
+        ChannelType channelType = this.channelType;
+        return channelType == null ? Set.of() : Set.of(channelType);
     }
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        if (this.channelTypeUID.equals(channelTypeUID)) {
+        if (channelTypeUID.equals(this.channelTypeUID)) {
             return channelType;
         } else {
             return null;
         }
     }
 
-    public ChannelTypeUID getChannelTypeUID() {
+    public @Nullable ChannelTypeUID getChannelTypeUID() {
         return channelTypeUID;
     }
 
     private void createChannelType(StateDescriptionFragment state) {
-        channelType = ChannelTypeBuilder.state(channelTypeUID, "Input source", "String")
-                .withDescription("Select the input source of the AVR").withStateDescriptionFragment(state).build();
+        ChannelTypeUID channelTypeUID = this.channelTypeUID;
+        if (channelTypeUID != null) {
+            channelType = ChannelTypeBuilder.state(channelTypeUID, "Input source", "String")
+                    .withDescription("Select the input source of the AVR").withStateDescriptionFragment(state).build();
+        }
     }
 
     private StateDescriptionFragment getDefaultStateDescription() {
@@ -124,7 +132,6 @@ public class ChannelsTypeProviderAvailableInputs implements ChannelTypeProvider,
                 .withOptions(options).build());
     }
 
-    @NonNullByDefault({})
     @Override
     public void setThingHandler(ThingHandler handler) {
         this.handler = (YamahaZoneThingHandler) handler;

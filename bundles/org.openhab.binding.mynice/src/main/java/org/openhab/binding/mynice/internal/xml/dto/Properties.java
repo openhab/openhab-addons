@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,32 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("Properties")
 public class Properties {
+    public enum DoorStatus {
+        OPEN(false),
+        CLOSED(false),
+        OPENING(true),
+        CLOSING(true),
+        STOPPED(false);
+
+        public final boolean moving;
+
+        DoorStatus(boolean moving) {
+            this.moving = moving;
+        }
+    }
+
     @XStreamAlias("DoorStatus")
-    public String doorStatus;
+    private String doorStatus;
     @XStreamAlias("Obstruct")
-    public String obstruct;
+    private String obstruct;
     @XStreamAlias("T4_allowed")
     public Property t4allowed;
+
+    public boolean obstructed() {
+        return "1".equals(obstruct);
+    }
+
+    public DoorStatus status() {
+        return DoorStatus.valueOf(doorStatus.toUpperCase());
+    }
 }

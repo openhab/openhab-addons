@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mielecloud.internal.handler.channel;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,29 +47,31 @@ public final class ChannelTypeUtil {
      * Converts an {@link Optional} of {@link String} to {@link State}.
      */
     public static State stringToState(Optional<String> value) {
-        return value.filter(v -> !v.isEmpty()).filter(v -> !v.equals("null")).map(v -> (State) new StringType(v))
-                .orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(value.filter(v -> !v.isEmpty()).filter(v -> !"null".equals(v))
+                .map(v -> (State) new StringType(v)).orElse(UnDefType.UNDEF));
     }
 
     /**
      * Converts an {@link Optional} of {@link Boolean} to {@link State}.
      */
     public static State booleanToState(Optional<Boolean> value) {
-        return value.map(v -> (State) OnOffType.from(v)).orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(value.map(v -> (State) OnOffType.from(v)).orElse(UnDefType.UNDEF));
     }
 
     /**
      * Converts an {@link Optional} of {@link Integer} to {@link State}.
      */
     public static State intToState(Optional<Integer> value) {
-        return value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF);
+        return Objects
+                .requireNonNull(value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF));
     }
 
     /**
      * Converts an {@link Optional} of {@link Long} to {@link State}.
      */
     public static State longToState(Optional<Long> value) {
-        return value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF);
+        return Objects
+                .requireNonNull(value.map(v -> (State) new DecimalType(new BigDecimal(v))).orElse(UnDefType.UNDEF));
     }
 
     /**
@@ -76,15 +79,16 @@ public final class ChannelTypeUtil {
      */
     public static State intToTemperatureState(Optional<Integer> value) {
         // The Miele 3rd Party API always provides temperatures in °C (even if the device uses another unit).
-        return value.map(v -> (State) new QuantityType<>(v, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF);
+        return Objects
+                .requireNonNull(value.map(v -> (State) new QuantityType<>(v, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF));
     }
 
     /**
      * Converts an {@link Optional} of {@link Quantity} to {@link State}.
      */
     public static State quantityToState(Optional<Quantity> value) {
-        return value.flatMap(ChannelTypeUtil::formatQuantity).flatMap(ChannelTypeUtil::parseQuantityType)
-                .orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(value.flatMap(ChannelTypeUtil::formatQuantity)
+                .flatMap(ChannelTypeUtil::parseQuantityType).orElse(UnDefType.UNDEF));
     }
 
     /**

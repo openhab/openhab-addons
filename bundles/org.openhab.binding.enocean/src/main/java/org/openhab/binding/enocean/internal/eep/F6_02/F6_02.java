@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public abstract class F6_02 extends _RPSMessage {
     }
 
     protected State inverse(OnOffType currentState) {
-        return currentState == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(currentState != OnOffType.ON);
     }
 
     protected State inverse(UpDownType currentState) {

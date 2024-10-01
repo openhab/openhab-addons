@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,8 +64,7 @@ public class BondHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BOND_BRIDGE.equals(thingTypeUID)) {
-            final BondBridgeHandler handler = new BondBridgeHandler((Bridge) thing, httpClientFactory);
-            return handler;
+            return new BondBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new BondDeviceHandler(thing);
         }

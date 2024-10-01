@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,58 +69,55 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         String option;
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                // Set Pump % min and max speeds
-                Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT);
-                if (ch != null) {
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINSPEED)))
-                            .withMaximum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED)))
-                            .build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            // Set Pump % min and max speeds
+            Channel ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT);
+            if (ch != null) {
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINSPEED)))
+                        .withMaximum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXSPEED)))
+                        .withPattern("%d %%").withStep(new BigDecimal(5)).withReadOnly(false).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+            }
+
+            // Set Pump Speed RPM min and max speeds
+            ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM);
+            if (ch != null) {
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINRPM)))
+                        .withMaximum(new BigDecimal(
+                                getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM)))
+                        .withPattern("%d rpm").withStep(new BigDecimal(200)).withReadOnly(false).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
+            }
+
+            // Set Pump Speed States
+            ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT);
+            if (ch != null) {
+                options.add(new StateOption("0", "Off"));
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_LOWSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Low"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MEDSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Medium"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_HIGHSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "High"));
+                }
+                option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_CUSTOMSPEED);
+                if (option != null) {
+                    options.add(new StateOption(option, "Custom"));
                 }
 
-                // Set Pump Speed RPM min and max speeds
-                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM);
-                if (ch != null) {
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MINRPM)))
-                            .withMaximum(new BigDecimal(
-                                    getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM)))
-                            .build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
-                }
-
-                // Set Pump Speed States
-                ch = thing.getChannel(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT);
-                if (ch != null) {
-                    options.add(new StateOption("0", "Off"));
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_LOWSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Low"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MEDSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Medium"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_HIGHSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "High"));
-                    }
-                    option = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_CUSTOMSPEED);
-                    if (option != null) {
-                        options.add(new StateOption(option, "Custom"));
-                    }
-
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withOptions(options).build();
-                    bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
-                }
+                StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withOptions(options).build();
+                bridgehandler.updateChannelStateDescriptionFragment(ch, stateDescriptionFragment);
             }
         }
     }
@@ -131,49 +128,45 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                systemIDs = bridgehandler.evaluateXPath("//Pump/@systemId", xmlResponse);
-                String thingSystemID = getThing().getUID().getId();
-                for (int i = 0; i < systemIDs.size(); i++) {
-                    if (systemIDs.get(i).equals(thingSystemID)) {
-                        // Speed percent
-                        data = bridgehandler.evaluateXPath("//Pump/@pumpSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT, data.get(i));
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            systemIDs = bridgehandler.evaluateXPath("//Pump/@systemId", xmlResponse);
+            String thingSystemID = getThing().getUID().getId();
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // Speed percent
+                    data = bridgehandler.evaluateXPath("//Pump/@pumpSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT, data.get(i));
 
-                        // Speed rpm
-                        String pumpMaxRpm = getThing().getProperties()
-                                .get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM);
-                        if (pumpMaxRpm != null) {
-                            Integer rpmSpeed = (Integer.parseInt(data.get(i))) * (Integer.parseInt(pumpMaxRpm)) / 100;
-                            updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM, rpmSpeed.toString());
-                        }
-
-                        if (data.get(i).equals("0")) {
-                            updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "0");
-                        } else {
-                            updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "1");
-                        }
-
-                        // Speed Select
-                        data = bridgehandler.evaluateXPath("//Pump/@pumpSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT, data.get(i));
-
-                        // State
-                        data = bridgehandler.evaluateXPath("//Pump/@pumpState", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_PUMP_STATE, data.get(i));
-
-                        // lastSpeed
-                        data = bridgehandler.evaluateXPath("//Pump/@lastSpeed", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED, data.get(i));
-                        channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED, data.get(i)));
+                    // Speed rpm
+                    String pumpMaxRpm = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM);
+                    if (pumpMaxRpm != null) {
+                        Integer rpmSpeed = (Integer.parseInt(data.get(i))) * (Integer.parseInt(pumpMaxRpm)) / 100;
+                        updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM, rpmSpeed.toString());
                     }
+
+                    if ("0".equals(data.get(i))) {
+                        updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "0");
+                    } else {
+                        updateData(HaywardBindingConstants.CHANNEL_PUMP_ENABLE, "1");
+                    }
+
+                    // Speed Select
+                    data = bridgehandler.evaluateXPath("//Pump/@pumpSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT, data.get(i));
+
+                    // State
+                    data = bridgehandler.evaluateXPath("//Pump/@pumpState", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_PUMP_STATE, data.get(i));
+
+                    // lastSpeed
+                    data = bridgehandler.evaluateXPath("//Pump/@lastSpeed", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED, data.get(i));
+                    channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED, data.get(i)));
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -190,78 +183,74 @@ public class HaywardPumpHandler extends HaywardThingHandler {
         String pumpMaxRpm = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_PUMP_MAXRPM);
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                String cmdString = this.cmdToString(command);
-                try {
-                    switch (channelUID.getId()) {
-                        case HaywardBindingConstants.CHANNEL_PUMP_ENABLE:
-                            if (command == OnOffType.ON) {
-                                cmdString = channelStates.get(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED)
-                                        .format("%d");
-                            } else {
-                                cmdString = "0";
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            String cmdString = this.cmdToString(command);
+            try {
+                switch (channelUID.getId()) {
+                    case HaywardBindingConstants.CHANNEL_PUMP_ENABLE:
+                        if (command == OnOffType.ON) {
+                            cmdString = channelStates.get(HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED).format("%d");
+                        } else {
+                            cmdString = "0";
+                        }
+                        break;
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
+                        if (pumpMinSpeed != null && pumpMaxSpeed != null) {
+                            if (Integer.parseInt(cmdString) > 0
+                                    && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
+                                cmdString = pumpMinSpeed;
+                            } else if (Integer.parseInt(cmdString) > Integer.parseInt(pumpMaxSpeed)) {
+                                cmdString = pumpMaxSpeed;
                             }
-                            break;
-                        case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
-                            if (pumpMinSpeed != null && pumpMaxSpeed != null) {
-                                if (Integer.parseInt(cmdString) > 0
-                                        && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
-                                    cmdString = pumpMinSpeed;
-                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(pumpMaxSpeed)) {
-                                    cmdString = pumpMaxSpeed;
-                                }
+                        }
+                        break;
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
+                        // Convert cmdString from RPM to Percent
+                        if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {
+                            cmdString = Integer
+                                    .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxRpm)));
+                            if (Integer.parseInt(cmdString) > 0
+                                    && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
+                                cmdString = pumpMinSpeed;
+                            } else if (Integer.parseInt(cmdString) > Integer.parseInt(pumpMaxSpeed)) {
+                                cmdString = pumpMaxSpeed;
                             }
-                        case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
-                            // Convert cmdString from RPM to Percent
-                            if (pumpMaxRpm != null && pumpMaxSpeed != null && pumpMinSpeed != null) {
-                                cmdString = Integer
-                                        .toString((Integer.parseInt(cmdString) * 100 / Integer.parseInt(pumpMaxSpeed)));
-                                if (Integer.parseInt(cmdString) > 0
-                                        && Integer.parseInt(cmdString) < Integer.parseInt(pumpMinSpeed)) {
-                                    cmdString = pumpMinSpeed;
-                                } else if (Integer.parseInt(cmdString) > Integer.parseInt(pumpMaxSpeed)) {
-                                    cmdString = pumpMaxSpeed;
-                                }
-                            }
-                            break;
-                        case HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT:
-                            break;
-                        default:
-                            logger.warn("haywardCommand Unsupported type {}", channelUID);
-                            return;
-                    }
-
-                    String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
-                            + "<Name>SetUIEquipmentCmd</Name><Parameters>"
-                            + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
-                            + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
-                            + bridgehandler.account.mspSystemID + "</Parameter>"
-                            + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
-                            + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
-                            + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
-                            + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
-
-                    // *****Send Command to Hayward server
-                    String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
-                    String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse)
-                            .get(0);
-
-                    if (!("0".equals(status))) {
-                        logger.debug("haywardCommand XML response: {}", xmlResponse);
+                        }
+                        break;
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT:
+                        break;
+                    default:
+                        logger.warn("haywardCommand Unsupported type {}", channelUID);
                         return;
-                    }
-                } catch (HaywardException e) {
-                    logger.debug("Unable to send command to Hayward's server {}:{}:{}",
-                            bridgehandler.config.endpointUrl, bridgehandler.config.username, e.getMessage());
-                } catch (InterruptedException e) {
+                }
+
+                String cmdURL = HaywardBindingConstants.COMMAND_PARAMETERS
+                        + "<Name>SetUIEquipmentCmd</Name><Parameters>"
+                        + "<Parameter name=\"Token\" dataType=\"String\">" + bridgehandler.account.token
+                        + "</Parameter>" + "<Parameter name=\"MspSystemID\" dataType=\"int\">"
+                        + bridgehandler.account.mspSystemID + "</Parameter>"
+                        + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>"
+                        + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
+                        + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdString + "</Parameter>"
+                        + HaywardBindingConstants.COMMAND_SCHEDULE + "</Parameters></Request>";
+
+                // *****Send Command to Hayward server
+                String xmlResponse = bridgehandler.httpXmlResponse(cmdURL);
+                String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse).get(0);
+
+                if (!("0".equals(status))) {
+                    logger.debug("haywardCommand XML response: {}", xmlResponse);
                     return;
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            } catch (HaywardException e) {
+                logger.debug("Unable to send command to Hayward's server {}:{}:{}", bridgehandler.config.endpointUrl,
+                        bridgehandler.config.username, e.getMessage());
+            } catch (InterruptedException e) {
+                return;
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,56 +12,23 @@
  */
 package org.openhab.binding.mercedesme.internal.config;
 
-import static org.openhab.binding.mercedesme.internal.Constants.*;
+import static org.openhab.binding.mercedesme.internal.Constants.NOT_SET;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link AccountConfiguration} class contains fields mapping thing configuration parameters.
+ * {@link AccountConfiguration} for Account Bridge
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class AccountConfiguration {
 
-    public String clientId = NOT_SET;
-    public String clientSecret = NOT_SET;
-    public String imageApiKey = NOT_SET;
+    public String email = NOT_SET;
+    public String region = NOT_SET;
+    public String pin = NOT_SET;
+    public int refreshInterval = 15;
 
-    // Advanced Parameters
     public String callbackIP = NOT_SET;
     public int callbackPort = -1;
-    public boolean odoScope = true;
-    public boolean vehicleScope = true;
-    public boolean lockScope = true;
-    public boolean fuelScope = true;
-    public boolean evScope = true;
-
-    // https://developer.mercedes-benz.com/products/electric_vehicle_status/docs#_required_scopes
-    public String getScope() {
-        StringBuffer sb = new StringBuffer();
-        sb.append(SCOPE_OPENID).append(SPACE).append(SCOPE_OFFLINE);
-        if (odoScope) {
-            sb.append(SPACE).append(SCOPE_ODO);
-        }
-        if (vehicleScope) {
-            sb.append(SPACE).append(SCOPE_STATUS);
-        }
-        if (lockScope) {
-            sb.append(SPACE).append(SCOPE_LOCK);
-        }
-        if (fuelScope) {
-            sb.append(SPACE).append(SCOPE_FUEL);
-        }
-        if (evScope) {
-            sb.append(SPACE).append(SCOPE_EV);
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-        return "ID " + clientId + ", Secret " + clientSecret + ", IP " + callbackIP + ", Port " + callbackPort
-                + ", scope " + getScope();
-    }
 }

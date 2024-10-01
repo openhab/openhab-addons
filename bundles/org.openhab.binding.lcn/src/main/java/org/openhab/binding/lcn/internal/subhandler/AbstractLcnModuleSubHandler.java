@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,7 +117,6 @@ public abstract class AbstractLcnModuleSubHandler implements ILcnModuleSubHandle
      * message.
      *
      * @param pck the message to process
-     * @return true, if the message could be processed successfully
      */
     public void tryParse(String pck) {
         getPckStatusMessagePatterns().stream() //

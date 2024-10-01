@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,24 +13,27 @@
 package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.handler.PulseaudioHandler;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.audio.FileAudioStream;
 import org.openhab.core.audio.UnsupportedAudioFormatException;
-import org.openhab.core.audio.UnsupportedAudioStreamException;
+import org.openhab.core.audio.utils.AudioSinkUtils;
+import org.openhab.core.common.Disposable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +41,9 @@ import org.slf4j.LoggerFactory;
  * The audio sink for openhab, implemented by a connection to a pulseaudio sink
  *
  * @author Gwendal Roulleau - Initial contribution
- * @author Miguel Álvarez - move some code to the PulseaudioSimpleProtocolStream class so sink and source can extend
+ * @author Miguel Álvarez - Move some code to the PulseaudioSimpleProtocolStream class so sink and source can extend
  *         from it.
+ * @author Miguel Álvarez - Use a socket per stream.
  *
  */
 @NonNullByDefault
@@ -47,68 +51,107 @@ public class PulseAudioAudioSink extends PulseaudioSimpleProtocolStream implemen
 
     private final Logger logger = LoggerFactory.getLogger(PulseAudioAudioSink.class);
 
-    private static final HashSet<AudioFormat> SUPPORTED_FORMATS = new HashSet<>();
-    private static final HashSet<Class<? extends AudioStream>> SUPPORTED_STREAMS = new HashSet<>();
+    private final AudioSinkUtils audioSinkUtils;
 
-    static {
-        SUPPORTED_FORMATS.add(AudioFormat.WAV);
-        SUPPORTED_FORMATS.add(AudioFormat.MP3);
-        SUPPORTED_STREAMS.add(FixedLengthAudioStream.class);
-    }
+    private static final Set<AudioFormat> SUPPORTED_FORMATS = Set.of(AudioFormat.PCM_SIGNED, AudioFormat.WAV,
+            AudioFormat.MP3);
+    private static final Set<Class<? extends AudioStream>> SUPPORTED_STREAMS = Set.of(AudioStream.class);
 
-    public PulseAudioAudioSink(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler) {
+    public PulseAudioAudioSink(PulseaudioHandler pulseaudioHandler, ScheduledExecutorService scheduler,
+            AudioSinkUtils audioSinkUtils) {
         super(pulseaudioHandler, scheduler);
+        this.audioSinkUtils = audioSinkUtils;
     }
 
     @Override
-    public void process(@Nullable AudioStream audioStream)
-            throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
+    public void process(@Nullable AudioStream audioStream) {
+        processAndComplete(audioStream);
+    }
+
+    @Override
+    public CompletableFuture<@Nullable Void> processAndComplete(@Nullable AudioStream audioStream) {
         if (audioStream == null) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        addClientCount();
-        try (ConvertedInputStream normalizedPCMStream = new ConvertedInputStream(audioStream)) {
-            for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
+
+        ConvertedInputStream preparedInputStream = null;
+        AcquireModuleResult acquireModuleResult = null;
+        CompletableFuture<@Nullable Void> soundPlayed = new CompletableFuture<>();
+        try {
+            preparedInputStream = new ConvertedInputStream(audioStream);
+            acquireModuleResult = acquireSimpleProtocolModule(preparedInputStream.getFormat());
+
+            // final var needed to use inside lambda :
+            final var finalPreparedInputStream = preparedInputStream;
+            final var finalAcquireModuleResult = acquireModuleResult;
+            scheduler.execute(() -> {
+                Socket spSocket = null;
                 try {
-                    connectIfNeeded();
-                    final Socket clientSocketLocal = clientSocket;
-                    if (clientSocketLocal != null) {
-                        // send raw audio to the socket and to pulse audio
-                        Instant start = Instant.now();
-                        normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
-                        if (normalizedPCMStream.getDuration() != -1) { // ensure, if the sound has a duration
-                            // that we let at least this time for the system to play
-                            Instant end = Instant.now();
-                            long millisSecondTimedToSendAudioData = Duration.between(start, end).toMillis();
-                            if (millisSecondTimedToSendAudioData < normalizedPCMStream.getDuration()) {
-                                long timeToSleep = normalizedPCMStream.getDuration() - millisSecondTimedToSendAudioData;
-                                logger.debug("Sleep time to let the system play sound : {}", timeToSleep);
-                                Thread.sleep(timeToSleep);
-                            }
-                        }
-                        break;
+                    SimpleProtocolTCPModule spModule = finalAcquireModuleResult.module()
+                            .orElseThrow(() -> new IOException("Unable to load new Simple Protocol module instance."));
+                    spSocket = connectIfNeeded(spModule);
+                    var moduleOutputStream = spSocket.getOutputStream();
+
+                    Long timeStampEnded = audioSinkUtils.transferAndAnalyzeLength(finalPreparedInputStream,
+                            moduleOutputStream, finalPreparedInputStream.getFormat());
+
+                    long timeToWait = Optional.ofNullable(timeStampEnded)
+                            .map(tse -> (tse - System.nanoTime()) / 1000000).orElse(0L);
+                    if (timeToWait > 0) {
+                        logger.debug("Some time to let the system play sound : {}", timeToWait);
+                        scheduler
+                                .schedule(
+                                        () -> endStream(finalPreparedInputStream,
+                                                finalAcquireModuleResult.releaseModule(), soundPlayed, null),
+                                        timeToWait, TimeUnit.MILLISECONDS);
+                    } else {
+                        endStream(finalPreparedInputStream, finalAcquireModuleResult.releaseModule(), soundPlayed,
+                                null);
                     }
                 } catch (IOException e) {
-                    disconnect(); // disconnect force to clear connection in case of socket not cleanly shutdown
-                    if (countAttempt == 2) { // we won't retry : log and quit
-                        final Socket clientSocketLocal = clientSocket;
-                        String port = clientSocketLocal != null ? Integer.toString(clientSocketLocal.getPort())
-                                : "unknown";
-                        logger.warn(
-                                "Error while trying to send audio to pulseaudio audio sink. Cannot connect to {}:{}, error: {}",
-                                pulseaudioHandler.getHost(), port, e.getMessage());
-                        break;
+                    if (spSocket != null) {
+                        disconnect(spSocket);
                     }
-                } catch (InterruptedException ie) {
-                    logger.info("Interrupted during sink audio connection: {}", ie.getMessage());
-                    break;
+                    endStream(finalPreparedInputStream, finalAcquireModuleResult.releaseModule(), soundPlayed, e);
+                }
+            });
+        } catch (UnsupportedAudioFileException | UnsupportedAudioFormatException | IOException
+                | InterruptedException e) {
+            endStream(preparedInputStream, null, soundPlayed, new UnsupportedAudioFormatException(
+                    "Cannot send sound to the pulseaudio sink", audioStream.getFormat(), e));
+        }
+        return soundPlayed;
+    }
+
+    private void endStream(@Nullable InputStream inputStream, @Nullable Runnable releaseModule,
+            CompletableFuture<@Nullable Void> soundPlayed, @Nullable Exception sourceException) {
+        if (releaseModule != null) {
+            releaseModule.run();
+        }
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException ignored) {
+        }
+        if (sourceException != null) {
+            soundPlayed.completeExceptionally(sourceException);
+        } else {
+            soundPlayed.complete(null);
+        }
+        // if the stream is not needed anymore, then we should call back the AudioStream to let it a chance
+        // to auto dispose.
+        if (inputStream instanceof Disposable disposableAudioStream) {
+            try {
+                disposableAudioStream.dispose();
+            } catch (IOException e) {
+                String fileName = inputStream instanceof FileAudioStream file ? file.toString() : "unknown";
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Cannot dispose of stream {}", fileName, e);
+                } else {
+                    logger.warn("Cannot dispose of stream {}, reason {}", fileName, e.getMessage());
                 }
             }
-        } catch (UnsupportedAudioFileException | IOException e) {
-            throw new UnsupportedAudioFormatException("Cannot send sound to the pulseaudio sink",
-                    audioStream.getFormat(), e);
-        } finally {
-            minusClientCount();
         }
     }
 

@@ -45,6 +45,12 @@
 				<default>false</default>
 			</parameter>
 
+			<parameter name="dateTimeSynch" type="boolean">
+				<label>Date Time Synchronisation</label>
+				<description>Synchronise date and time of slave elements on the SCS BUS using openHAB timestamp (default: false)</description>
+				<default>false</default>
+			</parameter>
+
 		</config-description>
 
 	</bridge-type>

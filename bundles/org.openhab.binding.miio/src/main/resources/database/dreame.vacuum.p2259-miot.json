@@ -721,19 +721,19 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "mode 0"
+							"label": "Quiet"
 						},
 						{
 							"value": "1",
-							"label": "mode 1"
+							"label": "Standard"
 						},
 						{
 							"value": "2",
-							"label": "mode 2"
+							"label": "Medium"
 						},
 						{
 							"value": "3",
-							"label": "mode 3"
+							"label": "Strong"
 						}
 					]
 				},
@@ -744,7 +744,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"mode 0\",\"1\"\u003d\"mode 1\",\"2\"\u003d\"mode 2\",\"3\"\u003d\"mode 3\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "mop-mode",

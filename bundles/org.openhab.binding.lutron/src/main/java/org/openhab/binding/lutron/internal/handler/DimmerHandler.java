@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openhab.binding.lutron.internal.action.DimmerActions;
@@ -56,7 +56,7 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DimmerActions.class);
+        return List.of(DimmerActions.class);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class DimmerHandler extends LutronHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
-            if (command instanceof Number) {
-                int level = ((Number) command).intValue();
+            if (command instanceof Number number) {
+                int level = number.intValue();
                 output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, level, new LutronDuration("0.25"), null);
             } else if (command.equals(OnOffType.ON)) {
                 if (config.onToLast) {

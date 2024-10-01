@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,14 +20,16 @@ import org.openhab.core.types.State;
 
 /**
  *
- * A callback to {@link AtlonaHandler} that can be used to update the status, properties and state of the thing.
+ * A callback to {@link org.openhab.binding.atlona.internal.handler.AtlonaHandler}
+ * that can be used to update the status, properties and state of the thing.
  *
  * @author Tim Roberts - Initial contribution
  */
 @NonNullByDefault
 public interface AtlonaHandlerCallback {
     /**
-     * Callback to the {@link AtlonaHandler} to update the status of the thing.
+     * Callback to the {@link org.openhab.binding.atlona.internal.handler.AtlonaHandler}
+     * to update the status of the thing.
      *
      * @param status a non-null {@link org.openhab.core.thing.ThingStatus}
      * @param detail a non-null {@link org.openhab.core.thing.ThingStatusDetail}
@@ -36,15 +38,17 @@ public interface AtlonaHandlerCallback {
     void statusChanged(ThingStatus status, ThingStatusDetail detail, @Nullable String msg);
 
     /**
-     * Callback to the {@link AtlonaHandler} to update the state of an item
+     * Callback to the {@link org.openhab.binding.atlona.internal.handler.AtlonaHandler}
+     * to update the state of an item
      *
      * @param channelId the non-null, non-empty channel id
-     * @param state the new non-null {@State}
+     * @param state the new non-null {@link State}
      */
     void stateChanged(String channelId, State state);
 
     /**
-     * Callback to the {@link AtlonaHandler} to update the property of a thing
+     * Callback to the {@link org.openhab.binding.atlona.internal.handler.AtlonaHandler}
+     * to update the property of a thing
      *
      * @param propertyName a non-null, non-empty property name
      * @param propertyValue a non-null, possibly empty property value

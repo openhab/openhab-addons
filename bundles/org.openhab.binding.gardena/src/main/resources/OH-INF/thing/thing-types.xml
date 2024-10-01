@@ -592,22 +592,22 @@
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
-		<description>Duration in minutes</description>
+		<description>Duration</description>
 		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="soilHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Soil Humidity</label>
-		<description>Soil humidity in percent</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<description>Soil humidity</description>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="lightIntensity">
 		<item-type>Number:Illuminance</item-type>
 		<label>Light Intensity</label>
-		<description>Light intensity in Lux</description>
-		<state readOnly="true" pattern="%d lux"/>
+		<description>Light intensity</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -621,7 +621,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Operating Hours</label>
 		<description>The operating hours</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 
 	<channel-type id="batteryState">

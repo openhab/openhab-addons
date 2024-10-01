@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,9 +58,9 @@ public class MacTTSVoice implements Voice {
      *
      * {@code  <Label>  <Locale>  # <Sentence>}
      *
-     * where <Label> is the voice name (which may contain spaces), <Locale>
-     * is the locale ISO 639 alpha-2 + "_" + ISO 3166 alpha-2 and <Sentence>
-     * is an example sentence in <Locale>.
+     * where {@code <Label>} is the voice name (which may contain spaces), {@code <Locale>}
+     * is the locale ISO 639 alpha-2 + "_" + ISO 3166 alpha-2 and {@code <Sentence>}
+     * is an example sentence in {@code <Locale>}.
      *
      * @param line Line from a 'say -v ?' call.
      */
@@ -86,7 +86,7 @@ public class MacTTSVoice implements Voice {
             int underscore = token.indexOf('_');
             if (-1 == underscore) {
                 // Check we're dealing with <Label>
-                if (!token.equals("en-scotland")) {
+                if (!"en-scotland".equals(token)) {
                     if (null == this.label) {
                         this.label = token;
                     } else {

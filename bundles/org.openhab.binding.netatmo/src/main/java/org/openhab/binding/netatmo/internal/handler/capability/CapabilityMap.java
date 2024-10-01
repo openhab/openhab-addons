@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link CapabilityMap} is a specialized Map designed to store capabilities
@@ -39,5 +40,22 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
         @SuppressWarnings("unchecked")
         T cap = (T) super.get(clazz);
         return Optional.ofNullable(cap);
+    }
+
+    public <T extends Capability> void remove(Class<?> clazz) {
+        @Nullable
+        Capability cap = super.remove(clazz);
+        if (cap != null) {
+            cap.dispose();
+        }
+    }
+
+    public Optional<RefreshCapability> getRefresh() {
+        return values().stream().filter(RefreshCapability.class::isInstance).map(RefreshCapability.class::cast)
+                .findFirst();
+    }
+
+    public Optional<Capability> getParentUpdate() {
+        return values().stream().filter(ParentUpdateCapability.class::isInstance).findFirst();
     }
 }

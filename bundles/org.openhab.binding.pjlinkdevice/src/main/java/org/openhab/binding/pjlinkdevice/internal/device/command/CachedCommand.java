@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,14 +59,14 @@ public class CachedCommand<ResponseType extends Response<?>> implements Command<
         } catch (CacheException e) {
             // try to unwrap RuntimeException thrown in ExpiringCache
             Throwable cause = e.getCause();
-            if (cause instanceof ResponseException) {
-                throw (ResponseException) cause;
+            if (cause instanceof ResponseException responseException) {
+                throw responseException;
             }
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
+            if (cause instanceof IOException ioException) {
+                throw ioException;
             }
-            if (cause instanceof AuthenticationException) {
-                throw (AuthenticationException) cause;
+            if (cause instanceof AuthenticationException authenticationException) {
+                throw authenticationException;
             }
             throw e;
         }

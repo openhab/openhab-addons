@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractWriteCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
@@ -39,8 +40,9 @@ public class SendCommand extends AbstractWriteCommand {
      * @param channel the channel that triggered this command
      * @param command the command to be send
      */
-    public SendCommand(EaseeThingHandler handler, String chargerId, Channel channel, Command command) {
-        this(handler, channel, command);
+    public SendCommand(EaseeThingHandler handler, String chargerId, Channel channel, Command command,
+            JsonResultProcessor resultProcessor) {
+        this(handler, channel, command, resultProcessor);
         this.url = COMMANDS_URL.replaceAll("\\{id\\}", chargerId).replaceAll("\\{command\\}", getCommandValue());
     }
 
@@ -51,8 +53,8 @@ public class SendCommand extends AbstractWriteCommand {
      * @param channel the channel that triggered this command
      * @param command the command to be send
      */
-    SendCommand(EaseeThingHandler handler, Channel channel, Command command) {
-        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES);
+    SendCommand(EaseeThingHandler handler, Channel channel, Command command, JsonResultProcessor resultProcessor) {
+        super(handler, channel, command, RetryOnFailure.YES, ProcessFailureResponse.YES, resultProcessor);
     }
 
     @Override

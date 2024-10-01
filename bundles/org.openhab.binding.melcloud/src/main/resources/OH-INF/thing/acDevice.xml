@@ -36,10 +36,10 @@
 				<label>Building ID</label>
 				<description>Building ID of the A.C. device.</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="true">
+			<parameter name="pollingInterval" type="integer" min="180" required="true">
 				<label>Polling Interval</label>
 				<description>Time interval how often poll data from MELCloud</description>
-				<default>60</default>
+				<default>360</default>
 			</parameter>
 		</config-description>
 	</thing-type>

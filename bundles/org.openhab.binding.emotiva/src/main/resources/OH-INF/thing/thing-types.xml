@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="emotiva"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="processor">
+		<label>Emotiva Processor</label>
+		<description>Emotiva Processor Thing for Emotiva Binding</description>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="main-zone" typeId="zone">
+				<label>Main Zone Control</label>
+				<description>Channels for the main zone of this processor</description>
+			</channel-group>
+			<channel-group id="zone2" typeId="zone">
+				<label>Zone 2 Control</label>
+				<description>Channels for zone2 of this processor</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="model">Unknown Model</property>
+			<property name="revision">Unknown Model Revision</property>
+			<property name="dataRevision">Unknown Data Revision</property>
+		</properties>
+
+		<representation-property>ipAddress</representation-property>
+
+		<config-description-ref uri="thing-type:processor:config"/>
+	</thing-type>
+
+	<channel-group-type id="general">
+		<label>General Control</label>
+		<description>General channels for this processor</description>
+		<channels>
+			<channel id="power" typeId="mainPower"/>
+			<channel id="standby" typeId="standby"/>
+			<channel id="menu" typeId="menu"/>
+			<channel id="menu-control" typeId="menu-control"/>
+			<channel id="up" typeId="up"/>
+			<channel id="down" typeId="up"/>
+			<channel id="left" typeId="up"/>
+			<channel id="right" typeId="up"/>
+			<channel id="enter" typeId="up"/>
+			<channel id="dim" typeId="dim"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="info" typeId="info"/>
+			<channel id="speaker-preset" typeId="speaker-preset"/>
+			<channel id="center" typeId="volume-speaker-db"/>
+			<channel id="subwoofer" typeId="volume-speaker-db"/>
+			<channel id="surround" typeId="volume-speaker-db"/>
+			<channel id="back" typeId="volume-speaker-db"/>
+			<channel id="loudness" typeId="loudness"/>
+			<channel id="treble" typeId="volume-speaker-db"/>
+			<channel id="bass" typeId="volume-speaker-db"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="seek" typeId="seek"/>
+			<channel id="channel" typeId="channel"/>
+			<channel id="tuner-band" typeId="tuner-band"/>
+			<channel id="tuner-channel" typeId="tuner-channel"/>
+			<channel id="tuner-channel-select" typeId="tuner-channel-select"/>
+			<channel id="tuner-signal" typeId="tuner-signal"/>
+			<channel id="tuner-program" typeId="tuner-program"/>
+			<channel id="tuner-rds" typeId="tuner-rds"/>
+			<channel id="audio-input" typeId="audio-input"/>
+			<channel id="audio-bitstream" typeId="audio-bitstream"/>
+			<channel id="audio-bits" typeId="audio-bits"/>
+			<channel id="video-input" typeId="video-input"/>
+			<channel id="video-format" typeId="video-format"/>
+			<channel id="video-space" typeId="video-space"/>
+			<channel id="input-1" typeId="input-name"/>
+			<channel id="input-2" typeId="input-name"/>
+			<channel id="input-3" typeId="input-name"/>
+			<channel id="input-4" typeId="input-name"/>
+			<channel id="input-5" typeId="input-name"/>
+			<channel id="input-6" typeId="input-name"/>
+			<channel id="input-7" typeId="input-name"/>
+			<channel id="input-8" typeId="input-name"/>
+
+			<!-- Channels requiring protocol V2 -->
+			<channel id="selected-mode" typeId="selected-mode"/>
+			<channel id="selected-movie-music" typeId="selected-movie-music"/>
+			<channel id="mode-ref-stereo" typeId="input-name"/>
+			<channel id="mode-stereo" typeId="input-name"/>
+			<channel id="mode-music" typeId="input-name"/>
+			<channel id="mode-movie" typeId="input-name"/>
+			<channel id="mode-direct" typeId="input-name"/>
+			<channel id="mode-dolby" typeId="input-name"/>
+			<channel id="mode-dts" typeId="mode"/>
+			<channel id="mode-all-stereo" typeId="mode"/>
+			<channel id="mode-auto" typeId="mode"/>
+			<channel id="mode-surround" typeId="mode-surround"/>
+			<channel id="menu-display-highlight" typeId="menu-display"/>
+			<channel id="menu-display-top-start" typeId="menu-display"/>
+			<channel id="menu-display-top-center" typeId="menu-display"/>
+			<channel id="menu-display-top-end" typeId="menu-display"/>
+			<channel id="menu-display-middle-start" typeId="menu-display"/>
+			<channel id="menu-display-middle-center" typeId="menu-display"/>
+			<channel id="menu-display-middle-end" typeId="menu-display"/>
+			<channel id="menu-display-bottom-start" typeId="menu-display"/>
+			<channel id="menu-display-bottom-center" typeId="menu-display"/>
+			<channel id="menu-display-bottom-end" typeId="menu-display"/>
+
+			<!-- Channels requiring protocol V3 -->
+			<channel id="width" typeId="volume-speaker-db"/>
+			<channel id="height" typeId="volume-speaker-db"/>
+			<channel id="bar" typeId="bar"/>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Control</label>
+		<description>Channels for a zone of this processor</description>
+		<channels>
+			<channel id="power" typeId="zonePower"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="volume-db" typeId="volume-db"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="source" typeId="source"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="mainPower">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the device</description>
+	</channel-type>
+
+	<channel-type id="zonePower">
+		<item-type>Switch</item-type>
+		<label>Power (zone)</label>
+		<description>Power ON/OFF this zone of the Processor</description>
+	</channel-type>
+
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Set the volume level of this zone</description>
+		<category>SoundVolume</category>
+		<state min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="volume-db" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Volume (dB)</label>
+		<description>Set the volume level (dB). Same as [mainVolume - 96]</description>
+		<category>SoundVolume</category>
+		<state min="-96" max="15" step="0.5" pattern="%.1f dB"/>
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Enable or Disable Mute on this zone of the Processor</description>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>String</item-type>
+		<label>Input Source</label>
+		<description>Select the input source for this zone of the Processor</description>
+		<autoUpdatePolicy>recommend</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="standby">
+		<item-type>Switch</item-type>
+		<label>On Standby</label>
+		<description>Set appliance on standby</description>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="menu">
+		<item-type>String</item-type>
+		<label>Menu</label>
+		<description>Menu display ON/OFF for the device</description>
+	</channel-type>
+
+	<channel-type id="menu-control">
+		<item-type>String</item-type>
+		<label>Menu Control</label>
+		<description>Menu Control for emulating an Emotiva Remote control</description>
+	</channel-type>
+
+	<channel-type id="up">
+		<item-type>String</item-type>
+		<label>Menu Up</label>
+		<description>Menu Control Up</description>
+	</channel-type>
+
+	<channel-type id="down">
+		<item-type>String</item-type>
+		<label>Menu Down</label>
+		<description>Menu Control Down</description>
+	</channel-type>
+
+	<channel-type id="left">
+		<item-type>String</item-type>
+		<label>Menu Left</label>
+		<description>Menu Control Left</description>
+	</channel-type>
+
+	<channel-type id="right">
+		<item-type>String</item-type>
+		<label>Menu Right</label>
+		<description>Menu Control Right</description>
+	</channel-type>
+
+	<channel-type id="enter">
+		<item-type>String</item-type>
+		<label>Menu Enter</label>
+		<description>Menu Control Enter</description>
+	</channel-type>
+
+	<channel-type id="volume-speaker-db">
+		<item-type>Number</item-type>
+		<label>Volume Speaker</label>
+		<description>Increased/Reduced volume for a given speaker, in dB</description>
+		<category>SoundVolume</category>
+		<state min="-24" step="0.5" max="24" pattern="%.1f dB"/>
+	</channel-type>
+
+	<channel-type id="dim">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Front Panel Dimness</label>
+		<description>Percentage of dimness: "0", "20", "40", "60", "80", "100"</description>
+		<category>Light</category>
+		<state min="0" step="20" max="100" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Main zone mode: "Stereo", "Direct", "Auto", etc.</description>
+		<state>
+			<options>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="info">
+		<item-type>String</item-type>
+		<label>Info Screen</label>
+		<description>Shown Info Screen</description>
+	</channel-type>
+
+	<channel-type id="speaker-preset">
+		<item-type>String</item-type>
+		<label>Speaker Preset</label>
+		<description>Speaker preset Name</description>
+		<state>
+			<options>
+				<option value="preset-1">preset-1</option>
+				<option value="preset-2">preset-2</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="loudness">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Enable/Disable Loudness on this zone of the Processor</description>
+	</channel-type>
+
+	<channel-type id="frequency">
+		<item-type>Rollershutter</item-type>
+		<label>Radio Tuner Frequency</label>
+		<description>Radio Tuner frequency</description>
+	</channel-type>
+
+	<channel-type id="seek">
+		<item-type>Rollershutter</item-type>
+		<label>Radio Tuner Seek</label>
+		<description>Radio Tuner seek</description>
+	</channel-type>
+
+	<channel-type id="channel">
+		<item-type>Rollershutter</item-type>
+		<label>Tuner Channel</label>
+		<description>Radio Tuner Channel</description>
+		<state min="1" max="20"/>
+	</channel-type>
+
+	<channel-type id="tuner-band">
+		<item-type>String</item-type>
+		<label>Radio Tuner Band</label>
+		<description>Radio tuner band: "AM" or "FM"</description>
+		<state>
+			<options>
+				<option value="band-am">band-am</option>
+				<option value="band-fm">band-fm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tuner-channel">
+		<item-type>Number:Frequency</item-type>
+		<label>Radio Tuner Channel Frequency</label>
+		<description>User select radio tuner channel frequency"</description>
+		<state readOnly="true" min="535000" max="108000000" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tuner-channel-select">
+		<item-type>String</item-type>
+		<label>Radio Tuner Channel Name</label>
+		<description>User select radio tuner channel name</description>
+		<state>
+			<options>
+				<option value="channel-1">channel-1</option>
+				<option value="channel-2">channel-2</option>
+				<option value="channel-3">channel-3</option>
+				<option value="channel-4">channel-4</option>
+				<option value="channel-5">channel-5</option>
+				<option value="channel-6">channel-6</option>
+				<option value="channel-7">channel-7</option>
+				<option value="channel-8">channel-8</option>
+				<option value="channel-9">channel-9</option>
+				<option value="channel-10">channel-10</option>
+				<option value="channel-11">channel-11</option>
+				<option value="channel-12">channel-12</option>
+				<option value="channel-13">channel-13</option>
+				<option value="channel-14">channel-14</option>
+				<option value="channel-15">channel-15</option>
+				<option value="channel-16">channel-16</option>
+				<option value="channel-17">channel-17</option>
+				<option value="channel-18">channel-18</option>
+				<option value="channel-19">channel-19</option>
+				<option value="channel-20">channel-20</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tuner-signal">
+		<item-type>String</item-type>
+		<label>Radio Tuner Signal</label>
+		<description>Radio tuner signal quality</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tuner-program">
+		<item-type>String</item-type>
+		<label>Radio Tuner Program</label>
+		<description>Radio tuner program: "Country", "Rock", "Classical", etc.</description>
+		<state readOnly="true">
+			<options>
+				<option value="adult-hits">adult-hits</option>
+				<option value="alarm-test">alarm-test</option>
+				<option value="alarm">alarm</option>
+				<option value="children-programmes">children-programmes</option>
+				<option value="classic-rock">classic-rock</option>
+				<option value="classical">classical</option>
+				<option value="college">college</option>
+				<option value="country-music">country-music</option>
+				<option value="culture">culture</option>
+				<option value="current-affairs">current-affairs</option>
+				<option value="documentary">documentary</option>
+				<option value="drama">drama</option>
+				<option value="easy-listening">easy-listening</option>
+				<option value="education">education</option>
+				<option value="emergency-test">emergency-test</option>
+				<option value="emergency">emergency</option>
+				<option value="finance">finance</option>
+				<option value="folk-music">folk-music</option>
+				<option value="information">information</option>
+				<option value="jazz-music">jazz-music</option>
+				<option value="jazz">jazz</option>
+				<option value="language">language</option>
+				<option value="Leisure">leisure</option>
+				<option value="Light Classical">light-classical</option>
+				<option value="National Music">national-music</option>
+				<option value="News">news</option>
+				<option value="Nostalgia">nostalgia</option>
+				<option value="no-program">no-program</option>
+				<option value="oldies">oldies</option>
+				<option value="oldies-music">oldies-music</option>
+				<option value="other-music">other-music</option>
+				<option value="personality">personality</option>
+				<option value="Phone-in">phone-in</option>
+				<option value="popular-music">popular-music</option>
+				<option value="public">public</option>
+				<option value="religion">religion</option>
+				<option value="religious-talk">religious-talk</option>
+				<option value="rhythm-blues">rhythm-blues</option>
+				<option value="rock-music">rock-music</option>
+				<option value="rock">rock</option>
+				<option value="science">Science</option>
+				<option value="serious-classical">serious-classical</option>
+				<option value="social-affairs">social-affairs</option>
+				<option value="soft-music">soft-music</option>
+				<option value="soft-rhythm-blues">soft-rhythm-blues</option>
+				<option value="soft-rock">soft-rock</option>
+				<option value="sport">sport</option>
+				<option value="talk">talk</option>
+				<option value="top-40">top-40</option>
+				<option value="travel">travel</option>
+				<option value="weather">weather</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tuner-rds">
+		<item-type>String</item-type>
+		<label>Radio Tuner RDS</label>
+		<description>Radio Data System (RDS) tuner string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audio-input">
+		<item-type>String</item-type>
+		<label>Audio Input</label>
+		<description>Input source for audio on main zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audio-bitstream">
+		<item-type>String</item-type>
+		<label>Audio Input Bitstream Type</label>
+		<description>Audio input bitstream type: "PCM 2.0", "ATMOS", etc.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="audio-bits">
+		<item-type>String</item-type>
+		<label>Audio Input Bits</label>
+		<description>Audio input bits: "32kHZ 24bits", etc.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-input">
+		<item-type>String</item-type>
+		<label>Video Input Source</label>
+		<description>Input source for video on main zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-format">
+		<item-type>String</item-type>
+		<label>Video Input Format</label>
+		<description>Video input format: "1920x1080i/60", "3840x2160p/60", etc.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="video-space">
+		<item-type>String</item-type>
+		<label>Video Input Space</label>
+		<description>Video input space: "YcbCr 8bits", etc.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="input-name">
+		<item-type>String</item-type>
+		<label>Custom Input Name</label>
+		<description>Custom Input Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Channels requiring protocol V2 -->
+	<channel-type id="selected-mode">
+		<item-type>String</item-type>
+		<label>User Selected Mode</label>
+		<description>User selected mode for the main zone. An "Auto" value here might not mean the mode channel is in
+			auto:
+			"Stereo", "Direct", "Auto", etc.
+		</description>
+		<state readOnly="true">
+			<options>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="selected-movie-music">
+		<item-type>String</item-type>
+		<label>Media Mode</label>
+		<description>User-selected movie or music mode for main zone: "Movie" or "Music"</description>
+		<state readOnly="true">
+			<options>
+				<option value="movie">movie</option>
+				<option value="music">music</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mode-surround">
+		<item-type>String</item-type>
+		<label>Mode Surround</label>
+		<description>Main zone surround mode: "Auto", "Stereo", "Dolby", ...</description>
+		<state readOnly="true">
+			<options>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="bar">
+		<item-type>String</item-type>
+		<label>Front Panel Bar</label>
+		<description>Text displayed on front panel bar of device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu-display">
+		<item-type>String</item-type>
+		<label>Menu Display</label>
+		<description>Text displayed on a specific menu row and column</description>
+	</channel-type>
+
+</thing:thing-descriptions>

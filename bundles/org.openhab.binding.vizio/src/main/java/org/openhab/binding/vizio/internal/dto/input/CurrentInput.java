@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,9 +30,9 @@ public class CurrentInput {
     @SerializedName("STATUS")
     private Status status;
     @SerializedName("ITEMS")
-    private List<ItemInput> items = new ArrayList<ItemInput>();
+    private List<ItemInput> items = new ArrayList<>();
     @SerializedName("HASHLIST")
-    private List<Long> hashlist = new ArrayList<Long>();
+    private List<Long> hashlist = new ArrayList<>();
     @SerializedName("URI")
     private String uri;
     @SerializedName("PARAMETERS")

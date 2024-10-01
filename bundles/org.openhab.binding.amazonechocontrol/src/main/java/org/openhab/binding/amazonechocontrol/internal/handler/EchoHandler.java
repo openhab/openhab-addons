@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -293,8 +293,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             // Notification commands
             if (channelId.equals(CHANNEL_NOTIFICATION_VOLUME)) {
-                if (command instanceof PercentType) {
-                    int volume = ((PercentType) command).intValue();
+                if (command instanceof PercentType percentCommand) {
+                    int volume = percentCommand.intValue();
                     connection.notificationVolume(device, volume);
                     this.notificationVolumeLevel = volume;
                     waitForUpdate = -1;
@@ -318,21 +318,18 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Media progress commands
             Long mediaPosition = null;
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS)) {
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
-                    int percent = value.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    int percent = percentCommand.intValue();
                     mediaPosition = Math.round((mediaLengthMs / 1000d) * (percent / 100d));
                 }
             }
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS_TIME)) {
-                if (command instanceof DecimalType) {
-                    DecimalType value = (DecimalType) command;
-                    mediaPosition = value.longValue();
+                if (command instanceof DecimalType decimalCommand) {
+                    mediaPosition = decimalCommand.longValue();
                 }
-                if (command instanceof QuantityType<?>) {
-                    QuantityType<?> value = (QuantityType<?>) command;
+                if (command instanceof QuantityType<?> quantityCommand) {
                     @Nullable
-                    QuantityType<?> seconds = value.toUnit(Units.SECOND);
+                    QuantityType<?> seconds = quantityCommand.toUnit(Units.SECOND);
                     if (seconds != null) {
                         mediaPosition = seconds.longValue();
                     }
@@ -353,9 +350,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
                 Integer volume = null;
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
-                    volume = value.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    volume = percentCommand.intValue();
                 } else if (command == OnOffType.OFF) {
                     volume = 0;
                 } else if (command == OnOffType.ON) {
@@ -393,9 +389,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // shuffle command
             if (channelId.equals(CHANNEL_SHUFFLE)) {
-                if (command instanceof OnOffType) {
-                    OnOffType value = (OnOffType) command;
-
+                if (command instanceof OnOffType value) {
                     connection.command(device, "{\"type\":\"ShuffleCommand\",\"shuffle\":\""
                             + (value == OnOffType.ON ? "true" : "false") + "\"}");
                 }
@@ -429,8 +423,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // bluetooth commands
             if (channelId.equals(CHANNEL_BLUETOOTH_MAC)) {
                 needBluetoothRefresh = true;
-                if (command instanceof StringType) {
-                    String address = ((StringType) command).toFullString();
+                if (command instanceof StringType stringCommand) {
+                    String address = stringCommand.toFullString();
                     if (!address.isEmpty()) {
                         waitForUpdate = 4000;
                     }
@@ -566,9 +560,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
             if (channelId.equals(CHANNEL_TEXT_TO_SPEECH_VOLUME)) {
-                if (command instanceof PercentType) {
-                    PercentType value = (PercentType) command;
-                    textToSpeechVolume = value.intValue();
+                if (command instanceof PercentType percentCommand) {
+                    textToSpeechVolume = percentCommand.intValue();
                 } else if (command == OnOffType.OFF) {
                     textToSpeechVolume = 0;
                 } else if (command == OnOffType.ON) {
@@ -680,8 +673,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (command instanceof RefreshType) {
             this.lastKnownEqualizer = null;
         }
-        if (command instanceof DecimalType) {
-            DecimalType value = (DecimalType) command;
+        if (command instanceof DecimalType decimalCommand) {
             if (this.lastKnownEqualizer == null) {
                 updateEqualizerState();
             }
@@ -689,13 +681,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (lastKnownEqualizer != null) {
                 JsonEqualizer newEqualizerSetting = lastKnownEqualizer.createClone();
                 if (channelId.equals(CHANNEL_EQUALIZER_BASS)) {
-                    newEqualizerSetting.bass = value.intValue();
+                    newEqualizerSetting.bass = decimalCommand.intValue();
                 }
                 if (channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)) {
-                    newEqualizerSetting.mid = value.intValue();
+                    newEqualizerSetting.mid = decimalCommand.intValue();
                 }
                 if (channelId.equals(CHANNEL_EQUALIZER_TREBLE)) {
-                    newEqualizerSetting.treble = value.intValue();
+                    newEqualizerSetting.treble = decimalCommand.intValue();
                 }
                 try {
                     connection.setEqualizer(device, newEqualizerSetting);
@@ -1105,10 +1097,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
             updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
-            updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_AMAZON_MUSIC, OnOffType.from(isPlaying && amazonMusic));
             updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
             updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
-            updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RADIO, OnOffType.from(isPlaying && isRadio));
             updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
             updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
@@ -1119,13 +1111,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
             updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
             if (bluetoothState != null) {
-                updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_BLUETOOTH, OnOffType.from(bluetoothIsConnected));
                 updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
                 updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
             }
 
             updateState(CHANNEL_ASCENDING_ALARM,
-                    ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+                    ascendingAlarm != null ? OnOffType.from(ascendingAlarm) : UnDefType.UNDEF);
 
             final Integer notificationVolumeLevel = this.notificationVolumeLevel;
             if (notificationVolumeLevel != null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.daikin.internal.api;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -43,9 +42,9 @@ public class BasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         BasicInfo info = new BasicInfo();
-        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
-        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
+        info.mac = responseMap.getOrDefault("mac", "");
+        info.ret = responseMap.getOrDefault("ret", "");
+        info.ssid = responseMap.getOrDefault("ssid", "");
         return info;
     }
 

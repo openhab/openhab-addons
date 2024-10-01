@@ -9,5 +9,6 @@
 	<connection>none</connection>
 
 	<service-id>org.openhab.automation.jrubyscripting</service-id>
+	<config-description-ref uri="automation:jrubyscripting"/>
 
 </addon:addon>

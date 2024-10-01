@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,8 @@ public class TimetableStubHttpCallable implements HttpCallable {
     public TimetableStubHttpCallable(File testdataDir) {
         this.testdataDir = testdataDir;
         this.requestedPlanUrls = new ArrayList<>();
-        this.requestedFullChangesUrls = new ArrayList<String>();
-        this.requestedRecentChangesUrls = new ArrayList<String>();
+        this.requestedFullChangesUrls = new ArrayList<>();
+        this.requestedRecentChangesUrls = new ArrayList<>();
     }
 
     public void addAvailableUrl(String url) {

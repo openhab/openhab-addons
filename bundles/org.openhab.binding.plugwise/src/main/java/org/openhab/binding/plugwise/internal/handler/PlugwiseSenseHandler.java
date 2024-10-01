@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,13 +117,13 @@ public class PlugwiseSenseHandler extends AbstractSleepingEndDeviceHandler {
     }
 
     @Override
-    public void handleReponseMessage(Message message) {
+    public void handleResponseMessage(Message message) {
         switch (message.getType()) {
             case SENSE_REPORT_REQUEST:
                 handleSenseReportRequestMessage((SenseReportRequestMessage) message);
                 break;
             default:
-                super.handleReponseMessage(message);
+                super.handleResponseMessage(message);
                 break;
         }
     }

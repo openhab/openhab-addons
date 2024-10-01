@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.core.types.Command;
  * Interface for Samsung TV services.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Nick Waterton - add checkConnection(), getServiceName(), refactoring
  */
 @NonNullByDefault
 public interface SamsungTvService {
@@ -30,7 +31,7 @@ public interface SamsungTvService {
      *
      * @return List of supported
      */
-    List<String> getSupportedChannelNames();
+    List<String> getSupportedChannelNames(boolean refresh);
 
     /**
      * Procedure for sending command.
@@ -38,23 +39,7 @@ public interface SamsungTvService {
      * @param channel the channel to which the command applies
      * @param command the command to be handled
      */
-    void handleCommand(String channel, Command command);
-
-    /**
-     * Procedure for register event listener.
-     *
-     * @param listener
-     *            Event listener instance to handle events.
-     */
-    void addEventListener(EventListener listener);
-
-    /**
-     * Procedure for remove event listener.
-     *
-     * @param listener
-     *            Event listener instance to remove.
-     */
-    void removeEventListener(EventListener listener);
+    boolean handleCommand(String channel, Command command);
 
     /**
      * Procedure for starting service.
@@ -80,4 +65,18 @@ public interface SamsungTvService {
      * @return whether this service is an UPnP configured / discovered service
      */
     boolean isUpnp();
+
+    /**
+     * Is service connected
+     *
+     * @return whether this service is connected or not
+     */
+    boolean checkConnection();
+
+    /**
+     * get service name.
+     *
+     * @return String SERVICE_NAME
+     */
+    String getServiceName();
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -138,7 +139,7 @@ public class ThingsTemplateGeneratorTest {
         when(discoveryResult.getThingTypeUID()).thenReturn(thingTypeUid);
         when(discoveryResult.getThingUID()).thenReturn(new ThingUID(thingTypeUid, id, bridgeId));
         when(discoveryResult.getProperties())
-                .thenReturn(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, id));
+                .thenReturn(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, id));
         return discoveryResult;
     }
 
@@ -177,9 +178,12 @@ public class ThingsTemplateGeneratorTest {
                 Collections.emptyList());
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
-                + "    Thing oven 000137439123 \"Oven H7860XY\" [ deviceIdentifier=\"000137439123\" ]\n"
-                + "    Thing hob 000160106123 [ deviceIdentifier=\"000160106123\" ]\n}", template);
+        assertEquals("""
+                Bridge mielecloud:account:mielebridge [ email="everyone@openhab.org", locale="de" ] {
+                    Thing oven 000137439123 "Oven H7860XY" [ deviceIdentifier="000137439123" ]
+                    Thing hob 000160106123 [ deviceIdentifier="000160106123" ]
+                }\
+                """, template);
     }
 
     @Test
@@ -203,10 +207,12 @@ public class ThingsTemplateGeneratorTest {
                 discoveredThings);
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"everyone@openhab.org\", locale=\"de\" ] {\n"
-                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ deviceIdentifier=\"000154106123\" ]\n"
-                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ deviceIdentifier=\"000189106123\" ]\n}",
-                template);
+        assertEquals("""
+                Bridge mielecloud:account:mielebridge [ email="everyone@openhab.org", locale="de" ] {
+                    Thing fridge_freezer 000154106123 "Fridge-Freezer Kitchen" [ deviceIdentifier="000154106123" ]
+                    Thing washing_machine 000189106123 "Washing Machine" [ deviceIdentifier="000189106123" ]
+                }\
+                """, template);
     }
 
     @Test
@@ -237,12 +243,14 @@ public class ThingsTemplateGeneratorTest {
                 discoveredThings);
 
         // then:
-        assertEquals("Bridge mielecloud:account:mielebridge [ email=\"openhab@openhab.org\", locale=\"de\" ] {\n"
-                + "    Thing oven 000137439123 \"Oven H7860XY\" [ deviceIdentifier=\"000137439123\" ]\n"
-                + "    Thing hob 000160106123 [ deviceIdentifier=\"000160106123\" ]\n"
-                + "    Thing fridge_freezer 000154106123 \"Fridge-Freezer Kitchen\" [ deviceIdentifier=\"000154106123\" ]\n"
-                + "    Thing washing_machine 000189106123 \"Washing Machine\" [ deviceIdentifier=\"000189106123\" ]\n}",
-                template);
+        assertEquals("""
+                Bridge mielecloud:account:mielebridge [ email="openhab@openhab.org", locale="de" ] {
+                    Thing oven 000137439123 "Oven H7860XY" [ deviceIdentifier="000137439123" ]
+                    Thing hob 000160106123 [ deviceIdentifier="000160106123" ]
+                    Thing fridge_freezer 000154106123 "Fridge-Freezer Kitchen" [ deviceIdentifier="000154106123" ]
+                    Thing washing_machine 000189106123 "Washing Machine" [ deviceIdentifier="000189106123" ]
+                }\
+                """, template);
     }
 
     @Test

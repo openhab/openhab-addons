@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,9 +119,6 @@ public class PilightGenericHandler extends PilightBaseHandler {
 
                 if (channelType != null) {
                     logger.debug("initializeReadOnly {} {}", channelType, channelType.getState());
-                }
-
-                if (channelType != null) {
                     final @Nullable StateDescription state = channelType.getState();
                     if (state != null) {
                         channelReadOnlyMap.putIfAbsent(channel.getUID(), state.isReadOnly());

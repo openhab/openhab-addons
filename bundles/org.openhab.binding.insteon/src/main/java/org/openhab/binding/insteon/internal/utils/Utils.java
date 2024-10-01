@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,7 @@ import org.openhab.binding.insteon.internal.message.DataType;
 @NonNullByDefault
 public class Utils {
     public static String getHexString(int b) {
-        String result = String.format("%02X", b & 0xFF);
-        return result;
+        return String.format("%02X", b & 0xFF);
     }
 
     public static String getHexString(byte[] b) {
@@ -86,7 +85,7 @@ public class Utils {
         }
 
         public static byte parseByte(@Nullable String val) {
-            if (val != null && !val.trim().equals("")) {
+            if (val != null && !"".equals(val.trim())) {
                 return (byte) Utils.from0xHexString(val.trim());
             } else {
                 return 0x00;
@@ -94,7 +93,7 @@ public class Utils {
         }
 
         public static int parseInt(@Nullable String val) {
-            if (val != null && !val.trim().equals("")) {
+            if (val != null && !"".equals(val.trim())) {
                 return Integer.parseInt(val);
             } else {
                 return 0x00;
@@ -102,7 +101,7 @@ public class Utils {
         }
 
         public static float parseFloat(@Nullable String val) {
-            if (val != null && !val.trim().equals("")) {
+            if (val != null && !"".equals(val.trim())) {
                 return Float.parseFloat(val.trim());
             } else {
                 return 0;
@@ -110,7 +109,7 @@ public class Utils {
         }
 
         public static InsteonAddress parseAddress(@Nullable String val) {
-            if (val != null && !val.trim().equals("")) {
+            if (val != null && !"".equals(val.trim())) {
                 return InsteonAddress.parseAddress(val.trim());
             } else {
                 return new InsteonAddress();

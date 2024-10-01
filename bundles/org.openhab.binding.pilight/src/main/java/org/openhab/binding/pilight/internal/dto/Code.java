@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,8 @@ package org.openhab.binding.pilight.internal.dto;
  * Part of the {@link Action} message that is sent to pilight.
  * This contains the desired state for a single device.
  *
- * {@link http://www.pilight.org/development/api/#sender}
+ * @see <a href="https://manual.pilight.org/development/socket/index.html">
+ *      https://manual.pilight.org/development/socket/index.html</a>
  *
  * @author Jeroen Idserda - Initial contribution
  * @author Stefan Röllin - Port to openHAB 2 pilight binding

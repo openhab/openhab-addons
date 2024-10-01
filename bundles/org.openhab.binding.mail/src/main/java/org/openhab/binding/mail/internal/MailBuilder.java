@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -185,7 +185,7 @@ public class MailBuilder {
                 htmlMail.setTextMsg(text);
                 htmlMail.setHtmlMsg(html);
             } else {
-                htmlMail.setMsg(html);
+                htmlMail.setHtmlMsg(html);
             }
             for (File file : attachmentFiles) {
                 htmlMail.attach(new FileDataSource(file), "", "");

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="tires-values">
+		<label>Tire Status</label>
+		<description>Tire Pressure Values</description>
+		<channels>
+			<channel id="pressure-front-right" typeId="pressure-front-right"/>
+			<channel id="pressure-rear-right" typeId="pressure-rear-right"/>
+			<channel id="pressure-front-left" typeId="pressure-front-left"/>
+			<channel id="pressure-rear-left" typeId="pressure-rear-left"/>
+			<channel id="sensor-available" typeId="sensor-available"/>
+			<channel id="marker-front-right" typeId="marker-front-right"/>
+			<channel id="marker-rear-right" typeId="marker-rear-right"/>
+			<channel id="marker-front-left" typeId="marker-front-left"/>
+			<channel id="marker-rear-left" typeId="marker-rear-left"/>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

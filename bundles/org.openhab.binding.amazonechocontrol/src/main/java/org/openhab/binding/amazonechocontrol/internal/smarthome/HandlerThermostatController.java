@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,9 +101,9 @@ public class HandlerThermostatController extends HandlerBase {
                     float temperature = value.get("value").getAsFloat();
                     String scale = value.get("scale").getAsString().toUpperCase();
                     if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
                     } else {
-                        temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
+                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
                     }
                 }
                 updateState(TARGET_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
@@ -121,9 +121,9 @@ public class HandlerThermostatController extends HandlerBase {
                     float temperature = value.get("value").getAsFloat();
                     String scale = value.get("scale").getAsString().toUpperCase();
                     if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
                     } else {
-                        temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
+                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
                     }
                 }
                 updateState(UPPER_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);
@@ -135,9 +135,9 @@ public class HandlerThermostatController extends HandlerBase {
                     float temperature = value.get("value").getAsFloat();
                     String scale = value.get("scale").getAsString().toUpperCase();
                     if ("CELSIUS".equals(scale)) {
-                        temperatureValue = new QuantityType<Temperature>(temperature, SIUnits.CELSIUS);
+                        temperatureValue = new QuantityType<>(temperature, SIUnits.CELSIUS);
                     } else {
-                        temperatureValue = new QuantityType<Temperature>(temperature, ImperialUnits.FAHRENHEIT);
+                        temperatureValue = new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT);
                     }
                 }
                 updateState(LOWER_SETPOINT.channelId, temperatureValue == null ? UnDefType.UNDEF : temperatureValue);

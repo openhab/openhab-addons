@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 /**
  * Contains some test data used across different tests
  *
- * @author Svilen Valkanov - Initial implementation
+ * @author Svilen Valkanov - Initial contribution
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
 public final class AstroBindingTestsData {

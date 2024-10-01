@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +46,7 @@ import org.openhab.core.model.script.engine.action.ActionService;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
+import org.openhab.core.util.StringUtils;
 import org.openhab.io.openhabcloud.NotificationAction;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @Component(service = { CloudService.class, EventSubscriber.class,
         ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
@@ -80,8 +81,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
-    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom SR = new SecureRandom();
 
     private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
@@ -115,11 +114,22 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param userId the {@link String} containing the openHAB Cloud user id to send message to
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param tag the {@link String} containing tag of notification (formerly severity)
+     * @param title the {@link String} containing the title to be used with this notification
+     * @param referenceId the {@link String} identifier used to collapse and hide notifications
+     * @param onClickAction the {@link String} containing the action to perform when clicked
+     * @param mediaAttachmentUrl the {@link String} containing the media to attach to a notification
+     * @param actionButton1 the {@link String} containing the action button in the format "Title=Action"
+     * @param actionButton2 the {@link String} containing the action button in the format "Title=Action"
+     * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
-    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity) {
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         logger.debug("Sending message '{}' to user id {}", message, userId);
-        cloudClient.sendNotification(userId, message, icon, severity);
+        cloudClient.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     /**
@@ -141,11 +151,70 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      *
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param tag the {@link String} containing tag of notification (formerly severity)
+     * @param title the {@link String} containing the title to be used with this notification
+     * @param referenceId the {@link String} identifier used to collapse and hide notifications
+     * @param onClickAction the {@link String} containing the action to perform when clicked
+     * @param mediaAttachmentUrl the {@link String} containing the media to attach to a notification
+     * @param actionButton1 the {@link String} containing the action button in the format "Title=Action"
+     * @param actionButton2 the {@link String} containing the action button in the format "Title=Action"
+     * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
-    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         logger.debug("Sending broadcast message '{}' to all users", message);
-        cloudClient.sendBroadcastNotification(message, icon, severity);
+        cloudClient.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
+    }
+
+    /**
+     * This method hides a notification by its tag through the openHAB Cloud service for a specific user
+     *
+     * @param userId the {@link String} containing the openHAB Cloud user id to hide messages for
+     * @param tag the {@link String} containing severity group of notification
+     *
+     */
+    public void hideNotificationByTag(String userId, String tag) {
+        logger.debug("hiding with tag '{}' to user id {}", tag, userId);
+        cloudClient.hideNotificationByTag(userId, tag);
+    }
+
+    /**
+     * This method hides a notification by its tag through the openHAB Cloud service for all
+     * mobile devices of all users of the account
+     *
+     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     *
+     */
+    public void hideBroadcastNotificationByTag(String tag) {
+        logger.debug("hiding broadcast with tag '{}'", tag);
+        cloudClient.hideBroadcastNotificationByTag(tag);
+    }
+
+    /**
+     * This method hides a notification by its reference id through the openHAB Cloud service for a specific user
+     *
+     * @param userId the {@link String} containing the openHAB Cloud user id to hide messages for
+     * @param severity the {@link String} containing severity group of notification
+     *
+     */
+    public void hideNotificationByReferenceId(String userId, String referenceId) {
+        logger.debug("hiding with referenceId '{}' to user id {}", referenceId, userId);
+        cloudClient.hideNotificationByReferenceId(userId, referenceId);
+    }
+
+    /**
+     * This method hides a notification by its reference id through the openHAB Cloud service for all
+     * mobile devices of all users of the account
+     *
+     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     *
+     */
+    public void hideBroadcastNotificationByReferenceId(String referenceId) {
+        logger.debug("hiding broadcast with referenceId '{}'", referenceId);
+        cloudClient.hideBroadcastNotificationByReferenceId(referenceId);
     }
 
     private String substringBefore(String str, String separator) {
@@ -211,8 +280,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         exposedItems = new HashSet<>();
         Object expCfg = config.get(CFG_EXPOSE);
-        if (expCfg instanceof String) {
-            String value = (String) expCfg;
+        if (expCfg instanceof String value) {
             while (value.startsWith("[")) {
                 value = value.substring(1);
             }
@@ -222,8 +290,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             for (String itemName : Arrays.asList((value).split(","))) {
                 exposedItems.add(itemName.trim());
             }
-        } else if (expCfg instanceof Iterable) {
-            for (Object entry : ((Iterable<?>) expCfg)) {
+        } else if (expCfg instanceof Iterable iterable) {
+            for (Object entry : iterable) {
                 exposedItems.add(entry.toString());
             }
         }
@@ -293,14 +361,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         }
     }
 
-    private String randomString(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            sb.append(CHARS.charAt(SR.nextInt(CHARS.length())));
-        }
-        return sb.toString();
-    }
-
     /**
      * Creates a random secret and writes it to the <code>userdata/openhabcloud</code>
      * directory. An existing <code>secret</code> file won't be overwritten.
@@ -311,7 +371,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         String newSecretString = "";
 
         if (!file.exists()) {
-            newSecretString = randomString(20);
+            newSecretString = StringUtils.getRandomAlphanumeric(20);
             logger.debug("New secret = {}", censored(newSecretString));
             writeFile(file, newSecretString);
         } else {
@@ -381,6 +441,6 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     private boolean supportsUpdates() {
-        return cloudBaseUrl.indexOf(CFG_BASE_URL) >= 0;
+        return cloudBaseUrl.contains(CFG_BASE_URL);
     }
 }

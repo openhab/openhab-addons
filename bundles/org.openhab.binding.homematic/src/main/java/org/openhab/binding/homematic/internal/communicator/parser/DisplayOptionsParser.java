@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
-    private static final String[] onOff = new String[] { "ON", "OFF" };
+    private static final String[] ON_OFF = new String[] { "ON", "OFF" };
     private static final int IDX_NOT_FOUND = -1;
     private HmChannel channel;
     private String text;
@@ -128,7 +128,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
             String[] dpOpts = dp.getOptions();
             String[] options = new String[dpOpts.length - 1];
             options = Arrays.copyOfRange(dpOpts, 1, dpOpts.length);
-            for (String onOffString : onOff) {
+            for (String onOffString : ON_OFF) {
                 int onIdx = findInArray(options, onOffString);
                 if (onIdx != IDX_NOT_FOUND) {
                     options[onIdx] = datapointName + "_" + onOffString;

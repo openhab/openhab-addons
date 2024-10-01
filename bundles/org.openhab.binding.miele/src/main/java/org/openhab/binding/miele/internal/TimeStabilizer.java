@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class TimeStabilizer {
     private static final int SLIDING_SECONDS = 300;
     private static final int MAX_FLUCTUATION_SECONDS = 180;
 
-    private final Deque<Item> cache = new ConcurrentLinkedDeque<Item>();
+    private final Deque<Item> cache = new ConcurrentLinkedDeque<>();
 
     private class Item {
         public Instant start;

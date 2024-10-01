@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
             String deviceType = getDeviceType(properties);
 
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.deviceIp, deviceType, profile.mode, version,
+                    : getFirmwareUrl(config.deviceIp, deviceType, profile.device.mode, version,
                             connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target
@@ -100,7 +100,8 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
                 }
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_LOCAL)) {
                 // redirect to local server -> http://<oh-ip>:<oh-port>/shelly/manager/ota?deviceType=xxx&version=xxx
-                String modeParm = !profile.mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + profile.mode : "";
+                String modeParm = !profile.device.mode.isEmpty() ? "&" + URLPARM_DEVMODE + "=" + profile.device.mode
+                        : "";
                 url = URLPARM_URL + "=http://" + localIp + ":" + localPort + SHELLY_MGR_OTA_URI + urlEncode(
                         "?" + URLPARM_DEVTYPE + "=" + deviceType + modeParm + "&" + URLPARM_VERSION + "=" + version);
             } else if (connection.equalsIgnoreCase(CONNECTION_TYPE_CUSTOM)) {
@@ -117,7 +118,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             if ("yes".equalsIgnoreCase(update)) {
                 // do the update
-                th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
+                th.setThingOfflineAndDisconnect(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);
 
                 new Thread(() -> { // schedule asynchronous reboot

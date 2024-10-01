@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,27 +67,27 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                     updateState(channelUID, openClosedType);
                     break;
                 case ZONE_BYPASS_MODE:
-                    onOffType = (state > 0) ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(state > 0);
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_IN_ALARM:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TAMPER:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_FAULT:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case ZONE_TRIPPED:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 default:
@@ -107,7 +107,7 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
 
         if (dscAlarmBridgeHandler != null && dscAlarmBridgeHandler.isConnected()
                 && channelUID.getId().equals(ZONE_BYPASS_MODE)) {
-            String data = String.valueOf(getPartitionNumber()) + "*1" + String.format("%02d", getZoneNumber()) + "#";
+            String data = getPartitionNumber() + "*1" + String.format("%02d", getZoneNumber()) + "#";
 
             dscAlarmBridgeHandler.sendCommand(DSCAlarmCode.KeySequence, data);
         }

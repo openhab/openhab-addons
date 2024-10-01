@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,9 +159,9 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
         FloureonDevice floureonDevice = this.floureonDevice;
-        if (command instanceof QuantityType && floureonDevice != null) {
+        if (command instanceof QuantityType quantityCommand && floureonDevice != null) {
             try {
-                QuantityType<?> temperatureQuantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                QuantityType<?> temperatureQuantityType = quantityCommand.toUnit(SIUnits.CELSIUS);
                 if (temperatureQuantityType != null) {
                     floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
                 } else {
@@ -211,8 +211,8 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
     }
 
     private void handleSetTimeCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof DateTimeType) {
-            ZonedDateTime zonedDateTime = ((DateTimeType) command).getZonedDateTime();
+        if (command instanceof DateTimeType dateTimeCommand) {
+            ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime();
             try {
                 new SetTimeCommand(tob(zonedDateTime.getHour()), tob(zonedDateTime.getMinute()),
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))
@@ -262,7 +262,6 @@ public class FloureonThermostatHandler extends BroadlinkBaseHandler {
     }
 
     protected void refreshData() {
-
         AdvancedStatusInfo advancedStatusInfo = advancedStatusInfoExpiringCache.getValue();
         if (advancedStatusInfo == null) {
             return;

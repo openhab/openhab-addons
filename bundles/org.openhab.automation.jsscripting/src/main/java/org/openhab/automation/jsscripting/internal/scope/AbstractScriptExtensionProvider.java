@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.jsscripting.internal.scope;
 
 import java.util.Collection;
@@ -18,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -56,7 +56,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public Collection<String> getPresets() {
-        return Collections.singleton(getPresetName());
+        return Set.of(getPresetName());
     }
 
     @Override
@@ -66,7 +66,6 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
-
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
         return forScript.computeIfAbsent(type,
                 k -> Objects.nonNull(types.get(k)) ? types.get(k).apply(scriptIdentifier) : null);

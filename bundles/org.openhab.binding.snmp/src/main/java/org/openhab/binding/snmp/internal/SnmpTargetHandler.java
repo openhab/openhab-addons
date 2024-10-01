@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.snmp.internal.SnmpBindingConstants.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -53,7 +52,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
-import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.AbstractTarget;
@@ -68,6 +66,8 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.IpAddress;
@@ -87,8 +87,8 @@ import org.snmp4j.smi.VariableBinding;
  */
 @NonNullByDefault
 public class SnmpTargetHandler extends BaseThingHandler implements ResponseListener, CommandResponder {
-    private static final Pattern HEXSTRING_VALIDITY = Pattern.compile("([a-f0-9]{2}[ :-]?)+");
-    private static final Pattern HEXSTRING_EXTRACTOR = Pattern.compile("[^a-f0-9]");
+    private static final Pattern HEX_STRING_VALIDITY = Pattern.compile("([A-Fa-f0-9]{2}[ :-]?)+");
+    private static final Pattern HEX_STRING_EXTRACTOR = Pattern.compile("[^A-Fa-f0-9]");
 
     private final Logger logger = LoggerFactory.getLogger(SnmpTargetHandler.class);
 
@@ -97,12 +97,16 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     private @Nullable ScheduledFuture<?> refresh;
     private int timeoutCounter = 0;
 
-    private @NonNullByDefault({}) AbstractTarget target;
+    private @NonNullByDefault({}) AbstractTarget<UdpAddress> target;
     private @NonNullByDefault({}) String targetAddressString;
 
     private @NonNullByDefault({}) Set<SnmpInternalChannelConfiguration> readChannelSet;
     private @NonNullByDefault({}) Set<SnmpInternalChannelConfiguration> writeChannelSet;
     private @NonNullByDefault({}) Set<SnmpInternalChannelConfiguration> trapChannelSet;
+
+    // SNMP v3
+    private @Nullable UsmUser usmUser;
+    private @Nullable OctetString engineId;
 
     public SnmpTargetHandler(Thing thing, SnmpService snmpService) {
         super(thing);
@@ -139,12 +143,12 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     }
                 } else {
                     Command rawValue = command;
-                    if (command instanceof QuantityType) {
+                    if (command instanceof QuantityType<?> quantityCommand) {
                         Unit<?> channelUnit = channel.unit;
                         if (channelUnit == null) {
-                            rawValue = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                            rawValue = new DecimalType(quantityCommand.toBigDecimal());
                         } else {
-                            QuantityType<?> convertedValue = ((QuantityType<?>) command).toUnit(channelUnit);
+                            QuantityType<?> convertedValue = quantityCommand.toUnit(channelUnit);
                             if (convertedValue == null) {
                                 logger.warn("Cannot convert '{}' to configured unit '{}'", command, channelUnit);
                                 return;
@@ -180,7 +184,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
         try {
             if (config.protocol.toInteger() == SnmpConstants.version1
                     || config.protocol.toInteger() == SnmpConstants.version2c) {
-                CommunityTarget target = new CommunityTarget();
+                CommunityTarget<UdpAddress> target = new CommunityTarget<>();
                 target.setCommunity(new OctetString(config.community));
                 this.target = target;
             } else if (config.protocol.toInteger() == SnmpConstants.version3) {
@@ -189,31 +193,31 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "user not set");
                     return;
                 }
-                String engineIdHexString = config.engineId;
-                if (engineIdHexString == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "engineId not set");
-                    return;
-                }
                 String authPassphrase = config.authPassphrase;
-                if ((config.securityModel == SnmpSecurityModel.AUTH_PRIV
-                        || config.securityModel == SnmpSecurityModel.AUTH_NO_PRIV)
-                        && (authPassphrase == null || authPassphrase.isEmpty())) {
+                if (config.securityModel != SnmpSecurityModel.NO_AUTH_NO_PRIV
+                        && (authPassphrase == null || authPassphrase.isBlank())) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Authentication passphrase not configured");
                     return;
                 }
                 String privPassphrase = config.privPassphrase;
                 if (config.securityModel == SnmpSecurityModel.AUTH_PRIV
-                        && (privPassphrase == null || privPassphrase.isEmpty())) {
+                        && (privPassphrase == null || privPassphrase.isBlank())) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Privacy passphrase not configured");
                     return;
                 }
-                byte[] engineId = HexUtils.hexToBytes(engineIdHexString);
-                snmpService.addUser(userName, config.authProtocol, authPassphrase, config.privProtocol, privPassphrase,
-                        engineId);
-                UserTarget target = new UserTarget();
-                target.setAuthoritativeEngineID(engineId);
+                usmUser = new UsmUser(new OctetString(userName),
+                        config.securityModel != SnmpSecurityModel.NO_AUTH_NO_PRIV ? config.authProtocol.getOid() : null,
+                        config.securityModel != SnmpSecurityModel.NO_AUTH_NO_PRIV && authPassphrase != null
+                                ? new OctetString(authPassphrase)
+                                : null,
+                        config.securityModel == SnmpSecurityModel.AUTH_PRIV ? config.privProtocol.getOid() : null,
+                        config.securityModel == SnmpSecurityModel.AUTH_PRIV && privPassphrase != null
+                                ? new OctetString(privPassphrase)
+                                : null);
+
+                UserTarget<UdpAddress> target = new UserTarget<>();
                 target.setSecurityName(new OctetString(config.user));
                 target.setSecurityLevel(config.securityModel.getSecurityLevel());
                 this.target = target;
@@ -248,6 +252,16 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             r.cancel(true);
         }
         snmpService.removeCommandResponder(this);
+
+        UsmUser user = usmUser;
+        OctetString engineId = this.engineId;
+        Address address = target.getAddress();
+        if (user != null && engineId != null && address != null) {
+            snmpService.removeUser(address, user, engineId);
+        }
+
+        usmUser = null;
+        this.engineId = null;
     }
 
     @Override
@@ -260,7 +274,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             // Always cancel async request when response has been received
             // otherwise a memory leak is created! Not canceling a request
             // immediately can be useful when sending a request to a broadcast
-            // address (Comment is taken from the snmp4j API doc).
+            // address (Comment is taken from the SNMP4J API doc).
             ((Snmp) event.getSource()).cancel(event.getRequest(), this);
         }
 
@@ -350,7 +364,7 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
             if (configUnit != null) {
                 unit = UnitUtils.parseUnit(configUnit);
                 if (unit == null) {
-                    logger.warn("Failed to parse unit from '{}'for channel '{}'", unit, channel.getUID());
+                    logger.warn("Failed to parse unit from '{}'for channel '{}'", configUnit, channel.getUID());
                 }
             }
         } else if (CHANNEL_TYPE_UID_STRING.equals(channel.getChannelTypeUID())) {
@@ -394,8 +408,9 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     }
 
     private void generateChannelConfigs() {
-        Set<SnmpInternalChannelConfiguration> channelConfigs = Collections.unmodifiableSet(thing.getChannels().stream()
-                .map(this::getChannelConfigFromChannel).filter(Objects::nonNull).collect(Collectors.toSet()));
+        Set<SnmpInternalChannelConfiguration> channelConfigs = thing.getChannels().stream()
+                .map(this::getChannelConfigFromChannel).filter(Objects::nonNull).map(Objects::requireNonNull)
+                .collect(Collectors.toUnmodifiableSet());
         this.readChannelSet = channelConfigs.stream()
                 .filter(c -> c.mode == SnmpChannelMode.READ || c.mode == SnmpChannelMode.READ_WRITE)
                 .collect(Collectors.toSet());
@@ -443,7 +458,6 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
                                             octets[3] << 24 | octets[4] << 16 | octets[5] << 8 | octets[6]);
                                     state = channelUnit == null ? new DecimalType(floatValue)
                                             : new QuantityType<>(floatValue, channelUnit);
-
                                 } else {
                                     throw new UnsupportedOperationException("Unknown opaque datatype" + value);
                                 }
@@ -491,46 +505,46 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     private Variable convertDatatype(Command command, SnmpDatatype datatype) {
         switch (datatype) {
             case INT32 -> {
-                if (command instanceof DecimalType) {
-                    return new Integer32(((DecimalType) command).intValue());
-                } else if (command instanceof StringType) {
-                    return new Integer32((new DecimalType(((StringType) command).toString())).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new Integer32(decimalCommand.intValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new Integer32((new DecimalType(stringCommand.toString())).intValue());
                 }
             }
             case UINT32 -> {
-                if (command instanceof DecimalType) {
-                    return new UnsignedInteger32(((DecimalType) command).intValue());
-                } else if (command instanceof StringType) {
-                    return new UnsignedInteger32((new DecimalType(((StringType) command).toString())).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new UnsignedInteger32(decimalCommand.intValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new UnsignedInteger32((new DecimalType(stringCommand.toString())).intValue());
                 }
             }
             case COUNTER64 -> {
-                if (command instanceof DecimalType) {
-                    return new Counter64(((DecimalType) command).longValue());
-                } else if (command instanceof StringType) {
-                    return new Counter64((new DecimalType(((StringType) command).toString())).longValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new Counter64(decimalCommand.longValue());
+                } else if (command instanceof StringType stringCommand) {
+                    return new Counter64((new DecimalType(stringCommand.toString())).longValue());
                 }
             }
             case FLOAT, STRING -> {
-                if (command instanceof DecimalType) {
-                    return new OctetString(((DecimalType) command).toString());
-                } else if (command instanceof StringType) {
-                    return new OctetString(((StringType) command).toString());
+                if (command instanceof DecimalType decimalCommand) {
+                    return new OctetString(decimalCommand.toString());
+                } else if (command instanceof StringType stringCommand) {
+                    return new OctetString(stringCommand.toString());
                 }
             }
             case HEXSTRING -> {
-                if (command instanceof StringType) {
-                    String commandString = ((StringType) command).toString().toLowerCase();
-                    Matcher commandMatcher = HEXSTRING_VALIDITY.matcher(commandString);
+                if (command instanceof StringType stringCommand) {
+                    String commandString = stringCommand.toString().toLowerCase();
+                    Matcher commandMatcher = HEX_STRING_VALIDITY.matcher(commandString);
                     if (commandMatcher.matches()) {
-                        commandString = HEXSTRING_EXTRACTOR.matcher(commandString).replaceAll("");
+                        commandString = HEX_STRING_EXTRACTOR.matcher(commandString).replaceAll("");
                         return OctetString.fromHexStringPairs(commandString);
                     }
                 }
             }
             case IPADDRESS -> {
-                if (command instanceof StringType) {
-                    return new IpAddress(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    return new IpAddress(stringCommand.toString());
                 }
             }
             default -> {
@@ -542,7 +556,25 @@ public class SnmpTargetHandler extends BaseThingHandler implements ResponseListe
     private boolean renewTargetAddress() {
         try {
             target.setAddress(new UdpAddress(InetAddress.getByName(config.hostname), config.port));
-            targetAddressString = ((UdpAddress) target.getAddress()).getInetAddress().getHostAddress();
+            targetAddressString = target.getAddress().getInetAddress().getHostAddress();
+            logger.trace("Determined {} as address for {} (thing {})", target.getAddress(), config.hostname,
+                    this.thing.getUID());
+            UsmUser user = usmUser;
+            if (user != null && target instanceof UserTarget<UdpAddress> userTarget) {
+                byte[] engineIdBytes = snmpService.getEngineId(target.getAddress());
+                if (engineIdBytes != null) {
+                    OctetString engineIdOctets = new OctetString(engineIdBytes);
+                    this.engineId = engineIdOctets;
+                    logger.trace("Determined {} as engineId for {}", engineIdOctets, target.getAddress());
+                    snmpService.addUser(user, engineIdOctets);
+                    userTarget.setAuthoritativeEngineID(engineIdBytes);
+                } else {
+                    target.setAddress(null);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Cannot determine engineId");
+                    return false;
+                }
+            }
             return true;
         } catch (UnknownHostException e) {
             target.setAddress(null);

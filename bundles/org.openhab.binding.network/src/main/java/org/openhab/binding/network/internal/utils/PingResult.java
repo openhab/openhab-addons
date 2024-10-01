@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import java.util.Optional;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
+
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Information about the ping result.
@@ -25,16 +28,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PingResult {
 
     private boolean success;
-    private Optional<Double> responseTimeInMS = Optional.empty();
-    private double executionTimeInMS;
+    private @Nullable Duration responseTime;
+    private Duration executionTime;
 
     /**
      * @param success <code>true</code> if the device was reachable, <code>false</code> if not.
-     * @param executionTimeInMS Execution time of the ping command in ms.
+     * @param executionTime execution time of the ping command.
      */
-    public PingResult(boolean success, double executionTimeInMS) {
+    public PingResult(boolean success, Duration executionTime) {
         this.success = success;
-        this.executionTimeInMS = executionTimeInMS;
+        this.executionTime = executionTime;
     }
 
     /**
@@ -45,30 +48,32 @@ public class PingResult {
     }
 
     /**
-     * @return Response time in ms which was returned by the ping command. Optional is empty if response time provided
+     * @return response time which was returned by the ping command. <code>null</code> if response time provided
      *         by ping command is not available.
      */
-    public Optional<Double> getResponseTimeInMS() {
-        return responseTimeInMS;
+    public @Nullable Duration getResponseTime() {
+        return responseTime;
     }
 
     /**
-     * @param responseTimeInMS Response time in ms which was returned by the ping command.
+     * @param responseTime the response time which was returned by the ping command.
      */
-    public void setResponseTimeInMS(double responseTimeInMS) {
-        this.responseTimeInMS = Optional.of(responseTimeInMS);
+    public void setResponseTime(@Nullable Duration responseTime) {
+        this.responseTime = responseTime;
     }
 
     @Override
     public String toString() {
-        return "PingResult{" + "success=" + success + ", responseTimeInMS=" + responseTimeInMS + ", executionTimeInMS="
-                + executionTimeInMS + '}';
+        Duration responseTime = this.responseTime;
+        String rt = responseTime == null ? "null" : durationToMillis(responseTime) + "ms";
+        String et = durationToMillis(executionTime) + "ms";
+        return "PingResult{success=" + success + ", responseTime=" + rt + ", executionTime=" + et + "}";
     }
 
     /**
-     * @return Execution time of the ping command in ms.
+     * @return Execution time of the ping command.
      */
-    public double getExecutionTimeInMS() {
-        return executionTimeInMS;
+    public Duration getExecutionTime() {
+        return executionTime;
     }
 }

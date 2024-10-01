@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,8 @@ public class SwitchHandler extends LutronHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         RS232Handler bridgeHandler = getRS232Handler();
         if (LutronBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
-            if (command instanceof OnOffType) {
-                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), (OnOffType) command,
+            if (command instanceof OnOffType onOffCommand) {
+                SetSwitchLevelCommand cmd = new SetSwitchLevelCommand(config.getZoneNumber(), onOffCommand,
                         config.system);
 
                 if (bridgeHandler != null) {
@@ -65,10 +65,10 @@ public class SwitchHandler extends LutronHandler {
 
     @Override
     public void handleFeedback(RadioRAFeedback feedback) {
-        if (feedback instanceof LocalZoneChangeFeedback) {
-            handleLocalZoneChangeFeedback((LocalZoneChangeFeedback) feedback);
-        } else if (feedback instanceof ZoneMapFeedback) {
-            handleZoneMapFeedback((ZoneMapFeedback) feedback);
+        if (feedback instanceof LocalZoneChangeFeedback localZoneChangeFeedback) {
+            handleLocalZoneChangeFeedback(localZoneChangeFeedback);
+        } else if (feedback instanceof ZoneMapFeedback zoneMapFeedback) {
+            handleZoneMapFeedback(zoneMapFeedback);
         }
     }
 

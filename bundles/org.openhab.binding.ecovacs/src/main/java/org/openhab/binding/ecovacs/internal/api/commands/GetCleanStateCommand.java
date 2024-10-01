@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,8 +50,7 @@ public class GetCleanStateCommand extends IotDeviceCommand<CleanMode> {
     @Override
     public CleanMode convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            final PortalIotCommandJsonResponse jsonResponse = (PortalIotCommandJsonResponse) response;
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
             final CleanMode mode;
             if (version == ProtocolVersion.JSON) {
                 CleanReport resp = jsonResponse.getResponsePayloadAs(gson, CleanReport.class);

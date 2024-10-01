@@ -63,13 +63,13 @@
 	</channel-type>
 	<!-- Relative Humidity Channel -->
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="humidityconf">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity (0-100%)</description>
 		<state readOnly="true" pattern="%.0f %%"/>

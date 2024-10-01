@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal.api.dto;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link UnfiPortOverride} represents the data model of UniFi port override.
+ * The {@link UnfiPortOverrideJsonObject} represents the data model of UniFi port override.
  * Using plain JsonObject to make sure any data in the object is not lost when writing the data back to the UniFi
  * device.
  *

@@ -9,5 +9,6 @@
 	<connection>none</connection>
 
 	<service-id>org.openhab.jsscripting</service-id>
+	<config-description-ref uri="automation:jsscripting"/>
 
 </addon:addon>

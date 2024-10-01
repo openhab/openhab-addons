@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,20 +52,19 @@ public class A5_3F_7F_EltakoFRM extends _4BSMessage {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
-        if (command instanceof PercentType) {
-            PercentType target = (PercentType) command;
-            int rawPosition = Math.round(
-                    (PercentType.HUNDRED.floatValue() - target.floatValue()) * TOP / PercentType.HUNDRED.floatValue());
+        if (command instanceof PercentType percentCommand) {
+            int rawPosition = Math.round((PercentType.HUNDRED.floatValue() - percentCommand.floatValue()) * TOP
+                    / PercentType.HUNDRED.floatValue());
             int position = Math.min(TOP, Math.max(BOTTOM, rawPosition));
             setData((byte) position, ZERO, MOVE, TEACHIN_BIT);
-        } else if (command instanceof UpDownType) {
-            if ((UpDownType) command == UpDownType.UP) {
+        } else if (command instanceof UpDownType upDownCommand) {
+            if (upDownCommand == UpDownType.UP) {
                 setData((byte) TOP, ZERO, MOVE, TEACHIN_BIT); // => 0 percent
-            } else if ((UpDownType) command == UpDownType.DOWN) {
+            } else if (upDownCommand == UpDownType.DOWN) {
                 setData((byte) BOTTOM, ZERO, MOVE, TEACHIN_BIT); // => 100 percent
             }
-        } else if (command instanceof StopMoveType) {
-            if ((StopMoveType) command == StopMoveType.STOP) {
+        } else if (command instanceof StopMoveType stopMoveCommand) {
+            if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, ZERO, STOP, TEACHIN_BIT);
             }
         }

@@ -1,0 +1,51 @@
+ {
+  "id": "TapoStrip_0fOleCdwSgR0nfjkReeYfw",
+  "name": "Ocean",
+  "brightness": 100,
+  "display_colors": [
+    [
+      198,
+      84,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 3,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 0,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      198,
+      84,
+      30
+    ],
+    [
+      198,
+      70,
+      30
+    ],
+    [
+      198,
+      10,
+      30
+    ]
+  ],
+  "spread": 16,
+  "transition": 2000,
+  "transition_range": null,
+  "type": "sequence"
+}

@@ -16,7 +16,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="fek-humidity-type">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>FEK Humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

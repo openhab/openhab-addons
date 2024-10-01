@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public class AutelisDiscoveryParticipant implements UpnpDiscoveryParticipant {
                     device.getDetails().getModelDetails().getModelNumber());
             if (device.getDetails().getManufacturerDetails().getManufacturer().toLowerCase().startsWith(MANUFACTURER)) {
                 logger.debug("Autelis Pool Control Found at {}", device.getDetails().getBaseURL());
-                String id = device.getIdentity().getUdn().getIdentifierString().replaceAll(":", "").toUpperCase();
+                String id = device.getIdentity().getUdn().getIdentifierString().replace(":", "").toUpperCase();
                 if (device.getDetails().getModelDetails().getModelNumber().toLowerCase().startsWith(MODEL_PENTAIR)) {
                     return new ThingUID(AutelisBindingConstants.PENTAIR_THING_TYPE_UID, id);
                 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public enum SolarMaxChannel {
     CHANNEL_ENERGY_GENERATED_LAST_YEAR(SolarMaxCommandKey.energyGeneratedLastYear.name(), Units.WATT_HOUR),
     CHANNEL_ENERGY_GENERATED_THIS_MONTH(SolarMaxCommandKey.energyGeneratedThisMonth.name(), Units.WATT_HOUR),
     CHANNEL_ENERGY_GENERATED_THIS_YEAR(SolarMaxCommandKey.energyGeneratedThisYear.name(), Units.WATT_HOUR),
-    CHANNEL_CURRENT_POWER_GENERATED(SolarMaxCommandKey.currentPowerGenerated.name(), Units.WATT_HOUR),
+    CHANNEL_CURRENT_POWER_GENERATED(SolarMaxCommandKey.currentPowerGenerated.name(), Units.WATT),
     CHANNEL_AC_FREQUENCY(SolarMaxCommandKey.acFrequency.name(), Units.HERTZ),
     CHANNEL_AC_PHASE1_VOLTAGE(SolarMaxCommandKey.acPhase1Voltage.name(), Units.VOLT),
     CHANNEL_AC_PHASE2_VOLTAGE(SolarMaxCommandKey.acPhase2Voltage.name(), Units.VOLT),

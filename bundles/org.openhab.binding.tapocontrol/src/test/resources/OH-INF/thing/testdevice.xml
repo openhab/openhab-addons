@@ -16,7 +16,8 @@
 			<channel-group id="actuator" typeId="colorBulb"/>
 			<channel-group id="device" typeId="deviceState"/>
 			<channel-group id="effect" typeId="lightEffect"/>
-			<channel-group id="debug" typeId="commandDebug"/>
+			<channel-group id="response" typeId="responseChannels"/>
+			<channel-group id="devicecommand" typeId="commandChannels"/>
 		</channel-groups>
 		<representation-property>macAddress</representation-property>
 
@@ -26,32 +27,75 @@
 	<!-- ############################### CHANNEL-GROUPS ############################### -->
 
 	<!-- CHANNEL GROUP TYPES -->
-	<!--Device-Statuss Channel Type -->
-	<channel-group-type id="commandDebug">
+	<!-- Command Debug Channel Type -->
+	<channel-group-type id="responseChannels" advanced="true">
 		<label>Device Communication Debug</label>
 		<description>Device resoponses and command debugging</description>
 		<channels>
-			<channel id="deviceResponse" typeId="deviceResponse"/>
 			<channel id="deviceCommand" typeId="deviceCommand"/>
+			<channel id="deviceResponse" typeId="deviceResponse"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Command Debug Channel Type -->
+	<channel-group-type id="commandChannels" advanced="true">
+		<label>Device Command Channels</label>
+		<description>sent commands to the device manually</description>
+		<channels>
+			<channel id="method" typeId="deviceCommand"/>
+			<channel id="params" typeId="deviceParams"/>
+			<channel id="secure" typeId="securePasstrough"/>
+			<channel id="send" typeId="sendSwitch"/>
 		</channels>
 	</channel-group-type>
 
 	<!-- ############################### CHANNELS ############################### -->
 
-	<!-- OuputState Channel Type -->
+	<!-- response from device -->
 	<channel-type id="deviceResponse">
 		<item-type>String</item-type>
 		<label>Device Response</label>
-		<description>DeviceResponse</description>
-		<state readOnly="true"/>
+		<description>DeviceResponse from device.</description>
+		<state readOnly="false"/>
 	</channel-type>
 
-	<!-- OuputState Channel Type -->
+	<!-- device command -->
 	<channel-type id="deviceCommand">
 		<item-type>String</item-type>
 		<label>Device Command</label>
-		<description>command send to device. use: 'command':'value'</description>
+		<description>command (method) to send to device</description>
+		<state readOnly="false">
+			<options>
+				<option value="setDeviceData">Set Data</option>
+				<option value="queryInfo">Query DeviceInfo</option>
+				<option value="getChildData">Get Child Data</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- device params -->
+	<channel-type id="deviceParams">
+		<item-type>String</item-type>
+		<label>Params</label>
+		<description>params to send to device. Use JSON String</description>
 		<state readOnly="false"/>
 	</channel-type>
+
+	<!-- secure passtrough -->
+	<channel-type id="securePasstrough">
+		<item-type>Switch</item-type>
+		<label>Encrypt Message</label>
+		<description>encrypt message when sent to device</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- secure passtrough -->
+	<channel-type id="sendSwitch">
+		<item-type>Switch</item-type>
+		<label>Send</label>
+		<description>send command to device</description>
+		<state readOnly="false"/>
+	</channel-type>
+
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -46,8 +45,8 @@ public class SensiboModel {
     }
 
     public Optional<SensiboSky> findSensiboSkyByMacAddress(final String macAddress) {
-        final String macAddressWithoutColons = StringUtils.remove(macAddress, ':');
-        return pods.stream().filter(pod -> macAddressWithoutColons.equals(pod.getMacAddress())).findFirst();
+        final String macAddressWithoutColons = macAddress.replace(":", "");
+        return pods.stream().filter(pod -> macAddressWithoutColons.equalsIgnoreCase(pod.getMacAddress())).findFirst();
     }
 
     /**

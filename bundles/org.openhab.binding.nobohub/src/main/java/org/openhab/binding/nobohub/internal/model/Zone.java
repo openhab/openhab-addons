@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public final class Zone {
     }
 
     public static Zone fromH01(String h01) throws NoboDataException {
-        String parts[] = h01.split(" ", 8);
+        String[] parts = h01.split(" ", 8);
 
         if (parts.length != 8) {
             throw new NoboDataException(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.snmp.internal.types;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.snmp4j.security.Priv3DES;
 import org.snmp4j.security.PrivAES128;
 import org.snmp4j.security.PrivAES192;
 import org.snmp4j.security.PrivAES256;
@@ -29,7 +30,8 @@ public enum SnmpPrivProtocol {
     AES128(PrivAES128.ID),
     AES192(PrivAES192.ID),
     AES256(PrivAES256.ID),
-    DES(PrivDES.ID);
+    DES(PrivDES.ID),
+    DES3(Priv3DES.ID);
 
     private final OID oid;
 

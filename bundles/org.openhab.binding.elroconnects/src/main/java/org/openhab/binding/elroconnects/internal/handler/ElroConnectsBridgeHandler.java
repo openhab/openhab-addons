@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,9 +23,9 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -864,9 +864,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             if (SCENE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     updateState(SCENE, new StringType(String.valueOf(currentScene)));
-                } else if (command instanceof StringType) {
+                } else if (command instanceof StringType stringCommand) {
                     try {
-                        selectScene(Integer.valueOf(((StringType) command).toString()));
+                        selectScene(Integer.valueOf(stringCommand.toString()));
                     } catch (NumberFormatException nfe) {
                         logger.debug("Cannot interpret scene command {}", command);
                     }
@@ -965,7 +965,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ElroConnectsDiscoveryService.class);
+        return Set.of(ElroConnectsDiscoveryService.class);
     }
 
     public Map<Integer, String> listDevicesFromConsole() {

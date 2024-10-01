@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     private static final String YES = "yes";
     private static final String NO = "no";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final EncryptionHelper CRYPTER = new EncryptionHelper();
     private static Map<String, JsonObject> retentionInbox = new ConcurrentHashMap<>();
 
@@ -370,15 +370,15 @@ public class XiaomiBridgeHandler extends ConfigStatusBridgeHandler implements Xi
     }
 
     private String escapeQuotes(String string) {
-        return string.replaceAll("\"", "\\\\\"");
+        return string.replace("\"", "\\\\\"");
     }
 
     private int getConfigInteger(Configuration config, String key) {
         Object value = config.get(key);
-        if (value instanceof BigDecimal) {
-            return ((BigDecimal) value).intValue();
-        } else if (value instanceof String) {
-            return Integer.parseInt((String) value);
+        if (value instanceof BigDecimal decimal) {
+            return decimal.intValue();
+        } else if (value instanceof String str) {
+            return Integer.parseInt(str);
         } else {
             return (Integer) value;
         }

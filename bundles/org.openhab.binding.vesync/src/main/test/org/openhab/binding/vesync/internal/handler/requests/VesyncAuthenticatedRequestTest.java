@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
 @NonNullByDefault
 public class VesyncAuthenticatedRequestTest {
 
-    public final static VesyncLoginResponse.VesyncUserSession testUser = VeSyncConstants.GSON.fromJson(
+    public static final VesyncLoginResponse.VesyncUserSession testUser = VeSyncConstants.GSON.fromJson(
             org.openhab.binding.vesync.internal.handler.responses.VesyncLoginResponseTest.testGoodLoginResponseBody,
             VesyncLoginResponse.class).result;
 

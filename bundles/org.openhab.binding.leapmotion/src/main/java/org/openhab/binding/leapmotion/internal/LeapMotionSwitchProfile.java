@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class LeapMotionSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String event) {
         if (event.equals(LeapMotionBindingConstants.GESTURE_TAP)) {
-            callback.sendCommand(lastState ? OnOffType.OFF : OnOffType.ON);
+            callback.sendCommand(OnOffType.from(!lastState));
         }
     }
 }

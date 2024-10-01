@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
+ * The {@link StiebelEltronHandler} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
@@ -90,7 +90,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-
             logger.debug("Setting up regular polling");
 
             ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
@@ -178,7 +177,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param modbusManager the modbus manager
      */
     public StiebelEltronHandler(Thing thing) {
         super(thing);
@@ -220,16 +218,15 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
+        if (command instanceof QuantityType quantityCommand) {
+            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {
                 throw new StiebelEltronException("Unsupported unit");
             }
         }
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return (short) (c.doubleValue() * 10);
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -240,8 +237,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return c.shortValue();
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -327,7 +323,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Start the periodic polling1
      */
     private void startUp() {
-
         if (comms != null) {
             return;
         }
@@ -479,9 +474,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
         }

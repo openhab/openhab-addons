@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,19 +37,15 @@ public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
 
     @Override
     public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        String smartthingsValue = (command.toString().toLowerCase().equals("open")) ? "open" : "close";
+        String smartthingsValue = ("open".equals(command.toString().toLowerCase())) ? "open" : "close";
         smartthingsValue = surroundWithQuotes(smartthingsValue);
 
-        String jsonMsg = String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}",
-                thingTypeId, smartthingsName, smartthingsValue);
-
-        return jsonMsg;
+        return String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}", thingTypeId,
+                smartthingsName, smartthingsValue);
     }
 
     @Override
     public State convertToOpenHab(@Nullable String acceptedChannelType, SmartthingsStateData dataFromSmartthings) {
-        State state = defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
-
-        return state;
+        return defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,9 @@ public class ErrorEntry {
     }
 
     /**
-     * @return - the error code. Some codes are documented here: http://www.robonect.de/viewtopic.php?f=11&t=110
+     * @return - the error code. Some codes are documented here:
+     *         <a href="http://www.robonect.de/viewtopic.php?f=11&t=110">
+     *         http://www.robonect.de/viewtopic.php?f=11&amp;t=110</a>
      */
     public Integer getErrorCode() {
         return errorCode;

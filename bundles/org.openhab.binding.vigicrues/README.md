@@ -8,7 +8,7 @@ These data are made public through OpenDataSoft website.
 There is exactly one supported thing type, which represents a river level measurement station.
 It is identified by the `id`.
 
-To get your station id :
+To get your station id:
 
 1. open <https://www.vigicrues.gouv.fr/>
 

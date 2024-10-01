@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,10 +71,13 @@ public class DigitalSTROMHandlerFactory extends BaseThingHandlerFactory {
             if (dSSUID != null) {
                 return super.createThing(thingTypeUID, configuration, dSSUID, null);
             } else {
-                logger.error("Can't generate thing UID for thing type {}"
-                        + ", because digitalSTROM-Server is not reachable. Please check these points:\n"
-                        + "Are the server address and portnumber correct?\n" + "Is the server turned on?\n"
-                        + "Is the network configured correctly?", thingTypeUID);
+                logger.error("""
+                        Can't generate thing UID for thing type {}\
+                        , because digitalSTROM-Server is not reachable. Please check these points:
+                        Are the server address and portnumber correct?
+                        Is the server turned on?
+                        Is the network configured correctly?\
+                        """, thingTypeUID);
                 return null;
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class VDRHandler extends BaseThingHandler {
         Map<String, String> properties = editProperties();
         // set vdr version to properties of thing
         String version = client.getSVDRPVersion();
-        properties.put(VDRBindingConstants.PROPERTY_VERSION, version.toString());
+        properties.put(VDRBindingConstants.PROPERTY_VERSION, version);
 
         // persist changes only if there are any changes.
         if (!editProperties().equals(properties)) {

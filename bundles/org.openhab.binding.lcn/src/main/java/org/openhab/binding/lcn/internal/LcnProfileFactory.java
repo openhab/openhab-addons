@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.lcn.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,12 +46,12 @@ public class LcnProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return Collections.singleton(DimmerOutputProfile.UID);
+        return Set.of(DimmerOutputProfile.UID);
     }
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Collections.singleton(ProfileTypeBuilder.newState(DimmerOutputProfile.UID, "Dimmer Output (%)")
+        return Set.of(ProfileTypeBuilder.newState(DimmerOutputProfile.UID, "Dimmer Output (%)")
                 .withSupportedItemTypes(CoreItemFactory.DIMMER, CoreItemFactory.COLOR)
                 .withSupportedChannelTypeUIDs(
                         new ChannelTypeUID(LcnBindingConstants.BINDING_ID, LcnChannelGroup.OUTPUT.name().toLowerCase()))

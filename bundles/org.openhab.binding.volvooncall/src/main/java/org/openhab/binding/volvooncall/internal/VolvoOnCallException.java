@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,13 +31,13 @@ public class VolvoOnCallException extends Exception {
     private final Logger logger = LoggerFactory.getLogger(VolvoOnCallException.class);
     private static final long serialVersionUID = -6215621577081394328L;
 
-    public static enum ErrorType {
+    public enum ErrorType {
         UNKNOWN,
         SERVICE_UNAVAILABLE,
         SERVICE_UNABLE_TO_START,
         IOEXCEPTION,
         INTERRUPTED,
-        JSON_SYNTAX;
+        JSON_SYNTAX
     }
 
     private final ErrorType cause;

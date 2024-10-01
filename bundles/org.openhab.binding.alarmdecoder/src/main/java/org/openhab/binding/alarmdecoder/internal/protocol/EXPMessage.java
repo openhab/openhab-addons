@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ public class EXPMessage extends ADMessage {
     public EXPMessage(String message) throws IllegalArgumentException {
         super(message);
 
-        String topLevel[] = message.split(":");
+        String[] topLevel = message.split(":");
         if (topLevel.length != 2) {
             throw new IllegalArgumentException("Multiple colons found in EXP message");
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ public class WemoDiscoveryParticipantTest {
         assertThat(result.getThingUID(), is(new ThingUID(thingTypeUid, DEVICE_UDN)));
         assertThat(result.getThingTypeUID(), is(thingTypeUid));
         assertThat(result.getBridgeUID(), is(nullValue()));
-        assertThat(result.getProperties().get(WemoBindingConstants.UDN), is(DEVICE_UDN.toString()));
+        assertThat(result.getProperties().get(WemoBindingConstants.UDN), is(DEVICE_UDN));
         assertThat(result.getRepresentationProperty(), is(WemoBindingConstants.UDN));
     }
 }

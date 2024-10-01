@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class DS2423 extends AbstractOwDevice {
             List<State> states = bridgeHandler.readDecimalTypeArray(sensorId, counterParameter);
 
             if (states.size() != 2) {
-                throw new OwException("Expected exactly two values, got " + String.valueOf(states.size()));
+                throw new OwException("Expected exactly two values, got " + states.size());
             } else {
                 callback.postUpdate(CHANNEL_COUNTER + "0", states.get(0));
                 callback.postUpdate(CHANNEL_COUNTER + "1", states.get(1));

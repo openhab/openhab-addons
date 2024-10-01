@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="fs-site">
+		<label>ForecastSolar Site</label>
+		<description>Site location for Forecast Solar</description>
+
+		<channels>
+			<channel id="power-estimate" typeId="power-estimate"/>
+			<channel id="energy-estimate" typeId="energy-estimate"/>
+			<channel id="power-actual" typeId="power-actual"/>
+			<channel id="energy-actual" typeId="energy-actual"/>
+			<channel id="energy-remain" typeId="energy-remain"/>
+			<channel id="energy-today" typeId="energy-today"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:solarforecast:fs-site"/>
+	</bridge-type>
+</thing:thing-descriptions>

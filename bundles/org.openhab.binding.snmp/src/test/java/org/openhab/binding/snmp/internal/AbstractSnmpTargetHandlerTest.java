@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,10 +18,9 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.snmp.internal.SnmpBindingConstants.THING_TYPE_TARGET;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,7 +115,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, channelMode);
 
         PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString(TEST_STRING))));
+                List.of(new VariableBinding(new OID(TEST_OID), new OctetString(TEST_STRING))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
 
         thingHandler.onResponse(event);
@@ -132,8 +131,7 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
             String onValue, String offValue, Variable value, boolean refresh) {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, channelMode, datatype, onValue, offValue);
 
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), value)));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), value)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
 
         thingHandler.onResponse(event);
@@ -157,9 +155,8 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         if (refresh) {
             ArgumentCaptor<PDU> pduCaptor = ArgumentCaptor.forClass(PDU.class);
             verify(snmpService, timeout(500).atLeast(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
-            Vector<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
-            assertTrue(variables.stream().filter(v -> v.getOid().toDottedString().equals(TEST_OID)).findFirst()
-                    .isPresent());
+            List<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
+            assertTrue(variables.stream().anyMatch(v -> v.getOid().toDottedString().equals(TEST_OID)));
         } else {
             verify(snmpService, never()).send(any(), any(), eq(null), eq(thingHandler));
         }

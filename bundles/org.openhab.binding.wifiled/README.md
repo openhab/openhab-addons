@@ -1,7 +1,7 @@
 # WiFi LED Binding
 
 This binding is used to control LED strips connected by WiFi.
-These devices are sold with different names, i.e. Magic Home LED, UFO LED, LED NET controller, etc.  
+These devices are sold with different names, i.e. Magic Home LED, UFO LED, LED NET controller, etc.
 
 ## Supported Things
 
@@ -119,8 +119,8 @@ Switch LED_1_preset_23    "Jump - R/G/B"           <chart>        (LEDPresets1) 
 wifiled.sitemap
 
 ```perl
-sitemap wifiled label="LED Sitemap" 
-{ 
+sitemap wifiled label="LED Sitemap"
+{
 
     Frame {
         Switch item=MyWiFiLight_power
@@ -129,7 +129,7 @@ sitemap wifiled label="LED Sitemap"
         Slider item=MyWiFiLight_speed      visibility=[MyWiFiLight_power==ON]
 
         Selection item=LED_1_program  visibility=[MyWiFiLight_power==ON]
-  
+
         Switch item=LED_1_preset_0   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_1   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_2   visibility=[MyWiFiLight_power==ON]
@@ -153,7 +153,7 @@ sitemap wifiled label="LED Sitemap"
         Switch item=LED_1_preset_20   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_21   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_22   visibility=[MyWiFiLight_power==ON]
-        Switch item=LED_1_preset_23   visibility=[MyWiFiLight_power==ON]  
+        Switch item=LED_1_preset_23   visibility=[MyWiFiLight_power==ON]
     }
 }
 ```

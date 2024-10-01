@@ -32,6 +32,18 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="retry" type="integer">
+				<label>Retry Count</label>
+				<description>Specifies the number of retries on connection timeouts.</description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s">
+				<label>Timeout</label>
+				<description>Specifies the connection timeout in seconds.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="basicUsername" type="text">
 				<label>Basic Auth Username</label>
 				<description>Used if the OpenSprinkler device is behind a basic auth protected reverse proxy.</description>
@@ -89,7 +101,15 @@
 			<channel id="resetStations" typeId="resetStations"></channel>
 			<channel id="enablePrograms" typeId="enablePrograms"></channel>
 			<channel id="rainDelay" typeId="rainDelay"></channel>
+			<channel id="queuedZones" typeId="queuedZones"></channel>
+			<channel id="cloudConnected" typeId="cloudConnected"></channel>
+			<channel id="pausePrograms" typeId="pausePrograms"></channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 	</thing-type>
 
 	<channel-type id="rainsensor">
@@ -104,6 +124,14 @@
 		<item-type>Switch</item-type>
 		<label>Sensor 2</label>
 		<description>Sensor 2 can be setup as a rain, flow or soil moisture sensor.</description>
+		<category>Sensor</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cloudConnected">
+		<item-type>Switch</item-type>
+		<label>Cloud Connected</label>
+		<description>If the device is fully connected to the OpenSprinkler cloud this will show as 'ON'.</description>
 		<category>Sensor</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -123,12 +151,19 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="queuedZones">
+		<item-type>Number</item-type>
+		<label>Number Of Queued Zones</label>
+		<description>A count of how many zones are running and also waiting to run in the queue.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="currentDraw">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current Draw</label>
 		<description>The current draw in mA</description>
 		<category>Energy</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="stationState">
@@ -174,6 +209,26 @@
 		<description>Read-only property of the remaining water time of the station.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="pausePrograms">
+		<item-type>Number:Time</item-type>
+		<label>Pause Programs</label>
+		<description>The duration that all zones will be paused for before resuming the watering.</description>
+		<category>Time</category>
+		<state>
+			<options>
+				<option value="0s">Not Paused</option>
+				<option value="15s">15 Seconds</option>
+				<option value="30s">30 Seconds</option>
+				<option value="1min">1 Minute</option>
+				<option value="2min">2 Minutes</option>
+				<option value="3min">3 Minutes</option>
+				<option value="4min">4 Minutes</option>
+				<option value="5min">5 Minutes</option>
+				<option value="10min">10 Minutes</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="nextDuration">

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ public class AnnounceAwakeRequestMessage extends Message {
         WAKEUP_BUTTON(5);
 
         public static AwakeReason forValue(int value) {
-            return Arrays.stream(values()).filter(awakeReason -> awakeReason.id == value).findFirst().get();
+            return Arrays.stream(values()).filter(awakeReason -> awakeReason.id == value).findFirst().orElse(null);
         }
 
         private final int id;

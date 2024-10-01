@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,8 +56,8 @@ import org.slf4j.LoggerFactory;
 public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseAudioBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(PulseaudioBindingConstants.BRIDGE_THING_TYPE);
 
     public String host = "localhost";
     public int port = 4712;
@@ -215,8 +214,8 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseA
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof PulseaudioHandler) {
-            this.childHandlersInitialized.add((PulseaudioHandler) childHandler);
+        if (childHandler instanceof PulseaudioHandler pulsaudioHandler) {
+            this.childHandlersInitialized.add(pulsaudioHandler);
         } else {
             logger.error("This bridge can only support PulseaudioHandler child");
         }

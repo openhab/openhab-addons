@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,18 +60,15 @@ public class PlugwiseCommunicationContext {
 
     public static final int MAX_BUFFER_SIZE = 1024;
 
-    private static final Comparator<? super @Nullable PlugwiseQueuedMessage> QUEUED_MESSAGE_COMPERATOR = new Comparator<@Nullable PlugwiseQueuedMessage>() {
-        @Override
-        public int compare(@Nullable PlugwiseQueuedMessage o1, @Nullable PlugwiseQueuedMessage o2) {
-            if (o1 == null || o2 == null) {
-                return -1;
-            }
-            int result = o1.getPriority().compareTo(o2.getPriority());
-            if (result == 0) {
-                result = o1.getDateTime().compareTo(o2.getDateTime());
-            }
-            return result;
+    private static final Comparator<? super @Nullable PlugwiseQueuedMessage> QUEUED_MESSAGE_COMPARATOR = (o1, o2) -> {
+        if (o1 == null || o2 == null) {
+            return -1;
         }
+        int result = o1.getPriority().compareTo(o2.getPriority());
+        if (result == 0) {
+            result = o1.getDateTime().compareTo(o2.getDateTime());
+        }
+        return result;
     };
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseCommunicationContext.class);
@@ -79,7 +76,7 @@ public class PlugwiseCommunicationContext {
             MAX_BUFFER_SIZE, true);
     private final BlockingQueue<@Nullable Message> receivedQueue = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE, true);
     private final PriorityBlockingQueue<@Nullable PlugwiseQueuedMessage> sendQueue = new PriorityBlockingQueue<>(
-            MAX_BUFFER_SIZE, QUEUED_MESSAGE_COMPERATOR);
+            MAX_BUFFER_SIZE, QUEUED_MESSAGE_COMPARATOR);
     private final BlockingQueue<@Nullable PlugwiseQueuedMessage> sentQueue = new ArrayBlockingQueue<>(MAX_BUFFER_SIZE,
             true);
     private final ReentrantLock sentQueueLock = new ReentrantLock();
@@ -141,7 +138,7 @@ public class PlugwiseCommunicationContext {
         }
 
         // Build exception message when port not found
-        String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+        String availablePorts = serialPortManager.getIdentifiers().map(SerialPortIdentifier::getName)
                 .collect(Collectors.joining(System.lineSeparator()));
 
         throw new PlugwiseInitializationException(

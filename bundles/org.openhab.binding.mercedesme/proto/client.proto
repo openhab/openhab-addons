@@ -1,0 +1,46 @@
+syntax = "proto3";
+package proto;
+
+import "protos.proto";
+import "service-activation.proto";
+import "user-events.proto";
+import "vehicle-commands.proto";
+import "vehicle-events.proto";
+import "vehicleapi.proto";
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+// message that is sent from the client
+// Sending direction: App -> Websocket (-> AppTwin)
+message ClientMessage {
+  reserved 8;
+  string tracking_id = 5;
+  oneof msg {
+    UnsubscribeRequest unsubscribeRequest = 2;
+    CommandRequest commandRequest = 3;
+    TrackingEvent tracking_event = 4;
+    ConfigurePingInterval ping_interval = 6;
+    AcknowledgeVEPRequest acknowledge_vep_request = 7;
+    AcknowledgeServiceStatusUpdatesByVIN acknowledge_service_status_updates_by_vin = 9;
+    AcknowledgeServiceStatusUpdate acknowledge_service_status_update = 13;
+    AcknowledgeUserDataUpdate acknowledge_user_data_update = 10;
+    AcknowledgeUserPictureUpdate acknowledge_user_picture_update = 11;
+    AcknowledgeUserPINUpdate acknowledge_user_pin_update = 12;
+    UpdateUserJWTRequest update_user_jwt_request = 14;
+    AcknowledgeUserVehicleAuthChangedUpdate acknowledge_user_vehicle_auth_changed_update = 15;
+    AcknowledgeAbilityToGetVehicleMasterDataFromRestAPI acknowledge_ability_to_get_vehicle_master_data_from_rest_api = 16;
+    AcknowledgeVehicleUpdated acknowledge_vehicle_updated = 17;
+    AcknowledgePreferredDealerChange acknowledge_preferred_dealer_change = 18;
+    AcknowledgeAppTwinCommandStatusUpdatesByVIN acknowledge_apptwin_command_status_update_by_vin = 19;
+    Logout logout = 20;
+    AppTwinPendingCommandsResponse apptwin_pending_commands_response = 21;
+    AcknowledgeVEPUpdatesByVIN acknowledge_vep_updates_by_vin = 22;
+    AcknowledgeAssignedVehicles acknowledge_assigned_vehicles = 23;
+  }
+}
+
+// Message to send from the app right before logging out of keycloak
+// Stops the corresponding AppTwin actor and shuts it down and
+// stops the websocket actor (but does not shut it down. This automatically happens, when the websocket connection is terminated)
+message Logout {
+}

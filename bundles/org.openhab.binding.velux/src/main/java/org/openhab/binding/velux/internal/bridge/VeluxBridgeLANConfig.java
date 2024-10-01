@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class VeluxBridgeLANConfig {
             channel.openHABipAddress = new StringType(bcp.getLANConfig().getIpAddress());
             channel.openHABsubnetMask = new StringType(bcp.getLANConfig().getSubnetMask());
             channel.openHABdefaultGW = new StringType(bcp.getLANConfig().getDefaultGW());
-            channel.openHABenabledDHCP = bcp.getLANConfig().getDHCP() ? OnOffType.ON : OnOffType.OFF;
+            channel.openHABenabledDHCP = OnOffType.from(bcp.getLANConfig().getDHCP());
             channel.isRetrieved = true;
         } else {
             channel.isRetrieved = false;

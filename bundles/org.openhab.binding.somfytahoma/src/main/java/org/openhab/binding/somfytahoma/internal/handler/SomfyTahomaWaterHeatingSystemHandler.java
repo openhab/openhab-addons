@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,14 +83,14 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
 
             Object relaunchValue = data.get("relaunch");
             if (relaunchValue != null) {
-                this.boostMode = relaunchValue.toString().equalsIgnoreCase("on");
+                this.boostMode = "on".equalsIgnoreCase(relaunchValue.toString());
                 logger.debug("Boost Value: {}", this.boostMode);
                 updateState(BOOST_MODE, OnOffType.from(this.boostMode));
             }
 
             Object awayValue = data.get("absence");
             if (awayValue != null) {
-                this.awayMode = awayValue.toString().equalsIgnoreCase("on");
+                this.awayMode = "on".equalsIgnoreCase(awayValue.toString());
                 logger.debug("Away Value: {}", this.awayMode);
                 updateState(AWAY_MODE, OnOffType.from(this.awayMode));
             }

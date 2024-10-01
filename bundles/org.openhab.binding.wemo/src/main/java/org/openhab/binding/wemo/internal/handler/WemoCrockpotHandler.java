@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoCrockpotHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CROCKPOT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_CROCKPOT);
 
     private final Object jobLock = new Object();
 
@@ -147,9 +147,13 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             }
             try {
                 String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-                String content = "<?xml version=\"1.0\"?>"
-                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                        + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
+                String content = """
+                        <?xml version="1.0"?>\
+                        <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                        <s:Body>\
+                        <u:SetCrockpotState xmlns:u="urn:Belkin:service:basicevent:1">\
+                        <mode>\
+                        """
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
                 wemoHttpCaller.executeCall(wemoURL, soapHeader, content);

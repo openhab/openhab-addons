@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
         }
     },
     PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
-    // lightingStatus signalFailure signalInfo
+    // lightingStatus
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
         public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
@@ -80,6 +80,18 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
             }
 
             return UnDefType.UNDEF;
+        }
+    },
+    INFO("signalInfo", "info", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
+    FAILURE("signalFailure", "failure", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
         }
     },
     SWITCH("", "switch", OnOffType.class, false);
@@ -150,6 +162,7 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
         }
     }
 
+    @Override
     public State getState(String s) {
         try {
             Method valueOf = typeClass.getMethod("valueOf", String.class);

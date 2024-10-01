@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.unbescape.html.HtmlEscape;
 
 /**
- * The {@link BsbLanParameterHandler} is responsible for updating the data, which are
+ * The {@link BsbLanParameterConverter} is responsible for updating the data, which are
  * sent to one of the channels.
  *
  * @author Peter Schraffl - Initial contribution
@@ -106,7 +106,7 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
-        return parameter.value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(parameter.value));
     }
 
     /**
@@ -134,9 +134,7 @@ public class BsbLanParameterConverter {
     }
 
     private static @Nullable String getValueForNumberValueChannel(Command command) {
-        if (command instanceof QuantityType<?>) {
-            // the target unit is yet unknown, so just use the value as is (without converting based on the unit)
-            QuantityType<?> quantity = (QuantityType<?>) command;
+        if (command instanceof QuantityType<?> quantity) {
             return String.valueOf(quantity.doubleValue());
         }
         // check if numeric

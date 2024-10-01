@@ -40,6 +40,7 @@ The `zone` and `group` Things have the following channels:
 
 | Channel  | Type   | Description                                        |
 |----------|--------|----------------------------------------------------|
+| power    | Switch | Whether the zone/group is active or off            |
 | volume   | Dimmer | The volume of the zone/group                       |
 | mute     | Switch | Mutes the zone/group                               |
 | source   | Number | The source (1-4) that this zone/group is playing   |
@@ -70,6 +71,7 @@ String      Input2      "Input 2"               { channel="amplipi:controller:1:
 String      Input3      "Input 3"               { channel="amplipi:controller:1:input3" }
 String      Input4      "Input 4"               { channel="amplipi:controller:1:input4" }
 
+Switch      PowerZ2     "Power Zone2"           { channel="amplipi:zone:1:zone2:power" }
 Dimmer      VolumeZ2    "Volume Zone2"          { channel="amplipi:zone:1:zone2:volume" }
 Switch      MuteZ2      "Mute Zone2"            { channel="amplipi:zone:1:zone2::mute" }
 Number      SourceZ2    "Source Zone2"          { channel="amplipi:zone:1:zone2::source" }
@@ -88,6 +90,7 @@ sitemap amplipi label="Main Menu"
         Selection item=Input4
     }
     Frame label="Living Room Zone" {
+        Switch item=PowerZ2
         Slider item=VolumeZ2 label="Volume Zone 1 [%.1f %%]"
         Switch item=MuteZ2
         Selection item=SourceZ2

@@ -1,0 +1,17 @@
+{
+  "evt": "motion-started",
+  "isoDate": "2021-12-06T20:01:11.934Z",
+  "bleName": "PIR:1233",
+  "id": 55,
+  "currentPositions": {
+    "primary": 0.99,
+    "secondary": 0.98,
+    "tilt": 0
+  },
+  "targetPositions": {
+    "etaInSeconds": 7,
+    "primary": 0.99,
+    "secondary": 0.99,
+    "tilt": 0
+  }
+}

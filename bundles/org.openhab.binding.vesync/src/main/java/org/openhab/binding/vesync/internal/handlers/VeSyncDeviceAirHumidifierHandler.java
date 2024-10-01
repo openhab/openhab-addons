@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -174,10 +174,10 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         logger.warn("Warm mode API is unknown in order to send the command");
                         break;
                 }
-            } else if (command instanceof QuantityType) {
+            } else if (command instanceof QuantityType quantityCommand) {
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_CONFIG_TARGET_HUMIDITY:
-                        int targetHumidity = ((QuantityType<?>) command).intValue();
+                        int targetHumidity = quantityCommand.intValue();
                         if (targetHumidity < 30) {
                             logger.warn("Target Humidity less than 30 - adjusting to 30 as the valid API value");
                             targetHumidity = 30;
@@ -193,7 +193,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                                 new VeSyncRequestManagedDeviceBypassV2.SetTargetHumidity(targetHumidity));
                         break;
                     case DEVICE_CHANNEL_MIST_LEVEL:
-                        int targetMistLevel = ((QuantityType<?>) command).intValue();
+                        int targetMistLevel = quantityCommand.intValue();
                         // If more devices have this the hope is it's those with the prefix LUH so the check can
                         // be simplified, originally devices mapped 1/5/9 to 1/2/3.
                         if (DEV_FAMILY_DUAL_200S.equals(deviceFamily)) {

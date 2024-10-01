@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,7 +114,7 @@ public class DeviceCollectionTest {
         assertEquals(false, remoteEnable.getSmartGrid().get());
 
         assertEquals(Light.ENABLE, state.getLight());
-        assertEquals(new ArrayList<Object>(), state.getElapsedTime().get());
+        assertEquals(new ArrayList<>(), state.getElapsedTime().get());
 
         SpinningSpeed spinningSpeed = state.getSpinningSpeed().get();
         assertEquals(Integer.valueOf(1200), spinningSpeed.getValueRaw().get());
@@ -229,7 +229,7 @@ public class DeviceCollectionTest {
         assertEquals(false, remoteEnable.getSmartGrid().get());
 
         assertEquals(Light.NOT_SUPPORTED, state.getLight());
-        assertEquals(new ArrayList<Object>(), state.getElapsedTime().get());
+        assertEquals(new ArrayList<>(), state.getElapsedTime().get());
 
         DryingStep dryingStep = state.getDryingStep().get();
         assertFalse(dryingStep.getValueRaw().isPresent());

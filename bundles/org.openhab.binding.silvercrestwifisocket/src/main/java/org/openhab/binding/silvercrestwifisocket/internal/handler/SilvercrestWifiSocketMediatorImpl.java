@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,7 +157,7 @@ public class SilvercrestWifiSocketMediatorImpl implements SilvercrestWifiSocketM
     /**
      * Returns all the {@link Thing} registered.
      *
-     * @returns all the {@link Thing}.
+     * @return all the {@link Thing}.
      */
     @Override
     public Set<Thing> getAllThingsRegistred() {

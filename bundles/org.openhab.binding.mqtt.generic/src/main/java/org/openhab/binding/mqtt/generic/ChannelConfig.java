@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,10 +33,13 @@ public class ChannelConfig {
     /** This is either a state topic or a trigger topic, depending on {@link #trigger}. */
     public String stateTopic = "";
     public String commandTopic = "";
+    public String stopCommandTopic = "";
 
     /**
      * If true, the channel state is not updated on a new message.
-     * Instead a postCommand() call is performed.
+     * Instead a postCommand() call is performed. If the message is
+     * not possible to send as a command (i.e. UNDEF), it will ignore
+     * this.
      */
     public boolean postCommand = false;
     public @Nullable Integer qos;
@@ -44,8 +48,8 @@ public class ChannelConfig {
     public boolean trigger = false;
     public String unit = "";
 
-    public String transformationPattern = "";
-    public String transformationPatternOut = "";
+    public List<String> transformationPattern = List.of();
+    public List<String> transformationPatternOut = List.of();
     public String formatBeforePublish = "%s";
     public String allowedStates = "";
 
@@ -55,7 +59,12 @@ public class ChannelConfig {
     public @Nullable String on;
     public @Nullable String off;
     public @Nullable String stop;
+    public @Nullable String onState;
+    public @Nullable String offState;
+    public @Nullable String nullValue;
 
     public int onBrightness = 10;
     public String colorMode = ColorMode.HSB.toString();
+    public boolean invert = false;
+    public boolean transformExtentsToString = false;
 }

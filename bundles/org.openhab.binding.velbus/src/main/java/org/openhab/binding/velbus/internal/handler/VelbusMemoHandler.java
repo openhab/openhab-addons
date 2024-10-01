@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,8 @@ public abstract class VelbusMemoHandler extends VelbusThermostatHandler {
             return;
         }
 
-        if (channelUID.equals(memoChannel) && command instanceof StringType) {
-            String memoText = ((StringType) command).toFullString();
+        if (channelUID.equals(memoChannel) && command instanceof StringType stringCommand) {
+            String memoText = stringCommand.toFullString();
             String trucatedMemoText = memoText.substring(0, Math.min(memoText.length(), MEMO_TEXT_MAX_LENGTH));
             String[] splittedMemoText = trucatedMemoText.split("(?<=\\G.....)");
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,7 +43,7 @@ public class NhcAction1 extends NhcAction {
         void execute();
     }
 
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     private volatile @Nullable Action rollershutterTask;
     private volatile @Nullable ScheduledFuture<?> rollershutterStopTask;

@@ -12,7 +12,6 @@ This binding offers integration to the Sure Petcare API, supporting cloud-connec
 
 1. The Sure Petcare API is not publicly available and this binding has been based on observed interactions between their mobile phone app and the cloud API.
    If the Sure Petcare API changes, this binding might stop working.
-1. The current version of the binding supports only cat/pet flaps. Feeders are not yet supported as I don't own one yet.
 
 ### Credits
 
@@ -169,7 +168,7 @@ Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="
 /* *****************************************
  * Bridge
  * *****************************************/
-Group   dgPet                                               
+Group   dgPet
 Switch  UR_1a_Online    "Bridge Online [%s]"        (dgPet) {channel="surepetcare:bridge:bridge1:online"}
 Switch  UR_1a_Refresh   "Bridge Data Refresh [%s]"  (dgPet) {channel="surepetcare:bridge:bridge1:refresh"}
 
@@ -189,7 +188,7 @@ String      UR_1c_Product           "Hub Product [%s]"                          
 String      UR_1c_LEDMode           "Hub LED Mode [%s]"                             (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:ledMode"}
 String      UR_1c_PairingMode       "Hub Pairing Mode [%s]"                         (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:pairingMode"}
 Switch      UR_1c_Online            "Hub Online [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:online"}
- 
+
 /* *****************************************
  * Cat/Pet Flap
  * *****************************************/

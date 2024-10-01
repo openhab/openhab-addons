@@ -4,7 +4,6 @@
 
 	<feature name="openhab-binding-pulseaudio" description="Pulseaudio Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-mdns</feature>
 		<feature>openhab-transport-upnp</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.pulseaudio/${project.version}</bundle>
 		<bundle dependency="true">mvn:com.googlecode.soundlibs/tritonus-share/0.3.7.4</bundle>

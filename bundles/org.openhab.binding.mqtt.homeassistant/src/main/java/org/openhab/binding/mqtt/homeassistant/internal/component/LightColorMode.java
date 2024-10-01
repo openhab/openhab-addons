@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,5 +60,14 @@ public enum LightColorMode {
      */
     public static boolean hasRGB(List<LightColorMode> supportedColorModes) {
         return WITH_RGB.stream().anyMatch(cm -> supportedColorModes.contains(cm));
+    }
+
+    public String serializedName() {
+        try {
+            return LightColorMode.class.getDeclaredField(toString()).getAnnotation(SerializedName.class).value();
+        } catch (NoSuchFieldException e) {
+            // can't happen
+            throw new IllegalStateException(e);
+        }
     }
 }

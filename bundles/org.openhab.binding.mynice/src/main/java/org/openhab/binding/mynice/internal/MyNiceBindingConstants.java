@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,11 +25,12 @@ public class MyNiceBindingConstants {
     private static final String BINDING_ID = "mynice";
 
     // List of all Channel ids
-    public static final String DOOR_STATUS = "status";
-    public static final String DOOR_OBSTRUCTED = "obstruct";
-    public static final String DOOR_MOVING = "moving";
-    public static final String DOOR_COMMAND = "command";
-    public static final String DOOR_T4_COMMAND = "t4command";
+    public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_OBSTRUCTED = "obstruct";
+    public static final String CHANNEL_MOVING = "moving";
+    public static final String CHANNEL_COMMAND = "command";
+    public static final String CHANNEL_T4_COMMAND = "t4command";
+    public static final String CHANNEL_COURTESY = "courtesy";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BRIDGE_TYPE_IT4WIFI = new ThingTypeUID(BINDING_ID, "it4wifi");

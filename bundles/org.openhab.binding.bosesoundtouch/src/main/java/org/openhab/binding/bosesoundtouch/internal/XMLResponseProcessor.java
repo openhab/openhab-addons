@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,6 +123,7 @@ public class XMLResponseProcessor {
         nowPlayingMap.put("artist", XMLHandlerState.NowPlayingArtist);
         nowPlayingMap.put("ContentItem", XMLHandlerState.ContentItem);
         nowPlayingMap.put("description", XMLHandlerState.NowPlayingDescription);
+        nowPlayingMap.put("genre", XMLHandlerState.NowPlayingGenre);
         nowPlayingMap.put("playStatus", XMLHandlerState.NowPlayingPlayStatus);
         nowPlayingMap.put("rateEnabled", XMLHandlerState.NowPlayingRateEnabled);
         nowPlayingMap.put("skipEnabled", XMLHandlerState.NowPlayingSkipEnabled);

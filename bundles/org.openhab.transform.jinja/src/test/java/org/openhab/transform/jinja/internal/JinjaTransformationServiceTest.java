@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,15 +76,13 @@ public class JinjaTransformationServiceTest {
     }
 
     @Test
-    public void testMissingVariableError() {
-        assertThrows(TransformationException.class,
-                () -> processor.transform("Hello {{ missing }}!", "{\"string\": \"world\"}"));
+    public void testMissingVariableError() throws TransformationException {
+        assertEquals("Hello !", processor.transform("Hello {{ missing }}!", "{\"string\": \"world\"}"));
     }
 
     @Test
-    public void testMissingMapKeyError() {
-        assertThrows(TransformationException.class,
-                () -> processor.transform("Hello {{ value_json.missing }}!", "{\"string\": \"world\"}"));
+    public void testMissingMapKeyError() throws TransformationException {
+        assertEquals("Hello !", processor.transform("Hello {{ value_json.missing }}!", "{\"string\": \"world\"}"));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,15 @@ public class XMLResponseHandler extends DefaultHandler {
     private Map<Integer, ContentItem> playerPresets;
 
     /**
+     * String builder to collect text content.
+     * <p>
+     * Background: {@code characters()} may be called multiple times for the same
+     * text content in case there are entities like {@code &apos;} inside the
+     * content.
+     */
+    private StringBuilder textContent = new StringBuilder();
+
+    /**
      * Creates a new instance of this class
      *
      * @param handler
@@ -96,6 +105,7 @@ public class XMLResponseHandler extends DefaultHandler {
         state = XMLHandlerState.Unprocessed; // set default value; we avoid default in select to have the compiler
                                              // showing a
                                              // warning for unhandled states
+        textContent = new StringBuilder();
 
         switch (curState) {
             case INIT:
@@ -461,7 +471,7 @@ public class XMLResponseHandler extends DefaultHandler {
                 skipPreviousEnabled = OnOffType.ON;
                 break;
             case Volume:
-                OnOffType muted = volumeMuteEnabled ? OnOffType.ON : OnOffType.OFF;
+                OnOffType muted = OnOffType.from(volumeMuteEnabled);
                 commandExecutor.setCurrentMuted(volumeMuteEnabled);
                 commandExecutor.postVolumeMuted(muted);
                 break;
@@ -475,6 +485,27 @@ public class XMLResponseHandler extends DefaultHandler {
             case Group:
                 handler.handleGroupUpdated(masterDeviceId);
                 break;
+            case NowPlayingAlbum:
+                updateNowPlayingAlbum(new StringType(textContent.toString()));
+                break;
+            case NowPlayingArtist:
+                updateNowPlayingArtist(new StringType(textContent.toString()));
+                break;
+            case NowPlayingDescription:
+                updateNowPlayingDescription(new StringType(textContent.toString()));
+                break;
+            case NowPlayingGenre:
+                updateNowPlayingGenre(new StringType(textContent.toString()));
+                break;
+            case NowPlayingStationLocation:
+                updateNowPlayingStationLocation(new StringType(textContent.toString()));
+                break;
+            case NowPlayingStationName:
+                updateNowPlayingStationName(new StringType(textContent.toString()));
+                break;
+            case NowPlayingTrack:
+                updateNowPlayingTrack(new StringType(textContent.toString()));
+                break;
             default:
                 // no actions...
                 break;
@@ -483,8 +514,11 @@ public class XMLResponseHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, new String(ch, start, length));
+        String string = new String(ch, start, length);
+        logger.trace("{}: Text data during {}: '{}'", handler.getDeviceName(), state, string);
+
         super.characters(ch, start, length);
+
         switch (state) {
             case INIT:
             case Msg:
@@ -507,8 +541,7 @@ public class XMLResponseHandler extends DefaultHandler {
             case Zone:
             case ZoneUpdated:
             case Sources:
-                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
-                        new String(ch, start, length));
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state, string);
                 break;
             case BassMin: // @TODO - find out how to dynamically change "channel-type" bass configuration
             case BassMax: // based on these values...
@@ -518,38 +551,37 @@ public class XMLResponseHandler extends DefaultHandler {
                 // this are currently unprocessed values.
                 break;
             case BassCapabilities:
-                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state,
-                        new String(ch, start, length));
+                logger.debug("{}: Unexpected text data during {}: '{}'", handler.getDeviceName(), state, string);
                 break;
             case Unprocessed:
                 // drop quietly..
                 break;
             case BassActual:
-                commandExecutor.updateBassLevelGUIState(new DecimalType(new String(ch, start, length)));
+                commandExecutor.updateBassLevelGUIState(new DecimalType(string));
                 break;
             case InfoName:
-                setConfigOption(DEVICE_INFO_NAME, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_NAME, string);
                 break;
             case InfoType:
-                setConfigOption(DEVICE_INFO_TYPE, new String(ch, start, length));
-                setConfigOption(PROPERTY_MODEL_ID, new String(ch, start, length));
+                setConfigOption(DEVICE_INFO_TYPE, string);
+                setConfigOption(PROPERTY_MODEL_ID, string);
                 break;
             case InfoModuleType:
-                setConfigOption(PROPERTY_HARDWARE_VERSION, new String(ch, start, length));
+                setConfigOption(PROPERTY_HARDWARE_VERSION, string);
                 break;
             case InfoFirmwareVersion:
-                String[] fwVersion = new String(ch, start, length).split(" ");
+                String[] fwVersion = string.split(" ");
                 setConfigOption(PROPERTY_FIRMWARE_VERSION, fwVersion[0]);
                 break;
             case BassAvailable:
-                boolean bassAvailable = Boolean.parseBoolean(new String(ch, start, length));
+                boolean bassAvailable = Boolean.parseBoolean(string);
                 commandExecutor.setBassAvailable(bassAvailable);
                 break;
             case NowPlayingAlbum:
-                updateNowPlayingAlbum(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingArt:
-                String url = new String(ch, start, length);
+                String url = string;
                 if (url.startsWith("http")) {
                     // We download the cover art in a different thread to not delay the other operations
                     handler.getScheduler().submit(() -> {
@@ -565,22 +597,22 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case NowPlayingArtist:
-                updateNowPlayingArtist(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case ContentItemItemName:
-                contentItem.setItemName(new String(ch, start, length));
+                contentItem.setItemName(string);
                 break;
             case ContentItemContainerArt:
-                contentItem.setContainerArt(new String(ch, start, length));
+                contentItem.setContainerArt(string);
                 break;
             case NowPlayingDescription:
-                updateNowPlayingDescription(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingGenre:
-                updateNowPlayingGenre(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingPlayStatus:
-                String playPauseState = new String(ch, start, length);
+                String playPauseState = string;
                 if ("PLAY_STATE".equals(playPauseState) || "BUFFERING_STATE".equals(playPauseState)) {
                     commandExecutor.updatePlayerControlGUIState(PlayPauseType.PLAY);
                 } else if ("STOP_STATE".equals(playPauseState) || "PAUSE_STATE".equals(playPauseState)) {
@@ -588,37 +620,37 @@ public class XMLResponseHandler extends DefaultHandler {
                 }
                 break;
             case NowPlayingStationLocation:
-                updateNowPlayingStationLocation(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingStationName:
-                updateNowPlayingStationName(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case NowPlayingTrack:
-                updateNowPlayingTrack(new StringType(new String(ch, start, length)));
+                textContent.append(string);
                 break;
             case VolumeActual:
-                commandExecutor.updateVolumeGUIState(new PercentType(Integer.parseInt(new String(ch, start, length))));
+                commandExecutor.updateVolumeGUIState(new PercentType(Integer.parseInt(string)));
                 break;
             case VolumeMuteEnabled:
-                volumeMuteEnabled = Boolean.parseBoolean(new String(ch, start, length));
+                volumeMuteEnabled = Boolean.parseBoolean(string);
                 commandExecutor.setCurrentMuted(volumeMuteEnabled);
                 break;
             case MasterDeviceId:
                 if (masterDeviceId != null) {
-                    masterDeviceId.macAddress = new String(ch, start, length);
+                    masterDeviceId.macAddress = string;
                 }
                 break;
             case GroupName:
                 if (masterDeviceId != null) {
-                    masterDeviceId.groupName = new String(ch, start, length);
+                    masterDeviceId.groupName = string;
                 }
                 break;
             case DeviceId:
-                deviceId = new String(ch, start, length);
+                deviceId = string;
                 break;
             case DeviceIp:
                 if (masterDeviceId != null && Objects.equals(masterDeviceId.macAddress, deviceId)) {
-                    masterDeviceId.host = new String(ch, start, length);
+                    masterDeviceId.host = string;
                 }
                 break;
             default:

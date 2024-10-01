@@ -46,8 +46,8 @@ MainType: 3
 3.008: DPT_Control_Blinds values: 0 = up 1 = down
 
 MainType: 4
-4.001: DPT_Char_ASCII
-4.002: DPT_Char_8859_1
+unsupported 4.001: DPT_Char_ASCII
+unsupported 4.002: DPT_Char_8859_1
 
 MainType: 5
 5.000: General byte

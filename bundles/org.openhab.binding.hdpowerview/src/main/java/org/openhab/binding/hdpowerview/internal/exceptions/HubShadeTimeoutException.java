@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link HubShadeTimeoutException} is a custom exception for the HD PowerView Hub
  * which is thrown when a shade does not respond to a request.
  *
- * @author @author Jacob Laursen - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
 public class HubShadeTimeoutException extends HubException {

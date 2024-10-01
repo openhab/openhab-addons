@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class StuderHandler extends BaseThingHandler {
     /**
      * Array of tasks used to poll the device
      */
-    private ArrayList<PollTask> pollTasks = new ArrayList<PollTask>();
+    private ArrayList<PollTask> pollTasks = new ArrayList<>();
 
     /**
      * Communication interface to the slave endpoint we're connecting to
@@ -95,9 +95,6 @@ public class StuderHandler extends BaseThingHandler {
      * Instances of this handler
      *
      * @param thing the thing to handle
-     * @param type the type of thing to handle
-     * @param slaveAddress the address of thing
-     * @param refreshSec the address of thing
      */
     public StuderHandler(Thing thing) {
         super(thing);
@@ -106,7 +103,6 @@ public class StuderHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         // Currently we do not support any commands
     }
 
@@ -132,7 +128,6 @@ public class StuderHandler extends BaseThingHandler {
      * Start the periodic polling
      */
     private void startUp() {
-
         connectEndpoint();
 
         if (comms == null || config == null) {
@@ -203,9 +198,8 @@ public class StuderHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;
@@ -302,7 +296,7 @@ public class StuderHandler extends BaseThingHandler {
      * The register array is first parsed, then each of the channels are updated
      * to the new values
      *
-     * @param n register readed
+     * @param registerNumber register readed
      * @param registers byte array read from the modbus slave
      */
     protected void handlePolledData(int registerNumber, ModbusRegisterArray registers) {

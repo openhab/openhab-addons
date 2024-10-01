@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,26 +21,26 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
-import org.openhab.binding.tado.internal.api.model.ACFanLevel;
-import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
-import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
-import org.openhab.binding.tado.internal.api.model.AcFanSpeed;
-import org.openhab.binding.tado.internal.api.model.AcPowerDataPoint;
-import org.openhab.binding.tado.internal.api.model.ActivityDataPoints;
-import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
-import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
-import org.openhab.binding.tado.internal.api.model.HeatingZoneSetting;
-import org.openhab.binding.tado.internal.api.model.HotWaterZoneSetting;
-import org.openhab.binding.tado.internal.api.model.Overlay;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
-import org.openhab.binding.tado.internal.api.model.PercentageDataPoint;
-import org.openhab.binding.tado.internal.api.model.Power;
-import org.openhab.binding.tado.internal.api.model.SensorDataPoints;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.TemperatureDataPoint;
-import org.openhab.binding.tado.internal.api.model.TemperatureObject;
-import org.openhab.binding.tado.internal.api.model.TimerTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACFanLevel;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACHorizontalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcFanSpeed;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcPowerDataPoint;
+import org.openhab.binding.tado.swagger.codegen.api.model.ActivityDataPoints;
+import org.openhab.binding.tado.swagger.codegen.api.model.CoolingZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.HeatingZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.HotWaterZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.Overlay;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
+import org.openhab.binding.tado.swagger.codegen.api.model.PercentageDataPoint;
+import org.openhab.binding.tado.swagger.codegen.api.model.Power;
+import org.openhab.binding.tado.swagger.codegen.api.model.SensorDataPoints;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.TemperatureDataPoint;
+import org.openhab.binding.tado.swagger.codegen.api.model.TemperatureObject;
+import org.openhab.binding.tado.swagger.codegen.api.model.TimerTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.ZoneState;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -48,6 +48,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -75,13 +76,14 @@ public class TadoZoneStateAdapter {
 
     public State getHumidity() {
         PercentageDataPoint humidity = zoneState.getSensorDataPoints().getHumidity();
-        return humidity != null ? toDecimalType(humidity.getPercentage()) : UnDefType.UNDEF;
+        return humidity != null ? new QuantityType<>(humidity.getPercentage(), Units.PERCENT) : UnDefType.UNDEF;
     }
 
-    public DecimalType getHeatingPower() {
+    public State getHeatingPower() {
         ActivityDataPoints dataPoints = zoneState.getActivityDataPoints();
-        return dataPoints.getHeatingPower() != null ? toDecimalType(dataPoints.getHeatingPower().getPercentage())
-                : DecimalType.ZERO;
+        return dataPoints.getHeatingPower() != null
+                ? new QuantityType<>(dataPoints.getHeatingPower().getPercentage().doubleValue(), Units.PERCENT)
+                : UnDefType.UNDEF;
     }
 
     public State getAcPower() {
@@ -221,7 +223,7 @@ public class TadoZoneStateAdapter {
                 break;
         }
 
-        return power.getValue().equals("ON");
+        return "ON".equals(power.getValue());
     }
 
     private static DecimalType toDecimalType(double value) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.max.internal.device;
 /**
  * Room information provided by the M message meta information.
  *
- * @author Andreas Heil (info@aheil.de) - Initial contribution
- * @author Marcel Verpaalen (marcel@verpaalen.com) - OH2 update
+ * @author Andreas Heil - Initial contribution
+ * @author Marcel Verpaalen - OH2 update
  */
 public class RoomInformation {
     private int position;

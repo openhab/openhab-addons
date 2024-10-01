@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         BatteryStatus batteryStatus = sensorDevice.getBatteryStatus();
 
         updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_LOW_BATTERY,
-                batteryStatus.isLow() ? OnOffType.ON : OnOffType.OFF);
+                OnOffType.from(batteryStatus.isLow()));
         Integer percentage = batteryStatus.getPercentage();
         if (percentage != null) {
             updateState(FineOffsetWeatherStationBindingConstants.SENSOR_CHANNEL_BATTERY_LEVEL,

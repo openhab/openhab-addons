@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public enum VeluxProductType {
     SWITCH,
     UNDEFTYPE;
 
-    public static enum ActuatorType {
+    public enum ActuatorType {
         UNDEFTYPE((short) 0xffff, VeluxBindingConstants.UNKNOWN, VeluxProductType.SWITCH),
         BLIND_1_0((short) 0x0040, "Interior Venetian Blind", VeluxProductType.SLIDER_SHUTTER),
         ROLLERSHUTTER_2_0((short) 0x0080, "Roller Shutter", VeluxProductType.SLIDER_SHUTTER),

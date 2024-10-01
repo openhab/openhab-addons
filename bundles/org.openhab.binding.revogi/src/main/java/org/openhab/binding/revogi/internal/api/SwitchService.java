@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,10 +66,10 @@ public class SwitchService {
     }
 
     private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
-        return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
+        return Objects.requireNonNull(singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
-                .findFirst().orElse(new SwitchResponseDTO(0, 503));
+                .findFirst().orElse(new SwitchResponseDTO(0, 503)));
     }
 
     private SwitchResponseDTO deserializeString(String response) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link VitotronicBinding} class defines common constants, which are
+ * The {@link VitotronicBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Stefan Andres - Initial contribution
@@ -74,6 +74,5 @@ public class VitotronicBindingConstants {
                     THING_TYPE_UID_TEMPERATURESENSOR, THING_TYPE_UID_PUMP, THING_TYPE_UID_VALVE)
             .collect(Collectors.toSet()));
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
-            .singleton(THING_TYPE_UID_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_UID_BRIDGE);
 }

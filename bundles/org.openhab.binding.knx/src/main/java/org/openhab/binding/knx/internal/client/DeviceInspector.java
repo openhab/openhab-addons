@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,16 +17,15 @@ import static org.openhab.binding.knx.internal.handler.DeviceConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.knx.internal.handler.Manufacturer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DataUnitBuilder;
 import tuwien.auto.calimero.DeviceDescriptor;
 import tuwien.auto.calimero.DeviceDescriptor.DD0;
 import tuwien.auto.calimero.DeviceDescriptor.DD2;
@@ -52,23 +51,7 @@ public class DeviceInspector {
     private final DeviceInfoClient client;
     private final IndividualAddress address;
 
-    public static class Result {
-        private final Map<String, String> properties;
-        private final Set<GroupAddress> groupAddresses;
-
-        public Result(Map<String, String> properties, Set<GroupAddress> groupAddresses) {
-            super();
-            this.properties = properties;
-            this.groupAddresses = groupAddresses;
-        }
-
-        public Map<String, String> getProperties() {
-            return properties;
-        }
-
-        public Set<GroupAddress> getGroupAddresses() {
-            return groupAddresses;
-        }
+    public record Result(Map<String, String> properties, Set<GroupAddress> groupAddresses) {
     }
 
     public DeviceInspector(DeviceInfoClient client, IndividualAddress address) {
@@ -115,7 +98,7 @@ public class DeviceInspector {
      *           task immediately on connection loss or thing deconstruction.
      *
      * @param address Individual address of KNX device
-     * @return List of device properties
+     * @return Map of device properties
      * @throws InterruptedException
      */
     private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
@@ -126,8 +109,8 @@ public class DeviceInspector {
                 OPERATION_TIMEOUT);
         if ((elements == null ? 0 : toUnsigned(elements)) == 1) {
             Thread.sleep(OPERATION_INTERVAL);
-            String manufacturerID = Manufacturer.getName(toUnsigned(getClient().readDeviceProperties(address,
-                    DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)));
+            String manufacturerId = MANUFACTURER_MAP.getOrDefault(toUnsigned(getClient().readDeviceProperties(address,
+                    DEVICE_OBJECT, PID.MANUFACTURER_ID, 1, 1, false, OPERATION_TIMEOUT)), "Unknown");
 
             Thread.sleep(OPERATION_INTERVAL);
             String serialNo = toHex(getClient().readDeviceProperties(address, DEVICE_OBJECT, PID.SERIAL_NUMBER, 1, 1,
@@ -180,7 +163,7 @@ public class DeviceInspector {
             if (!maxApdu.isEmpty()) {
                 logger.trace("Max APDU of device {} is {} bytes (routing)", address, maxApdu);
             } else {
-                // fallback: MAX_APDU_LENGTH; if availble set the default is 14 according to spec
+                // fallback: MAX_APDU_LENGTH; if available set the default is 14 according to spec
                 Thread.sleep(OPERATION_INTERVAL);
                 try {
                     byte[] result = getClient().readDeviceProperties(address, ADDRESS_TABLE_OBJECT,
@@ -228,7 +211,7 @@ public class DeviceInspector {
                 byte[] count = getClient().readDeviceProperties(address, ROUTER_OBJECT, PID.FRIENDLY_NAME, 0, 1, false,
                         OPERATION_TIMEOUT);
                 if ((count != null) && (toUnsigned(count) == 30)) {
-                    StringBuffer buf = new StringBuffer(30);
+                    StringBuilder buf = new StringBuilder(30);
                     for (int i = 1; i <= 30; i++) {
                         Thread.sleep(OPERATION_INTERVAL);
                         // for some reason, reading more than one character per message fails
@@ -248,7 +231,7 @@ public class DeviceInspector {
                         logger.debug("Identified device {} as \"{}\"", address, result);
                         ret.put(FRIENDLY_NAME, result);
                     } else {
-                        // this is due to devices which have a buggy implememtation (and show a broken string also
+                        // this is due to devices which have a buggy implementation (and show a broken string also
                         // in ETS tool)
                         logger.debug("Ignoring FRIENDLY_NAME of device {} as it contains non-printable characters",
                                 address);
@@ -260,7 +243,7 @@ public class DeviceInspector {
                 // allowed to fail, optional
             }
 
-            ret.put(MANUFACTURER_NAME, manufacturerID);
+            ret.put(MANUFACTURER_NAME, manufacturerId);
             if (serialNo != null) {
                 ret.put(MANUFACTURER_SERIAL_NO, serialNo);
             }
@@ -272,7 +255,7 @@ public class DeviceInspector {
             }
             ret.put(MAX_APDU_LENGTH, maxApdu);
             logger.debug("Identified device {} as {}, type {}, revision {}, serial number {}, max APDU {}", address,
-                    manufacturerID, hardwareType, firmwareRevision, serialNo, maxApdu);
+                    manufacturerId, hardwareType, firmwareRevision, serialNo, maxApdu);
         } else {
             logger.debug("The KNX device with address {} does not expose a Device Object", address);
         }
@@ -280,16 +263,16 @@ public class DeviceInspector {
     }
 
     private @Nullable String toHex(byte @Nullable [] input, String separator) {
-        return input == null ? null : DataUnitBuilder.toHex(input, separator);
+        return input == null ? null : HexFormat.ofDelimiter(separator).formatHex(input);
     }
 
     /**
      * @implNote {@link readDeviceDescription(address)} tries to read device description from the KNX device.
-     *           According to KNX specification, eihter device descriptor DD0 or DD2 must be implemented.
+     *           According to KNX specification, either device descriptor DD0 or DD2 must be implemented.
      *           Currently only data from DD0 is returned; DD2 is just logged in debug mode.
      *
      * @param address Individual address of KNX device
-     * @return List of device properties
+     * @return Map of device properties
      * @throws InterruptedException
      */
     private Map<String, String> readDeviceDescription(IndividualAddress address) throws InterruptedException {
@@ -316,7 +299,7 @@ public class DeviceInspector {
             if (data != null) {
                 try {
                     final DD2 dd = DeviceDescriptor.DD2.from(data);
-                    logger.debug("The device with address {} is has DD2 {}", address, dd.toString());
+                    logger.debug("The device with address {} is has DD2 {}", address, dd);
                 } catch (KNXIllegalArgumentException e) {
                     logger.warn("Can not parse device descriptor 2 of device with address {}: {}", address,
                             e.getMessage());
@@ -343,21 +326,14 @@ public class DeviceInspector {
     }
 
     private static String getMediumType(int type) {
-        switch (type) {
-            case 0:
-                return "TP";
-            case 1:
-                return "PL";
-            case 2:
-                return "RF";
-            case 3:
-                return "TP0 (deprecated)";
-            case 4:
-                return "PL123 (deprecated)";
-            case 5:
-                return "IP";
-            default:
-                return "unknown (" + type + ")";
-        }
+        return switch (type) {
+            case 0 -> "TP";
+            case 1 -> "PL";
+            case 2 -> "RF";
+            case 3 -> "TP0 (deprecated)";
+            case 4 -> "PL123 (deprecated)";
+            case 5 -> "IP";
+            default -> "unknown (" + type + ")";
+        };
     }
 }

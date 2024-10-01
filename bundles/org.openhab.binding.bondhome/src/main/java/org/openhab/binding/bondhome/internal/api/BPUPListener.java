@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,8 +66,7 @@ public class BPUPListener implements Runnable {
     /**
      * Constructor of the receiver runnable thread.
      *
-     * @param address The address of the Bond Bridge
-     * @throws SocketException is some problem occurs opening the socket.
+     * @param bridgeHandler The handler of the Bond Bridge
      */
     public BPUPListener(BondBridgeHandler bridgeHandler) {
         logger.debug("Starting BPUP Listener...");
@@ -133,7 +132,7 @@ public class BPUPListener implements Runnable {
                     @Nullable
                     String bondId = response.bondId;
                     if (bondId == null || !bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
-                        logger.warn("Response isn't from expected Bridge!  Expected: {}  Got: {}",
+                        logger.trace("Response isn't from expected Bridge! Expected: {} Got: {}",
                                 bridgeHandler.getBridgeId(), bondId);
                     } else {
                         bridgeHandler.setBridgeOnline(inPacket.getAddress().getHostAddress());
@@ -201,7 +200,7 @@ public class BPUPListener implements Runnable {
         BPUPUpdate update = transformUpdatePacket(packet);
         if (update != null) {
             if (!update.bondId.equalsIgnoreCase(bridgeHandler.getBridgeId())) {
-                logger.warn("Response isn't from expected Bridge!  Expected: {}  Got: {}", bridgeHandler.getBridgeId(),
+                logger.trace("Response isn't from expected Bridge! Expected: {} Got: {}", bridgeHandler.getBridgeId(),
                         update.bondId);
             }
 
@@ -236,7 +235,7 @@ public class BPUPListener implements Runnable {
         try {
             response = this.gsonBuilder.fromJson(responseJson, BPUPUpdate.class);
         } catch (JsonParseException e) {
-            logger.warn("Error parsing json! {}", e.getMessage());
+            logger.debug("Error parsing json! {}", e.getMessage());
         }
         return response;
     }
@@ -277,7 +276,7 @@ public class BPUPListener implements Runnable {
                 this.socket = s;
                 logger.trace("Datagram Socket reconnected using port {}.", s.getPort());
             } catch (SocketException exception) {
-                logger.warn("Problem creating new socket : {}", exception.getLocalizedMessage());
+                logger.trace("Problem creating new socket : {}", exception.getLocalizedMessage());
             }
         }
     }

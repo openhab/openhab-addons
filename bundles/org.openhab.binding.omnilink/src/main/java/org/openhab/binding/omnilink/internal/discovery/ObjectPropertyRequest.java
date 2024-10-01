@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.omnilink.internal.exceptions.BridgeOfflineException;
 import org.openhab.binding.omnilink.internal.handler.OmnilinkBridgeHandler;
@@ -42,14 +43,14 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
     }
 
     private final OmnilinkBridgeHandler bridgeHandler;
-    private final ObjectPropertyRequests<T> request;
+    private final ObjectPropertyRequests<@NonNull T> request;
     private final int objectNumber;
     private final int filter1;
     private final int filter2;
     private final int filter3;
     private final int offset;
 
-    private ObjectPropertyRequest(OmnilinkBridgeHandler bridgeHandler, ObjectPropertyRequests<T> request,
+    private ObjectPropertyRequest(OmnilinkBridgeHandler bridgeHandler, ObjectPropertyRequests<@NonNull T> request,
             int objectNumber, int filter1, int filter2, int filter3, int offset) {
         this.bridgeHandler = bridgeHandler;
         this.request = request;
@@ -62,7 +63,7 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
 
     @Override
     public Iterator<T> iterator() {
-        List<T> messages = new ArrayList<T>();
+        List<T> messages = new ArrayList<>();
         int currentObjectNumber = objectNumber;
 
         while (true) {
@@ -122,8 +123,7 @@ public class ObjectPropertyRequest<T extends ObjectProperties> implements Iterab
         }
 
         public ObjectPropertyRequest<T> build() {
-            return new ObjectPropertyRequest<T>(bridgeHandler, request, objectNumber, filter1, filter2, filter3,
-                    offset);
+            return new ObjectPropertyRequest<>(bridgeHandler, request, objectNumber, filter1, filter2, filter3, offset);
         }
     }
 }

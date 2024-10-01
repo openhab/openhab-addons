@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,7 +58,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
     private final Logger logger = LoggerFactory.getLogger(WemoLinkDiscoveryService.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MZ100);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MZ100);
 
     public static final String NORMALIZE_ID_REGEX = "[^a-zA-Z0-9_]";
 
@@ -119,11 +118,20 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
             logger.trace("devUDN = '{}'", devUDN);
 
             String soapHeader = "\"urn:Belkin:service:bridge:1#GetEndDevices\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:GetEndDevices xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DevUDN>" + devUDN
-                    + "</DevUDN><ReqListType>PAIRED_LIST</ReqListType>" + "</u:GetEndDevices>" + "</s:Body>"
-                    + "</s:Envelope>";
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:GetEndDevices xmlns:u="urn:Belkin:service:bridge:1">\
+                    <DevUDN>\
+                    """
+                    + devUDN + """
+                            </DevUDN>\
+                            <ReqListType>PAIRED_LIST</ReqListType>\
+                            </u:GetEndDevices>\
+                            </s:Body>\
+                            </s:Envelope>\
+                            """;
 
             URL descriptorURL = service.getDescriptorURL(this);
 
@@ -274,8 +282,7 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
     public static String getCharacterDataFromElement(Element e) {
         Node child = e.getFirstChild();
-        if (child instanceof CharacterData) {
-            CharacterData cd = (CharacterData) child;
+        if (child instanceof CharacterData cd) {
             return cd.getData();
         }
         return "?";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -225,9 +225,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             logger.debug("Unexpected bridge handler: {}", handler);
             return null;
@@ -385,8 +384,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof ModbusDataThingHandler) {
-            this.childCallbacks.add((ModbusDataThingHandler) childHandler);
+        if (childHandler instanceof ModbusDataThingHandler modbusDataThingHandler) {
+            this.childCallbacks.add(modbusDataThingHandler);
         }
     }
 

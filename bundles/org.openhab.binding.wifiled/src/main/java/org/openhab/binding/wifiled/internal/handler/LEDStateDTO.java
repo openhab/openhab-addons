@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class LEDStateDTO {
 
     public static LEDStateDTO valueOf(int state, int program, int programSpeed, int red, int green, int blue, int white,
             int white2) {
-        OnOffType power = (state & 0x01) != 0 ? OnOffType.ON : OnOffType.OFF;
+        OnOffType power = OnOffType.from((state & 0x01) != 0);
 
         float[] hsv = new float[3];
         Color.RGBtoHSB(red, green, blue, hsv);

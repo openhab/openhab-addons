@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.coronastats.internal.handler;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,7 +155,8 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
                         f.completeExceptionally(new CoronaStatsPollingException("Request failed", e));
                     }
                 } else if (response.getStatus() != 200) {
-                    f.completeExceptionally(new CoronaStatsPollingException(getContentAsString()));
+                    f.completeExceptionally(
+                            new CoronaStatsPollingException(Objects.requireNonNull(getContentAsString())));
                 } else {
                     try {
                         CoronaStats coronaStatsJSON = gson.fromJson(getContentAsString(), CoronaStats.class);
@@ -172,9 +174,8 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler) {
+        if (childHandler instanceof CoronaStatsCountryHandler listener) {
             logger.debug("Register thing listener.");
-            final CoronaStatsCountryHandler listener = (CoronaStatsCountryHandler) childHandler;
             if (countryListeners.add(listener)) {
                 final CoronaStats localCoronaStats = coronaStats;
                 if (localCoronaStats != null) {
@@ -189,9 +190,9 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof CoronaStatsCountryHandler) {
+        if (childHandler instanceof CoronaStatsCountryHandler countryHandler) {
             logger.debug("Unregister thing listener.");
-            if (!countryListeners.remove((CoronaStatsCountryHandler) childHandler)) {
+            if (!countryListeners.remove(countryHandler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

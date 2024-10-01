@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,10 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openuv.internal.handler.OpenUVBridgeHandler;
 import org.openhab.binding.openuv.internal.handler.OpenUVReportHandler;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -48,19 +45,10 @@ import com.google.gson.JsonDeserializer;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.openuv")
 public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
-
-    private final LocationProvider locationProvider;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
     private final Gson gson;
 
     @Activate
-    public OpenUVHandlerFactory(@Reference TimeZoneProvider timeZoneProvider,
-            @Reference LocationProvider locationProvider, @Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider) {
-        this.locationProvider = locationProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
+    public OpenUVHandlerFactory(@Reference TimeZoneProvider timeZoneProvider) {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -78,8 +66,7 @@ public class OpenUVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return APIBRIDGE_THING_TYPE.equals(thingTypeUID)
-                ? new OpenUVBridgeHandler((Bridge) thing, locationProvider, i18nProvider, localeProvider, gson)
+        return APIBRIDGE_THING_TYPE.equals(thingTypeUID) ? new OpenUVBridgeHandler((Bridge) thing, gson)
                 : LOCATION_REPORT_THING_TYPE.equals(thingTypeUID) ? new OpenUVReportHandler(thing) : null;
     }
 }

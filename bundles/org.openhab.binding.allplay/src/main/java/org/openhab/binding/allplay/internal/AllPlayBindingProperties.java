@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,9 +63,9 @@ public class AllPlayBindingProperties {
     private int getIntegerProperty(Dictionary<String, Object> properties, String propertyKey, int defaultValue) {
         Object configValue = properties.get(propertyKey);
         int value = defaultValue;
-        if (configValue instanceof String) {
+        if (configValue instanceof String stringValue) {
             try {
-                value = Integer.parseInt((String) configValue);
+                value = Integer.parseInt(stringValue);
             } catch (NumberFormatException e) {
                 logger.warn("Unable to convert value {} for config property {} to integer. Using default value.",
                         configValue, propertyKey);

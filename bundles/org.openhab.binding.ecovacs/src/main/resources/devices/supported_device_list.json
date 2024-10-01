@@ -355,31 +355,6 @@
         "deviceClassLink": "fqxoiu"
     },
     {
-        "modelName": "DEEBOT T9+",
-        "deviceClass": "lhbd50",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT T9+",
-        "deviceClass": "um2ywg",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT T9 AIVI",
-        "deviceClass": "8kwdb4",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT T9 AIVI",
-        "deviceClass": "659yh8",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
-        "modelName": "DEEBOT T9 AIVI Plus",
-        "deviceClass": "kw9ayx",
-        "deviceClassLink": "fqxoiu"
-    },
-    {
         "modelName": "DEEBOT N8 PRO+",
         "deviceClass": "85as7h",
         "deviceClassLink": "fqxoiu"
@@ -389,75 +364,136 @@
         "deviceClass": "ifbw08",
         "deviceClassLink": "fqxoiu"
     },
+
+    {
+        "modelName": "DEEBOT T9+",
+        "deviceClass": "lhbd50",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "custom_area_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "unit_care_lifespan",
+            "true_detect_3d",
+            "mapping",
+            "auto_empty_station",
+            "uses_clean_results_log_api"
+        ]
+    },
+    {
+        "modelName": "DEEBOT T9+",
+        "deviceClass": "um2ywg",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T9 AIVI",
+        "deviceClass": "8kwdb4",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T9 AIVI",
+        "deviceClass": "659yh8",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T9 AIVI Plus",
+        "deviceClass": "kw9ayx",
+        "deviceClassLink": "lhbd50"
+    },
     {
         "modelName": "DEEBOT N9+",
         "deviceClass": "a7lhb1",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT N9+",
         "deviceClass": "c2of2s",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1",
         "deviceClass": "3yqsch",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT T10",
         "deviceClass": "jtmf04",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT T10 PLUS",
         "deviceClass": "rss8xk",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT T10 PLUS",
         "deviceClass": "p95mgv",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT T10 TURBO",
         "deviceClass": "9s1s80",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT T10 OMNI",
         "deviceClass": "lx3j7m",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "8bja83",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "1b23du",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1 OMNI",
         "deviceClass": "1vxt52",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1 TURBO",
         "deviceClass": "2o4lnm",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1 PLUS",
         "deviceClass": "n4gstt",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
     },
     {
         "modelName": "DEEBOT X1e OMNI",
         "deviceClass": "bro5wu",
-        "deviceClassLink": "fqxoiu"
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T20 OMNI",
+        "deviceClass": "p1jij8",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T20e OMNI",
+        "deviceClass": "9ku8nu",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT N10 PLUS",
+        "deviceClass": "umwv6z",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT N10 MAX+",
+        "deviceClass": "clojes",
+        "deviceClassLink": "lhbd50"
     },
 
     {
@@ -542,5 +578,42 @@
         "modelName": "DEEBOT U2 SE",
         "deviceClass": "zjna8m",
         "deviceClassLink": "ipzjy0"
+    },
+
+    {
+        "modelName": "DEEBOT X2",
+        "deviceClass": "e6ofmn",
+        "protoVersion": "json_v2",
+        "usesMqtt": true,
+        "capabilities": [
+            "mopping_system",
+            "main_brush",
+            "spot_area_cleaning",
+            "free_clean_command",
+            "custom_area_cleaning",
+            "clean_speed_control",
+            "voice_reporting",
+            "read_network_info",
+            "unit_care_lifespan",
+            "true_detect_3d",
+            "mapping",
+            "auto_empty_station",
+            "uses_clean_results_log_api"
+        ]
+    },
+    {
+        "modelName": "DEEBOT X2 OMNI",
+        "deviceClass": "lf3bn4",
+        "deviceClassLink": "e6ofmn"
+    },
+    {
+        "modelName": "DEEBOT X2 COMBO",
+        "deviceClass": "e6rcnf",
+        "deviceClassLink": "e6ofmn"
+    },
+    {
+        "modelName": "DEEBOT X2 PRO OMNI",
+        "deviceClass": "ip3mmy",
+        "deviceClassLink": "e6ofmn"
     }
 ]

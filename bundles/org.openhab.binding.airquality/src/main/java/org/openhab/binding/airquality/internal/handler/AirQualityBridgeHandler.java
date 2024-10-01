@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airquality.internal.api.ApiBridge;
 import org.openhab.binding.airquality.internal.discovery.AirQualityDiscoveryService;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -36,12 +35,10 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class AirQualityBridgeHandler extends BaseBridgeHandler {
-    private final LocationProvider locationProvider;
     private @Nullable ApiBridge apiBridge;
 
-    public AirQualityBridgeHandler(Bridge bridge, LocationProvider locationProvider) {
+    public AirQualityBridgeHandler(Bridge bridge) {
         super(bridge);
-        this.locationProvider = locationProvider;
     }
 
     @Override
@@ -68,9 +65,5 @@ public class AirQualityBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(AirQualityDiscoveryService.class);
-    }
-
-    public LocationProvider getLocationProvider() {
-        return locationProvider;
     }
 }

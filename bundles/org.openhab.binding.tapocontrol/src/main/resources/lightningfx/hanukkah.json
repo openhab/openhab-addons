@@ -1,0 +1,53 @@
+ {
+  "id": "TapoStrip_2YTk4wramLKv5XZ9KFDVYm",
+  "name": "Hanukkah",
+  "brightness": 100,
+  "display_colors": [
+    [
+      200,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [
+    50,
+    100
+  ],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": null,
+  "duration": 1500,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": [
+    200,
+    210
+  ],
+  "init_states": [
+    [
+      35,
+      81,
+      80
+    ]
+  ],
+  "random_seed": null,
+  "repeat_times": null,
+  "saturation_range": [
+    0,
+    100
+  ],
+  "segment_length": null,
+  "segments": [
+    1
+  ],
+  "sequence": null,
+  "spread": null,
+  "transition": 0,
+  "transition_range": [
+    400,
+    500
+  ],
+  "type": "random"
+}

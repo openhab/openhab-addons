@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.accessories.ValveAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.common.ActiveEnum;
 import io.github.hapjava.characteristics.impl.common.InUseEnum;
@@ -59,7 +61,7 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public static final String CONFIG_DEFAULT_DURATION = "homekitDefaultDuration";
     private static final String CONFIG_TIMER = "homekitTimer";
 
-    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<String, ValveTypeEnum>() {
+    private static final Map<String, ValveTypeEnum> CONFIG_VALVE_TYPE_MAPPING = new HashMap<>() {
         {
             put("GENERIC", ValveTypeEnum.GENERIC);
             put("IRRIGATION", ValveTypeEnum.IRRIGATION);
@@ -75,15 +77,24 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     private ValveTypeEnum valveType;
 
     public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         inUseReader = createBooleanReader(INUSE_STATUS);
         activeReader = createBooleanReader(ACTIVE_STATUS);
-        ValveService service = new ValveService(this);
-        getServices().add(service);
         homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
-        if (homekitTimer) {
-            addRemainingDurationCharacteristic(taggedItem, updater, service);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        ValveService service = new ValveService(this);
+        addService(service);
+
+        var remainingDurationCharacteristic = getCharacteristic(RemainingDurationCharacteristic.class);
+
+        if (homekitTimer && remainingDurationCharacteristic.isEmpty()) {
+            addRemainingDurationCharacteristic(getRootAccessory(), getUpdater(), service);
         }
         String valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE, "GENERIC");
         valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE_DEPRECATED, valveTypeConfig);

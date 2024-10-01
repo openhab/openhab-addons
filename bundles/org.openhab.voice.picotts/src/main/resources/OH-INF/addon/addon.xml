@@ -6,6 +6,6 @@
 	<type>voice</type>
 	<name>Pico Text-to-Speech</name>
 	<description>The Pico Text-to-Speech (TTS) service uses the TTS binary from SVOX for producing spoken text.</description>
-	<connection>local</connection>
+	<connection>none</connection>
 
 </addon:addon>

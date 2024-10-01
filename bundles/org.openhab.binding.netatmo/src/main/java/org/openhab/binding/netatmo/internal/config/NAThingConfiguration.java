@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,12 @@ public class NAThingConfiguration {
     public static final String ID = "id";
 
     protected String id = "";
-    public int refreshInterval = -1;
+    protected int refreshInterval = -1;
+
+    public int getRefreshInterval() {
+        int local = refreshInterval;
+        return local == -1 ? 600 : local;
+    }
 
     public String getId() {
         return id;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,8 +67,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * If a {@link ConnectionManager} is given at the constructor, the session-token is not needed by requests and the
- * {@link ConnectionListener}, which is registered at the {@link ConnectionManager}, will be automatically informed
- * about
+ * {@link org.openhab.binding.digitalstrom.internal.lib.listener.ConnectionListener}, which is registered at the
+ * {@link ConnectionManager}, will be automatically informed about
  * connection state changes through the {@link #execute(String, int, int)} method.
  * </p>
  *
@@ -333,7 +333,11 @@ public class HttpTransportImpl implements HttpTransport {
     }
 
     private boolean checkNeededSessionToken(String request) {
-        String requestFirstPart = request.substring(0, request.indexOf("?"));
+        String requestFirstPart = request;
+        int indexOfSeparator = request.indexOf("?");
+        if (indexOfSeparator >= 0) {
+            requestFirstPart = request.substring(0, request.indexOf("?"));
+        }
         String functionName = requestFirstPart.substring(requestFirstPart.lastIndexOf("/") + 1);
         return !DsAPIImpl.METHODS_MUST_NOT_BE_LOGGED_IN.contains(functionName);
     }
@@ -349,7 +353,10 @@ public class HttpTransportImpl implements HttpTransport {
         } else {
             String strippedRequest = correctedRequest
                     .substring(correctedRequest.indexOf(ParameterKeys.TOKEN + "=") + ParameterKeys.TOKEN.length() + 1);
-            strippedRequest = strippedRequest.substring(0, strippedRequest.lastIndexOf("&"));
+            int indexOfSeparator = strippedRequest.indexOf("&");
+            if (indexOfSeparator >= 0) {
+                strippedRequest = strippedRequest.substring(0, indexOfSeparator);
+            }
             correctedRequest = correctedRequest.replaceFirst(strippedRequest, sessionToken);
         }
         return correctedRequest;

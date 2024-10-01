@@ -13,8 +13,8 @@
 			<channel id="service-date" typeId="next-service-date-channel"/>
 			<channel id="service-mileage" typeId="next-service-mileage-channel"/>
 			<channel id="check-control" typeId="check-control-channel"/>
-			<channel id="motion" typeId="motion-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="last-fetched" typeId="last-fetched-channel"/>
 			<channel id="raw" typeId="raw-channel"/>
 		</channels>
 	</channel-group-type>

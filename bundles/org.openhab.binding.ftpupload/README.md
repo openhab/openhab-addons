@@ -91,7 +91,7 @@ Thing ftpupload:imagereceiver:images2 [ userName="test2", password="12345" ] {
         Trigger String : my_image_trigger2 [
             filename="test.jpg"
         ]
-}    
+}
 ```
 
 Items:
@@ -106,14 +106,14 @@ Rules:
 ```java
 rule "example trigger rule 1"
 when
-    Channel 'ftpupload:imagereceiver:images1:image-received' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:images1:image-received' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Image received")
 end
 
 rule "example trigger rule 2"
 when
-    Channel 'ftpupload:imagereceiver:images2:my_image_trigger1' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:images2:my_image_trigger1' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Image received")
 end
@@ -150,7 +150,7 @@ Rules:
 ```java
 rule "example trigger rule"
 when
-    Channel 'ftpupload:imagereceiver:garagecamera:image-received' triggered IMAGE_RECEIVED 
+    Channel 'ftpupload:imagereceiver:garagecamera:image-received' triggered IMAGE_RECEIVED
 then
     logInfo("Test","Garage motion detected")
 end

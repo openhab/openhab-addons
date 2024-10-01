@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -258,7 +258,7 @@ public class TACmiHandler extends BaseThingHandler {
                 updateState(channel.getUID(), new DecimalType(value.value));
             } else {
                 final boolean state = ((DigitalMessage) message).getPortState(channelConfig.output);
-                updateState(channel.getUID(), state ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel.getUID(), OnOffType.from(state));
             }
             return;
         }
@@ -380,7 +380,7 @@ public class TACmiHandler extends BaseThingHandler {
                 updateState(channel.getUID(), newState);
             } else {
                 final boolean state = ((DigitalMessage) message).getPortState(output);
-                updateState(channel.getUID(), state ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel.getUID(), OnOffType.from(state));
             }
         }
     }

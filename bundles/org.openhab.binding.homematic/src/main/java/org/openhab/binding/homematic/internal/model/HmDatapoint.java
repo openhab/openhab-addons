@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -426,9 +426,10 @@ public class HmDatapoint implements Cloneable {
 
     @Override
     public String toString() {
-        return String.format("%s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,options=%s,"
-                + "readOnly=%b,readable=%b,unit=%s,description=%s,info=%s,paramsetType=%s,virtual=%b,trigger=%b]",
-                getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue,
+        return String.format("""
+                %s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,options=%s,\
+                readOnly=%b,readable=%b,unit=%s,description=%s,info=%s,paramsetType=%s,virtual=%b,trigger=%b]\
+                """, getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue,
                 (options == null ? null : String.join(";", options)), readOnly, readable, unit, description, info,
                 paramsetType, virtual, trigger);
     }

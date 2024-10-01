@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,7 @@ public class EiscpProtocol {
             // version
             final byte versionChar = stream.readByte();
             if (versionChar != 1) {
-                throw new EiscpException("Unsupported version " + String.valueOf(versionChar));
+                throw new EiscpException("Unsupported version " + versionChar);
             }
 
             // skip 3 reserved bytes

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class IpObserverHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final IpObserverUpdateReceiver ipObserverUpdateReceiver;
     private final Logger logger = LoggerFactory.getLogger(IpObserverHandler.class);
-    private Map<String, ChannelHandler> channelHandlers = new HashMap<String, ChannelHandler>();
+    private Map<String, ChannelHandler> channelHandlers = new HashMap<>();
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private IpObserverConfiguration config = new IpObserverConfiguration();
     private String idPass = "";
@@ -92,7 +92,7 @@ public class IpObserverHandler extends BaseThingHandler {
         private Channel channel;
         private String previousValue = "";
         private Unit<?> unit;
-        private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<Class<? extends State>>();
+        private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<>();
 
         ChannelHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
             super();

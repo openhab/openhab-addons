@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,18 +28,19 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HeaterCoolerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.TargetHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
-import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
 import io.github.hapjava.services.impl.HeaterCoolerService;
 
 /**
@@ -51,26 +52,36 @@ import io.github.hapjava.services.impl.HeaterCoolerService;
 public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implements HeaterCoolerAccessory {
     private final Logger logger = LoggerFactory.getLogger(HomekitHeaterCoolerImpl.class);
     private final BooleanItemReader activeReader;
-    private final Map<CurrentHeaterCoolerStateEnum, String> currentStateMapping;
-    private final Map<TargetHeaterCoolerStateEnum, String> targetStateMapping;
+    private final Map<CurrentHeaterCoolerStateEnum, Object> currentStateMapping;
+    private final Map<TargetHeaterCoolerStateEnum, Object> targetStateMapping;
 
     private final List<CurrentHeaterCoolerStateEnum> customCurrentStateList = new ArrayList<>();
     private final List<TargetHeaterCoolerStateEnum> customTargetStateList = new ArrayList<>();
 
     public HomekitHeaterCoolerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         activeReader = new BooleanItemReader(getItem(ACTIVE_STATUS, GenericItem.class)
                 .orElseThrow(() -> new IncompleteAccessoryException(ACTIVE_STATUS)), OnOffType.ON, OpenClosedType.OPEN);
         currentStateMapping = createMapping(CURRENT_HEATER_COOLER_STATE, CurrentHeaterCoolerStateEnum.class,
                 customCurrentStateList);
         targetStateMapping = createMapping(TARGET_HEATER_COOLER_STATE, TargetHeaterCoolerStateEnum.class,
                 customTargetStateList);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         final HeaterCoolerService service = new HeaterCoolerService(this);
-        service.addOptionalCharacteristic(new TemperatureDisplayUnitCharacteristic(this::getTemperatureDisplayUnit,
-                this::setTemperatureDisplayUnit, this::subscribeTemperatureDisplayUnit,
-                this::unsubscribeTemperatureDisplayUnit));
-        getServices().add(service);
+
+        var temperatureDisplayUnit = getCharacteristic(TemperatureDisplayUnitCharacteristic.class);
+        if (temperatureDisplayUnit.isEmpty()) {
+            service.addOptionalCharacteristic(
+                    HomekitCharacteristicFactory.createSystemTemperatureDisplayUnitCharacteristic());
+        }
+
+        addService(service);
     }
 
     @Override
@@ -127,17 +138,6 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
         return CompletableFuture.completedFuture(null);
     }
 
-    public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
-        return CompletableFuture
-                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
-                        : TemperatureDisplayUnitEnum.CELSIUS);
-    }
-
-    public void setTemperatureDisplayUnit(TemperatureDisplayUnitEnum value) {
-        // temperature unit set globally via binding setting and cannot be changed at item level.
-        // this method is intentionally empty.
-    }
-
     @Override
     public void subscribeCurrentHeaterCoolerState(HomekitCharacteristicChangeCallback callback) {
         subscribe(HomekitCharacteristicType.CURRENT_HEATER_COOLER_STATE, callback);
@@ -176,15 +176,5 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     @Override
     public void unsubscribeCurrentTemperature() {
         unsubscribe(HomekitCharacteristicType.CURRENT_TEMPERATURE);
-    }
-
-    public void subscribeTemperatureDisplayUnit(HomekitCharacteristicChangeCallback callback) {
-        // temperature unit set globally via binding setting and cannot be changed at item level.
-        // this method is intentionally empty
-    }
-
-    public void unsubscribeTemperatureDisplayUnit() {
-        // temperature unit set globally via binding setting and cannot be changed at item level.
-        // this method is intentionally empty
     }
 }

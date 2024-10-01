@@ -18,12 +18,148 @@
 				<context>network_address</context>
 				<label>Network Address</label>
 				<description>Network address of the Raspberry Pi.</description>
+				<default>127.0.0.1</default>
 			</parameter>
 			<parameter name="port" type="integer" min="0" max="65535">
 				<context>port</context>
 				<label>Port</label>
 				<description>Port of pigpio on the remote Raspberry Pi.</description>
 				<default>8888</default>
+			</parameter>
+			<parameter name="heartBeatInterval" type="integer" min="100" max="2147483647">
+				<context>time</context>
+				<label>Heart Beat Interval</label>
+				<description>
+					Time in ms to send CMD_TICK calls on the communication socket.
+					Used to detect and recover from pigpiod
+					disconnects.
+				</description>
+				<default>30000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="inputConnectAction" type="text">
+				<label>Input Channel Connect Action</label>
+				<description>
+					When a pigpiod connection is first established after
+					binding INITIALIZATION.
+					The desired action to
+					perform on input channels.
+					REFRESH: Send a REFRESH command
+					to the channel.
+					NOTHING: Leave
+					all channels
+					at their
+					current
+					state.
+				</description>
+				<options>
+					<option value="REFRESH">Refresh Channel</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="inputDisconnectAction" type="text">
+				<label>Input Channel Disconnect Action</label>
+				<description>
+					When a pigpiod disconnect is encountered.
+					The desired action to perform on input channel.
+					SETUNDEF: Set
+					all configured channels to UNDEF.
+					NOTHING: Leave all channels at their current state.
+				</description>
+				<options>
+					<option value="SETUNDEF">Set Undef</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="inputReconnectAction" type="text">
+				<label>Input Channel Reconnect Action</label>
+				<description>
+					When a pigpiod connection is re-established after being disconnected.
+					The desired action to perform on
+					input channels.
+					REFRESH: Send a REFRESH command
+					to the channel.
+					NOTHING: Leave all
+					channels at their
+					current
+					state.
+				</description>
+				<options>
+					<option value="REFRESH">Refresh Channel</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="outputConnectAction" type="text">
+				<label>Output Channel Connect Action</label>
+				<description>
+					When a pigpiod connection is first established after
+					binding INITIALIZATION.
+					The desired action to
+					perform on outputs.
+					ALLOFF: Update the GPIO pin to OFF.
+					ALLON: Update the GPIO pin to ON.
+					REFRESH: Send a REFRESH
+					command
+					to the channel.
+					NOTHING: Leave all
+					channels at their current
+					state.
+				</description>
+				<options>
+					<option value="ALLOFF">All OFF</option>
+					<option value="ALLON">All ON</option>
+					<option value="REFRESH">Refresh Channel</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="outputDisconnectAction" type="text">
+				<label>Output Channel Disconnect Action</label>
+				<description>
+					When a pigpiod disconnect is encountered.
+					The desired action to perform on outputs.
+					SETUNDEF: Set all
+					configured channels to UNDEF.
+					NOTHING: Leave all channels at their current state.
+				</description>
+				<options>
+					<option value="SETUNDEF">Set Undef</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="outputReconnectAction" type="text">
+				<label>Output Channel Reconnect Action</label>
+				<description>
+					When a pigpiod connection is re-established after being disconnected.
+					The desired action to perform on
+					outputs.
+					REFRESH: Send a REFRESH command
+					to the channel.
+					NOTHING: Leave all
+					channels at their current
+					state.
+				</description>
+				<options>
+					<option value="REFRESH">Refresh Channel</option>
+					<option value="NOTHING">Do Nothing</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>NOTHING</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -35,18 +171,28 @@
 		<state readOnly="true"/>
 
 		<config-description>
-			<parameter name="gpioId" type="integer" required="true">
+			<parameter name="gpioId" type="integer" required="true" min="1" max="2147483647">
 				<label>GPIO Pin</label>
 				<description>GPIO pin to use as input</description>
 			</parameter>
 			<parameter name="invert" type="boolean">
 				<default>false</default>
 				<label>Invert</label>
+				<description>
+					Inverts the GPIO pin state from the channel state.
+					Setting this to true can simulate an active low GPIO
+					pin.
+				</description>
 			</parameter>
 			<parameter name="debouncingTime" type="integer" min="0">
 				<context>time</context>
 				<label>Delay Time</label>
-				<description>Time in ms to double check if value hasn't changed</description>
+				<description>
+					Time in ms to double check if value hasn't changed.
+					Be sure that the maximum latency of your
+					network is
+					not greater than two times this value.
+				</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -60,6 +206,17 @@
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>OFF</default>
+			</parameter>
+			<parameter name="edgeMode" type="text">
+				<label>Edge Detection Mode</label>
+				<description>Edge detection mode of the GPIO pin</description>
+				<options>
+					<option value="EDGE_EITHER">Either Edge</option>
+					<option value="EDGE_FALLING">Falling Edge</option>
+					<option value="EDGE_RISING">Rising Edge</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>EDGE_EITHER</default>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -76,6 +233,30 @@
 			<parameter name="invert" type="boolean">
 				<default>false</default>
 				<label>Invert</label>
+				<description>
+					Inverts the GPIO pin state from the channel state.
+					Setting this to true can simulate an active low GPIO
+					pin.
+				</description>
+			</parameter>
+			<parameter name="pulse" type="integer" min="0" max="2147483647">
+				<label>Pulse</label>
+				<description>Issues the pulse command after the given number of milliseconds. Used to pulse outputs.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="pulseCommand" type="text">
+				<label>Pulse Command</label>
+				<description>The command to issue after the pulse duration to complete the pulse. Blink will alternate ON/OFF,
+					useful for beacons
+					or
+					flashing leds.</description>
+				<options>
+					<option value="OFF">Off</option>
+					<option value="ON">On</option>
+					<option value="BLINK">Blink</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>OFF</default>
 			</parameter>
 		</config-description>
 	</channel-type>

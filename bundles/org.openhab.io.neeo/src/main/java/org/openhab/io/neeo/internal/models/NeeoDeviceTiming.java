@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ public class NeeoDeviceTiming {
     }
 
     /**
-     * Constructs the timings from the specified delays. If the delay is < {@link #MIN_DELAY}, it is set to
+     * Constructs the timings from the specified delays. If the delay is {@literal <} {@link #MIN_DELAY}, it is set to
      * {@link #MIN_DELAY}. If the delay is > {@link #MAX_DELAY}, the delay will be set to {@link #MAX_DELAY}. If any
      * delay is null, {@link #DEFAULT_DELAY} will be used instead
      *

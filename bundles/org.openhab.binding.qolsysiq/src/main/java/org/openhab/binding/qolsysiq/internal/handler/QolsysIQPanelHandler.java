@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +69,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private @Nullable QolsysiqClient apiClient;
     private @Nullable ScheduledFuture<?> retryFuture;
     private @Nullable QolsysIQChildDiscoveryService discoveryService;
-    private List<Partition> partitions = Collections.synchronizedList(new LinkedList<Partition>());
+    private List<Partition> partitions = Collections.synchronizedList(new LinkedList<>());
     private String key = "";
 
     public QolsysIQPanelHandler(Bridge bridge) {
@@ -100,7 +101,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(QolsysIQChildDiscoveryService.class);
+        return Set.of(QolsysIQChildDiscoveryService.class);
     }
 
     @Override
@@ -316,9 +317,9 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private @Nullable QolsysIQPartitionHandler partitionHandler(int partitionId) {
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof QolsysIQPartitionHandler) {
-                if (((QolsysIQPartitionHandler) handler).getPartitionId() == partitionId) {
-                    return (QolsysIQPartitionHandler) handler;
+            if (handler instanceof QolsysIQPartitionHandler partitionHandler) {
+                if (partitionHandler.getPartitionId() == partitionId) {
+                    return partitionHandler;
                 }
             }
         }

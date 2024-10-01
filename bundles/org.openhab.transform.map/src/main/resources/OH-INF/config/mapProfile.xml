@@ -7,7 +7,16 @@
 	<config-description uri="profile:transform:MAP">
 		<parameter name="function" type="text" required="true">
 			<label>Filename</label>
-			<description>Filename containing the mapping information.</description>
+			<description><![CDATA[Filename containing the mapping information.
+			<br /><br />
+			Inline map is supported, e.g. "|online=ON;offline=OFF".
+			<br /><br />
+			The inline map entries are delimited with semicolons ("<code>;</code>") by default.
+			<br />
+			To use a different delimiter, for example a comma: "<code>|?delimiter=,;online=ON,offline=OFF</code>"
+			<br />
+			To use "<code>?delimiter</code>" as an actual map key, do not place it at the beginning of the map.
+			]]></description>
 			<limitToOptions>false</limitToOptions>
 		</parameter>
 		<parameter name="sourceFormat" type="text">

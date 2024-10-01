@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.radiothermostat.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import javax.measure.Unit;
@@ -26,7 +25,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link RadioThermostatBinding} class defines common constants, which are
+ * The {@link RadioThermostatBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Michael Lobstein - Initial contribution
@@ -79,7 +78,7 @@ public class RadioThermostatBindingConstants {
     public static final String REMOTE_TEMP = "remote_temp";
     public static final String MESSAGE = "message";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RTHERM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Set.of(TEMPERATURE, HUMIDITY, MODE, FAN_MODE, PROGRAM_MODE,
             SET_POINT, OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, TODAY_HEAT_RUNTIME,

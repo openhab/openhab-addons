@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class A5_09_0C extends A5_09_05 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (CHANNEL_VOC.equals(channelId)) {
             double scaledVOC = getUnscaledVOCValue() * getScalingFactor();
             if (getBit(getDB0(), 2)) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -198,7 +197,7 @@ public class TransmitterStick {
         private final int updateInterval;
         private final SerialConnection connection;
 
-        private final BlockingQueue<Command> cmdQueue = new DelayQueue<Command>() {
+        private final BlockingQueue<Command> cmdQueue = new DelayQueue<>() {
             @Override
             public boolean add(Command e) {
                 if (TransmitterStick.prepareAddition(e, this)) {
@@ -226,7 +225,7 @@ public class TransmitterStick {
             // handle commands that are sent to multiple channels correctly
             if (channelIds.size() > 1) {
                 for (int channelId : channelIds) {
-                    requestUpdates(Collections.singletonList(channelId));
+                    requestUpdates(List.of(channelId));
                 }
             } else if (!channelIds.isEmpty()) {
                 final Integer[] ids = channelIds.toArray(new Integer[channelIds.size()]);
@@ -241,7 +240,7 @@ public class TransmitterStick {
             // handle commands that are sent to multiple channels correctly
             if (channelIds.size() > 1) {
                 for (int channelId : channelIds) {
-                    executeCommand(command, Collections.singletonList(channelId));
+                    executeCommand(command, List.of(channelId));
                 }
             } else if (!channelIds.isEmpty()) {
                 final Integer[] ids = channelIds.toArray(new Integer[channelIds.size()]);
@@ -307,8 +306,8 @@ public class TransmitterStick {
                                 }
                             }
 
-                            if (cmd instanceof TimedCommand) {
-                                long delay = 1000 * ((TimedCommand) cmd).getDuration();
+                            if (cmd instanceof TimedCommand timedCommand) {
+                                long delay = 1000 * timedCommand.getDuration();
                                 logger.debug("adding timed command STOP for channel ids {} to queue with delay {}...",
                                         cmd.getChannelIds(), delay);
 

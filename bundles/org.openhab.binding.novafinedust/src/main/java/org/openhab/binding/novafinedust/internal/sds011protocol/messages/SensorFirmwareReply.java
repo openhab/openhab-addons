@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,7 @@ public class SensorFirmwareReply extends SensorReply {
      * @return firmware of the sensor formatted as YY-MM-DD
      */
     public String getFirmware() {
-        String firmware = year + "-" + month + "-" + day;
-        return firmware;
+        return year + "-" + month + "-" + day;
     }
 
     @Override

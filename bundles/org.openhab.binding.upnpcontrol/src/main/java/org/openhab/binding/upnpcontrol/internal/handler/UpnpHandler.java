@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -235,7 +235,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     public void updateDeviceConfig(RemoteDevice device) {
         this.device = device;
-    };
+    }
 
     protected void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
@@ -316,11 +316,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isConnectionIdSet = new CompletableFuture<Boolean>();
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isConnectionIdSet = new CompletableFuture<>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
-        HashMap<String, String> inputs = new HashMap<String, String>();
+        HashMap<String, String> inputs = new HashMap<>();
         inputs.put("RemoteProtocolInfo", remoteProtocolInfo);
         inputs.put("PeerConnectionManager", peerConnectionManager);
         inputs.put("PeerConnectionID", Integer.toString(peerConnectionId));
@@ -333,7 +333,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * Invoke ConnectionComplete on UPnP Connection Manager.
      */
     protected void connectionComplete() {
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "ConnectionComplete", inputs);
     }
@@ -363,11 +363,11 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         }
 
         // Set new futures, so we don't try to use service when connection id's are not known yet
-        isAvTransportIdSet = new CompletableFuture<Boolean>();
-        isRcsIdSet = new CompletableFuture<Boolean>();
+        isAvTransportIdSet = new CompletableFuture<>();
+        isRcsIdSet = new CompletableFuture<>();
 
         // ConnectionID will default to 0 if not set through prepareForConnection method
-        Map<String, String> inputs = Collections.singletonMap(CONNECTION_ID, Integer.toString(connectionId));
+        Map<String, String> inputs = Map.of(CONNECTION_ID, Integer.toString(connectionId));
 
         invokeAction(CONNECTION_MANAGER, "GetCurrentConnectionInfo", inputs);
     }

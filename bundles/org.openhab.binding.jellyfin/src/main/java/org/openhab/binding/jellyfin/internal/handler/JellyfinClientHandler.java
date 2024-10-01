@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> refreshState());
+        scheduler.execute(this::refreshState);
     }
 
     public synchronized void updateStateFromSession(@Nullable SessionInfo session) {
@@ -111,128 +111,30 @@ public class JellyfinClientHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            switch (channelUID.getId()) {
-                case SEND_NOTIFICATION_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    sendDeviceMessage(command);
-                    break;
-                case MEDIA_CONTROL_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        refreshState();
-                        return;
-                    }
-                    handleMediaControlCommand(channelUID, command);
-                    break;
-                case PLAY_BY_TERMS_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    runItemSearch(command.toFullString(), PlayCommand.PLAY_NOW);
-                    break;
-                case PLAY_NEXT_BY_TERMS_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    runItemSearch(command.toFullString(), PlayCommand.PLAY_NEXT);
-                    break;
-                case PLAY_LAST_BY_TERMS_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    runItemSearch(command.toFullString(), PlayCommand.PLAY_LAST);
-                    break;
-                case BROWSE_ITEM_BY_TERMS_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    runItemSearch(command.toFullString(), null);
-                    break;
-                case PLAY_BY_ID_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    UUID itemUUID;
-                    try {
-                        itemUUID = parseItemUUID(command);
-                    } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
-                        return;
-                    }
-                    runItemById(itemUUID, PlayCommand.PLAY_NOW);
-                    break;
-                case PLAY_NEXT_BY_ID_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    try {
-                        itemUUID = parseItemUUID(command);
-                    } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
-                        return;
-                    }
-                    runItemById(itemUUID, PlayCommand.PLAY_NEXT);
-                    break;
-                case PLAY_LAST_BY_ID_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    try {
-                        itemUUID = parseItemUUID(command);
-                    } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
-                        return;
-                    }
-                    runItemById(itemUUID, PlayCommand.PLAY_LAST);
-                    break;
-                case BROWSE_ITEM_BY_ID_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    try {
-                        itemUUID = parseItemUUID(command);
-                    } catch (NumberFormatException e) {
-                        logger.warn("Thing {}: Unable to parse item UUID in command {}.", thing.getUID(), command);
-                        return;
-                    }
-                    runItemById(itemUUID, null);
-                    break;
-                case PLAYING_ITEM_SECOND_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        refreshState();
-                        return;
-                    }
-                    if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
-                        return;
-                    }
-                    seekToSecond(Long.parseLong(command.toFullString()));
-                    break;
-                case PLAYING_ITEM_PERCENTAGE_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        refreshState();
-                        return;
-                    }
-                    if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
-                        return;
-                    }
-                    seekToPercentage(Integer.parseInt(command.toFullString()));
-                    break;
-                case PLAYING_ITEM_ID_CHANNEL:
-                case PLAYING_ITEM_NAME_CHANNEL:
-                case PLAYING_ITEM_GENRES_CHANNEL:
-                case PLAYING_ITEM_SEASON_CHANNEL:
-                case PLAYING_ITEM_EPISODE_CHANNEL:
-                case PLAYING_ITEM_SERIES_NAME_CHANNEL:
-                case PLAYING_ITEM_SEASON_NAME_CHANNEL:
-                case PLAYING_ITEM_TYPE_CHANNEL:
-                case PLAYING_ITEM_TOTAL_SECOND_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        refreshState();
-                        return;
-                    }
-                    break;
+            if (command instanceof RefreshType) {
+                refreshState();
+                return;
             }
+            switch (channelUID.getId()) {
+                case SEND_NOTIFICATION_CHANNEL -> sendDeviceMessage(command);
+                case MEDIA_CONTROL_CHANNEL -> handleMediaControlCommand(channelUID, command);
+                case PLAY_BY_TERMS_CHANNEL -> runItemSearch(command.toFullString(), PlayCommand.PLAY_NOW);
+                case PLAY_NEXT_BY_TERMS_CHANNEL -> runItemSearch(command.toFullString(), PlayCommand.PLAY_NEXT);
+                case PLAY_LAST_BY_TERMS_CHANNEL -> runItemSearch(command.toFullString(), PlayCommand.PLAY_LAST);
+                case BROWSE_ITEM_BY_TERMS_CHANNEL -> runItemSearch(command.toFullString(), null);
+                case PLAY_BY_ID_CHANNEL -> runItemById(parseItemUUID(command), PlayCommand.PLAY_NOW);
+                case PLAY_NEXT_BY_ID_CHANNEL -> runItemById(parseItemUUID(command), PlayCommand.PLAY_NEXT);
+                case PLAY_LAST_BY_ID_CHANNEL -> runItemById(parseItemUUID(command), PlayCommand.PLAY_LAST);
+                case BROWSE_ITEM_BY_ID_CHANNEL -> runItemById(parseItemUUID(command), null);
+                case PLAYING_ITEM_SECOND_CHANNEL -> seekToSecond(command);
+                case PLAYING_ITEM_PERCENTAGE_CHANNEL -> seekToPercentage(command);
+            }
+        } catch (NumberFormatException numberFormatException) {
+            logger.warn("NumberFormatException error while running channel {}: {}", channelUID.getId(),
+                    numberFormatException.getMessage());
+        } catch (IllegalArgumentException illegalArgumentException) {
+            logger.warn("IllegalArgumentException error while running channel {}: {}", channelUID.getId(),
+                    illegalArgumentException.getMessage());
         } catch (SyncCallback.SyncCallbackError syncCallbackError) {
             logger.warn("Unexpected error while running channel {}: {}", channelUID.getId(),
                     syncCallbackError.getMessage());
@@ -241,11 +143,14 @@ public class JellyfinClientHandler extends BaseThingHandler {
         }
     }
 
-    private UUID parseItemUUID(Command command) throws NumberFormatException {
-        var itemId = command.toFullString().replace("-", "");
-        UUID itemUUID = new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
-                new BigInteger(itemId.substring(16), 16).longValue());
-        return itemUUID;
+    private UUID parseItemUUID(Command command) throws IllegalArgumentException {
+        try {
+            var itemId = command.toFullString().replace("-", "");
+            return new UUID(new BigInteger(itemId.substring(0, 16), 16).longValue(),
+                    new BigInteger(itemId.substring(16), 16).longValue());
+        } catch (NumberFormatException ignored) {
+            throw new IllegalArgumentException("Unable to parse item UUID in command " + command.toFullString() + ".");
+        }
     }
 
     @Override
@@ -385,9 +290,9 @@ public class JellyfinClientHandler extends BaseThingHandler {
         var typeMatcher = typeSearchPattern.matcher(terms);
         boolean searchByTypeEnabled = typeMatcher.matches();
         var type = searchByTypeEnabled ? typeMatcher.group("type") : "";
-        boolean movieSearchEnabled = !searchByTypeEnabled || type.equals("movie");
-        boolean seriesSearchEnabled = !searchByTypeEnabled || type.equals("series");
-        boolean episodeSearchEnabled = !searchByTypeEnabled || type.equals("episode");
+        boolean movieSearchEnabled = !searchByTypeEnabled || "movie".equals(type);
+        boolean seriesSearchEnabled = !searchByTypeEnabled || "series".equals(type);
+        boolean episodeSearchEnabled = !searchByTypeEnabled || "episode".equals(type);
         var searchTerms = searchByTypeEnabled ? typeMatcher.group("terms") : terms;
         runItemSearchByType(searchTerms, playCommand, movieSearchEnabled, seriesSearchEnabled, episodeSearchEnabled);
     }
@@ -587,17 +492,27 @@ public class JellyfinClientHandler extends BaseThingHandler {
         }
     }
 
-    private void seekToPercentage(int percentage) throws SyncCallback.SyncCallbackError, ApiClientException {
+    private void seekToPercentage(Command command)
+            throws NumberFormatException, SyncCallback.SyncCallbackError, ApiClientException {
+        if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
+            return;
+        }
         if (lastRunTimeTicks == 0L) {
             logger.warn("Can't seek missing RunTimeTicks info");
             return;
         }
+        int percentage = Integer.parseInt(command.toFullString());
         var seekPositionTick = Math.round(((float) lastRunTimeTicks) * ((float) percentage / 100.0));
         logger.debug("Seek to {}%: {} of {}", percentage, seekPositionTick, lastRunTimeTicks);
         seekToTick(seekPositionTick);
     }
 
-    private void seekToSecond(long second) throws SyncCallback.SyncCallbackError, ApiClientException {
+    private void seekToSecond(Command command)
+            throws NumberFormatException, SyncCallback.SyncCallbackError, ApiClientException {
+        if (command.toFullString().equals(UnDefType.NULL.toFullString())) {
+            return;
+        }
+        long second = Long.parseLong(command.toFullString());
         long seekPositionTick = second * 10000000L;
         logger.debug("Seek to second {}: {} of {}", second, seekPositionTick, lastRunTimeTicks);
         seekToTick(seekPositionTick);

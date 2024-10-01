@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public class JeeLinkBindingConstants {
     public static final ThingTypeUID LACROSSE_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "lacrosse");
     public static final ThingTypeUID EC3000_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "ec3k");
     public static final ThingTypeUID PCA301_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "pca301");
+    public static final ThingTypeUID EMT7110_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "emt7110");
     public static final ThingTypeUID TX22_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "tx22");
     public static final ThingTypeUID REVOLT_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "revolt");
     public static final ThingTypeUID LGW_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, "lgw");

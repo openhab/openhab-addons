@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -130,7 +130,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         Optional<ApplianceStatus> applianceStatusOptional;
         try {
             applianceStatusOptional = ondusService.applianceStatus(appliance);
-            if (!applianceStatusOptional.isPresent()) {
+            if (applianceStatusOptional.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
                 return null;
             }

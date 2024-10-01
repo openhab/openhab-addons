@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.ihc.internal.ws.services;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,12 +56,14 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public WSResourceValue resourceQuery(int resoureId) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soapenv:Body>\n"
-                + "  <ns1:getRuntimeValue1 xmlns:ns1=\"utcs\">%s</ns1:getRuntimeValue1>\n"
-                + " </soapenv:Body>\n"
-                + "</soapenv:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soapenv:Body>
+                  <ns1:getRuntimeValue1 xmlns:ns1="utcs">%s</ns1:getRuntimeValue1>
+                 </soapenv:Body>
+                </soapenv:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, String.valueOf(resoureId));
@@ -173,22 +174,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSResourceValue value) throws IhcExecption {
         boolean retval = false;
 
-        if (value instanceof WSFloatingPointValue) {
-            retval = resourceUpdate((WSFloatingPointValue) value);
-        } else if (value instanceof WSBooleanValue) {
-            retval = resourceUpdate((WSBooleanValue) value);
-        } else if (value instanceof WSIntegerValue) {
-            retval = resourceUpdate((WSIntegerValue) value);
-        } else if (value instanceof WSTimerValue) {
-            retval = resourceUpdate((WSTimerValue) value);
-        } else if (value instanceof WSWeekdayValue) {
-            retval = resourceUpdate((WSWeekdayValue) value);
-        } else if (value instanceof WSEnumValue) {
-            retval = resourceUpdate((WSEnumValue) value);
-        } else if (value instanceof WSTimeValue) {
-            retval = resourceUpdate((WSTimeValue) value);
-        } else if (value instanceof WSDateValue) {
-            retval = resourceUpdate((WSDateValue) value);
+        if (value instanceof WSFloatingPointValue pointValue) {
+            retval = resourceUpdate(pointValue);
+        } else if (value instanceof WSBooleanValue booleanValue) {
+            retval = resourceUpdate(booleanValue);
+        } else if (value instanceof WSIntegerValue integerValue) {
+            retval = resourceUpdate(integerValue);
+        } else if (value instanceof WSTimerValue timerValue) {
+            retval = resourceUpdate(timerValue);
+        } else if (value instanceof WSWeekdayValue weekdayValue) {
+            retval = resourceUpdate(weekdayValue);
+        } else if (value instanceof WSEnumValue enumValue) {
+            retval = resourceUpdate(enumValue);
+        } else if (value instanceof WSTimeValue timeValue) {
+            retval = resourceUpdate(timeValue);
+        } else if (value instanceof WSDateValue dateValue) {
+            retval = resourceUpdate(dateValue);
         } else {
             throw new IhcExecption("Unsupported value type " + value.getClass().toString());
         }
@@ -199,18 +200,20 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSBooleanValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSBooleanValue\">\n"
-                + "    <q1:value>%s</q1:value>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSBooleanValue">
+                    <q1:value>%s</q1:value>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.value ? "true" : "false", value.resourceID);
@@ -220,20 +223,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSFloatingPointValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSFloatingPointValue\">\n"
-                + "    <q1:maximumValue>%s</q1:maximumValue>\n"
-                + "    <q1:minimumValue>%s</q1:minimumValue>\n"
-                + "    <q1:floatingPointValue>%s</q1:floatingPointValue>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSFloatingPointValue">
+                    <q1:maximumValue>%s</q1:maximumValue>
+                    <q1:minimumValue>%s</q1:minimumValue>
+                    <q1:floatingPointValue>%s</q1:floatingPointValue>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.maximumValue, value.minimumValue, value.value, value.resourceID);
@@ -243,20 +248,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSIntegerValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSIntegerValue\">\n"
-                + "    <q1:maximumValue>%s</q1:maximumValue>\n"
-                + "    <q1:minimumValue>%s</q1:minimumValue>\n"
-                + "    <q1:integer>%s</q1:integer>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSIntegerValue">
+                    <q1:maximumValue>%s</q1:maximumValue>
+                    <q1:minimumValue>%s</q1:minimumValue>
+                    <q1:integer>%s</q1:integer>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.maximumValue, value.minimumValue, value.value, value.resourceID);
@@ -266,18 +273,20 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSTimerValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSTimerValue\">\n"
-                + "    <q1:milliseconds>%s</q1:milliseconds>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSTimerValue">
+                    <q1:milliseconds>%s</q1:milliseconds>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.milliseconds, value.resourceID);
@@ -287,18 +296,20 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSWeekdayValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSWeekdayValue\">\n"
-                + "    <q1:weekdayNumber>%s</q1:weekdayNumber>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSWeekdayValue">
+                    <q1:weekdayNumber>%s</q1:weekdayNumber>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.weekdayNumber, value.resourceID);
@@ -308,20 +319,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSEnumValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSEnumValue\">\n"
-                + "    <q1:definitionTypeID>%s</q1:definitionTypeID>\n"
-                + "    <q1:enumValueID>%s</q1:enumValueID>\n"
-                + "    <q1:enumName>%s</q1:enumName>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSEnumValue">
+                    <q1:definitionTypeID>%s</q1:definitionTypeID>
+                    <q1:enumValueID>%s</q1:enumValueID>
+                    <q1:enumName>%s</q1:enumName>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.definitionTypeID, value.enumValueID, value.enumName,
@@ -332,20 +345,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSTimeValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSTimeValue\">\n"
-                + "    <q1:hours>%s</q1:hours>\n"
-                + "    <q1:minutes>%s</q1:minutes>\n"
-                + "    <q1:seconds>%s</q1:seconds>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSTimeValue">
+                    <q1:hours>%s</q1:hours>
+                    <q1:minutes>%s</q1:minutes>
+                    <q1:seconds>%s</q1:seconds>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.hours, value.minutes, value.seconds, value.resourceID);
@@ -355,20 +370,22 @@ public class IhcResourceInteractionService extends IhcBaseService {
     public boolean resourceUpdate(WSDateValue value) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <setResourceValue1 xmlns=\"utcs\">\n"
-                + "   <value xmlns:q1=\"utcs.values\" xsi:type=\"q1:WSDateValue\">\n"
-                + "    <q1:month>%s</q1:month>\n"
-                + "    <q1:year>%s</q1:year>\n"
-                + "    <q1:day>%s</q1:day>\n"
-                + "   </value>\n"
-                + "   <resourceID>%s</resourceID>\n"
-                + "   <isValueRuntime>true</isValueRuntime>\n"
-                + "  </setResourceValue1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <setResourceValue1 xmlns="utcs">
+                   <value xmlns:q1="utcs.values" xsi:type="q1:WSDateValue">
+                    <q1:month>%s</q1:month>
+                    <q1:year>%s</q1:year>
+                    <q1:day>%s</q1:day>
+                   </value>
+                   <resourceID>%s</resourceID>
+                   <isValueRuntime>true</isValueRuntime>
+                  </setResourceValue1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, value.month, value.year, value.day, value.resourceID);
@@ -389,20 +406,23 @@ public class IhcResourceInteractionService extends IhcBaseService {
      * Enable resources runtime value notifications.
      *
      * @param resourceIdList List of resource Identifiers.
-     * @return True is connection successfully opened.
      */
     public void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
         // @formatter:off
         final String soapQueryPrefix =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                + " <soap:Body>\n"
-                + "  <enableRuntimeValueNotifications1 xmlns=\"utcs\">\n";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                 <soap:Body>
+                  <enableRuntimeValueNotifications1 xmlns="utcs">
+                """;
 
         final String soapQuerySuffix =
-                  "  </enableRuntimeValueNotifications1>\n"
-                + " </soap:Body>\n"
-                + "</soap:Envelope>";
+                  """
+                  </enableRuntimeValueNotifications1>
+                 </soap:Body>
+                </soap:Envelope>\
+                """;
         // @formatter:on
 
         String query = soapQueryPrefix;
@@ -421,18 +441,19 @@ public class IhcResourceInteractionService extends IhcBaseService {
      *
      * @param timeoutInSeconds How many seconds to wait notifications.
      * @return List of received runtime value notifications.
-     * @throws SocketTimeoutException
-     * @throws IhcTimeoutExecption
+     * @throws IhcExecption
      */
     public List<WSResourceValue> waitResourceValueNotifications(int timeoutInSeconds) throws IhcExecption {
         // @formatter:off
         final String soapQuery =
-                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:utcs=\"utcs\">\n"
-                + " <soapenv:Body>\n"
-                + "  <utcs:waitForResourceValueChanges1>%s</utcs:waitForResourceValueChanges1>\n"
-                + " </soapenv:Body>\n"
-                + "</soapenv:Envelope>";
+                  """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:utcs="utcs">
+                 <soapenv:Body>
+                  <utcs:waitForResourceValueChanges1>%s</utcs:waitForResourceValueChanges1>
+                 </soapenv:Body>
+                </soapenv:Envelope>\
+                """;
         // @formatter:on
 
         String query = String.format(soapQuery, timeoutInSeconds);

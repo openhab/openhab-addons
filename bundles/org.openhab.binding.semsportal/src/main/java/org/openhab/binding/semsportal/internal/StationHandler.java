@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,8 +158,8 @@ public class StationHandler extends BaseThingHandler {
         String uuid = getThing().getProperties().get(STATION_UUID);
         if (uuid == null) {
             Object uuidObj = getThing().getConfiguration().get(STATION_UUID);
-            if (uuidObj instanceof String) {
-                uuid = (String) uuidObj;
+            if (uuidObj instanceof String stringValue) {
+                uuid = stringValue;
             }
         }
         return uuid == null ? "" : uuid;

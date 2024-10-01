@@ -24,7 +24,7 @@
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
-				<description>The Host address of the PowerView Hub</description>
+				<description>The host address of the PowerView Hub</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
@@ -43,6 +43,35 @@
 					default is weekly)</description>
 				<advanced>true</advanced>
 				<default>0</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="gateway">
+		<label>PowerView Gen3 Gateway</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Generation 3 Gateway/Gateway Pro</description>
+
+		<channel-groups>
+			<channel-group id="scenes" typeId="scenes"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Gen 3 Gateway</property>
+		</properties>
+
+		<representation-property>host</representation-property>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>The host address of the PowerView Gateway</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="hardRefresh" type="integer" required="false">
+				<label>Hard Refresh Interval</label>
+				<description>The number of minutes between hard refreshes of the PowerView Gateway</description>
+				<default>180</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

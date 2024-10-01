@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,9 +41,8 @@ public class GetChargeStateCommand extends IotDeviceCommand<ChargeMode> {
     @Override
     public ChargeMode convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            ChargeReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    ChargeReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            ChargeReport resp = jsonResponse.getResponsePayloadAs(gson, ChargeReport.class);
             return resp.isCharging != 0 ? ChargeMode.CHARGING : ChargeMode.IDLE;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

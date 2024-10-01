@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,8 +83,8 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         Map<String, Object> properties = new HashMap<>();
         // All devices need this parameter
         properties.put(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION, uidName);
-        if (device instanceof Sink) {
-            if (((Sink) device).isCombinedSink()) {
+        if (device instanceof Sink sink) {
+            if (sink.isCombinedSink()) {
                 thingType = PulseaudioBindingConstants.COMBINED_SINK_THING_TYPE;
             } else {
                 thingType = PulseaudioBindingConstants.SINK_THING_TYPE;

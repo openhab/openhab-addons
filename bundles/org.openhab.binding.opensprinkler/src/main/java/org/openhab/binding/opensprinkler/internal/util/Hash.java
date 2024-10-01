@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,7 @@ public class Hash {
                 sb.append(String.format("%02x", b & 0xff));
             }
 
-            String digest = sb.toString();
-
-            return digest;
+            return sb.toString();
         } catch (Exception exp) {
             // Instead of null we return the unhashed password.
             return unhashed;

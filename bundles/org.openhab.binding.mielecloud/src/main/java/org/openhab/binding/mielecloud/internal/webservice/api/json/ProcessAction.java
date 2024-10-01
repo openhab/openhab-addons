@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public enum ProcessAction {
     /**
-     * {@StateType} for unknown states.
+     * {@link StateType} for unknown states.
      */
     UNKNOWN,
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,8 @@ public class FlicButtonBindingConstants {
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "flicd-bridge");
     public static final ThingTypeUID FLICBUTTON_THING_TYPE = new ThingTypeUID(BINDING_ID, "button");
 
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections.singleton(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(FLICBUTTON_THING_TYPE);
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(FLICBUTTON_THING_TYPE);
 
     // List of all configuration options
     public static final String CONFIG_HOST_NAME = "hostname";
@@ -53,7 +53,7 @@ public class FlicButtonBindingConstants {
     public static final int BUTTON_OFFLINE_GRACE_PERIOD_SECONDS = 60;
 
     public static final Map<String, String> FLIC_OPENHAB_TRIGGER_EVENT_MAP = Collections
-            .unmodifiableMap(new HashMap<String, String>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
                     put("ButtonSingleClick", CommonTriggerEvents.SHORT_PRESSED);
                     put("ButtonDoubleClick", CommonTriggerEvents.DOUBLE_PRESSED);

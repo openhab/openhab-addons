@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
@@ -59,8 +60,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
         protected @Nullable String jsonAttributesTemplate;
     }
 
-    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();
@@ -69,15 +70,11 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
             throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
         }
 
-        String stateOn = channelConfiguration.stateOn != null ? channelConfiguration.stateOn
-                : channelConfiguration.payloadOn;
-        String stateOff = channelConfiguration.stateOff != null ? channelConfiguration.stateOff
-                : channelConfiguration.payloadOff;
+        OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
+                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        OnOffValue value = new OnOffValue(stateOn, stateOff, channelConfiguration.payloadOn,
-                channelConfiguration.payloadOff);
-
-        buildChannel(SWITCH_CHANNEL_ID, value, "state", componentConfiguration.getUpdateListener())
+        buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())

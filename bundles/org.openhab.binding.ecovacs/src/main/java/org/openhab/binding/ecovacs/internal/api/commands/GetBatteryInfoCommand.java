@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,9 +40,8 @@ public class GetBatteryInfoCommand extends IotDeviceCommand<Integer> {
     @Override
     public Integer convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            BatteryReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    BatteryReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            BatteryReport resp = jsonResponse.getResponsePayloadAs(gson, BatteryReport.class);
             return resp.percent;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

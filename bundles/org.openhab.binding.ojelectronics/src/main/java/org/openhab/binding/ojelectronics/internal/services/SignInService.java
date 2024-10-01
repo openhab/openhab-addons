@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class SignInService {
                 if (result.getResponse().getStatus() == 200) {
                     PostSignInResponseModel signInModel = Objects
                             .requireNonNull(gson.fromJson(getContentAsString(), PostSignInResponseModel.class));
-                    if (signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                    if (signInModel.errorCode != 0 || "".equals(signInModel.sessionId)) {
                         unauthorized.run();
                         return;
                     }

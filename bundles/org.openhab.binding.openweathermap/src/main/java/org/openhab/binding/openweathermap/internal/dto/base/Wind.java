@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,23 +28,11 @@ public class Wind {
         return speed;
     }
 
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
     public Double getDeg() {
         return deg;
     }
 
-    public void setDeg(Double deg) {
-        this.deg = deg;
-    }
-
     public @Nullable Double getGust() {
         return gust;
-    }
-
-    public void setGust(Double gust) {
-        this.gust = speed;
     }
 }

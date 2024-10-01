@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
+ * @author Arne Seime - Added Airthings Radon / Wave 2 support
  */
 @NonNullByDefault
 public class AirthingsDataParser {
@@ -73,6 +74,19 @@ public class AirthingsDataParser {
                             .subtract(BigDecimal.valueOf(273.15)).doubleValue());
             result.put(HUMIDITY, intFromBytes(data[6], data[7]) / 100D);
             result.put(TVOC, intFromBytes(data[8], data[9]));
+            return result;
+        } else {
+            throw new AirthingsParserException(String.format("Illegal data structure length '%d'", data.length));
+        }
+    }
+
+    public static Map<String, Number> parseWaveRadonData(int[] data) throws AirthingsParserException {
+        if (data.length == EXPECTED_DATA_LEN) {
+            final Map<String, Number> result = new HashMap<>();
+            result.put(HUMIDITY, data[1] / 2D);
+            result.put(RADON_SHORT_TERM_AVG, intFromBytes(data[4], data[5]));
+            result.put(RADON_LONG_TERM_AVG, intFromBytes(data[6], data[7]));
+            result.put(TEMPERATURE, intFromBytes(data[8], data[9]) / 100D);
             return result;
         } else {
             throw new AirthingsParserException(String.format("Illegal data structure length '%d'", data.length));

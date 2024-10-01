@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,8 @@ package org.openhab.binding.denonmarantz.internal.config;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Configuration class for the Denon Marantz binding.
@@ -23,43 +24,42 @@ import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public class DenonMarantzConfiguration {
 
     /**
      * The hostname (or IP Address) of the Denon Marantz AVR
      */
-    public String host;
+    public String host = "";
 
     /**
      * Whether Telnet communication is enabled
      */
-    public Boolean telnetEnabled;
+    public @Nullable Boolean telnetEnabled;
 
     /**
      * The telnet port
      */
-    public Integer telnetPort;
+    public Integer telnetPort = 23;
 
     /**
      * The HTTP port
      */
-    public Integer httpPort;
+    public Integer httpPort = 80;
 
     /**
      * The interval to poll the AVR over HTTP for changes
      */
-    public Integer httpPollingInterval;
+    public Integer httpPollingInterval = 5;
 
     // Default maximum volume
     public static final BigDecimal MAX_VOLUME = new BigDecimal("98");
 
-    private DenonMarantzConnector connector;
-
-    private Integer zoneCount;
+    private Integer zoneCount = 2;
 
     private BigDecimal mainVolumeMax = MAX_VOLUME;
 
-    public List<String> inputOptions;
+    public @Nullable List<String> inputOptions;
 
     public String getHost() {
         return host;
@@ -69,7 +69,7 @@ public class DenonMarantzConfiguration {
         this.host = host;
     }
 
-    public Boolean isTelnet() {
+    public @Nullable Boolean isTelnet() {
         return telnetEnabled;
     }
 
@@ -91,14 +91,6 @@ public class DenonMarantzConfiguration {
 
     public void setHttpPort(Integer httpPort) {
         this.httpPort = httpPort;
-    }
-
-    public DenonMarantzConnector getConnector() {
-        return connector;
-    }
-
-    public void setConnector(DenonMarantzConnector connector) {
-        this.connector = connector;
     }
 
     public BigDecimal getMainVolumeMax() {

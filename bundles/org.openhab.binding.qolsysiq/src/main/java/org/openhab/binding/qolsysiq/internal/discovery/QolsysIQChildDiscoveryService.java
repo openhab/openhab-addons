@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,13 @@ package org.openhab.binding.qolsysiq.internal.discovery;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.qolsysiq.internal.QolsysIQBindingConstants;
 import org.openhab.binding.qolsysiq.internal.handler.QolsysIQChildDiscoveryHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,48 +32,25 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class QolsysIQChildDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class QolsysIQChildDiscoveryService extends AbstractThingHandlerDiscoveryService<QolsysIQChildDiscoveryHandler> {
     private final Logger logger = LoggerFactory.getLogger(QolsysIQChildDiscoveryService.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_DISCOVERY_THING_TYPES_UIDS = Set
             .of(QolsysIQBindingConstants.THING_TYPE_PARTITION, QolsysIQBindingConstants.THING_TYPE_ZONE);
 
-    private @Nullable ThingHandler thingHandler;
-
     public QolsysIQChildDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 5, false);
+        super(QolsysIQChildDiscoveryHandler.class, SUPPORTED_DISCOVERY_THING_TYPES_UIDS, 5, false);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof QolsysIQChildDiscoveryHandler) {
-            ((QolsysIQChildDiscoveryHandler) handler).setDiscoveryService(this);
-            this.thingHandler = handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return thingHandler;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
     protected void startScan() {
-        ThingHandler handler = this.thingHandler;
-        if (handler != null) {
-            ((QolsysIQChildDiscoveryHandler) handler).startDiscovery();
-        }
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+        thingHandler.startDiscovery();
     }
 
     public void discoverQolsysIQChildThing(ThingUID thingUID, ThingUID bridgeUID, Integer id, String label) {

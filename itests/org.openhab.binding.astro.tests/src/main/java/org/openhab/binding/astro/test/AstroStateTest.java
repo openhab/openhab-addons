@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,8 +39,8 @@ import org.openhab.core.types.State;
 /**
  * Tests for the Astro Channels state
  *
- * @See {@link AstroParametrizedTestCases}
- * @author Petar Valchev - Initial implementation
+ * @see AstroParametrizedTestCases
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Migrated tests to pure Java

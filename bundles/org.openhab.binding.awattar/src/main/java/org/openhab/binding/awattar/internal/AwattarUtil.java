@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,13 +40,11 @@ public class AwattarUtil {
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
         dt = dt.plusMinutes(offset);
-        long result = dt.toInstant().toEpochMilli() - now;
-
-        return result;
+        return dt.toInstant().toEpochMilli() - now;
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
-        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plus(hour, ChronoUnit.HOURS);
+        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plusHours(hour);
     }
 
     public static DateTimeType getDateTimeType(long time, TimeZoneProvider tz) {

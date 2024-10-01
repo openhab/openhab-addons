@@ -50,7 +50,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The Current Humidity Reading of the Thermostat</description>
 		<category>Humidity</category>

@@ -44,7 +44,7 @@ The weather information that is retrieved is available as these channels:
 
 ### Things
 
-Here is an example of thing definition :
+Here is an example of thing definition:
 
 ```java
 synopanalyzer:synopanalyzer:orly [ stationId=7149 ]

@@ -1,0 +1,408 @@
+
+{
+  "status": "success",
+  "result": {
+    "id": "IDIDIDIDI",
+    "qrId": "SFWZNCVZQE",
+    "temperatureUnit": "C",
+    "room": {
+      "uid": "JCs8iZDs",
+      "name": "Uppe",
+      "icon": "Livingroom"
+    },
+    "acState": {
+      "timestamp": {
+        "time": "2024-07-10T13:37:08.892645Z",
+        "secondsAgo": 0
+      },
+      "on": true,
+      "mode": "cool",
+      "targetTemperature": 21,
+      "temperatureUnit": "C",
+      "fanLevel": "high",
+      "swing": "stopped",
+      "horizontalSwing": "stopped"
+    },
+    "lastStateChange": {
+      "time": "2024-07-10T09:34:59Z",
+      "secondsAgo": 14529
+    },
+    "lastStateChangeToOn": {
+      "time": "2024-06-29T20:05:50Z",
+      "secondsAgo": 927078
+    },
+    "lastStateChangeToOff": {
+      "time": "2024-06-29T20:05:49Z",
+      "secondsAgo": 927079
+    },
+    "location": {
+      "id": "Vy5YqF7Zhd",
+      "name": "Home",
+      "latLon": [
+        58.340266022912814,
+        13.833971541444877
+      ],
+      "address": [
+        "Address 13",
+        " Zip place",
+        " Country"
+      ],
+      "countryAlpha2": "SE",
+      "createTime": {
+        "time": "2023-12-11T13:49:04Z",
+        "secondsAgo": 18316084
+      },
+      "updateTime": {
+        "time": "2023-12-11T13:49:14Z",
+        "secondsAgo": 18316074
+      },
+      "features": [],
+      "geofenceTriggerRadius": 200,
+      "shareAnalytics": false,
+      "currency": ""
+    },
+    "connectionStatus": {
+      "isAlive": true,
+      "lastSeen": {
+        "time": "2024-07-10T13:36:50.018202Z",
+        "secondsAgo": 17
+      }
+    },
+    "firmwareVersion": "SKY30047",
+    "firmwareType": "esp8266ex",
+    "productModel": "skyv2",
+    "configGroup": "flash_ok",
+    "currentlyAvailableFirmwareVersion": "SKY30047",
+    "cleanFiltersNotificationEnabled": false,
+    "shouldShowFilterCleaningNotification": false,
+    "isGeofenceOnExitEnabled": false,
+    "isClimateReactGeofenceOnExitEnabled": false,
+    "isMotionGeofenceOnExitEnabled": false,
+    "isCalibrating": false,
+    "serial": "522101087",
+    "sensorsCalibration": {
+      "temperature": 0.0,
+      "humidity": 0.0
+    },
+    "motionSensors": [],
+    "tags": [],
+    "schedules": [],
+    "filtersCleaning": {
+      "acOnSecondsSinceLastFiltersClean": 17981666,
+      "filtersCleanSecondsThreshold": 1080000,
+      "shouldCleanFilters": true
+    },
+    "serviceSubscriptions": [],
+    "warrantyEligible": "no",
+    "warrantyEligibleUntil": {
+      "time": "2022-10-04T16:05:11Z",
+      "secondsAgo": 55719117
+    },
+    "features": [
+      "optimusTrial",
+      "showPlus"
+    ],
+    "homekitSupported": false,
+    "remoteCapabilities": {
+      "modes": {
+        "cool": {
+          "temperatures": {
+            "F": {
+              "isNative": false,
+              "values": [
+                61,
+                63,
+                64,
+                66,
+                68,
+                70,
+                72,
+                73,
+                75,
+                77,
+                79,
+                81,
+                82,
+                84,
+                86
+              ]
+            },
+            "C": {
+              "isNative": true,
+              "values": [
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30
+              ]
+            }
+          },
+          "fanLevels": [
+            "quiet",
+            "low",
+            "medium_low",
+            "medium",
+            "high",
+            "auto",
+            "strong"
+          ],
+          "swing": [
+            "stopped",
+            "rangeFull"
+          ],
+          "horizontalSwing": [
+            "stopped",
+            "rangeFull"
+          ]
+        },
+        "heat": {
+          "temperatures": {
+            "F": {
+              "isNative": false,
+              "values": [
+                46,
+                48,
+                50,
+                52,
+                54,
+                55,
+                57,
+                59,
+                61,
+                63,
+                64,
+                66,
+                68,
+                70,
+                72,
+                73,
+                75,
+                77,
+                79,
+                81,
+                82,
+                84,
+                86
+              ]
+            },
+            "C": {
+              "isNative": true,
+              "values": [
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30
+              ]
+            }
+          },
+          "fanLevels": [
+            "quiet",
+            "low",
+            "medium_low",
+            "medium",
+            "high",
+            "auto",
+            "strong"
+          ],
+          "swing": [
+            "stopped",
+            "rangeFull"
+          ],
+          "horizontalSwing": [
+            "stopped",
+            "rangeFull"
+          ]
+        },
+        "fan": {
+          "temperatures": {},
+          "fanLevels": [
+            "quiet",
+            "low",
+            "medium_low",
+            "medium",
+            "high",
+            "auto",
+            "strong"
+          ],
+          "swing": [
+            "stopped",
+            "rangeFull"
+          ],
+          "horizontalSwing": [
+            "stopped",
+            "rangeFull"
+          ]
+        },
+        "dry": {
+          "temperatures": {
+            "F": {
+              "isNative": false,
+              "values": [
+                61,
+                63,
+                64,
+                66,
+                68,
+                70,
+                72,
+                73,
+                75,
+                77,
+                79,
+                81,
+                82,
+                84,
+                86
+              ]
+            },
+            "C": {
+              "isNative": true,
+              "values": [
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30
+              ]
+            }
+          },
+          "swing": [
+            "stopped",
+            "rangeFull"
+          ],
+          "horizontalSwing": [
+            "stopped",
+            "rangeFull"
+          ]
+        },
+        "auto": {
+          "temperatures": {
+            "F": {
+              "isNative": false,
+              "values": [
+                61,
+                63,
+                64,
+                66,
+                68,
+                70,
+                72,
+                73,
+                75,
+                77,
+                79,
+                81,
+                82,
+                84,
+                86
+              ]
+            },
+            "C": {
+              "isNative": true,
+              "values": [
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29,
+                30
+              ]
+            }
+          },
+          "swing": [
+            "stopped",
+            "rangeFull"
+          ],
+          "horizontalSwing": [
+            "stopped",
+            "rangeFull"
+          ]
+        }
+      }
+    },
+    "remote": {
+      "toggle": false,
+      "window": false
+    },
+    "remoteFlavor": "Cheerful Orca",
+    "remoteAlternatives": [
+      "_samsung2b_different_quiet",
+      "samsung2b"
+    ],
+    "measurements": {
+      "time": {
+        "time": "2024-07-10T13:36:50.018202Z",
+        "secondsAgo": 18
+      },
+      "temperature": 21.1,
+      "humidity": 67,
+      "feelsLike": 21.1,
+      "rssi": -56
+    },
+    "accessPoint": {
+      "ssid": "SENSIBO-I-IDIDIDIDI"
+    },
+    "macAddress": "BC:FF:AA:AA:AA:AA",
+    "autoOffEnabled": false,
+    "optimusEnabled": true,
+    "optimusInsights": {
+      "Progress": {
+        "name": "Progress",
+        "start_time": "2024-07-10T09:29:38",
+        "data": {
+          "Percentage": 0.0
+        }
+      }
+    },
+    "hasPolicy": false
+  }
+}

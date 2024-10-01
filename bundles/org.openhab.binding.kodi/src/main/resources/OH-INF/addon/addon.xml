@@ -15,4 +15,20 @@
 		</parameter>
 	</config-description>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i)XBMC.*</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*MediaRenderer.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

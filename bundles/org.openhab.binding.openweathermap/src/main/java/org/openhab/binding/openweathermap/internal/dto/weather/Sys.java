@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.openweathermap.internal.dto.weather;
 
 /**
- * Generated Plain Old Java Objects class for {@link Sys} from JSON.
+ * Holds the data from the <code>sys</code> object of the JSON response of the Current weather data API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -29,47 +29,23 @@ public class Sys {
         return type;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
-
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Double getMessage() {
         return message;
     }
 
-    public void setMessage(Double message) {
-        this.message = message;
-    }
-
     public String getCountry() {
         return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public Integer getSunrise() {
         return sunrise;
     }
 
-    public void setSunrise(Integer sunrise) {
-        this.sunrise = sunrise;
-    }
-
     public Integer getSunset() {
         return sunset;
-    }
-
-    public void setSunset(Integer sunset) {
-        this.sunset = sunset;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension im
             PowermaxBridgeHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof PowermaxBridgeHandler) {
-                    handler = (PowermaxBridgeHandler) thingHandler;
+                if (thingHandler instanceof PowermaxBridgeHandler bridgeHandler) {
+                    handler = bridgeHandler;
                 }
             }
             if (thing == null) {

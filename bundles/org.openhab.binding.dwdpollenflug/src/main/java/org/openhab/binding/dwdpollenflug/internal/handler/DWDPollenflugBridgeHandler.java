@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.dwdpollenflug.internal.handler;
 
 import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -153,7 +154,7 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
                         f.completeExceptionally(new DWDPollingException("Request failed", e));
                     }
                 } else if (response.getStatus() != 200) {
-                    f.completeExceptionally(new DWDPollingException(getContentAsString()));
+                    f.completeExceptionally(new DWDPollingException(Objects.requireNonNull(getContentAsString())));
                 } else {
                     try {
                         DWDPollenflug pollenflugJSON = gson.fromJson(getContentAsString(), DWDPollenflug.class);
@@ -170,9 +171,8 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler regionListener) {
             logger.debug("Register region listener.");
-            final DWDPollenflugRegionHandler regionListener = (DWDPollenflugRegionHandler) childHandler;
             if (regionListeners.add(regionListener)) {
                 final DWDPollenflug localPollenflug = pollenflug;
                 if (localPollenflug != null) {
@@ -187,9 +187,9 @@ public class DWDPollenflugBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof DWDPollenflugRegionHandler) {
+        if (childHandler instanceof DWDPollenflugRegionHandler handler) {
             logger.debug("Unregister region listener.");
-            if (!regionListeners.remove((DWDPollenflugRegionHandler) childHandler)) {
+            if (!regionListeners.remove(handler)) {
                 logger.warn("Tried to remove listener {} but it was not registered. This is probably an error.",
                         childHandler);
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,12 +18,12 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationConditionType;
-import org.openhab.binding.tado.internal.api.model.TimerTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
+import org.openhab.binding.tado.swagger.codegen.api.model.TimerTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.ZoneState;
 
 /**
  * Builder for creation of overlay termination conditions.
@@ -84,8 +84,7 @@ public class TerminationConditionBuilder {
     }
 
     private OverlayTerminationCondition getDefaultTerminationCondition() throws IOException, ApiException {
-        OverlayTerminationCondition defaultTerminationCondition = zoneHandler.getDefaultTerminationCondition();
-        return defaultTerminationCondition;
+        return zoneHandler.getDefaultTerminationCondition();
     }
 
     private TimerTerminationCondition getCurrentOrDefaultTimerTermination(ZoneStateProvider zoneStateProvider)

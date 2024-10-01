@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCAnalogHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ANALOG);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ANALOG);
 
     private final Logger logger = LoggerFactory.getLogger(PLCAnalogHandler.class);
     private AtomicReference<PLCAnalogConfiguration> config = new AtomicReference<>();
@@ -118,11 +118,11 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                 } else {
                     logger.debug("Can not read data from LOGO!: {}.", S7Client.ErrorText(result));
                 }
-            } else if (command instanceof DecimalType) {
+            } else if (command instanceof DecimalType decimalCommand) {
                 byte[] buffer = new byte[2];
                 String type = channel.getAcceptedItemType();
                 if (ANALOG_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetShortAt(buffer, 0, ((DecimalType) command).intValue());
+                    S7.SetShortAt(buffer, 0, decimalCommand.intValue());
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -262,7 +262,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
                 cBuilder.withLabel(name);
                 cBuilder.withDescription("Analog " + text + " block " + name);
-                cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+                cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
                 tBuilder.withChannel(cBuilder.build());
                 setOldValue(name, null);
             }

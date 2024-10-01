@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,8 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.AfterEach;
@@ -131,13 +129,12 @@ public class SceneTests {
 
     @SuppressWarnings("null")
     @Test
-    public void addGetRemoveSceneViaRest() {
+    public void addGetRemoveSceneViaRest() throws Exception {
         // 1. Create
         String body = "{ 'name':'Cozy dinner', 'recycle':false, 'lights':['switch1','white1'], 'type':'LightScene'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes").request()
-                .post(Entity.json(body));
+        ContentResponse response = commonSetup.sendPost("/testuser/scenes", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for scene entry
         Entry<String, HueSceneEntry> entry = cs.ds.scenes.entrySet().stream().findAny().get();
@@ -152,22 +149,20 @@ public class SceneTests {
         assertThat(rule.getActions().get(1).getId(), is("white1"));
 
         // 2. Get
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes/" + entry.getKey()).request()
-                .get();
+        response = commonSetup.sendGet("/testuser/scenes/" + entry.getKey());
         assertEquals(200, response.getStatus());
-        HueSceneEntry fromJson = new Gson().fromJson(response.readEntity(String.class), HueSceneEntry.class);
+        HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
         assertThat(fromJson.name, is(entry.getValue().name));
 
         // 3. Remove
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes/" + entry.getKey()).request()
-                .delete();
+        response = commonSetup.sendDelete("/testuser/scenes/" + entry.getKey());
         assertEquals(200, response.getStatus());
         assertTrue(cs.ds.scenes.isEmpty());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void updateSceneViaRest() {
+    public void updateSceneViaRest() throws Exception {
         Rule rule = RuleBuilder.create("demo1").withTags("scene").withName("Some name") //
                 .withActions(Scenes.actionFromState("switch1", (Command) OnOffType.ON)).build();
 
@@ -175,10 +170,9 @@ public class SceneTests {
 
         // 3. Modify (just the name)
         String body = "{ 'name':'A new name'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes/demo1").request()
-                .put(Entity.json(body));
+        ContentResponse response = commonSetup.sendPut("/testuser/scenes/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("name"));
+        assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueSceneEntry> sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
         assertThat(sceneEntry.getValue().name, is("A new name"));
@@ -195,10 +189,9 @@ public class SceneTests {
 
         // Without store lights
         body = "{ 'lights':['white1']}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/scenes/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("lights"));
+        assertThat(response.getContentAsString(), containsString("lights"));
 
         sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
         assertThat(sceneEntry.getValue().name, is("Some name")); // should not have changed
@@ -207,26 +200,25 @@ public class SceneTests {
 
         // With store lights
         body = "{ 'lights':['white1'], 'storelightstate':true }";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes/demo1").request()
-                .put(Entity.json(body));
+        response = commonSetup.sendPut("/testuser/scenes/demo1", body);
         assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("lights"));
+        assertThat(response.getContentAsString(), containsString("lights"));
 
         sceneEntry = cs.ds.scenes.entrySet().stream().findAny().get();
         assertThat(sceneEntry.getValue().lights.get(0), is("white1"));
     }
 
     @Test
-    public void getAll() {
+    public void getAll() throws Exception {
         Rule rule = RuleBuilder.create("demo1").withTags("scene") //
                 .withActions(Scenes.actionFromState("switch1", (Command) OnOffType.ON)).build();
 
         ruleRegistry.add(rule);
 
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/scenes").request().get();
+        ContentResponse response = commonSetup.sendGet("/testuser/scenes");
         Type type = new TypeToken<Map<String, HueSceneEntry>>() {
         }.getType();
-        Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.readEntity(String.class), type);
+        Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.getContentAsString(), type);
         assertTrue(fromJson.containsKey("demo1"));
     }
 }

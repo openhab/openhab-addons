@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,8 +87,8 @@ public class CoronaStatsCountryHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof CoronaStatsWorldHandler) {
-                return (CoronaStatsWorldHandler) handler;
+            if (handler instanceof CoronaStatsWorldHandler worldHandler) {
+                return worldHandler;
             }
         }
 

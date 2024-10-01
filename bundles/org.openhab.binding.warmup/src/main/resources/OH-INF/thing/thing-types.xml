@@ -33,16 +33,25 @@
 		</supported-bridge-type-refs>
 
 		<label>Room</label>
-		<description>Warmup 4iE Device controlling a room</description>
+		<description>Warmup WiFi connected Thermostat(s) controlling a room</description>
 		<category>RadiatorControl</category>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="currentTemperature" typeId="system.indoor-temperature"/>
 			<channel id="targetTemperature" typeId="targetTemperature"/>
+			<channel id="fixedTemperature" typeId="fixedTemperature"/>
 			<channel id="overrideRemaining" typeId="overrideRemaining"/>
+			<channel id="energyToday" typeId="system.electric-energy"/>
 			<channel id="runMode" typeId="runMode"/>
 			<channel id="frostProtectionMode" typeId="frostProtectionMode"/>
+			<channel id="airTemperature" typeId="system.indoor-temperature"/>
+			<channel id="floor1Temperature" typeId="system.indoor-temperature"/>
+			<channel id="floor2Temperature" typeId="system.indoor-temperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>serialNumber</representation-property>
 
@@ -58,18 +67,18 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="currentTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Current Temperature</label>
-		<description>Current temperature in room, may be air or floor dependent on Heating Target</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>Target temperature currently set on device</description>
+		<category>Heating</category>
+		<state min="5" max="30" step="0.5" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="fixedTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Fixed Temperature</label>
+		<description>Target temperature for fixed mode on device</description>
 		<category>Heating</category>
 		<state min="5" max="30" step="0.5" readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -86,7 +95,7 @@
 		<item-type>String</item-type>
 		<label>Run Mode</label>
 		<description>The heat regulation mode of the thermostat</description>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="not_set">Not Set</option>
 				<option value="off">Off</option>

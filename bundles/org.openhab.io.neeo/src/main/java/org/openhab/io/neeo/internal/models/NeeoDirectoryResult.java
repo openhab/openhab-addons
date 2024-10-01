@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,10 +70,10 @@ public class NeeoDirectoryResult {
         this.totalMatchingItems = 1;
         this.browseIdentifier = req.getBrowseIdentifier();
 
-        this.items = Arrays.stream(listItems).skip(this.offset).limit(this.limit).map(item -> {
-            return new NeeoDirectoryResultItem(item.getTitle(), item.getThumbNailUri(), null, item.getItemValue(),
-                    true);
-        }).toArray(NeeoDirectoryResultItem[]::new);
+        this.items = Arrays.stream(listItems).skip(this.offset).limit(this.limit)
+                .map(item -> new NeeoDirectoryResultItem(item.getTitle(), item.getThumbNailUri(), null,
+                        item.getItemValue(), true))
+                .toArray(NeeoDirectoryResultItem[]::new);
 
         final NeeoDirectoryRequest current = new NeeoDirectoryRequest(this.offset, this.limit, this.browseIdentifier);
 

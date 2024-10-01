@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -63,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link OrbitBhyveBridgeHandler} is responsible for handling commands, which are
@@ -109,7 +111,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OrbitBhyveDiscoveryService.class);
+        return Set.of(OrbitBhyveDiscoveryService.class);
     }
 
     @Override
@@ -209,6 +211,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Get devices returned response status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing devices json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing devices json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
         } catch (InterruptedException e) {
@@ -230,13 +235,15 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Device response: {}", response.getContentAsString());
                 }
-                OrbitBhyveDevice device = gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
-                return device;
+                return gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
             } else {
                 logger.debug("Returned status: {}", response.getStatus());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Returned status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing device json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing device json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during getting device info: " + deviceId);
@@ -288,7 +295,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 ch = getThingChannel(event.getDeviceId(), CHANNEL_CONTROL);
                 if (ch != null) {
-                    updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
+                    updateState(ch.getUID(), OnOffType.from(!"off".equals(event.getMode())));
                 }
                 updateDeviceStatus(event.getDeviceId());
                 break;
@@ -314,12 +321,12 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         List<OrbitBhyveDevice> devices = getDevices();
         for (Thing th : getThing().getThings()) {
             if (th.isEnabled()) {
-                String deviceId = th.getUID().getId();
                 ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    String deviceId = sprinklerHandler.getSprinklerId();
                     for (OrbitBhyveDevice device : devices) {
-                        if (deviceId.equals(th.getUID().getId())) {
-                            updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                        if (deviceId.equals(device.getId())) {
+                            updateDeviceStatus(device, sprinklerHandler);
                         }
                     }
                 }
@@ -338,11 +345,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateDeviceStatus(String deviceId) {
         for (Thing th : getThing().getThings()) {
-            if (deviceId.equals(th.getUID().getId())) {
-                ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
+            ThingHandler handler = th.getHandler();
+            if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                if (deviceId.equals(sprinklerHandler.getSprinklerId())) {
                     OrbitBhyveDevice device = getDevice(deviceId);
-                    updateDeviceStatus(device, (OrbitBhyveSprinklerHandler) handler);
+                    updateDeviceStatus(device, sprinklerHandler);
                 }
             }
         }
@@ -352,8 +359,8 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         for (Thing th : getThing().getThings()) {
             if (program.getDeviceId().equals(th.getUID().getId())) {
                 ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler) {
-                    ((OrbitBhyveSprinklerHandler) handler).updateProgram(program);
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    sprinklerHandler.updateProgram(program);
                 }
             }
         }

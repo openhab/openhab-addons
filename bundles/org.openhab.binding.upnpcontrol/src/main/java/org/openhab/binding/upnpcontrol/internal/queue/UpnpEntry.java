@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,13 +14,14 @@ package org.openhab.binding.upnpcontrol.internal.queue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.upnpcontrol.internal.util.StringUtils;
+import org.openhab.core.util.StringUtils;
 
 /**
  *
@@ -149,7 +150,8 @@ public class UpnpEntry {
      * @return a URI for this entry. Thumbnail resources are not considered.
      */
     public String getRes() {
-        return resList.stream().filter(res -> !res.isThumbnailRes()).map(UpnpEntryRes::getRes).findAny().orElse("");
+        return Objects.requireNonNull(
+                resList.stream().filter(res -> !res.isThumbnailRes()).map(UpnpEntryRes::getRes).findAny().orElse(""));
     }
 
     public List<String> getProtocolList() {
@@ -178,7 +180,7 @@ public class UpnpEntry {
      * @return the URI for the album art.
      */
     public String getAlbumArtUri() {
-        return StringUtils.unEscapeXml(albumArtUri);
+        return Objects.requireNonNull(StringUtils.unEscapeXml(albumArtUri));
     }
 
     /**

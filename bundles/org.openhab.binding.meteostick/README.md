@@ -41,10 +41,11 @@ Set mode to one of the following depending on your device and region:
 
 ### meteostick_davis_iss Configuration Options
 
-| Option  | Description                               |
-|---------|-------------------------------------------|
-| channel | Sets the RF channel used for this sensor  |
-| spoon   | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319 |
+| Option             | Description                                                                                                                                                                      |
+|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| channel            | Sets the RF channel used for this sensor                                                                                                                                         |
+| spoon              | Size of rain spoon assembly for this sensor in mm.  Default value is 0.254 (0.01") for use with Davis part number 7345.280.  Set to 0.2 for use with Davis part number 7345.319  |
+| deltaWindDirection | For Davis 6410, 7911 & 7914 anemometers, if your anemometer cannot be mounted aiming true North set the direction it is aiming here (0 to 359 degrees). Default is 0 (for North) |
 
 ## Channels
 
@@ -69,15 +70,17 @@ Set mode to one of the following depending on your device and region:
 | rain-raw            | Number                | Raw rain counter from the tipping spoon sensor  |
 | rain-currenthour    | Number:Length         | The rainfall in the last 60 minutes             |
 | rain-lasthour       | Number:Length         | The rainfall in the previous hour               |
+| rain-today          | Number:Length         | Accumulated rainfall for today
 | solar-power         | Number                | Solar power from the sensor station             |
 | signal-strength     | Number                | Received signal strength                        |
 | low-battery         | Switch                | Low battery warning                             |
 
 #### Rainfall
 
-There are three channels associated with rainfall.
+There are four channels associated with rainfall.
 The raw counter from the tipping bucket is provided, the rainfall in the last 60 minutes is updated on each received rainfall and provides the past 60 minutes of rainfall.
 The rainfall in the previous hour is the rainfall for each hour of the day and is updated on the hour.
+The accumulated rainfall for today provides the amount of rain for the current date and will reset to 0 at timezone's midnight.
 
 ## Full Example
 
@@ -95,10 +98,10 @@ Things can be defined in the .things file as follows:
 
 ```java
 meteostick:meteostick_bridge:receiver [ port="/dev/tty.usbserial-AI02XA60", mode=1 ]
-meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2 ]
+meteostick:meteostick_davis_iss:iss (meteostick:meteostick_bridge:receiver) [ channel=1, spoon=0.2, deltaWindDirection=0 ]
 ```
 
-Note the configuration options for `port`, `mode`, `channel` and `spoon` above and adjust as needed for your specific hardware.
+Note the configuration options for `port`, `mode`, `channel`, `deltaWindDirection` and `spoon` above and adjust as needed for your specific hardware.
 
 ### items/meteostick.items
 
@@ -112,6 +115,7 @@ Number:Speed DavisVantageVueWindSpeed "ISS Wind Speed [%.1f m/s]" { channel="met
 Number:Speed DavisVantageVueWindSpeedAverage "ISS Average Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-average" }
 Number:Speed DavisVantageVueWindSpeedMaximum "ISS Maximum Wind Speed [%.1f m/s]" { channel="meteostick:meteostick_davis_iss:iss:wind-speed-last2min-maximum" }
 Number:Length DavisVantageVueRainCurrentHour "ISS Rain Current Hour [%.1f mm]" { channel="meteostick:meteostick_davis_iss:iss:rain-currenthour" }
+Number:Length DavisVantageVueRainToday "ISS Rain Today [%.1f mm]" { channel="meteostick:meteostick_davis_iss:iss:rain-today" }
 ```
 
 ### rules/meteostick.rules
@@ -157,6 +161,7 @@ then
   'dewptf' ->           dewptf,
   'tempf' ->            DavisVantageVueOutdoorTemperature.getStateAs(QuantityType).toUnit('°F').doubleValue,
   'rainin' ->           DavisVantageVueRainCurrentHour.getStateAs(QuantityType).toUnit('in').doubleValue,
+  'dailyrainin' ->	DavisVantageVueRainToday.getStateAs(QuantityType).toUnit('in').doubleValue,
   'baromin' ->          MeteoStickPressure.getStateAs(QuantityType).toUnit('inHg').doubleValue,
   'softwaretype' ->     'openHAB 2.4')
 

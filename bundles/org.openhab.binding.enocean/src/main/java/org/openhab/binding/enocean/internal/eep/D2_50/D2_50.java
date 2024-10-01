@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,15 +86,15 @@ public class D2_50 extends _VLDMessage {
         } else {
             switch (channelId) {
                 case CHANNEL_VENTILATIONOPERATIONMODE:
-                    if (command instanceof StringType) {
-                        byte value = (byte) (Helper.tryParseInt(((StringType) command).toString(), 15) & 0x0f);
+                    if (command instanceof StringType stringCommand) {
+                        byte value = (byte) (Helper.tryParseInt(stringCommand.toString(), 15) & 0x0f);
                         setData((byte) (MT_CONTROL + value), CONTROL_NOACTION, TMOC_NOACTION, THRESHOLD_NOACTION,
                                 THRESHOLD_NOACTION, CONTROL_NOACTION);
                     }
                     break;
                 case CHANNEL_TIMEROPERATIONMODE:
-                    if (command instanceof OnOffType) {
-                        byte value = (OnOffType) command == OnOffType.ON ? TMOC_ACTIVATE : TMOC_NOACTION;
+                    if (command instanceof OnOffType onOffCommand) {
+                        byte value = onOffCommand == OnOffType.ON ? TMOC_ACTIVATE : TMOC_NOACTION;
                         setData((byte) (MT_CONTROL + DOMC_NOACTION), CONTROL_NOACTION, value, THRESHOLD_NOACTION,
                                 THRESHOLD_NOACTION, CONTROL_NOACTION);
                     }
@@ -144,19 +144,20 @@ public class D2_50 extends _VLDMessage {
             case CHANNEL_AIRQUALITYVALUE2:
                 return new QuantityType<>((bytes[4] & 0x7f), Units.PERCENT);
             case CHANNEL_OUTDOORAIRTEMPERATURE:
-                return new QuantityType<>(-63 + (bytes[5] >>> 1), SIUnits.CELSIUS);
+                return new QuantityType<>(-63 + ((bytes[5] & 0xff) >>> 1), SIUnits.CELSIUS);
             case CHANNEL_SUPPLYAIRTEMPERATURE:
-                return new QuantityType<>(-63 + (bytes[6] >>> 2) + ((bytes[5] & 1) << 6), SIUnits.CELSIUS);
+                return new QuantityType<>(-63 + ((bytes[6] & 0xff) >>> 2) + ((bytes[5] & 1) << 6), SIUnits.CELSIUS);
             case CHANNEL_INDOORAIRTEMPERATURE:
-                return new QuantityType<>(-63 + (bytes[7] >>> 3) + ((bytes[6] & 0b11) << 5), SIUnits.CELSIUS);
+                return new QuantityType<>(-63 + ((bytes[7] & 0xff) >>> 3) + ((bytes[6] & 0b11) << 5), SIUnits.CELSIUS);
             case CHANNEL_EXHAUSTAIRTEMPERATURE:
-                return new QuantityType<>(-63 + (bytes[8] >>> 4) + ((bytes[7] & 0b111) << 4), SIUnits.CELSIUS);
+                return new QuantityType<>(-63 + ((bytes[8] & 0xff) >>> 4) + ((bytes[7] & 0b111) << 4), SIUnits.CELSIUS);
             case CHANNEL_SUPPLYAIRFANAIRFLOWRATE:
-                return new QuantityType<>((bytes[9] >>> 2) + ((bytes[8] & 0b1111) << 6), Units.CUBICMETRE_PER_MINUTE);
+                return new QuantityType<>(((bytes[9] & 0xff) >>> 2) + ((bytes[8] & 0b1111) << 6),
+                        Units.CUBICMETRE_PER_MINUTE);
             case CHANNEL_EXHAUSTAIRFANAIRFLOWRATE:
                 return new QuantityType<>((bytes[10] & 0xff) + ((bytes[9] & 0b11) << 8), Units.CUBICMETRE_PER_MINUTE);
             case CHANNEL_SUPPLYFANSPEED:
-                return new DecimalType((bytes[12] >>> 4) + (bytes[11] << 4));
+                return new DecimalType(((bytes[12] & 0xff) >>> 4) + (bytes[11] << 4));
             case CHANNEL_EXHAUSTFANSPEED:
                 return new DecimalType((bytes[13] & 0xff) + ((bytes[12] & 0b1111) << 8));
         }

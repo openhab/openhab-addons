@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
- * @see based on the calculations of http://www.suncalc.net
+ * @implNote based on the calculations of http://www.suncalc.net
  */
 public class SunCalc {
     private static final double J2000 = 2451545.0;
@@ -346,7 +346,7 @@ public class SunCalc {
     public static Map<SunPhaseName, Range> sortByValue(Map<SunPhaseName, Range> map) {
         List<Entry<SunPhaseName, Range>> list = new ArrayList<>(map.entrySet());
 
-        Collections.sort(list, new Comparator<Entry<SunPhaseName, Range>>() {
+        Collections.sort(list, new Comparator<>() {
             @Override
             public int compare(Entry<SunPhaseName, Range> p1, Entry<SunPhaseName, Range> p2) {
                 Range p1Range = p1.getValue();

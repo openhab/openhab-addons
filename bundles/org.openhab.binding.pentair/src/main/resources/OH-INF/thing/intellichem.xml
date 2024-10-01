@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pentair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="intellichem">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ip_bridge"/>
+			<bridge-type-ref id="serial_bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Intellichem</label>
+		<description>A Pentair Intellichem controller.</description>
+
+		<channels>
+			<channel id="phReading" typeId="phReading"/>
+			<channel id="orpReading" typeId="orpReading"/>
+			<channel id="phSetPoint" typeId="phSetPoint"/>
+			<channel id="orpSetPoint" typeId="orpSetPoint"/>
+			<channel id="tank1Level" typeId="tankLevel"/>
+			<channel id="tank2Level" typeId="tankLevel"/>
+			<channel id="calciumHardness" typeId="calciumHardness"/>
+			<channel id="cyaReading" typeId="cyaReading"/>
+			<channel id="alkalinity" typeId="alkalinity"/>
+
+			<channel id="phDoserType" typeId="phDoserType"/>
+			<channel id="orpDoserType" typeId="orpDoserType"/>
+			<channel id="phDoserStatus" typeId="doserStatus"/>
+			<channel id="orpDoserStatus" typeId="doserStatus"/>
+			<channel id="phDoseTime" typeId="doseTime"/>
+			<channel id="orpDoseTime" typeId="doseTime"/>
+			<channel id="lsi" typeId="lsi"/>
+			<channel id="saltLevel" typeId="saltlevel"/>
+			<channel id="temperature" typeId="temperature"/>
+
+			<channel id="alarmWaterflow" typeId="alarmWaterFlow"/>
+			<channel id="alarmPh" typeId="alarmPh"/>
+			<channel id="alarmOrp" typeId="alarmOrp"/>
+			<channel id="alarmPhTank" typeId="alarmPhTank"/>
+			<channel id="alarmOrpTank" typeId="alarmOrpTank"/>
+			<channel id="alarmProbeFault" typeId="alarmProbeFault"/>
+
+			<channel id="warningPhLockout" typeId="warningPhLockout"/>
+			<channel id="warningPhDailyLimitReached" typeId="warningPhDailyLimitReached"/>
+			<channel id="warningOrpDailyLimitReached" typeId="warningOrpDailyLimitReached"/>
+			<channel id="warningInvalidSetup" typeId="warningInvalidSetup"/>
+			<channel id="warningChloinatorCommError" typeId="warningChlorinatorCommError"/>
+		</channels>
+
+		<properties>
+			<property name="firmwareVersion">Firmware Version</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer">
+				<label>ID</label>
+				<description>The ID of the device (in decimal, not hex)</description>
+				<default>144</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="phReading">
+		<item-type>Number</item-type>
+		<label>PH Reading</label>
+		<description>Current PH reading.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="orpReading">
+		<item-type>Number</item-type>
+		<label>ORP Reading</label>
+		<description>Current Oxidation Reduction Potential (ORP) reading.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="phSetPoint">
+		<item-type>Number</item-type>
+		<label>PH Set Point</label>
+		<description>Current PH set point.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="orpSetPoint">
+		<item-type>Number</item-type>
+		<label>ORP Set Point</label>
+		<description>Oxidation Reduction Potential (ORP) set point.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tankLevel">
+		<item-type>Number</item-type>
+		<label>Tank Level</label>
+		<description>Tank level (1-7).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="calciumHardness">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Calcium Hardess</label>
+		<description>Calcium hardness (ppm).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cyaReading">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CYA Reading</label>
+		<description>Cyanuric acid reading (ppm).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alkalinity">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Total Alkalinity</label>
+		<description>Total Alkalinity reading (ppm).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="phDoserType">
+		<item-type>String</item-type>
+		<label>PH Doser Type</label>
+		<description>The doser type for PH (None, CO2, Acid).</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="CO2">CO2</option>
+				<option value="ACID">Acid</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="orpDoserType">
+		<item-type>String</item-type>
+		<label>ORP Doser Type</label>
+		<description>The doser type for ORP (None, ORP).</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">None</option>
+				<option value="ORP">ORP</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="doserStatus">
+		<item-type>Switch</item-type>
+		<label>Doser Status</label>
+		<description>Whether the chemical is currently dosing.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doseTime">
+		<item-type>Number:Time</item-type>
+		<label>Dose Time</label>
+		<description>The time a particular chemical has been dosing.</description>
+	</channel-type>
+
+	<channel-type id="lsi">
+		<item-type>Number</item-type>
+		<label>LSI</label>
+		<description>Langelier Saturation Index.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="saltLevel">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>Salt Level (PPM)</label>
+		<description>Current salt content reading of the water (PPM).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmWaterFlow">
+		<item-type>Switch</item-type>
+		<label>Water Flow Alarm</label>
+		<description>Water flow alarm (on = no water flow).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmPh">
+		<item-type>Switch</item-type>
+		<label>PH Alarm</label>
+		<description>PH alarm reported.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmOrp">
+		<item-type>Switch</item-type>
+		<label>ORP Alarm</label>
+		<description>ORP alarm reported.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmPhTank">
+		<item-type>Switch</item-type>
+		<label>PH Tank Alarm</label>
+		<description>PH tank alarm reported.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmOrpTank">
+		<item-type>Switch</item-type>
+		<label>ORP Tank Alarm</label>
+		<description>ORP tank alarm reported.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarmProbeFault">
+		<item-type>Switch</item-type>
+		<label>Probe Fault Alarm</label>
+		<description>Probe fault alarm reported.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningPhLockout">
+		<item-type>Switch</item-type>
+		<label>PH Lockout Warning</label>
+		<description>Unit is in PH Lockout.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningPhDailyLimitReached">
+		<item-type>Switch</item-type>
+		<label>PH Daily Limit Reached</label>
+		<description>Daily limit of PH dosing has been reached.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningOrpDailyLimitReached">
+		<item-type>Switch</item-type>
+		<label>ORP Daily Limit Reached</label>
+		<description>Daily limit of ORP dosing has been reached.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningInvalidSetup">
+		<item-type>Switch</item-type>
+		<label>Invalid Setup</label>
+		<description>Invalid setup for the unit.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningChlorinatorCommError">
+		<item-type>Switch</item-type>
+		<label>Chlorinator Comm Error</label>
+		<description>Error in communicating with the Chlorinator.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

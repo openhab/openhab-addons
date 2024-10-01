@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,13 +87,12 @@ public class NikobusRollershutterModuleHandler extends NikobusModuleHandler {
     @Override
     protected int valueFromCommand(String channelId, Command command) {
         Optional<PositionEstimator> positionEstimator = getPositionEstimator(channelId);
-        if (command instanceof DecimalType) {
-            return positionEstimator.map(estimator -> {
-                return estimator.processSetPosition(((DecimalType) command).intValue());
-            }).orElseThrow(() -> {
-                throw new IllegalArgumentException(
-                        "Received position request but no estimation configured for channel " + channelId);
-            });
+        if (command instanceof DecimalType decimalCommand) {
+            return positionEstimator.map(estimator -> estimator.processSetPosition(decimalCommand.intValue()))
+                    .orElseThrow(() -> {
+                        throw new IllegalArgumentException(
+                                "Received position request but no estimation configured for channel " + channelId);
+                    });
         }
         int result = convertCommandToValue(channelId, command);
         positionEstimator.ifPresent(PositionEstimator::cancelStopMovement);

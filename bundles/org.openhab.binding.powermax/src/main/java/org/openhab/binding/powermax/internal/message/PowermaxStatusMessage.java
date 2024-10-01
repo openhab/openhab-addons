@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,7 +181,7 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
             } else if (zoneEType == 0x05) {
                 // Violated (Motion)
                 PowermaxZoneSettings zone = panelSettings.getZoneSettings(eventZone);
-                if ((zone != null) && zone.getSensorType().equalsIgnoreCase("unknown")) {
+                if ((zone != null) && "unknown".equalsIgnoreCase(zone.getSensorType())) {
                     zone.setSensorType(PowermaxSensorType.MOTION_SENSOR_1.getLabel());
                 }
                 updatedState.getZone(eventZone).tripped.setValue(true);
@@ -276,11 +276,11 @@ public class PowermaxStatusMessage extends PowermaxBaseMessage {
                     // the sensor type always triggers an alarm
                     // or the system is armed away
                     // or the system is armed home and the zone is not interior(-follow)
-                    boolean armed = (!zone.getType().equalsIgnoreCase("Non-Alarm")
+                    boolean armed = (!"Non-Alarm".equalsIgnoreCase(zone.getType())
                             && (zone.isAlwaysInAlarm() || (mode == PowermaxArmMode.ARMED_AWAY.getCode())
                                     || ((mode == PowermaxArmMode.ARMED_HOME.getCode())
-                                            && !zone.getType().equalsIgnoreCase("Interior-Follow")
-                                            && !zone.getType().equalsIgnoreCase("Interior"))));
+                                            && !"Interior-Follow".equalsIgnoreCase(zone.getType())
+                                            && !"Interior".equalsIgnoreCase(zone.getType()))));
                     updatedState.getZone(i).armed.setValue(armed);
                 }
             });

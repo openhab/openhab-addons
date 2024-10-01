@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.folderwatcher.internal.api.exception.AuthException;
 import org.openhab.binding.folderwatcher.internal.api.util.BinaryUtils;
+import org.openhab.binding.folderwatcher.internal.api.util.HttpUtilException;
 import org.openhab.binding.folderwatcher.internal.api.util.HttpUtils;
 
 /**
@@ -46,8 +48,8 @@ public abstract class AWS4SignerBase {
     public static final String SCHEME = "AWS4";
     public static final String ALGORITHM = "HMAC-SHA256";
     public static final String TERMINATOR = "aws4_request";
-    public static final String ISO8601BasicFormat = "yyyyMMdd'T'HHmmss'Z'";
-    public static final String DateStringFormat = "yyyyMMdd";
+    public static final String ISO8601_BASIC_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
+    public static final String DATESTRING_FORMAT = "yyyyMMdd";
     protected URL endpointUrl;
     protected String httpMethod;
     protected String serviceName;
@@ -61,14 +63,14 @@ public abstract class AWS4SignerBase {
         this.serviceName = serviceName;
         this.regionName = regionName;
 
-        dateTimeFormat = new SimpleDateFormat(ISO8601BasicFormat);
+        dateTimeFormat = new SimpleDateFormat(ISO8601_BASIC_FORMAT);
         dateTimeFormat.setTimeZone(new SimpleTimeZone(0, "UTC"));
-        dateStampFormat = new SimpleDateFormat(DateStringFormat);
+        dateStampFormat = new SimpleDateFormat(DATESTRING_FORMAT);
         dateStampFormat.setTimeZone(new SimpleTimeZone(0, "UTC"));
     }
 
     protected static String getCanonicalizeHeaderNames(Map<String, String> headers) {
-        List<String> sortedHeaders = new ArrayList<String>();
+        List<String> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers.keySet());
         Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
 
@@ -87,7 +89,7 @@ public abstract class AWS4SignerBase {
             return "";
         }
 
-        List<String> sortedHeaders = new ArrayList<String>();
+        List<String> sortedHeaders = new ArrayList<>();
         sortedHeaders.addAll(headers.keySet());
         Collections.sort(sortedHeaders, String.CASE_INSENSITIVE_ORDER);
 
@@ -100,13 +102,12 @@ public abstract class AWS4SignerBase {
     }
 
     protected static String getCanonicalRequest(URL endpoint, String httpMethod, String queryParameters,
-            String canonicalizedHeaderNames, String canonicalizedHeaders, String bodyHash) {
-        String canonicalRequest = httpMethod + "\n" + getCanonicalizedResourcePath(endpoint) + "\n" + queryParameters
-                + "\n" + canonicalizedHeaders + "\n" + canonicalizedHeaderNames + "\n" + bodyHash;
-        return canonicalRequest;
+            String canonicalizedHeaderNames, String canonicalizedHeaders, String bodyHash) throws HttpUtilException {
+        return httpMethod + "\n" + getCanonicalizedResourcePath(endpoint) + "\n" + queryParameters + "\n"
+                + canonicalizedHeaders + "\n" + canonicalizedHeaderNames + "\n" + bodyHash;
     }
 
-    protected static String getCanonicalizedResourcePath(URL endpoint) {
+    protected static String getCanonicalizedResourcePath(URL endpoint) throws HttpUtilException {
         if (endpoint == null) {
             return "/";
         }
@@ -123,12 +124,12 @@ public abstract class AWS4SignerBase {
         }
     }
 
-    public static String getCanonicalizedQueryString(Map<String, String> parameters) {
+    public static String getCanonicalizedQueryString(Map<String, String> parameters) throws HttpUtilException {
         if (parameters == null || parameters.isEmpty()) {
             return "";
         }
 
-        SortedMap<String, String> sorted = new TreeMap<String, String>();
+        SortedMap<String, String> sorted = new TreeMap<>();
         Iterator<Map.Entry<String, String>> pairs = parameters.entrySet().iterator();
 
         while (pairs.hasNext()) {
@@ -153,40 +154,39 @@ public abstract class AWS4SignerBase {
     }
 
     protected static String getStringToSign(String scheme, String algorithm, String dateTime, String scope,
-            String canonicalRequest) {
-        String stringToSign = scheme + "-" + algorithm + "\n" + dateTime + "\n" + scope + "\n"
+            String canonicalRequest) throws AuthException {
+        return scheme + "-" + algorithm + "\n" + dateTime + "\n" + scope + "\n"
                 + BinaryUtils.toHex(hash(canonicalRequest));
-        return stringToSign;
     }
 
-    public static byte[] hash(String text) {
+    public static byte[] hash(String text) throws AuthException {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(text.getBytes("UTF-8"));
             return md.digest();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to compute hash while signing request: " + e.getMessage(), e);
+            throw new AuthException("Unable to compute hash while signing request: " + e.getMessage(), e);
         }
     }
 
-    public static byte[] hash(byte[] data) {
+    public static byte[] hash(byte[] data) throws AuthException {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(data);
             return md.digest();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to compute hash while signing request: " + e.getMessage(), e);
+            throw new AuthException("Unable to compute hash while signing request: " + e.getMessage(), e);
         }
     }
 
-    protected static byte[] sign(String stringData, byte[] key, String algorithm) {
+    protected static byte[] sign(String stringData, byte[] key, String algorithm) throws AuthException {
         try {
             byte[] data = stringData.getBytes("UTF-8");
             Mac mac = Mac.getInstance(algorithm);
             mac.init(new SecretKeySpec(key, algorithm));
             return mac.doFinal(data);
         } catch (Exception e) {
-            throw new RuntimeException("Unable to calculate a request signature: " + e.getMessage(), e);
+            throw new AuthException("Unable to calculate a request signature: " + e.getMessage(), e);
         }
     }
 }

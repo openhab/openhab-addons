@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,8 +65,8 @@ public class LGWebOSCommandExtension extends AbstractConsoleCommandExtension imp
             LGWebOSHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof LGWebOSHandler) {
-                    handler = (LGWebOSHandler) thingHandler;
+                if (thingHandler instanceof LGWebOSHandler webOSHandler) {
+                    handler = webOSHandler;
                 }
             }
             if (thing == null) {

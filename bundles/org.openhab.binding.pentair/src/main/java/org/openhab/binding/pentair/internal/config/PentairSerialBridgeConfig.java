@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,16 @@
  */
 package org.openhab.binding.pentair.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Configuration parameters for Serial Bridge
+ * The {@link PentairSerialBridgeConfig } class contains the configuration parameters for Serial Bridge
  *
  * @author Jeff James - initial contribution
  *
  */
+@NonNullByDefault
 public class PentairSerialBridgeConfig {
     /** path or name of serial port, usually /dev/ttyUSB0 format for linux/mac, COM1 for windows */
-    public String serialPort;
-    /** ID to use when sending commands on the Pentair RS485 bus. */
-    public Integer id;
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{ serialPort=" + serialPort + ", id=" + id + "}";
-    }
+    public String serialPort = "";
 }

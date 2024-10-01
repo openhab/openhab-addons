@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public class RotelBindingConstants {
     public static final String THING_TYPE_ID_RSX1550 = "rsx1550";
     public static final String THING_TYPE_ID_RSX1560 = "rsx1560";
     public static final String THING_TYPE_ID_RSX1562 = "rsx1562";
+    public static final String THING_TYPE_ID_RX1052 = "rx1052";
     public static final String THING_TYPE_ID_A11 = "a11";
     public static final String THING_TYPE_ID_A12 = "a12";
     public static final String THING_TYPE_ID_A14 = "a14";
@@ -91,6 +92,7 @@ public class RotelBindingConstants {
     public static final ThingTypeUID THING_TYPE_RSX1550 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RSX1550);
     public static final ThingTypeUID THING_TYPE_RSX1560 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RSX1560);
     public static final ThingTypeUID THING_TYPE_RSX1562 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RSX1562);
+    public static final ThingTypeUID THING_TYPE_RX1052 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_RX1052);
     public static final ThingTypeUID THING_TYPE_A11 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_A11);
     public static final ThingTypeUID THING_TYPE_A12 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_A12);
     public static final ThingTypeUID THING_TYPE_A14 = new ThingTypeUID(BINDING_ID, THING_TYPE_ID_A14);
@@ -163,6 +165,8 @@ public class RotelBindingConstants {
     public static final String CHANNEL_MAIN_MUTE = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_MUTE;
     public static final String CHANNEL_MAIN_BASS = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_BASS;
     public static final String CHANNEL_MAIN_TREBLE = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_TREBLE;
+    public static final String CHANNEL_MAIN_SPEAKER_A = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_SPEAKER_A;
+    public static final String CHANNEL_MAIN_SPEAKER_B = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_SPEAKER_B;
     public static final String CHANNEL_MAIN_OTHER_COMMAND = CHANNEL_GROUP_MAIN_ZONE + "#" + CHANNEL_OTHER_COMMAND;
 
     public static final String CHANNEL_GROUP_ZONE1 = "zone1";
@@ -332,6 +336,7 @@ public class RotelBindingConstants {
     public static final String KEY_POWER_ZONE2 = "power_zone2";
     public static final String KEY_POWER_ZONE3 = "power_zone3";
     public static final String KEY_POWER_ZONE4 = "power_zone4";
+    public static final String KEY_POWER_ZONES = "power_zones";
     public static final String KEY_SOURCE_ZONE2 = "source_zone2";
     public static final String KEY_SOURCE_ZONE3 = "source_zone3";
     public static final String KEY_SOURCE_ZONE4 = "source_zone4";

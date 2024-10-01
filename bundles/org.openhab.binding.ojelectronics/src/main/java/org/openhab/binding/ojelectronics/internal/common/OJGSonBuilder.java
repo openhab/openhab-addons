@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public final class OJGSonBuilder {
     /**
      * Gets a correct initialized {@link Gson}
      *
-     * @return {@link GSon}
+     * @return {@link com.google.gson.GSon}
      */
     public static Gson getGSon() {
         return new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).setPrettyPrinting()

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -769,10 +769,10 @@ class AtlonaPro3PortocolHandler {
                             AtlonaPro3Constants.CHANNEL_POWER), OnOffType.OFF);
                     break;
                 default:
-                    logger.warn("Invalid power response: '{}'", resp);
+                    logger.debug("Invalid power response: '{}'", resp);
             }
         } else {
-            logger.warn("Invalid power response: '{}'", resp);
+            logger.debug("Invalid power response: '{}'", resp);
         }
     }
 
@@ -790,7 +790,7 @@ class AtlonaPro3PortocolHandler {
             version = m.group(1);
             callback.setProperty(AtlonaPro3Constants.PROPERTY_VERSION, version);
         } else {
-            logger.warn("Invalid version response: '{}'", resp);
+            logger.debug("Invalid version response: '{}'", resp);
         }
     }
 
@@ -808,7 +808,7 @@ class AtlonaPro3PortocolHandler {
             modelType = resp;
             callback.setProperty(AtlonaPro3Constants.PROPERTY_TYPE, modelType);
         } else {
-            logger.warn("Invalid Type response: '{}'", resp);
+            logger.debug("Invalid Type response: '{}'", resp);
         }
     }
 
@@ -819,7 +819,7 @@ class AtlonaPro3PortocolHandler {
      */
     private void handlePanelLockResponse(String resp) {
         callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
-                AtlonaPro3Constants.CHANNEL_PANELLOCK), RSP_LOCK.equals(resp) ? OnOffType.ON : OnOffType.OFF);
+                AtlonaPro3Constants.CHANNEL_PANELLOCK), OnOffType.from(RSP_LOCK.equals(resp)));
     }
 
     /**
@@ -845,13 +845,13 @@ class AtlonaPro3PortocolHandler {
                                 portNbr, AtlonaPro3Constants.CHANNEL_PORTPOWER), OnOffType.OFF);
                         break;
                     default:
-                        logger.warn("Invalid port power response: '{}'", resp);
+                        logger.debug("Invalid port power response: '{}'", resp);
                 }
             } catch (NumberFormatException e) {
-                logger.warn("Invalid port power (can't parse number): '{}'", resp);
+                logger.debug("Invalid port power (can't parse number): '{}'", resp);
             }
         } else {
-            logger.warn("Invalid port power response: '{}'", resp);
+            logger.debug("Invalid port power response: '{}'", resp);
         }
     }
 
@@ -885,7 +885,7 @@ class AtlonaPro3PortocolHandler {
                 callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PORT, outPort,
                         AtlonaPro3Constants.CHANNEL_PORTOUTPUT), new DecimalType(inPort));
             } catch (NumberFormatException e) {
-                logger.warn("Invalid port output response (can't parse number): '{}'", resp);
+                logger.debug("Invalid port output response (can't parse number): '{}'", resp);
             }
         }
     }
@@ -918,10 +918,10 @@ class AtlonaPro3PortocolHandler {
                             hdmiPortNbr, AtlonaPro3Constants.CHANNEL_PORTMIRRORENABLED), OnOffType.ON);
                 }
             } catch (NumberFormatException e) {
-                logger.warn("Invalid mirror response (can't parse number): '{}'", resp);
+                logger.debug("Invalid mirror response (can't parse number): '{}'", resp);
             }
         } else {
-            logger.warn("Invalid mirror response: '{}'", resp);
+            logger.debug("Invalid mirror response: '{}'", resp);
         }
     }
 
@@ -941,10 +941,10 @@ class AtlonaPro3PortocolHandler {
                 callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_MIRROR, hdmiPortNbr,
                         AtlonaPro3Constants.CHANNEL_PORTMIRROR), new DecimalType(0));
             } catch (NumberFormatException e) {
-                logger.warn("Invalid unmirror response (can't parse number): '{}'", resp);
+                logger.debug("Invalid unmirror response (can't parse number): '{}'", resp);
             }
         } else {
-            logger.warn("Invalid unmirror response: '{}'", resp);
+            logger.debug("Invalid unmirror response: '{}'", resp);
         }
     }
 
@@ -965,10 +965,10 @@ class AtlonaPro3PortocolHandler {
                 callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_VOLUME, portNbr,
                         AtlonaPro3Constants.CHANNEL_VOLUME), new DecimalType(level));
             } catch (NumberFormatException e) {
-                logger.warn("Invalid volume response (can't parse number): '{}'", resp);
+                logger.debug("Invalid volume response (can't parse number): '{}'", resp);
             }
         } else {
-            logger.warn("Invalid volume response: '{}'", resp);
+            logger.debug("Invalid volume response: '{}'", resp);
         }
     }
 
@@ -995,13 +995,13 @@ class AtlonaPro3PortocolHandler {
                                 portNbr, AtlonaPro3Constants.CHANNEL_VOLUME_MUTE), OnOffType.OFF);
                         break;
                     default:
-                        logger.warn("Invalid volume mute response: '{}'", resp);
+                        logger.debug("Invalid volume mute response: '{}'", resp);
                 }
             } catch (NumberFormatException e) {
-                logger.warn("Invalid volume mute (can't parse number): '{}'", resp);
+                logger.debug("Invalid volume mute (can't parse number): '{}'", resp);
             }
         } else {
-            logger.warn("Invalid volume mute response: '{}'", resp);
+            logger.debug("Invalid volume mute response: '{}'", resp);
         }
     }
 
@@ -1012,7 +1012,7 @@ class AtlonaPro3PortocolHandler {
      */
     private void handleIrLockResponse(String resp) {
         callback.stateChanged(AtlonaPro3Utilities.createChannelID(AtlonaPro3Constants.GROUP_PRIMARY,
-                AtlonaPro3Constants.CHANNEL_IRENABLE), RSP_IRON.equals(resp) ? OnOffType.ON : OnOffType.OFF);
+                AtlonaPro3Constants.CHANNEL_IRENABLE), OnOffType.from(RSP_IRON.equals(resp)));
     }
 
     /**
@@ -1253,10 +1253,10 @@ class AtlonaPro3PortocolHandler {
          */
         String getResponse() throws Exception {
             final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
-            if (lastResponse instanceof String) {
-                return (String) lastResponse;
-            } else if (lastResponse instanceof Exception) {
-                throw (Exception) lastResponse;
+            if (lastResponse instanceof String stringResponse) {
+                return stringResponse;
+            } else if (lastResponse instanceof Exception exceptionResponse) {
+                throw exceptionResponse;
             } else if (lastResponse == null) {
                 throw new Exception("Didn't receive response in time");
             } else {

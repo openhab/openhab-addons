@@ -15,4 +15,16 @@
 		</parameter>
 	</config-description>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>modelName</name>
+					<regex>Logitech Media Server</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

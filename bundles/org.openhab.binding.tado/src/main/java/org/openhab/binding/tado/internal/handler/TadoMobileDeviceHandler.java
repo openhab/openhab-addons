@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tado.internal.TadoBindingConstants;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.MobileDevice;
 import org.openhab.binding.tado.internal.config.TadoMobileDeviceConfig;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.MobileDevice;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -108,7 +108,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
         try {
             MobileDevice device = getMobileDevice();
             updateState(TadoBindingConstants.CHANNEL_MOBILE_DEVICE_AT_HOME,
-                    device.getLocation().isAtHome() ? OnOffType.ON : OnOffType.OFF);
+                    OnOffType.from(device.getLocation().isAtHome()));
         } catch (IOException | ApiException e) {
             logger.debug("Status update of mobile device with id {} failed: {}", configuration.id, e.getMessage());
         }

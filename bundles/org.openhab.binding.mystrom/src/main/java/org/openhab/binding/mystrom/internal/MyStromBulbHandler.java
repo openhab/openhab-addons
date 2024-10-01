@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,18 +95,18 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                         }
                         break;
                     case CHANNEL_COLOR:
-                        if (command instanceof HSBType) {
-                            if (Objects.equals(((HSBType) command).as(OnOffType.class), OnOffType.OFF)) {
+                        if (command instanceof HSBType hsb) {
+                            if (Objects.equals(hsb.as(OnOffType.class), OnOffType.OFF)) {
                                 sResp = sendToBulb("off", null, null, null);
                             } else {
-                                String hsv = command.toString().replaceAll(",", ";");
+                                String hsv = command.toString().replace(",", ";");
                                 sResp = sendToBulb("on", hsv, null, HSV);
                             }
                         }
                         break;
                     case CHANNEL_BRIGHTNESS:
-                        if (command instanceof PercentType) {
-                            if (Objects.equals(((PercentType) command).as(OnOffType.class), OnOffType.OFF)) {
+                        if (command instanceof PercentType brightness) {
+                            if (Objects.equals(brightness.as(OnOffType.class), OnOffType.OFF)) {
                                 sResp = sendToBulb("off", null, null, null);
                             } else {
                                 if (lastMode.equals(MONO)) {
@@ -122,9 +122,8 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                         }
                         break;
                     case CHANNEL_COLOR_TEMPERATURE:
-                        if (command instanceof PercentType) {
-                            String mono = convertPercentageToMyStromCT((PercentType) command) + ";"
-                                    + lastBrightness.toString();
+                        if (command instanceof PercentType temperature) {
+                            String mono = convertPercentageToMyStromCT(temperature) + ";" + lastBrightness.toString();
                             sResp = sendToBulb("on", mono, null, MONO);
                         }
                         break;
@@ -184,10 +183,10 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private void updateDevice(@Nullable MyStromBulbResponse deviceInfo) {
         if (deviceInfo != null) {
-            updateState(CHANNEL_SWITCH, deviceInfo.on ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SWITCH, OnOffType.from(deviceInfo.on));
             updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
-            if (deviceInfo instanceof MyStromDeviceSpecificInfo) {
-                updateState(CHANNEL_POWER, QuantityType.valueOf(((MyStromDeviceSpecificInfo) deviceInfo).power, WATT));
+            if (deviceInfo instanceof MyStromDeviceSpecificInfo info) {
+                updateState(CHANNEL_POWER, QuantityType.valueOf(info.power, WATT));
             }
             if (deviceInfo.on) {
                 try {
@@ -200,9 +199,9 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
                         lastColor = new HSBType(lastColor.getHue() + ",0," + lastBrightness);
                         updateState(CHANNEL_COLOR_TEMPERATURE, lastColorTemperature);
                     } else if (numSemicolon == 2 && deviceInfo.mode.equals(HSV)) {
-                        lastColor = HSBType.valueOf(deviceInfo.color.replaceAll(";", ","));
+                        lastColor = HSBType.valueOf(deviceInfo.color.replace(";", ","));
                         lastBrightness = lastColor.getBrightness();
-                    } else if (!deviceInfo.color.equals("") && deviceInfo.mode.equals(RGB)) {
+                    } else if (!"".equals(deviceInfo.color) && deviceInfo.mode.equals(RGB)) {
                         int r = Integer.parseInt(deviceInfo.color.substring(2, 4), 16);
                         int g = Integer.parseInt(deviceInfo.color.substring(4, 6), 16);
                         int b = Integer.parseInt(deviceInfo.color.substring(6, 8), 16);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,8 +91,8 @@ class LxControlUpDownAnalog extends LxControl {
     }
 
     private void handleCommands(Command command) throws IOException {
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             if (minValue != null && maxValue != null && value >= minValue && value <= maxValue) {
                 sendAction(value.toString());
             } else {

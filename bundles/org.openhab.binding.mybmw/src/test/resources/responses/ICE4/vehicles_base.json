@@ -1,0 +1,48 @@
+[
+    {
+        "vin": "anonymousICE4",
+        "mappingInfo": {
+            "isAssociated": false,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2023-01-16T15:33:53.940Z",
+            "model": "435i",
+            "year": 2014,
+            "color": 4284572001,
+            "brand": "BMW",
+            "driveTrain": "COMBUSTION",
+            "headUnitType": "NBT",
+            "headUnitRaw": "NBT",
+            "hmiVersion": "ID4",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 7,
+                    "year": 19
+                },
+                "iStep": 539,
+                "seriesCluster": "F020"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 3,
+                    "year": 14
+                },
+                "iStep": 502,
+                "seriesCluster": "F020"
+            },
+            "bodyType": "F33",
+            "countryOfOrigin": "DE",
+            "a4aType": "USB_ONLY",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]

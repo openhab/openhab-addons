@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.util.Collections;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
@@ -27,9 +28,10 @@ import org.openhab.core.types.State;
 /**
  * @author Sven Strohschein - Initial contribution
  */
+@NonNullByDefault
 public class EventCameraChannelHelperTest {
 
-    private EventCameraChannelHelper helper;
+    private @NonNullByDefault({}) EventCameraChannelHelper helper;
 
     @BeforeEach
     public void before() {

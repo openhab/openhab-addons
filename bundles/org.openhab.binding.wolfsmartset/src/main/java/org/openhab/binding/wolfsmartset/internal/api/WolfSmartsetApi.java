@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WolfSmartsetCloudConnector} class is used for connecting to the Wolf Smartset cloud service
+ * The {@link WolfSmartsetApi} class is used for connecting to the Wolf Smartset cloud service
  *
  * @author Bo Biene - Initial contribution
  */
@@ -125,7 +125,6 @@ public class WolfSmartsetApi {
                 logger.trace("Login succeeded but failed to create session {}", loginFailedCounter);
                 return false;
             }
-
         } catch (WolfSmartsetCloudException e) {
             logger.debug("Error logging on to Wolf Smartset ({}): {}", loginFailedCounter, e.getMessage());
             loginFailedCounter++;
@@ -319,7 +318,7 @@ public class WolfSmartsetApi {
     private String getSystemDescriptionString(Integer systemId, Integer gatewayId) {
         String resp = "";
         try {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("SystemId", systemId.toString());
             params.put("GatewayId", gatewayId.toString());
             resp = requestGET("api/portal/GetGuiDescriptionForGateway", params).get();
@@ -407,7 +406,7 @@ public class WolfSmartsetApi {
     }
 
     private CompletableFuture<String> requestGET(String url) throws WolfSmartsetCloudException {
-        return requestGET(url, new HashMap<String, String>());
+        return requestGET(url, new HashMap<>());
     }
 
     private CompletableFuture<String> requestGET(String url, Map<String, String> params)

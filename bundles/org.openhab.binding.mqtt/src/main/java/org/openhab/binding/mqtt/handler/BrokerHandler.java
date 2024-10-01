@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     }
 
     /**
-     * This method gets called by the {@link PinningSSLContextProvider} if a new public key
+     * This method gets called by the {@link PinTrustManager} if a new public key
      * or certificate hash got pinned. The hash is stored in the thing configuration.
      */
     @Override
@@ -83,6 +83,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             logger.error("Received pins hash is empty!");
             return;
         }
+        PinMessageDigest hashDigest = pin.getHashDigest();
+        if (hashDigest == null) {
+            logger.error("Received pins message digest is not set!");
+            return;
+        }
+
         String configKey = null;
         try {
             switch (pin.getType()) {
@@ -99,13 +105,13 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         }
 
         Configuration thingConfig = editConfiguration();
-        thingConfig.put(configKey, HexUtils.bytesToHex(hash));
+        thingConfig.put(configKey, hashDigest.getMethod() + ":" + HexUtils.bytesToHex(hash));
         updateConfiguration(thingConfig);
     }
 
     @Override
     public void pinnedConnectionDenied(Pin pin) {
-        // We don't need to handle this here, because the {@link PinningSSLContextProvider}
+        // We don't need to handle this here, because the {@link PinTrustManager}
         // will throw a CertificateException if the connection fails.
     }
 
@@ -136,12 +142,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
 
     /**
      * Reads the thing configuration related to public key or certificate pinning, creates an appropriate a
-     * {@link PinningSSLContextProvider} and assigns it to the {@link MqttBrokerConnection} instance.
+     * {@link PinTrustManager} and assigns it to the {@link MqttBrokerConnection} instance.
      * The instance need to be set before calling this method. If the SHA-256 algorithm is not supported
      * by the platform, this method will do nothing.
      *
      * @throws IllegalArgumentException Throws this exception, if provided hash values cannot be
-     *             assigned to the {@link PinningSSLContextProvider}.
+     *             assigned to the {@link PinTrustManager}.
      */
     protected void assignSSLContextProvider(BrokerHandlerConfig config, MqttBrokerConnection connection,
             PinnedCallback callback) throws IllegalArgumentException {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,39 +28,19 @@ public class City {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Coord getCoord() {
         return coord;
     }
 
-    public void setCoord(Coord coord) {
-        this.coord = coord;
-    }
-
     public String getCountry() {
         return country;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public Integer getPopulation() {
         return population;
-    }
-
-    public void setPopulation(Integer population) {
-        this.population = population;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.qolsysiq.internal.client.dto.event;
 import org.openhab.binding.qolsysiq.internal.client.dto.model.Zone;
 
 /**
- * A {@link ZoneEventType.ZONE_UPDATE} type of {@link ZoneEvent} message sent by the panel
+ * A {@link ZoneEventType#ZONE_UPDATE} type of {@link ZoneEvent} message sent by the panel
  *
  * @author Dan Cunningham - Initial contribution
  */

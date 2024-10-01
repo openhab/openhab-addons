@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,9 +35,9 @@ public class NhcAction2 extends NhcAction {
     private final Logger logger = LoggerFactory.getLogger(NhcAction2.class);
 
     private volatile boolean booleanState;
-    private String deviceType;
-    private String deviceTechnology;
-    private String deviceModel;
+    private final String deviceType;
+    private final String deviceTechnology;
+    private final String deviceModel;
 
     NhcAction2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
             @Nullable String location, ActionType type, NikoHomeControlCommunication nhcComm) {

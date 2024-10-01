@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,12 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link gpioBindingConstants} class defines common constants, which are
+ * The {@link GPIOBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Nils Bauer - Initial contribution
  * @author Martin Dagarin - Pull Up/Down GPIO pin
+ * @author Jeremy Rumpf - Added Action/Edge constants
  */
 @NonNullByDefault
 public class GPIOBindingConstants {
@@ -43,11 +44,26 @@ public class GPIOBindingConstants {
     public static final String DEBOUNCING_TIME = "debouncing_time";
     public static final String STRICT_DEBOUNCING = "debouncing_strict";
     public static final String PULLUPDOWN_RESISTOR = "pullupdown";
+    public static final String ACTION_SET_UNDEF = "SETUNDEF";
+    public static final String ACTION_NOTHING = "NOTHING";
+    public static final String ACTION_REFRESH = "REFRESH";
+    public static final String ACTION_ALL_ON = "ALLON";
+    public static final String ACTION_ALL_OFF = "ALLOFF";
 
     // Pull Up/Down modes
     public static final String PUD_OFF = "OFF";
     public static final String PUD_DOWN = "DOWN";
     public static final String PUD_UP = "UP";
+
+    // Pulse
+    public static final String PULSE_OFF = "OFF";
+    public static final String PULSE_ON = "ON";
+    public static final String PULSE_BLINK = "BLINK";
+
+    // Edge modes
+    public static final String EDGE_EITHER = "EDGE_EITHER";
+    public static final String EDGE_RISING = "EDGE_RISING";
+    public static final String EDGE_FALLING = "EDGE_FALLING";
 
     // GPIO config properties
     public static final String GPIO_ID = "gpioId";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,8 +78,8 @@ public class VZoneHandler extends ADThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
-            if (command instanceof StringType) {
-                String cmd = ((StringType) command).toString();
+            if (command instanceof StringType stringCommand) {
+                String cmd = stringCommand.toString();
                 if (CMD_OPEN.equalsIgnoreCase(cmd)) {
                     sendCommand(ADCommand.setZone(config.address, ADCommand.ZONE_OPEN));
                     setChannelState(OnOffType.OFF);

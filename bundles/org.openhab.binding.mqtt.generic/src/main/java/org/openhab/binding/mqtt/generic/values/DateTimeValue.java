@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 
 /**
  * Implements a datetime value.
@@ -35,8 +36,8 @@ public class DateTimeValue extends Value {
 
     @Override
     public DateTimeType parseCommand(Command command) throws IllegalArgumentException {
-        if (command instanceof DateTimeType) {
-            return ((DateTimeType) command);
+        if (command instanceof DateTimeType dateTimeCommand) {
+            return dateTimeCommand;
         } else {
             return DateTimeType.valueOf(command.toString());
         }
@@ -49,5 +50,11 @@ public class DateTimeValue extends Value {
             return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(((DateTimeType) command).getZonedDateTime());
         }
         return String.format(formatPattern, ((DateTimeType) command).getZonedDateTime());
+    }
+
+    @Override
+    public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
+        return StateDescriptionFragmentBuilder.create().withReadOnly(readOnly)
+                .withPattern("%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS");
     }
 }

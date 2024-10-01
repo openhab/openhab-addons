@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,9 +39,7 @@ public class HPFeatures {
         boolean localScannerStatus = false;
 
         for (Node n = root.getFirstChild(); n != null; n = n.getNextSibling()) {
-            if (n instanceof Element) {
-                Element feature = (Element) n;
-
+            if (n instanceof Element feature) {
                 NodeList resourceType = feature.getElementsByTagName("dd:ResourceType");
 
                 if (resourceType.getLength() > 0) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,9 +230,7 @@ public class BluetoothCharacteristic {
     }
 
     /**
-     * Get the service to which this characteristic belongs
-     *
-     * @return the {@link BluetoothService}
+     * Set the service to which this characteristic belongs
      */
     public void setService(BluetoothService service) {
         this.service = service;

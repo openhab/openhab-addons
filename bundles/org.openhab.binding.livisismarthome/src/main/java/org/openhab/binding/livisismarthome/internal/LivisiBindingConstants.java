@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,7 @@ public class LivisiBindingConstants {
     public static final String DEVICE_ISS2 = "ISS2"; // inwall smart switch
     public static final String DEVICE_WSD = "WSD"; // wall mounted smoke detector
     public static final String DEVICE_WSD2 = "WSD2"; // wall mounted smoke detector
+    public static final String DEVICE_SIR = "SIR"; // wall mounted siren indoor
     public static final String DEVICE_WMD = "WMD"; // wall mounted motion detector indoor
     public static final String DEVICE_WMDO = "WMDO"; // wall mounted motion detector outdoor
     public static final String DEVICE_WSC2 = "WSC2"; // wall mounted smart controller (2 buttons)
@@ -88,12 +89,12 @@ public class LivisiBindingConstants {
 
     public static final Set<String> SUPPORTED_DEVICES = Set.of(DEVICE_SHC, DEVICE_SHCA, DEVICE_PSS, DEVICE_PSSO,
             DEVICE_BT_PSS, DEVICE_VARIABLE_ACTUATOR, DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_ISS2,
-            DEVICE_WSD, DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2,
-            DEVICE_ISR2, DEVICE_PSD, DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER,
+            DEVICE_WSD, DEVICE_WSD2, DEVICE_SIR, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2,
+            DEVICE_ISD2, DEVICE_ISR2, DEVICE_PSD, DEVICE_ANALOG_METER, DEVICE_GENERATION_METER, DEVICE_SMART_METER,
             DEVICE_TWO_WAY_METER);
 
     public static final Set<String> BATTERY_POWERED_DEVICES = Set.of(DEVICE_ISC2, DEVICE_RST, DEVICE_RST2, DEVICE_WRT,
-            DEVICE_WDS, DEVICE_WSD, DEVICE_WSD2, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8);
+            DEVICE_WDS, DEVICE_WSD, DEVICE_WSD2, DEVICE_SIR, DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8);
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -109,6 +110,7 @@ public class LivisiBindingConstants {
     public static final ThingTypeUID THING_TYPE_ISS2 = new ThingTypeUID(BINDING_ID, DEVICE_ISS2);
     public static final ThingTypeUID THING_TYPE_WSD = new ThingTypeUID(BINDING_ID, DEVICE_WSD);
     public static final ThingTypeUID THING_TYPE_WSD2 = new ThingTypeUID(BINDING_ID, DEVICE_WSD2);
+    public static final ThingTypeUID THING_TYPE_SIR = new ThingTypeUID(BINDING_ID, DEVICE_SIR);
     public static final ThingTypeUID THING_TYPE_WMD = new ThingTypeUID(BINDING_ID, DEVICE_WMD);
     public static final ThingTypeUID THING_TYPE_WMDO = new ThingTypeUID(BINDING_ID, DEVICE_WMDO);
     public static final ThingTypeUID THING_TYPE_WSC2 = new ThingTypeUID(BINDING_ID, DEVICE_WSC2);
@@ -125,9 +127,10 @@ public class LivisiBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = Set.of(THING_TYPE_PSS, THING_TYPE_PSSO,
             THING_TYPE_BT_PSS, THING_TYPE_VARIABLE_ACTUATOR, THING_TYPE_RST, THING_TYPE_RST2, THING_TYPE_WRT,
-            THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2, THING_TYPE_WMD, THING_TYPE_WMDO,
-            THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2, THING_TYPE_ISD2, THING_TYPE_ISR2, THING_TYPE_PSD,
-            THING_TYPE_ANALOG_METER, THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER, THING_TYPE_TWO_WAY_METER);
+            THING_TYPE_WDS, THING_TYPE_ISS2, THING_TYPE_WSD, THING_TYPE_WSD2, THING_TYPE_SIR, THING_TYPE_WMD,
+            THING_TYPE_WMDO, THING_TYPE_WSC2, THING_TYPE_BRC8, THING_TYPE_ISC2, THING_TYPE_ISD2, THING_TYPE_ISR2,
+            THING_TYPE_PSD, THING_TYPE_ANALOG_METER, THING_TYPE_GENERATION_METER, THING_TYPE_SMART_METER,
+            THING_TYPE_TWO_WAY_METER);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .concat(Stream.of(THING_TYPE_BRIDGE), SUPPORTED_DEVICE_THING_TYPES.stream()).collect(Collectors.toSet());
@@ -140,6 +143,9 @@ public class LivisiBindingConstants {
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_SMOKE = "smoke";
     public static final String CHANNEL_ALARM = "alarm";
+    public static final String CHANNEL_SIREN_ALARM = "sirenAlarm";
+    public static final String CHANNEL_SIREN_NOTIFICATION = "sirenNotification";
+    public static final String CHANNEL_SIREN_FEEDBACK = "sirenFeedback";
     public static final String CHANNEL_MOTION_COUNT = "motionCount";
     public static final String CHANNEL_LUMINANCE = "luminance";
     public static final String CHANNEL_OPERATION_MODE = "operationMode";

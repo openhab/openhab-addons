@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class RokuHttpException extends Exception {
     private static final long serialVersionUID = 1L;
+
+    public RokuHttpException(String errorMessage, Throwable t) {
+        super(errorMessage, t);
+    }
 
     public RokuHttpException(String errorMessage) {
         super(errorMessage);

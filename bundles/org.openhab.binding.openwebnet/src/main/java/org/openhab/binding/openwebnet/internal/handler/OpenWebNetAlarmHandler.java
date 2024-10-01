@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -43,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
+ * @author Giovanni Fabiani - Add zone alarm's tismestamp feature
  */
 @NonNullByDefault
 public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
@@ -53,7 +55,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
-    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<OpenWebNetAlarmHandler>();
+    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<>();
 
     private static final String BATTERY_OK = "OK";
     private static final String BATTERY_FAULT = "FAULT";
@@ -79,6 +81,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             // initially set zone alarm to NONE (it will be set if specific alarm message is
             // received)
             updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
+            // initializing timestamp
+            updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
         }
     }
 
@@ -112,7 +116,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
@@ -122,7 +126,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
                 send(Alarm.requestSystemStatus());
                 lastAllDevicesRefreshTS = System.currentTimeMillis();
             } catch (OWNException e) {
-                logger.warn("Excpetion while requesting alarm system status: {}", e.getMessage());
+                logger.warn("Exception while requesting alarm system status: {}", e.getMessage());
             }
         } else {
             logger.debug("--- refreshDevice() : refreshing SINGLE... ({})", thing.getUID());
@@ -218,6 +222,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
             case ZONE_ALARM_TECHNICAL:
             case ZONE_ALARM_TECHNICAL_RESET:
                 updateZoneAlarm(w);
+                updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
                 break;
             default:
                 logger.debug("Alarm.updateZone() Ignoring unsupported WHAT {}. Frame={}", msg.getWhat(), msg);
@@ -257,6 +262,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     private void resetAllZonesAlarmState() {
         for (OpenWebNetAlarmHandler h : zoneHandlers) {
             h.updateState(CHANNEL_ALARM_ZONE_ALARM, new StringType(ALARM_NONE));
+            h.updateState(CHANNEL_ALARM_ZONE_ALARM_TIMESTAMP, new DateTimeType());
         }
     }
 
@@ -266,8 +272,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.BURGLAR_ALARM.value().toString();
+    protected Who getManagedWho() {
+        return Who.BURGLAR_ALARM;
     }
 
     @Override

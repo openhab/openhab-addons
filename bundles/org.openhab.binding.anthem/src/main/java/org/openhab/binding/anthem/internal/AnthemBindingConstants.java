@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,9 @@ public class AnthemBindingConstants {
     // List of all Thing Type UIDs
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ANTHEM);
 
+    // Channel groups
+    public static final String CHANNEL_GROUP_GENERAL = "general";
+
     // Channel Ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_VOLUME = "volume";
@@ -40,6 +43,7 @@ public class AnthemBindingConstants {
     public static final String CHANNEL_ACTIVE_INPUT = "activeInput";
     public static final String CHANNEL_ACTIVE_INPUT_SHORT_NAME = "activeInputShortName";
     public static final String CHANNEL_ACTIVE_INPUT_LONG_NAME = "activeInputLongName";
+    public static final String CHANNEL_COMMAND = "command";
 
     // Connection-related configuration parameters
     public static final int DEFAULT_PORT = 14999;
@@ -47,4 +51,8 @@ public class AnthemBindingConstants {
     public static final int DEFAULT_COMMAND_DELAY_MSEC = 100;
 
     public static final char COMMAND_TERMINATION_CHAR = ';';
+
+    public static final String PROPERTY_REGION = "region";
+    public static final String PROPERTY_SOFTWARE_BUILD_DATE = "softwareBuildDate";
+    public static final String PROPERTY_NUM_AVAILABLE_INPUTS = "numAvailableInputs";
 }

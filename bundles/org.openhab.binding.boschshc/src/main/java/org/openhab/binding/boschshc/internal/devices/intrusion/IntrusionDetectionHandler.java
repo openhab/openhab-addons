@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,7 +93,7 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
                         CHANNEL_ACTIVE_CONFIGURATION_PROFILE),
                 true);
         this.registerService(intrusionDetectionControlStateService, this::updateChannels,
-                List.of(CHANNEL_ARMING_STATE));
+                List.of(CHANNEL_ARMING_STATE, CHANNEL_ACTIVE_CONFIGURATION_PROFILE));
         this.registerService(surveillanceAlarmService, this::updateChannels, List.of(CHANNEL_ALARM_STATE));
         this.registerStatelessService(armActionService);
         this.registerStatelessService(disarmActionService);
@@ -110,6 +110,7 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
 
     private void updateChannels(IntrusionDetectionControlState controlState) {
         super.updateState(CHANNEL_ARMING_STATE, new StringType(controlState.value.toString()));
+        super.updateState(CHANNEL_ACTIVE_CONFIGURATION_PROFILE, new StringType(controlState.activeProfile));
     }
 
     private void updateChannels(SurveillanceAlarmState surveillanceAlarmState) {
@@ -122,18 +123,18 @@ public class IntrusionDetectionHandler extends BoschSHCHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_ARM_ACTION:
-                if (command instanceof StringType) {
-                    armIntrusionDetectionSystem((StringType) command);
+                if (command instanceof StringType stringCommand) {
+                    armIntrusionDetectionSystem(stringCommand);
                 }
                 break;
             case CHANNEL_DISARM_ACTION:
-                if (command instanceof OnOffType) {
-                    disarmIntrusionDetectionSystem((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    disarmIntrusionDetectionSystem(onOffCommand);
                 }
                 break;
             case CHANNEL_MUTE_ACTION:
-                if (command instanceof OnOffType) {
-                    muteIntrusionDetectionSystem((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    muteIntrusionDetectionSystem(onOffCommand);
                 }
                 break;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,6 +151,12 @@ public class EcovacsXmppDevice implements EcovacsDevice {
     @Override
     public List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException {
         return sendCommand(new GetCleanLogsCommand());
+    }
+
+    @Override
+    public Optional<byte[]> downloadCleanMapImage(CleanLogRecord record)
+            throws EcovacsApiException, InterruptedException {
+        return Optional.empty();
     }
 
     @Override
@@ -347,9 +353,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 return null;
             }
 
-            if (iqRequest instanceof DeviceCommandIQ) {
-                DeviceCommandIQ iq = (DeviceCommandIQ) iqRequest;
-
+            if (iqRequest instanceof DeviceCommandIQ iq) {
                 try {
                     if (!iq.id.isEmpty()) {
                         CommandResponseHolder responseHolder = pendingCommands.remove(iq.id);
@@ -372,8 +376,8 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                 } catch (DataParsingException e) {
                     listener.onEventStreamFailure(EcovacsXmppDevice.this, e);
                 }
-            } else if (iqRequest instanceof ErrorIQ) {
-                StanzaError error = ((ErrorIQ) iqRequest).getError();
+            } else if (iqRequest instanceof ErrorIQ errorIQ) {
+                StanzaError error = errorIQ.getError();
                 logger.trace("{}: Got error response {}", getSerialNumber(), error);
                 listener.onEventStreamFailure(EcovacsXmppDevice.this,
                         new XMPPException.XMPPErrorException(iqRequest, error));

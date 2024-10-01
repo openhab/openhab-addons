@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ public class VenstarFanStateSerializer implements JsonDeserializer<VenstarFanSta
     @Override
     public VenstarFanState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-
         int key = element.getAsInt();
         try {
             return VenstarFanState.fromInt(key);

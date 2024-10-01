@@ -15,14 +15,15 @@
 			<label>MQTT Trigger Topic</label>
 			<description>An MQTT topic that this thing will subscribe to, to receive the trigger</description>
 		</parameter>
-		<parameter name="transformationPattern" type="text" groupName="transformations">
+		<parameter name="transformationPattern" type="text" groupName="transformations" multiple="true">
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[
 			Applies transformations to an incoming MQTT topic value.
 			This can be used to map the events sent by the device to common values for all devices using,
 			e.g. the MAP transformation.
 
-			You can chain transformations by separating them with the intersection character ∩.
+			You can chain transformations by listing each transformation on a separate line, or
+			by separating them with the intersection character ∩.
 			]]></description>
 			<advanced>true</advanced>
 		</parameter>

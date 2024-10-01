@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,13 +19,11 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Power;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
+import org.openhab.binding.sonnen.internal.communication.SonnenJsonPowerMeterDataDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -61,6 +59,10 @@ public class SonnenHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
+    private boolean sonnenAPIV2 = false;
+
+    private int disconnectionCounter = 0;
+
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public SonnenHandler(Thing thing) {
@@ -77,9 +79,13 @@ public class SonnenHandler extends BaseThingHandler {
                     "Parameter 'refresh Rate' msut be in the range 0-1000!");
             return;
         }
-        if (config.hostIP == null) {
+        if (config.hostIP.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP Address must be configured!");
             return;
+        }
+
+        if (!config.authToken.isEmpty()) {
+            sonnenAPIV2 = true;
         }
 
         serviceCommunication.setConfig(config);
@@ -101,13 +107,23 @@ public class SonnenHandler extends BaseThingHandler {
      * @return true if the update succeeded, false otherwise
      */
     private boolean updateBatteryData() {
-        String error = serviceCommunication.refreshBatteryConnection();
+        String error = "";
+        if (sonnenAPIV2) {
+            error = serviceCommunication.refreshBatteryConnectionAPICALLV2(arePowerMeterChannelsLinked());
+        } else {
+            error = serviceCommunication.refreshBatteryConnectionAPICALLV1();
+        }
         if (error.isEmpty()) {
             if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
                 updateStatus(ThingStatus.ONLINE);
+                disconnectionCounter = 0;
             }
         } else {
+            disconnectionCounter++;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            if (disconnectionCounter < 60) {
+                return true;
+            }
         }
         return error.isEmpty();
     }
@@ -134,7 +150,7 @@ public class SonnenHandler extends BaseThingHandler {
     }
 
     /**
-     * Start the job refreshing the oven status
+     * Start the job refreshing the battery status
      */
     private void startAutomaticRefresh() {
         ScheduledFuture<?> job = refreshJob;
@@ -176,6 +192,35 @@ public class SonnenHandler extends BaseThingHandler {
         if (isLinked(channelId)) {
             State state = null;
             SonnenJsonDataDTO data = serviceCommunication.getBatteryData();
+            // The sonnen API has two sub-channels, e.g. 4_1 and 4_2, one representing consumption and the
+            // other production. E.g. 4_1.kwh_imported represents the total production since the
+            // battery was installed.
+            SonnenJsonPowerMeterDataDTO[] dataPM = null;
+            if (arePowerMeterChannelsLinked()) {
+                dataPM = serviceCommunication.getPowerMeterData();
+            }
+
+            if (dataPM != null && dataPM.length >= 2) {
+                switch (channelId) {
+                    case CHANNELENERGYIMPORTEDSTATEPRODUCTION:
+                        state = new QuantityType<>(dataPM[0].getKwhImported(), Units.KILOWATT_HOUR);
+                        update(state, channelId);
+                        break;
+                    case CHANNELENERGYEXPORTEDSTATEPRODUCTION:
+                        state = new QuantityType<>(dataPM[0].getKwhExported(), Units.KILOWATT_HOUR);
+                        update(state, channelId);
+                        break;
+                    case CHANNELENERGYIMPORTEDSTATECONSUMPTION:
+                        state = new QuantityType<>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
+                        update(state, channelId);
+                        break;
+                    case CHANNELENERGYEXPORTEDSTATECONSUMPTION:
+                        state = new QuantityType<>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
+                        update(state, channelId);
+                        break;
+                }
+            }
+
             if (data != null) {
                 switch (channelId) {
                     case CHANNELBATTERYDISCHARGINGSTATE:
@@ -185,34 +230,34 @@ public class SonnenHandler extends BaseThingHandler {
                         update(OnOffType.from(data.isBatteryCharging()), channelId);
                         break;
                     case CHANNELCONSUMPTION:
-                        state = new QuantityType<Power>(data.getConsumptionHouse(), Units.WATT);
+                        state = new QuantityType<>(data.getConsumptionHouse(), Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELBATTERYDISCHARGING:
-                        state = new QuantityType<Power>(data.getbatteryCurrent() > 0 ? data.getbatteryCurrent() : 0,
+                        state = new QuantityType<>(data.getbatteryCurrent() > 0 ? data.getbatteryCurrent() : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELBATTERYCHARGING:
-                        state = new QuantityType<Power>(
-                                data.getbatteryCurrent() <= 0 ? (data.getbatteryCurrent() * -1) : 0, Units.WATT);
+                        state = new QuantityType<>(data.getbatteryCurrent() <= 0 ? (data.getbatteryCurrent() * -1) : 0,
+                                Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELGRIDFEEDIN:
-                        state = new QuantityType<Power>(data.getGridValue() > 0 ? data.getGridValue() : 0, Units.WATT);
+                        state = new QuantityType<>(data.getGridValue() > 0 ? data.getGridValue() : 0, Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELGRIDCONSUMPTION:
-                        state = new QuantityType<Power>(data.getGridValue() <= 0 ? (data.getGridValue() * -1) : 0,
+                        state = new QuantityType<>(data.getGridValue() <= 0 ? (data.getGridValue() * -1) : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELSOLARPRODUCTION:
-                        state = new QuantityType<Power>(data.getSolarProduction(), Units.WATT);
+                        state = new QuantityType<>(data.getSolarProduction(), Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELBATTERYLEVEL:
-                        state = new QuantityType<Dimensionless>(data.getBatteryChargingLevel(), Units.PERCENT);
+                        state = new QuantityType<>(data.getBatteryChargingLevel(), Units.PERCENT);
                         update(state, channelId);
                         break;
                     case CHANNELFLOWCONSUMPTIONBATTERYSTATE:
@@ -234,9 +279,24 @@ public class SonnenHandler extends BaseThingHandler {
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
                 }
-            } else {
-                update(null, channelId);
             }
+        } else {
+            update(null, channelId);
+        }
+    }
+
+    @SuppressWarnings("PMD.SimplifyBooleanReturns")
+    private boolean arePowerMeterChannelsLinked() {
+        if (isLinked(CHANNELENERGYIMPORTEDSTATEPRODUCTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYEXPORTEDSTATEPRODUCTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYIMPORTEDSTATECONSUMPTION)) {
+            return true;
+        } else if (isLinked(CHANNELENERGYEXPORTEDSTATECONSUMPTION)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

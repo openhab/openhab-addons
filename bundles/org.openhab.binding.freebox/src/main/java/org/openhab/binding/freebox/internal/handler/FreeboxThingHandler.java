@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -309,7 +309,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
             }
         }
         if (found) {
-            updateState(new ChannelUID(getThing().getUID(), REACHABLE), reachable ? OnOffType.ON : OnOffType.OFF);
+            updateState(new ChannelUID(getThing().getUID(), REACHABLE), OnOffType.from(reachable));
         }
         if (vendor != null && !vendor.isEmpty()) {
             updateProperty(Thing.PROPERTY_VENDOR, vendor);
@@ -387,7 +387,7 @@ public class FreeboxThingHandler extends BaseThingHandler {
     }
 
     private void updateGroupChannelSwitchState(String group, String channel, boolean state) {
-        updateState(new ChannelUID(getThing().getUID(), group, channel), state ? OnOffType.ON : OnOffType.OFF);
+        updateState(new ChannelUID(getThing().getUID(), group, channel), OnOffType.from(state));
     }
 
     private void updateGroupChannelStringState(String group, String channel, String state) {

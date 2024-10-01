@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,8 @@ public class GetContinuousCleaningCommand extends IotDeviceCommand<Boolean> {
     @Override
     public Boolean convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            EnabledStateReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    EnabledStateReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            EnabledStateReport resp = jsonResponse.getResponsePayloadAs(gson, EnabledStateReport.class);
             return resp.enabled != 0;
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

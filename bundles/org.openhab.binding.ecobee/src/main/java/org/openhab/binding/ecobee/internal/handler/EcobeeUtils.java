@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public final class EcobeeUtils {
      * Set the state to the passed value. If value is null, set the state to UNDEF
      */
     public static State undefOrOnOff(@Nullable Boolean value) {
-        return value == null ? UnDefType.UNDEF : (value.booleanValue() ? OnOffType.ON : OnOffType.OFF);
+        return value == null ? UnDefType.UNDEF : OnOffType.from(value);
     }
 
     public static State undefOrString(@Nullable String value) {

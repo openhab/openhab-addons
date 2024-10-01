@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -610,9 +610,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
 
         @Override
         public boolean equals(Object object) {
-            return object instanceof TrashDevice
-                    ? this.device.getDSID().equals(((TrashDevice) object).getDevice().getDSID())
-                    : false;
+            return object instanceof TrashDevice td ? this.device.getDSID().equals(td.getDevice().getDSID()) : false;
         }
     }
 

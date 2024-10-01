@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,11 +21,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -114,7 +114,7 @@ public class NeeoBrainService extends DefaultServletService {
      * @param api the non-null api
      * @param context the non-null context
      */
-    public NeeoBrainService(NeeoApi api, ServiceContext context, ClientBuilder clientBuilder) {
+    public NeeoBrainService(NeeoApi api, ServiceContext context, HttpClient httpClient) {
         Objects.requireNonNull(api, "api cannot be null");
         Objects.requireNonNull(context, "context cannot be null");
 
@@ -125,7 +125,7 @@ public class NeeoBrainService extends DefaultServletService {
         scheduler.execute(() -> {
             resendState();
         });
-        request = new HttpRequest(clientBuilder);
+        request = new HttpRequest(httpClient);
     }
 
     /**
@@ -141,7 +141,7 @@ public class NeeoBrainService extends DefaultServletService {
             return false;
         }
 
-        if (paths[0].equalsIgnoreCase("device")) {
+        if ("device".equalsIgnoreCase(paths[0])) {
             return true;
         }
 
@@ -158,7 +158,7 @@ public class NeeoBrainService extends DefaultServletService {
             throw new IllegalArgumentException("paths cannot be empty");
         }
 
-        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
+        final boolean hasDeviceStart = "device".equalsIgnoreCase(paths[0]);
 
         if (hasDeviceStart) {
             final PathInfo pathInfo = new PathInfo(paths);
@@ -190,9 +190,9 @@ public class NeeoBrainService extends DefaultServletService {
         // 4. Old subscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}/{devicekey}
         // 4. Old unsubscribe path: /{thingUID}/subscribe or unsubscribe/{deviceid}
 
-        final boolean hasDeviceStart = paths[0].equalsIgnoreCase("device");
-        if (hasDeviceStart && (paths.length >= 3 && !paths[2].equalsIgnoreCase("subscribe")
-                && !paths[2].equalsIgnoreCase("unsubscribe"))) {
+        final boolean hasDeviceStart = "device".equalsIgnoreCase(paths[0]);
+        if (hasDeviceStart && (paths.length >= 3 && !"subscribe".equalsIgnoreCase(paths[2])
+                && !"unsubscribe".equalsIgnoreCase(paths[2]))) {
             try {
                 final PathInfo pathInfo = new PathInfo(paths);
 
@@ -404,10 +404,9 @@ public class NeeoBrainService extends DefaultServletService {
                 }
 
             } else {
-                if (channel instanceof NeeoDeviceChannelDirectory) {
+                if (channel instanceof NeeoDeviceChannelDirectory directoryChannel) {
                     final NeeoDirectoryRequest discoveryRequest = gson.fromJson(req.getReader(),
                             NeeoDirectoryRequest.class);
-                    final NeeoDeviceChannelDirectory directoryChannel = (NeeoDeviceChannelDirectory) channel;
                     NeeoUtil.write(resp, gson.toJson(new NeeoDirectoryResult(discoveryRequest, directoryChannel)));
                 } else {
                     logger.debug("Channel definition for '{}' not found to directory set value ({})",

@@ -123,7 +123,7 @@
 		<description>Valve switch</description>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The humidity reported by the device</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,6 @@ public class SimpleRequestBuilder {
      *
      * @param interfaceKey must not be null
      * @return simpleRequestBuilder with chosen interface
-     * @throws NullArgumentException if the interfaceKey is null
      */
     public static SimpleRequestBuilder buildNewRequest(String interfaceKey) throws IllegalArgumentException {
         if (builder == null) {
@@ -75,7 +74,6 @@ public class SimpleRequestBuilder {
      * @param requestClassKey must not be null
      * @return simpleRequestBuilder with chosen requestClass
      * @throws IllegalArgumentException if a requestClass is already chosen
-     * @throws NullArgumentException if the requestClassKey is null
      */
     public static SimpleRequestBuilder buildNewJsonRequest(String requestClassKey) throws IllegalArgumentException {
         return buildNewRequest(InterfaceKeys.JSON).addRequestClass(requestClassKey);
@@ -98,7 +96,6 @@ public class SimpleRequestBuilder {
      * @param requestClassKey must not be null
      * @return simpleRequestBuilder with chosen requestClass
      * @throws IllegalArgumentException if a requestClass is already chosen
-     * @throws NullArgumentException if the requestClassKey is null
      */
     public SimpleRequestBuilder addRequestClass(String requestClassKey) throws IllegalArgumentException {
         return builder.addRequestClassInt(requestClassKey);
@@ -124,7 +121,6 @@ public class SimpleRequestBuilder {
      * @param functionKey must not be null
      * @return SimpleRequestBuilder with chosen function
      * @throws IllegalArgumentException if a function is already chosen
-     * @throws NullArgumentException if the functionKey is null
      */
     public SimpleRequestBuilder addFunction(String functionKey) throws IllegalArgumentException {
         return builder.addFunctionInt(functionKey);
@@ -154,7 +150,6 @@ public class SimpleRequestBuilder {
      * @param parameterValue can be null
      * @return SimpleRequestBuilder with added parameter
      * @throws IllegalArgumentException if no class and function added
-     * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addParameter(String parameterKey, String parameterValue)
             throws IllegalArgumentException {
@@ -169,7 +164,6 @@ public class SimpleRequestBuilder {
      * @param zoneName
      * @return SimpleRequestBuilder with added parameter
      * @throws IllegalArgumentException if no class and function added
-     * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultZoneParameter(String sessionToken, Integer zoneID, String zoneName)
             throws IllegalArgumentException {
@@ -185,7 +179,6 @@ public class SimpleRequestBuilder {
      * @param groupName
      * @return SimpleRequestBuilder with added parameter
      * @throws IllegalArgumentException if no class and function added
-     * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultGroupParameter(String sessionToken, Short groupID, String groupName)
             throws IllegalArgumentException {
@@ -204,7 +197,6 @@ public class SimpleRequestBuilder {
      * @param groupName
      * @return SimpleRequestBuilder with added parameter
      * @throws IllegalArgumentException if no class and function added
-     * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultZoneGroupParameter(String sessionToken, Integer zoneID, String zoneName,
             Short groupID, String groupName) throws IllegalArgumentException {
@@ -222,7 +214,6 @@ public class SimpleRequestBuilder {
      * @param name
      * @return SimpleRequestBuilder with added parameter
      * @throws IllegalArgumentException if no class and function added
-     * @throws NullArgumentException if the parameterKey is null
      */
     public SimpleRequestBuilder addDefaultDeviceParameter(String sessionToken, DSID dsid, String dSUID, String name)
             throws IllegalArgumentException {
@@ -283,11 +274,11 @@ public class SimpleRequestBuilder {
         if (obj == null) {
             return null;
         }
-        if (obj instanceof DSID) {
-            return ((DSID) obj).getValue();
+        if (obj instanceof DSID id) {
+            return id.getValue();
         }
-        if (obj instanceof Number) {
-            return ((Number) obj).intValue() > -1 ? obj.toString() : null;
+        if (obj instanceof Number number) {
+            return number.intValue() > -1 ? obj.toString() : null;
         }
         return obj.toString();
     }

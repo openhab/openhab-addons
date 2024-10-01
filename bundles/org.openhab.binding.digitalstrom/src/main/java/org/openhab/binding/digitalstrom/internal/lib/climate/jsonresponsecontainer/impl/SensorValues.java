@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,8 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link SensorValues} acts as container for the digitalSTROM json-method <i>getSensorValues</i>. So the
- * {@link SensorValues} contains all {@link CachedSensorValue}s of a zone.
+ * {@link SensorValues} contains all
+ * {@link org.openhab.binding.digitalstrom.internal.lib.climate.datatypes.CachedSensorValue}s of a zone.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

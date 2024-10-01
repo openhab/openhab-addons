@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.sonyprojector.internal.communication.sdcp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
-import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.util.HexUtils;
@@ -33,7 +32,7 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
 
     private final Logger logger = LoggerFactory.getLogger(SonyProjectorSdcpSimuConnector.class);
 
-    private SonyProjectorItem lastItem = SonyProjectorItem.POWER;
+    private byte[] lastItemCode = new byte[] { 0x00, 0x00 };
 
     /**
      * Constructor
@@ -61,9 +60,9 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
     }
 
     @Override
-    protected byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data) {
-        lastItem = item;
-        return super.buildMessage(item, getCommand, data);
+    protected byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data) {
+        lastItemCode = itemCode;
+        return super.buildMessage(itemCode, getCommand, data);
     }
 
     @Override
@@ -77,8 +76,8 @@ public class SonyProjectorSdcpSimuConnector extends SonyProjectorSdcpConnector {
         message[4] = communityData[2];
         message[5] = communityData[3];
         message[6] = OK;
-        message[7] = lastItem.getCode()[0];
-        message[8] = lastItem.getCode()[1];
+        message[7] = lastItemCode[0];
+        message[8] = lastItemCode[1];
         message[9] = 2;
         message[10] = 0;
         message[11] = 1;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,36 +29,40 @@ public class DoorbirdInfoTest {
 
     private final String infoWithControllerId =
     //@formatter:off
-    "{" +
-        "'BHA': {" +
-            "'RETURNCODE': '1'," +
-            "'VERSION': [{" +
-                "'FIRMWARE': '000109'," +
-                "'BUILD_NUMBER': '15120529'," +
-                "'PRIMARY_MAC_ADDR': '1CCAE3711111'," +
-                "'WIFI_MAC_ADDR': '1CCAE3799999'," +
-                "'RELAYS': ['1', '2', 'gggaaa@1', 'gggaaa@2']," +
-                "'DEVICE-TYPE': 'DoorBird D101'" +
-            "}]" +
-        "}" +
-    "}";
+    """
+    {\
+    'BHA': {\
+    'RETURNCODE': '1',\
+    'VERSION': [{\
+    'FIRMWARE': '000109',\
+    'BUILD_NUMBER': '15120529',\
+    'PRIMARY_MAC_ADDR': '1CCAE3711111',\
+    'WIFI_MAC_ADDR': '1CCAE3799999',\
+    'RELAYS': ['1', '2', 'gggaaa@1', 'gggaaa@2'],\
+    'DEVICE-TYPE': 'DoorBird D101'\
+    }]\
+    }\
+    }\
+    """;
     //@formatter:on
 
     private final String infoWithoutControllerId =
     //@formatter:off
-    "{" +
-        "'BHA': {" +
-            "'RETURNCODE': '1'," +
-            "'VERSION': [{" +
-                "'FIRMWARE': '000109'," +
-                "'BUILD_NUMBER': '15120529'," +
-                "'PRIMARY_MAC_ADDR': '1CCAE3711111'," +
-                "'WIFI_MAC_ADDR': '1CCAE3799999'," +
-                "'RELAYS': ['1', '2']," +
-                "'DEVICE-TYPE': 'DoorBird D101'" +
-            "}]" +
-        "}" +
-    "}";
+    """
+    {\
+    'BHA': {\
+    'RETURNCODE': '1',\
+    'VERSION': [{\
+    'FIRMWARE': '000109',\
+    'BUILD_NUMBER': '15120529',\
+    'PRIMARY_MAC_ADDR': '1CCAE3711111',\
+    'WIFI_MAC_ADDR': '1CCAE3799999',\
+    'RELAYS': ['1', '2'],\
+    'DEVICE-TYPE': 'DoorBird D101'\
+    }]\
+    }\
+    }\
+    """;
     //@formatter:on
 
     @Test

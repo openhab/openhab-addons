@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,9 @@ import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.folderwatcher.internal.api.exception.AuthException;
 import org.openhab.binding.folderwatcher.internal.api.util.BinaryUtils;
+import org.openhab.binding.folderwatcher.internal.api.util.HttpUtilException;
 
 /**
  * The {@link AWS4SignerForAuthorizationHeader} class contains methods for AWS S3 API authentication using HTTP(S)
@@ -35,7 +37,7 @@ public class AWS4SignerForAuthorizationHeader extends AWS4SignerBase {
     }
 
     public String computeSignature(Map<String, String> headers, Map<String, String> queryParameters, String bodyHash,
-            String awsAccessKey, String awsSecretKey) {
+            String awsAccessKey, String awsSecretKey) throws AuthException, HttpUtilException {
         Date now = new Date();
         String dateTimeStamp = dateTimeFormat.format(now);
         headers.put("x-amz-date", dateTimeStamp);
@@ -63,8 +65,7 @@ public class AWS4SignerForAuthorizationHeader extends AWS4SignerBase {
         String credentialsAuthorizationHeader = "Credential=" + awsAccessKey + "/" + scope;
         String signedHeadersAuthorizationHeader = "SignedHeaders=" + canonicalizedHeaderNames;
         String signatureAuthorizationHeader = "Signature=" + BinaryUtils.toHex(signature);
-        String authorizationHeader = SCHEME + "-" + ALGORITHM + " " + credentialsAuthorizationHeader + ", "
-                + signedHeadersAuthorizationHeader + ", " + signatureAuthorizationHeader;
-        return authorizationHeader;
+        return SCHEME + "-" + ALGORITHM + " " + credentialsAuthorizationHeader + ", " + signedHeadersAuthorizationHeader
+                + ", " + signatureAuthorizationHeader;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,17 +22,15 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.HomekitAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.impl.common.ConfiguredNameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IdentifierCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateEnum;
-import io.github.hapjava.characteristics.impl.inputsource.InputDeviceTypeCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeEnum;
-import io.github.hapjava.characteristics.impl.inputsource.TargetVisibilityStateCharacteristic;
 import io.github.hapjava.services.impl.InputSourceService;
 
 /**
@@ -49,8 +47,9 @@ import io.github.hapjava.services.impl.InputSourceService;
 public class HomekitInputSourceImpl extends AbstractHomekitAccessoryImpl {
 
     public HomekitInputSourceImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
@@ -79,19 +78,16 @@ public class HomekitInputSourceImpl extends AbstractHomekitAccessoryImpl {
                         () -> CompletableFuture.completedFuture(CurrentVisibilityStateEnum.SHOWN), v -> {
                         }, () -> {
                         }));
-        var identifierCharacteristic = getCharacteristic(IdentifierCharacteristic.class)
-                .orElseGet(() -> new IdentifierCharacteristic(() -> CompletableFuture.completedFuture(1)));
 
         var service = new InputSourceService(configuredNameCharacteristic, inputSourceTypeCharacteristic,
                 isConfiguredCharacteristic, currentVisibilityStateCharacteristic);
 
-        getCharacteristic(NameCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
-        service.addOptionalCharacteristic(identifierCharacteristic);
-        getCharacteristic(InputDeviceTypeCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
-        getCharacteristic(TargetVisibilityStateCharacteristic.class)
-                .ifPresent(c -> service.addOptionalCharacteristic(c));
+        var identifierCharacteristic = getCharacteristic(IdentifierCharacteristic.class);
+        if (identifierCharacteristic.isEmpty()) {
+            service.addOptionalCharacteristic(new IdentifierCharacteristic(() -> CompletableFuture.completedFuture(1)));
+        }
 
-        getServices().add(service);
+        addService(service);
     }
 
     @Override

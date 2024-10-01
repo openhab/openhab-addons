@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,8 @@ public class FineOffsetWeatherStationHandlerFactory extends BaseThingHandlerFact
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_GATEWAY.equals(thingTypeUID) && thing instanceof Bridge) {
-            return new FineOffsetGatewayHandler((Bridge) thing, gatewayDiscoveryService, channelTypeRegistry,
+        if (THING_TYPE_GATEWAY.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new FineOffsetGatewayHandler(bridge, gatewayDiscoveryService, channelTypeRegistry,
                     translationProvider, localeProvider, timeZoneProvider);
         }
         if (THING_TYPE_SENSOR.equals(thingTypeUID)) {

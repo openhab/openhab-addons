@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ public enum CleanMode {
     EDGE,
     @SerializedName("spot")
     SPOT,
-    @SerializedName(value = "SpotArea", alternate = { "spotArea" })
+    @SerializedName(value = "SpotArea", alternate = { "spotArea", "freeClean" })
     SPOT_AREA,
     @SerializedName(value = "CustomArea", alternate = { "customArea" })
     CUSTOM_AREA,

@@ -47,7 +47,12 @@
 		<parameter name="noResultsMessage" type="text" groupName="stt">
 			<label>No Results Message</label>
 			<description>Message to be told when no transcription is done.</description>
-			<default>No results</default>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
+		<parameter name="errorMessage" type="text" groupName="stt">
+			<label>Error Message</label>
+			<description>Message to be told when an error has happened.</description>
+			<default>Sorry, something went wrong</default>
 		</parameter>
 		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
 			<label>Single Utterance Mode</label>

@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Body of Water</label>
-		<description>The Hayward Body of Water</description>
 		<channels>
 			<channel id="bowFlow" typeId="waterFlow"/>
 			<channel id="bowWaterTemp" typeId="waterTemp"/>
@@ -33,14 +32,12 @@
 	<channel-type id="waterFlow">
 		<item-type>Switch</item-type>
 		<label>Flow Sensor</label>
-		<description>Flow Sensor</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="waterTemp">
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temp</label>
-		<description>Water Temp</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 

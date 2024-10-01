@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,7 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
 
     @Override
     public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        String jsonMsg = defaultConvertToSmartthings(channelUid, command);
-        return jsonMsg;
+        return defaultConvertToSmartthings(channelUid, command);
     }
 
     /*
@@ -78,14 +77,13 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
         }
 
         // Get the RGB colors
-        int rgb[] = new int[3];
+        int[] rgb = new int[3];
         for (int i = 0, pos = 1; i < 3; i++, pos += 2) {
             String c = value.substring(pos, pos + 2);
             rgb[i] = Integer.parseInt(c, 16);
         }
 
         // Convert to state
-        State state = HSBType.fromRGB(rgb[0], rgb[1], rgb[2]);
-        return state;
+        return HSBType.fromRGB(rgb[0], rgb[1], rgb[2]);
     }
 }

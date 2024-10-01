@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.ecovacs.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ecovacs.internal.api.util.MD5Util;
+import org.openhab.binding.ecovacs.internal.api.util.HashUtil;
 
 /**
  * @author Johannes Ptaszyk - Initial contribution
@@ -30,10 +30,12 @@ public final class EcovacsApiConfiguration {
     private final String clientSecret;
     private final String authClientKey;
     private final String authClientSecret;
+    private final String appKey;
 
     public EcovacsApiConfiguration(String deviceId, String username, String password, String continent, String country,
-            String language, String clientKey, String clientSecret, String authClientKey, String authClientSecret) {
-        this.deviceId = MD5Util.getMD5Hash(deviceId);
+            String language, String clientKey, String clientSecret, String authClientKey, String authClientSecret,
+            String appKey) {
+        this.deviceId = HashUtil.getMD5Hash(deviceId);
         this.username = username;
         this.password = password;
         this.continent = continent;
@@ -43,6 +45,7 @@ public final class EcovacsApiConfiguration {
         this.clientSecret = clientSecret;
         this.authClientKey = authClientKey;
         this.authClientSecret = authClientSecret;
+        this.appKey = appKey;
     }
 
     public String getDeviceId() {
@@ -90,7 +93,7 @@ public final class EcovacsApiConfiguration {
         return "ecouser.net";
     }
 
-    public String getPortalAUthRequestWith() {
+    public String getPortalAuthRequestWith() {
         return "users";
     }
 
@@ -110,12 +113,28 @@ public final class EcovacsApiConfiguration {
         return "google_play";
     }
 
+    public String getAppId() {
+        return "ecovacs";
+    }
+
+    public String getAppPlatform() {
+        return "android";
+    }
+
     public String getAppCode() {
         return "global_e";
     }
 
     public String getAppVersion() {
-        return "1.6.3";
+        return "2.3.7";
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public String getAppUserAgent() {
+        return "EcovacsHome/2.3.7 (Linux; U; Android 5.1.1; A5010 Build/LMY48Z)";
     }
 
     public String getDeviceType() {

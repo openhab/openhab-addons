@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class PointDeserializer implements JsonDeserializer<BasePoint> {
 
-    private static enum PointType {
+    private enum PointType {
         UNDEFINED,
         STRING,
         NESTED_NUMBER,

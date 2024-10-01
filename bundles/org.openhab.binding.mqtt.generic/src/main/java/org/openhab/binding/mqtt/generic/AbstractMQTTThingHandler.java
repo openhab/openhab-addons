@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -83,6 +84,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
 
     private AtomicBoolean messageReceived = new AtomicBoolean(false);
     private Map<String, @Nullable ChannelState> availabilityStates = new ConcurrentHashMap<>();
+    private AvailabilityMode availabilityMode = AvailabilityMode.ALL;
 
     public AbstractMQTTThingHandler(Thing thing, int subscribeTimeout) {
         super(thing);
@@ -261,7 +263,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void updateChannelState(ChannelUID channelUID, State value) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateThingStatus();
+            calculateAndUpdateThingStatus(true);
         }
         super.updateState(channelUID, value);
     }
@@ -269,7 +271,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
         if (messageReceived.compareAndSet(false, true)) {
-            calculateThingStatus();
+            calculateAndUpdateThingStatus(true);
         }
         super.triggerChannel(channelUID, event);
     }
@@ -293,15 +295,19 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     }
 
     @Override
+    public void setAvailabilityMode(AvailabilityMode mode) {
+        this.availabilityMode = mode;
+    }
+
+    @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
-        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null);
     }
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable String transformation_pattern,
-            @Nullable TransformationServiceProvider transformationServiceProvider) {
+            @Nullable ChannelTransformation transformation) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
@@ -310,7 +316,8 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                     channelUID, value, new ChannelStateUpdateListener() {
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
-                            calculateThingStatus();
+                            boolean online = value.equals(OnOffType.ON);
+                            calculateAndUpdateThingStatus(online);
                         }
 
                         @Override
@@ -320,10 +327,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         @Override
                         public void postChannelCommand(ChannelUID channelUID, Command value) {
                         }
-                    });
-            if (transformation_pattern != null && transformationServiceProvider != null) {
-                state.addTransformation(transformation_pattern, transformationServiceProvider);
-            }
+                    }, transformation, null);
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
                 state.start(connection, scheduler, 0);
@@ -352,18 +356,23 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void resetMessageReceived() {
         if (messageReceived.compareAndSet(true, false)) {
-            calculateThingStatus();
+            calculateAndUpdateThingStatus(false);
         }
     }
 
-    protected void calculateThingStatus() {
+    protected void calculateAndUpdateThingStatus(boolean lastValue) {
         final Optional<Boolean> availabilityTopicsSeen;
 
         if (availabilityStates.isEmpty()) {
             availabilityTopicsSeen = Optional.empty();
         } else {
-            availabilityTopicsSeen = Optional.of(availabilityStates.values().stream().allMatch(
-                    c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
+            availabilityTopicsSeen = switch (availabilityMode) {
+                case ALL -> Optional.of(availabilityStates.values().stream().allMatch(
+                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
+                case ANY -> Optional.of(availabilityStates.values().stream().anyMatch(
+                        c -> c != null && OnOffType.ON.equals(c.getCache().getChannelState().as(OnOffType.class))));
+                case LATEST -> Optional.of(lastValue);
+            };
         }
         updateThingStatus(messageReceived.get(), availabilityTopicsSeen);
     }

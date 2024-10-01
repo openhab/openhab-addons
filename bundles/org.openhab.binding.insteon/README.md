@@ -521,7 +521,7 @@ For safety reasons, only close the garage door if you have visual contact to mak
 
 > NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
 Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immediately closed again.
-To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off). 
+To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off).
 That would be with the door open when using the Insteon garage kit.
 
 ### Keypads
@@ -836,7 +836,7 @@ Insufficient access to the lock directory will result in openHAB failing to acce
 Device types are defined in the file `device_types.xml`, which is inside the Insteon bundle and thus not visible to the user.
 You can however load your own device_types.xml by referencing it in the network config parameters:
 
-```text
+```ini
 additionalDevices="/usr/local/openhab/rt/my_own_devices.xml"
 ```
 
@@ -861,7 +861,7 @@ Avoid duplicate keys by finding the highest fake product key in the `device_type
 
 If you can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
 
-```text
+```ini
 additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
 ```
 

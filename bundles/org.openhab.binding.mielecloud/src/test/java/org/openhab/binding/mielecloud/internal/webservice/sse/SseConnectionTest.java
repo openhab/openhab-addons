@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,7 +112,8 @@ public class SseConnectionTest {
         getSseConnection().addSseListener(getMockedSseListener());
         getSseConnection().connect();
 
-        getRegisteredHeadersListener().onHeaders(null);
+        Response response = mock(Response.class);
+        getRegisteredHeadersListener().onHeaders(response);
     }
 
     private Request getMockedRequest() {
@@ -206,7 +207,8 @@ public class SseConnectionTest {
         assertNotNull(headersListener);
 
         // when:
-        headersListener.onHeaders(null);
+        Response response = mock(Response.class);
+        headersListener.onHeaders(response);
 
         // then:
         verify(scheduler).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
@@ -266,7 +268,8 @@ public class SseConnectionTest {
         setUpRunningConnection();
 
         // when:
-        getRegisteredCompleteListener().onComplete(null);
+        Result result = mock(Result.class);
+        getRegisteredCompleteListener().onComplete(result);
 
         // then:
         verify(getMockedScheduler(), times(2)).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), any());
@@ -505,7 +508,8 @@ public class SseConnectionTest {
 
         HeadersListener headersListener = registeredHeadersListener;
         assertNotNull(headersListener);
-        headersListener.onHeaders(null);
+        Response response = mock(Response.class);
+        headersListener.onHeaders(response);
 
         ServerSentEvent serverSentEvent = new ServerSentEvent("ping", "ping");
 

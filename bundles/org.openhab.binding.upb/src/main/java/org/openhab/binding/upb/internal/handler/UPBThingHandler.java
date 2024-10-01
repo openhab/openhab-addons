@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,8 +144,8 @@ public class UPBThingHandler extends BaseThingHandler {
             message = MessageBuilder.forCommand(ACTIVATE);
         } else if (cmd == OnOffType.OFF) {
             message = MessageBuilder.forCommand(DEACTIVATE);
-        } else if (cmd instanceof PercentType) {
-            message = MessageBuilder.forCommand(GOTO).args(((PercentType) cmd).byteValue());
+        } else if (cmd instanceof PercentType percentCommand) {
+            message = MessageBuilder.forCommand(GOTO).args(percentCommand.byteValue());
         } else if (cmd == RefreshType.REFRESH) {
             refreshDeviceState();
             return;

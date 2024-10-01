@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="boschshc:shc">
+		<instruction-set targetVersion="1">
+			<add-channel id="scenario-triggered">
+				<type>boschshc:scenario-triggered</type>
+			</add-channel>
+			<add-channel id="trigger-scenario">
+				<type>boschshc:trigger-scenario</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="boschshc:motion-detector">
+		<instruction-set targetVersion="1">
+			<add-channel id="illuminance">
+				<type>boschshc:illuminance</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

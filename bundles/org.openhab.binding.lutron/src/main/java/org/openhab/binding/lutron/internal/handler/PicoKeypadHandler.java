@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lutron.internal.handler;
+
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,6 +68,10 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
                 buttonList = kp.getComponents("3BRL", ComponentType.BUTTON);
                 leapButtonMap = KeypadConfigPico.LEAPBUTTONS_3BRL;
                 break;
+        }
+        if (getBridgeHandler() instanceof LeapBridgeHandler) {
+            leapButtonInverseMap = leapButtonMap.entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
         }
     }
 }

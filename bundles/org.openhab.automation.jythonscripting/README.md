@@ -1,16 +1,16 @@
 # Jython Scripting
 
-This add-on provides [Jython](https://www.jython.org/) 2.7.2 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
+This add-on provides [Jython](https://www.jython.org/) 2.7 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
 
 The `python.home` system property is set to the path of the add-on.
 
-The `python.path` system property is set to `$OPENHAB_CONF/automation/lib/python`, but any existing `python.path` will be appended to it.
+The `python.path` system property is set to `$OPENHAB_CONF/automation/jython/lib`, but any existing `python.path` will be appended to it.
 
 ## Creating Jython Scripts
 
 When this add-on is installed, you can select Jython as a scripting language when creating a script action within the rule editor of the UI.
 
-Alternatively, you can create scripts in the `automation/jsr223` configuration directory.
+Alternatively, you can create scripts in the `automation/jython` configuration directory.
 If you create an empty file called `test.py`, you will see a log line with information similar to:
 
 ```text

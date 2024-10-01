@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,13 +28,14 @@ public class MqttThingID {
      * for creating a ThingUID with that string (tcp_122_123_111_123_1883).
      */
     public static String getThingID(String host, int port) {
-        return host.replace('.', '_').replace("://", "_") + "_" + String.valueOf(port);
+        return host.replace('.', '_').replace("://", "_") + "_" + port;
     }
 
     /**
      * Creates a normal broker thing with an url that will be converted to a thing ID.
      *
-     * @param url The broker connection url
+     * @param host The broker connection (host name)
+     * @param port The port
      * @return Returns a ThingUID
      */
     public static ThingUID getThingUID(String host, int port) {

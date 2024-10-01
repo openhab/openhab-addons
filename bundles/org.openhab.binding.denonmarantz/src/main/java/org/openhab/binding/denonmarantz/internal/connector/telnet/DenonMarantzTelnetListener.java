@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.denonmarantz.internal.connector.telnet;
 
-import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Listener interface used to notify the {@link DenonMarantzConnector} about received messages over Telnet
+ * Listener interface used to notify the
+ * {@link org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector} about received messages over Telnet
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DenonMarantzTelnetListener {
     /**
      * The telnet client has received a line.

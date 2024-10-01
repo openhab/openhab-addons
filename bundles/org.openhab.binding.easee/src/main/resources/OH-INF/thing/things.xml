@@ -22,6 +22,9 @@
 			<channel-group typeId="circuit-dynamicCurrent" id="dynamicCurrent"/>
 			<channel-group typeId="circuit-settings" id="settings"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:easee:mastercharger"/>
 	</thing-type>
 	<thing-type id="charger">
@@ -36,6 +39,9 @@
 			<channel-group typeId="charger-commands" id="commands"/>
 			<channel-group typeId="charger-latestSession" id="latestSession"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:easee:charger"/>
 	</thing-type>
 </thing:thing-descriptions>

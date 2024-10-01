@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,11 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
-
     private double priceSum = 0;
     private int length = 0;
-    private String hours;
-    private ZoneId zoneId;
+    private final String hours;
+    private final ZoneId zoneId;
 
     public AwattarConsecutiveBestPriceResult(List<AwattarPrice> prices, ZoneId zoneId) {
         super();
@@ -40,14 +39,14 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
         StringBuilder hours = new StringBuilder();
         boolean second = false;
         for (AwattarPrice price : prices) {
-            priceSum += price.getPrice();
+            priceSum += price.netPrice();
             length++;
-            updateStart(price.getStartTimestamp());
-            updateEnd(price.getEndTimestamp());
+            updateStart(price.timerange().start());
+            updateEnd(price.timerange().end());
             if (second) {
                 hours.append(',');
             }
-            hours.append(getHourFrom(price.getStartTimestamp(), zoneId));
+            hours.append(getHourFrom(price.timerange().start(), zoneId));
             second = true;
         }
         this.hours = hours.toString();
@@ -66,11 +65,13 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
         return priceSum;
     }
 
+    @Override
     public String toString() {
         return String.format("{%s, %s, %.2f}", formatDate(getStart(), zoneId), formatDate(getEnd(), zoneId),
                 priceSum / length);
     }
 
+    @Override
     public String getHours() {
         return hours;
     }

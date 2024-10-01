@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -133,7 +133,7 @@ public abstract class KeypadConfig {
      * @return Concatenated list
      */
     @SafeVarargs
-    protected static final List<KeypadComponent> combinedList(final List<KeypadComponent>... lists) {
+    protected static List<KeypadComponent> combinedList(final List<KeypadComponent>... lists) {
         List<KeypadComponent> newlist = new LinkedList<>();
         for (List<KeypadComponent> list : lists) {
             newlist.addAll(list);

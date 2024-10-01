@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ public interface DeviceStatusListener {
     /**
      * This method is called whenever a device config is updated.
      *
-     * @param bridgeThe MAX! Cube bridge the device was connected to
+     * @param bridge The MAX! Cube bridge the device was connected to
      * @param device The device which config is changed
      */
     void onDeviceConfigUpdate(Bridge bridge, Device device);

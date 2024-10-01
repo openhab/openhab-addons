@@ -83,8 +83,8 @@ demo.sitemap:
 ```perl
 sitemap demo label="Enigma2 Demo"
 {
-  Frame label="Enigma2" { 
-     Switch    item=Enigma2_Power        
+  Frame label="Enigma2" {
+     Switch    item=Enigma2_Power
      Slider    item=Enigma2_Volume step=5 minValue=0 maxValue=100
      Setpoint  item=Enigma2_Volume step=5 minValue=0 maxValue=100
      Switch    item=Enigma2_Mute
@@ -111,8 +111,8 @@ sitemap demo label="Enigma2 Demo"
      Switch    item=Enigma2_RemoteKeys mappings=[FAST_BACKWARD="<<", PLAY=">", PAUSE="||", FAST_FORWARD=">>"]
      Switch    item=Enigma2_RemoteKeys mappings=[TV="TV", RECORD="O", STOP="[]", RADIO="Radio"]
      Switch    item=Enigma2_RemoteKeys mappings=[INFO="INFO"]
-  }   
-  Frame label="Enigma2 Messages" {   
+  }
+  Frame label="Enigma2 Messages" {
      Switch    item=Enigma2_SendError mappings=[SEND="SEND"]
      Switch    item=Enigma2_SendWarning mappings=[SEND="SEND"]
      Switch    item=Enigma2_SendInfo mappings=[SEND="SEND"]

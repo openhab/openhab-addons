@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,14 +113,14 @@ public class ZWayDeviceDiscoveryService extends AbstractDiscoveryService {
                 ZWaveDevice zwaveDevice = mBridgeHandler.getZWayApi().getZWaveDevice(nodeId);
                 if (zwaveDevice != null) {
                     String givenName = "Device " + nodeId;
-                    if (!zwaveDevice.getData().getGivenName().getValue().equals("")) {
+                    if (!"".equals(zwaveDevice.getData().getGivenName().getValue())) {
                         givenName = zwaveDevice.getData().getGivenName().getValue();
-                    } else if (!zwaveDevice.getData().getDeviceTypeString().getValue().equals("")) {
+                    } else if (!"".equals(zwaveDevice.getData().getDeviceTypeString().getValue())) {
                         givenName += " - " + zwaveDevice.getData().getDeviceTypeString().getValue();
                     }
                     // Add additional information as properties
                     String vendorString = zwaveDevice.getData().getVendorString().getValue();
-                    if (!zwaveDevice.getData().getVendorString().getValue().equals("")) {
+                    if (!"".equals(zwaveDevice.getData().getVendorString().getValue())) {
                         givenName += " (" + vendorString + ")";
                     }
                     String manufacturerId = zwaveDevice.getData().getManufacturerId().getValue();

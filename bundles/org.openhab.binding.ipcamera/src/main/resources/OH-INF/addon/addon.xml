@@ -7,4 +7,47 @@
 	<name>IpCamera Binding</name>
 	<description>This binding interfaces IP cameras of various vendors via open protocols.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipMulticast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destIp</name>
+					<value>239.255.255.250</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>3702</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>requestPlain</name>
+					<value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;e:Envelope
+						xmlns:e=&quot;http://www.w3.org/2003/05/soap-envelope&quot;
+						xmlns:w=&quot;http://schemas.xmlsoap.org/ws/2004/08/addressing&quot;
+						xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot;
+						xmlns:dn=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;&lt;e:Header&gt;&lt;w:MessageID&gt;uuid:$uuid&lt;/w:MessageID&gt;&lt;w:To
+						e:mustUnderstand=&quot;true&quot;&gt;urn:schemas-xmlsoap-org:ws:2005:04:discovery&lt;/w:To&gt;&lt;w:Action
+						a:mustUnderstand=&quot;true&quot;&gt;http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe&lt;/w:Action&gt;&lt;/e:Header&gt;&lt;e:Body&gt;&lt;d:Probe&gt;&lt;d:Types
+						xmlns:d=&quot;http://schemas.xmlsoap.org/ws/2005/04/discovery&quot;
+						xmlns:dp0=&quot;http://www.onvif.org/ver10/network/wsdl&quot;&gt;dp0:NetworkVideoTransmitter&lt;/d:Types&gt;&lt;/d:Probe&gt;&lt;/e:Body&gt;&lt;/e:Envelope&gt;</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>5000</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

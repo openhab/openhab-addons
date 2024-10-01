@@ -7,11 +7,11 @@ Ruuvi Cloud Subscription is not needed at all as the integration is local.
 Compared to Ruuvi Tag Bluetooth binding, this binding has the benefit of relying on strong and reliable antenna of Ruuvi Gateway, as opposed to e.g. usually much weaker antenna integrated onto computer motherboard.
 Obvious downside compared to the bluetooth binding is the requirement of having Ruuvi Gateway device.
 
-Both RuuviTag and RuuviTag Pro are supported. 
+Both RuuviTag and RuuviTag Pro are supported.
 
 ## Setup the Gateway
 
-Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT. 
+Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT.
 
 For further instructions, refer to relevant section in [Ruuvi Gateway documentation](https://ruuvi.com/gateway-config/).
 For most convenient usage of this binding, please ensure that "Use 'ruuvi' on the prefix' MQTT setting is enabled on Ruuvi Gateway.

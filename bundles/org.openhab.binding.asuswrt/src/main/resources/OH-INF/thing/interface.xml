@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Router Thing Type -->
+	<thing-type id="interface">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="router"/>
+		</supported-bridge-type-refs>
+
+		<label>Router Interface</label>
+		<description>Interface of router</description>
+		<channel-groups>
+			<channel-group id="network-info" typeId="if-info-group"></channel-group>
+			<channel-group id="traffic" typeId="traffic-group"></channel-group>
+		</channel-groups>
+		<representation-property>interfaceName</representation-property>
+
+		<config-description>
+			<parameter name="interfaceName" type="text" required="true">
+				<label>Interface Name</label>
+				<description>Name of selected interface. *Maybe not all are supported by your device*</description>
+				<options>
+					<option value="wan">WAN</option>
+					<option value="lan">LAN</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+
+	<!-- Interface Information -->
+	<channel-group-type id="if-info-group">
+		<label>LAN Status</label>
+		<description>LAN connection state</description>
+		<channels>
+			<channel id="mac-address" typeId="mac-address-type"></channel>
+			<channel id="ip-address" typeId="ip-address-type"></channel>
+			<channel id="ip-method" typeId="ip-proto-type"></channel>
+			<channel id="subnet" typeId="ip-netmask-type"></channel>
+			<channel id="gateway" typeId="ip-gateway-type"></channel>
+			<channel id="dns-servers" typeId="dns-server-type"></channel>
+			<channel id="network-state" typeId="ip-connection-state"></channel>
+			<channel id="connection-event" typeId="connection-event-type"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

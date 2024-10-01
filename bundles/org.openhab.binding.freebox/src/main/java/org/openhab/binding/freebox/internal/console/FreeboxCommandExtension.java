@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,8 +62,8 @@ public class FreeboxCommandExtension extends AbstractConsoleCommandExtension imp
             FreeboxHandler handler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof FreeboxHandler) {
-                    handler = (FreeboxHandler) thingHandler;
+                if (thingHandler instanceof FreeboxHandler freeboxHandler) {
+                    handler = freeboxHandler;
                 }
             }
             if (thing == null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
+import java.time.Duration;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,16 +41,17 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@NonNullByDefault
 public class DiscoveryTest {
     private final String ip = "127.0.0.1";
 
-    private @Mock PresenceDetectionValue value;
-    private @Mock DiscoveryListener listener;
+    private @Mock @NonNullByDefault({}) PresenceDetectionValue value;
+    private @Mock @NonNullByDefault({}) DiscoveryListener listener;
 
     @BeforeEach
     public void setUp() {
         when(value.getHostAddress()).thenReturn(ip);
-        when(value.getLowestLatency()).thenReturn(10.0);
+        when(value.getLowestLatency()).thenReturn(Duration.ofMillis(10));
         when(value.isReachable()).thenReturn(true);
         when(value.getSuccessfulDetectionTypes()).thenReturn("TESTMETHOD");
     }
@@ -62,7 +65,7 @@ public class DiscoveryTest {
 
         // Ping device
         when(value.isPingReachable()).thenReturn(true);
-        when(value.isTCPServiceReachable()).thenReturn(false);
+        when(value.isTcpServiceReachable()).thenReturn(false);
         d.partialDetectionResult(value);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
@@ -79,8 +82,8 @@ public class DiscoveryTest {
 
         // TCP device
         when(value.isPingReachable()).thenReturn(false);
-        when(value.isTCPServiceReachable()).thenReturn(true);
-        when(value.getReachableTCPports()).thenReturn(Collections.singletonList(1010));
+        when(value.isTcpServiceReachable()).thenReturn(true);
+        when(value.getReachableTcpPorts()).thenReturn(List.of(1010));
         d.partialDetectionResult(value);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.KNXBindingConstants;
@@ -38,6 +40,7 @@ import org.openhab.binding.knx.internal.client.InboundSpec;
 import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.OutboundSpec;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
+import org.openhab.binding.knx.internal.dpt.DPTUnits;
 import org.openhab.binding.knx.internal.dpt.DPTUtil;
 import org.openhab.binding.knx.internal.dpt.ValueDecoder;
 import org.openhab.binding.knx.internal.i18n.KNXTranslationProvider;
@@ -51,11 +54,15 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,15 +106,63 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
 
     @Override
     public void initialize() {
-        attachToClient();
         DeviceConfig config = getConfigAs(DeviceConfig.class);
         readInterval = config.getReadInterval();
+
         // gather all GAs from channel configurations and create channels
-        getThing().getChannels().forEach(channel -> {
+        ThingBuilder thingBuilder = editThing();
+        boolean modified = false;
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
+            return;
+        }
+
+        for (Channel channel : getThing().getChannels()) {
             KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
+
+            if (knxChannel.getChannelType().startsWith("number")) {
+                // check if we need to update the accepted item-type
+                List<InboundSpec> inboundSpecs = knxChannel.getAllGroupAddresses().stream()
+                        .map(knxChannel::getListenSpec).filter(Objects::nonNull).map(Objects::requireNonNull).toList();
+                if (inboundSpecs.isEmpty()) {
+                    logger.warn("Skipping {}: group address / DPT not according to Group Address Notation",
+                            channel.getUID());
+                    continue;
+                }
+
+                String dpt = inboundSpecs.get(0).getDPT(); // there can be only one DPT on number channels
+                Unit<?> unit = UnitUtils.parseUnit(DPTUnits.getUnitForDpt(dpt));
+                String dimension = unit == null ? null : UnitUtils.getDimensionName(unit);
+                String expectedItemType = dimension == null ? "Number" : "Number:" + dimension; // unknown dimension ->
+                                                                                                // Number
+                String actualItemType = channel.getAcceptedItemType();
+                if (!expectedItemType.equals(actualItemType)) {
+                    ChannelBuilder channelBuilder = callback
+                            .createChannelBuilder(channel.getUID(), Objects.requireNonNull(channel.getChannelTypeUID()))
+                            .withAcceptedItemType(expectedItemType).withConfiguration(channel.getConfiguration());
+                    if (channel.getLabel() != null) {
+                        channelBuilder.withLabel(Objects.requireNonNull(channel.getLabel()));
+                    }
+                    if (channel.getDescription() != null) {
+                        channelBuilder.withDescription(Objects.requireNonNull(channel.getDescription()));
+                    }
+                    thingBuilder.withoutChannel(channel.getUID());
+                    thingBuilder.withChannel(channelBuilder.build());
+                    modified = true;
+                }
+            }
+
+            // add channels only if they could be successfully processed
             knxChannels.put(channel.getUID(), knxChannel);
             groupAddresses.addAll(knxChannel.getAllGroupAddresses());
-        });
+        }
+
+        if (modified) {
+            updateThing(thingBuilder.build());
+        }
+
+        attachToClient();
     }
 
     @Override
@@ -245,7 +300,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         if (knxChannel == null) {
             return;
         }
-        Set<GroupAddress> rsa = knxChannel.getWriteAddresses();
+        List<GroupAddress> rsa = knxChannel.getWriteAddresses();
         if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             OutboundSpec os = groupAddressesRespondingSpec.get(destination);
@@ -315,9 +370,8 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                 logger.trace(
                         "onGroupWrite Thing '{}' processes a GroupValueWrite telegram for destination '{}' for channel '{}'",
                         getThing().getUID(), destination, knxChannel.getChannelUID());
-                /**
-                 * Remember current KNXIO outboundSpec only if it is a control channel.
-                 */
+
+                // Remember current KNXIO outboundSpec only if it is a control channel
                 if (knxChannel.isControl()) {
                     logger.trace("onGroupWrite isControl");
                     Type value = ValueDecoder.decode(listenSpec.getDPT(), asdu, knxChannel.preferredType());
@@ -366,18 +420,22 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     if (oldFuture != null) {
                         oldFuture.cancel(true);
                     }
-                    if (value instanceof IncreaseDecreaseType type) {
-                        channelFutures.put(channelUID, scheduler.scheduleWithFixedDelay(
-                                () -> postCommand(channelUID, type), 0, frequency, TimeUnit.MILLISECONDS));
+                    if (value instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                        channelFutures.put(channelUID,
+                                scheduler.scheduleWithFixedDelay(() -> postCommand(channelUID, increaseDecreaseCommand),
+                                        0, frequency, TimeUnit.MILLISECONDS));
                     }
                 } else {
                     if (value instanceof Command command) {
-                        logger.trace("processDataReceived postCommand new value '{}' for GA '{}'", asdu, address);
+                        logger.trace("processDataReceived postCommand to channel '{}' new value '{}' for GA '{}'",
+                                channelUID, asdu, destination);
                         postCommand(channelUID, command);
                     }
                 }
             } else {
                 if (value instanceof State state && !(value instanceof UnDefType)) {
+                    logger.trace("processDataReceived updateState to channel '{}' new value '{}' for GA '{}'",
+                            knxChannel.getChannelUID(), value, destination);
                     updateState(knxChannel.getChannelUID(), state);
                 }
             }
@@ -419,7 +477,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         DeviceInspector.Result result = inspector.readDeviceInfo();
         if (result != null) {
             Map<String, String> properties = editProperties();
-            properties.putAll(result.getProperties());
+            properties.putAll(result.properties());
             updateProperties(properties);
             return true;
         }

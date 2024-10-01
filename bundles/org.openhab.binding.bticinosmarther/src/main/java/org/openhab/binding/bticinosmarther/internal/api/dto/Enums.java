@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,8 +54,7 @@ public class Enums {
          *
          * @return the enum value representing the given raw value
          *
-         * @throws {@link SmartherIllegalPropertyValueException}
-         *             if the raw value cannot be mapped to any valid enum value
+         * @throws SmartherIllegalPropertyValueException if the raw value cannot be mapped to any valid enum value
          */
         public static Function fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(Function.class, value);
@@ -91,8 +90,7 @@ public class Enums {
          *
          * @return the enum value representing the given raw value
          *
-         * @throws {@link SmartherIllegalPropertyValueException}
-         *             if the raw value cannot be mapped to any valid enum value
+         * @throws SmartherIllegalPropertyValueException if the raw value cannot be mapped to any valid enum value
          */
         public static Mode fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(Mode.class, value);
@@ -134,8 +132,7 @@ public class Enums {
          *
          * @return the enum value representing the given raw value
          *
-         * @throws {@link SmartherIllegalPropertyValueException}
-         *             if the raw value cannot be mapped to any valid enum value
+         * @throws SmartherIllegalPropertyValueException if the raw value cannot be mapped to any valid enum value
          */
         public static LoadState fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(LoadState.class, value);
@@ -190,8 +187,7 @@ public class Enums {
          *
          * @return the enum value representing the given raw value
          *
-         * @throws {@link SmartherIllegalPropertyValueException}
-         *             if the raw value cannot be mapped to any valid enum value
+         * @throws SmartherIllegalPropertyValueException if the raw value cannot be mapped to any valid enum value
          */
         public static MeasureUnit fromValue(String value) throws SmartherIllegalPropertyValueException {
             return lookup(MeasureUnit.class, value);
@@ -225,8 +221,7 @@ public class Enums {
          *
          * @return the enum value representing the given raw value
          *
-         * @throws {@link SmartherIllegalPropertyValueException}
-         *             if the raw value cannot be mapped to any valid enum value
+         * @throws SmartherIllegalPropertyValueException if the raw value cannot be mapped to any valid enum value
          */
         public static BoostTime fromValue(int value) throws SmartherIllegalPropertyValueException {
             return lookup(BoostTime.class, value);

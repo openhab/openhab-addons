@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -155,7 +156,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
     }
 
     @Override
-    protected byte[] buildMessage(SonyProjectorItem item, boolean getCommand, byte[] data) {
+    protected byte[] buildMessage(byte[] itemCode, boolean getCommand, byte[] data) {
         byte[] communityData = community.getBytes();
         byte[] message = new byte[10 + data.length];
         message[0] = HEADER[0];
@@ -165,8 +166,8 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         message[4] = communityData[2];
         message[5] = communityData[3];
         message[6] = getCommand ? GET : SET;
-        message[7] = item.getCode()[0];
-        message[8] = item.getCode()[1];
+        message[7] = itemCode[0];
+        message[8] = itemCode[1];
         message[9] = getCommand ? 0 : (byte) data.length;
         if (!getCommand) {
             System.arraycopy(data, 0, message, 10, data.length);
@@ -259,9 +260,10 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
 
         // Item number should be the same as used for sending
         byte[] itemResponseMsg = Arrays.copyOfRange(responseMessage, 7, 9);
-        if (!Arrays.equals(itemResponseMsg, item.getCode())) {
+        byte[] itemSentMsg = Objects.requireNonNull(item.getCode());
+        if (!Arrays.equals(itemResponseMsg, itemSentMsg)) {
             logger.debug("Unexpected item number in response: {} rather than {}", HexUtils.bytesToHex(itemResponseMsg),
-                    HexUtils.bytesToHex(item.getCode()));
+                    HexUtils.bytesToHex(itemSentMsg));
             throw new CommunicationException("Unexpected item number in response");
         }
 
@@ -308,5 +310,24 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
      */
     public String getModelName() throws SonyProjectorException {
         return new String(getSetting(SonyProjectorItem.MODEL_NAME), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Request the MAC address
+     *
+     * @return the MAC address
+     *
+     * @throws SonyProjectorException in case of any problem
+     */
+    public String getMacAddress() throws SonyProjectorException {
+        String macAddress = "";
+        byte[] macBytes = getSetting(SonyProjectorItem.MAC_ADDRESS);
+        for (byte macByte : macBytes) {
+            if (!macAddress.isEmpty()) {
+                macAddress = macAddress + "-";
+            }
+            macAddress = macAddress + String.format("%02x", macByte);
+        }
+        return macAddress;
     }
 }

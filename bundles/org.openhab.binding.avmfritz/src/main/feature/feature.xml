@@ -5,7 +5,6 @@
 	<feature name="openhab-binding-avmfritz" description="AVM FRITZ!Box Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-upnp</feature>
-		<feature dependency="true">openhab.tp-jaxb</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.avmfritz/${project.version}</bundle>
 	</feature>
 </features>

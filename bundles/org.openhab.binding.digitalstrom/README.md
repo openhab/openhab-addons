@@ -398,13 +398,13 @@ _Blinds:_
 
 ```java
 Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin", password="mySecretPassword", sensorDataUpdateInterval=180] {
-  GE GE-KM-200 [ dSID="3504175fe000000000010db9",  activePowerRefreshPriority="low", electricMeterRefreshPriority="medium", outputCurrentRefreshPriority="high"] 
-  SW SW-ZWS-200 [ dSID="3504175fe0000000000651c0"] 
-  SW SW-UMR-200 [ dSID="302ed89f43f00ec0000a1034"] 
-  dSiSens200 dS-iSens200 [ dSID="302ed89f43f026800003543d"] 
+  GE GE-KM-200 [ dSID="3504175fe000000000010db9",  activePowerRefreshPriority="low", electricMeterRefreshPriority="medium", outputCurrentRefreshPriority="high"]
+  SW SW-ZWS-200 [ dSID="3504175fe0000000000651c0"]
+  SW SW-UMR-200 [ dSID="302ed89f43f00ec0000a1034"]
+  dSiSens200 dS-iSens200 [ dSID="302ed89f43f026800003543d"]
   zoneTemperatureControl zoneTemperatureControl [ zoneID="livingroom"]
-  GR GR-KL220 [ dSID="3504175fe0000000000651c1" ] 
-  namedScene Scene1 [ zoneID="5", groupID="1", sceneID="5"] 
+  GR GR-KL220 [ dSID="3504175fe0000000000651c1" ]
+  namedScene Scene1 [ zoneID="5", groupID="1", sceneID="5"]
   circuit circuit1 [ dSID="3504175fe0000010000004e4" ]
   GR GR-KL200 [ dSID="3504175fe0000000000651c1" ]
 }
@@ -458,59 +458,59 @@ sitemap demo label="Main Menu"
 {
   Frame label="System" {
    Frame label="digitalSTROM-Server"{
-      Text item=TotalActivePower 
-      Text item=TotalElectricMeter 
+      Text item=TotalActivePower
+      Text item=TotalElectricMeter
     }
-  
+
    Frame label="digitalSTROM-Meter"{
       Text item=TotalActivePowerDsm
       Text item=TotalElectricMeterDsm
     }
   }
-  
+
   Frame label="Climate" {
    Frame label="heating/cooling"{
-      Switch item=SensorSwitch 
+      Switch item=SensorSwitch
     }
-    
+
    Frame label="iSens200"{
       Text item=TempIndoor
       Text item=HumidityIndoor
     }
-    
+
    Frame label="Target temperature"{
       Slider item=Temperature
       Text item=Temperature
     }
   }
-  
+
   Frame label="Shade"{
    Frame label="Rollerschutter"{
-      Slider item=Shade 
+      Slider item=Shade
       Text item=Shade
     }
-    
+
    Frame label="Blind"{
-      Slider item=BlindPosition 
+      Slider item=BlindPosition
       Slider item=BlindAngle
     }
   }
-  
+
   Frame label="Scenes"{
     Frame label="TV scene"{
-      Switch item=Scene 
+      Switch item=Scene
     }
   }
-  
+
   Frame label="HiFi" {
     Frame label="TV light"{
-      Slider item=Brightness 
+      Slider item=Brightness
       Switch item=Brightness
-      Text item=ActivePower 
-      Text item=OutputCurrent 
-      Text item=ElectricMeter 
+      Text item=ActivePower
+      Text item=OutputCurrent
+      Text item=ElectricMeter
     }
-    
+
    Frame label="TV"{
       Switch item=DeviceSwitch
     }

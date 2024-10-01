@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -246,7 +246,12 @@ public class MeterHandler extends BaseThingHandler {
 
             Properties urlHeader = new Properties();
             urlHeader.put("CONTENT-TYPE", "application/json");
-            urlHeader.put("Authorization", getTokenFromBridge());
+            String token = getTokenFromBridge();
+            if (token == null) {
+                logger.debug("Unable to get the token from the bridge");
+                return null;
+            }
+            urlHeader.put("Authorization", token);
 
             String urlResponse = HttpUtil.executeUrl("GET", url, urlHeader, null, null, 2000);
 

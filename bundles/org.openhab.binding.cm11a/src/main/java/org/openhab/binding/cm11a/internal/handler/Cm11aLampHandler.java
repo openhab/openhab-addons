@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,8 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
                 desiredState = OnOffType.ON;
             } else if (OnOffType.OFF.equals(command)) {
                 desiredState = OnOffType.OFF;
-            } else if (command instanceof PercentType) {
-                desiredState = (PercentType) command;
+            } else if (command instanceof PercentType percentCommand) {
+                desiredState = percentCommand;
             } else if (command instanceof RefreshType) {
                 // Refresh is triggered by framework during startup.
                 // Force the lamp off by indicating it is currently on and we want it off
@@ -105,10 +105,10 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
                 x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_ON);
             } else if (desiredState.equals(OnOffType.OFF)) {
                 x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_OFF);
-            } else if (desiredState instanceof PercentType) {
+            } else if (desiredState instanceof PercentType desiredStatePercent) {
                 // desiredState must be a PercentType if we got here.
                 // Calc how many bright increments we need to send (0 to 22)
-                int desiredPercentFullBright = ((PercentType) desiredState).intValue();
+                int desiredPercentFullBright = desiredStatePercent.intValue();
                 int dims = (desiredPercentFullBright * X10_DIM_INCREMENTS) / 100;
                 if (currentState.equals(OnOffType.ON)) {
                     // The current level isn't known because it would have gone to
@@ -120,11 +120,11 @@ public class Cm11aLampHandler extends Cm11aAbstractHandler {
                     // desiredState must be a PercentType if we got here. And, the light should be off
                     // We should just be able to send the appropriate number if dims
                     x10Status = x10Interface.sendFunction(houseUnitCode, X10Interface.FUNC_BRIGHT, dims);
-                } else if (currentState instanceof PercentType) {
+                } else if (currentState instanceof PercentType currentStatePercent) {
                     // This is the expected case
                     // Now currentState and desiredState are both PercentType's
                     // Need to calc how much to dim or brighten
-                    int currentPercentFullBright = ((PercentType) currentState).intValue();
+                    int currentPercentFullBright = currentStatePercent.intValue();
                     int percentToBrighten = desiredPercentFullBright - currentPercentFullBright;
                     int brightens = (percentToBrighten * X10_DIM_INCREMENTS) / 100;
                     if (brightens > 0) {

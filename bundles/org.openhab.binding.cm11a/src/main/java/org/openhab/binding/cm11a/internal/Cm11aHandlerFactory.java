@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,6 @@ package org.openhab.binding.cm11a.internal;
 
 import static org.openhab.binding.cm11a.internal.CM11ABindingConstants.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.openhab.binding.cm11a.internal.handler.Cm11aApplianceHandler;
@@ -43,8 +40,7 @@ public class Cm11aHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(Cm11aHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_SWITCH, THING_TYPE_DIMMER)));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SWITCH, THING_TYPE_DIMMER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

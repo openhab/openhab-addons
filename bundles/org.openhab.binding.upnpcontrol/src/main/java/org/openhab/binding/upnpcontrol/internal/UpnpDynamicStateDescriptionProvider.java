@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,7 @@ public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescript
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
-        StateDescription description = descriptions.get(channel.getUID());
-        return description;
+        return descriptions.get(channel.getUID());
     }
 
     @Deactivate

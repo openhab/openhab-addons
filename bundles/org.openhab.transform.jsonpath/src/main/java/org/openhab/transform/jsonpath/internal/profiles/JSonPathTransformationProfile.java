@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Profile to offer the JSonPathTransformationservice on an ItemChannelLink
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 public class JSonPathTransformationProfile implements StateProfile {
@@ -47,10 +46,8 @@ public class JSonPathTransformationProfile implements StateProfile {
     private static final String FUNCTION_PARAM = "function";
     private static final String SOURCE_FORMAT_PARAM = "sourceFormat";
 
-    @NonNullByDefault({})
-    private final String function;
-    @NonNullByDefault({})
-    private final String sourceFormat;
+    private final @NonNullByDefault({}) String function;
+    private final @NonNullByDefault({}) String sourceFormat;
 
     public JSonPathTransformationProfile(ProfileCallback callback, ProfileContext context,
             TransformationService service) {
@@ -66,9 +63,9 @@ public class JSonPathTransformationProfile implements StateProfile {
         if (paramSource == null) {
             paramSource = "%s";
         }
-        if (paramFunction instanceof String && paramSource instanceof String) {
-            function = (String) paramFunction;
-            sourceFormat = (String) paramSource;
+        if (paramFunction instanceof String pFunction && paramSource instanceof String pFormat) {
+            function = pFunction;
+            sourceFormat = pFormat;
         } else {
             logger.error("Parameter '{}' and '{}' have to be Strings. Profile will be inactive.", FUNCTION_PARAM,
                     SOURCE_FORMAT_PARAM);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class Icons {
     private IconsMetadata meta;
-    private List<Icon> data = new ArrayList<Icon>();
+    private List<Icon> data = new ArrayList<>();
 
     public IconsMetadata getMeta() {
         return meta;

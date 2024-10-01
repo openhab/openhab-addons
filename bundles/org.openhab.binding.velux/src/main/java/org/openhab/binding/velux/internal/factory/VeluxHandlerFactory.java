@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -199,10 +199,10 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
             veluxBindingHandlers.remove(thingHandler);
         } else
         // Handle Bridge removal
-        if (thingHandler instanceof VeluxBridgeHandler) {
+        if (thingHandler instanceof VeluxBridgeHandler veluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService((VeluxBridgeHandler) thingHandler);
+            unregisterDeviceDiscoveryService(veluxBridgeHandler);
         } else
         // Handle removal of Things behind the Bridge
         if (thingHandler instanceof VeluxHandler) {

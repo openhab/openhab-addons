@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,35 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link Alert} from JSON.
+ * Holds the data from the <code>alerts</code> object of the JSON response of the One Call APIs.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
 public class Alert {
-    public String event;
-    public int start;
-    public int end;
-    public String description;
+    private String event;
+    private int start;
+    private int end;
+    private String description;
     @SerializedName("sender_name")
-    public String senderName;
+    private String senderName;
+
+    public String getEvent() {
+        return event;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
 }

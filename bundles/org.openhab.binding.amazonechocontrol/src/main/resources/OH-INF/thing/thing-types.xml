@@ -636,7 +636,7 @@
 	</channel-type>
 	<!-- Alexa.HumiditySensor -->
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Relative humidity measured by the thermostat.</description>
 		<category>Humidity</category>

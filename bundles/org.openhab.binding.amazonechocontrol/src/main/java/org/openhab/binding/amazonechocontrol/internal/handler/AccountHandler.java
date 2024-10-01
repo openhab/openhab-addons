@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -821,8 +821,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             // create new id map
             Map<String, SmartHomeBaseDevice> newJsonIdSmartHomeDeviceMapping = new HashMap<>();
             for (Object smartHomeDevice : smartHomeDevices) {
-                if (smartHomeDevice instanceof SmartHomeBaseDevice) {
-                    SmartHomeBaseDevice smartHomeBaseDevice = (SmartHomeBaseDevice) smartHomeDevice;
+                if (smartHomeDevice instanceof SmartHomeBaseDevice smartHomeBaseDevice) {
                     String id = smartHomeBaseDevice.findId();
                     if (id != null) {
                         newJsonIdSmartHomeDeviceMapping.put(id, smartHomeBaseDevice);

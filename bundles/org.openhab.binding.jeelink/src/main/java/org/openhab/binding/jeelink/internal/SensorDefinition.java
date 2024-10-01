@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openhab.binding.jeelink.internal.ec3k.Ec3kSensorDefinition;
+import org.openhab.binding.jeelink.internal.emt7110.Emt7110SensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LaCrosseSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.LgwSensorDefinition;
 import org.openhab.binding.jeelink.internal.lacrosse.Tx22SensorDefinition;
@@ -36,9 +37,9 @@ import org.openhab.core.thing.binding.ThingHandler;
 public abstract class SensorDefinition<R extends Reading> {
     public static final String ALL_TYPE = "All";
 
-    private static final Set<SensorDefinition<?>> SENSOR_DEFS = Stream
-            .of(new LaCrosseSensorDefinition(), new Ec3kSensorDefinition(), new Pca301SensorDefinition(),
-                    new Tx22SensorDefinition(), new RevoltSensorDefinition(), new LgwSensorDefinition())
+    private static final Set<SensorDefinition<?>> SENSOR_DEFS = Stream.of(new LaCrosseSensorDefinition(),
+            new Ec3kSensorDefinition(), new Pca301SensorDefinition(), new Emt7110SensorDefinition(),
+            new Tx22SensorDefinition(), new RevoltSensorDefinition(), new LgwSensorDefinition())
             .collect(Collectors.toSet());
     private static final Set<JeeLinkReadingConverter<?>> CONVERTERS = SENSOR_DEFS.stream()
             .map(SensorDefinition::createConverter).collect(Collectors.toSet());

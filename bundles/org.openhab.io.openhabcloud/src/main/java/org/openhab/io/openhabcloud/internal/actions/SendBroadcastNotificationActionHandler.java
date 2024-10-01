@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,12 +25,14 @@ import org.openhab.io.openhabcloud.internal.CloudService;
  * cloud users.
  *
  * @author Christoph Weitkamp - Initial contribution
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public class SendBroadcastNotificationActionHandler extends BaseNotificationActionHandler {
 
     public static final String TYPE_ID = "notification.SendBroadcastNotification";
     public static final String EXTENDED_TYPE_ID = "notification.SendExtendedBroadcastNotification";
+    public static final String EXTENDED2_TYPE_ID = "notification.SendExtended2BroadcastNotification";
 
     public SendBroadcastNotificationActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
@@ -38,7 +40,8 @@ public class SendBroadcastNotificationActionHandler extends BaseNotificationActi
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.sendBroadcastNotification(message, icon, severity);
+        cloudService.sendBroadcastNotification(message, icon, tag == null ? severity : tag, title, referenceId,
+                onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
         return null;
     }
 }

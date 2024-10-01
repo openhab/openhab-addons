@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,7 +72,6 @@ public class SDS011Communicator {
      *
      * @param mode the {@link WorkMode} if we want to use polling or reporting
      * @param interval the time between polling or reportings
-     * @return {@code true} if we can communicate with the device
      * @throws PortInUseException
      * @throws TooManyListenersException
      * @throws IOException
@@ -80,7 +79,6 @@ public class SDS011Communicator {
      */
     public void initialize(WorkMode mode, Duration interval)
             throws PortInUseException, TooManyListenersException, IOException, UnsupportedCommOperationException {
-
         logger.trace("Initializing with mode={}, interval={}", mode, interval);
 
         SerialPort localSerialPort = portId.open(thingHandler.getThing().getUID().toString(), 2000);
@@ -246,8 +244,7 @@ public class SDS011Communicator {
     private boolean doRead() throws IOException {
         SensorReply reply = readReply();
         logger.trace("doRead(): Read reply={}", reply);
-        if (reply instanceof SensorMeasuredDataReply) {
-            SensorMeasuredDataReply sensorData = (SensorMeasuredDataReply) reply;
+        if (reply instanceof SensorMeasuredDataReply sensorData) {
             logger.trace("We received sensor data");
             if (sensorData.isValidData()) {
                 logger.trace("Sensor data is valid => updating channels");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.easee.internal.command.AbstractCommand;
+import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeBridgeHandler;
 
 import com.google.gson.JsonObject;
@@ -47,9 +48,9 @@ public class Login extends AbstractCommand {
 
     private final LoginData loginData;
 
-    public Login(EaseeBridgeHandler handler) {
+    public Login(EaseeBridgeHandler handler, JsonResultProcessor resultProcessor) {
         // flags do not matter as "onComplete" is overwritten in this class.
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO);
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO, resultProcessor);
         loginData = new LoginData(handler.getBridgeConfiguration().getUsername(),
                 handler.getBridgeConfiguration().getPassword());
     }

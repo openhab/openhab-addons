@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernhard Bauer - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = HeliosEasyControlsActions.class)
 @ThingActionsScope(name = "modbus.helioseasycontrols")
 @NonNullByDefault
 public class HeliosEasyControlsActions implements ThingActions {
@@ -53,8 +56,8 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     private void triggerSwitch(String variableName) {
         try {
+            HeliosEasyControlsHandler handler = this.handler;
             if (handler != null) {
-
                 handler.writeValue(variableName, "1");
             }
         } catch (HeliosException e) {
@@ -157,7 +160,8 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
     public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
-        return (handler != null) ? handler.getErrorMessages() : new ArrayList<String>();
+        HeliosEasyControlsHandler handler = this.handler;
+        return (handler != null) ? handler.getErrorMessages() : new ArrayList<>();
     }
 
     public static List<String> getErrorMessages(ThingActions actions) {
@@ -166,7 +170,8 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
     public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
-        return (handler != null) ? handler.getWarningMessages() : new ArrayList<String>();
+        HeliosEasyControlsHandler handler = this.handler;
+        return (handler != null) ? handler.getWarningMessages() : new ArrayList<>();
     }
 
     public static List<String> getWarningMessages(ThingActions actions) {
@@ -175,7 +180,8 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
     public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
-        return (handler != null) ? handler.getInfoMessages() : new ArrayList<String>();
+        HeliosEasyControlsHandler handler = this.handler;
+        return (handler != null) ? handler.getInfoMessages() : new ArrayList<>();
     }
 
     public static List<String> getInfoMessages(ThingActions actions) {
@@ -184,7 +190,8 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
     public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
-        return (handler != null) ? handler.getStatusMessages() : new ArrayList<String>();
+        HeliosEasyControlsHandler handler = this.handler;
+        return (handler != null) ? handler.getStatusMessages() : new ArrayList<>();
     }
 
     public static List<String> getStatusMessages(ThingActions actions) {

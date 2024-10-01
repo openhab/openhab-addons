@@ -207,7 +207,7 @@ Selection item=ZmServer_ImageMonitorId
 Image item=ZmServer_ImageUrl
 Selection item=ZmServer_VideoMonitorId
 Video item=ZmServer_VideoUrl url="" encoding="mjpeg"
-                
+
 Selection item=ZM_Monitor1_Function
 Selection item=ZM_Monitor1_Enable
 Image item=ZM_Monitor1_Image

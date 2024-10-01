@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,8 +93,10 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             // Special handling for TRV, because it uses duplicate ID values with different meanings
             switch (sen.id) {
                 case "3101": // current temp
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    if (value != SHELLY_API_INVTEMP) {
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
+                                toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    }
                     break;
                 case "3103": // target temp in C. 4/31, 999=unknown
                     updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
@@ -123,6 +125,9 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                         logger.debug("{}: Valve position changed, force update", thingName);
                         thingHandler.requestUpdates(1, false);
                     }
+                    break;
+                case "3122": // boost mode, Type=S, Range=0/1
+                    updateChannel(updates, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_BCONTROL, getOnOff(value > 0));
                     break;
                 default:
                     processed = false;
@@ -196,7 +201,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
-                if (idx >= 0) {
+                if (idx >= 0 && value != SHELLY_API_INVTEMP) {
                     // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
                     // Some devices report values = -999 or 99 during fw update
@@ -208,7 +213,6 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 break;
             case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
                 if ("targetTemp".equalsIgnoreCase(sen.desc)) {
-
                     break; // target temp in F-> ignore
                 }
                 // sensor_0: T, internalTemp, F, 39/88, unknown 999
@@ -300,13 +304,18 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "4209": // emeter_1: A, current, 0/120A, -1
             case "4309": // emeter_2: A, current, 0/120A, -1
                 updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
-                        toQuantityType(getDouble(s.value), DIGITS_VOLT, Units.AMPERE));
+                        toQuantityType(getDouble(s.value), DIGITS_AMPERE, Units.AMPERE));
                 break;
 
             case "4110": // emeter_0: S, powerFactor, 0/1, -1
             case "4210": // emeter_1: S, powerFactor, 0/1, -1
             case "4310": // emeter_2: S, powerFactor, 0/1, -1
                 updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
+                break;
+
+            case "6": // 3EM: emeter_n: nCurrent
+                updateChannel(updates, CHANNEL_GROUP_NMETER, CHANNEL_NMETER_CURRENT,
+                        toQuantityType(value, DIGITS_AMPERE, Units.AMPERE));
                 break;
 
             case "5101": // {"I":5101,"T":"S","D":"brightness","R":"0/100","L":1},
@@ -347,14 +356,12 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                     thingHandler.postEvent("ROLLER_" + reason.toUpperCase(), true);
                 }
             case "6106": // A, flood, 0/1, -1
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
-                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, OnOffType.from(value == 1));
                 break;
 
             case "6107": // A, motion, 0/1, -1
                 // {"I":6107,"T":"A","D":"motion","R":["0/1","-1"],"L":1},
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
-                        value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION, OnOffType.from(value == 1));
                 break;
             case "3119": // Motion timestamp (timestamp os GMT, not adapted to the adapted timezone)
                 // {"I":3119,"T":"S","D":"timestamp","U":"s","R":["U32","-1"],"L":1},
@@ -373,15 +380,14 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
             case "6110": // A, vibration, 0/1, -1=unknown
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
-                        s.value == 1 ? OnOffType.ON : OnOffType.OFF);
+                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION, OnOffType.from(s.value == 1));
                 if (s.value == 1) {
                     // post event
                     thingHandler.triggerChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM, EVENT_TYPE_VIBRATION);
                 }
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
-                if (s.valueArray.size() > 0) {
+                if (!s.valueArray.isEmpty()) {
                     thingHandler.updateWakeupReason(s.valueArray);
                     lastWakeup = (String) s.valueArray.get(0);
                 }

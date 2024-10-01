@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,11 @@
 package org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants;
 
 /**
- * The {@link ExeptionConstants} contains the {@link SimpleRequestBuilder} exception strings.
+ * The
+ * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.constants.ExeptionConstants}
+ * contains the
+ * {@link org.openhab.binding.digitalstrom.internal.lib.serverconnection.simpledsrequestbuilder.SimpleRequestBuilder}
+ * exception strings.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

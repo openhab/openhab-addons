@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="freecurrency"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="info" extensible="exchange-rate">
+		<label>Currency Information</label>
+		<description>Provide exchanges rates between currencies and service status information.</description>
+
+		<channels>
+			<channel id="lastUpdate" typeId="last-update"/>
+		</channels>
+
+	</thing-type>
+
+	<channel-type id="last-update">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>The timestamp of the last retrieved set of exchange rates.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="exchange-rate">
+		<item-type>Number</item-type>
+		<label>Exchange Rate</label>
+		<description>Exchange rate between two currencies</description>
+		<state pattern="%.6f" readOnly="true"/>
+
+		<config-description>
+			<parameter name="currency1" type="text" required="true">
+				<label>Currency 1</label>
+			</parameter>
+			<parameter name="currency2" type="text">
+				<label>Currency 2</label>
+				<description>Optional, defaults to base currency if not configured.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>
