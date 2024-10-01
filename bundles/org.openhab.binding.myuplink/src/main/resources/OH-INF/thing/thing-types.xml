@@ -24,7 +24,7 @@
 			</channel>
 			<channel id="smart-home-mode" typeId="rwtype-mode">
 				<label>Smart Home Mode</label>
-				<description>Sets the smart home mode</description>
+				<description>Controls the smart home mode</description>
 				<properties>
 					<property name="validationExpression">\w+</property>
 				</properties>
