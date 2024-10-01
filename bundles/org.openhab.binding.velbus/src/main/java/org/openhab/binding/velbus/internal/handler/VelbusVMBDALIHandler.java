@@ -86,7 +86,7 @@ public class VelbusVMBDALIHandler extends VelbusSensorWithAlarmClockHandler {
 
     private void initializeColorChannel() {
         for (int i = 0; i <= 80; i++) {
-            colorChannels[i] = new VelbusColorChannel();
+            colorChannels[i] = new VelbusColorChannel(CURVE_TYPE_EXPONENTIAL);
         }
     }
 

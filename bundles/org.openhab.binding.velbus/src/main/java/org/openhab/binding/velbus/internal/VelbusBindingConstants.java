@@ -280,6 +280,9 @@ public class VelbusBindingConstants {
     public static final byte SETTING_ACTUAL_LEVEL = (byte) 0x1A;
     public static final byte DALI_MAX_VALUE = (byte) 0xFE;
 
+    public static final byte CURVE_TYPE_LINEAR = (byte) 0x01;
+    public static final byte CURVE_TYPE_EXPONENTIAL = (byte) 0x02;
+
     // Module properties
     public static final String PORT = "port";
     public static final String ADDRESS = "address";

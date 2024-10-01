@@ -87,8 +87,13 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     private void initializeColorChannel() {
+        byte curveType;
+
+        curveType = (this.thing.getThingTypeUID().equals(THING_TYPE_VMB8DC_20)) ? CURVE_TYPE_LINEAR
+                : CURVE_TYPE_EXPONENTIAL;
+
         for (int i = 0; i <= 7; i++) {
-            colorChannels[i] = new VelbusColorChannel();
+            colorChannels[i] = new VelbusColorChannel(curveType);
         }
     }
 
