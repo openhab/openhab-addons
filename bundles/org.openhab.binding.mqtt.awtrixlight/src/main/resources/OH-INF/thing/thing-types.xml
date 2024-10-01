@@ -89,6 +89,7 @@
 		</channels>
 		<properties>
 			<property name="appid"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>appid</representation-property>
 		<config-description-ref uri="thing-type:mqtt:awtrixapp"/>
