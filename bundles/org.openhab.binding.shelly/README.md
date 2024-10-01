@@ -239,7 +239,7 @@ In this case the credentials are persisted as part of the Thing configuration.
 
 ### Range Extender Mode
 
-The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1). 
+The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1).
 This allows connect Shellys, which are normally no reachable, because of a lack of WiFi signal.
 Once enabled the Shelly acts as a hub to the linked devices, like a WiFi repeater.
 The hub device enables the access point, which can be seen by the linked device.
@@ -482,7 +482,7 @@ Refer to section [Full Example](#full-example) for examples how to catch alarm t
 
 ## Channels
 
-Depending on the device type and firmware release channels might be not available or stay with value NaN.  
+Depending on the device type and firmware release channels might be not available or stay with value NaN.
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -1712,7 +1712,7 @@ then
     if (! gBattery.allMembers.filter([state < lowBatteryThreshold]).empty) {
         message = "Battery levels:\n"
 
-        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[ 
+        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[
         name + ": " + state.format("%d%%\n") ]
         message = message + report
 
@@ -1807,10 +1807,10 @@ then
         eventSource = triggeredChannel
         eventType = receivedEvent
         ...
-    } 
+    }
 end
 
-rule "Color changed" 
+rule "Color changed"
 when
     Item ShellyColor changed
 then

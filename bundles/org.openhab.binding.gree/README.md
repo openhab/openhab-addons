@@ -139,9 +139,9 @@ Switch   GreeAirConditioner_Light   "Light"               {channel="gree:aircond
 rule "Mode changed"
 when
         Item GreeAirConditioner_Mode changed
-then        
+then
         if(GreeAirConditioner_Mode.state == "cool" ) {
             logInfo("A/C", "Cooling has be turned on")
-        } 
+        }
 end
 ```

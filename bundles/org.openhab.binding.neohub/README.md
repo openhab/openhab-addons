@@ -76,7 +76,7 @@ The device name is automatically discovered by the NeoHub Thing, and it is also 
 The following Channels, and their associated channel types are shown below.
 | Channel        | Data Type            | Description                                                                                                                                  |
 |----------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| meshNetworkQoS | Number:Dimensionless | RF mesh network Quality-of-Service; this is the percentage of configured devices that are currently connected online via the RF mesh network |  
+| meshNetworkQoS | Number:Dimensionless | RF mesh network Quality-of-Service; this is the percentage of configured devices that are currently connected online via the RF mesh network |
 
 ## Channels for "NeoStat" Thermostat
 
@@ -171,15 +171,15 @@ Number:Temperature Kitchen_Temperature "Kitchen Temperature" { channel="neohub:n
 sitemap neohub label="Heatmiser NeoHub"
 {
     Frame label="Thermostat" {
-        Text      item=Upstairs_RoomTemperature 
+        Text      item=Upstairs_RoomTemperature
         Setpoint  item=Upstairs_TargetTemperature minValue=15 maxValue=30 step=1
         Text      item=Upstairs_ThermostatOutputState
         Switch    item=Upstairs_OccupancyModePresent
-        Text      item=Upstairs_FloorTemperature 
+        Text      item=Upstairs_FloorTemperature
     }
 
     Frame label="Plug" {
-        Switch item=Downstairs_PlugOutputState  
+        Switch item=Downstairs_PlugOutputState
         Switch item=Downstairs_PlugAutoMode
     }
 

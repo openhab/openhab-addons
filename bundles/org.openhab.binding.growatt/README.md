@@ -139,15 +139,15 @@ The list of all possible channels is as follows:
 This binding includes rule actions, which allow you to setup programs for battery charging and discharging.
 Each inverter thing has a separate actions instance, which can be retrieved as follows.
 
-```php
+```java
 val growattActions = getActions("growatt", "growatt:inverter:home:sph")
 ```
 
 Where the first parameter must always be `growatt` and the second must be the full inverter thing UID.
 Once the action instance has been retrieved, you can invoke the following method:
 
-```php
-growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime, @Nullable Boolean enableProgram) 
+```java
+growattActions.setupBatteryProgram(int programMode, @Nullable Integer powerLevel, @Nullable Integer stopSOC, @Nullable Boolean enableAcCharging, @Nullable String startTime, @Nullable String stopTime, @Nullable Boolean enableProgram)
 ```
 
 The meaning of the method parameters is as follows:
@@ -184,7 +184,7 @@ The permission for passing 'null' parameters, and the effect of such 'null' para
 
 The following is an example program to charge the battery during a night-time low tariff period, and depending on the forecast solar energy for the coming day.
 
-```php
+```java
 // solar power constants
 val Integer programMode = 1 // 0 = Load First, 1 = Battery First, 2 = Grid First
 val Integer powerLevel = 23 // percent
@@ -257,7 +257,7 @@ end
 
 The following is an example program to charge the battery in preparation to avoid importing energy during a coming extra high tariff time window.
 
-```php
+```java
 // solar power constants
 var pauseProgramLastSetupDate
 
@@ -283,7 +283,7 @@ then
     var pauseStartDateTime = (pauseStartState as DateTimeType).getZonedDateTime()
     if (pauseStartDateTime.getHour() < 8) {
         logWarn("Rules", "Power Pause program shall not start before 08:00h => " + pauseStartDateTime)
-        return 
+        return
     }
 
     val programDuration = Duration.between(now, pauseStartDateTime)
@@ -409,7 +409,7 @@ The installation is as follows:
 
 A suggested Grott configuration for openHAB is as follows:
 
-```php
+```ini
 [Generic]
 mode = proxy
 compat = False
@@ -437,7 +437,7 @@ The service configuration for Linux is summarised below:
 - Copy the `grott.service` file to the `/etc/systemd/system/` folder
 - Modify `grott.service` to enter your user name; the Grott settings; the path to Python; and the path to the Grott application:
 
-```php
+```ini
 [Service]
 SyslogIdentifier=grott
 User=<username>  // your username
