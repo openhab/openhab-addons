@@ -163,7 +163,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final long sysMillis = System.currentTimeMillis();
         if (lastMdnsScanMillis + MIN_TIME_BETWEEN_MDNS_SCANS_MS < sysMillis) {
             logger.debug("Requesting MDNS Scan");
-            discoverySrvReg.startScan(THING_TYPE_GATEWAY, null);
+            discoverySrvReg.startScan(THING_TYPE_GATEWAY, null, null);
             lastMdnsScanMillis = sysMillis;
         } else {
             logger.trace("Not requesting MDNS Scan last ran under 10 min's ago");
