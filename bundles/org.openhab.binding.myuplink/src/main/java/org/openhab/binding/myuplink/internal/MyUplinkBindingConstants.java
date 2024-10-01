@@ -31,7 +31,7 @@ public class MyUplinkBindingConstants {
 
     // List of main device types
     public static final String DEVICE_ACCOUNT = "account";
-    public static final String DEVICE_GENERIC_DEVICE = "genericDevice";
+    public static final String DEVICE_GENERIC_DEVICE = "generic-device";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, DEVICE_ACCOUNT);
