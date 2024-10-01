@@ -104,8 +104,13 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         this.haID = componentConfiguration.getHaID();
 
         String name = channelConfiguration.getName();
-        if (newStyleChannels || (name != null && !name.isEmpty())) {
-            groupId = componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
+        if (newStyleChannels) {
+            // try for a simple component/group ID first; if there are conflicts
+            // (components of different types, but the same object id)
+            // we'll resolve them later
+            groupId = componentId = haID.objectID.replace('-', '_');
+        } else if (name != null && !name.isEmpty()) {
+            groupId = componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
         } else {
             groupId = null;
             componentId = "";
@@ -148,11 +153,23 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     protected void finalizeChannels() {
-        if (newStyleChannels && channels.size() == 1) {
-            groupId = null;
-            channels.forEach(
-                    (id, componentChannel) -> componentChannel.replaceChannelUID(buildChannelUID(componentId)));
+        if (!newStyleChannels) {
+            return;
         }
+        if (channels.size() == 1) {
+            groupId = null;
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
+        } else {
+            // only the first channel needs to persist the configuration
+            channels.values().stream().skip(1).forEach(c -> {
+                c.clearConfiguration();
+            });
+        }
+    }
+
+    public void resolveConflict() {
+        componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
+        channels.values().forEach(c -> c.resetUID(buildChannelUID(c.getChannel().getUID().getIdWithoutGroup())));
     }
 
     protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
@@ -225,6 +242,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public String getComponentId() {
         return componentId;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     /**

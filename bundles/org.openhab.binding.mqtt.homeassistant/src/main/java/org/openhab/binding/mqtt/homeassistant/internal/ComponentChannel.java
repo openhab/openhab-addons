@@ -77,11 +77,15 @@ public class ComponentChannel {
         return channel;
     }
 
-    public void replaceChannelUID(ChannelUID channelUID) {
+    public void resetUID(ChannelUID channelUID) {
         channel = ChannelBuilder.create(channelUID, channel.getAcceptedItemType()).withType(channel.getChannelTypeUID())
                 .withKind(channel.getKind()).withLabel(Objects.requireNonNull(channel.getLabel()))
                 .withConfiguration(channel.getConfiguration()).withAutoUpdatePolicy(channel.getAutoUpdatePolicy())
                 .build();
+    }
+
+    public void clearConfiguration() {
+        channel = ChannelBuilder.create(channel).withConfiguration(new Configuration()).build();
     }
 
     public ChannelState getState() {

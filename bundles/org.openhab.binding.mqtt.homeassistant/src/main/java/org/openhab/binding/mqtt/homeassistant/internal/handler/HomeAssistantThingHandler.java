@@ -42,6 +42,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactor
 import org.openhab.binding.mqtt.homeassistant.internal.component.Update;
 import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
@@ -97,6 +98,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     private final Gson gson;
     protected final Map<@Nullable String, AbstractComponent<?>> haComponents = new HashMap<>();
+    protected final Map<@Nullable String, AbstractComponent<?>> haComponentsByUniqueId = new HashMap<>();
     protected final Map<ChannelUID, ChannelState> channelStates = new HashMap<>();
 
     protected HandlerConfiguration config = new HandlerConfiguration();
@@ -154,7 +156,14 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     continue;
                 }
             }
-            HaID haID = HaID.fromConfig(config.basetopic, channel.getConfiguration());
+            Configuration channelConfig = channel.getConfiguration();
+            if (!channelConfig.containsKey("component")
+                    || !channelConfig.containsKey("objectid") | !channelConfig.containsKey("config")) {
+                // Must be a secondary channel
+                continue;
+            }
+
+            HaID haID = HaID.fromConfig(config.basetopic, channelConfig);
 
             if (!config.topics.contains(haID.getTopic())) {
                 // don't add a component for this channel that isn't configured on the thing
@@ -165,21 +174,17 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
             discoveryHomeAssistantIDs.add(haID);
             ThingUID thingUID = channel.getUID().getThingUID();
-            String channelConfigurationJSON = (String) channel.getConfiguration().get("config");
-            if (channelConfigurationJSON == null) {
-                logger.warn("Provided channel does not have a 'config' configuration key!");
-            } else {
-                try {
-                    AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
-                            channelConfigurationJSON, this, this, scheduler, gson, jinjava, newStyleChannels);
-                    if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
-                        typeID = calculateThingTypeUID(component);
-                    }
-
-                    haComponents.put(component.getComponentId(), component);
-                } catch (ConfigurationException e) {
-                    logger.error("Cannot restore component {}: {}", thing, e.getMessage());
+            String channelConfigurationJSON = (String) channelConfig.get("config");
+            try {
+                AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
+                        channelConfigurationJSON, this, this, scheduler, gson, jinjava, newStyleChannels);
+                if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
+                    typeID = calculateThingTypeUID(component);
                 }
+
+                addComponent(component);
+            } catch (ConfigurationException e) {
+                logger.error("Cannot restore component {}: {}", thing, e.getMessage());
             }
         }
         if (updateThingType(typeID)) {
@@ -272,14 +277,18 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
                     typeID = calculateThingTypeUID(discovered);
                 }
-                String id = discovered.getComponentId();
-                AbstractComponent<?> known = haComponents.get(id);
+                AbstractComponent<?> known = haComponentsByUniqueId.get(discovered.getUniqueId());
                 // Is component already known?
                 if (known != null) {
                     if (discovered.getConfigHash() != known.getConfigHash()) {
                         // Don't wait for the future to complete. We are also not interested in failures.
                         // The component will be replaced in a moment.
                         known.stop();
+                        haComponentsByUniqueId.remove(discovered.getUniqueId());
+                        haComponents.remove(known.getComponentId());
+                        if (!known.getComponentId().equals(discovered.getComponentId())) {
+                            discovered.resolveConflict();
+                        }
                     } else {
                         known.setConfigSeen();
                         continue;
@@ -287,7 +296,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
 
                 // Add component to the component map
-                haComponents.put(id, discovered);
+                addComponent(discovered);
                 // Start component / Subscribe to channel topics
                 discovered.start(connection, scheduler, 0).exceptionally(e -> {
                     logger.warn("Failed to start component {}", discovered.getHaID(), e);
@@ -407,5 +416,19 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         Map<String, String> properties = editProperties();
         properties = state.appendToProperties(properties);
         updateProperties(properties);
+    }
+
+    // should only be called when it's safe to access haComponents
+    private void addComponent(AbstractComponent component) {
+        AbstractComponent existing = haComponents.get(component.getComponentId());
+        if (existing != null) {
+            // rename the conflict
+            haComponents.remove(existing.getComponentId());
+            existing.resolveConflict();
+            component.resolveConflict();
+            haComponents.put(existing.getComponentId(), existing);
+        }
+        haComponents.put(component.getComponentId(), component);
+        haComponentsByUniqueId.put(component.getUniqueId(), component);
     }
 }
