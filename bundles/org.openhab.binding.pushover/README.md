@@ -87,11 +87,33 @@ Thing pushover:pushover-account:account [ apikey="APP_TOKEN", user="USER_KEY" ]
 
 demo.rules:
 
+:::: tabs
+
+::: tab DSL
+
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
 // send HTML message
 actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send HTML message
+pushoverActions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB");
+```
+
+:::
+
+::::
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
@@ -102,6 +124,28 @@ actions.sendAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;b
 // in case you want to send the content of an Image Item (RawType)
 actions.sendAttachmentMessage("Hello World!", "openHAB", myImageItem.state.toFullString, null)
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send message with attachment
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "/path/to/my-local-image.png", "image/png");
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "https://www.openhab.org/openhab-logo-square.png", null);
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;base64],<data>", null);
+// in case you want to send the content of an Image Item (RawType)
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", items.myImageItem.rawState.toFullString(), null);
+```
+
+:::
+
+::::
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
@@ -115,6 +159,27 @@ if( receipt !== null ) {
     receipt = null
 }
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send priority message
+var receipt = pushoverActions.sendPriorityMessage("Emergency!!!", "openHAB", 2);
+
+// wait for your cancel condition
+
+if (receipt !== null ) {
+    pushoverActions.cancelPriorityMessage(receipt);
+    receipt = null;
+}
+```
+
+:::
+
+::::
 
 :::: tabs
 
