@@ -16,7 +16,7 @@ This binding provides two thing types:
 | Thing/Bridge        | Thing Type          | Description                                                                                   |
 |---------------------|---------------------|-----------------------------------------------------------------------------------------------|
 | bridge              | account             | cloud connection to a myUplink user account                                                   |
-| thing               | genericDevice       | the physical heatpump which is connected to myUplink                                          |
+| thing               | generic-device       | the physical heatpump which is connected to myUplink                                          |
 
 
 ## Discovery
@@ -47,7 +47,7 @@ If manual configuration is preferred you need to specify configuration as below.
 
 The binding only supports channels which are explicitely exposed by the myUplink API.
 
-Depending on your model and additional hardware the channels might be different. 
+Depending on your model and additional hardware the channels might be different.
 Thus no list is provided here.
 
 ## Full Example
@@ -59,22 +59,22 @@ _*.sitemap examples are optional._
 ### Thing Configuration
 
 ```java
-Bridge myuplink:account:myAccount "myUplink" [ 
-    clientId="c7c2f9a4-b960-448f-b00d-b8f30aff3324", 
-    clientSecret="471147114711ABCDEF133713371337AB", 
-    dataPollingInterval=55 
+Bridge myuplink:account:myAccount "myUplink" [
+    clientId="c7c2f9a4-b960-448f-b00d-b8f30aff3324",
+    clientSecret="471147114711ABCDEF133713371337AB",
+    dataPollingInterval=55
     ] {
-        Thing genericDevice vvm320 "VVM320" [ deviceId="id taken from automatic discovery" ]
+        Thing generic-device vvm320 "VVM320" [ deviceId="id taken from automatic discovery" ]
     }
 ```
 
 ### Item Configuration
 
 ```java
-Number                  NIBE_ADD_STATUS        "Status ZH [%s]"          { channel="myuplink:genericDevice:myAccount:vvm320:49993" }
-Number                  NIBE_COMP_STATUS       "Status Compr. [%s]"      { channel="myuplink:genericDevice:myAccount:vvm320:44064" }
-Number:Temperature      NIBE_SUPPLY            "Supply line"             { unit="°C", channel="myuplink:genericDevice:myAccount:vvm320:40008" }
-Number:Temperature      NIBE_RETURN            "Return line"             { unit="°C", channel="myuplink:genericDevice:myAccount:vvm320:40012" }
-Number:Energy           NIBE_HM_HEAT           "HM heating"              { unit="kWh", channel="myuplink:genericDevice:myAccount:vvm320:44308" }
-Number:Energy           NIBE_HM_HW             "HM hot water"            { unit="kWh", channel="myuplink:genericDevice:myAccount:vvm320:44306" }
+Number                  NIBE_ADD_STATUS        "Status ZH [%s]"          { channel="myuplink:generic-device:myAccount:vvm320:49993" }
+Number                  NIBE_COMP_STATUS       "Status Compr. [%s]"      { channel="myuplink:generic-device:myAccount:vvm320:44064" }
+Number:Temperature      NIBE_SUPPLY            "Supply line"             { unit="°C", channel="myuplink:generic-device:myAccount:vvm320:40008" }
+Number:Temperature      NIBE_RETURN            "Return line"             { unit="°C", channel="myuplink:generic-device:myAccount:vvm320:40012" }
+Number:Energy           NIBE_HM_HEAT           "HM heating"              { unit="kWh", channel="myuplink:generic-device:myAccount:vvm320:44308" }
+Number:Energy           NIBE_HM_HW             "HM hot water"            { unit="kWh", channel="myuplink:generic-device:myAccount:vvm320:44306" }
 ```
