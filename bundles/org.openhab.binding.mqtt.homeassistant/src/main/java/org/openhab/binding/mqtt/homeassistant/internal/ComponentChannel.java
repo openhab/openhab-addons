@@ -82,6 +82,7 @@ public class ComponentChannel {
                 .withKind(channel.getKind()).withLabel(Objects.requireNonNull(channel.getLabel()))
                 .withConfiguration(channel.getConfiguration()).withAutoUpdatePolicy(channel.getAutoUpdatePolicy())
                 .build();
+        channelState.setChannelUID(channelUID);
     }
 
     public void clearConfiguration() {
