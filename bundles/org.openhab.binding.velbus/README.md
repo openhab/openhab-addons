@@ -375,23 +375,15 @@ Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH64` (A1 ... A6
 hsbColor command type is supported on channels `virtual-light#VL1` ... `virtual-light#VL16`. This is to set the color on the virtual light.
 They have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
-Things type `vmb4ledpwm-20` has 4 trigger channels `input#CH1` ... `input#CH4`. 
-It has 4 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH4`.
-hsbColor command type is supported on channels `color#CH1` ... `color#CH4`. This is to set the color on the channels.
+Things type `vmb4ledpwm-20`.
 Percent command type is supported on channels `brightness#CH1` ... `brightness#CH4`. This is to set the brightness on the channels.
 Direct, Fade_Rate and Fade_Time command types are supported on channels `fade-mode#CH1` ... `fade-mode#CH4`.
-Percent command type is supported on channels `white#CH1` ... `white#CH4`. This is to set the white on the channels.
 Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH4`. This is to set the scene on the channels.
-It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
-Things type `vmb8dc-20` has 8 trigger channels `input#CH1` ... `input#CH8`.
-It has 8 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH8`.
-hsbColor command type is supported on channels `color#CH1` ... `color#CH8`. This is to set the color on the channels.
+Things type `vmb8dc-20`.
 Percent command type is supported on channels `brightness#CH1` ... `brightness#CH8`. This is to set the brightness on the channels.
 Direct, Fade_Rate and Fade_Time command types are supported on channels `fade-mode#CH1` ... `fade-mode#CH8`.
-Percent command type is supported on channels `white#CH1` ... `white#CH8`. This is to set the white on the channels.
 Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH8`. This is to set the scene on the channels.
-It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
 The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED`.
 
