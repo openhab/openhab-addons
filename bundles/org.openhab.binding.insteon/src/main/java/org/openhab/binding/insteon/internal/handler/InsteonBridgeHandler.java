@@ -180,6 +180,8 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
             getChildHandlers().forEach(handler -> handler.bridgeThingUpdated(config, modem));
         }
 
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting to modem.");
+
         scheduler.execute(() -> {
             connectJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (!modem.connect()) {
@@ -194,8 +196,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
                 cancelJob(connectJob, false);
             }, START_DELAY, RETRY_INTERVAL, TimeUnit.SECONDS);
         });
-
-        updateStatus();
     }
 
     @Override
@@ -249,12 +249,12 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     public void updateStatus() {
         InsteonModem modem = getModem();
         if (modem == null || !modem.isInitialized()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Initializing modem.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine modem.");
             return;
         }
 
         if (!modem.getDB().isComplete()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Loading modem database.");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Loading modem database.");
             return;
         }
 
@@ -331,7 +331,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
             dispose();
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Resetting bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Resetting bridge.");
 
             resetJob = scheduler.schedule(() -> {
                 initialize();

@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.DeviceFeature.QueryStatus;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureEntry;
-import org.openhab.binding.insteon.internal.handler.InsteonBaseThingHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonThingHandler;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
-public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S extends InsteonBaseThingHandler>
+public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S extends InsteonThingHandler>
         implements Device {
     private static final int DIRECT_ACK_TIMEOUT = 6000; // in milliseconds
     private static final int REQUEST_QUEUE_TIMEOUT = 30000; // in milliseconds

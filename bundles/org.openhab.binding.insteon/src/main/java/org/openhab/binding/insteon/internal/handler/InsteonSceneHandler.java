@@ -163,7 +163,7 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
         InsteonModem modem = getModem();
         if (modem == null || !modem.getDB().isComplete()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for modem database.");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for modem database.");
             return;
         }
 

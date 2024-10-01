@@ -86,4 +86,9 @@ public interface InsteonThingHandler extends ThingHandler {
      * @param modem the bridge modem
      */
     public void bridgeThingUpdated(InsteonBridgeConfiguration config, InsteonModem modem);
+
+    /**
+     * Refreshes the thing
+     */
+    public void refresh();
 }

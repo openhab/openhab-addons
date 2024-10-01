@@ -317,6 +317,7 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                 .forEach(this::channelLinked);
     }
 
+    @Override
     public void refresh() {
         InsteonModem modem = getModem();
         if (modem != null && modem.getDB().isComplete()) {

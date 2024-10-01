@@ -260,7 +260,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
         InsteonModem modem = getModem();
         if (modem == null || !modem.getDB().isComplete()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for modem database.");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for modem database.");
             return;
         }
 
@@ -282,7 +282,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
 
         if (device.getProductData() == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for product data.");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for product data.");
             return;
         }
 
@@ -292,7 +292,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
 
         if (!device.getLinkDB().isComplete()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for link database.");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for link database.");
             return;
         }
 
