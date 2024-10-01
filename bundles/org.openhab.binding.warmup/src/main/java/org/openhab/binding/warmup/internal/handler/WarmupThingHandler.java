@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
@@ -104,7 +106,7 @@ public class WarmupThingHandler extends BaseThingHandler {
      * @param temperature {@link QuantityType} a temperature
      * @return the temperature as an int in degrees C * 10. i.e. 21.5 degrees C = 215
      */
-    protected int formatTemperature(QuantityType<?> temperature) {
+    protected int formatTemperature(QuantityType<Temperature> temperature) {
         return (int) (temperature.toUnit(SIUnits.CELSIUS).doubleValue() * 10);
     }
 
