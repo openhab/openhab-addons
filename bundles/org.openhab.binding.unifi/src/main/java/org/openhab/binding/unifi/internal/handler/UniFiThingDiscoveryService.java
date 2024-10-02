@@ -137,7 +137,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                 final var thingTypeUID = UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
                 final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(ud.getId()));
                 final Map<String, Object> properties = Map.of(PARAMETER_CID, ud.getMac(), PARAMETER_SITE,
-                        ud.getSite().getName());
+                        ud.getSite().getName(), PARAMETER_MAC_ADDRESS, ud.getMac());
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                         .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS)
                         .withProperties(properties).withLabel(ud.getName()).build());
