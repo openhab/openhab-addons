@@ -38,6 +38,8 @@ public class UniFiDevice implements HasId {
 
     private String model;
 
+    private String type;
+
     private String name;
 
     private String siteId;
@@ -45,6 +47,16 @@ public class UniFiDevice implements HasId {
     private UniFiPortTable[] portTable;
 
     private JsonObject[] portOverrides;
+
+    private boolean disabled;
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public String getType() {
+        return type;
+    }
 
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
@@ -81,6 +93,7 @@ public class UniFiDevice implements HasId {
 
     @Override
     public String toString() {
-        return String.format("UniFiDevice{mac: '%s', name: '%s', model: '%s', site: %s}", mac, name, model, getSite());
+        return String.format("UniFiDevice{mac: '%s', name: '%s', type: %s, model: '%s', disabled: %b, site: %s}", mac,
+                name, type, model, disabled, getSite());
     }
 }

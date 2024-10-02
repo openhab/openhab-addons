@@ -143,6 +143,10 @@ public class UniFiControllerCache {
         return clientsCache.values();
     }
 
+    public Collection<UniFiDevice> getDevices() {
+        return devicesCache.values();
+    }
+
     public long countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
         return getClients().stream().filter(c -> site.isSite(c.getSite())).filter(filter::test).count();
     }

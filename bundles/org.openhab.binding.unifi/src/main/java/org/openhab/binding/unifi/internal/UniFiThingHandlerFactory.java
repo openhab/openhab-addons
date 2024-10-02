@@ -12,12 +12,21 @@
  */
 package org.openhab.binding.unifi.internal;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.ALL_THING_TYPE_SUPPORTED;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.BINDING_ID;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_CONTROLLER;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_POE_PORT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRED_CLIENT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.THING_TYPE_WLAN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.unifi.internal.handler.UniFiAccessPointThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler;
@@ -87,6 +96,8 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
             return new UniFiClientThingHandler(thing);
         } else if (THING_TYPE_POE_PORT.equals(thingTypeUID)) {
             return new UniFiPoePortThingHandler(thing);
+        } else if (THING_TYPE_ACCESS_POINT.equals(thingTypeUID)) {
+            return new UniFiAccessPointThingHandler(thing);
         }
         return null;
     }

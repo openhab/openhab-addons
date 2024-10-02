@@ -38,10 +38,12 @@ public final class UniFiBindingConstants {
     public static final ThingTypeUID THING_TYPE_WIRED_CLIENT = new ThingTypeUID(BINDING_ID, "wiredClient");
     public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wirelessClient");
     public static final ThingTypeUID THING_TYPE_POE_PORT = new ThingTypeUID(BINDING_ID, "poePort");
+    public static final ThingTypeUID THING_TYPE_ACCESS_POINT = new ThingTypeUID(BINDING_ID, "accessPoint");
     public static final Set<ThingTypeUID> ALL_THING_TYPE_SUPPORTED = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_SITE,
-            THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT);
+            THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT,
+            THING_TYPE_ACCESS_POINT);
     public static final Set<ThingTypeUID> THING_TYPE_SUPPORTED = Set.of(THING_TYPE_SITE, THING_TYPE_WLAN,
-            THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT);
+            THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT, THING_TYPE_ACCESS_POINT);
 
     // List of site channels
     public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
@@ -92,6 +94,12 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_PORT_POE_POWER = "power";
     public static final String CHANNEL_PORT_POE_VOLTAGE = "voltage";
     public static final String CHANNEL_PORT_POE_CURRENT = "current";
+
+    // List of access point channels
+    public static final String CHANNEL_DISABLED = "disabled";
+
+    // Device types
+    public static final String DEVICE_TYPE_AP = "uap";
 
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";

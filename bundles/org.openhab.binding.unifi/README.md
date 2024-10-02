@@ -10,6 +10,7 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 - `wirelessClient` - Any wireless client connected to a UniFi wireless network
 - `wiredClient` - A wired client connected to the UniFi network
 - `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
+- `accessPoint` - An access Point managed by the UniFi controller software
 
 ## Discovery
 
@@ -102,6 +103,15 @@ The following table describes the `poePort` configuration parameters:
 |------------|-----------------------------------------------------------|----------|
 | portNumber | The port number as reported by the switch (starts with 1) | Required |
 | macAddress | The MAC address of the switch device the port is part of  | Required |
+
+### `accessPoint`
+
+The following table describes the `accessPoint` configuration parameters:
+
+| Parameter    | Description                                                        | Config   | Default |
+| ------------ | -------------------------------------------------------------------|--------- | ------- |
+| cid          | The MAC address, IP address, hostname or alias of the access point | Required | -       |
+| site         | The site where the client should be found                          | Optional | -       |
 
 ## Channels
 
@@ -224,6 +234,14 @@ The `poePort` information that is retrieved is available as these channels:
 
 The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.
+
+### `accessPoint`
+
+The `accessPoint` information that is retrieved is available as these channels:
+
+| Channel ID | Item Type                | Description                                           | Permissions |
+|------------|--------------------------|-------------------------------------------------------|-------------|
+| active     | Switch                   | Active status of the access point                     | Read, Write |
 
 ## Rule Actions
 
