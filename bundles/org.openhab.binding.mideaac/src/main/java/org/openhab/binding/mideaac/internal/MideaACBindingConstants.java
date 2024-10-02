@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Jacek Dobrowolski - Initial contribution
+ * @author Bob Eckhoff - OH naming conventions
  */
 @NonNullByDefault
 public class MideaACBindingConstants {

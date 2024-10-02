@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * bit(s) the set them to the commanded value.
  *
  * @author Jacek Dobrowolski - Initial contribution
+ * @author Bob Eckhoff - Add Java Docs, minor fixes
  */
 @NonNullByDefault
 public class CommandSet extends CommandBase {

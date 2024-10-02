@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * The {@link CommandBase} has the discover command and the routine poll command
  *
  * @author Jacek Dobrowolski - Initial contribution
+ * @author Bob Eckhoff - Add Java Docs, minor fixes
  */
 @NonNullByDefault
 public class CommandBase {
