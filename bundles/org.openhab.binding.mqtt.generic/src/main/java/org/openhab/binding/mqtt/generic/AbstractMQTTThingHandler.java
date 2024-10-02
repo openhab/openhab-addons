@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -301,18 +302,19 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
-        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null, null);
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, List.of());
     }
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable String transformation_pattern,
-            @Nullable TransformationServiceProvider transformationServiceProvider) {
+            List<String> transformation_pattern) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
-            ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),
+            ChannelState state = new ChannelState(
+                    ChannelConfigBuilder.create().withStateTopic(topic)
+                            .withTransformationPattern(transformation_pattern).build(),
                     channelUID, value, new ChannelStateUpdateListener() {
                         @Override
                         public void updateChannelState(ChannelUID channelUID, State value) {
@@ -328,9 +330,6 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         public void postChannelCommand(ChannelUID channelUID, Command value) {
                         }
                     });
-            if (transformation_pattern != null && transformationServiceProvider != null) {
-                state.addTransformation(transformation_pattern, transformationServiceProvider);
-            }
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
                 state.start(connection, scheduler, 0);

@@ -382,7 +382,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             addVideoDevice(device);
         } else if ("accesscontrol".equals(device.model) || "bellbutton".equals(device.model)) {
             addAccessDevice(device, location);
-        } else if ("alarms".equals(device.model)) {
+        } else if ("alarms".equals(device.model) && (device.properties != null)
+                && (device.properties.stream().anyMatch(p -> (p.alarmActive != null)))) {
             addAlarmDevice(device, location);
         } else if ("action".equals(device.type) || "virtual".equals(device.type)) {
             addActionDevice(device, location);
@@ -403,6 +404,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             case "pir":
             case "simulation":
             case "comfort":
+            case "alarms":
             case "alloff":
             case "overallcomfort":
             case "garagedoor":

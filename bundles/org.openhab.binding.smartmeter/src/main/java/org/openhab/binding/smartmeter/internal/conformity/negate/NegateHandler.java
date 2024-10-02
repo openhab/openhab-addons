@@ -17,7 +17,6 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.internal.MeterValue;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NegateHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NegateHandler.class);
 
     /**
      * Gets whether negation should be applied for the given <code>negateProperty</code> and the {@link MeterValue}
@@ -71,7 +69,8 @@ public class NegateHandler {
         try {
             longValue = (long) Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            LOGGER.warn("Failed to parse value: {} when determining isNegateSet, assuming false", value);
+            LoggerFactory.getLogger(NegateHandler.class)
+                    .warn("Failed to parse value: {} when determining isNegateSet, assuming false", value);
             return false;
         }
         return (longValue & (1L << negatePosition)) != 0;

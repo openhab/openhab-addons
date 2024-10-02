@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
@@ -52,7 +51,6 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     private final ScheduledExecutorService scheduler;
     private final ChannelStateUpdateListener updateListener;
     private final AvailabilityTracker tracker;
-    private final TransformationServiceProvider transformationServiceProvider;
     private final boolean newStyleChannels;
 
     protected final CompletableFuture<@Nullable Void> discoverFinishedFuture = new CompletableFuture<>();
@@ -80,13 +78,12 @@ public class DiscoverComponents implements MqttMessageSubscriber {
      */
     public DiscoverComponents(ThingUID thingUID, ScheduledExecutorService scheduler,
             ChannelStateUpdateListener channelStateUpdateListener, AvailabilityTracker tracker, Gson gson,
-            TransformationServiceProvider transformationServiceProvider, boolean newStyleChannels) {
+            boolean newStyleChannels) {
         this.thingUID = thingUID;
         this.scheduler = scheduler;
         this.updateListener = channelStateUpdateListener;
         this.gson = gson;
         this.tracker = tracker;
-        this.transformationServiceProvider = transformationServiceProvider;
         this.newStyleChannels = newStyleChannels;
     }
 
@@ -103,7 +100,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         if (config.length() > 0) {
             try {
                 component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
-                        gson, transformationServiceProvider, newStyleChannels);
+                        gson, newStyleChannels);
                 component.setConfigSeen();
 
                 logger.trace("Found HomeAssistant component {}", haID);

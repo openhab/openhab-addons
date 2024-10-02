@@ -42,7 +42,6 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
@@ -76,7 +75,6 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
 
     private @Mock @NonNullByDefault({}) ChannelStateUpdateListener channelStateUpdateListener;
     private @Mock @NonNullByDefault({}) AvailabilityTracker availabilityTracker;
-    private @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -110,8 +108,6 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(2, TimeUnit.SECONDS);
 
         failure = null;
-
-        doReturn(null).when(transformationServiceProvider).getTransformationService(any());
     }
 
     @Override
@@ -150,7 +146,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider, true));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, true));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

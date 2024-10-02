@@ -49,7 +49,7 @@ FreeboxOS binding has the following configuration parameters:
 
 | Parameter Label | Parameter ID | Description                                                                | Default |
 |-----------------|--------------|----------------------------------------------------------------------------|         |
-| Timeout         | timeout      | The timeout for reading from the API in seconds.                           | 8       |
+| Timeout         | timeout      | The timeout for reading from the API in seconds.                           | 10      |
 | Callback URL    | callbackUrl  | URL to use for playing notification sounds, e.g. 'http://192.168.0.2:8080' |         |
 
 ## Thing Configuration
