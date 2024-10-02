@@ -23,7 +23,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="type-flow">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Generic Flow</label>
 		<state pattern="%.1f l/min" readOnly="true">
 		</state>
