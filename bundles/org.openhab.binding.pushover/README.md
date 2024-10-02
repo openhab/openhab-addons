@@ -56,7 +56,7 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendMonospaceMessage(String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a monospace message with TTL.
 
-- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` **mandatory**). Additionally you can pass a data URI scheme to this parameter. Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` mandatory). Additionally you can pass a data URI scheme to this parameter. The content of an Image-type item is also accepted (see demo.rules example). Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
 
 - `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable Duration ttl)` - This method is used to send a message with an attachment and TTL. See previous method for details.
 
