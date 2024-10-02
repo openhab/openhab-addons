@@ -49,7 +49,6 @@ public class PushoverHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public PushoverHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         httpClient = httpClientFactory.createHttpClient(PushoverBindingConstants.BINDING_ID);
-        httpClient.setIdleTimeout(18000);
         try {
             httpClient.start();
         } catch (final Exception e) {
