@@ -52,15 +52,14 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         // OpenhabGraalJSScriptEngine::beforeInvocation will be executed after
         // DebuggingGraalScriptEngine::beforeInvocation, because GraalJSScriptEngineFactory::createScriptEngine returns
         // a DebuggingGraalScriptEngine instance.
-        // We therefore need to synchronize locker setup here and cannot rely on the synchronization in
+        // We therefore need to synchronize logger setup here and cannot rely on the synchronization in
         // OpenhabGraalJSScriptEngine.
         delegate.lock();
         try {
             if (logger == null) {
                 initializeLogger();
             }
-        } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
-                    // deadlocks
+        } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid deadlocks
             delegate.unlock();
         }
     }
