@@ -35,6 +35,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -76,6 +77,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
 
     @Override
     protected void buildChannels() {
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         if (channelConfiguration.commandOnTemplate == null || channelConfiguration.commandOffTemplate == null) {
             throw new UnsupportedComponentException("Template schema light component '" + getHaID()
                     + "' does not define command_on_template or command_off_template!");
@@ -87,25 +89,28 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
                 && channelConfiguration.blueTemplate != null) {
             colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command))
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (channelConfiguration.brightnessTemplate != null) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
                     "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(command -> handleCommand(command)).build();
+                    .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
             onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
+                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command))
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (channelConfiguration.colorTempTemplate != null) {
             buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleColorTempCommand(command))
-                    .build();
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
         TextValue localEffectValue = effectValue;
         if (channelConfiguration.effectTemplate != null && localEffectValue != null) {
             buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, localEffectValue, "Effect", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command)).build();
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command))
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
     }
 
