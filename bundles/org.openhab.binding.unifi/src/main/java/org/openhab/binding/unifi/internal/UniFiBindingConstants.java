@@ -96,7 +96,7 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_PORT_POE_CURRENT = "current";
 
     // List of access point channels
-    public static final String CHANNEL_DISABLED = "disabled";
+    public static final String CHANNEL_AP_ENABLE = "enable";
 
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";

@@ -150,7 +150,7 @@
 		<description>An access point managed by a UniFi controller</description>
 
 		<channels>
-			<channel id="disabled" typeId="disabled"/>
+			<channel id="enable" typeId="apEnable"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:unifi:accessPoint"/>
@@ -436,10 +436,10 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="disabled" advanced="false">
+	<channel-type id="apEnable" advanced="false">
 		<item-type>Switch</item-type>
-		<label>Disabled</label>
-		<description>Is the access point disabled</description>
+		<label>Enabled</label>
+		<description>Is the access point enabled</description>
 	</channel-type>
 
 </thing:thing-descriptions>

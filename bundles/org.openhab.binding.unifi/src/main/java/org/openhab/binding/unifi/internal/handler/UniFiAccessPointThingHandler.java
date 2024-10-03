@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DISABLED;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,8 +70,8 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         final State state;
 
         switch (channelId) {
-            case CHANNEL_DISABLED:
-                state = OnOffType.from(device.isDisabled());
+            case CHANNEL_AP_ENABLE:
+                state = OnOffType.from(!device.isDisabled());
                 break;
             default:
                 state = UnDefType.UNDEF;
@@ -85,9 +85,9 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         final String channelID = channelUID.getIdWithoutGroup();
 
         switch (channelID) {
-            case CHANNEL_DISABLED:
+            case CHANNEL_AP_ENABLE:
                 if (command instanceof OnOffType) {
-                    return handleDisableCommand(controller, device, channelUID, command);
+                    return handleEnableCommand(controller, device, channelUID, command);
                 }
                 break;
             default:
@@ -96,10 +96,10 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         return false;
     }
 
-    private boolean handleDisableCommand(final UniFiController controller, final UniFiDevice device,
+    private boolean handleEnableCommand(final UniFiController controller, final UniFiDevice device,
             final ChannelUID channelUID, final Command command) throws UniFiException {
         if (command instanceof OnOffType) {
-            controller.disableAccessPoint(device, command == OnOffType.ON);
+            controller.disableAccessPoint(device, command == OnOffType.OFF);
             refresh();
             return true;
         }
