@@ -216,7 +216,7 @@ public class UniFiController {
     }
 
     public void disableAccessPoint(final UniFiDevice device, final boolean disable) throws UniFiException {
-        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, poeGson);
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
         req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
         req.setBodyParameter("_id", device.getId());
         req.setBodyParameter("disabled", disable ? "true" : "false");

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_AP;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_NUMBER;
@@ -133,7 +133,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
 
     private void discoverAccessPoints(final UniFiControllerCache cache, final ThingUID bridgeUID) {
         for (final UniFiDevice ud : cache.getDevices()) {
-            if (DEVICE_TYPE_AP.equals(ud.getType())) {
+            if (DEVICE_TYPE_UAP.equals(ud.getType())) {
                 final var thingTypeUID = UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
                 final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(ud.getId()));
                 final Map<String, Object> properties = Map.of(PARAMETER_CID, ud.getMac(), PARAMETER_SITE,

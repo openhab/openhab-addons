@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Thomas Lauterbach - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("unused")
 public class UniFiAccessPointThingConfig {
 
     private String macAddress = "";

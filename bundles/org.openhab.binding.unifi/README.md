@@ -10,7 +10,7 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 - `wirelessClient` - Any wireless client connected to a UniFi wireless network
 - `wiredClient` - A wired client connected to the UniFi network
 - `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
-- `accessPoint` - An access Point managed by the UniFi controller software
+- `accessPoint` - An access point managed by the UniFi controller software
 
 ## Discovery
 
@@ -108,10 +108,10 @@ The following table describes the `poePort` configuration parameters:
 
 The following table describes the `accessPoint` configuration parameters:
 
-| Parameter    | Description                                                        | Config   | Default |
-| ------------ | -------------------------------------------------------------------|--------- | ------- |
-| cid          | The MAC address, IP address, hostname or alias of the access point | Required | -       |
-| site         | The site where the client should be found                          | Optional | -       |
+| Parameter    | Description                               | Config   | Default |
+| ------------ | ------------------------------------------|--------- | ------- |
+| cid          | The MAC address of the access point       | Required | -       |
+| site         | The site where the client should be found | Optional | -       |
 
 ## Channels
 
@@ -239,9 +239,9 @@ The default mode value is `auto`.
 
 The `accessPoint` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type                | Description                                           | Permissions |
-|------------|--------------------------|-------------------------------------------------------|-------------|
-| active     | Switch                   | Active status of the access point                     | Read, Write |
+| Channel ID | Item Type | Description                       | Permissions |
+|------------|-----------|-----------------------------------|-------------|
+| disabled   | Switch    | Active status of the access point | Read, Write |
 
 ## Rule Actions
 

@@ -439,7 +439,7 @@
 	<channel-type id="disabled" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Disabled</label>
-		<description>Is access point disabled</description>
+		<description>Is the access point disabled</description>
 	</channel-type>
 
 </thing:thing-descriptions>

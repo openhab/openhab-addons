@@ -98,9 +98,6 @@ public final class UniFiBindingConstants {
     // List of access point channels
     public static final String CHANNEL_DISABLED = "disabled";
 
-    // Device types
-    public static final String DEVICE_TYPE_AP = "uap";
-
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";
@@ -120,6 +117,9 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_PORT_NUMBER = "portNumber";
     public static final String PARAMETER_MAC_ADDRESS = "macAddress";
     public static final String PARAMETER_WIFI_NAME = "wifi";
+
+    // UniFi device types
+    public static final String DEVICE_TYPE_UAP = "uap";
 
     private UniFiBindingConstants() {
         // Constants class
