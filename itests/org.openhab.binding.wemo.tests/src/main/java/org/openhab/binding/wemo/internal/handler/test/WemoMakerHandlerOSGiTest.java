@@ -69,8 +69,8 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         removeThing();
     }
 
-    @Disabled
     @Test
+    @Disabled("https://github.com/openhab/openhab-addons/issues/12474")
     public void assertThatThingHandlesOnOffCommandCorrectly()
             throws MalformedURLException, URISyntaxException, ValidationException, IOException {
         Command command = OnOffType.OFF;
