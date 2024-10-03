@@ -45,6 +45,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Provide storage towards sc-plane
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
