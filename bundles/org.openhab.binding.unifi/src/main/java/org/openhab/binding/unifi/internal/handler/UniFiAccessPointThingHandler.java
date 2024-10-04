@@ -98,14 +98,8 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
             final ChannelUID channelUID, final Command command) throws UniFiException {
         final String channelID = channelUID.getIdWithoutGroup();
 
-        switch (channelID) {
-            case CHANNEL_AP_ENABLE:
-                if (command instanceof OnOffType) {
-                    return handleEnableCommand(controller, device, channelUID, command);
-                }
-                break;
-            default:
-                return false;
+        if (CHANNEL_AP_ENABLE.equals(channelID) && command instanceof OnOffType onOffCommand) {
+            return handleEnableCommand(controller, device, channelUID, onOffCommand);
         }
         return false;
     }

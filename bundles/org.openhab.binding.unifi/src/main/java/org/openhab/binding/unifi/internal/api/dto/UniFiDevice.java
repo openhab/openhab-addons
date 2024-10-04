@@ -50,14 +50,6 @@ public class UniFiDevice implements HasId {
 
     private boolean disabled;
 
-    public boolean isDisabled() {
-        return disabled;
-    }
-
-    public String getType() {
-        return type;
-    }
-
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -65,6 +57,10 @@ public class UniFiDevice implements HasId {
     @Override
     public String getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getModel() {
@@ -89,6 +85,10 @@ public class UniFiDevice implements HasId {
 
     public JsonObject[] getPortOverrides() {
         return portOverrides;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
     }
 
     @Override

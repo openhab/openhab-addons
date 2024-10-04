@@ -124,6 +124,10 @@ public class UniFiControllerCache {
         return devicesCache.get(id);
     }
 
+    public Collection<UniFiDevice> getDevices() {
+        return devicesCache.values();
+    }
+
     public UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
         return deviceId == null ? new UniFiSwitchPorts()
                 : devicesToPortTables.getOrDefault(deviceId, new UniFiSwitchPorts());
@@ -141,10 +145,6 @@ public class UniFiControllerCache {
 
     public Collection<UniFiClient> getClients() {
         return clientsCache.values();
-    }
-
-    public Collection<UniFiDevice> getDevices() {
-        return devicesCache.values();
     }
 
     public long countClients(final UniFiSite site, final Predicate<UniFiClient> filter) {
