@@ -139,7 +139,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                 final Map<String, Object> properties = Map.of(PARAMETER_SITE, ud.getSite().getName(),
                         PARAMETER_MAC_ADDRESS, ud.getMac());
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                        .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS)
+                        .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_MAC_ADDRESS).withTTL(TTL_SECONDS)
                         .withProperties(properties).withLabel(ud.getName()).build());
             }
         }
