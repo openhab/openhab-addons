@@ -151,7 +151,7 @@ public class ModemDBReader implements PortListener {
     public void disconnected() {
         if (!done) {
             logger.debug("port disconnected, restarting");
-            getAllRecords();
+            restart();
         }
     }
 
