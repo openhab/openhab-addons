@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
-public class InsteonScene {
+public class InsteonScene implements Scene {
     public static final int GROUP_MIN = 2;
     public static final int GROUP_MAX = 254;
     // limit new scene group minimum to 25 matching the current Insteon app behavior
@@ -51,6 +51,7 @@ public class InsteonScene {
         this.group = group;
     }
 
+    @Override
     public int getGroup() {
         return group;
     }
@@ -306,6 +307,7 @@ public class InsteonScene {
     /**
      * Refreshes this scene
      */
+    @Override
     public void refresh() {
         logger.trace("refreshing scene {}", group);
 

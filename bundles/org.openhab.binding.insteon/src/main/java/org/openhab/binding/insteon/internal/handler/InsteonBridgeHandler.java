@@ -30,7 +30,6 @@ import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.DeviceCache;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
-import org.openhab.binding.insteon.internal.device.InsteonScene;
 import org.openhab.binding.insteon.internal.device.ProductData;
 import org.openhab.binding.insteon.internal.discovery.InsteonDiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -89,14 +88,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     @Override
     public @Nullable InsteonModem getModem() {
         return modem;
-    }
-
-    public @Nullable Device getDevice(DeviceAddress address) {
-        return Optional.ofNullable(modem).map(modem -> modem.getDevice(address)).orElse(null);
-    }
-
-    public @Nullable InsteonScene getScene(int group) {
-        return Optional.ofNullable(modem).map(modem -> modem.getScene(group)).orElse(null);
     }
 
     public @Nullable ProductData getProductData(DeviceAddress address) {

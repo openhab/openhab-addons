@@ -48,7 +48,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     private PollManager poller;
     private RequestManager requester;
     private Map<DeviceAddress, Device> devices = new ConcurrentHashMap<>();
-    private Map<Integer, InsteonScene> scenes = new ConcurrentHashMap<>();
+    private Map<Integer, Scene> scenes = new ConcurrentHashMap<>();
     private @Nullable X10Address lastX10Address;
     private boolean initialized = false;
     private int msgsReceived = 0;
@@ -121,7 +121,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         return getDevices().stream().filter(X10Device.class::isInstance).map(X10Device.class::cast).toList();
     }
 
-    public @Nullable InsteonScene getScene(int group) {
+    public @Nullable Scene getScene(int group) {
         return scenes.get(group);
     }
 
@@ -129,19 +129,26 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         return scenes.containsKey(group);
     }
 
-    public List<InsteonScene> getScenes() {
+    public List<Scene> getScenes() {
         return scenes.values().stream().toList();
     }
 
+    public @Nullable InsteonScene getInsteonScene(int group) {
+        return (InsteonScene) getScene(group);
+    }
+
+    public List<InsteonScene> getInsteonScenes() {
+        return getScenes().stream().filter(InsteonScene.class::isInstance).map(InsteonScene.class::cast).toList();
+    }
+
     public @Nullable ProductData getProductData(DeviceAddress address) {
-        ProductData productData = null;
         Device device = getDevice(address);
         if (device != null && device.getProductData() != null) {
-            productData = device.getProductData();
+            return device.getProductData();
         } else if (address instanceof InsteonAddress insteonAddress) {
-            productData = modemDB.getProductData(insteonAddress);
+            return modemDB.getProductData(insteonAddress);
         }
-        return productData;
+        return null;
     }
 
     public void addDevice(Device device) {
@@ -161,12 +168,13 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     public void deleteSceneEntries(InsteonDevice device) {
-        getScenes().stream().filter(scene -> scene.getDevices().contains(device.getAddress()))
+        getInsteonScenes().stream().filter(scene -> scene.getDevices().contains(device.getAddress()))
                 .forEach(scene -> scene.deleteEntries(device.getAddress()));
     }
 
     public void updateSceneEntries(InsteonDevice device) {
-        getScenes().stream().filter(scene -> modemDB.getRelatedDevices(scene.getGroup()).contains(device.getAddress()))
+        getInsteonScenes().stream()
+                .filter(scene -> modemDB.getRelatedDevices(scene.getGroup()).contains(device.getAddress()))
                 .forEach(scene -> scene.updateEntries(device));
     }
 
@@ -309,7 +317,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         logger.debug("modem database completed");
 
         getDevices().forEach(Device::refresh);
-        getScenes().forEach(InsteonScene::refresh);
+        getScenes().forEach(Scene::refresh);
 
         logDevicesAndScenes();
 
@@ -343,7 +351,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
                 device.getLinkDB().setReload(true);
             }
         }
-        InsteonScene scene = getScene(group);
+        InsteonScene scene = getInsteonScene(group);
         if (scene != null) {
             scene.refresh();
         }

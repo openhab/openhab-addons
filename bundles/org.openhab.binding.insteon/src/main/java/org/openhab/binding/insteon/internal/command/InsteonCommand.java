@@ -160,7 +160,7 @@ public abstract class InsteonCommand implements ConsoleCommandCompleter {
 
     protected @Nullable InsteonScene getInsteonScene(String thingId) {
         if (InsteonScene.isValidGroup(thingId)) {
-            return getModem().getScene(Integer.parseInt(thingId));
+            return getModem().getInsteonScene(Integer.parseInt(thingId));
         } else {
             return getInsteonSceneHandlers().filter(handler -> handler.getThingId().equals(thingId))
                     .map(InsteonSceneHandler::getScene).findFirst().orElse(null);
