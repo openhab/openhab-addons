@@ -30,7 +30,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,14 +83,12 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
 
     @Override
     protected State getChannelState(final UniFiDevice device, final String channelId) {
-        final State state;
+        State state = getDefaultState(channelId);
 
         switch (channelId) {
             case CHANNEL_AP_ENABLE:
                 state = OnOffType.from(!device.isDisabled());
                 break;
-            default:
-                state = UnDefType.UNDEF;
         }
         return state;
     }

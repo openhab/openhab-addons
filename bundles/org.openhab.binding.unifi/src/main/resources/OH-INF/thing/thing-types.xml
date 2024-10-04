@@ -150,7 +150,6 @@
 		<description>An access point managed by a UniFi controller</description>
 
 		<channels>
-			<channel id="site" typeId="site"/>
 			<channel id="enable" typeId="apEnable"/>
 		</channels>
 
