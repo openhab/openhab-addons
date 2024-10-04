@@ -88,7 +88,7 @@ public class ThreadsafeTimers {
             logger.debug("Lock acquired before timer execution");
             try {
                 closure.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
                 logger.debug("Lock released after timer execution");
@@ -113,7 +113,7 @@ public class ThreadsafeTimers {
             try {
                 callback.run();
                 idSchedulerMapping.remove(id);
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
                 logger.debug("Lock released after timeout execution");
@@ -157,7 +157,7 @@ public class ThreadsafeTimers {
             logger.debug("Lock acquired before interval execution");
             try {
                 callback.run();
-            } finally { // Make sure that Lock is unlocked regardless of an exception is thrown or not to avoid
+            } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid
                         // deadlocks
                 lock.unlock();
                 logger.debug("Lock released after interval execution");
