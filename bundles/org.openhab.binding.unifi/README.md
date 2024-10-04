@@ -241,7 +241,7 @@ The `accessPoint` information that is retrieved is available as these channels:
 
 | Channel ID | Item Type | Description                        | Permissions |
 |------------|-----------|------------------------------------|-------------|
-| enabled    | Switch    | Enable or disable the access point | Read, Write |
+| enable     | Switch    | Enable or disable the access point | Read, Write |
 
 ## Rule Actions
 
