@@ -174,4 +174,12 @@ public class GreeBindingConstants {
      *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;
+
+    public static enum ENCRYPTION_TYPES {
+        UNKNOWN,
+        ECB,
+        GCM
+    };
+
+    public static final ENCRYPTION_TYPES PROPERTY_ENCRYPTION_TYPE = ENCRYPTION_TYPES.UNKNOWN;
 }

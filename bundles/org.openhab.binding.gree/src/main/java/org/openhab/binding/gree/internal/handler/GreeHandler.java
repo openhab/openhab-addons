@@ -108,12 +108,12 @@ public class GreeHandler extends BaseThingHandler {
                 clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
             }
             // Find the GREE device
-            deviceFinder.scan(clientSocket.get(), config.ipAddress, false);
+            deviceFinder.scan(clientSocket.get(), config.ipAddress, false, config.encryptionType);
             GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
                 device = newDevice;
-                device.bindWithDevice(clientSocket.get());
+                device.bindWithDevice(clientSocket.get(), config.encryptionType);
                 if (device.getIsBound()) {
                     updateStatus(ThingStatus.ONLINE);
                     return;

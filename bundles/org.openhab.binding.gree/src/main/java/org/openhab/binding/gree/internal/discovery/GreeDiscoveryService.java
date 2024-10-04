@@ -87,7 +87,7 @@ public class GreeDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         try (DatagramSocket clientSocket = new DatagramSocket()) {
-            deviceFinder.scan(clientSocket, broadcastAddress, true);
+            deviceFinder.scan(clientSocket, broadcastAddress, true, ENCRYPTION_TYPES.UNKNOWN);
 
             int count = deviceFinder.getScannedDeviceCount();
             logger.debug("{}", messages.get("discovery.result", count));
