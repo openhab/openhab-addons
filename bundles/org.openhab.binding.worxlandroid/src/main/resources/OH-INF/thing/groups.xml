@@ -212,7 +212,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="wifi-group-type">
-		<label>Wifi Information</label>
+		<label>Wi-Fi Information</label>
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="wifi-quality" typeId="system.signal-strength"/>
