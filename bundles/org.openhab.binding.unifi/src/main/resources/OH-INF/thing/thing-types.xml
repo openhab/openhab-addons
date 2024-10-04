@@ -141,6 +141,21 @@
 		<config-description-ref uri="thing-type:unifi:poePort"/>
 	</thing-type>
 
+	<thing-type id="accessPoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+
+		<label>UniFi Access Point</label>
+		<description>An access point managed by a UniFi controller</description>
+
+		<channels>
+			<channel id="enable" typeId="apEnable"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:unifi:accessPoint"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="totalClients">
@@ -419,6 +434,12 @@
 		<label>Port PoE Current</label>
 		<description>Current usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="apEnable" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Enabled</label>
+		<description>If the access point is enabled</description>
 	</channel-type>
 
 </thing:thing-descriptions>
