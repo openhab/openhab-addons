@@ -13,6 +13,7 @@
 package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -48,6 +50,17 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         super(thing);
     }
 
+    private static boolean belongsToSite(final UniFiDevice client, final String siteName) {
+        boolean result = true;
+        if (!siteName.isEmpty()) {
+            final UniFiSite site = client.getSite();
+            if (site == null || !site.matchesName(siteName)) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
     @Override
     protected boolean initialize(final UniFiAccessPointThingConfig config) {
         this.config = config;
@@ -62,7 +75,11 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
 
     @Override
     protected @Nullable UniFiDevice getEntity(final UniFiControllerCache cache) {
-        return cache.getDevice(config.getMacAddress());
+        final UniFiDevice device = cache.getDevice(config.getMacAddress());
+        if (device == null || !belongsToSite(device, config.getSite()) || !DEVICE_TYPE_UAP.equals(device.getType())) {
+            return null;
+        }
+        return device;
     }
 
     @Override

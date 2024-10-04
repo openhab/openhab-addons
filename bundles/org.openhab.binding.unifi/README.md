@@ -108,10 +108,10 @@ The following table describes the `poePort` configuration parameters:
 
 The following table describes the `accessPoint` configuration parameters:
 
-| Parameter    | Description                               | Config   | Default |
-| ------------ | ------------------------------------------|--------- | ------- |
-| cid          | The MAC address of the access point       | Required | -       |
-| site         | The site where the client should be found | Optional | -       |
+| Parameter    | Description                                     | Config   | Default |
+| ------------ | ------------------------------------------------|--------- | ------- |
+| mac          | The MAC address of the access point             | Required | -       |
+| site         | The site where the access point should be found | Optional | -       |
 
 ## Channels
 
@@ -239,9 +239,9 @@ The default mode value is `auto`.
 
 The `accessPoint` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type | Description                       | Permissions |
-|------------|-----------|-----------------------------------|-------------|
-| disabled   | Switch    | Active status of the access point | Read, Write |
+| Channel ID | Item Type | Description                        | Permissions |
+|------------|-----------|------------------------------------|-------------|
+| enabled    | Switch    | Enable or disable the access point | Read, Write |
 
 ## Rule Actions
 

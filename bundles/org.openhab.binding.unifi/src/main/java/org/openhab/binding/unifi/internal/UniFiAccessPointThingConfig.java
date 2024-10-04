@@ -21,9 +21,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Thomas Lauterbach - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("unused")
 public class UniFiAccessPointThingConfig {
 
     private String macAddress = "";
+
+    private String site = "";
+
+    public String getSite() {
+        return site;
+    }
+
+    private void setSite(final String site) {
+        // method to avoid ide auto format mark the field as final
+        this.site = site;
+    }
 
     public String getMacAddress() {
         return macAddress;
