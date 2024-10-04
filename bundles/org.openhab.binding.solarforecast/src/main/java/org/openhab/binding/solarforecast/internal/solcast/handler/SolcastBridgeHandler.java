@@ -13,6 +13,7 @@
 package org.openhab.binding.solarforecast.internal.solcast.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
+import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.MODES;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -33,7 +34,6 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
-import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastBridgeConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -130,32 +130,32 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             return;
         }
         ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
-        List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
-        modes.forEach(mode -> {
-            String group = switch (mode) {
-                case Average -> GROUP_AVERAGE;
-                case Optimistic -> GROUP_OPTIMISTIC;
-                case Pessimistic -> GROUP_PESSIMISTIC;
-                default -> GROUP_AVERAGE;
-            };
-            boolean update = true;
-            double energySum = 0;
-            double powerSum = 0;
-            double daySum = 0;
-            for (Iterator<SolcastPlaneHandler> iterator = planes.iterator(); iterator.hasNext();) {
-                try {
-                    SolcastPlaneHandler sfph = iterator.next();
-                    SolcastObject fo = sfph.fetchData();
-                    energySum += fo.getActualEnergyValue(now, mode);
-                    powerSum += fo.getActualPowerValue(now, mode);
-                    daySum += fo.getDayTotal(now.toLocalDate(), mode);
-                } catch (SolarForecastException sfe) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
-                            "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
-                    update = false;
-                }
+
+        // try to catch ForecastException in case of missing data
+        try {
+            // get forecasts for all planes
+            List<SolcastObject> forecastList = new ArrayList<>();
+            for (Iterator<SolcastPlaneHandler> planeIterator = planes.iterator(); planeIterator.hasNext();) {
+                forecastList.add(planeIterator.next().fetchData());
             }
-            if (update) {
+
+            // loop on all modes
+            MODES.forEach(mode -> {
+                String group = switch (mode) {
+                    case Average -> GROUP_AVERAGE;
+                    case Optimistic -> GROUP_OPTIMISTIC;
+                    case Pessimistic -> GROUP_PESSIMISTIC;
+                    default -> GROUP_AVERAGE;
+                };
+                double energySum = 0;
+                double powerSum = 0;
+                double daySum = 0;
+                for (Iterator<SolcastObject> forecastIterator = forecastList.iterator(); forecastIterator.hasNext();) {
+                    SolcastObject forecastObject = forecastIterator.next();
+                    energySum += forecastObject.getActualEnergyValue(now, mode);
+                    powerSum += forecastObject.getActualPowerValue(now, mode);
+                    daySum += forecastObject.getDayTotal(now.toLocalDate(), mode);
+                }
                 updateStatus(ThingStatus.ONLINE);
                 updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
                         Utils.getEnergyState(energySum));
@@ -165,8 +165,12 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                         Utils.getEnergyState(daySum));
                 updateState(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
                         Utils.getPowerState(powerSum));
-            }
-        });
+            });
+        } catch (SolarForecastException sfe) {
+            // stay online to receive new data from planes but not ready with comment
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
+                    "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
+        }
     }
 
     public synchronized void forecastUpdate() {
@@ -180,8 +184,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             forecastObjects.addAll(sfph.getSolarForecasts());
         }
         // sort in Tree according to times for each scenario
-        List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
-        modes.forEach(mode -> {
+        MODES.forEach(mode -> {
             TreeMap<Instant, QuantityType<?>> combinedPowerForecast = new TreeMap<>();
             TreeMap<Instant, QuantityType<?>> combinedEnergyForecast = new TreeMap<>();
 

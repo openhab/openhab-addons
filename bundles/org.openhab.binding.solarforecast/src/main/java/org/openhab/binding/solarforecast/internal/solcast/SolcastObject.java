@@ -103,7 +103,6 @@ public class SolcastObject implements SolarForecast {
                 expirationDateTime = Instant.parse(expirationString);
             }
             add(forecast);
-            logger.trace("[REDUCE] recovered forecast data {}", forecast.toString());
         }
     }
 
@@ -116,7 +115,6 @@ public class SolcastObject implements SolarForecast {
                 .withZone(tzp.getTimeZone());
         add(forecast);
         // store data in storage for later use e.g. after restart
-        logger.trace("[REDUCE] store forecast data {}", forecast.toString());
         storage.put(id + FORECAST_APPENDIX, forecast.toString());
         storage.put(id + EXPIRATION_APPENDIX, expiration.toString());
     }
