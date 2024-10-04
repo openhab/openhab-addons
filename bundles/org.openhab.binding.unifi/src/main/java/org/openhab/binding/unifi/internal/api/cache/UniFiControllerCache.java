@@ -124,6 +124,10 @@ public class UniFiControllerCache {
         return devicesCache.get(id);
     }
 
+    public Collection<UniFiDevice> getDevices() {
+        return devicesCache.values();
+    }
+
     public UniFiSwitchPorts getSwitchPorts(@Nullable final String deviceId) {
         return deviceId == null ? new UniFiSwitchPorts()
                 : devicesToPortTables.getOrDefault(deviceId, new UniFiSwitchPorts());
