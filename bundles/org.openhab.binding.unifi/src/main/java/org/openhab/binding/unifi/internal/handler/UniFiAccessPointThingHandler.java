@@ -64,7 +64,6 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
     protected boolean initialize(final UniFiAccessPointThingConfig config) {
         this.config = config;
         if (!config.isValid()) {
-            // ToDo Error message
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.thing.ap.offline.configuration_error");
             return false;
