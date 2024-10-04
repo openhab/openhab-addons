@@ -197,7 +197,7 @@ Check log or catch exceptions for error handling
 - `IllegalArgumentException` thrown in case of problems with call arguments
 - `SolarForecastException` thrown in case of problems with timestamp and available forecast data
 
-### `getDay`
+### `getEnergyOfDay`
 
 | Parameter | Type          | Description                                                                                |
 |-----------|---------------|--------------------------------------------------------------------------------------------|
@@ -310,7 +310,7 @@ rule "Tomorrow Forecast Calculation"
         Item ForecastSolarHome_Today received update
     then
         val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
-        val energyState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
+        val energyState = solarforecastActions.getEnergyOfDay(LocalDate.now.plusDays(1))
         logInfo("SF Tests","{}",energyState)
         ForecastSolarHome_Tomorrow.postUpdate(energyState)
 end
