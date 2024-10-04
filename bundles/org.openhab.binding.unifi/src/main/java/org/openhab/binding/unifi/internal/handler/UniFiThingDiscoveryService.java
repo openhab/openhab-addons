@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_CID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_MAC_ADDRESS;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_PORT_NUMBER;
@@ -31,6 +32,7 @@ import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiClient;
+import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.dto.UniFiPortTuple;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSwitchPorts;
@@ -83,6 +85,7 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             discoverWlans(cache, bridgeUID);
             discoverClients(cache, bridgeUID);
             discoverPoePorts(cache, bridgeUID);
+            discoverAccessPoints(cache, bridgeUID);
         } catch (final UniFiException e) {
             logger.debug("Exception during discovery of UniFi Things", e);
         }
@@ -125,6 +128,20 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withBridge(bridgeUID)
                     .withRepresentationProperty(PARAMETER_CID).withTTL(TTL_SECONDS).withProperties(properties)
                     .withLabel(uc.getName()).build());
+        }
+    }
+
+    private void discoverAccessPoints(final UniFiControllerCache cache, final ThingUID bridgeUID) {
+        for (final UniFiDevice ud : cache.getDevices()) {
+            if (DEVICE_TYPE_UAP.equals(ud.getType())) {
+                final var thingTypeUID = UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
+                final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(ud.getId()));
+                final Map<String, Object> properties = Map.of(PARAMETER_SITE, ud.getSite().getName(),
+                        PARAMETER_MAC_ADDRESS, ud.getMac());
+                thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                        .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_MAC_ADDRESS).withTTL(TTL_SECONDS)
+                        .withProperties(properties).withLabel(ud.getName()).build());
+            }
         }
     }
 

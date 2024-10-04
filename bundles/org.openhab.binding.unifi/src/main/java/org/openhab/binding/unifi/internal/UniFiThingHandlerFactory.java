@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.unifi.internal.handler.UniFiAccessPointThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiPoePortThingHandler;
@@ -87,6 +88,8 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
             return new UniFiClientThingHandler(thing);
         } else if (THING_TYPE_POE_PORT.equals(thingTypeUID)) {
             return new UniFiPoePortThingHandler(thing);
+        } else if (THING_TYPE_ACCESS_POINT.equals(thingTypeUID)) {
+            return new UniFiAccessPointThingHandler(thing);
         }
         return null;
     }
