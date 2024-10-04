@@ -48,7 +48,7 @@ public class SolarForecastActions implements ThingActions {
     private Optional<ThingHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
-    public @ActionOutput(name = "getDay", type = "QuantityType<Energy>") QuantityType<Energy> getDay(
+    public @ActionOutput(name = "getEnergyOfDay", type = "QuantityType<Energy>") QuantityType<Energy> getEnergyOfDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
             @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
@@ -172,8 +172,8 @@ public class SolarForecastActions implements ThingActions {
         }
     }
 
-    public static QuantityType<Energy> getDay(ThingActions actions, LocalDate ld, String... args) {
-        return ((SolarForecastActions) actions).getDay(ld, args);
+    public static QuantityType<Energy> getEnergyOfDay(ThingActions actions, LocalDate ld, String... args) {
+        return ((SolarForecastActions) actions).getEnergyOfDay(ld, args);
     }
 
     public static QuantityType<Power> getPower(ThingActions actions, Instant dateTime, String... args) {
