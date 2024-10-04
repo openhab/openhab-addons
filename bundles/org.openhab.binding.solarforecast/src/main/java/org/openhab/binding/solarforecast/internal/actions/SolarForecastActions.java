@@ -50,7 +50,7 @@ public class SolarForecastActions implements ThingActions {
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
     public @ActionOutput(name = "getDay", type = "QuantityType<Energy>") QuantityType<Energy> getDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
-            @ActionInput(name = "arguments") String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -80,7 +80,7 @@ public class SolarForecastActions implements ThingActions {
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
     public @ActionOutput(name = "getPower", type = "QuantityType<Power>") QuantityType<Power> getPower(
             @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") Instant timestamp,
-            @ActionInput(name = "arguments") String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -111,7 +111,7 @@ public class SolarForecastActions implements ThingActions {
     public @ActionOutput(name = "getEnergy", type = "QuantityType<Energy>") QuantityType<Energy> getEnergy(
             @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") Instant start,
             @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") Instant end,
-            @ActionInput(name = "arguments") String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
