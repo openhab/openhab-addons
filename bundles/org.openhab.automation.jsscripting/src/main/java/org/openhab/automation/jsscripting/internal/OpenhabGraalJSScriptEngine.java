@@ -232,6 +232,7 @@ public class OpenhabGraalJSScriptEngine
         logger.debug("Initializing GraalJS script engine...");
 
         lock.lock();
+        logger.debug("Lock acquired before invocation.");
 
         if (initialized) {
             return;
@@ -302,6 +303,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     protected Object afterInvocation(Object obj) {
         lock.unlock();
+        logger.debug("Lock released after invocation.");
         return super.afterInvocation(obj);
     }
 
@@ -354,6 +356,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void lock() {
         lock.lock();
+        logger.debug("Lock acquired.");
     }
 
     @Override
@@ -374,6 +377,7 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public void unlock() {
         lock.unlock();
+        logger.debug("Lock released.");
     }
 
     @Override
