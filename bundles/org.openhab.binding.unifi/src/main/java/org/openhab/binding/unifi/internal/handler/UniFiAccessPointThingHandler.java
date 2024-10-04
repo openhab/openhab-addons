@@ -105,12 +105,9 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
     }
 
     private boolean handleEnableCommand(final UniFiController controller, final UniFiDevice device,
-            final ChannelUID channelUID, final Command command) throws UniFiException {
-        if (command instanceof OnOffType) {
-            controller.disableAccessPoint(device, command == OnOffType.OFF);
-            refresh();
-            return true;
-        }
-        return false;
+            final ChannelUID channelUID, final OnOffType command) throws UniFiException {
+        controller.disableAccessPoint(device, command == OnOffType.OFF);
+        refresh();
+        return true;
     }
 }
