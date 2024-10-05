@@ -138,7 +138,7 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
     public void forceBatteryCharging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label") QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
             handler.forceBatteryCharging(power);
@@ -149,7 +149,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     public void addForcedBatteryChargingSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description") LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description") LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label") QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
             handler.addForcedBatteryChargingSchedule(from, until, power);

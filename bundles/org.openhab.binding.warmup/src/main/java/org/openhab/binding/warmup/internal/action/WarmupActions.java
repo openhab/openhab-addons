@@ -56,8 +56,8 @@ public class WarmupActions implements ThingActions {
 
     @RuleAction(label = "override", description = "Overrides the thermostat state for a specified time")
     public void setOverride(
-            @ActionInput(name = "temperature", label = "Temperature") @Nullable QuantityType<Temperature> temperature,
-            @ActionInput(name = "duration", label = "Duration") @Nullable QuantityType<Time> duration) {
+            @ActionInput(name = "temperature", label = "Temperature", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> temperature,
+            @ActionInput(name = "duration", label = "Duration", type = "QuantityType<Time>") @Nullable QuantityType<Time> duration) {
         logger.debug("setOverride action called");
         RoomHandler handler = this.handler;
         if (handler != null && temperature != null && duration != null) {

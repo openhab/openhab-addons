@@ -152,8 +152,8 @@ public class EcobeeActions implements ThingActions {
     @RuleAction(label = "create a vacation", description = "The create vacation function creates a vacation event on the thermostat.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean createVacation(
             @ActionInput(name = "name", description = "The vacation event name. It must be unique.") @Nullable String name,
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool vacation hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat vacation hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool vacation hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat vacation hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "startDateTime", description = "(opt) The start date/time in thermostat time.") @Nullable Date startDateTime,
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,
             @ActionInput(name = "fan", description = "(opt) The fan mode during the vacation. Values: auto, on Default: auto") @Nullable String fan,
@@ -276,8 +276,8 @@ public class EcobeeActions implements ThingActions {
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperatures.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp) {
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp) {
         if (coolHoldTemp == null || heatHoldTemp == null) {
             throw new IllegalArgumentException("hold temperatures cannot be null");
         }
@@ -297,8 +297,8 @@ public class EcobeeActions implements ThingActions {
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold for the specified number of hours.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+            @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "holdHours", description = "The number of hours for the hold.") @Nullable Number holdHours) {
         if (coolHoldTemp == null || heatHoldTemp == null) {
             throw new IllegalArgumentException("hold temperatures cannot be null");
@@ -372,8 +372,8 @@ public class EcobeeActions implements ThingActions {
      */
     @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperature or climate ref.")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean setHold(
-            @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.") @Nullable QuantityType<Temperature> coolHoldTemp,
-            @ActionInput(name = "heatHoldTemp", description = "(opt) The temperature at which to set the heat hold.") @Nullable QuantityType<Temperature> heatHoldTemp,
+            @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
+            @ActionInput(name = "heatHoldTemp", description = "(opt) The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
             @ActionInput(name = "holdClimateRef", description = "(opt) The Climate to use as reference for setting the coolHoldTemp, heatHoldTemp and fan settings for this hold. If this value is passed the coolHoldTemp and heatHoldTemp are not required.") @Nullable String holdClimateRef,
             @ActionInput(name = "startDateTime", description = "(opt) The start date in thermostat time.") @Nullable Date startDateTime,
             @ActionInput(name = "endDateTime", description = "(opt) The end date in thermostat time.") @Nullable Date endDateTime,

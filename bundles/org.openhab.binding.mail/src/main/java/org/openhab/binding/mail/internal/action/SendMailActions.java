@@ -75,7 +75,7 @@ public class SendMailActions implements ThingActions {
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMailWithAttachments(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
-            @ActionInput(name = "urlList") @Nullable List<String> urlList) {
+            @ActionInput(name = "urlList", type = "List<String>") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
@@ -166,7 +166,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "htmlContent") @Nullable String htmlContent,
-            @ActionInput(name = "urlList") @Nullable List<String> urlList) {
+            @ActionInput(name = "urlList", type = "List<String>") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
