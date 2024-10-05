@@ -61,6 +61,7 @@ class PullJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(PullJob.class);
     private final int maxSize;
     private final URI sourceURI;
+    private @Nullable final String userAgent;
 
     /**
      * Constructor of PullJob for creating a single pull of a calendar.
@@ -74,7 +75,7 @@ class PullJob implements Runnable {
      * @param listener The listener that should be fired when update succeed.
      */
     public PullJob(HttpClient httpClient, URI sourceURI, @Nullable String username, @Nullable String password,
-            File destination, int maxSize, CalendarUpdateListener listener) {
+            File destination, int maxSize, CalendarUpdateListener listener, @Nullable String userAgent) {
         this.httpClient = httpClient;
         this.sourceURI = sourceURI;
         if (username != null && password != null) {
@@ -85,12 +86,16 @@ class PullJob implements Runnable {
         this.destination = destination;
         this.listener = listener;
         this.maxSize = maxSize;
+        this.userAgent = userAgent;
     }
 
     @Override
     public void run() {
         final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
                 .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
+        if (userAgent != null && !userAgent.isBlank()) {
+            request.agent(userAgent);
+        }
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);
