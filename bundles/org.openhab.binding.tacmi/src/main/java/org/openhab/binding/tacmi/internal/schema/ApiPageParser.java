@@ -15,6 +15,10 @@ package org.openhab.binding.tacmi.internal.schema;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +37,7 @@ import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
 import org.openhab.binding.tacmi.internal.schema.ApiPageEntry.Type;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -196,7 +201,18 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     sb = sb.delete(0, 0);
                 }
                 if (this.fieldType == FieldType.READ_ONLY || this.fieldType == FieldType.FORM_VALUE) {
+                    int len = sb.length();
                     int lids = sb.lastIndexOf(":");
+                    if (len - lids == 3) {
+                        int lids2 = sb.lastIndexOf(":", lids - 1);
+                        if (lids2 > 0 && (lids - lids2 >= 3 && lids - lids2 <= 7)) {
+                            // the given value might be a time. validate it
+                            String timeCandidate = sb.substring(lids2 + 1).trim();
+                            if (timeCandidate.length() == 5 && timeCandidate.matches("[0-9]{2}:[0-9]{2}")) {
+                                lids = lids2;
+                            }
+                        }
+                    }
                     int fsp = sb.indexOf(" ");
                     if (fsp < 0 || lids < 0 || fsp > lids) {
                         logger.debug("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
@@ -350,7 +366,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         // for the older pre-X2 devices (i.e. the UVR 1611) we get a comma. So we
                         // we replace all ',' with '.' to check if it's a valid number...
                         String val = valParts[0].replace(',', '.');
-                        BigDecimal bd = new BigDecimal(val);
+                        float bd = Float.parseFloat(val);
                         if (valParts.length == 2) {
                             if ("°C".equals(valParts[1])) {
                                 channelType = "Number:Temperature";
@@ -374,15 +390,14 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                                 state = new QuantityType<>(bd, Units.HERTZ);
                             } else if ("kW".equals(valParts[1])) {
                                 channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
+                                bd = bd *= 1000;
                                 state = new QuantityType<>(bd, Units.WATT);
                             } else if ("kWh".equals(valParts[1])) {
-                                channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
+                                channelType = "Number:Energy";
                                 state = new QuantityType<>(bd, Units.KILOWATT_HOUR);
                             } else if ("l/h".equals(valParts[1])) {
-                                channelType = "Number:Volume";
-                                bd = bd.divide(new BigDecimal(60));
+                                channelType = "Number:VolumetricFlowRate";
+                                bd = bd /= 60;
                                 state = new QuantityType<>(bd, Units.LITRE_PER_MINUTE);
                             } else {
                                 channelType = "Number";
@@ -402,16 +417,27 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             type = Type.NUMERIC_FORM;
                         }
                     } catch (NumberFormatException nfe) {
-                        // not a number...
-                        channelType = "String";
+                        ctuid = null;
+                        // check for time....
+                        String[] valParts = vs.split(":");
+                        if (valParts.length == 2) {
+                            channelType = "DateTime";
+                            // convert it to zonedDateTime with today as date and the
+                            // default timezone.
+                            var zdt = LocalTime.parse(vs, DateTimeFormatter.ofPattern("HH:mm")).atDate(LocalDate.now())
+                                    .atZone(ZoneId.systemDefault());
+                            state = new DateTimeType(zdt);
+                            type = Type.NUMERIC_FORM;
+                        } else {
+                            // not a number and not time...
+                            channelType = "String";
+                            state = new StringType(vs);
+                            type = Type.STATE_FORM;
+                        }
                         if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                             ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
                             type = Type.READ_ONLY_STATE;
-                        } else {
-                            ctuid = null;
-                            type = Type.STATE_FORM;
                         }
-                        state = new StringType(vs);
                     }
                 }
                 break;
@@ -440,7 +466,29 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
             }
-            if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
+            if (e != null && !channelType.equals(e.channel.getAcceptedItemType())) {
+                // channel type has changed. we have to rebuild the channel.
+                this.channels.remove(channel);
+                channel = null;
+            }
+            if (channel != null && ctuid == null && cx2e != null) {
+                // custom channel type - check if it already exists and recreate when needed...
+                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
+                if (curCtuid == null) {
+                    // we have to re-create and re-register the channel uuid
+                    logger.debug("Re-Registering channel type UUID for: {} ", shortName);
+                    var ct = buildAndRegisterChannelType(shortName, type, cx2e);
+                    var channelBuilder = ChannelBuilder.create(channel);
+                    channelBuilder.withType(ct.getUID());
+                    channel = channelBuilder.build(); // update channel
+                } else {
+                    // check if channel uuid still exists and re-carete when needed
+                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
+                    if (ct == null) {
+                        buildAndRegisterChannelType(shortName, type, cx2e);
+                    }
+                }
+            } else if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
                 logger.debug("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
                 this.configChanged = true;
                 ChannelUID channelUID = new ChannelUID(this.taCmiSchemaHandler.getThing().getUID(), shortName);
@@ -456,15 +504,6 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error configurating channel for {}: channeltype cannot be determined!", shortName);
                 }
                 channel = channelBuilder.build(); // add configuration property...
-            } else if (ctuid == null && cx2e != null) {
-                // custom channel type - check if it already exists and recreate when needed...
-                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
-                if (curCtuid != null) {
-                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
-                    if (ct == null) {
-                        buildAndRegisterChannelType(shortName, type, cx2e);
-                    }
-                }
             }
             this.configChanged = true;
             e = new ApiPageEntry(type, channel, address, cx2e, state);
@@ -543,8 +582,11 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     }
                 }
                 break;
+            case TIME:
+                itemType = "DateTime";
+                break;
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unhandled OptionType: " + cx2e.optionType);
         }
         ChannelTypeBuilder<?> ctb = ChannelTypeBuilder
                 .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)

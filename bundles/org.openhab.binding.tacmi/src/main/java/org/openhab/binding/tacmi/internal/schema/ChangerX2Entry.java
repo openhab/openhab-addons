@@ -33,6 +33,7 @@ public class ChangerX2Entry {
     enum OptionType {
         NUMBER,
         SELECT,
+        TIME,
     }
 
     /**
