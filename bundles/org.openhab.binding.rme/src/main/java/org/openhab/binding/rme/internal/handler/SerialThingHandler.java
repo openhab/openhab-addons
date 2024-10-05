@@ -173,7 +173,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                     availablePorts);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
-
         }
 
         // initialize serial port
@@ -322,7 +321,6 @@ public abstract class SerialThingHandler extends BaseThingHandler implements Ser
                         Thread.sleep(sleep);
                     } catch (InterruptedException e) {
                     }
-
                 }
             } catch (InterruptedIOException e) {
                 Thread.currentThread().interrupt();

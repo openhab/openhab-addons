@@ -129,7 +129,6 @@ public class Enums {
         HEAT("heat"),
         OFF("off");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
         private final String value;
 
         HomekitMode(String value) {
@@ -207,6 +206,45 @@ public class Enums {
                     return SpecialMode.ECO;
             }
             return NORMAL;
+        }
+    }
+
+    public enum DemandControlMode {
+        OFF("-"),
+        MANUAL("0"),
+        SCHEDULED("1"),
+        AUTO("2");
+
+        private final String value;
+        private static final Logger LOGGER = LoggerFactory.getLogger(DemandControlMode.class);
+
+        DemandControlMode(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static boolean isValidValue(String value) {
+            for (DemandControlMode m : DemandControlMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static DemandControlMode fromValue(String value) {
+            for (DemandControlMode m : DemandControlMode.values()) {
+                if (m.getValue().equals(value)) {
+                    return m;
+                }
+            }
+            LOGGER.debug("Unexpected DemandControlMode value of \"{}\"", value);
+
+            // Default to off
+            return OFF;
         }
     }
 }

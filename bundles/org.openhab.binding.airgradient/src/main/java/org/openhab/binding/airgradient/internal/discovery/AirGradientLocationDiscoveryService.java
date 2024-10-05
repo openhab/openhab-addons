@@ -24,20 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.handler.AirGradientAPIHandler;
 import org.openhab.binding.airgradient.internal.handler.PollEventListener;
 import org.openhab.binding.airgradient.internal.model.Measure;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -51,32 +49,31 @@ import org.slf4j.LoggerFactory;
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = AirGradientLocationDiscoveryService.class)
 @NonNullByDefault
-public class AirGradientLocationDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, PollEventListener {
+public class AirGradientLocationDiscoveryService extends AbstractThingHandlerDiscoveryService<AirGradientAPIHandler>
+        implements PollEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationDiscoveryService.class);
 
-    private @NonNullByDefault({}) AirGradientAPIHandler apiHandler;
-
     public AirGradientLocationDiscoveryService() {
-        super(Set.of(THING_TYPE_LOCATION), (int) SEARCH_TIME.getSeconds(), BACKGROUND_DISCOVERY);
+        super(AirGradientAPIHandler.class, Set.of(THING_TYPE_LOCATION), (int) SEARCH_TIME.getSeconds(),
+                BACKGROUND_DISCOVERY);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Start AirGradient background discovery");
-        apiHandler.addPollEventListener(this);
+        getApiHandler().addPollEventListener(this);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping AirGradient background discovery");
-        apiHandler.removePollEventListener(this);
+        getApiHandler().removePollEventListener(this);
     }
 
     @Override
     public void pollEvent(List<Measure> measures) {
-        BridgeHandler bridge = apiHandler.getThing().getHandler();
+        BridgeHandler bridge = getApiHandler().getThing().getHandler();
         if (bridge == null) {
             logger.debug("Missing bridge, can't discover sensors for unknown bridge.");
             return;
@@ -84,7 +81,7 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
 
         ThingUID bridgeUid = bridge.getThing().getUID();
 
-        Set<String> registeredLocationIds = new HashSet<>(apiHandler.getRegisteredLocationIds());
+        Set<String> registeredLocationIds = new HashSet<>(getApiHandler().getRegisteredLocationIds());
         for (Measure measure : measures) {
             String id = measure.getLocationId();
             if (id.isEmpty()) {
@@ -123,32 +120,14 @@ public class AirGradientLocationDiscoveryService extends AbstractDiscoveryServic
     @Override
     protected void startScan() {
         try {
-            List<Measure> measures = apiHandler.getApiController().getMeasures();
+            List<Measure> measures = getApiHandler().getApiController().getMeasures();
             pollEvent(measures);
         } catch (AirGradientCommunicationException agce) {
             logger.warn("Failed discovery due to communication exception: {}", agce.getMessage());
         }
     }
 
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof AirGradientAPIHandler airGradientAPIHandler) {
-            this.apiHandler = airGradientAPIHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return apiHandler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    private AirGradientAPIHandler getApiHandler() {
+        return (@NonNull AirGradientAPIHandler) getThingHandler();
     }
 }

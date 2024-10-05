@@ -47,6 +47,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 @Component(service = CommunicationManager.class)
 public class CommunicationManager {
+    private final Logger logger = LoggerFactory.getLogger(CommunicationManager.class);
     private final Gson gson = new Gson();
     // Holds a list of all thing handlers to send them thing updates via the receiver-Thread
     private final Map<String, GoveeHandler> thingHandlers = new HashMap<>();
@@ -101,7 +102,7 @@ public class CommunicationManager {
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        // logger.debug("Sending {} to {}", message, hostname);
+        logger.trace("Sending {} to {}", message, hostname);
         socket.send(packet);
         socket.close();
     }
@@ -199,7 +200,12 @@ public class CommunicationManager {
                     socket.setReuseAddress(true);
                     while (!stopped) {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        socket.receive(packet);
+                        if (!socket.isClosed()) {
+                            socket.receive(packet);
+                        } else {
+                            logger.warn("Socket was unexpectedly closed");
+                            break;
+                        }
                         if (stopped) {
                             break;
                         }
@@ -224,7 +230,9 @@ public class CommunicationManager {
                                     }
                                 }
                             } catch (JsonParseException e) {
-                                // this probably was a status message
+                                logger.debug(
+                                        "JsonParseException when trying to parse the response, probably a status message",
+                                        e);
                             }
                         } else {
                             final @Nullable GoveeHandler handler;

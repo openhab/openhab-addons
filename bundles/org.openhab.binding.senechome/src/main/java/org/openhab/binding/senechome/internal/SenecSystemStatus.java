@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SenecSystemStatus} class defines available Senec specific
  * system states.
@@ -19,6 +21,7 @@ package org.openhab.binding.senechome.internal;
  * @author Steven Schwarznau - Initial contribution
  *
  */
+@NonNullByDefault
 public enum SenecSystemStatus {
 
     INITIALSTATE(0, "INITIAL STATE"),
@@ -62,7 +65,7 @@ public enum SenecSystemStatus {
     NO_SERVER_CONNECTION(38, "NO SERVER CONNECTION"),
     BMS_ERROR(39, "BMS ERROR"),
     MAINTENANCE_FILTER(40, "MAINTENANCE: FILTER"),
-    SLEEPING_MODE(41, "SLEEPING MODE"),
+    BMS_SHUTDOWN(41, "BMS SHUTDOWN"),
     WAITING_EXCESS(42, "WAITING EXCESS"),
     CAPACITY_TEST_CHARGE(43, "CAPACITY TEST: CHARGE"),
     CAPACITY_TEST_DISCHARGE(44, "CAPACITY TEST: DISCHARGE"),
@@ -113,10 +116,11 @@ public enum SenecSystemStatus {
     SPARE_CAPACITY(89, "SPARE CAPACITY"),
     SELFTEST_ERROR(90, "SELFTEST ERROR"),
     EARTH_FAULT(91, "EARTH FAULT"),
-    PV_MODE(92, "PV MODE"),
+    PVMODE(92, "PV-MODE"),
     REMOTE_DISCONNECTION(93, "REMOTE DISCONNECTION"),
     ERROR_DRM0(94, "ERROR DRM0"),
     BATTERY_DIAGNOSIS(95, "BATTERY DIAGNOSIS"),
+    BALANCING(96, "BALANCING"),
     SAFETY_DISCHARGE(97, "SAFETY DISCHARGE"),
     BMS_ERROR_MODULE_IMBALANCE(98, "BMS ERROR - MODULE IMBALANCE"),
     WAKEUP_CHARGE(99, "WAKE-UP CHARGE"),

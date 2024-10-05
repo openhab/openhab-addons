@@ -83,8 +83,6 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         protected String schema = DEFAULT_SCHEMA;
         protected @Nullable Boolean optimistic; // All schemas
         protected boolean brightness = false; // JSON schema only
-        @SerializedName("color_mode")
-        protected boolean colorMode = false; // JSON schema only
         @SerializedName("supported_color_modes")
         protected @Nullable List<LightColorMode> supportedColorModes; // JSON schema only
         // Defines when on the payload_on is sent. Using last (the default) will send
@@ -245,21 +243,24 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
     protected final ChannelStateUpdateListener channelStateUpdateListener;
 
-    public static Light create(ComponentFactory.ComponentConfiguration builder) throws UnsupportedComponentException {
+    public static Light create(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels)
+            throws UnsupportedComponentException {
         String schema = builder.getConfig(ChannelConfiguration.class).schema;
         switch (schema) {
             case DEFAULT_SCHEMA:
-                return new DefaultSchemaLight(builder);
+                return new DefaultSchemaLight(builder, newStyleChannels);
             case JSON_SCHEMA:
-                return new JSONSchemaLight(builder);
+                return new JSONSchemaLight(builder, newStyleChannels);
+            case TEMPLATE_SCHEMA:
+                return new TemplateSchemaLight(builder, newStyleChannels);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");
         }
     }
 
-    protected Light(ComponentFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    protected Light(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, ChannelConfiguration.class, newStyleChannels);
         this.channelStateUpdateListener = builder.getUpdateListener();
 
         @Nullable

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link CharacteristicChannelTypeProvider} that provides channel types for dynamically discovered characteristics.
  *
- * @author Vlad Kolotov - Original author
+ * @author Vlad Kolotov - Initial contribution
  * @author Connor Petty - Modified for openHAB use.
  */
 @NonNullByDefault

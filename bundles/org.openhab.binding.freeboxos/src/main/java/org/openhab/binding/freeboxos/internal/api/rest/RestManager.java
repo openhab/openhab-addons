@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
@@ -83,7 +84,11 @@ public class RestManager {
     }
 
     protected void post(String... pathElements) throws FreeboxException {
-        session.execute(buildUri(pathElements), POST, GenericResponse.class, null);
+        post(null, pathElements);
+    }
+
+    protected <F> void post(@Nullable F payload, String... pathElements) throws FreeboxException {
+        session.execute(buildUri(pathElements), POST, GenericResponse.class, payload);
     }
 
     protected <F, T extends Response<F>> F put(Class<T> clazz, F payload, String... pathElements)

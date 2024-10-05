@@ -117,17 +117,23 @@
 		<label>String</label>
 		<description>Channel to receive commands as a string</description>
 		<config-description>
-			<parameter name="stateTransformation" type="text">
+			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+				<description><![CDATA[Transformation used to convert device data to channel state, e.g.
+					<code>REGEX(.*?STATE=(.*?);.*)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
 				<label>String Format</label>
 				<description>Format string applied to the command, e.g. ID=671;COMMAND=%s</description>
 			</parameter>
-			<parameter name="commandTransformation" type="text">
+			<parameter name="commandTransformation" type="text" multiple="true">
 				<label>Command Transformation</label>
-				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+				<description><![CDATA[Transformation used to convert command to device data, e.g.
+					<code>JS(device.js)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -137,17 +143,23 @@
 		<label>Number</label>
 		<description>Channel to receive commands as a number</description>
 		<config-description>
-			<parameter name="stateTransformation" type="text">
+			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+				<description><![CDATA[Transformation used to convert device data to channel state, e.g.
+					<code>REGEX(.*?STATE=(.*?);.*)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 			<parameter name="commandFormat" type="text">
 				<label>Number Format</label>
 				<description>Format string applied to the command, e.g. ID=671;VAL=%f</description>
 			</parameter>
-			<parameter name="commandTransformation" type="text">
+			<parameter name="commandTransformation" type="text" multiple="true">
 				<label>Command Transformation</label>
-				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+				<description><![CDATA[Transformation used to convert command to device data, e.g.
+					<code>JS(device.js)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -157,9 +169,12 @@
 		<label>Dimmer</label>
 		<description>Channel to receive commands from a Dimmer</description>
 		<config-description>
-			<parameter name="stateTransformation" type="text">
+			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+				<description><![CDATA[Transformation used to convert device data to channel state, e.g.
+					<code>REGEX(.*?STATE=(.*?);.*)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 			<parameter name="onValue" type="text">
 				<label>On Value</label>
@@ -181,9 +196,12 @@
 				<label>Percent Format</label>
 				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
 			</parameter>
-			<parameter name="commandTransformation" type="text">
+			<parameter name="commandTransformation" type="text" multiple="true">
 				<label>Command Transformation</label>
-				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+				<description><![CDATA[Transformation used to convert command to device data, e.g.
+					<code>JS(device.js)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -193,9 +211,12 @@
 		<label>Switch</label>
 		<description>Channel to receive commands from a Switch</description>
 		<config-description>
-			<parameter name="stateTransformation" type="text">
+			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+				<description><![CDATA[Transformation used to convert device data to channel state, e.g.
+					<code>REGEX(.*?STATE=(.*?);.*)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 			<parameter name="onValue" type="text">
 				<label>On Value</label>
@@ -205,9 +226,12 @@
 				<label>Off Value</label>
 				<description>Send this value when receiving an OFF command</description>
 			</parameter>
-			<parameter name="commandTransformation" type="text">
+			<parameter name="commandTransformation" type="text" multiple="true">
 				<label>Command Transformation</label>
-				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+				<description><![CDATA[Transformation used to convert command to device data, e.g.
+					<code>JS(device.js)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -217,9 +241,12 @@
 		<label>Rollershutter</label>
 		<description>Channel to receive commands from a Rollershutter</description>
 		<config-description>
-			<parameter name="stateTransformation" type="text">
+			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
-				<description>Transform used to convert device data to channel state, e.g. REGEX:.*?STATE=(.*?);.*</description>
+				<description><![CDATA[Transformation used to convert device data to channel state, e.g.
+					<code>REGEX(.*?STATE=(.*?);.*)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 			<parameter name="upValue" type="text">
 				<label>Up Value</label>
@@ -237,9 +264,12 @@
 				<label>Percent Format</label>
 				<description>Format string applied to the percent command, e.g. ID=671;VAL=%d</description>
 			</parameter>
-			<parameter name="commandTransformation" type="text">
+			<parameter name="commandTransformation" type="text" multiple="true">
 				<label>Command Transformation</label>
-				<description>Transform used to convert command to device data, e.g. JS:device.js</description>
+				<description><![CDATA[Transformation used to convert command to device data, e.g.
+					<code>JS(device.js)</code>.
+					Multiple transformations can be chained by listing each transformation on a separate line,
+					or by concatenating them with "∩".]]></description>
 			</parameter>
 		</config-description>
 	</channel-type>

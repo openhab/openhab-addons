@@ -28,6 +28,15 @@ It has the `amplifier` id.
 Discovery is not supported.
 You have to add all things manually.
 
+## Binding Configuration
+
+The binding has the following configuration parameters:
+
+| Parameter Label          | Parameter ID   | Description                                                   | Accepted Values       |
+|--------------------------|--------------- |---------------------------------------------------------------|-----------------------|
+| Image Height             | imageHeight    | Height (in pixels) for album art images loaded from the MPS4. | 1 - 1024; default 150 |
+| Image Width              | imageWidth     | Width (in pixels) for album art images loaded from the MPS4.  | 1 - 1024; default 150 |
+
 ## Thing Configuration
 
 The thing has the following configuration parameters:
@@ -124,7 +133,7 @@ nuvo:amplifier:myamp "Nuvo WHA" [ serialPort="COM5", numZones=6, clockSync=false
 // serial over IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=4444, numZones=6, clockSync=false]
 
-// MPS4 server IP connection 
+// MPS4 server IP connection
 nuvo:amplifier:myamp "Nuvo WHA" [ host="192.168.0.10", port=5006, numZones=6, clockSync=false]
 
 ```
@@ -133,10 +142,10 @@ nuvo.items:
 
 ```java
 // system
-Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff", autoupdate="false" }
+Switch nuvo_system_alloff "All Zones Off" { channel="nuvo:amplifier:myamp:system#alloff" }
 Switch nuvo_system_allmute "All Zones Mute" { channel="nuvo:amplifier:myamp:system#allmute" }
 Switch nuvo_system_page "Page All Zones" { channel="nuvo:amplifier:myamp:system#page" }
-String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd", autoupdate="false" }
+String nuvo_system_sendcmd "Send Command" { channel="nuvo:amplifier:myamp:system#sendcmd" }
 String nuvo_system_buttonpress "Zone Button: [%s]" { channel="nuvo:amplifier:myamp:system#buttonpress" }
 
 // zones
@@ -144,7 +153,7 @@ Switch nuvo_z1_power "Power" { channel="nuvo:amplifier:myamp:zone1#power" }
 Number nuvo_z1_source "Source Input [%s]" { channel="nuvo:amplifier:myamp:zone1#source" }
 Dimmer nuvo_z1_volume "Volume [%d %%]" { channel="nuvo:amplifier:myamp:zone1#volume" }
 Switch nuvo_z1_mute "Mute" { channel="nuvo:amplifier:myamp:zone1#mute" }
-Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite", autoupdate="false" }
+Number nuvo_z1_favorite "Favorite" { channel="nuvo:amplifier:myamp:zone1#favorite" }
 Player nuvo_z1_control "Control" { channel="nuvo:amplifier:myamp:zone1#control" }
 Number nuvo_z1_treble "Treble Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#treble" }
 Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#bass" }
@@ -165,9 +174,9 @@ String nuvo_s1_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s1_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_length" }
 Number:Time nuvo_s1_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source1#track_position" }
 String nuvo_s1_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source1#button_press" }
-// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url", autoupdate="false" }
+// String nuvo_s1_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source1#art_url" }
 // Image nuvo_s1_album_art { channel="nuvo:amplifier:myamp:source1#album_art" }
-// String nuvo_s1_source_menu { channel="nuvo:amplifier:myamp:source1#source_menu", autoupdate="false" }
+// String nuvo_s1_source_menu { channel="nuvo:amplifier:myamp:source1#source_menu" }
 
 String nuvo_s2_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line1" }
 String nuvo_s2_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source2#display_line2" }
@@ -177,9 +186,9 @@ String nuvo_s2_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s2_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_length" }
 Number:Time nuvo_s2_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source2#track_position" }
 String nuvo_s2_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source2#button_press" }
-// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url", autoupdate="false" }
+// String nuvo_s2_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source2#art_url" }
 // Image nuvo_s2_album_art { channel="nuvo:amplifier:myamp:source2#album_art" }
-// String nuvo_s2_source_menu { channel="nuvo:amplifier:myamp:source2#source_menu", autoupdate="false" }
+// String nuvo_s2_source_menu { channel="nuvo:amplifier:myamp:source2#source_menu" }
 
 String nuvo_s3_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line1" }
 String nuvo_s3_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source3#display_line2" }
@@ -189,9 +198,9 @@ String nuvo_s3_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s3_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_length" }
 Number:Time nuvo_s3_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source3#track_position" }
 String nuvo_s3_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source3#button_press" }
-// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url", autoupdate="false" }
+// String nuvo_s3_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source3#art_url" }
 // Image nuvo_s3_album_art { channel="nuvo:amplifier:myamp:source3#album_art" }
-// String nuvo_s3_source_menu { channel="nuvo:amplifier:myamp:source3#source_menu", autoupdate="false" }
+// String nuvo_s3_source_menu { channel="nuvo:amplifier:myamp:source3#source_menu" }
 
 String nuvo_s4_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line1" }
 String nuvo_s4_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source4#display_line2" }
@@ -201,9 +210,9 @@ String nuvo_s4_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s4_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_length" }
 Number:Time nuvo_s4_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source4#track_position" }
 String nuvo_s4_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source4#button_press" }
-// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url", autoupdate="false" }
+// String nuvo_s4_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source4#art_url" }
 // Image nuvo_s4_album_art { channel="nuvo:amplifier:myamp:source4#album_art" }
-// String nuvo_s4_source_menu { channel="nuvo:amplifier:myamp:source4#source_menu", autoupdate="false" }
+// String nuvo_s4_source_menu { channel="nuvo:amplifier:myamp:source4#source_menu" }
 
 String nuvo_s5_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line1" }
 String nuvo_s5_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source5#display_line2" }
@@ -213,9 +222,9 @@ String nuvo_s5_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s5_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_length" }
 Number:Time nuvo_s5_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source5#track_position" }
 String nuvo_s5_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source5#button_press" }
-// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url", autoupdate="false" }
+// String nuvo_s5_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source5#art_url" }
 // Image nuvo_s5_album_art { channel="nuvo:amplifier:myamp:source5#album_art" }
-// String nuvo_s5_source_menu { channel="nuvo:amplifier:myamp:source5#source_menu", autoupdate="false" }
+// String nuvo_s5_source_menu { channel="nuvo:amplifier:myamp:source5#source_menu" }
 
 String nuvo_s6_display_line1 "Line 1: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line1" }
 String nuvo_s6_display_line2 "Line 2: [%s]" { channel="nuvo:amplifier:myamp:source6#display_line2" }
@@ -225,9 +234,9 @@ String nuvo_s6_play_mode "Play Mode: [%s]" { channel="nuvo:amplifier:myamp:sourc
 Number:Time nuvo_s6_track_length "Track Length: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_length" }
 Number:Time nuvo_s6_track_position "Track Position: [%d %unit%]" { channel="nuvo:amplifier:myamp:source6#track_position" }
 String nuvo_s6_button_press "Button: [%s]" { channel="nuvo:amplifier:myamp:source6#button_press" }
-// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url", autoupdate="false" }
+// String nuvo_s6_art_url "URL: [%s]" { channel="nuvo:amplifier:myamp:source6#art_url" }
 // Image nuvo_s6_album_art { channel="nuvo:amplifier:myamp:source6#album_art" }
-// String nuvo_s6_source_menu { channel="nuvo:amplifier:myamp:source6#source_menu", autoupdate="false" }
+// String nuvo_s6_source_menu { channel="nuvo:amplifier:myamp:source6#source_menu" }
 
 ```
 
@@ -368,7 +377,7 @@ then
 end
 
 // In the below examples, a method for maintaing Metadata information
-// for a hypothetical non NuvoNet Source 3 is demonstrated 
+// for a hypothetical non NuvoNet Source 3 is demonstrated
 
 // Item_Containing_TrackLength should get a 'received update' when the track changes
 // ('changed' is not sufficient if two consecutive tracks are the same length)
@@ -383,7 +392,7 @@ then
     // '0' indicates the track is just starting (at position 0), '2' indicates to Nuvo that the track is playing
     // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from 0)
     sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + ",0,2")
-    
+
 end
 
 rule "Load track name for Source 3"
@@ -397,7 +406,7 @@ then
 
     sendCommand(nuvo_s3_display_line4, trackName)
     sendCommand(nuvo_s3_display_line1, "")
-    
+
 end
 
 rule "Load album name for Source 3"
@@ -442,7 +451,7 @@ then
         }
         case "Playing": {
             // when playback starts or resumes, '2' tells Nuvo to display 'playing' on the keypad
-            // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad 
+            // trackPosition does not need to be updated continuously, Nuvo will automatically count up the elapsed time displayed on the keypad
             sendCommand(nuvo_system_sendcmd, "S3DISPINFO," + trackLength.toString() + "," + trackPosition.toString() + ",2")
         }
         case "Paused": {
@@ -488,10 +497,10 @@ When the item `Top menu 2` is selected the text sent to the button channel will 
 ### Rule to trigger an action based on which keypad zone where a button was pressed or menu item selected
 
 By using the `system#buttonpress` channel it is possible to trigger an action based on which keypad zone was used to send the action.
-This channel appends the zone number and a comma before the button action or menu item selection.  
+This channel appends the zone number and a comma before the button action or menu item selection.
 
-For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`  
-Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`  
+For example if the Play/Pause button is pressed on Zone 7, the channel will display: `7,PLAYPAUSE`
+Also if a menu item from a custom menu was selected, ie: `Top menu 1` on Zone 5, the channel will display: `5,Top menu 1`
 
 The functionality can be used to create very powerful rules as demontrated below. The following rule triggered from a menu item turns off all zones except for the zone that triggered the rule.
 
@@ -549,7 +558,7 @@ var albumName = ""
 var trackName = ""
 
 // supportedactions bitmask tells the keypad what buttons to display
-// detailed in SourceCommunicationProtocolForNNA_v1.0.pdf 
+// detailed in SourceCommunicationProtocolForNNA_v1.0.pdf
 // 0 : play/pause only
 // 196615 : play/pause/skip
 // 196639 : play/pause/skip/shuffle/repeat
@@ -667,12 +676,12 @@ end
 rule "Music Source update song elapsed time"
 when
     Item music_Music_TrackPosition received update or
-    Item music_Music_Random received update or 
+    Item music_Music_Random received update or
     Item music_Music_Repeat received update
 then
     var int trackLength = Integer::parseInt(music_Music_TrackLength.state.toString.replaceAll("[\\D]", "")) * 10
     // track position should not update continuously to prevent excessive amounts of DISPINFOTWO messages from being sent
-    // the keypad counts up the time on its own after a DISPINFOTWO message is received 
+    // the keypad counts up the time on its own after a DISPINFOTWO message is received
     var int trackPosition = Integer::parseInt(music_Music_TrackPosition.state.toString.replaceAll("[\\D]", "")) * 10
     var playState = music_Music_PlayMode.state.toString()
     var randomMode = music_Music_Random.state
@@ -697,7 +706,7 @@ then
     // DISPINFOTWO sends track time, play state, album art id, source status, etc. all in one command message
     //*SsDISPINFOTWOduration,position,deprecatedstatus,albumartid,sourcemode,sourcestatus,supportedactions
 
-    // The binding will automatically substitute the 'albumartid' token with the id of the JPG processed by the `art_url` channel 
+    // The binding will automatically substitute the 'albumartid' token with the id of the JPG processed by the `art_url` channel
     if (playState == "Playing") {
         // first '2' indicates deprecatedstatus = playing, second '2' is sourcemode = Music Server Mode
         // The Nuvo keypad will now begin counting up the elapsed time displayed (starting from trackPosition)

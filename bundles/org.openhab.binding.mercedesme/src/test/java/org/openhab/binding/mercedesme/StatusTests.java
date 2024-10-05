@@ -28,6 +28,7 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 
@@ -60,29 +61,42 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "EMail offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "EMail config");
-        assertEquals("@text/mercedesme.account.status.email-missing", tcl.getThingStatus().getDescription(),
-                "EMail text");
+        ThingStatusInfo tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "EMail offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "EMail config");
+        assertEquals("@text/mercedesme.account.status.email-missing", tsi.getDescription(), "EMail text");
+        tearDown(ahm);
+
         config.put("email", "a@b.c");
         bi.setConfiguration(new Configuration(config));
+        tcl = new ThingCallbackListener();
+        ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Region offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Region config");
-        assertEquals("@text/mercedesme.account.status.region-missing", tcl.getThingStatus().getDescription(),
-                "Region text");
+        tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Region offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Region config");
+        assertEquals("@text/mercedesme.account.status.region-missing", tsi.getDescription(), "Region text");
+        tearDown(ahm);
+
         config.put("region", "row");
         bi.setConfiguration(new Configuration(config));
+        tcl = new ThingCallbackListener();
+        ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth offline");
-        assertEquals(ThingStatusDetail.NONE, tcl.getThingStatus().getStatusDetail(), "Auth detail");
+        tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth offline");
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth detail");
+        tearDown(ahm);
+
         config.put("refreshInterval", 0);
         bi.setConfiguration(new Configuration(config));
+        tcl = new ThingCallbackListener();
+        ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Refresh offline");
-        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Refresh config");
-        assertEquals("@text/mercedesme.account.status.refresh-invalid", tcl.getThingStatus().getDescription(),
-                "Refresh text");
+        tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Refresh offline");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Refresh config");
+        assertEquals("@text/mercedesme.account.status.refresh-invalid", tsi.getDescription(), "Refresh text");
         tearDown(ahm);
     }
 
@@ -100,18 +114,22 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.OFFLINE, tcl.getThingStatus().getStatus(), "Auth Offline");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tcl.getThingStatus().getStatusDetail(), "Auth details");
-        String statusDescription = tcl.getThingStatus().getDescription();
+        ThingStatusInfo tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Auth Offline");
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Auth details");
+        String statusDescription = tsi.getDescription();
         assertNotNull(statusDescription);
         assertTrue(statusDescription.contains("@text/mercedesme.account.status.authorization-needed"), "Auth text");
+        tearDown(ahm);
+
         AccessTokenResponse token = new AccessTokenResponse();
         token.setExpiresIn(3000);
         token.setAccessToken(Constants.JUNIT_TOKEN);
         token.setRefreshToken(Constants.JUNIT_REFRESH_TOKEN);
         ahm.onAccessTokenResponse(token);
         ahm.connect();
-        assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Auth Online");
+        tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.ONLINE, tsi.getStatus(), "Auth Online");
         tearDown(ahm);
     }
 
@@ -136,10 +154,12 @@ class StatusTests {
         ThingCallbackListener tcl = new ThingCallbackListener();
         ahm.setCallback(tcl);
         ahm.initialize();
-        assertEquals(ThingStatus.UNKNOWN, tcl.getThingStatus().getStatus(), "Socket Unknown "
-                + tcl.getThingStatus().getStatusDetail() + " " + tcl.getThingStatus().getDescription());
+        ThingStatusInfo tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.UNKNOWN, tsi.getStatus(),
+                "Socket Unknown " + tsi.getStatusDetail() + " " + tsi.getDescription());
         ahm.connect();
-        assertEquals(ThingStatus.ONLINE, tcl.getThingStatus().getStatus(), "Spcket Online");
+        tsi = tcl.getThingStatus();
+        assertEquals(ThingStatus.ONLINE, tsi.getStatus(), "Socket Online");
         tearDown(ahm);
     }
 }

@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -73,8 +73,19 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
         this.fixture = createFixture();
     }
 
+    /**
+     * Initializes the fixture and all required mocks around the handler.
+     * 
+     * @param testInfo used in subclasses where initializing the handler differently in individual tests is required.
+     * 
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws BoschSHCException
+     */
     @BeforeEach
-    void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         fixture = createFixture();
         lenient().when(thing.getUID()).thenReturn(getThingUID());
         when(thing.getBridgeUID()).thenReturn(new ThingUID("boschshc", "shc", "myBridgeUID"));
@@ -87,7 +98,29 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
         configureDevice(device);
         lenient().when(bridgeHandler.getDeviceInfo(anyString())).thenReturn(device);
 
+        beforeHandlerInitialization(testInfo);
+
         fixture.initialize();
+
+        afterHandlerInitialization(testInfo);
+    }
+
+    /**
+     * Hook to allow tests to add custom setup code before the handler initialization.
+     * 
+     * @param testInfo provides metadata related to the current test being executed
+     */
+    protected void beforeHandlerInitialization(TestInfo testInfo) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Hook to allow tests to add custom setup code after the handler initialization.
+     * 
+     * @param testInfo provides metadata related to the current test being executed
+     */
+    protected void afterHandlerInitialization(TestInfo testInfo) {
+        // default implementation is empty, subclasses may override
     }
 
     protected abstract T createFixture();
@@ -133,7 +166,7 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
     @Test
     void testInitialize() {
         ThingStatusInfo expectedStatusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-        verify(callback).statusUpdated(same(thing), eq(expectedStatusInfo));
+        verify(callback).statusUpdated(any(Thing.class), eq(expectedStatusInfo));
     }
 
     @Test

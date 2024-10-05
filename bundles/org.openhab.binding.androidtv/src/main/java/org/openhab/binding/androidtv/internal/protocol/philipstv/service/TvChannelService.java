@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.androidtv.internal.protocol.philipstv.service;
 
-import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.*;
+import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.CHANNEL_TV_CHANNEL;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.ConnectionManager.OBJECT_MAPPER;
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,6 +39,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
  * Service for handling commands regarding setting or retrieving the TV channel
@@ -106,23 +108,29 @@ public class TvChannelService implements PhilipsTVService {
     }
 
     private Map<String, String> getAvailableTvChannelListFromTv() throws IOException {
-        AvailableTvChannelsDTO availableTvChannelsDTO = OBJECT_MAPPER.readValue(
-                connectionManager.doHttpsGet(GET_AVAILABLE_TV_CHANNEL_LIST_PATH), AvailableTvChannelsDTO.class);
+        try {
+            AvailableTvChannelsDTO availableTvChannelsDTO = OBJECT_MAPPER.readValue(
+                    connectionManager.doHttpsGet(GET_AVAILABLE_TV_CHANNEL_LIST_PATH), AvailableTvChannelsDTO.class);
 
-        ConcurrentMap<String, String> tvChannelsMap = availableTvChannelsDTO.getChannel().stream()
-                .collect(Collectors.toConcurrentMap(ChannelDTO::getName, ChannelDTO::getCcid, (c1, c2) -> c1));
+            ConcurrentMap<String, String> tvChannelsMap = availableTvChannelsDTO.getChannel().stream()
+                    .collect(Collectors.toConcurrentMap(ChannelDTO::getName, ChannelDTO::getCcid, (c1, c2) -> c1));
 
-        logger.debug("TV Channels added: {}", tvChannelsMap.size());
-        if (logger.isTraceEnabled()) {
-            tvChannelsMap.keySet().forEach(app -> logger.trace("TV Channel found: {}", app));
+            logger.debug("TV Channels added: {}", tvChannelsMap.size());
+            if (logger.isTraceEnabled()) {
+                tvChannelsMap.keySet().forEach(app -> logger.trace("TV Channel found: {}", app));
+            }
+            return tvChannelsMap;
+        } catch (InvalidFormatException e) {
+            logger.debug("TV Channels loading failed: {}", e.getMessage(), e);
         }
-        return tvChannelsMap;
+        return Collections.emptyMap();
     }
 
     private String getCurrentTvChannel() throws IOException {
         TvChannelDTO tvChannelDTO = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_CHANNEL_PATH),
                 TvChannelDTO.class);
-        return Optional.ofNullable(tvChannelDTO.getChannel()).map(ChannelDTO::getName).orElse("NA");
+        ChannelDTO channel = tvChannelDTO.getChannel();
+        return channel != null ? channel.getName() : "NA";
     }
 
     private void switchTvChannel(Command command) throws IOException {

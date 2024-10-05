@@ -117,7 +117,6 @@ public class PushButtonToCommandProfile implements TriggerProfile {
                 logger.warn("Parameter '{}' is not a valid command type, using default value '{}'", param, defValue);
                 retval = defValue;
             }
-
         } else {
             logger.debug("Parameter '{}' is not of type String, using default value '{}'", param, defValue);
             retval = defValue;

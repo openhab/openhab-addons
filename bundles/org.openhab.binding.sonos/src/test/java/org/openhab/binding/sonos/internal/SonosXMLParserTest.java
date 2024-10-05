@@ -67,6 +67,11 @@ public class SonosXMLParserTest {
     }
 
     @Test
+    public void buildThingTypeIdFromBoost() {
+        assertEquals("", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Boost"));
+    }
+
+    @Test
     public void getRadioTimeFromXML() throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream("/OPML.xml");
         assertNotNull(resourceStream);

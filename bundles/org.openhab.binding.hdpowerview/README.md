@@ -323,7 +323,7 @@ Switch Automation_Children_Up_Time "Children Up At 6:30" {channel="hdpowerview:h
 
 ### `demo.sitemap` File
 
-```php
+```perl
 Frame label="Living Room" {
     Switch item=Living_Room_Shades_Scene_Open
     Slider item=Living_Room_Shade_Position

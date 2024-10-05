@@ -137,7 +137,7 @@
 
 	<!-- Temperature Sensor -->
 	<channel-group-type id="temperatureSensor">
-		<label>Wheater Sensor</label>
+		<label>Weather Sensor</label>
 		<description>Temperature and Humidity Sensor Channels</description>
 		<channels>
 			<channel id="currentTemp" typeId="temperatureChannel"></channel>

@@ -90,7 +90,7 @@ public class ChannelGroup {
                     groupTypes.stream().map(NetatmoThingTypeProvider::toGroupName).collect(Collectors.toSet()));
         } catch (ReflectiveOperationException e) {
             throw new IllegalArgumentException(
-                    "Error creating or initializing helper class : %s".formatted(e.getMessage()));
+                    "Error creating or initializing helper class: %s".formatted(e.getMessage()));
         }
     }
 }

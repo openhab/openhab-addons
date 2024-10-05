@@ -15,6 +15,7 @@ package org.openhab.binding.surepetcare.internal.dto;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.core.thing.Thing;
@@ -44,7 +45,8 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         }
 
         public static @NonNull ProductType findByTypeId(final int id) {
-            return Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNOWN);
+            return Objects.requireNonNull(
+                    Arrays.stream(values()).filter(value -> value.id.equals(id)).findFirst().orElse(UNKNOWN));
         }
     }
 

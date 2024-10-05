@@ -220,6 +220,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `animalAlarm`               | Switch | RW | Toggles when an animal is in view. |
 | `audioAlarm`                | Switch | R  | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED`                    | Switch | RW |When ON this sets a cameras IR LED to automatically turn on or off. |
+| `autoTracking`              | Switch | RW |Turn the automatic mode for tracking ON or OFF. |
 | `autoWhiteLED`              | Switch | RW |When ON this sets a cameras visible white LED to automatically turn on or off. |
 | `carAlarm`                   | Switch | RW | When a car is detected the switch will turn ON. |
 | `cellMotionAlarm`           | Switch | R | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
@@ -286,7 +287,7 @@ To move a camera with this binding you need an ONVIF camera that supports one of
 
 - Absolute movements
 - Relative movements
-- Continuous movements  
+- Continuous movements
 - Presets
 
 To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).
@@ -587,7 +588,7 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
             <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
     </body>
-</html> 
+</html>
 
 ```
 
@@ -718,13 +719,13 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
 ```java
 
     Text label="BabyMonitor" icon="camera"{
-        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]            
-        Text label="Advanced Controls" icon="settings"{ 
+        Switch item=BabyCam_GoToPreset icon=movecontrol label="Camera Direction" mappings=[1="Room", 2="Chair", 3="Cot"]
+        Text label="Advanced Controls" icon="settings"{
             Default item=BabyCam_AutoLED
             Default item=BabyCam_AudioAlarmThreshold icon=recorder
             Switch item=BabyCam_AudioAlarm
             Default item=BabyCam_EnableMotionAlarm
-            Default item=BabyCam_MotionAlarm                                
+            Default item=BabyCam_MotionAlarm
             Slider item=BabyCam_Pan icon=movecontrol
             Slider item=BabyCam_Tilt icon=movecontrol
             Slider item=BabyCam_Zoom icon=zoom
@@ -732,7 +733,7 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
         Default item=BabyCam_StartHLSStream
         Text label="Mjpeg Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.mjpeg" encoding="mjpeg"}
         Text label="HLS Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.m3u8" height=15}
-        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"            
-    }  
+        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"
+    }
 
 ```

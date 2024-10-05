@@ -26,6 +26,7 @@ import org.bson.types.Binary;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
@@ -77,11 +78,12 @@ public class MongoDBTypeConversions {
      * @throws IllegalArgumentException If the item type is not supported.
      */
     public static State getStateFromDocument(Item item, Document doc) {
-        BiFunction<Item, Document, State> converter = ITEM_STATE_CONVERTERS.get(item.getClass());
+        Item realItem = item instanceof GroupItem groupItem ? groupItem.getBaseItem() : item;
+        BiFunction<Item, Document, State> converter = ITEM_STATE_CONVERTERS.get(realItem.getClass());
         if (converter != null) {
-            return converter.apply(item, doc);
+            return converter.apply(realItem, doc);
         } else {
-            throw new IllegalArgumentException("Unsupported item type: " + item.getClass().getName());
+            throw new IllegalArgumentException("Unsupported item type: " + realItem.getClass().getName());
         }
     }
 

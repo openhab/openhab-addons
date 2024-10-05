@@ -15,6 +15,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LcdManager;
@@ -45,18 +47,17 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         LcdManager manager = getManager(LcdManager.class);
-        Config config = manager.getConfig();
         switch (channelId) {
             case LCD_BRIGHTNESS:
-                setBrightness(manager, config, command);
+                setBrightness(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
             case LCD_ORIENTATION:
-                setOrientation(manager, config, command);
+                setOrientation(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
             case LCD_FORCED:
-                setForced(manager, config, command);
+                setForced(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
         }
@@ -66,10 +67,12 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        Config config = getManager(LcdManager.class).getConfig();
-        updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
-        updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.orientation());
-        updateChannelOnOff(DISPLAY, LCD_FORCED, config.orientationForced());
+        if (anyChannelLinked(GROUP_DISPLAY, Set.of(LCD_BRIGHTNESS, LCD_ORIENTATION, LCD_FORCED))) {
+            Config config = getManager(LcdManager.class).getConfig();
+            updateChannelQuantity(GROUP_DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
+            updateChannelDecimal(GROUP_DISPLAY, LCD_ORIENTATION, config.orientation());
+            updateChannelOnOff(GROUP_DISPLAY, LCD_FORCED, config.orientationForced());
+        }
     }
 
     private void setOrientation(LcdManager manager, Config config, Command command) throws FreeboxException {

@@ -153,7 +153,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final int maxSize = maxSizeBD.intValue();
             try {
                 regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                        currentConfiguration.password, calendarFile, maxSize * 1048576, this);
+                        currentConfiguration.password, calendarFile, maxSize * 1048576, this,
+                        currentConfiguration.userAgent);
             } catch (URISyntaxException e) {
                 throw new ConfigBrokenException(String.format(
                         "The URI '%s' for downloading the calendar contains syntax errors.", currentConfiguration.url));

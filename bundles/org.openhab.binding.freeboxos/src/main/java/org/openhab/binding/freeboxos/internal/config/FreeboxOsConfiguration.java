@@ -36,7 +36,7 @@ public class FreeboxOsConfiguration {
     public int discoveryInterval = 10;
     public int wsReconnectInterval = 60;
 
-    private int httpsPort = 15682;
+    private int httpsPort = 443;
     private boolean httpsAvailable;
 
     private String getScheme() {

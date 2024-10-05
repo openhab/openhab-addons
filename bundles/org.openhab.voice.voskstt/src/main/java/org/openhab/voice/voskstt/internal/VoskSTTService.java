@@ -271,27 +271,15 @@ public class VoskSTTService implements STTService {
                     if (!transcript.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1F));
                     } else {
-                        if (!config.noResultsMessage.isBlank()) {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                        } else {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                        }
+                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                     }
                 }
             } catch (IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } catch (UnsatisfiedLinkError e) {
                 logger.warn("Missing native dependency: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } finally {
                 if (recognizer != null) {
                     recognizer.close();

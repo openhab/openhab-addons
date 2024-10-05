@@ -1,6 +1,6 @@
 # Groovy Scripting
 
-This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.11 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
+This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.23 that can be used as a scripting language within automation rules and which eliminates the need to manually install Groovy.
 
 ## Creating Groovy Scripts
 
@@ -15,7 +15,7 @@ If you create an empty file called `test.groovy`, you will see a log line with i
 
 To enable debug logging, use the [console logging]({{base}}/administration/logging.html) commands to enable debug logging for the automation functionality:
 
-```text
+```shell
 log:set DEBUG org.openhab.core.automation
 ```
 
@@ -23,7 +23,7 @@ For more information on the available APIs in scripts see the [JSR223 Scripting]
 
 ## Code reuse
 
-One can place *.groovy files with Groovy classes under `automation/groovy` configuration directory.  
+One can place *.groovy files with Groovy classes under `automation/groovy` configuration directory.
 Those classes can be imported in JSR-223 scripts or the UI rules action with the usual Groovy `import` statement.
 
 To apply shared code changes, one has to restart the `openHAB Core :: Bundles :: Automation` bundle on the Console or an openHAB instance altogether.

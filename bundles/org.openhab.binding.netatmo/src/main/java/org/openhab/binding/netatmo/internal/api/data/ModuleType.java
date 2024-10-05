@@ -18,7 +18,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,7 +96,7 @@ public enum ModuleType {
             Set.of(ChannelHelperCapability.class, ParentUpdateCapability.class), ChannelGroup.SIGNAL,
             ChannelGroup.BATTERY, ChannelGroup.TIMESTAMP, new ChannelGroup(SirenChannelHelper.class, GROUP_SIREN)),
 
-    PRESENCE(FeatureArea.SECURITY, "NOC", 1, "camera", HOME,
+    PRESENCE(FeatureArea.SECURITY, "NOC", 2, "camera", HOME,
             Set.of(PresenceCapability.class, ChannelHelperCapability.class, ParentUpdateCapability.class),
             ChannelGroup.SIGNAL, ChannelGroup.EVENT,
             new ChannelGroup(PresenceChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_CAM_STATUS, GROUP_CAM_LIVE,
@@ -170,7 +170,7 @@ public enum ModuleType {
 
     public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
-    private final Optional<ModuleType> bridgeType;
+    private final @Nullable ModuleType bridgeType;
     public final Set<ChannelGroup> channelGroups;
     public final Set<Class<? extends Capability>> capabilities;
     public final ThingTypeUID thingTypeUID;
@@ -181,7 +181,7 @@ public enum ModuleType {
 
     ModuleType(FeatureArea feature, String apiName, int thingTypeVersion, String config, @Nullable ModuleType bridge,
             Set<Class<? extends Capability>> capabilities, ChannelGroup... channelGroups) {
-        this.bridgeType = Optional.ofNullable(bridge);
+        this.bridgeType = bridge;
         this.feature = feature;
         this.capabilities = capabilities;
         this.apiName = apiName;
@@ -219,7 +219,7 @@ public enum ModuleType {
     }
 
     public ModuleType getBridge() {
-        return bridgeType.orElse(UNKNOWN);
+        return Objects.requireNonNullElse(this.bridgeType, UNKNOWN);
     }
 
     public int getDepth() {

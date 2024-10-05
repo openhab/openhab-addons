@@ -13,7 +13,6 @@
 package org.openhab.persistence.influxdb.internal;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.StringJoiner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,7 +68,7 @@ public class InfluxDBConfiguration {
 
     private InfluxDBVersion parseInfluxVersion(@Nullable String value) {
         try {
-            return Optional.ofNullable(value).map(InfluxDBVersion::valueOf).orElse(InfluxDBVersion.UNKNOWN);
+            return value != null ? InfluxDBVersion.valueOf(value) : InfluxDBVersion.UNKNOWN;
         } catch (RuntimeException e) {
             logger.warn("Invalid version {}", value);
             return InfluxDBVersion.UNKNOWN;

@@ -17,6 +17,7 @@ Binding for Bosch Smart Home devices.
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
+    - [Relay](#relay)
     - [Security Camera 360](#security-camera-360)
     - [Security Camera Eyes](#security-camera-eyes)
     - [Intrusion Detection System](#intrusion-detection-system)
@@ -44,7 +45,7 @@ The Smart Home Controller is the central hub that allows you to monitor and cont
 
 | Channel Type ID    | Item Type | Writable | Description                                                             |
 |--------------------|-----------|:--------:|-------------------------------------------------------------------------|
-| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      |
 | trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
 ### In-Wall Switch
@@ -222,6 +223,23 @@ Display of the current room temperature as well as the relative humidity in the 
 | battery-level   | Number               | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch               | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
+### Relay
+
+The smart switching relay is your universal all-rounder for smart switching.
+
+**Thing Type ID**: `relay`
+
+| Channel Type ID         | Item Type   | Writable | Description                                                                        |
+| ----------------------- | ----------- | :------: | ---------------------------------------------------------------------------------- |
+| signal-strength         | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection        | Switch      | &#9745;  | Indicates whether the child protection is active.                                  |
+| power-switch            | Switch      | &#9745;  | Switches the relay on or off. Only available if the relay is in power switch mode. |
+| impulse-switch          | Switch      | &#9745;  | Channel to send impulses by means of `ON` events. After the time specified by `impulse-length`, the relay will switch off automatically and the state will be reset to `OFF`. Only available if the relay is in impulse switch mode.  |
+| impulse-length          | Number:Time | &#9745;  | Channel to configure how long the relay will stay on after receiving an impulse switch event. If raw numbers (without time unit) are provided, the default unit is tenth seconds (deciseconds), e.g. 15 means 1.5 seconds. If quantities with time units are provided, the quantity will be converted to deciseconds internally, discarding any fraction digits that are more precise than expressible in whole deciseconds (e.g. 1.58 seconds will be converted to 15 ds). Only available if the relay is in impulse switch mode. |
+| instant-of-last-impulse | DateTime    | &#9744;  | Timestamp indicating when the last impulse was triggered. Only available if the relay is in impulse switch mode. |
+
+If the device mode is changed from power switch to impulse switch mode or vice versa, the corresponding thing has to be deleted and re-added in openHAB.
+
 ### Security Camera 360
 
 Indoor security camera with 360° view and motion detection.
@@ -298,7 +316,7 @@ The smoke detector warns you in case of fire.
 
 ### User-defined States
 
-User-defined states enable automations to be better adapted to specific needs and everyday situations. 
+User-defined states enable automations to be better adapted to specific needs and everyday situations.
 Individual states can be activated/deactivated and can be used as triggers, conditions and actions in automations.
 
 **Thing Type ID**: `user-defined-state`
@@ -338,7 +356,7 @@ A universally configurable switch with four buttons.
 
 Smart water leakage detector.
 
-**Thing Type ID**: `water-detector` 
+**Thing Type ID**: `water-detector`
 
 | Channel Type ID            | Item Type | Writable | Description                                       |
 | -------------------------- | --------- | :------: | ------------------------------------------------- |
@@ -354,7 +372,7 @@ Smart water leakage detector.
 ## Limitations
 
 No major limitation known.
-Check list of [openhab issues with "boshshc"](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+boschshc+) 
+Check list of [openhab issues with "boshshc"](https://github.com/openhab/openhab-addons/issues?q=is%3Aissue+boschshc+)
 
 ## Discovery
 

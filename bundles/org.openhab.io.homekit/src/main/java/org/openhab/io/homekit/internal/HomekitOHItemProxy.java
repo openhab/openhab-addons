@@ -97,7 +97,7 @@ public class HomekitOHItemProxy {
         final PercentType brightness = (PercentType) commandCache.remove(BRIGHTNESS_COMMAND);
         final DecimalType hue = (DecimalType) commandCache.remove(HUE_COMMAND);
         final PercentType saturation = (PercentType) commandCache.remove(SATURATION_COMMAND);
-        final @Nullable OnOffType currentOnState = ((DimmerItem) item).getStateAs(OnOffType.class);
+        final @Nullable OnOffType currentOnState = item.getStateAs(OnOffType.class);
         if (on != null) {
             // always sends OFF.
             // sends ON only if
