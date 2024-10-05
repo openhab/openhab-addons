@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.huesync</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Hue Play HDMI Sync Box Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Hue Sync Box Binding</name>
 
 </project>
