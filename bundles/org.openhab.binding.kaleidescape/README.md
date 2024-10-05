@@ -22,7 +22,7 @@ The binding supports either a TCP/IP connection or direct serial port connection
 
 ## Discovery
 
-Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using UPnP.
+Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
