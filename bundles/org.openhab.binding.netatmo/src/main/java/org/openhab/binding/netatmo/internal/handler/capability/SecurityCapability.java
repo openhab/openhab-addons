@@ -68,7 +68,6 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     @Override
     public void initialize() {
         super.initialize();
-        freshestEventTime = ZDT_REFERENCE;
         securityId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.SECURITY);
     }
 
@@ -124,26 +123,26 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     protected List<NAObject> updateReadings(SecurityApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
-            for (HomeEvent event : api.getHomeEvents(securityId, freshestEventTime)) {
-                HomeEvent previousEvent = eventBuffer.get(event.getCameraId());
-                if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
-                    eventBuffer.put(event.getCameraId(), event);
-                }
-                String personId = event.getPersonId();
-                if (personId != null) {
-                    previousEvent = eventBuffer.get(personId);
-                    if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
-                        eventBuffer.put(personId, event);
-                    }
+            api.getHomeEvents(securityId, freshestEventTime).stream().forEach(event -> {
+                bufferIfNewer(event.getCameraId(), event);
+                if (event.getPersonId() instanceof String personId) {
+                    bufferIfNewer(personId, event);
                 }
                 if (event.getTime().isAfter(freshestEventTime)) {
                     freshestEventTime = event.getTime();
                 }
-            }
+            });
         } catch (NetatmoException e) {
             logger.warn("Error retrieving last events for home '{}' : {}", securityId, e.getMessage());
         }
         return result;
+    }
+
+    private void bufferIfNewer(String id, HomeEvent event) {
+        HomeEvent previousEvent = eventBuffer.get(id);
+        if (previousEvent == null || previousEvent.getTime().isBefore(event.getTime())) {
+            eventBuffer.put(id, event);
+        }
     }
 
     public NAObjectMap<HomeDataPerson> getPersons() {
