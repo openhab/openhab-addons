@@ -60,7 +60,7 @@ The property `limitationTresholdValue` is used as threshold for channel `powerLi
 | batteryFuelCharge             | percent        | Fuel charge of your battery (0 - 100%)                                   |
 | systemState                   |                | Text describing current action of the senec home system (e.g. CHARGE)    |
 | systemStateValue              |                | Value describing current action of the senec home system (e.g. 14)       |
-| chargeMode                | OFF/CHARGE/    | In `CHARGE` mode, the battery will try to fill as quickly as possible   |
+| chargeMode                    | OFF/CHARGE/    | In `CHARGE` mode, the battery will try to fill as quickly as possible   |
 |                               | STORAGE        | in `STORAGE` mode, the battery will try to reach 25% SOC                  |
 | gridPower                     | watt           | Grid power level, negative for supply, positive values for drawing power |
 | gridPowerDraw                 | watt           | Absolute power level of power draw, zero while supplying                 |
