@@ -149,6 +149,7 @@ public class NetatmoConstants {
     public static final String PARAM_EVENT_ID = "event_id";
     public static final String PARAM_SCHEDULE_ID = "schedule_id";
     public static final String PARAM_OFFSET = "offset";
+    public static final String PARAM_SIZE = "size";
     public static final String PARAM_GATEWAY_TYPE = "gateway_types";
     public static final String PARAM_MODE = "mode";
     public static final String PARAM_URL = "url";
