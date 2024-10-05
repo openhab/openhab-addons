@@ -50,8 +50,7 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_BATTERY_FUEL_CHARGE = "batteryFuelCharge";
     public static final String CHANNEL_SENEC_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SENEC_BATTERY_CURRENT = "batteryCurrent";
-    public static final String CHANNEL_SENEC_SAFE_CHARGE_MODE = "safeChargeMode";
-    public static final String CHANNEL_SENEC_LI_STORAGE_MODE = "liStorageMode";
+    public static final String CHANNEL_SENEC_CHARGE_MODE = "chargeMode";
 
     // SenecHomeGrid
     public static final String CHANNEL_SENEC_GRID_POWER = "gridPower";
@@ -110,4 +109,9 @@ public class SenecHomeBindingConstants {
     public static final String CHANNEL_SENEC_WALLBOX1_CHARGING_CURRENT_PH2 = "wallbox1ChargingCurrentPhase2";
     public static final String CHANNEL_SENEC_WALLBOX1_CHARGING_CURRENT_PH3 = "wallbox1ChargingCurrentPhase3";
     public static final String CHANNEL_SENEC_WALLBOX1_CHARGING_POWER = "wallbox1ChargingPower";
+
+    // Charge Mode Definitions
+    public static final String STATE_SENEC_CHARGE_MODE_OFF = "OFF";
+    public static final String STATE_SENEC_CHARGE_MODE_CHARGE = "CHARGE";
+    public static final String STATE_SENEC_CHARGE_MODE_STORAGE = "STORAGE";
 }

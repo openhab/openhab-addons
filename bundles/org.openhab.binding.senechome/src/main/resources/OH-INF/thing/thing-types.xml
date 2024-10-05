@@ -32,8 +32,7 @@
 			<channel id="batteryFuelCharge" typeId="batteryFuelCharge"/>
 			<channel id="systemState" typeId="systemState"/>
 			<channel id="systemStateValue" typeId="systemStateValue"/>
-			<channel id="safeChargeMode" typeId="safeChargeMode"/>
-			<channel id="liStorageMode" typeId="liStorageMode"/>
+			<channel id="chargeMode" typeId="chargeMode"/>
 
 			<!-- SenecHomeGrid -->
 			<channel id="gridPower" typeId="gridPower"/>
@@ -244,17 +243,17 @@
 		<category>Number</category>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
-	<channel-type id="safeChargeMode">
-		<item-type>Switch</item-type>
+	<channel-type id="chargeMode">
+		<item-type>String</item-type>
 		<label>Safe Charge Mode</label>
-		<category>Switch</category>
-		<state readOnly="false" pattern="%s"/>
-	</channel-type>
-	<channel-type id="liStorageMode">
-		<item-type>Switch</item-type>
-		<label>Lithium Storage Mode</label>
-		<category>Switch</category>
-		<state readOnly="false" pattern="%s"/>
+		<category>Text</category>
+		<state readOnly="false" pattern="%s">
+			<options>
+				<option value="OFF">Off</option>
+				<option value="CHARGE">Safe Charge</option>
+				<option value="STORAGE">Lithium Storage</option>
+			</options>
+		</state>
 	</channel-type>
 
 

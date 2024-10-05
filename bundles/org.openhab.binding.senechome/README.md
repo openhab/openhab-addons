@@ -60,8 +60,8 @@ The property `limitationTresholdValue` is used as threshold for channel `powerLi
 | batteryFuelCharge             | percent        | Fuel charge of your battery (0 - 100%)                                   |
 | systemState                   |                | Text describing current action of the senec home system (e.g. CHARGE)    |
 | systemStateValue              |                | Value describing current action of the senec home system (e.g. 14)       |
-| safeChargeMode                | ON/OFF         | In safeChargeMode, the battery will try to fill as quickly as possible   |
-| liStorageMode                 | ON/OFF         | in liStorageMode, the battery will try to reach 25% SOC                  |
+| safeChargeMode                | OFF/CHARGE/    | In safeChargeMode, the battery will try to fill as quickly as possible   |
+|                               | STORAGE        | in liStorageMode, the battery will try to reach 25% SOC                  |
 | gridPower                     | watt           | Grid power level, negative for supply, positive values for drawing power |
 | gridPowerDraw                 | watt           | Absolute power level of power draw, zero while supplying                 |
 | gridPowerSupply               | watt           | Absolute power level of power supply, zero while drawing                 |
@@ -140,7 +140,7 @@ Number SenecGridVoltagePh2       "Voltage Level on Phase 2 [%d V]"            <e
 Number SenecGridVoltagePh3       "Voltage Level on Phase 3 [%d V]"            <energy> { channel="senechome:senechome:pvbattery:gridVoltagePhase3" }
 Number SenecGridFrequency        "Grid Frequency [%.2f Hz]"                   <energy> { channel="senechome:senechome:pvbattery:gridFrequency" }
 Number SenecBatteryVoltage       "Battery Voltage [%.1f V]"                   <energy> { channel="senechome:senechome:pvbattery:batteryVoltage" }
-Switch SenecBatteryChargeMode    "Battery Charge Mode [%.1f V]"               <switch> { channel="senechome:senechome:pvbattery:safeChargeMode" }
+String SenecBatteryChargeMode    "Battery Charge Mode [%s]"                            { channel="senechome:senechome:pvbattery:chargeMode" }
 ```
 
 ## Sitemap
