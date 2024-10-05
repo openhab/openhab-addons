@@ -7,7 +7,7 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
 - [HueSync Binding](#huesync-binding)
   - [Discovery](#discovery)
   - [Thing Configuration](#thing-configuration)
-  - [Thing Configuration "huesynbox"](#thing-configuration-huesynbox)
+  - [Thing Configuration "huesyncbox"](#thing-configuration-huesyncbox)
   - [Channels](#channels)
     - [Channels - Groups](#channels---groups)
     - [Channels -  device-firmware](#channels----device-firmware)
@@ -97,39 +97,39 @@ Group HueSyncBox_Output "Output" &lt;iconify:mdi:tv&gt; (HueSyncBox) ["Screen"]
 Group HueSyncBox_Firmware "Firmware" &lt;iconify:mdi:information&gt; (HueSyncBox)
 Group HueSyncBox_Execution "Remote Control" &lt;iconify:mdi:remote&gt; (HueSyncBox) ["RemoteControl"]
 
-String HueSyncBox_Device_Mode  "Mode"  &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Execution) { channel="huesync:huesynbox:HueSyncBox:device-commands#mode" }
-String HueSyncBox_Device_Input "Input" &lt;iconify:mdi:input&gt;      (HueSyncBox_Execution) { channel="huesync:huesynbox:HueSyncBox:device-commands#hdmiSource" }
-Switch HueSyncBox_Device_Hdmi  "HDMI"  &lt;iconify:mdi:hdmi-port&gt;  (HueSyncBox_Execution) { channel="huesync:huesynbox:HueSyncBox:device-commands#hdmiActive" }
-Switch HueSyncBox_Device_Sync  "Sync"  &lt;iconify:mdi:sync&gt;       (HueSyncBox_Execution) { channel="huesync:huesynbox:HueSyncBox:device-commands#syncActive" }
-Number:Dimensionless HueSyncBox_Device_Brightness "Brightness " &lt;iconify:mdi:brightness-percent&gt; (HueSyncBox_Execution) { channel="huesync:huesynbox:HueSyncBox:device-commands#brightness" }
+String HueSyncBox_Device_Mode  "Mode"  &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Execution) { channel="huesync:huesyncbox:HueSyncBox:device-commands#mode" }
+String HueSyncBox_Device_Input "Input" &lt;iconify:mdi:input&gt;      (HueSyncBox_Execution) { channel="huesync:huesyncbox:HueSyncBox:device-commands#hdmiSource" }
+Switch HueSyncBox_Device_Hdmi  "HDMI"  &lt;iconify:mdi:hdmi-port&gt;  (HueSyncBox_Execution) { channel="huesync:huesyncbox:HueSyncBox:device-commands#hdmiActive" }
+Switch HueSyncBox_Device_Sync  "Sync"  &lt;iconify:mdi:sync&gt;       (HueSyncBox_Execution) { channel="huesync:huesyncbox:HueSyncBox:device-commands#syncActive" }
+Number:Dimensionless HueSyncBox_Device_Brightness "Brightness " &lt;iconify:mdi:brightness-percent&gt; (HueSyncBox_Execution) { channel="huesync:huesyncbox:HueSyncBox:device-commands#brightness" }
 
-String HueSyncBox_Firmware_Version        "Firmware Version"        &lt;iconify:mdi:text&gt; (HueSyncBox_Firmware) { channel="huesync:huesynbox:HueSyncBox:device-firmware#firmware" }           
-String HueSyncBox_Latest_Firmware_Version "Latest Firmware Version" &lt;iconify:mdi:text&gt; (HueSyncBox_Firmware) { channel="huesync:huesynbox:HueSyncBox:device-firmware#available-firmware" } 
+String HueSyncBox_Firmware_Version        "Firmware Version"        &lt;iconify:mdi:text&gt; (HueSyncBox_Firmware) { channel="huesync:huesyncbox:HueSyncBox:device-firmware#firmware" }           
+String HueSyncBox_Latest_Firmware_Version "Latest Firmware Version" &lt;iconify:mdi:text&gt; (HueSyncBox_Firmware) { channel="huesync:huesyncbox:HueSyncBox:device-firmware#available-firmware" } 
 
-String HueSyncBox_Device_hdmi_in1_Name      "Name - Input 1"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_1)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#name" }              
-String HueSyncBox_Device_hdmi_in1_Type      "Type - Input 1"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_1)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#type" }              
-String HueSyncBox_Device_hdmi_in1_Status    "Status - Input 1"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_1)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#status" }
-String HueSyncBox_Device_hdmi_in1_Mode      "Mode - Input 1"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_1)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#mode" }               
+String HueSyncBox_Device_hdmi_in1_Name      "Name - Input 1"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_1)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#name" }              
+String HueSyncBox_Device_hdmi_in1_Type      "Type - Input 1"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_1)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#type" }              
+String HueSyncBox_Device_hdmi_in1_Status    "Status - Input 1"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_1)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#status" }
+String HueSyncBox_Device_hdmi_in1_Mode      "Mode - Input 1"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_1)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#mode" }               
 
-String HueSyncBox_Device_hdmi_in2_Name      "Name - Input 2"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_2)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#name" }              
-String HueSyncBox_Device_hdmi_in2_Type      "Type - Input 2"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_2)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#type" }              
-String HueSyncBox_Device_hdmi_in2_Status    "Status - Input 2"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_2)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#status" } 
-String HueSyncBox_Device_hdmi_in2_Mode      "Mode - Input 2"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_2)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#mode" }              
+String HueSyncBox_Device_hdmi_in2_Name      "Name - Input 2"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_2)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#name" }              
+String HueSyncBox_Device_hdmi_in2_Type      "Type - Input 2"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_2)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#type" }              
+String HueSyncBox_Device_hdmi_in2_Status    "Status - Input 2"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_2)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#status" } 
+String HueSyncBox_Device_hdmi_in2_Mode      "Mode - Input 2"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_2)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#mode" }              
 
-String HueSyncBox_Device_hdmi_in3_Name      "Name - Input 3"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_3)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#name" }              
-String HueSyncBox_Device_hdmi_in3_Type      "Type - Input 3"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_3)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#type" }              
-String HueSyncBox_Device_hdmi_in3_Status    "Status - Input 3"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_3)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#status" } 
-String HueSyncBox_Device_hdmi_in3_Mode      "Mode - Input 3"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_3)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#mode" }              
+String HueSyncBox_Device_hdmi_in3_Name      "Name - Input 3"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_3)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#name" }              
+String HueSyncBox_Device_hdmi_in3_Type      "Type - Input 3"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_3)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#type" }              
+String HueSyncBox_Device_hdmi_in3_Status    "Status - Input 3"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_3)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#status" } 
+String HueSyncBox_Device_hdmi_in3_Mode      "Mode - Input 3"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_3)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#mode" }              
 
-String HueSyncBox_Device_hdmi_in4_Name      "Name - Input 4"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_4)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#name" }              
-String HueSyncBox_Device_hdmi_in4_Type      "Type - Input 4"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_4)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#type" }              
-String HueSyncBox_Device_hdmi_in4_Status    "Status - Input 4"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_4)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#status" } 
-String HueSyncBox_Device_hdmi_in4_Mode      "Mode - Input 4"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_4)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#mode" }              
+String HueSyncBox_Device_hdmi_in4_Name      "Name - Input 4"           &lt;iconify:mdi:text&gt;       (HueSyncBox_Input_4)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#name" }              
+String HueSyncBox_Device_hdmi_in4_Type      "Type - Input 4"           &lt;iconify:mdi:devices&gt;    (HueSyncBox_Input_4)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#type" }              
+String HueSyncBox_Device_hdmi_in4_Status    "Status - Input 4"         &lt;iconify:mdi:connection&gt; (HueSyncBox_Input_4)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#status" } 
+String HueSyncBox_Device_hdmi_in4_Mode      "Mode - Input 4"           &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Input_4)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#mode" }              
 
-String HueSyncBox_Device_hdmi_out_Name      "Name - Output"            &lt;iconify:mdi:text&gt;       (HueSyncBox_Output)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#name" }               
-String HueSyncBox_Device_hdmi_out_Type      "Type - Output"            &lt;iconify:mdi:tv&gt;         (HueSyncBox_Output)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#type" }               
-String HueSyncBox_Device_hdmi_out_Status    "Status - Output"          &lt;iconify:mdi:connection&gt; (HueSyncBox_Output)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#status" }              
-String HueSyncBox_Device_hdmi_out_Mode      "Mode - Output"            &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Output)   { channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#mode" }
+String HueSyncBox_Device_hdmi_out_Name      "Name - Output"            &lt;iconify:mdi:text&gt;       (HueSyncBox_Output)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#name" }               
+String HueSyncBox_Device_hdmi_out_Type      "Type - Output"            &lt;iconify:mdi:tv&gt;         (HueSyncBox_Output)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#type" }               
+String HueSyncBox_Device_hdmi_out_Status    "Status - Output"          &lt;iconify:mdi:connection&gt; (HueSyncBox_Output)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#status" }              
+String HueSyncBox_Device_hdmi_out_Mode      "Mode - Output"            &lt;iconify:mdi:multimedia&gt; (HueSyncBox_Output)   { channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#mode" }
   </pre>
 </details>
 
@@ -222,11 +222,11 @@ Example thing configuration goes here.
 
 |                      |                              |              |                                    |                        |                                                                          |                                                                                                                                                                                 |
 | -------------------- | ---------------------------- | ------------ | ---------------------------------- | ---------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| String               | HueSyncBox_Device_Mode       | "Mode"       | \<iconify:mdi:multimedia\>         | (HueSyncBox_Execution) | { channel="huesync:huesynbox:HueSyncBox:device-commands#mode" }       |                                                                                                                                                                                 |
-| String               | HueSyncBox_Device_Input      | "Input"      | \<iconify:mdi:input\>              | (HueSyncBox_Execution) | { channel="huesync:huesynbox:HueSyncBox:device-commands#hdmiSource" } | <details><summary>HDMI Source</summary><ul><li>input1</li><li>input2</li><li>input3</li><li>input4</li></ul></details>                                                          |
-| Switch               | HueSyncBox_Device_Sync       | "Sync"       | \<iconify:mdi:sync\>               | (HueSyncBox_Execution) | { channel="huesync:huesynbox:HueSyncBox:device-commands#syncActive" } | <details><summary>HDMI Sync</summary><p><b>OFF</b> in case of <i>powersave</i> or <i>passthrough</i> mode, and <b>ON</b> in case of <i>video</i>, <i>game</i> or <i>music</i> mode.</p><p>When changed from <b>OFF</b> to <b>ON</b>, it will start syncing in last used mode for current source. When changed from <b>ON</b> to <b>OFF</b>, will set <i>passthrough</i> mode.</p></details>                                                                                                                                                                                |
-| Switch               | HueSyncBox_Device_Hdmi       | "HDMI"       | \<iconify:mdi:hdmi-port\>          | (HueSyncBox_Execution) | { channel="huesync:huesynbox:HueSyncBox:device-commands#hdmiActive" } | <details><summary>HDMI Active</summary><p><b>OFF</b> in case of <i>powersave</i> mode and <b>ON</b> in case of <i>passthrough</i>, <i>video</i>, <i>game</i> or <i>music</i> mode.</p><p>When changed from <b>OFF</b> to <b>ON</b>, it will set <i>passthrough</i> mode. When changed from <b>ON</b> to <b>OFF</b>, will set <i>powersave</i> mode.</p></details>                                                                                                                                                                                |
-| Number:Dimensionless | HueSyncBox_Device_Brightness | "Brightness" | \<iconify:mdi:brightness-percent\> | (HueSyncBox_Execution) | { channel="huesync:huesynbox:HueSyncBox:device-commands#brightness" } | <details><summary>0 ... 200</summary><p><ul><li>0 = max reduction</li><li>100 = no brightness reduction/boost compared to input</li><li>200 = max boost</li></ul></p></details> |
+| String               | HueSyncBox_Device_Mode       | "Mode"       | \<iconify:mdi:multimedia\>         | (HueSyncBox_Execution) | { channel="huesync:huesyncbox:HueSyncBox:device-commands#mode" }       |                                                                                                                                                                                 |
+| String               | HueSyncBox_Device_Input      | "Input"      | \<iconify:mdi:input\>              | (HueSyncBox_Execution) | { channel="huesync:huesyncbox:HueSyncBox:device-commands#hdmiSource" } | <details><summary>HDMI Source</summary><ul><li>input1</li><li>input2</li><li>input3</li><li>input4</li></ul></details>                                                          |
+| Switch               | HueSyncBox_Device_Sync       | "Sync"       | \<iconify:mdi:sync\>               | (HueSyncBox_Execution) | { channel="huesync:huesyncbox:HueSyncBox:device-commands#syncActive" } | <details><summary>HDMI Sync</summary><p><b>OFF</b> in case of <i>powersave</i> or <i>passthrough</i> mode, and <b>ON</b> in case of <i>video</i>, <i>game</i> or <i>music</i> mode.</p><p>When changed from <b>OFF</b> to <b>ON</b>, it will start syncing in last used mode for current source. When changed from <b>ON</b> to <b>OFF</b>, will set <i>passthrough</i> mode.</p></details>                                                                                                                                                                                |
+| Switch               | HueSyncBox_Device_Hdmi       | "HDMI"       | \<iconify:mdi:hdmi-port\>          | (HueSyncBox_Execution) | { channel="huesync:huesyncbox:HueSyncBox:device-commands#hdmiActive" } | <details><summary>HDMI Active</summary><p><b>OFF</b> in case of <i>powersave</i> mode and <b>ON</b> in case of <i>passthrough</i>, <i>video</i>, <i>game</i> or <i>music</i> mode.</p><p>When changed from <b>OFF</b> to <b>ON</b>, it will set <i>passthrough</i> mode. When changed from <b>ON</b> to <b>OFF</b>, will set <i>powersave</i> mode.</p></details>                                                                                                                                                                                |
+| Number:Dimensionless | HueSyncBox_Device_Brightness | "Brightness" | \<iconify:mdi:brightness-percent\> | (HueSyncBox_Execution) | { channel="huesync:huesyncbox:HueSyncBox:device-commands#brightness" } | <details><summary>0 ... 200</summary><p><ul><li>0 = max reduction</li><li>100 = no brightness reduction/boost compared to input</li><li>200 = max boost</li></ul></p></details> |
 </details>
 
 ### Items - Firmware
@@ -236,8 +236,8 @@ Example thing configuration goes here.
 
 |        |                                    |                           |                      |                       |              |                                                                                    |
 | ------ | ---------------------------------- | ------------------------- | -------------------- | --------------------- | ------------ | ---------------------------------------------------------------------------------- |
-| String | HueSyncBox_Firmware_Version        | "Firmware Version"        | \<iconify:mdi:text\> | (HueSyncBox_Firmware) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-firmware#firmware" }`           |
-| String | HueSyncBox_Latest_Firmware_Version | "Latest Firmware Version" | \<iconify:mdi:text\> | (HueSyncBox_Firmware) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-firmware#available-firmware" }` |
+| String | HueSyncBox_Firmware_Version        | "Firmware Version"        | \<iconify:mdi:text\> | (HueSyncBox_Firmware) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-firmware#firmware" }`           |
+| String | HueSyncBox_Latest_Firmware_Version | "Latest Firmware Version" | \<iconify:mdi:text\> | (HueSyncBox_Firmware) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-firmware#available-firmware" }` |
 
 </details>
 
@@ -248,10 +248,10 @@ Example thing configuration goes here.
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
-| String | HueSyncBox_Device_hdmi_in1_Name   | "Name - Input 1"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#name" }`   |
-| String | HueSyncBox_Device_hdmi_in1_Type   | "Type - Input 1"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#type" }`   |
-| String | HueSyncBox_Device_hdmi_in1_Status | "Status - Input 1" | \<iconify:mdi:connection\> | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#status" }` |
-| String | HueSyncBox_Device_hdmi_in1_Mode   | "Mode - Input 1"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-1#mode" }`   |
+| String | HueSyncBox_Device_hdmi_in1_Name   | "Name - Input 1"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#name" }`   |
+| String | HueSyncBox_Device_hdmi_in1_Type   | "Type - Input 1"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#type" }`   |
+| String | HueSyncBox_Device_hdmi_in1_Status | "Status - Input 1" | \<iconify:mdi:connection\> | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#status" }` |
+| String | HueSyncBox_Device_hdmi_in1_Mode   | "Mode - Input 1"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_1) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-1#mode" }`   |
 
 </details>
 
@@ -260,10 +260,10 @@ Example thing configuration goes here.
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
-| String | HueSyncBox_Device_hdmi_in2_Name   | "Name - Input 2"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#name" }`   |
-| String | HueSyncBox_Device_hdmi_in2_Type   | "Type - Input 2"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#type" }`   |
-| String | HueSyncBox_Device_hdmi_in2_Status | "Status - Input 2" | \<iconify:mdi:connection\> | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#status" }` |
-| String | HueSyncBox_Device_hdmi_in2_Mode   | "Mode - Input 2"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-2#mode" }`   |
+| String | HueSyncBox_Device_hdmi_in2_Name   | "Name - Input 2"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#name" }`   |
+| String | HueSyncBox_Device_hdmi_in2_Type   | "Type - Input 2"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#type" }`   |
+| String | HueSyncBox_Device_hdmi_in2_Status | "Status - Input 2" | \<iconify:mdi:connection\> | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#status" }` |
+| String | HueSyncBox_Device_hdmi_in2_Mode   | "Mode - Input 2"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_2) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-2#mode" }`   |
 </details>
 
 <details>
@@ -271,10 +271,10 @@ Example thing configuration goes here.
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
-| String | HueSyncBox_Device_hdmi_in3_Name   | "Name - Input 3"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#name" }`   |
-| String | HueSyncBox_Device_hdmi_in3_Type   | "Type - Input 3"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#type" }`   |
-| String | HueSyncBox_Device_hdmi_in3_Status | "Status - Input 3" | \<iconify:mdi:connection\> | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#status" }` |
-| String | HueSyncBox_Device_hdmi_in3_Mode   | "Mode - Input 3"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-3#mode" }`   |
+| String | HueSyncBox_Device_hdmi_in3_Name   | "Name - Input 3"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#name" }`   |
+| String | HueSyncBox_Device_hdmi_in3_Type   | "Type - Input 3"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#type" }`   |
+| String | HueSyncBox_Device_hdmi_in3_Status | "Status - Input 3" | \<iconify:mdi:connection\> | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#status" }` |
+| String | HueSyncBox_Device_hdmi_in3_Mode   | "Mode - Input 3"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_3) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-3#mode" }`   |
 
 </details>
 
@@ -283,10 +283,10 @@ Example thing configuration goes here.
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
-| String | HueSyncBox_Device_hdmi_in4_Name   | "Name - Input 4"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#name" }`   |
-| String | HueSyncBox_Device_hdmi_in4_Type   | "Type - Input 4"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#type" }`   |
-| String | HueSyncBox_Device_hdmi_in4_Status | "Status - Input 4" | \<iconify:mdi:connection\> | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#status" }` |
-| String | HueSyncBox_Device_hdmi_in4_Mode   | "Mode - Input 4"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-in-4#mode" }`   |
+| String | HueSyncBox_Device_hdmi_in4_Name   | "Name - Input 4"   | \<iconify:mdi:text\>       | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#name" }`   |
+| String | HueSyncBox_Device_hdmi_in4_Type   | "Type - Input 4"   | \<iconify:mdi:devices\>    | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#type" }`   |
+| String | HueSyncBox_Device_hdmi_in4_Status | "Status - Input 4" | \<iconify:mdi:connection\> | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#status" }` |
+| String | HueSyncBox_Device_hdmi_in4_Mode   | "Mode - Input 4"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Input_4) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-in-4#mode" }`   |
 
 </details>
 
@@ -297,10 +297,10 @@ Example thing configuration goes here.
 
 |        |                                   |                   |                            |                     |              |                                                                        |
 | ------ | --------------------------------- | ----------------- | -------------------------- | ------------------- | ------------ | ---------------------------------------------------------------------- |
-| String | HueSyncBox_Device_hdmi_out_Name   | "Name - Output"   | \<iconify:mdi:text\>       | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#name" }`   |
-| String | HueSyncBox_Device_hdmi_out_Type   | "Type - Output"   | \<iconify:mdi:tv\>         | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#type" }`   |
-| String | HueSyncBox_Device_hdmi_out_Status | "Status - Output" | \<iconify:mdi:connection\> | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#status" }` |
-| String | HueSyncBox_Device_hdmi_out_Mode   | "Mode - Output"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesynbox:HueSyncBox:device-hdmi-out#mode" }`   |
+| String | HueSyncBox_Device_hdmi_out_Name   | "Name - Output"   | \<iconify:mdi:text\>       | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#name" }`   |
+| String | HueSyncBox_Device_hdmi_out_Type   | "Type - Output"   | \<iconify:mdi:tv\>         | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#type" }`   |
+| String | HueSyncBox_Device_hdmi_out_Status | "Status - Output" | \<iconify:mdi:connection\> | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#status" }` |
+| String | HueSyncBox_Device_hdmi_out_Mode   | "Mode - Output"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesyncbox:HueSyncBox:device-hdmi-out#mode" }`   |
 
 </details>
 
