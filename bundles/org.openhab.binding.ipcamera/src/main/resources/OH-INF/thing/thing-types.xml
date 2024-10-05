@@ -2321,10 +2321,11 @@
 			<channel id="enableFTP" typeId="enableFTP"/>
 			<channel id="enableEmail" typeId="enableEmail"/>
 			<channel id="enablePush" typeId="enablePush"/>
+			<channel id="autoTracking" typeId="autoTracking"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -3073,5 +3074,11 @@
 				<option value="25">Preset 25</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="autoTracking" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Auto Tracking</label>
+		<description>Turn the automatic mode for tracking ON or OFF.</description>
 	</channel-type>
 </thing:thing-descriptions>

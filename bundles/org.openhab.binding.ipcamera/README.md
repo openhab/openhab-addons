@@ -220,6 +220,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `animalAlarm`               | Switch | RW | Toggles when an animal is in view. |
 | `audioAlarm`                | Switch | R  | When the camera detects noise above a threshold this switch will move to ON. |
 | `autoLED`                    | Switch | RW |When ON this sets a cameras IR LED to automatically turn on or off. |
+| `autoTracking`              | Switch | RW |Turn the automatic mode for tracking ON or OFF. |
 | `autoWhiteLED`              | Switch | RW |When ON this sets a cameras visible white LED to automatically turn on or off. |
 | `carAlarm`                   | Switch | RW | When a car is detected the switch will turn ON. |
 | `cellMotionAlarm`           | Switch | R | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
