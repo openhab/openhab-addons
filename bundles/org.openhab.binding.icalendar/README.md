@@ -26,6 +26,7 @@ Each `calendar` thing requires the following configuration parameters:
 | `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`.                                                | optional                      |
 | `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
+| `userAgent`         | Some providers require a specific user agent header. If left empty, the default Jetty header is used.                                                                                     | optional                      |
 
 ### Configuration for `eventfilter`
 
