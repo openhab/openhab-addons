@@ -58,7 +58,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Steven Schwarznau - Initial contribution
  * @author Erwin Guib - added more channels, added some convenience methods to reduce code duplication
- * @author Lukas Pindl - Update for writing to safeChargeMode
+ * @author Lukas Pindl - Update for writing to chargeMode
  */
 @NonNullByDefault
 public class SenecHomeHandler extends BaseThingHandler {
@@ -361,7 +361,6 @@ public class SenecHomeHandler extends BaseThingHandler {
     protected void updateDecimalState(String channelName, String senecValue) {
         Channel channel = getThing().getChannel(channelName);
         if (channel != null) {
-
             BigDecimal value = getSenecValue(senecValue);
             updateState(channel.getUID(), new DecimalType(value.intValue()));
         }

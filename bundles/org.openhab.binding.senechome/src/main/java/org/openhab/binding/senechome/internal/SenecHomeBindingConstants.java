@@ -20,7 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Steven Schwarznau - Initial contribution
- * @author Lukas Pindl - Update for writing to safeChargeMode
+ * @author Lukas Pindl - Update for writing to chargeMode
  */
 @NonNullByDefault
 public class SenecHomeBindingConstants {

@@ -76,8 +76,7 @@ public class SenecHomeApi {
 
         String dataToSend = gson.toJson(new SenecHomeResponse());
         ContentResponse response = postRequest(dataToSend);
-        String responseString = response.getContentAsString();
-        return Objects.requireNonNull(gson.fromJson(responseString, SenecHomeResponse.class));
+        return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
     }
 
     /**
