@@ -78,12 +78,7 @@ public class PushbulletHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("About to handle {} on {}", command, channelUID);
-
-        // Future improvement: If recipient is already set, send a push on a command channel change
-        // check reconnect channel of the unifi binding for that
-
-        logger.debug("The Pushbullet binding is a read-only binding and cannot handle command '{}'.", command);
+        // do nothing
     }
 
     @Override

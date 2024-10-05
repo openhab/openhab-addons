@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pushbullet.internal;
 
+import static org.openhab.binding.pushbullet.internal.PushbulletBindingConstants.*;
+
 import java.time.Instant;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -49,11 +51,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class PushbulletHttpClient {
-    private static final String AGENT = "openHAB/" + OpenHAB.getVersion();
+
+    private static final String USER_AGENT = "openHAB/" + OpenHAB.getVersion();
 
     private static final int TIMEOUT = 30; // in seconds
-
-    private static final String HEADER_RATELIMIT_RESET = "X-Ratelimit-Reset";
 
     private final Logger logger = LoggerFactory.getLogger(PushbulletHttpClient.class);
 
@@ -95,7 +96,7 @@ public class PushbulletHttpClient {
      */
     public <T> T executeRequest(String apiEndpoint, @Nullable Object body, Class<T> responseType)
             throws PushbulletApiException {
-        String url = config.getApiUrlBase() + apiEndpoint;
+        String url = API_BASE_URL + apiEndpoint;
         String accessToken = config.getAccessToken();
 
         Request request = newRequest(url).header("Access-Token", accessToken);
@@ -142,7 +143,7 @@ public class PushbulletHttpClient {
      * @return the new Request object with default parameters
      */
     private Request newRequest(String url) {
-        return httpClient.newRequest(url).agent(AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
+        return httpClient.newRequest(url).agent(USER_AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
     }
 
     /**
