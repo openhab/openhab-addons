@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -41,6 +42,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureCollection;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperties;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -57,6 +60,9 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +104,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
     public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
     /**
      * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
      * When run, if requests the run-time of the next one is calculated and scheduled.
@@ -112,9 +122,13 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
     private volatile long lastHourlyForecastPoll = -1;
 
-    public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider) {
+    public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super(thing);
         this.httpClientProvider = httpClientProvider;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
     }
 
     @Override
@@ -124,6 +138,11 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         cancelDataRequiredCheck();
         cancelScheduleDailyDataPoll(true);
         super.dispose();
+    }
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {
@@ -440,7 +459,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         if (resp.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             // Remove this once the status is updated accordingly
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check siteSpecificApiKey is correct in bridge - authentication failure");
+                    getLocalizedText("bridge.error.site-specific.auth-issue"));
             authFailed = true;
         }
     }
@@ -459,7 +478,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         MetOfficeDataHubBridgeHandler uplinkBridge = getMetOfficeDataHubBridge();
         if (uplinkBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Disabled requesting data - this things Bridge is not set");
+                    getLocalizedText("site.error.no-bridge"));
             return;
         }
 
@@ -560,7 +579,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         String[] coordinates = config.location.split(",");
         if (coordinates.length != 2) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check location has been entered in the format <latitude>,<longitude>");
+                    getLocalizedText("site.error.config"));
             return;
         }
         String latitude = coordinates[0].trim();
@@ -571,15 +590,16 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                 trueVal = Double.parseDouble(latitude);
                 if (trueVal > 85 || trueVal < -85) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Check latitude is between -85 / +85");
+                            getLocalizedText("site.error.lat"));
                 }
                 this.latitude = latitude;
             } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Check latitude has been entered as a number");
+                        getLocalizedText("site.error.lat-type"));
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Check latitude has been entered");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    getLocalizedText("site.error.lat-missing"));
         }
 
         String longitude = coordinates[1].trim();
@@ -590,16 +610,16 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                 trueVal = Double.parseDouble(longitude);
                 if (trueVal > 180 || trueVal < -180) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Check longitude is between -180 / +180");
+                            getLocalizedText("site.error.long"));
                 }
                 this.longitude = longitude;
             } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Check longitude has been entered as a number");
+                        getLocalizedText("site.error.long-type"));
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check longitude has been entered");
+                    getLocalizedText("site.error.long-missing"));
         }
 
         // In case of errors - fail fast and set the device to be offline

@@ -19,6 +19,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -45,10 +47,16 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
 
     private final HttpClientFactory httpClientFactory;
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+
     @Activate
-    public MetOfficeDataHubHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public MetOfficeDataHubHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super();
         this.httpClientFactory = httpClientFactory;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new MetOfficeDataHubBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_SITE_SPEC_API.equals(thingTypeUID)) {
-            return new MetOfficeDataHubSiteApiHandler(thing, this);
+            return new MetOfficeDataHubSiteApiHandler(thing, this, translationProvider, localeProvider);
         }
 
         return null;
