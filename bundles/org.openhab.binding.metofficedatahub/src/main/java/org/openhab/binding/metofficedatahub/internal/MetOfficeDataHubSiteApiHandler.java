@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
@@ -77,50 +76,43 @@ import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
 @NonNullByDefault
 public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements IForecastDataPollable {
 
-    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
-
-    private IHttpClientProvider httpClientProvider;
-
-    private boolean requiresDailyData = false;
-
-    private boolean requiresHourlyData = false;
-
-    private volatile boolean authFailed = false;
-
-    private volatile MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
-            MetOfficeDataHubSiteApiConfiguration.class);
-
-    private volatile String lastDailyResponse = "";
-    private volatile String lastHourlyResponse = "";
-
-    private String latitude = "";
-    private String longitude = "";
-
-    private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
-    private final Object checkDataRequiredSchedulerLock = new Object();
-
-    private @Nullable ScheduledFuture<?> dailyScheduler = null;
-    private final Object checkDailySchedulerLock = new Object();
-
     public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
 
+    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
+    private final Object checkDataRequiredSchedulerLock = new Object();
+    private final Object checkDailySchedulerLock = new Object();
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+
+    private IHttpClientProvider httpClientProvider;
+    private boolean requiresDailyData = false;
+    private boolean requiresHourlyData = false;
+
+    private volatile MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
+            MetOfficeDataHubSiteApiConfiguration.class);
+    private volatile boolean authFailed = false;
+    private volatile String lastDailyResponse = "";
+    private volatile String lastHourlyResponse = "";
+    private volatile long lastDailyForecastPoll = -1;
+    private volatile long lastHourlyForecastPoll = -1;
+
+    private String latitude = "";
+    private String longitude = "";
+    private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
+    private @Nullable ScheduledFuture<?> dailyScheduler = null;
 
     /**
      * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
      * When run, if requests the run-time of the next one is calculated and scheduled.
      */
     MetOfficeDelayedExecutor dailyForecastJob = new MetOfficeDelayedExecutor(scheduler);
-    private volatile long lastDailyForecastPoll = -1;
 
     /**
      * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
      * When run, if requests the run-time of the next one is calculated and scheduled.
      */
     MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
-    private volatile long lastHourlyForecastPoll = -1;
 
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
@@ -155,10 +147,9 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
     private void checkDataRequired() {
         final List<@Nullable String> activeGroups = getThing().getChannels().stream().filter(x -> isLinked(x.getUID()))
-                .map(x -> x.getUID().getGroupId()).distinct().collect(Collectors.toList());
+                .map(x -> x.getUID().getGroupId()).distinct().toList();
 
-        if (activeGroups.stream().filter(g -> g != null && g.startsWith(GROUP_PREFIX_DAILY_FORECAST)).findFirst()
-                .isPresent()) {
+        if (activeGroups.stream().anyMatch(g -> g != null && g.startsWith(GROUP_PREFIX_DAILY_FORECAST))) {
             boolean repollRequired = !requiresDailyData;
             if (!requiresDailyData) {
                 logger.trace("Daily data poll potentially required if older than required poll window");
@@ -173,8 +164,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             requiresDailyData = false;
         }
 
-        if (activeGroups.stream().filter(g -> g != null && g.startsWith(GROUP_PREFIX_HOURS_FORECAST)).findFirst()
-                .isPresent()) {
+        if (activeGroups.stream().anyMatch(g -> g != null && g.startsWith(GROUP_PREFIX_HOURS_FORECAST))) {
             boolean repollRequired = !requiresHourlyData;
             if (!requiresHourlyData) {
                 logger.trace("Hourly data poll potentially required if older than required poll window");
@@ -631,17 +621,11 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
          * Setup the initial device's status
          */
         scheduler.execute(() -> {
-            boolean thingReachable = true;
-            // when done do:
-            if (thingReachable) {
-                scheduler.execute(() -> {
-                    updateStatus(ThingStatus.ONLINE);
-                    checkDataRequired();
-                    reconfigurePolling();
-                });
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            scheduler.execute(() -> {
+                updateStatus(ThingStatus.ONLINE);
+                checkDataRequired();
+                reconfigurePolling();
+            });
         });
     }
 

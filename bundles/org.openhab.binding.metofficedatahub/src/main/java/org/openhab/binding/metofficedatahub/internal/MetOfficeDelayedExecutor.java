@@ -39,9 +39,7 @@ public class MetOfficeDelayedExecutor {
     public void scheduleExecution(final long initialDelay, final Runnable task) {
         synchronized (scheduledFutureRefLock) {
             cancelScheduledTask(true);
-            scheduledFutureRef = scheduler.schedule(() -> {
-                task.run();
-            }, initialDelay, TimeUnit.MILLISECONDS);
+            scheduledFutureRef = scheduler.schedule(task, initialDelay, TimeUnit.MILLISECONDS);
         }
     }
 

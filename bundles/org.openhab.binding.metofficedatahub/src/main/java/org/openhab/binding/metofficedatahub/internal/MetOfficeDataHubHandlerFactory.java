@@ -46,7 +46,6 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
             THING_TYPE_SITE_SPEC_API);
 
     private final HttpClientFactory httpClientFactory;
-
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
 

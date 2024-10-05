@@ -45,14 +45,17 @@ import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
 public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
-
+    private final Object timerResetSchedulerLock = new Object();
     protected final RequestLimiter forecastDataLimiter = new RequestLimiter();
 
     private volatile MetOfficeDataHubBridgeConfiguration config = getConfigAs(
             MetOfficeDataHubBridgeConfiguration.class);
 
     private @Nullable ScheduledFuture<?> timerResetScheduler = null;
-    private final Object timerResetSchedulerLock = new Object();
+
+    protected String getApiKey() {
+        return config.siteSpecificApiKey;
+    }
 
     public MetOfficeDataHubBridgeHandler(final Bridge bridge) {
         super(bridge);
@@ -62,10 +65,6 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         final Map<String, String> newProps = new HashMap<>();
         newProps.put(BRIDGE_PROP_FORECAST_REQUEST_COUNT, String.valueOf(forecastDataLimiter.getCurrentRequestCount()));
         this.updateProperties(newProps);
-    }
-
-    protected String getApiKey() {
-        return config.siteSpecificApiKey;
     }
 
     private static long getMillisUntilMidnight() {
