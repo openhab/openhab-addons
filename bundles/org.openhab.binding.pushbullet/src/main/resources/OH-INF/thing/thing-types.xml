@@ -8,6 +8,10 @@
 		<label>Pushbullet Bot</label>
 		<description>Bot to send messages with.</description>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="token" type="text" required="true">
 				<label>Access Token</label>
