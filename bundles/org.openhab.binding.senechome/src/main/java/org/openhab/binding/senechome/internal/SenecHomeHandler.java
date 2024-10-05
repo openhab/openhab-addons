@@ -58,6 +58,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Steven Schwarznau - Initial contribution
  * @author Erwin Guib - added more channels, added some convenience methods to reduce code duplication
+ * @author Lukas Pindl - Update for writing to chargeMode
  */
 @NonNullByDefault
 public class SenecHomeHandler extends BaseThingHandler {
@@ -101,7 +102,32 @@ public class SenecHomeHandler extends BaseThingHandler {
             logger.debug("Refreshing {}", channelUID);
             refresh();
         } else {
-            logger.trace("The SenecHome-Binding is a read-only binding and can not handle commands");
+            String channelID = channelUID.getId();
+
+            logger.trace("Channel: {}", channelID);
+            switch (channelID) {
+                case CHANNEL_SENEC_CHARGE_MODE: {
+                    if (command instanceof StringType stringCommand) {
+                        logger.trace("Command: {} ", stringCommand.toString());
+                        if (stringCommand.toString().equals(STATE_SENEC_CHARGE_MODE_OFF)) {
+                            senecHomeApi.setValue("ENERGY", "SAFE_CHARGE_PROHIBIT", "u8_01");
+                            senecHomeApi.setValue("ENERGY", "LI_STORAGE_MODE_STOP", "u8_01");
+                        } else if (stringCommand.toString().equals(STATE_SENEC_CHARGE_MODE_CHARGE)) {
+                            senecHomeApi.setValue("ENERGY", "SAFE_CHARGE_FORCE", "u8_01");
+                            senecHomeApi.setValue("ENERGY", "LI_STORAGE_MODE_STOP", "u8_01");
+                        } else if (stringCommand.toString().equals(STATE_SENEC_CHARGE_MODE_STORAGE)) {
+                            senecHomeApi.setValue("ENERGY", "SAFE_CHARGE_PROHIBIT", "u8_01");
+                            senecHomeApi.setValue("ENERGY", "LI_STORAGE_MODE_START", "u8_01");
+                        }
+                        updateState(channelUID, stringCommand);
+                    }
+                    break;
+                }
+                default: {
+                    logger.warn("Received command on unexpected channel: {}", channelID);
+                    break;
+                }
+            }
         }
     }
 
@@ -186,6 +212,9 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateQtyState(CHANNEL_SENEC_BATTERY_POWER, response.energy.batteryPower, 2, Units.WATT);
             updateQtyState(CHANNEL_SENEC_BATTERY_CURRENT, response.energy.batteryCurrent, 2, Units.AMPERE);
             updateQtyState(CHANNEL_SENEC_BATTERY_VOLTAGE, response.energy.batteryVoltage, 2, Units.VOLT);
+
+            updateChargeState(CHANNEL_SENEC_CHARGE_MODE, response.energy.safeChargeMode, response.energy.liStorageMode);
+
             updateStringStateFromInt(CHANNEL_SENEC_SYSTEM_STATE, response.energy.systemState,
                     SenecSystemStatus::descriptionFromCode);
             updateDecimalState(CHANNEL_SENEC_SYSTEM_STATE_VALUE, response.energy.systemState);
@@ -314,11 +343,34 @@ public class SenecHomeHandler extends BaseThingHandler {
         }
     }
 
+    protected void updateChargeState(String channelName, String senecValueCharge, String senecValueStorage) {
+        Channel channel = getThing().getChannel(channelName);
+        if (channel != null) {
+            BigDecimal valueCharge = getSenecValue(senecValueCharge);
+            BigDecimal valueStorage = getSenecValue(senecValueStorage);
+            if (valueStorage.intValue() == 1) {
+                updateState(channel.getUID(), new StringType(STATE_SENEC_CHARGE_MODE_STORAGE));
+            } else if (valueCharge.intValue() == 1) {
+                updateState(channel.getUID(), new StringType(STATE_SENEC_CHARGE_MODE_CHARGE));
+            } else {
+                updateState(channel.getUID(), new StringType(STATE_SENEC_CHARGE_MODE_OFF));
+            }
+        }
+    }
+
     protected void updateDecimalState(String channelName, String senecValue) {
         Channel channel = getThing().getChannel(channelName);
         if (channel != null) {
             BigDecimal value = getSenecValue(senecValue);
             updateState(channel.getUID(), new DecimalType(value.intValue()));
+        }
+    }
+
+    protected void updateSwitchState(String channelName, String senecValue) {
+        Channel channel = getThing().getChannel(channelName);
+        if (channel != null) {
+            BigDecimal value = getSenecValue(senecValue);
+            updateState(channel.getUID(), OnOffType.from(value.intValue() == 1));
         }
     }
 

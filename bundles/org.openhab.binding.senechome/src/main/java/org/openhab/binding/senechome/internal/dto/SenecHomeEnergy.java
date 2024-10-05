@@ -23,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * Section is "ENERGY"
  *
  * @author Steven Schwarznau - Initial Contribution
+ * @author Lukas Pindl - Update for writing to safeChargeMode
  */
 public class SenecHomeEnergy implements Serializable {
 
@@ -64,11 +65,21 @@ public class SenecHomeEnergy implements Serializable {
      */
     public @SerializedName("STAT_STATE") String systemState;
 
+    /**
+     * Safe Charge Mode Running.
+     */
+    public @SerializedName("SAFE_CHARGE_RUNNING") String safeChargeMode;
+
+    /**
+     * Lithium Storage Mode Running.
+     */
+    public @SerializedName("LI_STORAGE_MODE_RUNNING") String liStorageMode;
+
     @Override
     public String toString() {
         return "SenecHomeEnergy [housePowerConsumption=" + housePowerConsumption + ", inverterPowerGeneration="
                 + inverterPowerGeneration + ", batteryPower=" + batteryPower + ", batteryVoltage=" + batteryVoltage
                 + ", batteryCurrent=" + batteryCurrent + ", batteryFuelCharge=" + batteryFuelCharge + ", systemState="
-                + systemState + "]";
+                + systemState + ", safeChargeMode=" + safeChargeMode + ", liStorageMode=" + liStorageMode + "]";
     }
 }
