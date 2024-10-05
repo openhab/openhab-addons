@@ -18,6 +18,8 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -91,9 +93,10 @@ public class SecurityApi extends RestManager {
             }
         }
 
-        // Remove unneeded events being before freshestEventTime
+        // Remove potential duplicates then unneeded events being before freshestEventTime
         return events.stream().filter(event -> event.getTime().isAfter(freshestEventTime))
-                .sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
+                .collect(Collectors.toConcurrentMap(HomeEvent::getId, Function.identity(), (p, q) -> p)).values()
+                .stream().sorted(Comparator.comparing(HomeEvent::getTime).reversed()).toList();
     }
 
     public List<HomeEvent> getPersonEvents(String homeId, String personId) throws NetatmoException {
