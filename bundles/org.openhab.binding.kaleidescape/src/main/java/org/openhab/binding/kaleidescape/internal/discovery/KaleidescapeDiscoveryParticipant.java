@@ -20,10 +20,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.config.discovery.sddp.SddpDevice;
+import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -31,14 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KaleidescapeDiscoveryParticipant} class discovers Strato/Encore line components automatically via UPnP.
+ * The {@link KaleidescapeDiscoveryParticipant} class discovers Strato/Encore line components automatically via SDDP.
  *
  * @author Michael Lobstein - Initial contribution
  *
  */
 @NonNullByDefault
 @Component(immediate = true)
-public class KaleidescapeDiscoveryParticipant implements UpnpDiscoveryParticipant {
+public class KaleidescapeDiscoveryParticipant implements SddpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryParticipant.class);
 
     private static final String MANUFACTURER = "Kaleidescape";
@@ -53,26 +53,19 @@ public class KaleidescapeDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     @Override
-    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(SddpDevice device) {
         final ThingUID uid = getThingUID(device);
         if (uid != null) {
             final Map<String, Object> properties = new HashMap<>(3);
-            final String label;
-
-            if (device.getDetails().getFriendlyName() != null && !device.getDetails().getFriendlyName().isBlank()) {
-                label = device.getDetails().getFriendlyName();
-            } else {
-                label = device.getDetails().getModelDetails().getModelName();
-            }
 
             properties.put(PROPERTY_UUID, uid.getId());
-            properties.put(PROPERTY_HOST_NAME, device.getIdentity().getDescriptorURL().getHost());
+            properties.put(PROPERTY_HOST_NAME, device.ipAddress);
             properties.put(PROPERTY_PORT_NUM, DEFAULT_API_PORT);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withRepresentationProperty(PROPERTY_UUID).withLabel(label).build();
+                    .withRepresentationProperty(PROPERTY_UUID).withLabel(device.model).build();
 
-            logger.debug("Created a DiscoveryResult for device '{}' with UID '{}'", label, uid.getId());
+            logger.debug("Created a DiscoveryResult for device '{}' with UID '{}'", device.model, uid.getId());
             return result;
         } else {
             return null;
@@ -80,24 +73,20 @@ public class KaleidescapeDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     @Override
-    public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        if (device.getDetails().getManufacturerDetails().getManufacturer() != null
-                && device.getDetails().getModelDetails().getModelName() != null
-                && device.getDetails().getManufacturerDetails().getManufacturer().startsWith(MANUFACTURER)) {
-            final String modelName = device.getDetails().getModelDetails().getModelName();
-            final String id = device.getIdentity().getUdn().getIdentifierString().replace(":", EMPTY);
+    public @Nullable ThingUID getThingUID(SddpDevice device) {
+        if (device.manufacturer.startsWith(MANUFACTURER)) {
+            final String id = device.macAddress;
 
-            logger.debug("Kaleidescape {} with id {} found at {}", modelName, id,
-                    device.getIdentity().getDescriptorURL().getHost());
+            logger.debug("Kaleidescape {} with id {} found at {}", device.model, id, device.host);
 
             if (id.isBlank()) {
                 logger.debug("Invalid UDN for Kaleidescape device: {}", device.toString());
                 return null;
             }
 
-            if (modelName.contains(ALTO)) {
+            if (device.model.contains(ALTO)) {
                 return new ThingUID(THING_TYPE_ALTO, id);
-            } else if (modelName.contains(STRATO)) {
+            } else if (device.model.contains(STRATO)) {
                 return new ThingUID(THING_TYPE_STRATO, id);
             }
         }
