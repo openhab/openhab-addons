@@ -96,6 +96,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private @Nullable ScheduledFuture<?> dailyScheduler = null;
     private final Object checkDailySchedulerLock = new Object();
 
+    public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
+
     /**
      * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
      * When run, if requests the run-time of the next one is calculated and scheduled.
@@ -638,12 +640,12 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         logger.trace("Last hourly poll expected time should have been : {}",
-                cvDate.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.SSS")));
+                cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
         LocalDateTime cvDate2 = Instant.ofEpochMilli(lastHourlyForecastPoll).atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         logger.trace("Last hourly daily poll time should have been : {}",
-                cvDate2.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.SSS")));
+                cvDate2.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
         // Poll if a poll hasn't been done before, or if the previous poll was before what would be now the new
         // poll intervals last poll time then a poll should be run now.
@@ -671,12 +673,12 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         logger.trace("Last daily poll expected time should have been : {}",
-                cvDate.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.SSS")));
+                cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
         LocalDateTime cvDate2 = Instant.ofEpochMilli(lastDailyForecastPoll).atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
         logger.trace("Last daily poll time should have been : {}",
-                cvDate2.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.SSS")));
+                cvDate2.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
         // Poll if a poll hasn't been done before, or if the previous poll was before what would be now the new
         // poll intervals last poll time then a poll should be run now.
@@ -796,7 +798,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
     private String millisToLocalDateTime(final long milliseconds) {
         LocalDateTime cvDate = Instant.ofEpochMilli(milliseconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
-        return cvDate.format(DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss.SSS"));
+        return cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT));
     }
 
     private void cancelScheduleDailyDataPoll(final boolean allowInterrupt) {
