@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
-import javax.ws.rs.HttpMethod;
+import org.eclipse.jetty.http.HttpMethod;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link VeSyncRequestV1Command} is the Java class as a DTO to define the base implementation of a V1 command for
- * the Vesync
- * API.
+ * the Vesync API.
  *
  * @author David Goodyear - Initial contribution
  */

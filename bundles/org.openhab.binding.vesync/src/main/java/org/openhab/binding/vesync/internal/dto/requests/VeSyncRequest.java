@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.dto.requests;
 
-import javax.ws.rs.HttpMethod;
+import org.eclipse.jetty.http.HttpMethod;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VeSyncRequest {
 
-    public transient String httpMethod;
+    public transient HttpMethod httpMethod;
 
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
