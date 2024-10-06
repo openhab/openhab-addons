@@ -72,9 +72,9 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (VeSyncDeviceAirPurifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new VeSyncDeviceAirPurifierHandler(thing);
+            return new VeSyncDeviceAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new VeSyncDeviceAirHumidifierHandler(thing);
+            return new VeSyncDeviceAirHumidifierHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new VeSyncBridgeHandler((Bridge) thing, this, translationProvider, localeProvider);
         }

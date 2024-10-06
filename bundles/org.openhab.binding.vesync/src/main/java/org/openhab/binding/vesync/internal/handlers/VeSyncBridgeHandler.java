@@ -68,19 +68,18 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     private static final int DEFAULT_DEVICE_SCAN_RECOVERY_INTERVAL = 60;
     private static final int DEFAULT_DEVICE_SCAN_DISABLED = -1;
 
-    private final Logger logger = LoggerFactory.getLogger(VeSyncBridgeHandler.class);
-
-    private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
+    private volatile int backgroundScanTime = -1;
 
     protected final VeSyncV2ApiHelper api = new VeSyncV2ApiHelper();
-    private IHttpClientProvider httpClientProvider;
-
-    private volatile int backgroundScanTime = -1;
+    private final Logger logger = LoggerFactory.getLogger(VeSyncBridgeHandler.class);
     private final Object scanConfigLock = new Object();
 
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+
+    private @Nullable ScheduledFuture<?> backgroundDiscoveryPollingJob;
+    private IHttpClientProvider httpClientProvider;
 
     public VeSyncBridgeHandler(Bridge bridge, @NotNull IHttpClientProvider httpClientProvider,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {

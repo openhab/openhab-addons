@@ -40,6 +40,8 @@ import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2BypassPurifierS
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncV2Ver2BypassPurifierStatus;
 import org.openhab.binding.vesync.internal.dto.responses.v1.VeSyncV1AirPurifierDeviceDetailsResponse;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -53,6 +55,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,8 +135,9 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     private final Object pollLock = new Object();
 
-    public VeSyncDeviceAirPurifierHandler(Thing thing) {
-        super(thing);
+    public VeSyncDeviceAirPurifierHandler(Thing thing, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        super(thing, translationProvider, localeProvider);
     }
 
     @Override
@@ -218,7 +222,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
         final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_PURIFIER_MAP.get(deviceFamily);
         if (devContraints == null) {
-            logger.warn("Could not find device family for {} during handleCommand", deviceFamily);
+            logger.warn("{}", getLocalizedText("warning.device.command-device-family-not-found", deviceFamily));
             return;
         }
 
@@ -292,8 +296,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                         final String targetFanMode = command.toString().toLowerCase();
 
                         if (!devContraints.isFanModeSupported(targetFanMode)) {
-                            logger.warn("Fan mode command for \"{}\" is not valid in the ({}) API possible options {}",
-                                    command, devContraints.deviceFamilyName, String.join(",", devContraints.fanModes));
+                            logger.warn("{}", getLocalizedText("warning.device.fan-mode-invalid", command,
+                                    devContraints.deviceFamilyName, String.join(",", devContraints.fanModes)));
                             pollForUpdate();
                             return;
                         }
@@ -315,10 +319,8 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                     case DEVICE_CHANNEL_AF_NIGHT_LIGHT:
                         final String targetNightLightMode = command.toString().toLowerCase();
                         if (!devContraints.isNightLightModeSupported(targetNightLightMode)) {
-                            logger.warn(
-                                    "Night light mode command for \"{}\" is not valid in the ({}) API possible options {}",
-                                    command, devContraints.deviceFamilyName,
-                                    String.join(",", devContraints.nightLightModes));
+                            logger.warn("{}", getLocalizedText("warning.device.night-light-invalid", command,
+                                    devContraints.deviceFamilyName, String.join(",", devContraints.nightLightModes)));
                             pollForUpdate();
                             return;
                         }
@@ -331,9 +333,10 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                     case DEVICE_CHANNEL_FAN_SPEED_ENABLED:
                         int requestedLevel = ((QuantityType<?>) command).intValue();
                         if (!devContraints.isFanSpeedSupported(requestedLevel)) {
-                            logger.warn("Fan speed command for \"{}\" is not valid ({}) API possible options {} -> {}",
-                                    command, devContraints.deviceFamilyName, String.valueOf(devContraints.minFanSpeed),
-                                    String.valueOf(devContraints.maxFanSpeed));
+                            logger.warn("{}",
+                                    getLocalizedText("warning.device.fan-speed-invalid", command,
+                                            devContraints.deviceFamilyName, String.valueOf(devContraints.minFanSpeed),
+                                            String.valueOf(devContraints.maxFanSpeed)));
                             requestedLevel = requestedLevel < devContraints.minFanSpeed ? devContraints.minFanSpeed
                                     : devContraints.maxFanSpeed;
                         }
@@ -426,7 +429,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         }
 
         if (!"0".equals(purifierStatus.getCode())) {
-            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Purifier");
+            logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-purifier"));
             return;
         }
 
@@ -445,7 +448,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
         final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_PURIFIER_MAP.get(deviceFamily);
         if (devContraints == null) {
-            logger.warn("Could not find device family for {} during handleCommand", deviceFamily);
+            logger.warn("{}", getLocalizedText("warning.device.command-device-family-not-found", deviceFamily));
             return;
         }
 
@@ -499,7 +502,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     private void parseV2Ver1Poll(final VeSyncV2BypassPurifierStatus purifierStatus) {
         if (!"0".equals(purifierStatus.result.getCode())) {
-            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Purifier");
+            logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-purifier"));
             return;
         }
 
@@ -541,7 +544,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     private void parseV2Ver2Poll(final VeSyncV2Ver2BypassPurifierStatus purifierStatus) {
         if (!"0".equals(purifierStatus.result.getCode())) {
-            logger.warn("Check Thing type has been set - API gave a unexpected response for an Air Purifier");
+            logger.warn("{}", getLocalizedText("warning.device.unexpected-resp-for-air-purifier"));
             return;
         }
 
