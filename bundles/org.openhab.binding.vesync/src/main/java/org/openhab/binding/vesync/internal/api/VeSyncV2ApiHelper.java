@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncLoginCredentials;
@@ -58,7 +59,7 @@ public class VeSyncV2ApiHelper {
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncV2ApiHelper.class);
 
-    private final int RESPONSE_TIMEOUT_SEC = 5;
+    private static final int RESPONSE_TIMEOUT_SEC = 5;
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
 
@@ -169,7 +170,8 @@ public class VeSyncV2ApiHelper {
     private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
-            Request request = httpClient.newRequest(url).method(requestData.httpMethod);
+            Request request = httpClient.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
+                    TimeUnit.SECONDS);
 
             // No headers for login
             request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(requestData)));
@@ -179,7 +181,7 @@ public class VeSyncV2ApiHelper {
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
-            ContentResponse response = request.timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            ContentResponse response = request.send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 VeSyncResponse commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
                         VeSyncResponse.class);
@@ -223,7 +225,8 @@ public class VeSyncV2ApiHelper {
     private VeSyncLoginResponse processLogin(String username, String password, String timezone)
             throws AuthenticationException {
         try {
-            Request request = httpClient.POST(V1_LOGIN_ENDPOINT);
+            Request request = httpClient.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST)
+                    .timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
 
             // No headers for login
             request.content(new StringContentProvider(
@@ -231,7 +234,7 @@ public class VeSyncV2ApiHelper {
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
-            ContentResponse response = request.timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            ContentResponse response = request.send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 VeSyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
                         VeSyncLoginResponse.class);
