@@ -89,7 +89,7 @@ public class VeSyncV2Ver2BypassPurifierStatus extends VeSyncResponse {
             }
 
             @SerializedName("PM25")
-            public int PM25;
+            public int pm25;
 
             @SerializedName("timerRemain")
             public int timerRemain;

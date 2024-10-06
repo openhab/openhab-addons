@@ -154,11 +154,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             @Nullable
             VeSyncManagedDeviceBase metadata = veSyncBridgeHandler.api.getMacLookupMap().get(deviceLookupKey);
 
-            if (metadata == null) {
-                return false;
-            }
-
-            return ("online".equals(metadata.connectionStatus));
+            return !(metadata == null) || "online".equals(metadata.connectionStatus);
         }
         return false;
     }

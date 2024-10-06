@@ -112,7 +112,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
     public static final VeSyncDevicePurifierMetadata PUR131S = new VeSyncDevicePurifierMetadata(1, DEV_FAMILY_PUR_131S,
             Collections.emptyList(), Arrays.asList("LV-PUR131S", "LV-RH131S"), FAN_MODES_NO_PET, 1, 3, NO_NIGHT_LIGHTS);
 
-    public static final Map<String, VeSyncDevicePurifierMetadata> DEV_FAMILY_HUMIDIFER_MAP = new HashMap<String, VeSyncDevicePurifierMetadata>() {
+    public static final Map<String, VeSyncDevicePurifierMetadata> DEV_FAMILY_PURIFIER_MAP = new HashMap<String, VeSyncDevicePurifierMetadata>() {
         {
             put(PUR131S.deviceFamilyName, PUR131S);
             put(CORE200S.deviceFamilyName, CORE200S);
@@ -123,7 +123,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
             put(VITAL200S.deviceFamilyName, VITAL200S);
         }
     };
-    public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = DEV_FAMILY_HUMIDIFER_MAP.values().stream()
+    public static final List<VeSyncDeviceMetadata> SUPPORTED_MODEL_FAMILIES = DEV_FAMILY_PURIFIER_MAP.values().stream()
             .collect(Collectors.toList());
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncDeviceAirPurifierHandler.class);
@@ -216,7 +216,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
         if (deviceUuid == null) {
             return;
         }
-        final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_HUMIDIFER_MAP.get(deviceFamily);
+        final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_PURIFIER_MAP.get(deviceFamily);
         if (devContraints == null) {
             logger.warn("Could not find device family for {} during handleCommand", deviceFamily);
             return;
@@ -443,7 +443,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
     private void processV2BypassPoll(final ExpiringCache<String> cachedResponse) {
         final String deviceFamily = getThing().getProperties().get(DEVICE_PROP_DEVICE_FAMILY);
 
-        final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_HUMIDIFER_MAP.get(deviceFamily);
+        final VeSyncDevicePurifierMetadata devContraints = DEV_FAMILY_PURIFIER_MAP.get(deviceFamily);
         if (devContraints == null) {
             logger.warn("Could not find device family for {} during handleCommand", deviceFamily);
             return;
@@ -550,7 +550,7 @@ public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
                 OnOffType.from(purifierStatus.result.result.getChildLockSwitch()));
         updateState(DEVICE_CHANNEL_AIRQUALITY_BASIC, new DecimalType(purifierStatus.result.result.airQuality));
         updateState(DEVICE_CHANNEL_AIRQUALITY_PM25,
-                new QuantityType<>(purifierStatus.result.result.PM25, Units.MICROGRAM_PER_CUBICMETRE));
+                new QuantityType<>(purifierStatus.result.result.pm25, Units.MICROGRAM_PER_CUBICMETRE));
         updateState(DEVICE_CHANNEL_AIR_FILTER_LIFE_PERCENTAGE_REMAINING,
                 new QuantityType<>(purifierStatus.result.result.filterLifePercent, Units.PERCENT));
         updateState(DEVICE_CHANNEL_AF_LIGHT_DETECTION,
