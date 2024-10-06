@@ -184,7 +184,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
                 addComponent(component);
             } catch (ConfigurationException e) {
-                logger.error("Cannot restore component {}: {}", thing, e.getMessage());
+                logger.warn("Cannot restore component {}: {}", thing, e.getMessage());
             }
         }
         if (updateThingType(typeID)) {
