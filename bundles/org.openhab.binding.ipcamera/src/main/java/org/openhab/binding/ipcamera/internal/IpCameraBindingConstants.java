@@ -148,6 +148,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_ENABLE_EMAIL = "enableEmail";
     public static final String CHANNEL_ENABLE_PUSH = "enablePush";
     public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
+    public static final String CHANNEL_AUTO_TRACKING = "autoTracking";
     public static final String CHANNEL_ACCEPTED_CARD_NUMBER = "acceptedCardNumber";
     public static final String CHANNEL_UNACCEPTED_CARD_NUMBER = "unacceptedCardNumber";
     public static final String CHANNEL_DOOR_UNLOCK = "doorUnlock";
