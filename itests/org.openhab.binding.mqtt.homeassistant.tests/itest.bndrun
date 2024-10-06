@@ -122,12 +122,13 @@ Import-Package: \
 	com.fasterxml.jackson.core.jackson-core;version='[2.17.1,2.17.2)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.17.1,2.17.2)',\
 	com.fasterxml.jackson.dataformat.jackson-dataformat-yaml;version='[2.17.1,2.17.2)',\
-	com.google.guava;version='[33.2.0,33.2.1)',\
 	com.google.guava.failureaccess;version='[1.0.2,1.0.3)',\
 	com.google.re2j.re2j;version='[1.2.0,1.2.1)',\
 	com.hubspot.jinjava.jinjava;version='[2.7.3,2.7.4)',\
 	javassist;version='[3.29.2,3.29.3)',\
 	org.apache.commons.commons-net;version='[3.9.0,3.9.1)',\
 	org.apache.commons.lang3;version='[3.14.0,3.14.1)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
-	org.yaml.snakeyaml;version='[2.2.0,2.2.1)'
+	org.yaml.snakeyaml;version='[2.2.0,2.2.1)',\
+	com.fasterxml.jackson.datatype.jackson-datatype-jdk8;version='[2.17.1,2.17.2)',\
+	com.google.guava;version='[33.3.0,33.3.1)',\
+	com.hubspot.immutables.immutables-exceptions;version='[1.9.0,1.9.1)'
