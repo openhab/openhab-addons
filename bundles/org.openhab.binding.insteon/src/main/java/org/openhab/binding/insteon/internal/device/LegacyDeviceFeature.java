@@ -143,45 +143,45 @@ public class LegacyDeviceFeature {
     }
 
     public List<LegacyDeviceFeature> getConnectedFeatures() {
-        return (connectedFeatures);
+        return connectedFeatures;
     }
 
-    public void setStatusFeature(boolean f) {
-        isStatus = f;
+    public void setStatusFeature(boolean isStatus) {
+        this.isStatus = isStatus;
     }
 
-    public void setPollHandler(LegacyPollHandler h) {
-        pollHandler = h;
+    public void setPollHandler(LegacyPollHandler pollHandler) {
+        this.pollHandler = pollHandler;
     }
 
-    public void setDevice(LegacyDevice d) {
-        device = d;
+    public void setDevice(LegacyDevice device) {
+        this.device = device;
     }
 
-    public void setMessageDispatcher(LegacyMessageDispatcher md) {
-        dispatcher = md;
+    public void setMessageDispatcher(LegacyMessageDispatcher dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
-    public void setDefaultCommandHandler(LegacyCommandHandler ch) {
-        defaultCommandHandler = ch;
+    public void setDefaultCommandHandler(LegacyCommandHandler defaultCommandHandler) {
+        this.defaultCommandHandler = defaultCommandHandler;
     }
 
-    public void setDefaultMsgHandler(LegacyMessageHandler mh) {
-        defaultMsgHandler = mh;
+    public void setDefaultMsgHandler(LegacyMessageHandler defaultMsgHandler) {
+        this.defaultMsgHandler = defaultMsgHandler;
     }
 
-    public synchronized void setQueryStatus(QueryStatus status) {
-        logger.trace("{} set query status to: {}", name, status);
-        queryStatus = status;
+    public synchronized void setQueryStatus(QueryStatus queryStatus) {
+        logger.trace("{} set query status to: {}", name, queryStatus);
+        this.queryStatus = queryStatus;
     }
 
-    public void setTimeout(@Nullable String s) {
-        if (s != null && !s.isEmpty()) {
+    public void setTimeout(@Nullable String timeout) {
+        if (timeout != null && !timeout.isEmpty()) {
             try {
-                directAckTimeout = Integer.parseInt(s);
+                directAckTimeout = Integer.parseInt(timeout);
                 logger.trace("ack timeout set to {}", directAckTimeout);
             } catch (NumberFormatException e) {
-                logger.warn("invalid number for timeout: {}", s);
+                logger.warn("invalid number for timeout: {}", timeout);
             }
         }
     }
@@ -189,16 +189,16 @@ public class LegacyDeviceFeature {
     /**
      * Add a listener (item) to a device feature
      *
-     * @param l the listener
+     * @param listener the listener
      */
-    public void addListener(LegacyFeatureListener l) {
+    public void addListener(LegacyFeatureListener listener) {
         synchronized (listeners) {
-            for (LegacyFeatureListener m : listeners) {
-                if (m.getItemName().equals(l.getItemName())) {
+            for (LegacyFeatureListener l : listeners) {
+                if (l.getItemName().equals(listener.getItemName())) {
                     return;
                 }
             }
-            listeners.add(l);
+            listeners.add(listener);
         }
     }
 
@@ -206,18 +206,18 @@ public class LegacyDeviceFeature {
      * Adds a connected feature such that this DeviceFeature can
      * act as a feature group
      *
-     * @param f the device feature related to this feature
+     * @param feature the device feature related to this feature
      */
-    public void addConnectedFeature(LegacyDeviceFeature f) {
-        connectedFeatures.add(f);
+    public void addConnectedFeature(LegacyDeviceFeature feature) {
+        connectedFeatures.add(feature);
     }
 
     public boolean hasListeners() {
         if (!listeners.isEmpty()) {
             return true;
         }
-        for (LegacyDeviceFeature f : connectedFeatures) {
-            if (f.hasListeners()) {
+        for (LegacyDeviceFeature feature : connectedFeatures) {
+            if (feature.hasListeners()) {
                 return true;
             }
         }
@@ -227,15 +227,15 @@ public class LegacyDeviceFeature {
     /**
      * removes a DeviceFeatureListener from this feature
      *
-     * @param aItemName name of the item to remove as listener
+     * @param itemName name of the item to remove as listener
      * @return true if a listener was removed
      */
-    public boolean removeListener(String aItemName) {
+    public boolean removeListener(String itemName) {
         boolean listenerRemoved = false;
         synchronized (listeners) {
             for (Iterator<LegacyFeatureListener> it = listeners.iterator(); it.hasNext();) {
-                LegacyFeatureListener fl = it.next();
-                if (fl.getItemName().equals(aItemName)) {
+                LegacyFeatureListener listener = it.next();
+                if (listener.getItemName().equals(itemName)) {
                     it.remove();
                     listenerRemoved = true;
                 }
@@ -244,10 +244,10 @@ public class LegacyDeviceFeature {
         return listenerRemoved;
     }
 
-    public boolean isReferencedByItem(String aItemName) {
+    public boolean isReferencedByItem(String itemName) {
         synchronized (listeners) {
-            for (LegacyFeatureListener fl : listeners) {
-                if (fl.getItemName().equals(aItemName)) {
+            for (LegacyFeatureListener listener : listeners) {
+                if (listener.getItemName().equals(itemName)) {
                     return true;
                 }
             }
@@ -273,16 +273,17 @@ public class LegacyDeviceFeature {
     /**
      * Called when an openhab command arrives for this device feature
      *
-     * @param c the binding config of the item which sends the command
+     * @param config the binding config of the item which sends the command
      * @param cmd the command to be exectued
      */
-    public void handleCommand(InsteonLegacyChannelConfiguration c, Command cmd) {
+    public void handleCommand(InsteonLegacyChannelConfiguration config, Command cmd) {
         Class<? extends Command> key = cmd.getClass();
-        LegacyCommandHandler h = commandHandlers.containsKey(key) ? commandHandlers.get(key) : defaultCommandHandler;
-        if (h != null) {
-            logger.trace("{} uses {} to handle command {} for {}", getName(), h.getClass().getSimpleName(),
+        LegacyCommandHandler handler = commandHandlers.containsKey(key) ? commandHandlers.get(key)
+                : defaultCommandHandler;
+        if (handler != null) {
+            logger.trace("{} uses {} to handle command {} for {}", getName(), handler.getClass().getSimpleName(),
                     key.getSimpleName(), getDevice().getAddress());
-            h.handleCommand(c, cmd, getDevice());
+            handler.handleCommand(config, cmd, getDevice());
         }
     }
 
@@ -361,12 +362,12 @@ public class LegacyDeviceFeature {
     /**
      * Adds a command handler to this device feature
      *
-     * @param c the command for which this handler is invoked
+     * @param command the command for which this handler is invoked
      * @param handler the handler to call
      */
-    public void addCommandHandler(Class<? extends Command> c, LegacyCommandHandler handler) {
+    public void addCommandHandler(Class<? extends Command> command, LegacyCommandHandler handler) {
         synchronized (commandHandlers) {
-            commandHandlers.put(c, handler);
+            commandHandlers.put(command, handler);
         }
     }
 
@@ -386,11 +387,7 @@ public class LegacyDeviceFeature {
      */
     @Nullable
     public static LegacyDeviceFeature makeDeviceFeature(String s) {
-        LegacyDeviceFeature f = null;
-        LegacyFeatureTemplate ft = LegacyFeatureTemplateLoader.instance().getTemplate(s);
-        if (ft != null) {
-            f = ft.build();
-        }
-        return f;
+        LegacyFeatureTemplate template = LegacyFeatureTemplateLoader.instance().getTemplate(s);
+        return template != null ? template.build() : null;
     }
 }

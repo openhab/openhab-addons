@@ -38,20 +38,19 @@ public abstract class LegacyMessageDispatcher {
     protected final Logger logger = LoggerFactory.getLogger(LegacyMessageDispatcher.class);
 
     LegacyDeviceFeature feature;
-    @Nullable
     Map<String, String> parameters = new HashMap<>();
 
     /**
      * Constructor
      *
-     * @param f DeviceFeature to which this MessageDispatcher belongs
+     * @param feature DeviceFeature to which this MessageDispatcher belongs
      */
-    LegacyMessageDispatcher(LegacyDeviceFeature f) {
-        feature = f;
+    LegacyMessageDispatcher(LegacyDeviceFeature feature) {
+        this.feature = feature;
     }
 
-    public void setParameters(@Nullable Map<String, String> map) {
-        parameters = map;
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
     }
 
     /**
@@ -65,7 +64,7 @@ public abstract class LegacyMessageDispatcher {
             return false;
         }
         try {
-            InsteonAddress a = msg.getInsteonAddress("toAddress");
+            InsteonAddress address = msg.getInsteonAddress("toAddress");
             // ALL_LINK_BROADCAST and ALL_LINK_CLEANUP
             // have a valid Command1 field
             // but the CLEANUP_SUCCESS (of type ALL_LINK_BROADCAST!)
@@ -73,30 +72,30 @@ public abstract class LegacyMessageDispatcher {
             // high byte of the toAddress.
             byte cmd1 = msg.getByte("command1");
             if (!msg.isAllLinkCleanup() && cmd1 == 0x06) {
-                cmd1 = a.getHighByte();
+                cmd1 = address.getHighByte();
             }
             // For ALL_LINK_BROADCAST messages, the group is
             // in the low byte of the toAddress. For direct
             // ALL_LINK_CLEANUP, it is in Command2
 
-            int group = (msg.isAllLinkCleanup() ? msg.getByte("command2") : a.getLowByte()) & 0xff;
-            LegacyMessageHandler h = feature.getMsgHandlers().get(cmd1 & 0xFF);
-            if (h == null) {
+            int group = (msg.isAllLinkCleanup() ? msg.getByte("command2") : address.getLowByte()) & 0xff;
+            LegacyMessageHandler handler = feature.getMsgHandlers().get(cmd1 & 0xFF);
+            if (handler == null) {
                 logger.debug("msg is not for this feature");
                 return true;
             }
-            if (!h.isDuplicate(msg)) {
-                if (h.matchesGroup(group) && h.matches(msg)) {
+            if (!handler.isDuplicate(msg)) {
+                if (handler.matchesGroup(group) && handler.matches(msg)) {
                     logger.debug("{}:{}->{} cmd1:{} group {}/{}", feature.getDevice().getAddress(), feature.getName(),
-                            h.getClass().getSimpleName(), HexUtils.getHexString(cmd1), group, h.getGroup());
-                    h.handleMessage(group, cmd1, msg, feature);
+                            handler.getClass().getSimpleName(), HexUtils.getHexString(cmd1), group, handler.getGroup());
+                    handler.handleMessage(group, cmd1, msg, feature);
                 } else {
-                    logger.debug("message ignored because matches group: {} matches filter: {}", h.matchesGroup(group),
-                            h.matches(msg));
+                    logger.debug("message ignored because matches group: {} matches filter: {}",
+                            handler.matchesGroup(group), handler.matches(msg));
                 }
             } else {
                 logger.debug("message ignored as duplicate. Matches group: {} matches filter: {}",
-                        h.matchesGroup(group), h.matches(msg));
+                        handler.matchesGroup(group), handler.matches(msg));
             }
         } catch (FieldException e) {
             logger.warn("couldn't parse ALL_LINK message: {}", msg, e);
@@ -125,8 +124,8 @@ public abstract class LegacyMessageDispatcher {
     public abstract boolean dispatch(Msg msg);
 
     public static class DefaultDispatcher extends LegacyMessageDispatcher {
-        DefaultDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        DefaultDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -168,16 +167,16 @@ public abstract class LegacyMessageDispatcher {
                 key = (cmd1 & 0xFF);
             }
             if (key != -1 || feature.isStatusFeature()) {
-                LegacyMessageHandler h = feature.getMsgHandlers().get(key);
-                if (h == null) {
-                    h = feature.getDefaultMsgHandler();
+                LegacyMessageHandler handler = feature.getMsgHandlers().get(key);
+                if (handler == null) {
+                    handler = feature.getDefaultMsgHandler();
                 }
-                if (h.matches(msg)) {
+                if (handler.matches(msg)) {
                     if (!isConsumed) {
                         logger.debug("{}:{}->{} DIRECT", feature.getDevice().getAddress(), feature.getName(),
-                                h.getClass().getSimpleName());
+                                handler.getClass().getSimpleName());
                     }
-                    h.handleMessage(-1, cmd1, msg, feature);
+                    handler.handleMessage(-1, cmd1, msg, feature);
                 }
             }
             if (isConsumed) {
@@ -190,8 +189,8 @@ public abstract class LegacyMessageDispatcher {
     }
 
     public static class DefaultGroupDispatcher extends LegacyMessageDispatcher {
-        DefaultGroupDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        DefaultGroupDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -233,17 +232,17 @@ public abstract class LegacyMessageDispatcher {
                 key = (cmd1 & 0xFF);
             }
             if (key != -1) {
-                for (LegacyDeviceFeature f : feature.getConnectedFeatures()) {
-                    LegacyMessageHandler h = f.getMsgHandlers().get(key);
-                    if (h == null) {
-                        h = f.getDefaultMsgHandler();
+                for (LegacyDeviceFeature connectedFeature : feature.getConnectedFeatures()) {
+                    LegacyMessageHandler handler = connectedFeature.getMsgHandlers().get(key);
+                    if (handler == null) {
+                        handler = connectedFeature.getDefaultMsgHandler();
                     }
-                    if (h.matches(msg)) {
+                    if (handler.matches(msg)) {
                         if (!isConsumed) {
-                            logger.debug("{}:{}->{} DIRECT", f.getDevice().getAddress(), f.getName(),
-                                    h.getClass().getSimpleName());
+                            logger.debug("{}:{}->{} DIRECT", connectedFeature.getDevice().getAddress(),
+                                    connectedFeature.getName(), handler.getClass().getSimpleName());
                         }
-                        h.handleMessage(-1, cmd1, msg, f);
+                        handler.handleMessage(-1, cmd1, msg, connectedFeature);
                     }
 
                 }
@@ -258,8 +257,8 @@ public abstract class LegacyMessageDispatcher {
     }
 
     public static class PollGroupDispatcher extends LegacyMessageDispatcher {
-        PollGroupDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        PollGroupDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -277,15 +276,15 @@ public abstract class LegacyMessageDispatcher {
                 if (isMyAck) {
                     logger.debug("{}:{} got poll ACK", feature.getDevice().getAddress(), feature.getName());
                 }
-                return (isMyAck);
+                return isMyAck;
             }
-            return (false); // not a direct ack, so we didn't consume it either
+            return false; // not a direct ack, so we didn't consume it either
         }
     }
 
     public static class SimpleDispatcher extends LegacyMessageDispatcher {
-        SimpleDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        SimpleDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -307,22 +306,22 @@ public abstract class LegacyMessageDispatcher {
             }
             boolean isConsumed = isMyDirectAck(msg);
             int key = (cmd1 & 0xFF);
-            LegacyMessageHandler h = feature.getMsgHandlers().get(key);
-            if (h == null) {
-                h = feature.getDefaultMsgHandler();
+            LegacyMessageHandler handler = feature.getMsgHandlers().get(key);
+            if (handler == null) {
+                handler = feature.getDefaultMsgHandler();
             }
-            if (h.matches(msg)) {
+            if (handler.matches(msg)) {
                 logger.trace("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
-                        h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, cmd1, msg, feature);
+                        handler.getClass().getSimpleName(), msg);
+                handler.handleMessage(-1, cmd1, msg, feature);
             }
             return isConsumed;
         }
     }
 
     public static class X10Dispatcher extends LegacyMessageDispatcher {
-        X10Dispatcher(LegacyDeviceFeature f) {
-            super(f);
+        X10Dispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -330,14 +329,14 @@ public abstract class LegacyMessageDispatcher {
             try {
                 byte rawX10 = msg.getByte("rawX10");
                 int cmd = (rawX10 & 0x0f);
-                LegacyMessageHandler h = feature.getMsgHandlers().get(cmd);
-                if (h == null) {
-                    h = feature.getDefaultMsgHandler();
+                LegacyMessageHandler handler = feature.getMsgHandlers().get(cmd);
+                if (handler == null) {
+                    handler = feature.getDefaultMsgHandler();
                 }
                 logger.debug("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
-                        h.getClass().getSimpleName(), msg);
-                if (h.matches(msg)) {
-                    h.handleMessage(-1, (byte) cmd, msg, feature);
+                        handler.getClass().getSimpleName(), msg);
+                if (handler.matches(msg)) {
+                    handler.handleMessage(-1, (byte) cmd, msg, feature);
                 }
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
@@ -347,17 +346,17 @@ public abstract class LegacyMessageDispatcher {
     }
 
     public static class PassThroughDispatcher extends LegacyMessageDispatcher {
-        PassThroughDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        PassThroughDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public boolean dispatch(Msg msg) {
-            LegacyMessageHandler h = feature.getDefaultMsgHandler();
-            if (h.matches(msg)) {
+            LegacyMessageHandler handler = feature.getDefaultMsgHandler();
+            if (handler.matches(msg)) {
                 logger.trace("{}:{}->{} {}", feature.getDevice().getAddress(), feature.getName(),
-                        h.getClass().getSimpleName(), msg);
-                h.handleMessage(-1, (byte) 0x01, msg, feature);
+                        handler.getClass().getSimpleName(), msg);
+                handler.handleMessage(-1, (byte) 0x01, msg, feature);
             }
             return false;
         }
@@ -367,8 +366,8 @@ public abstract class LegacyMessageDispatcher {
      * Drop all incoming messages silently
      */
     public static class NoOpDispatcher extends LegacyMessageDispatcher {
-        NoOpDispatcher(LegacyDeviceFeature f) {
-            super(f);
+        NoOpDispatcher(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -382,21 +381,20 @@ public abstract class LegacyMessageDispatcher {
      *
      * @param name the name of the dispatcher to create
      * @param params
-     * @param f the feature for which to create the dispatcher
+     * @param feature the feature for which to create the dispatcher
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends LegacyMessageDispatcher> T makeHandler(String name, @Nullable Map<String, String> params,
-            LegacyDeviceFeature f) {
-        String cname = LegacyMessageDispatcher.class.getName() + "$" + name;
+    public static <T extends LegacyMessageDispatcher> T makeHandler(String name, Map<String, String> params,
+            LegacyDeviceFeature feature) {
         try {
-            Class<?> c = Class.forName(cname);
+            String className = LegacyMessageDispatcher.class.getName() + "$" + name;
             @SuppressWarnings("unchecked")
-            Class<? extends T> dc = (Class<? extends T>) c;
+            Class<? extends T> classRef = (Class<? extends T>) Class.forName(className);
             @Nullable
-            T ch = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
-            ch.setParameters(params);
-            return ch;
+            T handler = classRef.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(feature);
+            handler.setParameters(params);
+            return handler;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             return null;

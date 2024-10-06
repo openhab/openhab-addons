@@ -37,10 +37,10 @@ public class LegacyDeviceType {
     /**
      * Constructor
      *
-     * @param aProductKey the product key for this device type
+     * @param productKey the product key for this device type
      */
-    public LegacyDeviceType(String aProductKey) {
-        productKey = aProductKey;
+    public LegacyDeviceType(String productKey) {
+        this.productKey = productKey;
     }
 
     /**
@@ -64,60 +64,60 @@ public class LegacyDeviceType {
     /**
      * Sets the descriptive model string
      *
-     * @param aModel descriptive model string
+     * @param model descriptive model string
      */
-    public void setModel(String aModel) {
-        model = aModel;
+    public void setModel(String model) {
+        this.model = model;
     }
 
     /**
      * Sets free text description
      *
-     * @param aDesc free text description
+     * @param description free text description
      */
-    public void setDescription(String aDesc) {
-        description = aDesc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
      * Adds feature to this device type
      *
-     * @param aKey the key (e.g. "switch") under which this feature can be referenced in the item binding config
-     * @param aFeatureName the name (e.g. "GenericSwitch") under which the feature has been defined
+     * @param key the key (e.g. "switch") under which this feature can be referenced in the item binding config
+     * @param featureName the name (e.g. "GenericSwitch") under which the feature has been defined
      * @return false if feature was already there
      */
-    public boolean addFeature(String aKey, String aFeatureName) {
-        if (features.containsKey(aKey)) {
+    public boolean addFeature(String key, String featureName) {
+        if (features.containsKey(key)) {
             return false;
         }
-        features.put(aKey, aFeatureName);
+        features.put(key, featureName);
         return true;
     }
 
     /**
      * Adds feature group to device type
      *
-     * @param aKey name of the feature group, which acts as key for lookup later
-     * @param fg feature group to add
+     * @param key name of the feature group, which acts as key for lookup later
+     * @param featureGroup feature group to add
      * @return true if add succeeded, false if group was already there
      */
-    public boolean addFeatureGroup(String aKey, FeatureGroup fg) {
-        if (features.containsKey(aKey)) {
+    public boolean addFeatureGroup(String key, FeatureGroup featureGroup) {
+        if (features.containsKey(key)) {
             return false;
         }
-        featureGroups.put(aKey, fg);
+        featureGroups.put(key, featureGroup);
         return true;
     }
 
     @Override
     public String toString() {
         String s = "pk:" + productKey + "|model:" + model + "|desc:" + description + "|features";
-        for (Entry<String, String> f : features.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        for (Entry<String, String> entry : features.entrySet()) {
+            s += ":" + entry.getKey() + "=" + entry.getValue();
         }
         s += "|groups";
-        for (Entry<String, FeatureGroup> f : featureGroups.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        for (Entry<String, FeatureGroup> entry : featureGroups.entrySet()) {
+            s += ":" + entry.getKey() + "=" + entry.getValue();
         }
         return s;
     }
@@ -156,10 +156,10 @@ public class LegacyDeviceType {
         @Override
         public String toString() {
             String s = "";
-            for (String g : fgFeatures) {
-                s += g + ",";
+            for (String feature : fgFeatures) {
+                s += feature + ",";
             }
-            return (s.replaceAll(",$", ""));
+            return s.replaceAll(",$", "");
         }
     }
 }

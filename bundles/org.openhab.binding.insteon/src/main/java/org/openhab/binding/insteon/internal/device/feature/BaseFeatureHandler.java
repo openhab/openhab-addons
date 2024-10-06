@@ -43,27 +43,24 @@ public abstract class BaseFeatureHandler {
     }
 
     protected InsteonDevice getInsteonDevice() {
-        try {
-            return (InsteonDevice) feature.getDevice();
-        } catch (ClassCastException e) {
-            throw new UnsupportedOperationException("Not Insteon device");
+        if (feature.getDevice() instanceof InsteonDevice insteonDevice) {
+            return insteonDevice;
         }
+        throw new UnsupportedOperationException("Not Insteon device");
     }
 
     protected InsteonModem getInsteonModem() {
-        try {
-            return (InsteonModem) feature.getDevice();
-        } catch (ClassCastException e) {
-            throw new UnsupportedOperationException("Not Insteon modem");
+        if (feature.getDevice() instanceof InsteonModem insteonModem) {
+            return insteonModem;
         }
+        throw new UnsupportedOperationException("Not Insteon modem");
     }
 
     protected X10Device getX10Device() {
-        try {
-            return (X10Device) feature.getDevice();
-        } catch (ClassCastException e) {
-            throw new UnsupportedOperationException("Not X10 device");
+        if (feature.getDevice() instanceof X10Device x10Device) {
+            return x10Device;
         }
+        throw new UnsupportedOperationException("Not X10 device");
     }
 
     private @Nullable String getParameter(String key) {

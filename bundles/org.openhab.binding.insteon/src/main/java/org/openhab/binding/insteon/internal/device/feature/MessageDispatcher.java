@@ -139,8 +139,8 @@ public abstract class MessageDispatcher extends BaseFeatureHandler {
                     // handle my DIRECT ACK messages queried by this feature
                     handleDirectMessage(msg, feature);
                     // get connected features to handle my DIRECT ACK messages
-                    for (DeviceFeature f : feature.getConnectedFeatures()) {
-                        handleDirectMessage(msg, f);
+                    for (DeviceFeature connectedFeature : feature.getConnectedFeatures()) {
+                        handleDirectMessage(msg, connectedFeature);
                     }
                 }
                 return feature.isMyDirectAckOrNack(msg);
@@ -221,8 +221,8 @@ public abstract class MessageDispatcher extends BaseFeatureHandler {
                 if (feature.isMyReply(msg)) {
                     if (msg.isReplyAck()) {
                         // get connected features to handle my reply ACK messages
-                        for (DeviceFeature f : feature.getConnectedFeatures()) {
-                            handleIMMessage(msg, f);
+                        for (DeviceFeature connectedFeature : feature.getConnectedFeatures()) {
+                            handleIMMessage(msg, connectedFeature);
                         }
                     }
                     return true;

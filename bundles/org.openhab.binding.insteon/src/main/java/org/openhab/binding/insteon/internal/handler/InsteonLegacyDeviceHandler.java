@@ -169,37 +169,39 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
             Map<String, Channel> channelMap = new HashMap<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
-                String feature = channelId.toLowerCase();
+                String featureName = channelId.toLowerCase();
 
                 if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(BATTERY_WATERMARK_LEVEL)) {
-                        feature = DATA;
+                    if (featureName.equalsIgnoreCase(BATTERY_LEVEL)
+                            || featureName.equalsIgnoreCase(BATTERY_WATERMARK_LEVEL)) {
+                        featureName = DATA;
                     }
                 } else if (productKey.equals(MOTION_SENSOR_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(LIGHT_LEVEL)) {
-                        feature = DATA;
+                    if (featureName.equalsIgnoreCase(BATTERY_LEVEL) || featureName.equalsIgnoreCase(LIGHT_LEVEL)) {
+                        featureName = DATA;
                     }
                 } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(BATTERY_PERCENT)
-                            || feature.equalsIgnoreCase(LIGHT_LEVEL) || feature.equalsIgnoreCase(TEMPERATURE_LEVEL)) {
-                        feature = DATA;
+                    if (featureName.equalsIgnoreCase(BATTERY_LEVEL) || featureName.equalsIgnoreCase(BATTERY_PERCENT)
+                            || featureName.equalsIgnoreCase(LIGHT_LEVEL)
+                            || featureName.equalsIgnoreCase(TEMPERATURE_LEVEL)) {
+                        featureName = DATA;
                     }
                 } else if (productKey.equals(PLM_PRODUCT_KEY)) {
-                    String[] parts = feature.split("#");
+                    String[] parts = featureName.split("#");
                     if (parts.length == 2 && parts[0].equalsIgnoreCase(BROADCAST_ON_OFF)
                             && parts[1].matches("^\\d+$")) {
-                        feature = parts[0];
+                        featureName = parts[0];
                     }
                 } else if (productKey.equals(POWER_METER_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(KWH) || feature.equalsIgnoreCase(RESET)
-                            || feature.equalsIgnoreCase(UPDATE) || feature.equalsIgnoreCase(WATTS)) {
-                        feature = METER;
+                    if (featureName.equalsIgnoreCase(KWH) || featureName.equalsIgnoreCase(RESET)
+                            || featureName.equalsIgnoreCase(UPDATE) || featureName.equalsIgnoreCase(WATTS)) {
+                        featureName = METER;
                     }
                 }
 
-                LegacyDeviceFeature f = device.getFeature(feature);
-                if (f != null) {
-                    if (!f.isFeatureGroup()) {
+                LegacyDeviceFeature feature = device.getFeature(featureName);
+                if (feature != null) {
+                    if (!feature.isFeatureGroup()) {
                         if (channelId.equalsIgnoreCase(BROADCAST_ON_OFF)) {
                             Set<String> broadcastChannels = new HashSet<>();
                             for (Channel channel : thing.getChannels()) {
@@ -215,9 +217,9 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                                 boolean valid = false;
                                 if (groups instanceof List<?> list) {
                                     valid = true;
-                                    for (Object o : list) {
-                                        if (o instanceof Double && (Double) o % 1 == 0) {
-                                            String id = BROADCAST_ON_OFF + "#" + ((Double) o).intValue();
+                                    for (Object value : list) {
+                                        if (value instanceof Double doubleValue && doubleValue % 1 == 0) {
+                                            String id = BROADCAST_ON_OFF + "#" + doubleValue.intValue();
                                             if (!broadcastChannels.contains(id)) {
                                                 channelMap.put(id, createChannel(id, BROADCAST_ON_OFF, callback));
                                                 broadcastChannels.add(id);
@@ -242,7 +244,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                             channelMap.put(channelId, createChannel(channelId, channelId, callback));
                         }
                     } else {
-                        logger.debug("{} is a feature group for {}. It will not be added as a channel.", feature,
+                        logger.debug("{} is a feature group for {}. It will not be added as a channel.", featureName,
                                 productKey);
                     }
                 }

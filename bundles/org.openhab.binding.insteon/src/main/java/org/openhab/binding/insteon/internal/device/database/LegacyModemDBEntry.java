@@ -38,8 +38,8 @@ public class LegacyModemDBEntry {
     private ArrayList<Byte> controls = new ArrayList<>();
     private ArrayList<Byte> respondsTo = new ArrayList<>();
 
-    public LegacyModemDBEntry(InsteonAddress aAddr, boolean isModem) {
-        this.address = aAddr;
+    public LegacyModemDBEntry(InsteonAddress address, boolean isModem) {
+        this.address = address;
         this.isModem = isModem;
     }
 
@@ -83,8 +83,8 @@ public class LegacyModemDBEntry {
     public String toString() {
         String s = "addr:" + address + "|controls:[" + toGroupString(controls) + "]|responds_to:["
                 + toGroupString(respondsTo) + "]|link_recors";
-        for (Msg m : linkRecords) {
-            s += ":(" + m + ")";
+        for (Msg msg : linkRecords) {
+            s += ":(" + msg + ")";
         }
         return s;
     }

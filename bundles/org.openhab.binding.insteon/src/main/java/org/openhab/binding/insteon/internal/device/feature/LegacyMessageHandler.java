@@ -63,13 +63,8 @@ public abstract class LegacyMessageHandler {
     protected LegacyDeviceFeature feature;
     protected Map<String, String> parameters = new HashMap<>();
 
-    /**
-     * Constructor
-     *
-     * @param p state publishing object for dissemination of state changes
-     */
-    LegacyMessageHandler(LegacyDeviceFeature p) {
-        feature = p;
+    LegacyMessageHandler(LegacyDeviceFeature feature) {
+        this.feature = feature;
     }
 
     /**
@@ -87,20 +82,20 @@ public abstract class LegacyMessageHandler {
     /**
      * Method to send an extended insteon message for querying a device
      *
-     * @param f DeviceFeature that is being currently handled
-     * @param aCmd1 cmd1 for message to be sent
-     * @param aCmd2 cmd2 for message to be sent
+     * @param feature DeviceFeature that is being currently handled
+     * @param cmd1 cmd1 for message to be sent
+     * @param cmd2 cmd2 for message to be sent
      */
-    public void sendExtendedQuery(LegacyDeviceFeature f, byte aCmd1, byte aCmd2) {
-        LegacyDevice d = f.getDevice();
+    public void sendExtendedQuery(LegacyDeviceFeature feature, byte cmd1, byte cmd2) {
+        LegacyDevice device = feature.getDevice();
         try {
-            Msg m = Msg.makeExtendedMessage((InsteonAddress) d.getAddress(), aCmd1, aCmd2, true);
-            m.setQuietTime(500L);
-            d.enqueueMessage(m, f);
+            Msg msg = Msg.makeExtendedMessage((InsteonAddress) device.getAddress(), cmd1, cmd2, true);
+            msg.setQuietTime(500L);
+            device.enqueueMessage(msg, feature);
         } catch (InvalidMessageTypeException e) {
-            logger.warn("msg exception sending query message to device {}", d.getAddress());
+            logger.warn("msg exception sending query message to device {}", device.getAddress());
         } catch (FieldException e) {
-            logger.warn("field exception sending query message to device {}", d.getAddress());
+            logger.warn("field exception sending query message to device {}", device.getAddress());
         }
     }
 
@@ -111,8 +106,8 @@ public abstract class LegacyMessageHandler {
      * @return true if group matches or no group is specified
      */
     public boolean matchesGroup(int group) {
-        int g = getIntParameter("group", -1);
-        return (g == -1 || g == group);
+        int parameter = getIntParameter("group", -1);
+        return parameter == -1 || parameter == group;
     }
 
     /**
@@ -121,7 +116,7 @@ public abstract class LegacyMessageHandler {
      * @return group parameter
      */
     public int getGroup() {
-        return (getIntParameter("group", -1));
+        return getIntParameter("group", -1);
     }
 
     /**
@@ -165,9 +160,9 @@ public abstract class LegacyMessageHandler {
     }
 
     protected boolean getBooleanDeviceConfig(String key, boolean def) {
-        Object o = feature.getDevice().getDeviceConfigMap().get(key);
-        if (o != null) {
-            if (o instanceof Boolean booleanValue) {
+        Object value = feature.getDevice().getDeviceConfigMap().get(key);
+        if (value != null) {
+            if (value instanceof Boolean booleanValue) {
                 return booleanValue;
             } else {
                 logger.warn("{} {}: The value for the '{}' key is not boolean in the device configuration parameter.",
@@ -182,10 +177,10 @@ public abstract class LegacyMessageHandler {
      * Test if message refers to the button configured for given feature
      *
      * @param msg received message
-     * @param f device feature to test
+     * @param feature device feature to test
      * @return true if we have no button configured or the message is for this button
      */
-    protected boolean isMybutton(Msg msg, LegacyDeviceFeature f) {
+    protected boolean isMybutton(Msg msg, LegacyDeviceFeature feature) {
         int myButton = getIntParameter("button", -1);
         // if there is no button configured for this handler
         // the message is assumed to refer to this feature
@@ -194,7 +189,7 @@ public abstract class LegacyMessageHandler {
             return true;
         }
 
-        int button = getButtonInfo(msg, f);
+        int button = getButtonInfo(msg, feature);
         return button != -1 && myButton == button;
     }
 
@@ -211,10 +206,10 @@ public abstract class LegacyMessageHandler {
         int mp = getIntParameter(param, -1);
         // parameter not filtered for, declare this a match!
         if (mp == -1) {
-            return (true);
+            return true;
         }
         byte value = msg.getByte(field);
-        return (value == mp);
+        return value == mp;
     }
 
     /**
@@ -228,29 +223,29 @@ public abstract class LegacyMessageHandler {
             int ext = getIntParameter("ext", -1);
             if (ext != -1) {
                 if ((msg.isExtended() && ext != 1) || (!msg.isExtended() && ext != 0)) {
-                    return (false);
+                    return false;
                 }
                 if (!testMatch("match_cmd1", msg, "command1")) {
-                    return (false);
+                    return false;
                 }
             }
             if (!testMatch("match_cmd2", msg, "command2")) {
-                return (false);
+                return false;
             }
             if (!testMatch("match_d1", msg, "userData1")) {
-                return (false);
+                return false;
             }
             if (!testMatch("match_d2", msg, "userData2")) {
-                return (false);
+                return false;
             }
             if (!testMatch("match_d3", msg, "userData3")) {
-                return (false);
+                return false;
             }
         } catch (FieldException e) {
             logger.warn("error matching message: {}", msg, e);
-            return (false);
+            return false;
         }
-        return (true);
+        return true;
     }
 
     /**
@@ -262,8 +257,8 @@ public abstract class LegacyMessageHandler {
     protected boolean isDuplicate(Msg msg) {
         boolean isDuplicate = false;
         try {
-            MsgType t = MsgType.valueOf(msg.getByte("messageFlags"));
-            if (t == MsgType.ALL_LINK_BROADCAST) {
+            MsgType msgType = MsgType.valueOf(msg.getByte("messageFlags"));
+            if (msgType == MsgType.ALL_LINK_BROADCAST) {
                 int group = msg.getInsteonAddress("toAddress").getLowByte() & 0xff;
                 byte cmd1 = msg.getByte("command1");
                 // if the command is 0x06, then it's success message
@@ -271,7 +266,7 @@ public abstract class LegacyMessageHandler {
                 // confirms that it got all cleanup replies successfully.
                 GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
                 isDuplicate = !feature.getDevice().getGroupState(group, gm, cmd1);
-            } else if (t == MsgType.ALL_LINK_CLEANUP) {
+            } else if (msgType == MsgType.ALL_LINK_CLEANUP) {
                 // the cleanup messages are direct messages, so the
                 // group # is not in the toAddress, but in cmd2
                 int group = msg.getByte("command2") & 0xff;
@@ -282,24 +277,25 @@ public abstract class LegacyMessageHandler {
         } catch (FieldException e) {
             logger.warn("cannot parse msg: {}", msg, e);
         }
-        return (isDuplicate);
+        return isDuplicate;
     }
 
     /**
      * Extract button information from message
      *
      * @param msg the message to extract from
-     * @param f the device feature (needed for debug printing)
+     * @param feature the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
-    protected int getButtonInfo(Msg msg, LegacyDeviceFeature f) {
+    protected int getButtonInfo(Msg msg, LegacyDeviceFeature feature) {
         // the cleanup messages have the button number in the command2 field
         // the broadcast messages have it as the lsb of the toAddress
         try {
             int bclean = msg.getByte("command2") & 0xff;
             int bbcast = msg.getInsteonAddress("toAddress").getLowByte() & 0xff;
             int button = msg.isAllLinkCleanup() ? bclean : bbcast;
-            logger.trace("{} button: {} bclean: {} bbcast: {}", f.getDevice().getAddress(), button, bclean, bbcast);
+            logger.trace("{} button: {} bclean: {} bbcast: {}", feature.getDevice().getAddress(), button, bclean,
+                    bbcast);
             return button;
         } catch (FieldException e) {
             logger.warn("field exception while parsing msg {}: ", msg, e);
@@ -313,7 +309,7 @@ public abstract class LegacyMessageHandler {
      * @return name of the class
      */
     protected String nm() {
-        return (this.getClass().getSimpleName());
+        return this.getClass().getSimpleName();
     }
 
     /**
@@ -326,8 +322,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class DefaultMsgHandler extends LegacyMessageHandler {
-        public DefaultMsgHandler(LegacyDeviceFeature p) {
-            super(p);
+        public DefaultMsgHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -339,8 +335,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class NoOpMsgHandler extends LegacyMessageHandler {
-        NoOpMsgHandler(LegacyDeviceFeature p) {
-            super(p);
+        NoOpMsgHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -352,8 +348,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class LightOnDimmerHandler extends LegacyMessageHandler {
-        LightOnDimmerHandler(LegacyDeviceFeature p) {
-            super(p);
+        LightOnDimmerHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -361,13 +357,13 @@ public abstract class LegacyMessageHandler {
             if (!isMybutton(msg, f)) {
                 return;
             }
-            DeviceAddress a = f.getDevice().getAddress();
+            DeviceAddress address = f.getDevice().getAddress();
             if (msg.isAckOfDirect()) {
-                logger.warn("{}: device {}: ignoring ack of direct.", nm(), a);
+                logger.warn("{}: device {}: ignoring ack of direct.", nm(), address);
             } else {
                 String mode = getStringParameter("mode", "REGULAR");
-                logger.debug("{}: device {} was turned on {}. " + "Sending poll request to get actual level", nm(), a,
-                        mode);
+                logger.debug("{}: device {} was turned on {}. " + "Sending poll request to get actual level", nm(),
+                        address, mode);
                 feature.publish(PercentType.HUNDRED, StateChangeType.ALWAYS);
                 // need to poll to find out what level the dimmer is at now.
                 // it may not be at 100% because dimmers can be configured
@@ -381,8 +377,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class LightOffDimmerHandler extends LegacyMessageHandler {
-        LightOffDimmerHandler(LegacyDeviceFeature p) {
-            super(p);
+        LightOffDimmerHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -396,8 +392,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class LightOnSwitchHandler extends LegacyMessageHandler {
-        LightOnSwitchHandler(LegacyDeviceFeature p) {
-            super(p);
+        LightOnSwitchHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -413,8 +409,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class LightOffSwitchHandler extends LegacyMessageHandler {
-        LightOffSwitchHandler(LegacyDeviceFeature p) {
-            super(p);
+        LightOffSwitchHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -438,8 +434,8 @@ public abstract class LegacyMessageHandler {
         private int onCmd;
         private int offCmd;
 
-        RampDimmerHandler(LegacyDeviceFeature p) {
-            super(p);
+        RampDimmerHandler(LegacyDeviceFeature feature) {
+            super(feature);
             // Can't process parameters here because they are set after constructor is invoked.
             // Unfortunately, this means we can't declare the onCmd, offCmd to be final.
         }
@@ -494,21 +490,21 @@ public abstract class LegacyMessageHandler {
      */
 
     public static class SwitchRequestReplyHandler extends LegacyMessageHandler {
-        SwitchRequestReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        SwitchRequestReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
-                DeviceAddress a = f.getDevice().getAddress();
+                DeviceAddress address = f.getDevice().getAddress();
                 int cmd2 = msg.getByte("command2") & 0xff;
                 int button = this.getIntParameter("button", -1);
                 if (button < 0) {
-                    handleNoButtons(cmd2, a, msg);
+                    handleNoButtons(cmd2, address, msg);
                 } else {
                     boolean isOn = isLEDLit(cmd2, button);
-                    logger.debug("{}: dev {} button {} switched to {}", nm(), a, button, isOn ? "ON" : "OFF");
+                    logger.debug("{}: dev {} button {} switched to {}", nm(), address, button, isOn ? "ON" : "OFF");
                     feature.publish(OnOffType.from(isOn), StateChangeType.CHANGED);
                 }
             } catch (FieldException e) {
@@ -552,7 +548,7 @@ public abstract class LegacyMessageHandler {
             boolean isSet = (cmd & (0x1 << (button - 1))) != 0;
             logger.trace("cmd: {} button {}", Integer.toBinaryString(cmd), button);
             logger.trace("msk: {} isSet: {}", Integer.toBinaryString(0x1 << (button - 1)), isSet);
-            return (isSet);
+            return isSet;
         }
     }
 
@@ -561,8 +557,8 @@ public abstract class LegacyMessageHandler {
      * In the dimmers case the command2 byte represents the light level from 0-255
      */
     public static class DimmerRequestReplyHandler extends LegacyMessageHandler {
-        DimmerRequestReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        DimmerRequestReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -596,15 +592,15 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class DimmerStopManualChangeHandler extends LegacyMessageHandler {
-        DimmerStopManualChangeHandler(LegacyDeviceFeature p) {
-            super(p);
+        DimmerStopManualChangeHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public boolean isDuplicate(Msg msg) {
             // Disable duplicate elimination because
             // there are no cleanup or success messages for start/stop.
-            return (false);
+            return false;
         }
 
         @Override
@@ -617,15 +613,15 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class StartManualChangeHandler extends LegacyMessageHandler {
-        StartManualChangeHandler(LegacyDeviceFeature p) {
-            super(p);
+        StartManualChangeHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public boolean isDuplicate(Msg msg) {
             // Disable duplicate elimination because
             // there are no cleanup or success messages for start/stop.
-            return (false);
+            return false;
         }
 
         @Override
@@ -643,15 +639,15 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class StopManualChangeHandler extends LegacyMessageHandler {
-        StopManualChangeHandler(LegacyDeviceFeature p) {
-            super(p);
+        StopManualChangeHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public boolean isDuplicate(Msg msg) {
             // Disable duplicate elimination because
             // there are no cleanup or success messages for start/stop.
-            return (false);
+            return false;
         }
 
         @Override
@@ -662,8 +658,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class InfoRequestReplyHandler extends LegacyMessageHandler {
-        InfoRequestReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        InfoRequestReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -697,8 +693,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class MotionSensorDataReplyHandler extends LegacyMessageHandler {
-        MotionSensorDataReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        MotionSensorDataReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -759,8 +755,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class MotionSensor2AlternateHeartbeatHandler extends LegacyMessageHandler {
-        MotionSensor2AlternateHeartbeatHandler(LegacyDeviceFeature p) {
-            super(p);
+        MotionSensor2AlternateHeartbeatHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -799,8 +795,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class HiddenDoorSensorDataReplyHandler extends LegacyMessageHandler {
-        HiddenDoorSensorDataReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        HiddenDoorSensorDataReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -834,8 +830,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class PowerMeterUpdateHandler extends LegacyMessageHandler {
-        PowerMeterUpdateHandler(LegacyDeviceFeature p) {
-            super(p);
+        PowerMeterUpdateHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -872,8 +868,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class PowerMeterResetHandler extends LegacyMessageHandler {
-        PowerMeterResetHandler(LegacyDeviceFeature p) {
-            super(p);
+        PowerMeterResetHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -890,8 +886,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class LastTimeHandler extends LegacyMessageHandler {
-        LastTimeHandler(LegacyDeviceFeature p) {
-            super(p);
+        LastTimeHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -901,8 +897,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class ContactRequestReplyHandler extends LegacyMessageHandler {
-        ContactRequestReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        ContactRequestReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -926,8 +922,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class ClosedContactHandler extends LegacyMessageHandler {
-        ClosedContactHandler(LegacyDeviceFeature p) {
-            super(p);
+        ClosedContactHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -937,8 +933,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class OpenedContactHandler extends LegacyMessageHandler {
-        OpenedContactHandler(LegacyDeviceFeature p) {
-            super(p);
+        OpenedContactHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -948,8 +944,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class OpenedOrClosedContactHandler extends LegacyMessageHandler {
-        OpenedOrClosedContactHandler(LegacyDeviceFeature p) {
-            super(p);
+        OpenedOrClosedContactHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -988,8 +984,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class ClosedSleepingContactHandler extends LegacyMessageHandler {
-        ClosedSleepingContactHandler(LegacyDeviceFeature p) {
-            super(p);
+        ClosedSleepingContactHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -1006,8 +1002,8 @@ public abstract class LegacyMessageHandler {
     }
 
     public static class OpenedSleepingContactHandler extends LegacyMessageHandler {
-        OpenedSleepingContactHandler(LegacyDeviceFeature p) {
-            super(p);
+        OpenedSleepingContactHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -1032,8 +1028,8 @@ public abstract class LegacyMessageHandler {
      * the settings updated.
      */
     public static class TriggerPollMsgHandler extends LegacyMessageHandler {
-        TriggerPollMsgHandler(LegacyDeviceFeature p) {
-            super(p);
+        TriggerPollMsgHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -1046,8 +1042,8 @@ public abstract class LegacyMessageHandler {
      * Flexible handler to extract numerical data from messages.
      */
     public static class NumberMsgHandler extends LegacyMessageHandler {
-        NumberMsgHandler(LegacyDeviceFeature p) {
-            super(p);
+        NumberMsgHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
@@ -1079,7 +1075,7 @@ public abstract class LegacyMessageHandler {
         }
 
         public int transform(int raw) {
-            return (raw);
+            return raw;
         }
 
         private int extractValue(Msg msg, int group) throws FieldException {
@@ -1098,7 +1094,7 @@ public abstract class LegacyMessageHandler {
             if (highByte != null) {
                 value |= (msg.getByte(highByte) & 0xFF) << 8;
             }
-            return (value);
+            return value;
         }
     }
 
@@ -1107,27 +1103,27 @@ public abstract class LegacyMessageHandler {
      * conventions for numbering, we use the one of the status update messages
      */
     public static class ThermostatSystemModeMsgHandler extends NumberMsgHandler {
-        ThermostatSystemModeMsgHandler(LegacyDeviceFeature p) {
-            super(p);
+        ThermostatSystemModeMsgHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public int transform(int raw) {
             switch (raw) {
                 case 0:
-                    return (0); // off
+                    return 0; // off
                 case 1:
-                    return (3); // auto
+                    return 3; // auto
                 case 2:
-                    return (1); // heat
+                    return 1; // heat
                 case 3:
-                    return (2); // cool
+                    return 2; // cool
                 case 4:
-                    return (4); // program
+                    return 4; // program
                 default:
                     break;
             }
-            return (4); // when in doubt assume to be in "program" mode
+            return 4; // when in doubt assume to be in "program" mode
         }
     }
 
@@ -1135,27 +1131,27 @@ public abstract class LegacyMessageHandler {
      * Handle reply to system mode change command
      */
     public static class ThermostatSystemModeReplyHandler extends NumberMsgHandler {
-        ThermostatSystemModeReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        ThermostatSystemModeReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public int transform(int raw) {
             switch (raw) {
                 case 0x09:
-                    return (0); // off
+                    return 0; // off
                 case 0x04:
-                    return (1); // heat
+                    return 1; // heat
                 case 0x05:
-                    return (2); // cool
+                    return 2; // cool
                 case 0x06:
-                    return (3); // auto
+                    return 3; // auto
                 case 0x0A:
-                    return (4); // program
+                    return 4; // program
                 default:
                     break;
             }
-            return (4); // when in doubt assume to be in "program" mode
+            return 4; // when in doubt assume to be in "program" mode
         }
     }
 
@@ -1163,21 +1159,21 @@ public abstract class LegacyMessageHandler {
      * Handle reply to fan mode change command
      */
     public static class ThermostatFanModeReplyHandler extends NumberMsgHandler {
-        ThermostatFanModeReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        ThermostatFanModeReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public int transform(int raw) {
             switch (raw) {
                 case 0x08:
-                    return (0); // auto
+                    return 0; // auto
                 case 0x07:
-                    return (1); // always on
+                    return 1; // always on
                 default:
                     break;
             }
-            return (0); // when in doubt assume to be auto mode
+            return 0; // when in doubt assume to be auto mode
         }
     }
 
@@ -1185,25 +1181,25 @@ public abstract class LegacyMessageHandler {
      * Handle reply to fanlinc fan speed change command
      */
     public static class FanLincFanReplyHandler extends NumberMsgHandler {
-        FanLincFanReplyHandler(LegacyDeviceFeature p) {
-            super(p);
+        FanLincFanReplyHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public int transform(int raw) {
             switch (raw) {
                 case 0x00:
-                    return (0); // off
+                    return 0; // off
                 case 0x55:
-                    return (1); // low
+                    return 1; // low
                 case 0xAA:
-                    return (2); // medium
+                    return 2; // medium
                 case 0xFF:
-                    return (3); // high
+                    return 3; // high
                 default:
                     logger.warn("fanlinc got unexpected level: {}", raw);
             }
-            return (0); // when in doubt assume to be off
+            return 0; // when in doubt assume to be off
         }
     }
 
@@ -1212,77 +1208,77 @@ public abstract class LegacyMessageHandler {
      * changes the state of an X10 device.
      */
     public static class X10OnHandler extends LegacyMessageHandler {
-        X10OnHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10OnHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: set X10 device {} to ON", nm(), a);
+            DeviceAddress address = f.getDevice().getAddress();
+            logger.debug("{}: set X10 device {} to ON", nm(), address);
             feature.publish(OnOffType.ON, StateChangeType.ALWAYS);
         }
     }
 
     public static class X10OffHandler extends LegacyMessageHandler {
-        X10OffHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10OffHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: set X10 device {} to OFF", nm(), a);
+            DeviceAddress address = f.getDevice().getAddress();
+            logger.debug("{}: set X10 device {} to OFF", nm(), address);
             feature.publish(OnOffType.OFF, StateChangeType.ALWAYS);
         }
     }
 
     public static class X10BrightHandler extends LegacyMessageHandler {
-        X10BrightHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10BrightHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: ignoring brighten message for device {}", nm(), a);
+            DeviceAddress address = f.getDevice().getAddress();
+            logger.debug("{}: ignoring brighten message for device {}", nm(), address);
         }
     }
 
     public static class X10DimHandler extends LegacyMessageHandler {
-        X10DimHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10DimHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: ignoring dim message for device {}", nm(), a);
+            DeviceAddress address = f.getDevice().getAddress();
+            logger.debug("{}: ignoring dim message for device {}", nm(), address);
         }
     }
 
     public static class X10OpenHandler extends LegacyMessageHandler {
-        X10OpenHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10OpenHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: set X10 device {} to OPEN", nm(), a);
+            DeviceAddress address = f.getDevice().getAddress();
+            logger.debug("{}: set X10 device {} to OPEN", nm(), address);
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
         }
     }
 
     public static class X10ClosedHandler extends LegacyMessageHandler {
-        X10ClosedHandler(LegacyDeviceFeature p) {
-            super(p);
+        X10ClosedHandler(LegacyDeviceFeature feature) {
+            super(feature);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            DeviceAddress a = f.getDevice().getAddress();
-            logger.debug("{}: set X10 device {} to CLOSED", nm(), a);
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature feature) {
+            DeviceAddress address = feature.getDevice().getAddress();
+            logger.debug("{}: set X10 device {} to CLOSED", nm(), address);
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
         }
     }
@@ -1292,20 +1288,19 @@ public abstract class LegacyMessageHandler {
      *
      * @param name the name of the handler to create
      * @param params
-     * @param f the feature for which to create the handler
+     * @param feature the feature for which to create the handler
      * @return the handler which was created
      */
     public static @Nullable <T extends LegacyMessageHandler> T makeHandler(String name, Map<String, String> params,
-            LegacyDeviceFeature f) {
-        String cname = LegacyMessageHandler.class.getName() + "$" + name;
+            LegacyDeviceFeature feature) {
         try {
-            Class<?> c = Class.forName(cname);
+            String className = LegacyMessageHandler.class.getName() + "$" + name;
             @SuppressWarnings("unchecked")
-            Class<? extends T> dc = (Class<? extends T>) c;
+            Class<? extends T> classRef = (Class<? extends T>) Class.forName(className);
             @Nullable
-            T mh = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
-            mh.setParameters(params);
-            return mh;
+            T handler = classRef.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(feature);
+            handler.setParameters(params);
+            return handler;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             return null;

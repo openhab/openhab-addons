@@ -137,55 +137,56 @@ public class LegacyFeatureTemplate {
      * @return the feature which this template describes
      */
     public LegacyDeviceFeature build() {
-        LegacyDeviceFeature f = new LegacyDeviceFeature(name);
-        f.setStatusFeature(isStatus);
-        f.setTimeout(timeout);
+        LegacyDeviceFeature feature = new LegacyDeviceFeature(name);
+        feature.setStatusFeature(isStatus);
+        feature.setTimeout(timeout);
         HandlerEntry dispatcher = this.dispatcher;
         if (dispatcher != null) {
-            LegacyMessageDispatcher h = LegacyMessageDispatcher.makeHandler(dispatcher.getName(),
-                    dispatcher.getParameters(), f);
-            if (h != null) {
-                f.setMessageDispatcher(h);
+            LegacyMessageDispatcher handler = LegacyMessageDispatcher.makeHandler(dispatcher.getName(),
+                    dispatcher.getParameters(), feature);
+            if (handler != null) {
+                feature.setMessageDispatcher(handler);
             }
         }
         HandlerEntry pollHandler = this.pollHandler;
         if (pollHandler != null) {
-            LegacyPollHandler h = LegacyPollHandler.makeHandler(pollHandler, f);
-            if (h != null) {
-                f.setPollHandler(h);
+            LegacyPollHandler handler = LegacyPollHandler.makeHandler(pollHandler.getName(),
+                    pollHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setPollHandler(handler);
             }
         }
         HandlerEntry defaultCmdHandler = this.defaultCmdHandler;
         if (defaultCmdHandler != null) {
-            LegacyCommandHandler h = LegacyCommandHandler.makeHandler(defaultCmdHandler.getName(),
-                    defaultCmdHandler.getParameters(), f);
-            if (h != null) {
-                f.setDefaultCommandHandler(h);
+            LegacyCommandHandler handler = LegacyCommandHandler.makeHandler(defaultCmdHandler.getName(),
+                    defaultCmdHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setDefaultCommandHandler(handler);
             }
         }
         HandlerEntry defaultMsgHandler = this.defaultMsgHandler;
         if (defaultMsgHandler != null) {
-            LegacyMessageHandler h = LegacyMessageHandler.makeHandler(defaultMsgHandler.getName(),
-                    defaultMsgHandler.getParameters(), f);
-            if (h != null) {
-                f.setDefaultMsgHandler(h);
+            LegacyMessageHandler handler = LegacyMessageHandler.makeHandler(defaultMsgHandler.getName(),
+                    defaultMsgHandler.getParameters(), feature);
+            if (handler != null) {
+                feature.setDefaultMsgHandler(handler);
             }
         }
-        for (Entry<Integer, HandlerEntry> mH : messageHandlers.entrySet()) {
-            LegacyMessageHandler h = LegacyMessageHandler.makeHandler(mH.getValue().getName(),
-                    mH.getValue().getParameters(), f);
-            if (h != null) {
-                f.addMessageHandler(mH.getKey(), h);
+        for (Entry<Integer, HandlerEntry> entry : messageHandlers.entrySet()) {
+            LegacyMessageHandler handler = LegacyMessageHandler.makeHandler(entry.getValue().getName(),
+                    entry.getValue().getParameters(), feature);
+            if (handler != null) {
+                feature.addMessageHandler(entry.getKey(), handler);
             }
         }
-        for (Entry<Class<? extends Command>, HandlerEntry> cH : commandHandlers.entrySet()) {
-            LegacyCommandHandler h = LegacyCommandHandler.makeHandler(cH.getValue().getName(),
-                    cH.getValue().getParameters(), f);
-            if (h != null) {
-                f.addCommandHandler(cH.getKey(), h);
+        for (Entry<Class<? extends Command>, HandlerEntry> entry : commandHandlers.entrySet()) {
+            LegacyCommandHandler handler = LegacyCommandHandler.makeHandler(entry.getValue().getName(),
+                    entry.getValue().getParameters(), feature);
+            if (handler != null) {
+                feature.addCommandHandler(entry.getKey(), handler);
             }
         }
-        return f;
+        return feature;
     }
 
     @Override

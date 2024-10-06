@@ -182,13 +182,13 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             return;
         }
 
-        LegacyDevice dev = getDevice(bindingConfig.getAddress());
-        if (dev == null) {
+        LegacyDevice device = getDevice(bindingConfig.getAddress());
+        if (device == null) {
             logger.warn("no device found with insteon address {}", bindingConfig.getAddress());
             return;
         }
 
-        dev.processCommand(driver, bindingConfig, command);
+        device.processCommand(driver, bindingConfig, command);
 
         logger.debug("found binding config for channel {}", channelName);
     }
@@ -197,20 +197,20 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         logger.debug("adding listener for channel {}", bindingConfig.getChannelName());
 
         DeviceAddress address = bindingConfig.getAddress();
-        LegacyDevice dev = getDevice(address);
-        if (dev == null) {
+        LegacyDevice device = getDevice(address);
+        if (device == null) {
             logger.warn("device for address {} is null", address);
             return;
         }
         @Nullable
-        LegacyDeviceFeature f = dev.getFeature(bindingConfig.getFeature());
-        if (f == null || f.isFeatureGroup()) {
+        LegacyDeviceFeature feature = device.getFeature(bindingConfig.getFeature());
+        if (feature == null || feature.isFeatureGroup()) {
             StringBuilder buf = new StringBuilder();
-            ArrayList<String> names = new ArrayList<>(dev.getFeatures().keySet());
+            ArrayList<String> names = new ArrayList<>(device.getFeatures().keySet());
             Collections.sort(names);
             for (String name : names) {
-                LegacyDeviceFeature feature = dev.getFeature(name);
-                if (feature != null && !feature.isFeatureGroup()) {
+                LegacyDeviceFeature f = device.getFeature(name);
+                if (f != null && !f.isFeatureGroup()) {
                     if (buf.length() > 0) {
                         buf.append(", ");
                     }
@@ -224,10 +224,10 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             return;
         }
 
-        LegacyFeatureListener fl = new LegacyFeatureListener(this, bindingConfig.getChannelUID(),
+        LegacyFeatureListener listener = new LegacyFeatureListener(this, bindingConfig.getChannelUID(),
                 bindingConfig.getChannelName());
-        fl.setParameters(bindingConfig.getParameters());
-        f.addListener(fl);
+        listener.setParameters(bindingConfig.getParameters());
+        feature.addListener(listener);
 
         bindingConfigs.put(bindingConfig.getChannelName(), bindingConfig);
     }
@@ -238,10 +238,10 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         logger.debug("removing listener for channel {}", channelName);
 
         for (Iterator<Entry<DeviceAddress, LegacyDevice>> it = devices.entrySet().iterator(); it.hasNext();) {
-            LegacyDevice dev = it.next().getValue();
-            boolean removedListener = dev.removeFeatureListener(channelName);
+            LegacyDevice device = it.next().getValue();
+            boolean removedListener = device.removeFeatureListener(channelName);
             if (removedListener) {
-                logger.trace("removed feature listener {} from dev {}", channelName, dev);
+                logger.trace("removed feature listener {} from device {}", channelName, device);
             }
         }
     }
@@ -250,43 +250,43 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         handler.updateState(channelUID, state);
     }
 
-    public @Nullable LegacyDevice makeNewDevice(DeviceAddress addr, String productKey,
+    public @Nullable LegacyDevice makeNewDevice(DeviceAddress address, String productKey,
             Map<String, Object> deviceConfigMap) {
-        LegacyDeviceType dt = LegacyDeviceTypeLoader.instance().getDeviceType(productKey);
-        if (dt == null) {
+        LegacyDeviceType deviceType = LegacyDeviceTypeLoader.instance().getDeviceType(productKey);
+        if (deviceType == null) {
             return null;
         }
-        LegacyDevice dev = LegacyDevice.makeDevice(dt);
-        dev.setAddress(addr);
-        dev.setProductKey(productKey);
-        dev.setDriver(driver);
-        dev.setIsModem(productKey.equals(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY));
-        dev.setDeviceConfigMap(deviceConfigMap);
-        if (!dev.hasValidPollingInterval()) {
-            dev.setPollInterval(devicePollIntervalMilliseconds);
+        LegacyDevice device = LegacyDevice.makeDevice(deviceType);
+        device.setAddress(address);
+        device.setProductKey(productKey);
+        device.setDriver(driver);
+        device.setIsModem(productKey.equals(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY));
+        device.setDeviceConfigMap(deviceConfigMap);
+        if (!device.hasValidPollingInterval()) {
+            device.setPollInterval(devicePollIntervalMilliseconds);
         }
-        if (driver.isModemDBComplete() && dev.getStatus() != DeviceStatus.POLLING) {
-            int ndev = checkIfInModemDatabase(dev);
-            if (dev.hasModemDBEntry()) {
-                dev.setStatus(DeviceStatus.POLLING);
-                LegacyPollManager.instance().startPolling(dev, ndev);
+        if (driver.isModemDBComplete() && device.getStatus() != DeviceStatus.POLLING) {
+            int ndev = checkIfInModemDatabase(device);
+            if (device.hasModemDBEntry()) {
+                device.setStatus(DeviceStatus.POLLING);
+                LegacyPollManager.instance().startPolling(device, ndev);
             }
         }
-        devices.put(addr, dev);
+        devices.put(address, device);
 
         handler.insteonDeviceWasCreated();
 
-        return (dev);
+        return device;
     }
 
-    public void removeDevice(DeviceAddress addr) {
-        LegacyDevice dev = devices.remove(addr);
-        if (dev == null) {
+    public void removeDevice(DeviceAddress address) {
+        LegacyDevice device = devices.remove(address);
+        if (device == null) {
             return;
         }
 
-        if (dev.getStatus() == DeviceStatus.POLLING) {
-            LegacyPollManager.instance().stopPolling(dev);
+        if (device.getStatus() == DeviceStatus.POLLING) {
+            LegacyPollManager.instance().stopPolling(device);
         }
     }
 
@@ -294,23 +294,23 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
      * Checks if a device is in the modem link database, and, if the database
      * is complete, logs a warning if the device is not present
      *
-     * @param dev The device to search for in the modem database
+     * @param device The device to search for in the modem database
      * @return number of devices in modem database
      */
-    private int checkIfInModemDatabase(LegacyDevice dev) {
+    private int checkIfInModemDatabase(LegacyDevice device) {
         try {
             Map<InsteonAddress, LegacyModemDBEntry> dbes = driver.lockModemDBEntries();
-            if (dev.getAddress() instanceof InsteonAddress addr) {
-                if (dbes.containsKey(addr)) {
-                    if (!dev.hasModemDBEntry()) {
-                        logger.debug("device {} found in the modem database and {}.", addr,
-                                getLinkInfo(dbes, addr, true));
-                        dev.setHasModemDBEntry(true);
+            if (device.getAddress() instanceof InsteonAddress address) {
+                if (dbes.containsKey(address)) {
+                    if (!device.hasModemDBEntry()) {
+                        logger.debug("device {} found in the modem database and {}.", address,
+                                getLinkInfo(dbes, address, true));
+                        device.setHasModemDBEntry(true);
                     }
                 } else {
                     if (driver.isModemDBComplete()) {
-                        logger.warn("device {} not found in the modem database. Did you forget to link?", addr);
-                        handler.deviceNotLinked(addr);
+                        logger.warn("device {} not found in the modem database. Did you forget to link?", address);
+                        handler.deviceNotLinked(address);
                     }
                 }
             }
@@ -324,9 +324,8 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
         try {
             Map<String, String> databaseInfo = new HashMap<>();
             Map<InsteonAddress, LegacyModemDBEntry> dbes = driver.lockModemDBEntries();
-            for (InsteonAddress addr : dbes.keySet()) {
-                String a = addr.toString();
-                databaseInfo.put(a, a + ": " + getLinkInfo(dbes, addr, false));
+            for (InsteonAddress address : dbes.keySet()) {
+                databaseInfo.put(address.toString(), address + ": " + getLinkInfo(dbes, address, false));
             }
 
             return databaseInfo;
@@ -359,16 +358,15 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
     /**
      * Method to find a device by address
      *
-     * @param aAddr the insteon address to search for
+     * @param address the insteon address to search for
      * @return reference to the device, or null if not found
      */
-    public @Nullable LegacyDevice getDevice(@Nullable DeviceAddress aAddr) {
-        LegacyDevice dev = (aAddr == null) ? null : devices.get(aAddr);
-        return (dev);
+    public @Nullable LegacyDevice getDevice(@Nullable DeviceAddress address) {
+        return address == null ? null : devices.get(address);
     }
 
-    private String getLinkInfo(Map<InsteonAddress, LegacyModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
-        LegacyModemDBEntry dbe = dbes.get(a);
+    private String getLinkInfo(Map<InsteonAddress, LegacyModemDBEntry> dbes, InsteonAddress address, boolean prefix) {
+        LegacyModemDBEntry dbe = dbes.get(address);
         if (dbe == null) {
             return "";
         }
@@ -380,13 +378,13 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             return "";
         }
         String portName = port.getName();
-        String s = portName.startsWith("/hub") ? "hub" : "plm";
+        String modemType = portName.startsWith("/hub") ? "hub" : "plm";
         StringBuilder buf = new StringBuilder();
-        if (port.isModem(a)) {
+        if (port.isModem(address)) {
             if (prefix) {
                 buf.append("it is the ");
             }
-            buf.append(s);
+            buf.append(modemType);
             buf.append(" (");
             buf.append(portName);
             buf.append(")");
@@ -394,7 +392,7 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             if (prefix) {
                 buf.append("the ");
             }
-            buf.append(s);
+            buf.append(modemType);
             buf.append(" controls groups (");
             buf.append(toGroupString(controls));
             buf.append(") and responds to groups (");
@@ -432,13 +430,13 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
                 LegacyPollManager.instance().getSizeOfQueue(), messagesReceived);
         logger.debug("{}", msg);
         messagesReceived = 0;
-        for (LegacyDevice dev : devices.values()) {
-            if (dev.isModem()) {
+        for (LegacyDevice device : devices.values()) {
+            if (device.isModem()) {
                 continue;
             }
-            if (deadDeviceTimeout > 0 && dev.getPollOverDueTime() > deadDeviceTimeout) {
-                logger.debug("device {} has not responded to polls for {} sec", dev.toString(),
-                        dev.getPollOverDueTime() / 3600);
+            if (deadDeviceTimeout > 0 && device.getPollOverDueTime() > deadDeviceTimeout) {
+                logger.debug("device {} has not responded to polls for {} sec", device.toString(),
+                        device.getPollOverDueTime() / 3600);
             }
         }
     }
@@ -470,35 +468,35 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
             if (dbes.isEmpty()) {
                 logger.warn("the modem link database is empty!");
             }
-            for (InsteonAddress k : dbes.keySet()) {
-                logger.debug("modem db entry: {}", k);
+            for (InsteonAddress address : dbes.keySet()) {
+                logger.debug("modem db entry: {}", address);
             }
             Set<InsteonAddress> addrs = new HashSet<>();
-            for (LegacyDevice dev : devices.values()) {
-                if (dev.getAddress() instanceof InsteonAddress a) {
-                    if (!dbes.containsKey(a)) {
-                        logger.warn("device {} not found in the modem database. Did you forget to link?", a);
-                        handler.deviceNotLinked(a);
+            for (LegacyDevice device : devices.values()) {
+                if (device.getAddress() instanceof InsteonAddress address) {
+                    if (!dbes.containsKey(address)) {
+                        logger.warn("device {} not found in the modem database. Did you forget to link?", address);
+                        handler.deviceNotLinked(address);
                     } else {
-                        if (!dev.hasModemDBEntry()) {
-                            addrs.add(a);
-                            logger.debug("device {} found in the modem database and {}.", a,
-                                    getLinkInfo(dbes, a, true));
-                            dev.setHasModemDBEntry(true);
+                        if (!device.hasModemDBEntry()) {
+                            addrs.add(address);
+                            logger.debug("device {} found in the modem database and {}.", address,
+                                    getLinkInfo(dbes, address, true));
+                            device.setHasModemDBEntry(true);
                         }
-                        if (dev.getStatus() != DeviceStatus.POLLING) {
-                            LegacyPollManager.instance().startPolling(dev, dbes.size());
+                        if (device.getStatus() != DeviceStatus.POLLING) {
+                            LegacyPollManager.instance().startPolling(device, dbes.size());
                         }
                     }
                 }
             }
 
-            for (InsteonAddress a : dbes.keySet()) {
-                if (!addrs.contains(a)) {
-                    logger.debug("device {} found in the modem database, but is not configured as a thing and {}.", a,
-                            getLinkInfo(dbes, a, true));
+            for (InsteonAddress address : dbes.keySet()) {
+                if (!addrs.contains(address)) {
+                    logger.debug("device {} found in the modem database, but is not configured as a thing and {}.",
+                            address, getLinkInfo(dbes, address, true));
 
-                    missing.add(a);
+                    missing.add(address);
                 }
             }
         } finally {
@@ -542,11 +540,11 @@ public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortLis
     }
 
     private void handleMessage(DeviceAddress fromAddr, Msg msg) {
-        LegacyDevice dev = getDevice(fromAddr);
-        if (dev == null) {
+        LegacyDevice device = getDevice(fromAddr);
+        if (device == null) {
             logger.debug("dropping message from unknown device with address {}", fromAddr);
         } else {
-            dev.handleMessage(msg);
+            device.handleMessage(msg);
         }
     }
 }

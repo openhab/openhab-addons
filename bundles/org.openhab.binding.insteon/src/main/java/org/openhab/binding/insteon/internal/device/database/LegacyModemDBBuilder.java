@@ -166,13 +166,13 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
             logger.debug("MDB ------- start of modem link records ------------------");
             Map<InsteonAddress, LegacyModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             for (Entry<InsteonAddress, LegacyModemDBEntry> db : dbes.entrySet()) {
-                List<Msg> lrs = db.getValue().getLinkRecords();
-                for (Msg m : lrs) {
-                    int recordFlags = m.getByte("RecordFlags") & 0xff;
+                List<Msg> records = db.getValue().getLinkRecords();
+                for (Msg msg : records) {
+                    int recordFlags = msg.getByte("RecordFlags") & 0xff;
                     String ms = ((recordFlags & (0x1 << 6)) != 0) ? "CTRL" : "RESP";
                     logger.debug("MDB {}: {} group: {} data1: {} data2: {} data3: {}", db.getKey(), ms,
-                            toHex(m.getByte("ALLLinkGroup")), toHex(m.getByte("LinkData1")),
-                            toHex(m.getByte("LinkData2")), toHex(m.getByte("LinkData2")));
+                            toHex(msg.getByte("ALLLinkGroup")), toHex(msg.getByte("LinkData1")),
+                            toHex(msg.getByte("LinkData2")), toHex(msg.getByte("LinkData2")));
                 }
                 logger.debug("MDB -----");
             }
@@ -188,7 +188,7 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
         return HexUtils.getHexString(b);
     }
 
-    public void updateModemDB(InsteonAddress linkAddr, LegacyPort port, @Nullable Msg m, boolean isModem) {
+    public void updateModemDB(InsteonAddress linkAddr, LegacyPort port, @Nullable Msg msg, boolean isModem) {
         try {
             Map<InsteonAddress, LegacyModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             LegacyModemDBEntry dbe = dbes.get(linkAddr);
@@ -197,11 +197,11 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
                 dbes.put(linkAddr, dbe);
             }
             dbe.setPort(port);
-            if (m != null) {
-                dbe.addLinkRecord(m);
+            if (msg != null) {
+                dbe.addLinkRecord(msg);
                 try {
-                    byte group = m.getByte("ALLLinkGroup");
-                    int recordFlags = m.getByte("RecordFlags") & 0xff;
+                    byte group = msg.getByte("ALLLinkGroup");
+                    int recordFlags = msg.getByte("RecordFlags") & 0xff;
                     if ((recordFlags & (0x1 << 6)) != 0) {
                         dbe.addControls(group);
                     } else {

@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonResourceLoader;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
-import org.openhab.binding.insteon.internal.utils.ResourceLoader;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
-public class ProductDataRegistry extends ResourceLoader {
+public class ProductDataRegistry extends InsteonResourceLoader {
     private static final ProductDataRegistry PRODUCT_DATA_REGISTRY = new ProductDataRegistry();
     private static final String RESOURCE_NAME = "/device-products.xml";
 

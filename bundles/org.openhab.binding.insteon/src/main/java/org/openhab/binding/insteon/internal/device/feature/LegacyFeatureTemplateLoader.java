@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonResourceLoader;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
-import org.openhab.binding.insteon.internal.utils.ResourceLoader;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class LegacyFeatureTemplateLoader extends ResourceLoader {
+public class LegacyFeatureTemplateLoader extends InsteonResourceLoader {
     private static final LegacyFeatureTemplateLoader FEATURE_TEMPLATE_LOADER = new LegacyFeatureTemplateLoader();
     private static final String RESOURCE_NAME = "/legacy-device-features.xml";
 
@@ -57,8 +57,8 @@ public class LegacyFeatureTemplateLoader extends ResourceLoader {
     }
 
     @Override
-    protected void parseDocument(Element e) throws SAXException {
-        NodeList nodes = e.getChildNodes();
+    protected void parseDocument(Element element) throws SAXException {
+        NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -70,12 +70,12 @@ public class LegacyFeatureTemplateLoader extends ResourceLoader {
         }
     }
 
-    private void parseFeature(Element e) throws SAXException {
-        String name = e.getAttribute("name");
-        boolean statusFeature = "true".equals(e.getAttribute("statusFeature"));
-        LegacyFeatureTemplate feature = new LegacyFeatureTemplate(name, statusFeature, e.getAttribute("timeout"));
+    private void parseFeature(Element element) throws SAXException {
+        String name = element.getAttribute("name");
+        boolean statusFeature = "true".equals(element.getAttribute("statusFeature"));
+        LegacyFeatureTemplate feature = new LegacyFeatureTemplate(name, statusFeature, element.getAttribute("timeout"));
 
-        NodeList nodes = e.getChildNodes();
+        NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -95,60 +95,60 @@ public class LegacyFeatureTemplateLoader extends ResourceLoader {
         features.put(name, feature);
     }
 
-    private HandlerEntry makeHandlerEntry(Element e) throws SAXException {
-        String handler = e.getTextContent();
+    private HandlerEntry makeHandlerEntry(Element element) throws SAXException {
+        String handler = element.getTextContent();
         if (handler == null) {
-            throw new SAXException("Could not find Handler for: " + e.getTextContent());
+            throw new SAXException("Could not find Handler for: " + element.getTextContent());
         }
 
-        NamedNodeMap attributes = e.getAttributes();
+        NamedNodeMap attributes = element.getAttributes();
         Map<String, String> params = new HashMap<>();
         for (int i = 0; i < attributes.getLength(); i++) {
-            Node n = attributes.item(i);
-            params.put(n.getNodeName(), n.getNodeValue());
+            Node node = attributes.item(i);
+            params.put(node.getNodeName(), node.getNodeValue());
         }
         return new HandlerEntry(handler, params);
     }
 
-    private void parseMessageHandler(Element e, LegacyFeatureTemplate f) throws SAXException {
-        HandlerEntry he = makeHandlerEntry(e);
-        if ("true".equals(e.getAttribute("default"))) {
-            f.setDefaultMessageHandler(he);
+    private void parseMessageHandler(Element element, LegacyFeatureTemplate template) throws SAXException {
+        HandlerEntry he = makeHandlerEntry(element);
+        if ("true".equals(element.getAttribute("default"))) {
+            template.setDefaultMessageHandler(he);
         } else {
-            String attr = e.getAttribute("cmd");
+            String attr = element.getAttribute("cmd");
             int command = (attr == null) ? 0 : HexUtils.toInteger(attr);
-            f.addMessageHandler(command, he);
+            template.addMessageHandler(command, he);
         }
     }
 
-    private void parseCommandHandler(Element e, LegacyFeatureTemplate f) throws SAXException {
-        HandlerEntry he = makeHandlerEntry(e);
-        if ("true".equals(e.getAttribute("default"))) {
-            f.setDefaultCommandHandler(he);
+    private void parseCommandHandler(Element element, LegacyFeatureTemplate template) throws SAXException {
+        HandlerEntry he = makeHandlerEntry(element);
+        if ("true".equals(element.getAttribute("default"))) {
+            template.setDefaultCommandHandler(he);
         } else {
-            Class<? extends Command> command = parseCommandClass(e.getAttribute("command"));
-            f.addCommandHandler(command, he);
+            Class<? extends Command> command = parseCommandClass(element.getAttribute("command"));
+            template.addCommandHandler(command, he);
         }
     }
 
-    private void parseMessageDispatcher(Element e, LegacyFeatureTemplate f) throws SAXException {
-        HandlerEntry he = makeHandlerEntry(e);
-        f.setMessageDispatcher(he);
+    private void parseMessageDispatcher(Element element, LegacyFeatureTemplate template) throws SAXException {
+        HandlerEntry he = makeHandlerEntry(element);
+        template.setMessageDispatcher(he);
     }
 
-    private void parsePollHandler(Element e, LegacyFeatureTemplate f) throws SAXException {
-        HandlerEntry he = makeHandlerEntry(e);
-        f.setPollHandler(he);
+    private void parsePollHandler(Element element, LegacyFeatureTemplate template) throws SAXException {
+        HandlerEntry he = makeHandlerEntry(element);
+        template.setPollHandler(he);
     }
 
-    private Class<? extends Command> parseCommandClass(String c) throws SAXException {
-        if ("OnOffType".equals(c)) {
+    private Class<? extends Command> parseCommandClass(String command) throws SAXException {
+        if ("OnOffType".equals(command)) {
             return OnOffType.class;
-        } else if ("PercentType".equals(c)) {
+        } else if ("PercentType".equals(command)) {
             return PercentType.class;
-        } else if ("DecimalType".equals(c)) {
+        } else if ("DecimalType".equals(command)) {
             return DecimalType.class;
-        } else if ("IncreaseDecreaseType".equals(c)) {
+        } else if ("IncreaseDecreaseType".equals(command)) {
             return IncreaseDecreaseType.class;
         } else {
             throw new SAXException("Unknown Command Type");

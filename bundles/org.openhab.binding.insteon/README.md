@@ -18,7 +18,9 @@ At startup, the binding will download the modem database along with each configu
 Therefore, the initialization on the first start may take some additional time to complete depending on the number of devices configured.
 The modem and device link databases are only downloaded once unless the binding receives an indication that a database was updated or marked to be refreshed via the [openHAB console](#console-commands).
 
-The binding has been rewritten in openHAB 4.3 to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
+**Important note as of openHAB 4.3.0**
+
+The binding has been rewritten to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
 If switching from a previous release, you will need to reconfigure your Insteon environment with the new bridges, things and channels to take advantage of these enhancements.
 You can follow the [migration guide](#migration-guide).
 
@@ -213,6 +215,7 @@ Likewise, for a device that wasn't accessible during the binding initialization 
   | X10 switch | generic X10 switch                     | X00.00.01   |
   | X10 dimmer | generic X10 dimmer                     | X00.00.02   |
   | X10 motion | generic X10 motion sensor              | X00.00.03   |
+
 </details>
 
 ## Channels
@@ -367,7 +370,6 @@ And for Insteon Hub and PLM things:
 | `PRESSED`  | Button Pressed  |
 | `HELD`     | Button Held     |
 | `RELEASED` | Button Released |
-
 
 ### Legacy Channels
 

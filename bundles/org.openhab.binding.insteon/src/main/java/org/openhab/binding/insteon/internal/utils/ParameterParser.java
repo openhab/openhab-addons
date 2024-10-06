@@ -25,6 +25,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ParameterParser {
+    /**
+     * Returns a parameter value as type
+     *
+     * @param value the parameter value
+     * @param type the parameter type
+     * @return the parameter value as type if not null, otherwise null
+     * @throws NumberFormatException
+     */
     @SuppressWarnings("unchecked")
     public static <@NonNull T> @Nullable T getParameterAs(@Nullable String value, Class<T> type)
             throws NumberFormatException {
@@ -46,6 +54,14 @@ public class ParameterParser {
         return (T) result;
     }
 
+    /**
+     * Returns a parameter value as type or default value
+     *
+     * @param value the parameter value
+     * @param type the parameter type
+     * @param defaultValue the default value
+     * @return the parameter value as type if not null, otherwise default value
+     */
     public static <@NonNull T> T getParameterAsOrDefault(@Nullable String value, Class<T> type, T defaultValue) {
         try {
             return Objects.requireNonNullElse(getParameterAs(value, type), defaultValue);

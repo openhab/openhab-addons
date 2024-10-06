@@ -21,32 +21,80 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BinaryUtils {
+    /**
+     * Returns a binary string for a given byte
+     *
+     * @param b the byte
+     * @return the formatted binary string
+     */
     public static String getBinaryString(byte b) {
         return getBinaryString(b & 0xFF);
     }
 
-    public static String getBinaryString(int b) {
-        String binary = Integer.toBinaryString(b);
+    /**
+     * Returns a binary string for a given integer
+     *
+     * @param i the integer
+     * @return the formatted binary string
+     */
+    public static String getBinaryString(int i) {
+        String binary = Integer.toBinaryString(i);
         return String.format("%8s", binary).replace(" ", "0");
     }
 
+    /**
+     * Returns a bit value
+     *
+     * @param bitmask the bitmask
+     * @param bit the bit to extract
+     * @return the bit value
+     */
     public static int getBit(int bitmask, int bit) {
         return (bitmask >> bit) & 0x1;
     }
 
+    /**
+     * Returns if a bit is set
+     *
+     * @param bitmask the bitmask
+     * @param bit the bit to check
+     * @return true if bit is set, otherwise false
+     */
     public static boolean isBitSet(int bitmask, int bit) {
         return getBit(bitmask, bit) == 0x1;
     }
 
-    public static int setBit(int bitmask, int bit, boolean shouldSet) {
+    /**
+     * Updates a bit in a bitmask
+     *
+     * @param bitmask the bitmask to update
+     * @param bit the bit to update
+     * @param shouldSet if bit should be set
+     * @return the updated bitmask
+     */
+    public static int updateBit(int bitmask, int bit, boolean shouldSet) {
         return shouldSet ? bitmask | (0x1 << bit) : bitmask & ~(0x1 << bit);
     }
 
+    /**
+     * Sets a bit in a bitmask
+     *
+     * @param bitmask the bitmask to update
+     * @param bit the bit to set
+     * @return the updated bitmask
+     */
     public static int setBit(int bitmask, int bit) {
-        return setBit(bitmask, bit, true);
+        return updateBit(bitmask, bit, true);
     }
 
+    /**
+     * Clears a bit in a bitmask
+     *
+     * @param bitmask the bitmask to update
+     * @param bit the bit to clear
+     * @return the updated bitmask
+     */
     public static int clearBit(int bitmask, int bit) {
-        return setBit(bitmask, bit, false);
+        return updateBit(bitmask, bit, false);
     }
 }

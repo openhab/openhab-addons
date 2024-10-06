@@ -111,18 +111,18 @@ public class LegacyGroupMessageStateMachine {
     /**
      * Advance the state machine and determine if update is genuine (no duplicate)
      *
-     * @param a the group message (action) that was received
+     * @param action the group message (action) that was received
      * @param address the address of the device that this state machine belongs to
      * @param group the group that this state machine belongs to
      * @param cmd1 cmd1 from the message received
      * @return true if the group message is not a duplicate
      */
-    public boolean action(GroupMessage a, DeviceAddress address, int group, byte cmd1) {
+    public boolean action(GroupMessage action, DeviceAddress address, int group, byte cmd1) {
         publish = false;
         long currentTime = System.currentTimeMillis();
         switch (state) {
             case EXPECT_BCAST:
-                switch (a) {
+                switch (action) {
                     case BCAST:
                         publish = true;
                         break; // missed() move state machine and pub!
@@ -135,7 +135,7 @@ public class LegacyGroupMessageStateMachine {
                 } // missed(BCAST,CLEAN) or dup SUCCESS
                 break;
             case EXPECT_CLEAN:
-                switch (a) {
+                switch (action) {
                     case BCAST:
                         if (lastCmd1 == cmd1) {
                             if (currentTime > lastUpdated + 30000) {
@@ -165,7 +165,7 @@ public class LegacyGroupMessageStateMachine {
                 } // missed(CLEAN)
                 break;
             case EXPECT_SUCCESS:
-                switch (a) {
+                switch (action) {
                     case BCAST:
                         publish = true;
                         break; // missed(SUCCESS)
@@ -179,7 +179,7 @@ public class LegacyGroupMessageStateMachine {
                 break;
         }
         State oldState = state;
-        switch (a) {
+        switch (action) {
             case BCAST:
                 state = State.EXPECT_CLEAN;
                 break;
@@ -193,8 +193,8 @@ public class LegacyGroupMessageStateMachine {
 
         lastCmd1 = cmd1;
         lastUpdated = currentTime;
-        logger.debug("{} group {} state: {} --{}--> {}, publish: {}", address, group, oldState, a, state, publish);
-        return (publish);
+        logger.debug("{} group {} state: {} --{}--> {}, publish: {}", address, group, oldState, action, state, publish);
+        return publish;
     }
 
     public long getLastUpdated() {

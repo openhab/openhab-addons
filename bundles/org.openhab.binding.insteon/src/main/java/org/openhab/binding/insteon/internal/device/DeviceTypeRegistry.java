@@ -18,11 +18,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonResourceLoader;
 import org.openhab.binding.insteon.internal.device.DeviceType.CommandEntry;
 import org.openhab.binding.insteon.internal.device.DeviceType.DefaultLinkEntry;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureEntry;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
-import org.openhab.binding.insteon.internal.utils.ResourceLoader;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class DeviceTypeRegistry extends ResourceLoader {
+public class DeviceTypeRegistry extends InsteonResourceLoader {
     private static final DeviceTypeRegistry DEVICE_TYPE_REGISTRY = new DeviceTypeRegistry();
     private static final String RESOURCE_NAME = "/device-types.xml";
 

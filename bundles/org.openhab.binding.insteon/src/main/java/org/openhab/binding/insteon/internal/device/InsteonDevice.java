@@ -792,7 +792,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                 for (int group : buttons) {
                     int bit = group - 1;
                     onMask = BinaryUtils.clearBit(onMask, bit);
-                    offMask = BinaryUtils.setBit(offMask, bit, buttonGroup != group);
+                    offMask = BinaryUtils.updateBit(offMask, bit, buttonGroup != group);
                 }
                 onMaskFeature.handleCommand(new DecimalType(onMask));
                 offMaskFeature.handleCommand(new DecimalType(offMask));
@@ -845,8 +845,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
 
             for (int group : buttons) {
                 int bit = group - 1;
-                nonToggleMask = BinaryUtils.setBit(nonToggleMask, bit, mode != KeypadButtonToggleMode.TOGGLE);
-                alwaysOnOffMask = BinaryUtils.setBit(alwaysOnOffMask, bit, mode == KeypadButtonToggleMode.ALWAYS_ON);
+                nonToggleMask = BinaryUtils.updateBit(nonToggleMask, bit, mode != KeypadButtonToggleMode.TOGGLE);
+                alwaysOnOffMask = BinaryUtils.updateBit(alwaysOnOffMask, bit, mode == KeypadButtonToggleMode.ALWAYS_ON);
             }
             toggleModeFeature.handleCommand(new DecimalType(nonToggleMask << 8 | alwaysOnOffMask));
         }

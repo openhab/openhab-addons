@@ -296,7 +296,7 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                     logger.trace("{}: bitmask:{} bit:{} set:{}", nm(), BinaryUtils.getBinaryString(bitmask), bit,
                             shouldSetBit);
                 }
-                return BinaryUtils.setBit(bitmask, bit, shouldSetBit);
+                return BinaryUtils.updateBit(bitmask, bit, shouldSetBit);
             }
             return -1;
         }
@@ -1197,8 +1197,9 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                         return;
                     }
                     KeypadButtonToggleMode mode = KeypadButtonToggleMode.valueOf(stringCmd.toString());
-                    int nonToggleMask = BinaryUtils.setBit(lastValue >> 8, bit, mode != KeypadButtonToggleMode.TOGGLE);
-                    int alwaysOnOffMask = BinaryUtils.setBit(lastValue & 0xFF, bit,
+                    int nonToggleMask = BinaryUtils.updateBit(lastValue >> 8, bit,
+                            mode != KeypadButtonToggleMode.TOGGLE);
+                    int alwaysOnOffMask = BinaryUtils.updateBit(lastValue & 0xFF, bit,
                             mode == KeypadButtonToggleMode.ALWAYS_ON);
                     setToggleMode(nonToggleMask, alwaysOnOffMask);
                 }

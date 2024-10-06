@@ -251,19 +251,19 @@ public class LegacyPort {
     /**
      * Adds message to the write queue
      *
-     * @param m message to be added to the write queue
+     * @param msg message to be added to the write queue
      * @throws IOException
      */
-    public void writeMessage(@Nullable Msg m) throws IOException {
-        if (m == null) {
+    public void writeMessage(@Nullable Msg msg) throws IOException {
+        if (msg == null) {
             logger.warn("trying to write null message!");
             throw new IOException("trying to write null message!");
         }
         try {
-            writeQueue.add(m);
-            logger.trace("enqueued msg: {}", m);
+            writeQueue.add(msg);
+            logger.trace("enqueued msg: {}", msg);
         } catch (IllegalStateException e) {
-            logger.warn("cannot write message {}, write queue is full!", m);
+            logger.warn("cannot write message {}, write queue is full!", msg);
         }
     }
 
@@ -378,8 +378,8 @@ public class LegacyPort {
             synchronized (listeners) {
                 tempList = (ArrayList<LegacyPortListener>) listeners.clone();
             }
-            for (LegacyPortListener l : tempList) {
-                l.msg(msg); // deliver msg to listener
+            for (LegacyPortListener listener : tempList) {
+                listener.msg(msg); // deliver msg to listener
             }
         }
 
@@ -411,7 +411,7 @@ public class LegacyPort {
                     break; // done for the day...
                 }
             }
-            return (reply == ReplyType.GOT_NACK);
+            return reply == ReplyType.GOT_NACK;
         }
     }
 
@@ -486,16 +486,16 @@ public class LegacyPort {
                 }
                 if (msg.getByte("Cmd") == 0x60) {
                     // add the modem to the device list
-                    InsteonAddress a = msg.getInsteonAddress("IMAddress");
-                    LegacyDeviceType dt = LegacyDeviceTypeLoader.instance()
+                    InsteonAddress address = msg.getInsteonAddress("IMAddress");
+                    LegacyDeviceType deviceType = LegacyDeviceTypeLoader.instance()
                             .getDeviceType(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY);
-                    if (dt == null) {
+                    if (deviceType == null) {
                         logger.warn("unknown modem product key: {} for modem: {}.",
-                                InsteonLegacyBindingConstants.PLM_PRODUCT_KEY, a);
+                                InsteonLegacyBindingConstants.PLM_PRODUCT_KEY, address);
                     } else {
-                        device = LegacyDevice.makeDevice(dt);
-                        initDevice(a, device);
-                        mdbb.updateModemDB(a, LegacyPort.this, null, true);
+                        device = LegacyDevice.makeDevice(deviceType);
+                        initDevice(address, device);
+                        mdbb.updateModemDB(address, LegacyPort.this, null, true);
                     }
                     // can unsubscribe now
                     removeListener(this);
@@ -519,8 +519,8 @@ public class LegacyPort {
 
         public void initialize() {
             try {
-                Msg m = Msg.makeMessage("GetIMInfo");
-                writeMessage(m);
+                Msg msg = Msg.makeMessage("GetIMInfo");
+                writeMessage(msg);
             } catch (IOException e) {
                 logger.warn("modem init failed!", e);
             } catch (InvalidMessageTypeException e) {

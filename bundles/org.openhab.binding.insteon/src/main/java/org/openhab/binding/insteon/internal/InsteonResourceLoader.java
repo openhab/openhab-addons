@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.insteon.internal.utils;
+package org.openhab.binding.insteon.internal;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,6 +25,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -34,17 +35,17 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
- * The {@link ResourceLoader} represents a resource loader
+ * The {@link InsteonResourceLoader} represents an abstract Insteon resource loader
  *
  * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
-public abstract class ResourceLoader {
+public abstract class InsteonResourceLoader {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String name;
 
-    protected ResourceLoader(String name) {
+    protected InsteonResourceLoader(String name) {
         this.name = name;
     }
 

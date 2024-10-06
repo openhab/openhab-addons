@@ -62,32 +62,32 @@ public class LegacyRequestManager {
     /**
      * Add device to global request queue.
      *
-     * @param dev the device to add
+     * @param device the device to add
      * @param time the time when the queue should be processed
      */
-    public void addQueue(LegacyDevice dev, long time) {
+    public void addQueue(LegacyDevice device, long time) {
         synchronized (requestQueues) {
-            RequestQueue q = requestQueueHash.get(dev);
-            if (q == null) {
-                logger.trace("scheduling request for device {} in {} msec", dev.getAddress(),
+            RequestQueue queue = requestQueueHash.get(device);
+            if (queue == null) {
+                logger.trace("scheduling request for device {} in {} msec", device.getAddress(),
                         time - System.currentTimeMillis());
-                q = new RequestQueue(dev, time);
+                queue = new RequestQueue(device, time);
             } else {
-                logger.trace("queue for dev {} is already scheduled in {} msec", dev.getAddress(),
-                        q.getExpirationTime() - System.currentTimeMillis());
-                if (!requestQueues.remove(q)) {
-                    logger.warn("queue for {} should be there, report as bug!", dev);
+                logger.trace("queue for device {} is already scheduled in {} msec", device.getAddress(),
+                        queue.getExpirationTime() - System.currentTimeMillis());
+                if (!requestQueues.remove(queue)) {
+                    logger.warn("queue for {} should be there, report as bug!", device);
                 }
-                requestQueueHash.remove(dev);
+                requestQueueHash.remove(device);
             }
-            long expTime = q.getExpirationTime();
+            long expTime = queue.getExpirationTime();
             if (expTime > time) {
-                q.setExpirationTime(time);
+                queue.setExpirationTime(time);
             }
             // add the queue back in after (maybe) having modified
             // the expiration time
-            requestQueues.add(q);
-            requestQueueHash.put(dev, q);
+            requestQueues.add(queue);
+            requestQueueHash.put(device, queue);
             requestQueues.notify();
         }
     }
@@ -121,14 +121,14 @@ public class LegacyRequestManager {
             synchronized (requestQueues) {
                 while (keepRunning) {
                     try {
-                        RequestQueue q;
-                        while (keepRunning && (q = requestQueues.peek()) != null) {
+                        RequestQueue queue;
+                        while (keepRunning && (queue = requestQueues.peek()) != null) {
                             long now = System.currentTimeMillis();
-                            long expTime = q.getExpirationTime();
-                            LegacyDevice dev = q.getDevice();
+                            long expTime = queue.getExpirationTime();
+                            LegacyDevice device = queue.getDevice();
                             if (expTime > now) {
                                 // The head of the queue is not up for processing yet, wait().
-                                logger.trace("request queue head: {} must wait for {} msec", dev.getAddress(),
+                                logger.trace("request queue head: {} must wait for {} msec", device.getAddress(),
                                         expTime - now);
                                 requestQueues.wait(expTime - now);
                                 // note that the wait() can also return because of changes to
@@ -136,18 +136,18 @@ public class LegacyRequestManager {
                                 continue;
                             }
                             // The head of the queue has expired and can be processed!
-                            q = requestQueues.poll(); // remove front element
-                            requestQueueHash.remove(dev); // and remove from hash map
-                            long nextExp = dev.processRequestQueue(now);
+                            queue = requestQueues.poll(); // remove front element
+                            requestQueueHash.remove(device); // and remove from hash map
+                            long nextExp = device.processRequestQueue(now);
                             if (nextExp > 0) {
-                                q = new RequestQueue(dev, nextExp);
-                                requestQueues.add(q);
-                                requestQueueHash.put(dev, q);
-                                logger.trace("device queue for {} rescheduled in {} msec", dev.getAddress(),
+                                queue = new RequestQueue(device, nextExp);
+                                requestQueues.add(queue);
+                                requestQueueHash.put(device, queue);
+                                logger.trace("device queue for {} rescheduled in {} msec", device.getAddress(),
                                         nextExp - now);
                             } else {
                                 // remove from hash since queue is no longer scheduled
-                                logger.debug("device queue for {} is empty!", dev.getAddress());
+                                logger.debug("device queue for {} is empty!", device.getAddress());
                             }
                         }
                         logger.trace("waiting for request queues to fill");
@@ -166,8 +166,8 @@ public class LegacyRequestManager {
         private LegacyDevice device;
         private long expirationTime;
 
-        RequestQueue(LegacyDevice dev, long expirationTime) {
-            this.device = dev;
+        RequestQueue(LegacyDevice device, long expirationTime) {
+            this.device = device;
             this.expirationTime = expirationTime;
         }
 
@@ -184,8 +184,8 @@ public class LegacyRequestManager {
         }
 
         @Override
-        public int compareTo(RequestQueue a) {
-            return (int) (expirationTime - a.expirationTime);
+        public int compareTo(RequestQueue queue) {
+            return (int) (expirationTime - queue.expirationTime);
         }
     }
 

@@ -35,8 +35,8 @@ public class MsgDefinition {
     MsgDefinition() {
     }
 
-    MsgDefinition(MsgDefinition m) {
-        fields = new HashMap<>(m.fields);
+    MsgDefinition(MsgDefinition definition) {
+        fields = new HashMap<>(definition.fields);
     }
 
     public List<Field> getFields() {

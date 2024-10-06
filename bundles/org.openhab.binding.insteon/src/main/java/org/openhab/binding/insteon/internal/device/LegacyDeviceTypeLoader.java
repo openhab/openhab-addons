@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonResourceLoader;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceType.FeatureGroup;
-import org.openhab.binding.insteon.internal.utils.ResourceLoader;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
  * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class LegacyDeviceTypeLoader extends ResourceLoader {
+public class LegacyDeviceTypeLoader extends InsteonResourceLoader {
     private static final LegacyDeviceTypeLoader DEVICE_TYPE_LOADER = new LegacyDeviceTypeLoader();
     private static final String RESOURCE_NAME = "/legacy-device-types.xml";
 
@@ -65,12 +65,12 @@ public class LegacyDeviceTypeLoader extends ResourceLoader {
     /**
      * Parses the device types document
      *
-     * @param e element to parse
+     * @param element element to parse
      * @throws SAXException
      */
     @Override
-    protected void parseDocument(Element e) throws SAXException {
-        NodeList nodes = e.getChildNodes();
+    protected void parseDocument(Element element) throws SAXException {
+        NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE && "device".equals(node.getNodeName())) {
@@ -82,11 +82,11 @@ public class LegacyDeviceTypeLoader extends ResourceLoader {
     /**
      * Process device node
      *
-     * @param e name of the element to process
+     * @param element name of the element to process
      * @throws SAXException
      */
-    private void processDevice(Element e) throws SAXException {
-        String productKey = e.getAttribute("productKey");
+    private void processDevice(Element element) throws SAXException {
+        String productKey = element.getAttribute("productKey");
         if (productKey.isEmpty()) {
             throw new SAXException("device in device_types file has no product key!");
         }
@@ -96,7 +96,7 @@ public class LegacyDeviceTypeLoader extends ResourceLoader {
         }
         LegacyDeviceType devType = new LegacyDeviceType(productKey);
 
-        NodeList nodes = e.getChildNodes();
+        NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) {
@@ -117,31 +117,31 @@ public class LegacyDeviceTypeLoader extends ResourceLoader {
         }
     }
 
-    private String processFeature(LegacyDeviceType devType, Element e) throws SAXException {
-        String name = e.getAttribute("name");
+    private String processFeature(LegacyDeviceType devType, Element element) throws SAXException {
+        String name = element.getAttribute("name");
         if (name.isEmpty()) {
-            throw new SAXException("feature " + e.getNodeName() + " has feature without name!");
+            throw new SAXException("feature " + element.getNodeName() + " has feature without name!");
         }
         if (!name.equals(name.toLowerCase())) {
             throw new SAXException("feature name '" + name + "' must be lower case");
         }
-        if (!devType.addFeature(name, e.getTextContent())) {
+        if (!devType.addFeature(name, element.getTextContent())) {
             throw new SAXException("duplicate feature: " + name);
         }
         return name;
     }
 
-    private String processFeatureGroup(LegacyDeviceType devType, Element e) throws SAXException {
-        String name = e.getAttribute("name");
+    private String processFeatureGroup(LegacyDeviceType devType, Element element) throws SAXException {
+        String name = element.getAttribute("name");
         if (name.isEmpty()) {
-            throw new SAXException("feature group " + e.getNodeName() + " has no name attr!");
+            throw new SAXException("feature group " + element.getNodeName() + " has no name attr!");
         }
-        String type = e.getAttribute("type");
+        String type = element.getAttribute("type");
         if (type.isEmpty()) {
-            throw new SAXException("feature group " + e.getNodeName() + " has no type attr!");
+            throw new SAXException("feature group " + element.getNodeName() + " has no type attr!");
         }
         FeatureGroup fg = new FeatureGroup(name, type);
-        NodeList nodes = e.getChildNodes();
+        NodeList nodes = element.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) {

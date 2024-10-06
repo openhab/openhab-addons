@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
- * @author Jeremy Setton - Initial contribution
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class HandlerEntry {

@@ -164,7 +164,7 @@ public class PollManager {
 
     private long findNextExpirationTime(Device device, long pollInterval, long time) {
         long expTime;
-        // tailSet finds all those that expire after aTime - buffer
+        // tailSet finds all those that expire after time - buffer
         PQEntry queue = new PQEntry(device, pollInterval, time - MIN_MSEC_BETWEEN_POLLS);
         SortedSet<PQEntry> tailSet = pollQueue.tailSet(queue);
         if (tailSet.isEmpty()) {

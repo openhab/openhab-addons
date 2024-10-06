@@ -113,8 +113,8 @@ public class LegacyDevice {
         return isModem;
     }
 
-    public @Nullable LegacyDeviceFeature getFeature(String f) {
-        return features.get(f);
+    public @Nullable LegacyDeviceFeature getFeature(String name) {
+        return features.get(name);
     }
 
     public Map<String, LegacyDeviceFeature> getFeatures() {
@@ -127,17 +127,17 @@ public class LegacyDevice {
     }
 
     public boolean hasValidPollingInterval() {
-        return (pollInterval > 0);
+        return pollInterval > 0;
     }
 
     public long getPollOverDueTime() {
-        return (lastTimePolled - lastMsgReceived);
+        return lastTimePolled - lastMsgReceived;
     }
 
     public boolean hasAnyListeners() {
         synchronized (features) {
-            for (LegacyDeviceFeature f : features.values()) {
-                if (f.hasListeners()) {
+            for (LegacyDeviceFeature feature : features.values()) {
+                if (feature.hasListeners()) {
                     return true;
                 }
             }
@@ -145,40 +145,40 @@ public class LegacyDevice {
         return false;
     }
 
-    public void setStatus(DeviceStatus aI) {
-        status = aI;
+    public void setStatus(DeviceStatus status) {
+        this.status = status;
     }
 
-    public void setHasModemDBEntry(boolean b) {
-        hasModemDBEntry = b;
+    public void setHasModemDBEntry(boolean hasModemDBEntry) {
+        this.hasModemDBEntry = hasModemDBEntry;
     }
 
-    public void setAddress(DeviceAddress ia) {
-        address = ia;
+    public void setAddress(DeviceAddress address) {
+        this.address = address;
     }
 
-    public void setDriver(LegacyDriver d) {
-        driver = d;
+    public void setDriver(LegacyDriver driver) {
+        this.driver = driver;
     }
 
-    public void setIsModem(boolean f) {
-        isModem = f;
+    public void setIsModem(boolean isModem) {
+        this.isModem = isModem;
     }
 
-    public void setProductKey(String pk) {
-        productKey = pk;
+    public void setProductKey(String productKey) {
+        this.productKey = productKey;
     }
 
-    public void setPollInterval(long pi) {
-        logger.trace("setting poll interval for {} to {} ", address, pi);
-        if (pi > 0) {
-            pollInterval = pi;
+    public void setPollInterval(long pollInterval) {
+        logger.trace("setting poll interval for {} to {} ", address, pollInterval);
+        if (pollInterval > 0) {
+            this.pollInterval = pollInterval;
         }
     }
 
-    public void setFeatureQueried(@Nullable LegacyDeviceFeature f) {
+    public void setFeatureQueried(@Nullable LegacyDeviceFeature featureQueried) {
         synchronized (mrequestQueue) {
-            featureQueried = f;
+            this.featureQueried = featureQueried;
         }
     }
 
@@ -192,22 +192,22 @@ public class LegacyDevice {
 
     public @Nullable LegacyDeviceFeature getFeatureQueried() {
         synchronized (mrequestQueue) {
-            return (featureQueried);
+            return featureQueried;
         }
     }
 
     /**
      * Removes feature listener from this device
      *
-     * @param aItemName name of the feature listener to remove
+     * @param itemName name of the feature listener to remove
      * @return true if a feature listener was successfully removed
      */
-    public boolean removeFeatureListener(String aItemName) {
+    public boolean removeFeatureListener(String itemName) {
         boolean removedListener = false;
         synchronized (features) {
             for (Iterator<Entry<String, LegacyDeviceFeature>> it = features.entrySet().iterator(); it.hasNext();) {
-                LegacyDeviceFeature f = it.next().getValue();
-                if (f.removeListener(aItemName)) {
+                LegacyDeviceFeature feature = it.next().getValue();
+                if (feature.removeListener(itemName)) {
                     removedListener = true;
                 }
             }
@@ -219,15 +219,15 @@ public class LegacyDevice {
      * Invoked to process an openHAB command
      *
      * @param driver The driver to use
-     * @param c The item configuration
+     * @param config The item configuration
      * @param command The actual command to execute
      */
-    public void processCommand(LegacyDriver driver, InsteonLegacyChannelConfiguration c, Command command) {
+    public void processCommand(LegacyDriver driver, InsteonLegacyChannelConfiguration config, Command command) {
         logger.debug("processing command {} features: {}", command, features.size());
         synchronized (features) {
-            for (LegacyDeviceFeature i : features.values()) {
-                if (i.isReferencedByItem(c.getChannelName())) {
-                    i.handleCommand(c, command);
+            for (LegacyDeviceFeature feature : features.values()) {
+                if (feature.isReferencedByItem(config.getChannelName())) {
+                    feature.handleCommand(config, command);
                 }
             }
         }
@@ -242,25 +242,25 @@ public class LegacyDevice {
      */
     public void doPoll(long delay) {
         long now = System.currentTimeMillis();
-        List<QEntry> l = new ArrayList<>();
+        List<QEntry> list = new ArrayList<>();
         synchronized (features) {
             int spacing = 0;
-            for (LegacyDeviceFeature i : features.values()) {
-                if (i.hasListeners()) {
-                    Msg m = i.makePollMsg();
-                    if (m != null) {
-                        l.add(new QEntry(i, m, now + delay + spacing));
+            for (LegacyDeviceFeature feature : features.values()) {
+                if (feature.hasListeners()) {
+                    Msg msg = feature.makePollMsg();
+                    if (msg != null) {
+                        list.add(new QEntry(feature, msg, now + delay + spacing));
                         spacing += TIME_BETWEEN_POLL_MESSAGES;
                     }
                 }
             }
         }
-        if (l.isEmpty()) {
+        if (list.isEmpty()) {
             return;
         }
         synchronized (mrequestQueue) {
-            for (QEntry e : l) {
-                mrequestQueue.add(e);
+            for (QEntry qe : list) {
+                mrequestQueue.add(qe);
             }
         }
         LegacyRequestManager instance = LegacyRequestManager.instance();
@@ -270,7 +270,7 @@ public class LegacyDevice {
             logger.warn("request queue manager is null");
         }
 
-        if (!l.isEmpty()) {
+        if (!list.isEmpty()) {
             lastTimePolled = now;
         }
     }
@@ -286,13 +286,13 @@ public class LegacyDevice {
         synchronized (features) {
             // first update all features that are
             // not status features
-            for (LegacyDeviceFeature f : features.values()) {
-                if (!f.isStatusFeature()) {
-                    logger.debug("----- applying message to feature: {}", f.getName());
-                    if (f.handleMessage(msg)) {
+            for (LegacyDeviceFeature feature : features.values()) {
+                if (!feature.isStatusFeature()) {
+                    logger.debug("----- applying message to feature: {}", feature.getName());
+                    if (feature.handleMessage(msg)) {
                         // handled a reply to a query,
                         // mark it as processed
-                        logger.trace("handled reply of direct: {}", f);
+                        logger.trace("handled reply of direct: {}", feature);
                         setFeatureQueried(null);
                         break;
                     }
@@ -300,9 +300,9 @@ public class LegacyDevice {
             }
             // then update all the status features,
             // e.g. when the device was last updated
-            for (LegacyDeviceFeature f : features.values()) {
-                if (f.isStatusFeature()) {
-                    f.handleMessage(msg);
+            for (LegacyDeviceFeature feature : features.values()) {
+                if (feature.isStatusFeature()) {
+                    feature.handleMessage(msg);
                 }
             }
         }
@@ -324,10 +324,10 @@ public class LegacyDevice {
                 // A feature has been queried, but
                 // the response has not been digested yet.
                 // Must wait for the query to be processed.
-                long dt = timeNow - (lastQueryTime + featureQueried.getDirectAckTimeout());
-                if (dt < 0) {
-                    logger.debug("still waiting for query reply from {} for another {} usec", address, -dt);
-                    return (timeNow + 2000L); // retry soon
+                long delta = timeNow - (lastQueryTime + featureQueried.getDirectAckTimeout());
+                if (delta < 0) {
+                    logger.debug("still waiting for query reply from {} for another {} usec", address, -delta);
+                    return timeNow + 2000L; // retry soon
                 } else {
                     logger.debug("gave up waiting for query reply from device {}", address);
                 }
@@ -358,34 +358,34 @@ public class LegacyDevice {
             long nextExpTime = (qnext == null ? 0L : qnext.getExpirationTime());
             long nextTime = Math.max(timeNow + quietTime, nextExpTime);
             logger.debug("next request queue processed in {} msec, quiettime = {}", nextTime - timeNow, quietTime);
-            return (nextTime);
+            return nextTime;
         }
     }
 
     /**
      * Enqueues message to be sent at the next possible time
      *
-     * @param m message to be sent
-     * @param f device feature that sent this message (so we can associate the response message with it)
+     * @param msg message to be sent
+     * @param feature device feature that sent this message (so we can associate the response message with it)
      */
-    public void enqueueMessage(Msg m, LegacyDeviceFeature f) {
-        enqueueDelayedMessage(m, f, 0);
+    public void enqueueMessage(Msg msg, LegacyDeviceFeature feature) {
+        enqueueDelayedMessage(msg, feature, 0);
     }
 
     /**
      * Enqueues message to be sent after a delay
      *
-     * @param m message to be sent
-     * @param f device feature that sent this message (so we can associate the response message with it)
+     * @param msg message to be sent
+     * @param feature device feature that sent this message (so we can associate the response message with it)
      * @param delay time (in milliseconds) to delay before enqueuing message
      */
-    public void enqueueDelayedMessage(Msg m, LegacyDeviceFeature f, long delay) {
+    public void enqueueDelayedMessage(Msg msg, LegacyDeviceFeature feature, long delay) {
         long now = System.currentTimeMillis();
         synchronized (mrequestQueue) {
-            mrequestQueue.add(new QEntry(f, m, now + delay));
+            mrequestQueue.add(new QEntry(feature, msg, now + delay));
         }
-        if (!m.isBroadcast()) {
-            m.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
+        if (!msg.isBroadcast()) {
+            msg.setQuietTime(QUIET_TIME_DIRECT_MESSAGE);
         }
         logger.trace("enqueing direct message with delay {}", delay);
         LegacyRequestManager instance = LegacyRequestManager.instance();
@@ -396,52 +396,52 @@ public class LegacyDevice {
         }
     }
 
-    private void writeMessage(Msg m) throws IOException {
+    private void writeMessage(Msg msg) throws IOException {
         LegacyDriver driver = this.driver;
         if (driver != null) {
-            driver.writeMessage(m);
+            driver.writeMessage(msg);
         }
     }
 
-    private void instantiateFeatures(LegacyDeviceType dt) {
-        for (Entry<String, String> fe : dt.getFeatures().entrySet()) {
-            LegacyDeviceFeature f = LegacyDeviceFeature.makeDeviceFeature(fe.getValue());
-            if (f == null) {
-                logger.warn("device type {} references unknown feature: {}", dt, fe.getValue());
+    private void instantiateFeatures(LegacyDeviceType deviceType) {
+        for (Entry<String, String> entry : deviceType.getFeatures().entrySet()) {
+            LegacyDeviceFeature feature = LegacyDeviceFeature.makeDeviceFeature(entry.getValue());
+            if (feature == null) {
+                logger.warn("device type {} references unknown feature: {}", deviceType, entry.getValue());
             } else {
-                addFeature(fe.getKey(), f);
+                addFeature(entry.getKey(), feature);
             }
         }
-        for (Entry<String, FeatureGroup> fe : dt.getFeatureGroups().entrySet()) {
-            FeatureGroup fg = fe.getValue();
+        for (Entry<String, FeatureGroup> entry : deviceType.getFeatureGroups().entrySet()) {
+            FeatureGroup featureGroup = entry.getValue();
             @Nullable
-            LegacyDeviceFeature f = LegacyDeviceFeature.makeDeviceFeature(fg.getType());
-            if (f == null) {
-                logger.warn("device type {} references unknown feature group: {}", dt, fg.getType());
+            LegacyDeviceFeature feature = LegacyDeviceFeature.makeDeviceFeature(featureGroup.getType());
+            if (feature == null) {
+                logger.warn("device type {} references unknown feature group: {}", deviceType, featureGroup.getType());
             } else {
-                addFeature(fe.getKey(), f);
-                connectFeatures(fe.getKey(), f, fg.getFeatures());
+                addFeature(entry.getKey(), feature);
+                connectFeatures(entry.getKey(), feature, featureGroup.getFeatures());
             }
         }
     }
 
-    private void connectFeatures(String gn, LegacyDeviceFeature fg, ArrayList<String> fgFeatures) {
-        for (String fs : fgFeatures) {
+    private void connectFeatures(String name, LegacyDeviceFeature groupFeature, ArrayList<String> groupFeatures) {
+        for (String featureName : groupFeatures) {
             @Nullable
-            LegacyDeviceFeature f = features.get(fs);
-            if (f == null) {
-                logger.warn("feature group {} references unknown feature {}", gn, fs);
+            LegacyDeviceFeature feature = features.get(featureName);
+            if (feature == null) {
+                logger.warn("feature group {} references unknown feature {}", name, featureName);
             } else {
-                logger.debug("{} connected feature: {}", gn, f);
-                fg.addConnectedFeature(f);
+                logger.debug("{} connected feature: {}", name, feature);
+                groupFeature.addConnectedFeature(feature);
             }
         }
     }
 
-    private void addFeature(String name, LegacyDeviceFeature f) {
-        f.setDevice(this);
+    private void addFeature(String name, LegacyDeviceFeature feature) {
+        feature.setDevice(this);
         synchronized (features) {
-            features.put(name, f);
+            features.put(name, feature);
         }
     }
 
@@ -451,32 +451,32 @@ public class LegacyDevice {
      * otherwise return the current state.
      *
      * @param group the insteon group of the broadcast message
-     * @param a the type of group message came in (action etc)
+     * @param groupMessage the type of group message came in (action etc)
      * @param cmd1 cmd1 from the message received
      * @return true if this is message is NOT a duplicate
      */
-    public boolean getGroupState(int group, GroupMessage a, byte cmd1) {
-        LegacyGroupMessageStateMachine m = groupState.get(group);
-        if (m == null) {
-            m = new LegacyGroupMessageStateMachine();
-            groupState.put(group, m);
+    public boolean getGroupState(int group, GroupMessage groupMessage, byte cmd1) {
+        LegacyGroupMessageStateMachine stateMachine = groupState.get(group);
+        if (stateMachine == null) {
+            stateMachine = new LegacyGroupMessageStateMachine();
+            groupState.put(group, stateMachine);
             logger.trace("{} created group {} state", address, group);
         } else {
-            if (lastMsgReceived <= m.getLastUpdated()) {
-                logger.trace("{} using previous group {} state for {}", address, group, a);
-                return m.getPublish();
+            if (lastMsgReceived <= stateMachine.getLastUpdated()) {
+                logger.trace("{} using previous group {} state for {}", address, group, groupMessage);
+                return stateMachine.getPublish();
             }
         }
 
-        logger.trace("{} updating group {} state to {}", address, group, a);
-        return (m.action(a, address, group, cmd1));
+        logger.trace("{} updating group {} state to {}", address, group, groupMessage);
+        return stateMachine.action(groupMessage, address, group, cmd1);
     }
 
     @Override
     public String toString() {
         String s = address.toString();
-        for (Entry<String, LegacyDeviceFeature> f : features.entrySet()) {
-            s += "|" + f.getKey() + "->" + f.getValue().toString();
+        for (Entry<String, LegacyDeviceFeature> entry : features.entrySet()) {
+            s += "|" + entry.getKey() + "->" + entry.getValue().toString();
         }
         return s;
     }
@@ -484,13 +484,13 @@ public class LegacyDevice {
     /**
      * Factory method
      *
-     * @param dt device type after which to model the device
+     * @param deviceType device type after which to model the device
      * @return newly created device
      */
-    public static LegacyDevice makeDevice(LegacyDeviceType dt) {
-        LegacyDevice dev = new LegacyDevice();
-        dev.instantiateFeatures(dt);
-        return dev;
+    public static LegacyDevice makeDevice(LegacyDeviceType deviceType) {
+        LegacyDevice device = new LegacyDevice();
+        device.instantiateFeatures(deviceType);
+        return device;
     }
 
     /**
@@ -502,6 +502,12 @@ public class LegacyDevice {
         private LegacyDeviceFeature feature;
         private Msg msg;
         private long expirationTime;
+
+        QEntry(LegacyDeviceFeature feature, Msg msg, long expirationTime) {
+            this.feature = feature;
+            this.msg = msg;
+            this.expirationTime = expirationTime;
+        }
 
         public LegacyDeviceFeature getFeature() {
             return feature;
@@ -515,15 +521,9 @@ public class LegacyDevice {
             return expirationTime;
         }
 
-        QEntry(LegacyDeviceFeature f, Msg m, long t) {
-            feature = f;
-            msg = m;
-            expirationTime = t;
-        }
-
         @Override
-        public int compareTo(QEntry a) {
-            return (int) (expirationTime - a.expirationTime);
+        public int compareTo(QEntry qe) {
+            return (int) (expirationTime - qe.expirationTime);
         }
     }
 }

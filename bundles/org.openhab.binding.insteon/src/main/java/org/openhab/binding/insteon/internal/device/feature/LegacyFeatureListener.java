@@ -83,8 +83,8 @@ public class LegacyFeatureListener {
      * @return true if key exists and value matches
      */
     private boolean parameterHasValue(String key, String value) {
-        String v = parameters.get(key);
-        return (v != null && v.equals(value));
+        String parameter = parameters.get(key);
+        return parameter != null && parameter.equals(value);
     }
 
     /**
@@ -92,8 +92,8 @@ public class LegacyFeatureListener {
      *
      * @param p the parameters to set
      */
-    public void setParameters(Map<String, String> p) {
-        parameters = p;
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
         updateRelatedDevices();
     }
 
@@ -164,14 +164,13 @@ public class LegacyFeatureListener {
      */
 
     private void updateRelatedDevices() {
-        String d = parameters.get("related");
-        if (d == null) {
+        String value = parameters.get("related");
+        if (value == null) {
             return;
         }
-        String[] devs = d.split("\\+");
-        for (String dev : devs) {
-            InsteonAddress a = new InsteonAddress(dev);
-            relatedDevices.add(a);
+        for (String device : value.split("\\+")) {
+            InsteonAddress address = new InsteonAddress(device);
+            relatedDevices.add(address);
         }
     }
 
@@ -180,13 +179,13 @@ public class LegacyFeatureListener {
      * by the "related" keyword
      */
     public void pollRelatedDevices() {
-        for (InsteonAddress a : relatedDevices) {
-            logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
-            LegacyDevice d = binding.getDevice(a);
-            if (d != null) {
-                d.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
+        for (InsteonAddress address : relatedDevices) {
+            logger.debug("polling related device {} in {} ms", address, TIME_DELAY_POLL_RELATED_MSEC);
+            LegacyDevice device = binding.getDevice(address);
+            if (device != null) {
+                device.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
             } else {
-                logger.warn("device {} related to item {} is not configured!", a, itemName);
+                logger.warn("device {} related to item {} is not configured!", address, itemName);
             }
         }
     }
