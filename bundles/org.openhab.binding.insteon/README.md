@@ -759,7 +759,7 @@ end
 <details>
   <summary>Legacy</summary>
 
-  ##### Items
+##### Items
 
   Here is a simple example, just using the load (main) switch:
 
@@ -773,7 +773,7 @@ end
   Switch keypadSwitchD            "keypad button D"    { channel="insteon:device:home:AABBCC:keypadButtonD"}
   ```
 
-  ##### Things
+##### Things
 
   The value after group must either be a number or string.
   The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
@@ -790,7 +790,7 @@ end
   }
   ```
 
-  ##### Sitemap
+##### Sitemap
 
   The following sitemap will bring the items to life in the GUI:
 
@@ -943,7 +943,7 @@ The battery and light level are only updated when either there is motion, light 
   This can be configured with the device configuration parameter of the device.
   The key in the JSON object is `heartbeatOnly` and the value is a boolean:
 
-  #### Things
+#### Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -953,8 +953,8 @@ The battery and light level are only updated when either there is motion, light 
 
   The temperature can be calculated in Fahrenheit using the following formulas:
 
-  - If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
-  - If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
+- If the device is battery powered: `temperature = 0.73 * motionSensorTemperatureLevel - 20.53`
+- If the device is USB powered: `temperature = 0.72 * motionSensorTemperatureLevel - 24.61`
 
   Since the motion sensor II might not be calibrated correctly, the values `20.53` and `24.61` can be adjusted as necessary to produce the correct temperature.
 
@@ -1318,7 +1318,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
   The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-  ### Things
+### Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1337,7 +1337,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   }
   ```
 
-  ### Items
+### Items
 
   ```java
   Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
@@ -1552,7 +1552,7 @@ Insufficient access to the lock directory will result in openHAB failing to acce
 
 <details>
 
-  ### Adding New Legacy Device Types (Using Existing Device Features)
+### Adding New Legacy Device Types (Using Existing Device Features)
 
   Device types are defined in the file `legacy-device-types.xml`, which is inside the Insteon bundle and thus not visible to the user.
   You can however load your own device_types.xml by referencing it in the network config parameters:
@@ -1578,7 +1578,7 @@ Insufficient access to the lock directory will result in openHAB failing to acce
   If a web search does not turn up the product key, make one up, starting with "F", like: F00.00.99.
   Avoid duplicate keys by finding the highest fake product key in the `legacy-device-types.xml` file, and incrementing by one.
 
-  ### Adding New Legacy Device Features
+### Adding New Legacy Device Features
 
   If you can't build a new device out of the existing device features (for a complete list see `legacy-device-features.xml`) you can add new features by specifying a file (let's call it `my-own-features.xml`) with the "additionalDevices" option in the network config parameters:
 
