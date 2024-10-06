@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,7 +47,13 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
 
-    private @Nullable HttpClient httpClientRef = null;
+    private HttpClientFactory httpClientFactory;
+
+    @Activate
+    public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        super();
+        this.httpClientFactory = httpClientFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -68,13 +75,8 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
         return null;
     }
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientRef = httpClientFactory.getCommonHttpClient();
-    }
-
     @Override
     public @Nullable HttpClient getHttpClient() {
-        return httpClientRef;
+        return httpClientFactory.getCommonHttpClient();
     }
 }
