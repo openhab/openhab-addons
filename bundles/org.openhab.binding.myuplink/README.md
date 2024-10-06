@@ -42,6 +42,7 @@ If manual configuration is preferred you need to specify configuration as below.
 | Configuration Parameter | Required | Description                                                                                                            |
 |-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
 | deviceId                | yes      | The id of the heatpump that will be represented by this thing. Can be retrieved via API call or autodiscovery.         |
+| systemId                | no       | The systemId of the heatpump. Only needed for "SmartHomeMode". Can be retrieved via API call or autodiscovery.         |
 
 ## Channels
 
@@ -52,9 +53,9 @@ Thus no list is provided here.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+The configuration below is an example which could easily be adopted to your actual model.
+Thing configuration (account and generic-device) is the same for all models.
+Item configuration depends on your specific model and thus channels will have different IDs and/or channels might not exist for all models.
 
 ### Thing Configuration
 
@@ -64,7 +65,7 @@ Bridge myuplink:account:myAccount "myUplink" [
     clientSecret="471147114711ABCDEF133713371337AB",
     dataPollingInterval=55
     ] {
-        Thing generic-device vvm320 "VVM320" [ deviceId="id taken from automatic discovery" ]
+        Thing generic-device vvm320 "VVM320" [ deviceId="id taken from automatic discovery", systemId="id taken from automatic discovery" ]
     }
 ```
 
