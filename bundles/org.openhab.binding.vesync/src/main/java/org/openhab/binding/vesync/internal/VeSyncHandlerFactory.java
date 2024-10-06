@@ -23,6 +23,8 @@ import org.openhab.binding.vesync.internal.api.IHttpClientProvider;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,12 +49,17 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_AIR_PURIFIER, THING_TYPE_AIR_HUMIDIFIER);
 
-    private HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
         super();
         this.httpClientFactory = httpClientFactory;
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -69,7 +76,7 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory implements IHt
         } else if (VeSyncDeviceAirHumidifierHandler.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new VeSyncDeviceAirHumidifierHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new VeSyncBridgeHandler((Bridge) thing, this);
+            return new VeSyncBridgeHandler((Bridge) thing, this, translationProvider, localeProvider);
         }
 
         return null;
