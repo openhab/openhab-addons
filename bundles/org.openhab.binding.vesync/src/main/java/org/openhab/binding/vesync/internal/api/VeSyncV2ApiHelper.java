@@ -58,9 +58,11 @@ public class VeSyncV2ApiHelper {
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncV2ApiHelper.class);
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final int RESPONSE_TIMEOUT_SEC = 5;
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
+
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     private Map<String, @NotNull VeSyncManagedDeviceBase> macLookup;
 
@@ -177,7 +179,7 @@ public class VeSyncV2ApiHelper {
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
-            ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
+            ContentResponse response = request.timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 VeSyncResponse commResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
                         VeSyncResponse.class);
@@ -229,7 +231,7 @@ public class VeSyncV2ApiHelper {
 
             request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
 
-            ContentResponse response = request.timeout(5, TimeUnit.SECONDS).send();
+            ContentResponse response = request.timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 VeSyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
                         VeSyncLoginResponse.class);
