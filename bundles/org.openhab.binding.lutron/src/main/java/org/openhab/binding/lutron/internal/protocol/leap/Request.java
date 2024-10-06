@@ -154,6 +154,10 @@ public class Request {
         return request(CommuniqueType.READREQUEST, "/occupancygroup/status");
     }
 
+    public static String subscribeButtonStatus(int button) {
+        return request(CommuniqueType.SUBSCRIBEREQUEST, String.format("/button/%d/status/event", button));
+    }
+
     public static String subscribeOccupancyGroupStatus() {
         return request(CommuniqueType.SUBSCRIBEREQUEST, "/occupancygroup/status");
     }

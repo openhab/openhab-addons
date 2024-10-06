@@ -29,7 +29,7 @@ public class SMO40 {
 
     @SuppressWarnings("serial")
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_SMO40 = Collections
-            .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
             // @formatter:off
             put(40004, new VariableInformation(  10, NibeDataType.S16, Type.SENSOR  , "BT1 Outdoor Temperature"));

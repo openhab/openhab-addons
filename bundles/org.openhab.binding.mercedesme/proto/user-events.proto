@@ -1,0 +1,153 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+message AcknowledgeUserDataUpdate {
+  int32 sequence_number = 1;
+}
+
+message UserDataUpdate {
+  int32 sequence_number = 1;
+
+  string ciam_id = 2;
+
+  // when was the event emitted? This is the time of the update,
+  // not when the attributes where changed. To compare attribute changes, you need to look into each attribute timestamp
+  int64 emit_timestamp = 3;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 8;
+
+  CPDUserData old_data = 6;
+  CPDUserData new_data = 7;
+}
+
+message AcknowledgeUserVehicleAuthChangedUpdate {
+  int32 sequence_number = 1;
+}
+
+message AcknowledgeAbilityToGetVehicleMasterDataFromRestAPI {
+  int32 sequence_number = 1;
+}
+
+message UserVehicleAuthChangedUpdate {
+  int32 sequence_number = 1;
+
+  string ciam_id = 2;
+
+  // when was the event emitted? This is the time of the update,
+  // not when the attributes where changed. To compare attribute changes, you need to look into each attribute timestamp
+  int64 emit_timestamp = 3;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 8;
+}
+
+message CPDUserData {
+  string ciam_id = 1;
+  string user_id = 2;
+  string first_name = 3;
+  string last_name1 = 4;
+  string last_name2 = 5;
+  string title = 6;
+  string name_prefix = 7;
+  string middle_initial = 8;
+  string salutation_code = 9;
+  string email = 10;
+  string landline_phone = 11;
+  string mobile_phone_number = 12;
+  string created_at = 13;
+  string created_by = 14;
+  string updated_at = 15;
+  string birthday = 28;
+  string preferred_language_code = 29;
+  string account_country_code = 30;
+  // doc says: TODO
+  string uc_id = 31;
+  bool vip = 32;
+  CPDUserAddress address = 33;
+  CPDUserCommunicationPreference communication_preference  = 34;
+}
+
+message CPDUserAddress {
+  string country_code = 1;
+  string state = 2;
+  string province = 3;
+  string street = 4;
+  string house_no = 5;
+  string zip_code = 6;
+  string city = 7;
+  string street_type = 8;
+  string house_name = 9;
+  string floor_no = 10;
+  string door_no = 11;
+  string address_line1 = 12;
+  string address_line2 = 13;
+  string address_line3 = 14;
+  string post_office_box = 15;
+}
+
+message CPDUserCommunicationPreference {
+  bool contacted_by_phone = 1;
+  bool contacted_by_letter = 2;
+  bool contacted_by_email = 3;
+  bool contacted_by_sms = 4;
+}
+
+message AcknowledgeUserPictureUpdate {
+  int32 sequence_number = 1;
+}
+
+// Sent after a picture upload/change
+message UserPictureUpdate {
+  int32 sequence_number = 1;
+
+  // ciam ID
+  string ciam_id = 5;
+
+  // when was the event emitted? This is the time of the update
+  int64 emit_timestamp = 2;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 6;
+
+  // this timestamp indicates when a message was read from the eventhub
+  int64 eventhub_receive_timestamp = 3;
+
+  // this timestamp indicates when a message was processed in the app twin
+  int64 apptwin_receive_timestamp = 4;
+}
+
+message AcknowledgeUserPINUpdate {
+    int32 sequence_number = 1;
+}
+
+// Sent after a PIN update
+message UserPINUpdate {
+  int32 sequence_number = 1;
+
+  // ciam ID
+  string ciam_id = 5;
+
+  // when was the event emitted? This is the time of the update
+  int64 emit_timestamp = 2;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 6;
+
+  // this timestamp indicates when a message was read from the eventhub
+  int64 eventhub_receive_timestamp = 3;
+
+  // this timestamp indicates when a message was processed in the app twin
+  int64 apptwin_receive_timestamp = 4;
+}
+
+// Contains the refreshed jwt of the user
+message UpdateUserJWTRequest {
+  string jwt = 1;
+}
+
+// Ack for the UpdateUserJWTRequest
+message AcknowledgeUpdateUserJWTRequest {
+}

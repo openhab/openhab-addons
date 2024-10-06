@@ -8,4 +8,20 @@
 	<description>This binding supports the Bluetooth protocol.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>usb</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*bluegiga.*</regex>
+				</match-property>
+				<match-property>
+					<name>chipId</name>
+					<regex>0258:0001</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

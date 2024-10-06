@@ -162,7 +162,7 @@ public class EcoTouchConnector {
     public Map<String, String> getValues(Set<String> tags) throws Exception {
         final Integer maxNum = 100;
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         Integer counter = 1;
         StringBuilder query = new StringBuilder();
         Iterator<String> iter = tags.iterator();
@@ -196,7 +196,7 @@ public class EcoTouchConnector {
      */
     private Map<String, String> getValues(String url) throws Exception {
         trylogin(false);
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         int loginAttempt = 0;
         while (loginAttempt < 2) {
             BufferedReader reader = null;

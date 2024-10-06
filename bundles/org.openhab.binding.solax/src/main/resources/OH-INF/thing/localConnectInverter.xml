@@ -67,16 +67,16 @@
 				<description>Voltage of the inverter's phase 3</description>
 			</channel>
 			<channel id="inverter-frequency-phase1" typeId="frequency">
-				<label>Inverter Voltage Phase 3</label>
-				<description>Voltage of the inverter's phase 3</description>
+				<label>Inverter Frequency Phase 1</label>
+				<description>Frequency of the inverter's phase 1</description>
 			</channel>
 			<channel id="inverter-frequency-phase2" typeId="frequency">
-				<label>Inverter Voltage Phase 2</label>
-				<description>Voltage of the inverter's phase 3</description>
+				<label>Inverter Frequency Phase 2</label>
+				<description>Frequency of the inverter's phase 2</description>
 			</channel>
 			<channel id="inverter-frequency-phase3" typeId="frequency">
-				<label>Inverter Voltage Phase 3</label>
-				<description>Voltage of the inverter's phase 3</description>
+				<label>Inverter Frequency Phase 3</label>
+				<description>Frequency of the inverter's phase 3</description>
 			</channel>
 
 			<!-- Generic channels -->
@@ -111,6 +111,19 @@
 			<channel id="pv-total-current" typeId="system.electric-current">
 				<label>PV Total Current</label>
 				<description>The sum of PV currents from all strings</description>
+			</channel>
+
+			<channel id="inverter-temperature1" typeId="inverter-temperature">
+				<label>Inverter Temperature 1</label>
+				<description>Temperature 1 of the inverter</description>
+			</channel>
+			<channel id="inverter-temperature2" typeId="inverter-temperature">
+				<label>Inverter Temperature 2</label>
+				<description>Temperature 2 of the inverter</description>
+			</channel>
+			<channel id="inverter-workmode" typeId="inverter-workmode">
+				<label>Inverter Workmode</label>
+				<description>Inverter Workmode</description>
 			</channel>
 
 			<channel id="battery-power" typeId="system.electric-power">
@@ -193,7 +206,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>

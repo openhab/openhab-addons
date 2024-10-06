@@ -157,6 +157,7 @@ public class Server extends Thread {
             ServerSocket serverSock = this.serverSocket;
             if (serverSock != null) {
                 serverSock.close();
+                this.serverSocket = null;
             }
 
             Socket clientSocket = this.client;
@@ -166,6 +167,8 @@ public class Server extends Thread {
             }
         } catch (IOException e) {
             logger.debug("Error stopping Communication. {}", e.getMessage());
+            this.serverSocket = null;
+            this.client = null;
         }
     }
 
@@ -238,7 +241,7 @@ public class Server extends Thread {
     }
 
     private ArrayList<byte[]> getPackages(byte[] data) {
-        ArrayList<byte[]> result = new ArrayList<byte[]>();
+        ArrayList<byte[]> result = new ArrayList<>();
         if (data.length >= 0) {
             ByteBuffer list = ByteBuffer.allocate(data.length);
             list.put(data);

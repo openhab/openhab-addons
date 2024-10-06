@@ -35,7 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @XmlRootElement(name = "apps")
 public class Apps {
     @XmlElement
-    private List<Apps.App> app = new ArrayList<Apps.App>();
+    private List<Apps.App> app = new ArrayList<>();
 
     public List<Apps.App> getApp() {
         return this.app;

@@ -155,7 +155,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
@@ -309,8 +309,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.AUTOMATION.value().toString();
+    protected Who getManagedWho() {
+        return Who.AUTOMATION;
     }
 
     @Override

@@ -15,9 +15,9 @@ package org.openhab.binding.tradfri.internal.discovery;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +91,7 @@ public class TradfriDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         thingHandler.unregisterDeviceUpdateListener(this);
     }
 

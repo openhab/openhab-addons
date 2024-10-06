@@ -121,7 +121,7 @@ public class LGWebOSTVKeyboardInput {
             payload.addProperty("replace", 0);
         }
 
-        ResponseListener<JsonObject> responseListener = new ResponseListener<JsonObject>() {
+        ResponseListener<JsonObject> responseListener = new ResponseListener<>() {
 
             @Override
             public void onSuccess(JsonObject response) {

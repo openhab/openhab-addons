@@ -241,8 +241,8 @@ public class PanaBlurayHandler extends BaseThingHandler {
         synchronized (sequenceLock) {
             if (command instanceof RefreshType) {
                 logger.debug("Unsupported refresh command: {}", command);
-            } else if (BUTTON.equals(channelUID.getId()) || POWER.equals(channelUID.getId())
-                    || CONTROL.equals(channelUID.getId())) {
+            } else if (POWER.equals(channelUID.getId()) || CONTROL.equals(channelUID.getId())
+                    || BUTTON.equals(channelUID.getId())) {
                 final String commandStr;
                 if (command instanceof OnOffType) {
                     commandStr = CMD_POWER + command; // e.g. POWERON or POWEROFF

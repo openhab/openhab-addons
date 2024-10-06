@@ -76,15 +76,13 @@ public class JinjaTransformationServiceTest {
     }
 
     @Test
-    public void testMissingVariableError() {
-        assertThrows(TransformationException.class,
-                () -> processor.transform("Hello {{ missing }}!", "{\"string\": \"world\"}"));
+    public void testMissingVariableError() throws TransformationException {
+        assertEquals("Hello !", processor.transform("Hello {{ missing }}!", "{\"string\": \"world\"}"));
     }
 
     @Test
-    public void testMissingMapKeyError() {
-        assertThrows(TransformationException.class,
-                () -> processor.transform("Hello {{ value_json.missing }}!", "{\"string\": \"world\"}"));
+    public void testMissingMapKeyError() throws TransformationException {
+        assertEquals("Hello !", processor.transform("Hello {{ value_json.missing }}!", "{\"string\": \"world\"}"));
     }
 
     @Test

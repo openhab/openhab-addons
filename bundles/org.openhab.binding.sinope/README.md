@@ -127,9 +127,9 @@ Number Room_HeatLevel "Room Heating level [%d]" <heating> { channel="sinope:ther
 
 ```perl
 sitemap demo label="Main Menu"
-{ 
+{
   Frame label="Sinope" {
-     Text item=Room_In   
+     Text item=Room_In
      Text item=Room_Out
      Setpoint item=Room_SetPoint  label="Set Point [%.1f °C]" step=0.5 minValue=5 maxValue=35
      Switch item=Room_SetPointMode mappings=[2=Manual, 3=Auto, 5=Away]

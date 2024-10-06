@@ -212,19 +212,20 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 demo.items:
 
 ```java
+
 DateTime            TeslaEventstamp             {channel="account:model3:myaccount:mycar:eventstamp"}
 String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
 String              TeslaShiftState             {channel="account:model3:myaccount:mycar:shiftstate"}
-Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer"}
+Number:Length       TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer", unit="km"}
 Number              TeslaRange                  {channel="account:model3:myaccount:mycar:range"}
 
 Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
 Number              TeslaPower                  {channel="account:model3:myaccount:mycar:power"}
 Number              TeslaBatteryCurrent         {channel="account:model3:myaccount:mycar:batterycurrent"}
-Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange"}
-Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange"}
-Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange"}
+Number:Length       TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange", unit="km"}
+Number:Length       TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange", unit="km"}
+Number:Length       TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange", unit="km"}
 Number              TeslaUsableBatteryLevel     {channel="account:model3:myaccount:mycar:usablebatterylevel"}
 Switch              TeslaPreconditioning        {channel="account:model3:myaccount:mycar:preconditioning"}
 
@@ -275,6 +276,7 @@ String              TeslaDestinationName        {channel="account:model3:myaccou
 Location            TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
 Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival", unit="min"}
 Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
+
 ```
 
 demo.sitemap:
@@ -284,7 +286,7 @@ sitemap main label="Main"
 {
     Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
     {
-        Frame 
+        Frame
         {
             Text item=TeslaEventstamp icon="time"
             Text item=TeslaState label="State [%s]" icon=""
@@ -292,16 +294,16 @@ sitemap main label="Main"
             Text item=TeslaDistance
             Text item=TeslaSpeed label="Speed [%.1f]"
             Text item=TeslaShiftState label="Shift State [%s]" icon=""
-            Text item=nTeslaShiftState 
-            Text item=TeslaOdometer label="Odometer [%.1f miles]"
-            Text item=TeslaRange 
+            Text item=nTeslaShiftState
+            Text item=TeslaOdometer label="Odometer [%.1f %unit%]"
+            Text item=TeslaRange
         }
         Frame
         {
             Switch item=TeslaAutoconditioning label="Enable Heat or AC"
-            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f °F]"
-            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
-            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
+            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f %unit%]"
+            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
+            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
         }
         Frame
         {
@@ -309,9 +311,9 @@ sitemap main label="Main"
             Text item=TeslaUsableBatteryLevel
             Text item=TeslaPower
             Text item=TeslaBatteryCurrent label="Current [%.1f]"
-            Text item=TeslaBatteryRange label="Battery Range [%.1f miles]"
-            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f miles]"
-            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f miles]"
+            Text item=TeslaBatteryRange label="Battery Range [%.1f %unit%]"
+            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f %unit%]"
+            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f %unit%]"
         }
         Frame
         {
@@ -335,17 +337,17 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaDoorLock label="Doorlock"
-            Switch item=TeslaHorn label="Horn" 
+            Switch item=TeslaHorn label="Horn"
             Switch item=TeslaLights label="Lights"
             Switch item=TeslaStart label="Remote Start"
             Switch item=TeslaValet label="Valet Mode"
             Switch item=TeslaSentry label="Sentry Mode"
 
-            Switch item=TeslaBatteryHeater label="Battery Heater"   
-            Switch item=TeslaFrontDefrost label="Defrost Front"     
-            Switch item=TeslaRearDefrost label="Defrost Rear"                                               
-            Switch item=TeslaLeftSeatHeater label="Seat Heat Left" 
-            Switch item=TeslaRightSeatHeater label="Seat Heat Right" 
+            Switch item=TeslaBatteryHeater label="Battery Heater"
+            Switch item=TeslaFrontDefrost label="Defrost Front"
+            Switch item=TeslaRearDefrost label="Defrost Rear"
+            Switch item=TeslaLeftSeatHeater label="Seat Heat Left"
+            Switch item=TeslaRightSeatHeater label="Seat Heat Right"
         }
         Frame
         {

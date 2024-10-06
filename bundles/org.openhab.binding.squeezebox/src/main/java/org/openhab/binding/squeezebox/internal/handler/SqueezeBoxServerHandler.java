@@ -531,7 +531,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 this.key = key;
                 this.value = value;
             }
-        };
+        }
 
         private List<KeyValue> decodeKeyValueResponse(String[] response) {
             final List<KeyValue> keysAndValues = new ArrayList<>();

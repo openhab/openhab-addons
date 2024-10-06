@@ -32,11 +32,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ForegroundAppDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ListDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.StrictEnumTypeAdapterFactory;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.ForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,18 +60,18 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class ApiHandler {
-    public static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String CONTENT_TYPE = "application/json; charset=" + DEFAULT_CHARSET.name();
+    private static final int RESPONSE_BUFFER_SIZE = 65536;
+    public static final String AUTH_HEADER = "X-Fbx-App-Auth";
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
+    private long timeoutInMs = TimeUnit.SECONDS.toMillis(10);
 
-    public ApiHandler(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
-        this.httpClient = httpClient;
+    public ApiHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
@@ -86,6 +88,21 @@ public class ApiHandler {
                 .registerTypeAdapter(ForegroundApp.class, new ForegroundAppDeserializer())
                 .registerTypeAdapter(List.class, new ListDeserializer()).serializeNulls()
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
+        httpClient = httpClientFactory.createHttpClient(FreeboxOsBindingConstants.BINDING_ID);
+        httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            logger.warn("Unable to start httpClient: {}", e.getMessage());
+        }
+    }
+
+    public void dispose() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.warn("Unable to stop httpClient: {}", e.getMessage());
+        }
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
@@ -121,7 +138,11 @@ public class ApiHandler {
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
                 if (result instanceof Response<?> errorResponse) {
-                    throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    if (errorResponse.getErrorCode() == Response.ErrorCode.INSUFFICIENT_RIGHTS) {
+                        throw new PermissionException(errorResponse.getMissingRight(), errorResponse.getMsg());
+                    } else {
+                        throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    }
                 }
             }
 

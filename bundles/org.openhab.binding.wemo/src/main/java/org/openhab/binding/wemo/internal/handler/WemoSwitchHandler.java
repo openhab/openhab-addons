@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class WemoSwitchHandler extends WemoHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoSwitchHandler.class);
-    private final Map<String, String> stateMap = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> stateMap = new ConcurrentHashMap<>();
 
     public WemoSwitchHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);

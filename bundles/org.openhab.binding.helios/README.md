@@ -73,7 +73,7 @@ demo.rules:
 ```java
 rule SomeRule
 when
-    Channel "helios:ipvario221:gate:keypressed" triggered 
+    Channel "helios:ipvario221:gate:keypressed" triggered
 then
     var actionName = receivedEvent.getEvent()
     logInfo("org.openhab","Rule trigger " + actionName)

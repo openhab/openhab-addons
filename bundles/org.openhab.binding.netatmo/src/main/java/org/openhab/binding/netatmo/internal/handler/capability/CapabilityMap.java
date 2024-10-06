@@ -49,4 +49,13 @@ public class CapabilityMap extends ConcurrentHashMap<Class<?>, Capability> {
             cap.dispose();
         }
     }
+
+    public Optional<RefreshCapability> getRefresh() {
+        return values().stream().filter(RefreshCapability.class::isInstance).map(RefreshCapability.class::cast)
+                .findFirst();
+    }
+
+    public Optional<Capability> getParentUpdate() {
+        return values().stream().filter(ParentUpdateCapability.class::isInstance).findFirst();
+    }
 }

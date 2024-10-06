@@ -42,7 +42,7 @@ public class UpdateActionTest extends AbstractTest {
     public void testSerialize() throws Exception {
         UpdateAction action = new UpdateAction().withId("countdown.configure")
         // @formatter:off
-                                                .withParameters(new TreeMap<String, Parameter>(){{put("duration", new IntegerParameter().withValue(30));}});
+                                                .withParameters(new TreeMap<>(){{put("duration", new IntegerParameter().withValue(30));}});
                                                 // @formatter:on
         assertEquals(readJson("update-action.json"), gson.toJson(action));
     }

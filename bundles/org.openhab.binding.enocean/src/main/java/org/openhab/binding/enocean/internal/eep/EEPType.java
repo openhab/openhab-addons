@@ -416,8 +416,9 @@ public enum EEPType {
     // UniversalCommand(RORG._4BS, 0x3f, 0x7f, false, A5_3F_7F_Universal.class, THING_TYPE_UNIVERSALACTUATOR,
     // CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_LIGHT_SWITCHING, CHANNEL_GENERIC_DIMMER, CHANNEL_TEACHINCMD),
     EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER,
-            0, new Hashtable<String, Configuration>() {
+            0, new Hashtable<>() {
                 private static final long serialVersionUID = 1L;
+
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
@@ -429,8 +430,9 @@ public enum EEPType {
             }),
 
     EltakoFRM(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFRM", 0, A5_3F_7F_EltakoFRM.class, THING_TYPE_ROLLERSHUTTER,
-            0, new Hashtable<String, Configuration>() {
+            0, new Hashtable<>() {
                 private static final long serialVersionUID = 1L;
+
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
@@ -463,9 +465,9 @@ public enum EEPType {
     SwitchWithEnergyMeasurment_07(RORG.VLD, 0x01, 0x07, true, D2_01_07.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING),
     SwitchWithEnergyMeasurment_08(RORG.VLD, 0x01, 0x08, true, D2_01_08.class, THING_TYPE_MEASUREMENTSWITCH,
-            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
-    SwitchWithEnergyMeasurment_09(RORG.VLD, 0x01, 0x09, true, D2_01_09.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
+    SwitchWithEnergyMeasurment_09(RORG.VLD, 0x01, 0x09, true, D2_01_09.class, THING_TYPE_MEASUREMENTSWITCH,
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_DIMMER, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
     SwitchWithEnergyMeasurment_09_PERMUNDO(RORG.VLD, 0x01, 0x09, true, "PERMUNDO", PERMUNDOID, D2_01_09_Permundo.class,
             THING_TYPE_MEASUREMENTSWITCH, CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER,
             CHANNEL_ECOMODE, CHANNEL_REPEATERMODE),

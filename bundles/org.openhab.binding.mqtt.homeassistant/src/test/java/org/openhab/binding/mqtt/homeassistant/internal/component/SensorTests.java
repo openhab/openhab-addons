@@ -65,7 +65,7 @@ public class SensorTests extends AbstractComponentTests {
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("sensor1"));
-        assertThat(component.getGroupUID().getId(), is("sn1"));
+        assertThat(component.getGroupId(), is("sn1"));
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
                 NumberValue.class);
@@ -77,7 +77,7 @@ public class SensorTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/sensor/state", "20");
         assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
         assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
-                .build().getPattern(), is("%s W"));
+                .build().getPattern(), is("%.0f %unit%"));
 
         waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 5000, 200);
 

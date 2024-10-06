@@ -20,7 +20,6 @@ import static org.openhab.binding.serial.internal.SerialBindingConstants.DEVICE_
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 
 /**
  * A factory to create {@link DeviceChannel} objects
@@ -33,23 +32,34 @@ public class DeviceChannelFactory {
     /**
      * Create a {@link DeviceChannel} for the channel type
      * 
-     * @param valueTransformationProvider the transformation provider
      * @param channelConfig the channel configuration
      * @param channelTypeID the channel type id
      * @return the DeviceChannel or null if the channel type is not supported.
      */
-    public static @Nullable DeviceChannel createDeviceChannel(
-            final ValueTransformationProvider valueTransformationProvider, final ChannelConfig channelConfig,
+    public static @Nullable DeviceChannel createDeviceChannel(final ChannelConfig channelConfig,
             final String channelTypeID) {
+        DeviceChannel deviceChannel;
 
-        DeviceChannel deviceChannel = switch (channelTypeID) {
-            case DEVICE_STRING_CHANNEL -> new StringChannel(valueTransformationProvider, channelConfig);
-            case DEVICE_NUMBER_CHANNEL -> new NumberChannel(valueTransformationProvider, channelConfig);
-            case DEVICE_DIMMER_CHANNEL -> new DimmerChannel(valueTransformationProvider, channelConfig);
-            case DEVICE_SWITCH_CHANNEL -> new SwitchChannel(valueTransformationProvider, channelConfig);
-            case DEVICE_ROLLERSHUTTER_CHANNEL -> new RollershutterChannel(valueTransformationProvider, channelConfig);
-            default -> null;
-        };
+        switch (channelTypeID) {
+            case DEVICE_STRING_CHANNEL:
+                deviceChannel = new StringChannel(channelConfig);
+                break;
+            case DEVICE_NUMBER_CHANNEL:
+                deviceChannel = new NumberChannel(channelConfig);
+                break;
+            case DEVICE_DIMMER_CHANNEL:
+                deviceChannel = new DimmerChannel(channelConfig);
+                break;
+            case DEVICE_SWITCH_CHANNEL:
+                deviceChannel = new SwitchChannel(channelConfig);
+                break;
+            case DEVICE_ROLLERSHUTTER_CHANNEL:
+                deviceChannel = new RollershutterChannel(channelConfig);
+                break;
+            default:
+                deviceChannel = null;
+                break;
+        }
 
         return deviceChannel;
     }

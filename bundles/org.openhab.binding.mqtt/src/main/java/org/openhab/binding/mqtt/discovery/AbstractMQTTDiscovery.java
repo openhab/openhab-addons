@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -139,7 +139,7 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
     @Override
     protected void startBackgroundDiscovery() {
         // Remove results that are restored after a restart
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         subscribe();
     }
 

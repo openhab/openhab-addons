@@ -59,4 +59,6 @@ public interface EcovacsDevice {
     <T> T sendCommand(IotDeviceCommand<T> command) throws EcovacsApiException, InterruptedException;
 
     List<CleanLogRecord> getCleanLogs() throws EcovacsApiException, InterruptedException;
+
+    Optional<byte[]> downloadCleanMapImage(CleanLogRecord record) throws EcovacsApiException, InterruptedException;
 }

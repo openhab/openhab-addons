@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarBridgeConfiguration {
-
     public double basePrice;
     public double vatPercent;
     public String country = "";

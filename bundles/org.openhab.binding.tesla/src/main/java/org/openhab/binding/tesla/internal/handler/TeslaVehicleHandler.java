@@ -791,8 +791,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (authHeader != null) {
             try {
                 // get a list of vehicles
-                synchronized (account.vehiclesTarget) {
-                    Response response = account.vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                synchronized (account.productsTarget) {
+                    Response response = account.productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", authHeader).get();
 
                     logger.debug("Querying the vehicle, response : {}, {}", response.getStatus(),

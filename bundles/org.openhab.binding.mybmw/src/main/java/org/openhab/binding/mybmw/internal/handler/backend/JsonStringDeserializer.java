@@ -47,7 +47,7 @@ public interface JsonStringDeserializer {
             return Arrays.asList(vehicleBaseArray);
         } catch (JsonSyntaxException e) {
             LOGGER.debug("JsonSyntaxException {}", e.getMessage());
-            return new ArrayList<VehicleBase>();
+            return new ArrayList<>();
         }
     }
 

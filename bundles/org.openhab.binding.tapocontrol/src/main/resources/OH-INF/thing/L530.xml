@@ -36,13 +36,14 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of active lightning effect</description>
-		<state readOnly="false">
+		<state readOnly="false"/>
+		<command>
 			<options>
 				<option value="off">None (No FX)</option>
 				<option value="custom">Custom</option>
 				<option value="L1">Party</option>
 				<option value="L2">Relax</option>
 			</options>
-		</state>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

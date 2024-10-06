@@ -499,8 +499,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
             assertNull(bits);
             assertNull(registers);
             assertNotNull(error);
-            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<ModbusReadRequestBlueprint>(
-                    request, error);
+            AsyncModbusFailure<ModbusReadRequestBlueprint> result = new AsyncModbusFailure<>(request, error);
             dataHandler.handleReadError(result);
         }
         return dataHandler;
@@ -551,7 +550,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         dataHandler.handleCommand(new ChannelUID(dataHandler.getThing().getUID(), channel), command);
 
         if (error != null) {
-            dataHandler.handleReadError(new AsyncModbusFailure<ModbusReadRequestBlueprint>(request, error));
+            dataHandler.handleReadError(new AsyncModbusFailure<>(request, error));
         } else {
             ModbusResponse resp = new ModbusResponse() {
 

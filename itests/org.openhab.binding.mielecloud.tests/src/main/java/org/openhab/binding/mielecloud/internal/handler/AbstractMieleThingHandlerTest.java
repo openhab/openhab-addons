@@ -261,7 +261,7 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         List<ChannelDefinition> channelDefinitions = thingType.getChannelDefinitions();
         assertNotNull(channelDefinitions);
 
-        List<Channel> channels = new ArrayList<Channel>();
+        List<Channel> channels = new ArrayList<>();
         for (ChannelDefinition channelDefinition : channelDefinitions) {
             ChannelTypeUID channelTypeUid = channelDefinition.getChannelTypeUID();
             assertNotNull(channelTypeUid);

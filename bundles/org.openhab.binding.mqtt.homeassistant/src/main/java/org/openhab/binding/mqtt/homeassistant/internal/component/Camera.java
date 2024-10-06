@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 /**
@@ -38,12 +39,12 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
         protected String topic = "";
     }
 
-    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Camera(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         ImageValue value = new ImageValue();
 
-        buildChannel(CAMERA_CHANNEL_ID, value, getName(), componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.topic).build();
+        buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
+                componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
     }
 }

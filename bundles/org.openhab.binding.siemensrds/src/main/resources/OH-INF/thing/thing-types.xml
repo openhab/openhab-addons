@@ -149,11 +149,11 @@
 	</channel-type>
 
 	<channel-type id="roomHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
 		<category>humidity</category>
-		<state readOnly="true" pattern="%.0f %%r.H."/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="roomAirQuality">

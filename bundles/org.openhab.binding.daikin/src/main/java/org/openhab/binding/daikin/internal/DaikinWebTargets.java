@@ -15,7 +15,6 @@ package org.openhab.binding.daikin.internal;
 import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -29,10 +28,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.DemandControl;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
-import org.openhab.binding.daikin.internal.api.InfoParser;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseBasicInfo;
 import org.openhab.binding.daikin.internal.api.airbase.AirbaseControlInfo;
@@ -62,6 +61,8 @@ public class DaikinWebTargets {
     private String getEnergyInfoYearUri;
     private String getEnergyInfoWeekUri;
     private String setSpecialModeUri;
+    private String setDemandControlUri;
+    private String getDemandControlUri;
 
     private String setAirbaseControlInfoUri;
     private String getAirbaseControlInfoUri;
@@ -90,6 +91,8 @@ public class DaikinWebTargets {
         getEnergyInfoYearUri = baseUri + "aircon/get_year_power_ex";
         getEnergyInfoWeekUri = baseUri + "aircon/get_week_power_ex";
         setSpecialModeUri = baseUri + "aircon/set_special_mode";
+        setDemandControlUri = baseUri + "aircon/set_demand_control";
+        getDemandControlUri = baseUri + "aircon/get_demand_control";
 
         // Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
@@ -114,9 +117,7 @@ public class DaikinWebTargets {
 
     public boolean setControlInfo(ControlInfo info) throws DaikinCommunicationException {
         Map<String, String> queryParams = info.getParamString();
-        String result = invoke(setControlInfoUri, queryParams);
-        Map<String, String> responseMap = InfoParser.parse(result);
-        return Optional.ofNullable(responseMap.get("ret")).orElse("").equals("OK");
+        return isSuccessful(invoke(setControlInfoUri, queryParams));
     }
 
     public SensorInfo getSensorInfo() throws DaikinCommunicationException {
@@ -141,7 +142,7 @@ public class DaikinWebTargets {
         return EnergyInfoDayAndWeek.parse(response);
     }
 
-    public void setSpecialMode(SpecialMode newMode) throws DaikinCommunicationException {
+    public boolean setSpecialMode(SpecialMode newMode) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
         if (newMode == SpecialMode.NORMAL) {
             queryParams.put("set_spmode", "0");
@@ -155,18 +156,34 @@ public class DaikinWebTargets {
             queryParams.put("spmode_kind", newMode.getValue());
         }
         String response = invoke(setSpecialModeUri, queryParams);
-        if (!response.contains("ret=OK")) {
+        if (isSuccessful(response)) {
+            return true;
+        } else {
             logger.warn("Error setting special mode. Response: '{}'", response);
+            return false;
         }
     }
 
-    public void setStreamerMode(boolean state) throws DaikinCommunicationException {
+    public boolean setStreamerMode(boolean state) throws DaikinCommunicationException {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("en_streamer", state ? "1" : "0");
         String response = invoke(setSpecialModeUri, queryParams);
-        if (!response.contains("ret=OK")) {
+        if (isSuccessful(response)) {
+            return true;
+        } else {
             logger.warn("Error setting streamer mode. Response: '{}'", response);
+            return false;
         }
+    }
+
+    public DemandControl getDemandControl() throws DaikinCommunicationException {
+        String response = invoke(getDemandControlUri);
+        return DemandControl.parse(response);
+    }
+
+    public boolean setDemandControl(DemandControl info) throws DaikinCommunicationException {
+        Map<String, String> queryParams = info.getParamString();
+        return isSuccessful(invoke(setDemandControlUri, queryParams));
     }
 
     // Daikin Airbase API
@@ -175,9 +192,9 @@ public class DaikinWebTargets {
         return AirbaseControlInfo.parse(response);
     }
 
-    public void setAirbaseControlInfo(AirbaseControlInfo info) throws DaikinCommunicationException {
+    public boolean setAirbaseControlInfo(AirbaseControlInfo info) throws DaikinCommunicationException {
         Map<String, String> queryParams = info.getParamString();
-        invoke(setAirbaseControlInfoUri, queryParams);
+        return isSuccessful(invoke(setAirbaseControlInfoUri, queryParams));
     }
 
     public SensorInfo getAirbaseSensorInfo() throws DaikinCommunicationException {
@@ -200,9 +217,13 @@ public class DaikinWebTargets {
         return AirbaseZoneInfo.parse(response);
     }
 
-    public void setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo) throws DaikinCommunicationException {
+    public boolean setAirbaseZoneInfo(AirbaseZoneInfo zoneinfo) throws DaikinCommunicationException {
         Map<String, String> queryParams = zoneinfo.getParamString();
-        invoke(setAirbaseZoneInfoUri, queryParams);
+        return isSuccessful(invoke(setAirbaseZoneInfoUri, queryParams));
+    }
+
+    private boolean isSuccessful(String response) {
+        return response.contains("ret=OK");
     }
 
     private String invoke(String uri) throws DaikinCommunicationException {

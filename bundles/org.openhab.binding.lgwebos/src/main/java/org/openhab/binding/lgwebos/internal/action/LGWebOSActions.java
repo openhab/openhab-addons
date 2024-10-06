@@ -226,7 +226,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private ResponseListener<TextInputStatusInfo> createTextInputStatusListener() {
-        return new ResponseListener<TextInputStatusInfo>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {
@@ -241,7 +241,7 @@ public class LGWebOSActions implements ThingActions {
     }
 
     private <O> ResponseListener<O> createResponseListener() {
-        return new ResponseListener<O>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

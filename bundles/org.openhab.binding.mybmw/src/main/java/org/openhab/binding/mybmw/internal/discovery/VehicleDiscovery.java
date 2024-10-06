@@ -138,7 +138,7 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
                     if (!thingFound) {
                         // Properties needed for functional Thing
                         VehicleAttributes vehicleAttributes = vehicle.getVehicleBase().getAttributes();
-                        Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
+                        Map<String, Object> convertedProperties = new HashMap<>(properties);
                         convertedProperties.put(MyBMWConstants.VIN, vehicle.getVehicleBase().getVin());
                         convertedProperties.put(MyBMWConstants.VEHICLE_BRAND, vehicleAttributes.getBrand());
                         convertedProperties.put(MyBMWConstants.REFRESH_INTERVAL,

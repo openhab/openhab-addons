@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="player">
-		<label>Volumio Binding Thing</label>
-		<description>A Volumio Instance</description>
+		<label>Volumio Device</label>
+		<description>A Volumio device</description>
 
 		<channels>
 			<channel id="title" typeId="title"/>
@@ -31,12 +31,12 @@
 				<label>Hostname</label>
 				<description>The hostname of your Volumio device</description>
 			</parameter>
-			<parameter name="port" type="integer" required="true">
+			<parameter name="port" type="integer" required="false">
 				<label>Port</label>
 				<description>The port of your Volumio device (default is 3000)</description>
 				<default>3000</default>
 			</parameter>
-			<parameter name="protocol" type="text" required="true">
+			<parameter name="protocol" type="text" required="false">
 				<label>Protocol</label>
 				<description>The protocol of your Volumio device (default is http)</description>
 				<limitToOptions>true</limitToOptions>
@@ -44,10 +44,11 @@
 					<option value="http">http</option>
 					<option value="https">https</option>
 				</options>
+				<default>http</default>
 			</parameter>
-			<parameter name="timeout" type="integer" required="true">
+			<parameter name="timeout" type="integer" required="false">
 				<label>Timeout</label>
-				<description>Connection-Timeout in ms</description>
+				<description>Connection timeout in milliseconds (default is 5000)</description>
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -58,7 +59,8 @@
 	<channel-type id="system-command" advanced="true">
 		<item-type>String</item-type>
 		<label>Send System Command</label>
-		<description>Sends a system command to Volumio. This allows to shutdown/reboot Volumio</description>
+		<description>Sends a system command to shutdown or reboot the Volumio device. Use "shutdown" or "reboot" as string
+			command.</description>
 		<state>
 			<options>
 				<option value="shutdown">Shutdown</option>
@@ -70,7 +72,7 @@
 	<channel-type id="stop-command" advanced="true">
 		<item-type>String</item-type>
 		<label>Stop</label>
-		<description>Sends a Stop Command to Volumio. This allows to stop the player. Use "stop" as string command.
+		<description>Sends a Stop command to stop the player. Use "stop" as string command.
 		</description>
 		<state>
 			<options>
@@ -110,9 +112,9 @@
 
 	<channel-type id="player">
 		<item-type>Player</item-type>
-		<label>State</label>
-		<description>The State channel contains state of the Volumio Player</description>
-		<category>Player</category>
+		<label>Media Control</label>
+		<description>Control the state of the Volumio Player</description>
+		<category>MediaControl</category>
 	</channel-type>
 
 	<channel-type id="album-art" advanced="true">
@@ -125,7 +127,7 @@
 	<channel-type id="track-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Track Type</label>
-		<description>Tracktype of the currently played track</description>
+		<description>Track type of the currently played track</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -138,7 +140,7 @@
 	<channel-type id="play-playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Play Playlist</label>
-		<description>Playback a playlist identified by its name</description>
+		<description>Play a playlist identified by its name</description>
 	</channel-type>
 
 	<channel-type id="clear-queue" advanced="true">

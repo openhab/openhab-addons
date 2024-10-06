@@ -61,6 +61,29 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="4">
+			<remove-channel id="hourly-prices" groupIds="electricity"/>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="co2-emission-prognosis" groupIds="electricity">
+				<type>energidataservice:co2-emission</type>
+				<label>CO₂ Emission Prognosis</label>
+				<description>Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh.</description>
+			</add-channel>
+			<add-channel id="co2-emission-realtime" groupIds="electricity">
+				<type>energidataservice:co2-emission</type>
+				<label>CO₂ Emission Realtime</label>
+				<description>Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh.</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="event" groupIds="electricity">
+				<type>energidataservice:event</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

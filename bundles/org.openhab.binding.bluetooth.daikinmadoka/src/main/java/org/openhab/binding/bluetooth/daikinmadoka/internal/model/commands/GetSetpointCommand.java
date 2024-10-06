@@ -59,8 +59,8 @@ public class GetSetpointCommand extends BRC1HCommand {
         Integer iHeatingSetpoint = (int) (heatValue.getComputedValue() / 128.);
         Integer iCoolingSetpoint = (int) (coolValue.getComputedValue() / 128.);
 
-        this.heatingSetpoint = new QuantityType<Temperature>(iHeatingSetpoint, SIUnits.CELSIUS);
-        this.coolingSetpoint = new QuantityType<Temperature>(iCoolingSetpoint, SIUnits.CELSIUS);
+        this.heatingSetpoint = new QuantityType<>(iHeatingSetpoint, SIUnits.CELSIUS);
+        this.coolingSetpoint = new QuantityType<>(iCoolingSetpoint, SIUnits.CELSIUS);
 
         logger.debug("heatingSetpoint: {}", heatingSetpoint);
         logger.debug("coolingSetpoint: {}", coolingSetpoint);

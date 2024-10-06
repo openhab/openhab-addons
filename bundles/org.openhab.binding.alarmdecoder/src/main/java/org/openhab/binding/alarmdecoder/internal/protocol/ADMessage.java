@@ -44,7 +44,7 @@ public abstract class ADMessage {
 
     /** Utility routine to split an AD message into its component parts */
     protected static List<String> splitMsg(String msg) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         Matcher regexMatcher = SPLIT_REGEX.matcher(msg);
         while (regexMatcher.find()) {
             l.add(regexMatcher.group());

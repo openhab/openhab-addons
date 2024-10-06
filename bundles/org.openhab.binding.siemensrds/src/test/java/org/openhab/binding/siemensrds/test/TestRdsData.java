@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.measure.quantity.ElectricCurrent;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -269,8 +267,7 @@ public class TestRdsData {
             assertNotNull(celsius);
             assertEquals(18.55, celsius.floatValue(), 0.01);
 
-            assertEquals(new QuantityType<ElectricCurrent>(0, Units.AMPERE),
-                    dataPoints.getPointByClass("'HDevElLd").getState());
+            assertEquals(new QuantityType<>(0, Units.AMPERE), dataPoints.getPointByClass("'HDevElLd").getState());
 
             state = dataPoints.getPointByClass("'SpHPcf").getState();
             assertTrue(state instanceof QuantityType<?>);

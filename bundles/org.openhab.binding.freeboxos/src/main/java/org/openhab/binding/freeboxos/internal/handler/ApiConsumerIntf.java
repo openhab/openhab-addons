@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,6 +46,8 @@ public interface ApiConsumerIntf extends ThingHandler {
 
     void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
 
+    boolean anyChannelLinked(String groupId, Set<String> channelSet);
+
     void stopJobs();
 
     void addJob(String name, Runnable command, long initialDelay, long delay, TimeUnit unit);
@@ -55,8 +58,11 @@ public interface ApiConsumerIntf extends ThingHandler {
         return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();
     }
 
-    default MACAddress getMac() {
+    default @Nullable MACAddress getMac() {
         String mac = (String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS);
-        return new MACAddressString(mac).getAddress();
+        if (mac == null) {
+            mac = editProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        }
+        return mac == null ? null : new MACAddressString(mac).getAddress();
     }
 }

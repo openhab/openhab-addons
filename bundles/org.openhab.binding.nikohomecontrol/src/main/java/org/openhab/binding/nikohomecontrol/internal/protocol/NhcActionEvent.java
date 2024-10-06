@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public interface NhcActionEvent {
+public interface NhcActionEvent extends NhcBaseEvent {
 
     /**
      * This method is called when an action event is received from the Niko Home Control controller.
@@ -31,16 +31,4 @@ public interface NhcActionEvent {
      * @param state
      */
     void actionEvent(int state);
-
-    /**
-     * Called to indicate the action has been initialized.
-     *
-     */
-    void actionInitialized();
-
-    /**
-     * Called to indicate the action has been removed from the Niko Home Control controller.
-     *
-     */
-    void actionRemoved();
 }

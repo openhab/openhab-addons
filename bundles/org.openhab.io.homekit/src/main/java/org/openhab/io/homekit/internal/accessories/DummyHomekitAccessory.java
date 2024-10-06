@@ -110,7 +110,7 @@ public class DummyHomekitAccessory implements HomekitAccessory {
         public void addLinkedService(Service service) {
             linkedServices.add(service);
         }
-    };
+    }
 
     int id;
     String item;

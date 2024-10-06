@@ -37,7 +37,7 @@ import de.resol.vbus.SpecificationFile.Unit;
 @Component(service = { ChannelTypeProvider.class, ResolChannelTypeProvider.class })
 @NonNullByDefault
 public class ResolChannelTypeProvider implements ChannelTypeProvider {
-    private Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<ChannelTypeUID, ChannelType>();
+    private Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
 
     public ResolChannelTypeProvider() {
         // let's add all channel types from known by the resol-vbus java library

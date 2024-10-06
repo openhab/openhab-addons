@@ -60,6 +60,7 @@ public class MieleBindingConstants {
     public static final String FINISH_CHANNEL_ID = "finish";
     public static final String ENERGY_CONSUMPTION_CHANNEL_ID = "energyConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
+    public static final String LAUNDRY_WEIGHT_CHANNEL_ID = "laundryWeight";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");

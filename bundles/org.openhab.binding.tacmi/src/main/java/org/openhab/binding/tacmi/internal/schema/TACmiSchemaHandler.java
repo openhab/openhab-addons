@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -38,6 +39,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -253,8 +255,18 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             case NUMERIC_FORM:
                 ChangerX2Entry cx2en = e.changerX2Entry;
                 if (cx2en != null) {
-                    reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address
-                            + "&changetox2=" + command.format("%.2f")));
+                    String val;
+                    if (command instanceof Number qt) {
+                        val = String.format(Locale.US, "%.2f", qt.floatValue());
+                    } else if (command instanceof DateTimeType dtt) {
+                        // time is transferred as minutes since midnight...
+                        var zdt = dtt.getZonedDateTime();
+                        val = Integer.toString(zdt.getHour() * 60 + zdt.getMinute());
+                    } else {
+                        val = command.format("%.2f");
+                    }
+                    reqUpdate = prepareRequest(
+                            buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address + "&changetox2=" + val));
                     reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);

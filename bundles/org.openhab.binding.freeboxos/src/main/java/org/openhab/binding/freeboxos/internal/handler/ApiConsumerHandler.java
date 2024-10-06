@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.MediaType;
@@ -58,7 +60,7 @@ import org.slf4j.LoggerFactory;
 import inet.ipaddr.IPAddress;
 
 /**
- * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
+ * The {@link ApiConsumerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -80,43 +82,65 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         if (bridgeHandler == null) {
             return;
         }
+        initializeOnceBridgeOnline(bridgeHandler);
+    }
 
+    private void initializeOnceBridgeOnline(FreeboxOsHandler bridgeHandler) {
         Map<String, String> properties = editProperties();
-        if (properties.isEmpty()) {
-            try {
-                initializeProperties(properties);
-                checkAirMediaCapabilities(properties);
-                updateProperties(properties);
-            } catch (FreeboxException e) {
-                logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
-            }
-        }
-
-        boolean isAudioReceiver = Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()));
-        if (isAudioReceiver) {
-            configureMediaSink(bridgeHandler, properties.getOrDefault(Source.UPNP.name(), ""));
+        try {
+            initializeProperties(properties);
+            updateProperties(properties);
+        } catch (FreeboxException e) {
+            logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
         }
 
         startRefreshJob();
     }
 
-    private void configureMediaSink(FreeboxOsHandler bridgeHandler, String upnpName) {
+    protected void configureMediaSink() {
         try {
+            String upnpName = editProperties().getOrDefault(Source.UPNP.name(), "");
             Receiver receiver = getManager(MediaReceiverManager.class).getReceiver(upnpName);
-            if (receiver != null && reg == null) {
-                ApiConsumerConfiguration config = getConfig().as(ApiConsumerConfiguration.class);
-                String callbackURL = bridgeHandler.getCallbackURL();
-                if (!config.password.isEmpty() || !receiver.passwordProtected()) {
-                    reg = bridgeHandler.getBundleContext().registerService(
-                            AudioSink.class.getName(), new AirMediaSink(this, bridgeHandler.getAudioHTTPServer(),
-                                    callbackURL, receiver.name(), config.password, config.acceptAllMp3),
-                            new Hashtable<>());
-                } else {
-                    logger.info("A password needs to be configured to enable Air Media capability.");
-                }
+            if (receiver != null) {
+                Map<String, String> properties = editProperties();
+                receiver.capabilities().entrySet()
+                        .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString()));
+                updateProperties(properties);
+
+                startAudioSink(receiver);
+            } else {
+                stopAudioSink();
             }
         } catch (FreeboxException e) {
             logger.warn("Unable to retrieve Media Receivers: {}", e.getMessage());
+        }
+    }
+
+    private void startAudioSink(Receiver receiver) {
+        FreeboxOsHandler bridgeHandler = checkBridgeHandler();
+        // Only video and photo is supported by the API so use VIDEO capability for audio
+        if (reg == null && bridgeHandler != null && Boolean.TRUE.equals(receiver.capabilities().get(MediaType.VIDEO))) {
+            ApiConsumerConfiguration config = getConfig().as(ApiConsumerConfiguration.class);
+            String callbackURL = bridgeHandler.getCallbackURL();
+            if (!config.password.isEmpty() || !receiver.passwordProtected()) {
+                reg = bridgeHandler.getBundleContext()
+                        .registerService(
+                                AudioSink.class.getName(), new AirMediaSink(this, bridgeHandler.getAudioHTTPServer(),
+                                        callbackURL, receiver.name(), config.password, config.acceptAllMp3),
+                                new Hashtable<>());
+                logger.debug("Audio sink registered for {}.", receiver.name());
+            } else {
+                logger.warn("A password needs to be configured to enable Air Media capability.");
+            }
+        }
+    }
+
+    private void stopAudioSink() {
+        ServiceRegistration<?> localReg = reg;
+        if (localReg != null) {
+            localReg.unregister();
+            logger.debug("Audio sink unregistered");
+            reg = null;
         }
     }
 
@@ -132,8 +156,9 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (checkBridgeHandler() != null) {
-            startRefreshJob();
+        FreeboxOsHandler bridgeHandler = checkBridgeHandler();
+        if (bridgeHandler != null) {
+            initializeOnceBridgeOnline(bridgeHandler);
         } else {
             stopJobs();
         }
@@ -147,22 +172,16 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         try {
             if (checkBridgeHandler() != null) {
                 if (command instanceof RefreshType) {
-                    internalPoll();
+                    internalForcePoll();
                 } else if (!internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
                     logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
                 }
             }
+        } catch (PermissionException e) {
+            logger.warn("Missing permission {} for handling command {} on channel {}: {}", e.getPermission(), command,
+                    channelUID.getId(), e.getMessage());
         } catch (FreeboxException e) {
-            logger.warn("Error handling command: {}", e.getMessage());
-        }
-    }
-
-    private void checkAirMediaCapabilities(Map<String, String> properties) throws FreeboxException {
-        String upnpName = properties.getOrDefault(Source.UPNP.name(), "");
-        Receiver receiver = getManager(MediaReceiverManager.class).getReceiver(upnpName);
-        if (receiver != null) {
-            receiver.capabilities().entrySet()
-                    .forEach(entry -> properties.put(entry.getKey().name(), entry.getValue().toString()));
+            logger.warn("Error handling command {} on channel {}: {}", command, channelUID.getId(), e.getMessage());
         }
     }
 
@@ -190,10 +209,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     @Override
     public void dispose() {
         stopJobs();
-        ServiceRegistration<?> localReg = reg;
-        if (localReg != null) {
-            localReg.unregister();
-        }
+        stopAudioSink();
         super.dispose();
     }
 
@@ -206,7 +222,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
         if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
             try {
-                internalPoll();
+                internalForcePoll();
             } catch (FreeboxException ignore) {
                 // An exception is normal if the box is rebooting then let's try again later...
                 addJob("Initialize", this::initialize, 10, TimeUnit.SECONDS);
@@ -253,6 +269,10 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     }
 
     protected abstract void internalPoll() throws FreeboxException;
+
+    protected void internalForcePoll() throws FreeboxException {
+        internalPoll();
+    }
 
     private void updateIfActive(String group, String channelId, State state) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
@@ -337,6 +357,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     @Override
     public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
+    }
+
+    @Override
+    public boolean anyChannelLinked(String groupId, Set<String> channelSet) {
+        return channelSet.stream().map(id -> new ChannelUID(getThing().getUID(), groupId, id))
+                .anyMatch(uid -> isLinked(uid));
     }
 
     @Override

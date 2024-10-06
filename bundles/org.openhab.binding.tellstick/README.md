@@ -8,13 +8,9 @@ All of these 433 MHz devices is one-way, so some versions of the Tellstick monit
 
 The latest versions have also implemented Z-Wave as transmission protocol which open up for more robust transmission due two-ways communication.
 
-<p align="center">
-<img src="doc/tellstick_duo.jpg" alt="Tellstick Duo with device" width="300px"/>
-</p>
+![](doc/tellstick_duo.jpg)
 
-<p align="center">
-<img src="doc/znet.jpeg" alt="Tellstick Znet lite v2" width="300px"/>
-</p>
+![](doc/znet.jpeg)
 
 ## Supported Things
 
@@ -97,7 +93,7 @@ Optional:
 #### Telldus Live Bridge
 
 To configure Telldus Live you have request OAuth tokens from Telldus.
-Goto this page <https://api.telldus.com/keys/index> and request your keys and update the config.
+Goto this page <https://pa-api.telldus.com/keys/index> and request your keys and update the config.
 
 ```java
 Bridge tellstick:telldus-live:2 "Tellstick ZWave" [publicKey="XXX", privateKey="YYYY", token= "ZZZZ", tokenSecret="UUUU"]

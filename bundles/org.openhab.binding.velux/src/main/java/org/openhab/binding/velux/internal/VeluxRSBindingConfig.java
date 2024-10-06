@@ -49,7 +49,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The ascending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapAscending = new TreeMap<>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapAscending = new TreeMap<>(new Comparator<>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o1.compareTo(o2);
@@ -58,7 +58,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The descending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapDescending = new TreeMap<>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapDescending = new TreeMap<>(new Comparator<>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o2.compareTo(o1);

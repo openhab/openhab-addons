@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
  * @author Davy Wong - Added Airthings Wave Gen 1 support
+ * @author Arne Seime - Added Airthings Wave Radon / Wave 2 support
  */
 @NonNullByDefault
 public class AirthingsBindingConstants {
@@ -36,9 +37,11 @@ public class AirthingsBindingConstants {
             BluetoothBindingConstants.BINDING_ID, "airthings_wave_mini");
     public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_GEN1 = new ThingTypeUID(
             BluetoothBindingConstants.BINDING_ID, "airthings_wave_gen1");
+    public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_RADON = new ThingTypeUID(
+            BluetoothBindingConstants.BINDING_ID, "airthings_wave_radon");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRTHINGS_WAVE_PLUS,
-            THING_TYPE_AIRTHINGS_WAVE_MINI, THING_TYPE_AIRTHINGS_WAVE_GEN1);
+            THING_TYPE_AIRTHINGS_WAVE_MINI, THING_TYPE_AIRTHINGS_WAVE_GEN1, THING_TYPE_AIRTHINGS_WAVE_RADON);
 
     // Channel IDs
     public static final String CHANNEL_ID_HUMIDITY = "humidity";

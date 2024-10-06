@@ -48,7 +48,7 @@ public class SolarmaxConnectorFindCommands {
     @Test
     public void testForCommands() throws UnknownHostException, SolarMaxException {
         List<String> validCommands = new ArrayList<>();
-        List<String> commandsToCheck = new ArrayList<String>();
+        List<String> commandsToCheck = new ArrayList<>();
         List<String> failedCommands = new ArrayList<>();
         int failedCommandRetry = 0;
         String lastFailedCommand = "";
@@ -123,7 +123,7 @@ public class SolarmaxConnectorFindCommands {
 
     private boolean checkIsValidCommand(String command)
             throws InterruptedException, UnknownHostException, SolarMaxException {
-        List<String> commands = new ArrayList<String>();
+        List<String> commands = new ArrayList<>();
         commands.add(command);
 
         Map<String, @Nullable String> responseMap = null;

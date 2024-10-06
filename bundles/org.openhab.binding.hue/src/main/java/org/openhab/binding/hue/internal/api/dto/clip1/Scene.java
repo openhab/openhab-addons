@@ -86,7 +86,7 @@ public class Scene {
      */
     public List<String> getLightIds() {
         List<String> lightIds = this.lightIds;
-        return lightIds != null ? lightIds : new ArrayList<String>();
+        return lightIds != null ? lightIds : new ArrayList<>();
     }
 
     /**

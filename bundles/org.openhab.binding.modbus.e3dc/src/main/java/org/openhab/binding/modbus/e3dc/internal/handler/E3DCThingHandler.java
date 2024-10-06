@@ -115,7 +115,7 @@ public class E3DCThingHandler extends BaseBridgeHandler {
     private ChannelUID string3VoltChannel;
     private ChannelUID string3WattChannel;
 
-    private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<E3DCWallboxThingHandler>();
+    private final ArrayList<E3DCWallboxThingHandler> listeners = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(E3DCThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
     private ReadStatus dataRead = ReadStatus.NOT_RECEIVED;

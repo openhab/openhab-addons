@@ -63,7 +63,7 @@ public class InsteonCommandExtension extends AbstractConsoleCommandExtension imp
         STANDARD,
         EXTENDED,
         EXTENDED_2
-    };
+    }
 
     @Nullable
     private InsteonNetworkHandler handler;

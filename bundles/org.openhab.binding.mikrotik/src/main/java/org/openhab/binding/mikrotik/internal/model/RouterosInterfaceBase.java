@@ -49,7 +49,7 @@ public abstract class RouterosInterfaceBase extends RouterosBaseData {
 
     public String getApiType() {
         return getDesignedType().toString();
-    };
+    }
 
     public boolean validate() {
         return getDesignedType() == this.type;

@@ -13,6 +13,7 @@
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.BatteryStateType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -27,15 +28,18 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Power {
-    private @NonNullByDefault({}) @SerializedName("battery_state") String batteryState;
+    private @Nullable @SerializedName("battery_state") String batteryState;
     private @SerializedName("battery_level") int batteryLevel;
 
     public BatteryStateType getBatteryState() {
-        try {
-            return BatteryStateType.valueOf(batteryState.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return BatteryStateType.CRITICAL;
+        String batteryState = this.batteryState;
+        if (batteryState != null) {
+            try {
+                return BatteryStateType.valueOf(batteryState.toUpperCase());
+            } catch (IllegalArgumentException e) {
+            }
         }
+        return BatteryStateType.CRITICAL;
     }
 
     public int getBatteryLevel() {

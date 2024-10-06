@@ -41,7 +41,7 @@ public class DeviceFeatureListener {
     public enum StateChangeType {
         ALWAYS,
         CHANGED
-    };
+    }
 
     private String itemName;
     private ChannelUID channelUID;

@@ -60,7 +60,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
     }
 
     public void activate() {
-        activate(new Hashtable<String, Object>());
+        activate(new Hashtable<>());
     }
 
     @Override
@@ -129,7 +129,7 @@ public class SmartHomeDevicesDiscovery extends AbstractDiscoveryService {
         if (activateTimeStamp == null) {
             this.activateTimeStamp = new Date().getTime();
         }
-    };
+    }
 
     synchronized void setSmartHomeDevices(List<SmartHomeBaseDevice> deviceList) {
         int smartHomeDeviceDiscoveryMode = accountHandler.getSmartHomeDevicesDiscoveryMode();

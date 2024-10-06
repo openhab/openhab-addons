@@ -178,11 +178,11 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             removeChannels.add(channel);
                         }
                         // start checking the input IO status
-                        ipCameraHandler.lowPriorityRequests.set(0,
+                        ipCameraHandler.lowPriorityRequests.add(0,
                                 "/ISAPI/System/IO/inputs/" + ipCameraHandler.cameraConfig.getNvrChannel() + "/status");
                     } else {
                         // start checking the input IO status
-                        ipCameraHandler.lowPriorityRequests.set(0,
+                        ipCameraHandler.lowPriorityRequests.add(0,
                                 "/ISAPI/System/IO/inputs/" + ipCameraHandler.cameraConfig.getNvrChannel() + "/status");
                     }
                     ipCameraHandler.removeChannels(removeChannels);

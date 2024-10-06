@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.evohome.internal.handler;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evohome.internal.EvohomeBindingConstants;
@@ -69,11 +67,11 @@ public class EvohomeHeatingZoneHandler extends BaseEvohomeHandler {
             updateEvohomeThingStatus(ThingStatus.ONLINE);
 
             updateState(EvohomeBindingConstants.ZONE_TEMPERATURE_CHANNEL,
-                    new QuantityType<Temperature>(zoneStatus.getTemperature().getTemperature(), SIUnits.CELSIUS));
+                    new QuantityType<>(zoneStatus.getTemperature().getTemperature(), SIUnits.CELSIUS));
             updateState(EvohomeBindingConstants.ZONE_SET_POINT_STATUS_CHANNEL,
                     new StringType(zoneStatus.getHeatSetpoint().getSetpointMode()));
-            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL, new QuantityType<Temperature>(
-                    zoneStatus.getHeatSetpoint().getTargetTemperature(), SIUnits.CELSIUS));
+            updateState(EvohomeBindingConstants.ZONE_SET_POINT_CHANNEL,
+                    new QuantityType<>(zoneStatus.getHeatSetpoint().getTargetTemperature(), SIUnits.CELSIUS));
         }
     }
 

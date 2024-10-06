@@ -2,7 +2,7 @@
 
 The openHAB ChatGPT Binding allows openHAB to communicate with the ChatGPT language model provided by OpenAI.
 
-ChatGPT is a powerful natural language processing (NLP) tool that can be used to understand and respond to a wide range of text-based commands and questions. 
+ChatGPT is a powerful natural language processing (NLP) tool that can be used to understand and respond to a wide range of text-based commands and questions.
 With this binding, you can use ChatGPT to formulate proper sentences for any kind of information that you would like to output.
 
 ## Supported Things
@@ -77,7 +77,7 @@ Number Temperature_Forecast_High
 ```java
 rule "Weather forecast update"
 when
-  Item Temperature_Forecast_High changed 
+  Item Temperature_Forecast_High changed
 then
     Weather_Announcement.sendCommand("High: " + Temperature_Forecast_High.state + "°C, Low: " + Temperature_Forecast_Low.state + "°C")
 end

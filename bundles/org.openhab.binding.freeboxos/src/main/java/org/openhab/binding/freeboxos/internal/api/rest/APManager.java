@@ -46,14 +46,16 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
             long txBytes, // transmitted bytes (from Freebox to station)
             long txRate, // reception data rate (in bytes/s)
             long rxRate, // transmission data rate (in bytes/s)
-            WifiInformation wifiInformation) {
+            @Nullable WifiInformation wifiInformation) {
 
-        public int getSignal() {
-            return wifiInformation.signal();
+        public int getRSSI() {
+            WifiInformation local = wifiInformation;
+            return local != null ? local.signal : 1;
         }
 
         public @Nullable String getSsid() {
-            return wifiInformation().ssid();
+            WifiInformation local = wifiInformation;
+            return local != null ? local.ssid : null;
         }
     }
 

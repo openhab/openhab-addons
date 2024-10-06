@@ -46,9 +46,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EnergyCapability extends RestCapability<EnergyApi> {
     private final Logger logger = LoggerFactory.getLogger(EnergyCapability.class);
+    private final NetatmoDescriptionProvider descriptionProvider;
 
     private int setPointDefaultDuration = -1;
-    private final NetatmoDescriptionProvider descriptionProvider;
     private String energyId = "";
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
@@ -59,7 +59,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     @Override
     public void initialize() {
         super.initialize();
-        energyId = handler.getConfiguration().as(HomeConfiguration.class).getIdForArea(FeatureArea.ENERGY);
+        energyId = handler.getThingConfigAs(HomeConfiguration.class).getIdForArea(FeatureArea.ENERGY);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                                     .forEach(bridgedModule -> childHandler.setNewData(bridgedModule));
                         });
             });
-            descriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), GROUP_ENERGY, CHANNEL_PLANNING),
+            descriptionProvider.setStateOptions(new ChannelUID(thingUID, GROUP_ENERGY, CHANNEL_PLANNING),
                     energyData.getThermSchedules().stream().map(p -> new StateOption(p.getId(), p.getName())).toList());
             setPointDefaultDuration = energyData.getThermSetpointDefaultDuration();
         }

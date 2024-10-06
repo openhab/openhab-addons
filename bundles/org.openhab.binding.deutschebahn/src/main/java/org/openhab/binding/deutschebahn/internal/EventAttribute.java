@@ -428,7 +428,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * Used for derived attributes that can't be set.
      */
     private static <VALUE_TYPE> BiConsumer<Event, VALUE_TYPE> voidSetter() {
-        return new BiConsumer<Event, VALUE_TYPE>() {
+        return new BiConsumer<>() {
 
             @Override
             public void accept(Event t, VALUE_TYPE u) {

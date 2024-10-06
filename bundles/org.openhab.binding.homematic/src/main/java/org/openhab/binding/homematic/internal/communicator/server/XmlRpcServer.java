@@ -51,7 +51,7 @@ public class XmlRpcServer implements RpcServer {
 
     public XmlRpcServer(RpcEventListener listener, HomematicConfig config) {
         this.config = config;
-        this.rpcResponseHander = new RpcResponseHandler<String>(listener) {
+        this.rpcResponseHander = new RpcResponseHandler<>(listener) {
 
             @Override
             protected String getEmptyStringResult() {

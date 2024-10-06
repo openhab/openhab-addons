@@ -47,6 +47,6 @@ public class Device implements DeviceNode {
     }
 
     public List<Component> getComponents() {
-        return components != null ? components : Collections.<Component> emptyList();
+        return components != null ? components : Collections.emptyList();
     }
 }

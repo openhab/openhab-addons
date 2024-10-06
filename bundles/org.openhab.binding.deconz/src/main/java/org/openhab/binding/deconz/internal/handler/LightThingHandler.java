@@ -217,12 +217,12 @@ public class LightThingHandler extends DeconzBaseThingHandler {
                     } else {
                         double[] xy = ColorUtil.hsbToXY(hsbCommand);
                         newLightState.xy = new double[] { xy[0], xy[1] };
-                        newLightState.bri = (int) (xy[2] * BRIGHTNESS_MAX);
+                        newLightState.bri = Util.fromPercentType(hsbCommand.getBrightness());
                     }
-                } else if (command instanceof PercentType) {
-                    newLightState.bri = Util.fromPercentType((PercentType) command);
-                } else if (command instanceof DecimalType) {
-                    newLightState.bri = ((DecimalType) command).intValue();
+                } else if (command instanceof PercentType percentCommand) {
+                    newLightState.bri = Util.fromPercentType(percentCommand);
+                } else if (command instanceof DecimalType decimalCommand) {
+                    newLightState.bri = decimalCommand.intValue();
                 } else {
                     return;
                 }

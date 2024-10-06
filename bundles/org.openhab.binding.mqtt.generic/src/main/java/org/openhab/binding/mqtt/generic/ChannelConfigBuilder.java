@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -59,6 +61,13 @@ public class ChannelConfigBuilder {
         return this;
     }
 
+    public ChannelConfigBuilder withStopCommandTopic(@Nullable String topic) {
+        if (topic != null) {
+            config.stopCommandTopic = topic;
+        }
+        return this;
+    }
+
     public ChannelConfigBuilder withRetain(boolean retain) {
         config.retained = retain;
         return this;
@@ -71,6 +80,16 @@ public class ChannelConfigBuilder {
 
     public ChannelConfigBuilder makeTrigger(boolean trigger) {
         config.trigger = trigger;
+        return this;
+    }
+
+    public ChannelConfigBuilder withTransformationPattern(List<String> pattern) {
+        config.transformationPattern = pattern;
+        return this;
+    }
+
+    public ChannelConfigBuilder withTransformationPatternOut(List<String> pattern) {
+        config.transformationPatternOut = pattern;
         return this;
     }
 }

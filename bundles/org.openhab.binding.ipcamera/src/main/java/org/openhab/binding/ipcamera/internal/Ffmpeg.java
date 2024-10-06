@@ -49,7 +49,7 @@ public class Ffmpeg {
     private @Nullable Process process = null;
     private String ffmpegCommand = "";
     private FFmpegFormat format;
-    private List<String> commandArrayList = new ArrayList<String>();
+    private List<String> commandArrayList = new ArrayList<>();
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private String password;

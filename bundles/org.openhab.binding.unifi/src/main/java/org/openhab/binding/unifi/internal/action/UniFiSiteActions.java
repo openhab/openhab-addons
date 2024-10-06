@@ -177,7 +177,8 @@ public class UniFiSiteActions implements ThingActions {
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean revokeVouchers(
     /* @formatter:off */
             @ActionInput(name = "voucherCodes", label = "@text/action.unifi.vouchersInputVoucherCodes.label",
-                description = "@text/action.unifi.vouchersInputVoucherCodes.description") List<String> voucherCodes) {
+                description = "@text/action.unifi.vouchersInputVoucherCodes.description",
+                type = "List<String>") List<String> voucherCodes) {
     /* @formatter:on */
         UniFiSiteThingHandler handler = this.handler;
         if (handler == null) {

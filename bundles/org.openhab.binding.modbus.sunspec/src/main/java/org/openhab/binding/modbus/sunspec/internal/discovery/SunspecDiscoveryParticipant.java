@@ -41,7 +41,7 @@ public class SunspecDiscoveryParticipant implements ModbusDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return new HashSet<ThingTypeUID>(SUPPORTED_THING_TYPES_UIDS.values());
+        return new HashSet<>(SUPPORTED_THING_TYPES_UIDS.values());
     }
 
     @Override

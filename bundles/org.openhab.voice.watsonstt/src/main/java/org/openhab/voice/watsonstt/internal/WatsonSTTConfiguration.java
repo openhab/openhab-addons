@@ -63,7 +63,13 @@ public class WatsonSTTConfiguration {
     /**
      * Message to be told when no results
      */
-    public String noResultsMessage = "No results";
+    public String noResultsMessage = "Sorry, I didn't understand you";
+
+    /**
+     * Message to be told when an error has happened
+     */
+    public String errorMessage = "Sorry, something went wrong";
+
     /**
      * By default, all IBM Watson™ services log requests and their results. Logging is done only to improve the services
      * for future users. The logged data is not shared or made public.

@@ -121,7 +121,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
-    private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+    private final List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
     private PanelLayout previousPanelLayout = new PanelLayout();
     private final NanoleafPanelColors panelColors = new NanoleafPanelColors();
     private boolean updateVisualLayout = true;

@@ -127,6 +127,18 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
+    INFO("signalInfo", "info", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
+    FAILURE("signalFailure", "failure", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
     STOP("", "stop", OnOffType.class, false),
     SWITCH("", "switch", OnOffType.class, false);
 

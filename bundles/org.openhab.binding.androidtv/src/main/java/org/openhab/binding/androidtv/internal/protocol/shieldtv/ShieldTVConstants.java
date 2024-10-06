@@ -48,6 +48,7 @@ public class ShieldTVConstants {
     public static final String MESSAGE_LOWPRIV = "080a12";
     public static final String MESSAGE_HOSTNAME = "080b12";
     public static final String MESSAGE_APPDB = "08f10712";
+    public static final String MESSAGE_APPDB_FULL = "080112";
     public static final String MESSAGE_GOOD_COMMAND = "08f30712";
     public static final String MESSAGE_PINSTART = "0308cf08";
     public static final String MESSAGE_CERT_COMING = "20";

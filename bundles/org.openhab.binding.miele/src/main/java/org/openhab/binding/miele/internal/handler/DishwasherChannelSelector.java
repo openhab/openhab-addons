@@ -108,6 +108,18 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
+    INFO("signalInfo", "info", OnOffType.class, false, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
+    FAILURE("signalFailure", "failure", OnOffType.class, false, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
     SWITCH("", "switch", OnOffType.class, false, false),
     ENERGY_CONSUMPTION(EXTENDED_DEVICE_STATE_PROPERTY_NAME, ENERGY_CONSUMPTION_CHANNEL_ID, QuantityType.class, false,
             true),

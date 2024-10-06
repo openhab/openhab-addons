@@ -30,7 +30,7 @@ import org.openhab.core.library.types.QuantityType;
 @NonNullByDefault
 public class WemoPowerBank {
 
-    private final Deque<CacheItem> slidingCache = new ConcurrentLinkedDeque<CacheItem>();
+    private final Deque<CacheItem> slidingCache = new ConcurrentLinkedDeque<>();
 
     @Nullable
     private QuantityType<?> previousCurrentPower = null;

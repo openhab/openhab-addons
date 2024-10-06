@@ -91,7 +91,7 @@ demo.rules:
 ```java
 rule "Kitchen switch IR rule"
 when
-    Item KitchenIRReceiverTelenetPower received update 
+    Item KitchenIRReceiverTelenetPower received update
 then
     createTimer(now.plusSeconds(5)) [|
         KitchenIRBlasterSamsung.sendCommand("samsung,power")

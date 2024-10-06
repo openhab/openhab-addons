@@ -120,7 +120,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         }
     }
 
-    private String getSprinklerId() {
+    public String getSprinklerId() {
         return getThing().getConfiguration().get("id") != null ? getThing().getConfiguration().get("id").toString()
                 : "";
     }

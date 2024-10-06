@@ -23,11 +23,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.IllegalFormatException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,9 +40,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.transform.TransformationException;
-import org.openhab.core.transform.TransformationHelper;
-import org.openhab.core.transform.TransformationService;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.StringUtils;
@@ -85,13 +82,12 @@ public class ExecHandler extends BaseThingHandler {
     public static final String TRANSFORM = "transform";
     public static final String AUTORUN = "autorun";
 
-    // RegEx to extract a parse a function String <code>'(.*?)\((.*)\)'</code>
-    private static final Pattern EXTRACT_FUNCTION_PATTERN = Pattern.compile("(.*?)\\((.*)\\)");
-
     private @Nullable ScheduledFuture<?> executionJob;
     private @Nullable String lastInput;
 
     private static Runtime rt = Runtime.getRuntime();
+
+    private @Nullable ChannelTransformation channelTransformation;
 
     public ExecHandler(Thing thing, ExecWhitelistWatchService execWhitelistWatchService) {
         super(thing);
@@ -128,6 +124,8 @@ public class ExecHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        channelTransformation = new ChannelTransformation((List<String>) getConfig().get(TRANSFORM));
+
         if (executionJob == null || executionJob.isCancelled()) {
             if ((getConfig().get(INTERVAL)) != null && ((BigDecimal) getConfig().get(INTERVAL)).intValue() > 0) {
                 int pollingInterval = ((BigDecimal) getConfig().get(INTERVAL)).intValue();
@@ -144,6 +142,7 @@ public class ExecHandler extends BaseThingHandler {
             executionJob.cancel(true);
             executionJob = null;
         }
+        channelTransformation = null;
     }
 
     public void execute() {
@@ -291,10 +290,9 @@ public class ExecHandler extends BaseThingHandler {
             outputBuilder.append(errorBuilder.toString());
 
             String transformedResponse = Objects.requireNonNull(StringUtils.chomp(outputBuilder.toString()));
-            String transformation = (String) getConfig().get(TRANSFORM);
 
-            if (transformation != null && transformation.length() > 0) {
-                transformedResponse = transformResponse(transformedResponse, transformation);
+            if (channelTransformation != null) {
+                transformedResponse = channelTransformation.apply(transformedResponse).orElse(transformedResponse);
             }
 
             updateState(OUTPUT, new StringType(transformedResponse));
@@ -302,58 +300,6 @@ public class ExecHandler extends BaseThingHandler {
             DateTimeType stampType = new DateTimeType(ZonedDateTime.now());
             updateState(LAST_EXECUTION, stampType);
         }
-    }
-
-    protected @Nullable String transformResponse(String response, String transformation) {
-        String transformedResponse;
-
-        try {
-            String[] parts = splitTransformationConfig(transformation);
-            String transformationType = parts[0];
-            String transformationFunction = parts[1];
-
-            TransformationService transformationService = TransformationHelper.getTransformationService(bundleContext,
-                    transformationType);
-            if (transformationService != null) {
-                transformedResponse = transformationService.transform(transformationFunction, response);
-            } else {
-                transformedResponse = response;
-                logger.warn("Couldn't transform response because transformationService of type '{}' is unavailable",
-                        transformationType);
-            }
-        } catch (TransformationException te) {
-            logger.warn("An exception occurred while transforming '{}' with '{}' : '{}'", response, transformation,
-                    te.getMessage());
-
-            // in case of an error we return the response without any transformation
-            transformedResponse = response;
-        }
-
-        logger.debug("Transformed response is '{}'", transformedResponse);
-        return transformedResponse;
-    }
-
-    /**
-     * Splits a transformation configuration string into its two parts - the
-     * transformation type and the function/pattern to apply.
-     *
-     * @param transformation the string to split
-     * @return a string array with exactly two entries for the type and the function
-     */
-    protected String[] splitTransformationConfig(String transformation) {
-        Matcher matcher = EXTRACT_FUNCTION_PATTERN.matcher(transformation);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("given transformation function '" + transformation
-                    + "' does not follow the expected pattern '<function>(<pattern>)'");
-        }
-        matcher.reset();
-
-        matcher.find();
-        String type = matcher.group(1);
-        String pattern = matcher.group(2);
-
-        return new String[] { type, pattern };
     }
 
     /**

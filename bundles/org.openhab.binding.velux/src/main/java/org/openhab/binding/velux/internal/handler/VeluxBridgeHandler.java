@@ -242,7 +242,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public VeluxBridgeConfiguration veluxBridgeConfiguration() {
         return veluxBridgeConfiguration;
-    };
+    }
 
     /**
      * Information retrieved by {@link VeluxBridgeActuators#getProducts}
@@ -250,7 +250,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public VeluxExistingProducts existingProducts() {
         return bridgeParameters.actuators.getChannel().existingProducts;
-    };
+    }
 
     /**
      * Information retrieved by {@link VeluxBridgeScenes#getScenes}

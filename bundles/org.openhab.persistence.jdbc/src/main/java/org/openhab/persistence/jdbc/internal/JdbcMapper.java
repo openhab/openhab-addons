@@ -404,7 +404,7 @@ public class JdbcMapper {
             initialized = false;
         }
 
-        List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<ItemsVO>();
+        List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<>();
         var itemTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toList());
         List<ItemVO> oldNewTableNames;
 

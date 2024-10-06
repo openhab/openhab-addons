@@ -84,7 +84,7 @@ public interface ShellyApiInterface {
 
     void setValveMode(int id, boolean auto) throws ShellyApiException;
 
-    void setValveTemperature(int valveId, int value) throws ShellyApiException;
+    void setValveTemperature(int valveId, double value) throws ShellyApiException;
 
     void setValveProfile(int valveId, int value) throws ShellyApiException;
 
@@ -112,7 +112,7 @@ public interface ShellyApiInterface {
 
     boolean setBluetooth(boolean enable) throws ShellyApiException;
 
-    String deviceReboot() throws ShellyApiException;
+    void deviceReboot() throws ShellyApiException;
 
     String setDebug(boolean enabled) throws ShellyApiException;
 

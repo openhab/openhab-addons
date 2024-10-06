@@ -57,6 +57,8 @@ public class GoogleTVMessageParser {
             if (msg.startsWith(DELIMITER_1A)) {
                 logger.warn("{} - GoogleTV Error Message: {}", thingId, msg);
                 callback.getHandler().dispose();
+            } else if (msg.equals(VERSION_01)) {
+                logger.warn("{} - GoogleTV version on device needs to be updated", thingId);
             } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //

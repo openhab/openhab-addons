@@ -593,7 +593,7 @@
 	</channel-type>
 
 	<channel-type id="vh_relativehumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Relative humidity exhaust air</description>
 		<state readOnly="true" pattern="%d %%"/>

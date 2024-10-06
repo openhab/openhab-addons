@@ -25,4 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface RawDataBean {
     @Nullable
     String getRawData();
+
+    public void setRawData(String rawData);
 }

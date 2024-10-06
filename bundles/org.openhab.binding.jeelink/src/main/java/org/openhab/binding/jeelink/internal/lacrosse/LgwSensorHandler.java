@@ -60,7 +60,7 @@ public class LgwSensorHandler extends JeeLinkSensorHandler<LgwReading> {
 
     @Override
     public ReadingPublisher<LgwReading> createPublisher() {
-        return new ReadingPublisher<LgwReading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(LgwReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {

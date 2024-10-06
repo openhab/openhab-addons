@@ -96,7 +96,7 @@ public class DSCAlarmMessage {
                     data = message.substring(3);
                 }
             } catch (Exception e) {
-                logger.error("processDSCAlarmMessage(): Error processing message: ({}) ", message, e);
+                logger.warn("processDSCAlarmMessage(): Error processing message: ({}) ", message, e);
                 return;
             }
 

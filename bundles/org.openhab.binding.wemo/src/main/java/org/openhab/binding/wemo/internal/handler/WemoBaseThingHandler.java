@@ -57,7 +57,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     protected WemoHttpCall wemoHttpCaller;
 
     private @Nullable String host;
-    private Map<String, Instant> subscriptions = new ConcurrentHashMap<String, Instant>();
+    private Map<String, Instant> subscriptions = new ConcurrentHashMap<>();
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
@@ -182,7 +182,7 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     private int scanForPort(String host) {
         Integer portFromService = getPortFromService();
-        List<Integer> portsToCheck = new ArrayList<Integer>(PORT_RANGE_END - PORT_RANGE_START + 1);
+        List<Integer> portsToCheck = new ArrayList<>(PORT_RANGE_END - PORT_RANGE_START + 1);
         Stream<Integer> portRange = IntStream.rangeClosed(PORT_RANGE_START, PORT_RANGE_END).boxed();
         if (portFromService != null) {
             portsToCheck.add(portFromService);

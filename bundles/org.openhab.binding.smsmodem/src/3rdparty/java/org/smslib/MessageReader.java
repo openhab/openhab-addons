@@ -50,7 +50,7 @@ public class MessageReader extends Thread {
         if (this.modem.getStatus() == Status.Started) {
             try {
                 this.modem.getModemDriver().lock();
-                ArrayList<InboundMessage> messageList = new ArrayList<InboundMessage>();
+                ArrayList<InboundMessage> messageList = new ArrayList<>();
                 try {
                     for (int i = 0; i < (this.modem.getModemDriver().getMemoryLocations().length() / 2); i++) {
                         String memLocation = this.modem.getModemDriver().getMemoryLocations().substring((i * 2),

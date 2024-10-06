@@ -92,9 +92,9 @@ The configuration for the `tcpServerBridge` consists of the following parameters
 
 The configuration for the `serialDevice` consists of the following parameters:
 
-| Parameter    | Description                                                                                           |
-| ------------ | ----------------------------------------------------------------------------------------------------- |
-| patternMatch | Regular expression used to identify device from received data (must match the whole line) (mandatory) |
+| Parameter    | Description                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| patternMatch | Regular expression used to identify device from received data (must match the whole line). Use .* when having only one device attached. (mandatory)|
 
 ## Channels
 
@@ -118,20 +118,25 @@ The channels supported by the `serialDevice` are:
 
 The configuration for the `serialDevice` channels consists of the following parameters:
 
-| Parameter               | Description                                                                                                                     | Supported Channels                            |
-|-------------------------|---------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX:.*?STATE=(.*?);.*` | string, number, dimmer, switch, rollershutter |
-| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS:device.js`                  | string, number, dimmer, switch, rollershutter |
-| `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                 | string, number, dimmer, rollershutter         |
-| `onValue`               | Send this value when receiving an ON command                                                                                    | switch, dimmer                                |
-| `offValue`              | Send this value when receiving an OFF command                                                                                   | switch, dimmer                                |
-| `increaseValue`         | Send this value when receiving an INCREASE command                                                                              | dimmer                                        |
-| `decreaseValue`         | Send this value when receiving a DECREASE command                                                                               | dimmer                                        |
-| `upValue`               | Send this value when receiving an UP command                                                                                    | rollershutter                                 |
-| `downValue`             | Send this value when receiving a DOWN command                                                                                   | rollershutter                                 |
-| `stopValue`             | Send this value when receiving a STOP command                                                                                   | rollershutter                                 |
-| `refreshCommand`        | Command that should be issued to receive the current channel state                                                              | string, number, dimmer, switch, rollershutter |
-| `refreshInterval`       | If configured, this defines an interval that will schedule automatic channel refresh                                            | string, number, dimmer, switch, rollershutter |
+| Parameter               | Description                                                                                                                      | Supported Channels                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX(.*?STATE=(.*?);.*)` | string, number, dimmer, switch, rollershutter |
+| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS(device.js)`                  | string, number, dimmer, switch, rollershutter |
+| `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                  | string, number, dimmer, rollershutter         |
+| `onValue`               | Send this value when receiving an ON command                                                                                     | switch, dimmer                                |
+| `offValue`              | Send this value when receiving an OFF command                                                                                    | switch, dimmer                                |
+| `increaseValue`         | Send this value when receiving an INCREASE command                                                                               | dimmer                                        |
+| `decreaseValue`         | Send this value when receiving a DECREASE command                                                                                | dimmer                                        |
+| `upValue`               | Send this value when receiving an UP command                                                                                     | rollershutter                                 |
+| `downValue`             | Send this value when receiving a DOWN command                                                                                    | rollershutter                                 |
+| `stopValue`             | Send this value when receiving a STOP command                                                                                    | rollershutter                                 |
+| `refreshCommand`        | Command that should be issued to receive the current channel state                                                               | string, number, dimmer, switch, rollershutter |
+| `refreshInterval`       | If configured, this defines an interval that will schedule automatic channel refresh                                             | string, number, dimmer, switch, rollershutter |
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
 ## Full Example
 
@@ -145,13 +150,13 @@ demo.things:
 Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
     Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"] {
         Channels:
-            Type number : temperature [stateTransformation="REGEX:.*?TEMP=(.*?);.*"]
-            Type number : humidity [stateTransformation="REGEX:.*?HUM=(.*?);.*"]
+            Type number : temperature [stateTransformation="REGEX(.*?TEMP=(.*?);.*)"]
+            Type number : humidity [stateTransformation="REGEX(.*?HUM=(.*?);.*)"]
     }
     Thing serialDevice rollershutter [patternMatch=".*"] {
         Channels:
-            Type rollershutter : serialRollo [stateTransformation="REGEX:Position:([0-9.]*)", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
-            Type switch : roloAt100 [stateTransformation="REGEX:s/Position:100/ON/"]
+            Type rollershutter : serialRollo [stateTransformation="REGEX(Position:([0-9.]*))", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
+            Type switch : roloAt100 [stateTransformation="REGEX(s/Position:100/ON/)"]
     }
     Thing serialDevice relay [patternMatch=".*"] {
         Channels:
@@ -159,7 +164,7 @@ Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] 
     }
     Thing serialDevice myDevice [patternMatch="ID=2341;.*"] {
         Channels:
-            Type string : control [commandTransformation="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
+            Type string : control [commandTransformation="JS(addCheckSum.js)", commandFormat="ID=2341;COMMAND=%s;"]
     }
 }
 

@@ -4,15 +4,15 @@ This binding can read information from multiple PLEX players connected to a PLEX
 
 It can be used for multiple scenarios:
 
-* Drive light changes based on player status. For instances turn off the lights when movie starts playing and turn them back on when movie is stopped/paused
-* Create a page that displays currently played media of one or more player connected to the server.
-* Send social media messages when player plays new media
-* Inform what the end time of the currently played media is
+- Drive light changes based on player status. For instances turn off the lights when movie starts playing and turn them back on when movie is stopped/paused
+- Create a page that displays currently played media of one or more player connected to the server.
+- Send social media messages when player plays new media
+- Inform what the end time of the currently played media is
 
 The binding can also control `PLAY/PAUSE/NEXT/PREVIOUS` the players which can be used for:
 
-* Start playing some music when someone enters a room
-* Pause the movie when motion is detected
+- Start playing some music when someone enters a room
+- Pause the movie when motion is detected
 
 ## Supported Things
 
@@ -30,7 +30,7 @@ Next step is to *PLAY* something on the desired player. Only when media is playe
 
 The PLEX Server needs to be configured first. The hostname of the PLEX server is mandatory and the either the PLEX token (recommended) or the username/password of the PLEX server (not recommended).
 
-Then find the PLEX token please follow the instructions from the PLEX support forum: 
+Then find the PLEX token please follow the instructions from the PLEX support forum:
 
 1. Sign in to your Plex account in Plex Web App
 2. Browse to a library item and view the XML for it
@@ -54,7 +54,7 @@ You can add multiple PLEX players. You can choose to find the player by autodisc
 #### Autodiscovery
 
 Turn on the player you want to add and *play* some media on it. Navigate to `/settings/things/add/plex` and start the auto discover.
-The player will be found and you can add it. 
+The player will be found and you can add it.
 
 #### Manual adding a player Thing
 
@@ -95,21 +95,29 @@ Find the `Device` block of the player you want to add and fill in the `clientIde
 
 ## Channels
 
+The PLEX Server supports the following channels:
+
+| Channel              | Type     | Read/Write | Description                                                                                                      |
+|----------------------|----------|------------|------------------------------------------------------------------------------------------------------------------|
+| currentPlayers       | Number   | RO         | The number of players currently configured to watch on PLEX                                                      |
+| currentPlayersActive | Number   | RO         | The number of players currently being used on PLEX                                                               |
+
 The PLEX Player supports the following channels:
 
-| Channel              | Type     | Read/Write | Description                                                           |
-|----------------------|----------|------------|-----------------------------------------------------------------------|
-| currentPlayers       | Number   | RO         | The number of players currently configured to watch on PLEX           |
-| currentPlayersActive | Number   | RO         | The number of players currently being used on PLEX                    |
-| state                | String   | RO         | The current state of the Player (BUFFERING, PLAYING, PAUSED, STOPPED) |
-| power                | Switch   | RO         | The power status of the player                                        |
-| title                | String   | RO         | The title of media that is playing                                    |
-| type                 | String   | RO         | The current type of playing media                                     |
-| endtime              | DateTime | RO         | Time at which the media that is playing will end                      |
-| progress             | Dimmer   | RO         | The current progress of playing media                                 |
-| art                  | String   | RO         | The URL of the background art for currently playing media             |
-| thumb                | String   | RO         | The URL of the cover art for currently playing media                  |
-| player               | Player   | RW         | The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`         |
+| Channel              | Type     | Read/Write | Description                                                                                                      |
+|----------------------|----------|------------|------------------------------------------------------------------------------------------------------------------|
+| state                | String   | RO         | The current state of the Player (BUFFERING, PLAYING, PAUSED, STOPPED)                                            |
+| power                | Switch   | RO         | The power status of the player                                                                                   |
+| title                | String   | RO         | The title of media that is playing                                                                               |
+| type                 | String   | RO         | The current type of playing media                                                                                |
+| endtime              | DateTime | RO         | Time at which the media that is playing will end                                                                 |
+| progress             | Dimmer   | RO         | The current progress of playing media                                                                            |
+| art                  | String   | RO         | The URL of the background art for currently playing media                                                        |
+| thumb                | String   | RO         | The URL of the cover art for currently playing media                                                             |
+| player               | Player   | RW         | The control channel for the player `PLAY/PAUSE/NEXT/PREVIOUS`                                                    |
+| ratingKey            | String   | RO         | The unique key in the Plex library identifying the media that is playing                                         |
+| parentRatingKey      | String   | RO         | The unique key in the Plex library identifying the parent (TV show season or album) of the media that is playing |
+| grandparentRatingKey | String   | RO         | The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing            |
 
 ## Full Example
 
@@ -135,7 +143,7 @@ String    PlexTVType01                 "Type [%s]"                 {channel="ple
 String    PlexTVEndTime01              "End time"                  {channel="plex:player:MyViewerName01:endtime"}
 Dimmer    PlexTVProgress01             "Progress [%.1f%%]"         {channel="plex:player:MyViewerName01:progress"}
 String    PlexTVCover1                 "Cover"                     {channel="plex:player:MyViewerName01:thumb"}
-String     ShellArt01                  "Background art"            {channel="plex:player:MyViewerName01:art"}
+String    ShellArt01                   "Background art"            {channel="plex:player:MyViewerName01:art"}
 Switch    PlexTVPower02                "Power"                     {channel="plex:player:MyViewerName02:power"}
 String    PlexTVStatus02               "Status [%s]"               {channel="plex:player:MyViewerName02:state"}
 String    PlexTVTitle02                "Title [%s]"                {channel="plex:player:MyViewerName02:title"}

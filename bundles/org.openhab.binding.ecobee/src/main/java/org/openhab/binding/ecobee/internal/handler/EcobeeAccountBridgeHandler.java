@@ -188,8 +188,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     public SelectionDTO getSelection() {
         SelectionDTO mergedSelection = new SelectionDTO();
-        for (EcobeeThermostatBridgeHandler handler : new ArrayList<EcobeeThermostatBridgeHandler>(
-                thermostatHandlers.values())) {
+        for (EcobeeThermostatBridgeHandler handler : new ArrayList<>(thermostatHandlers.values())) {
             SelectionDTO selection = handler.getSelection();
             logger.trace("AccountBridge: Thermostat {} selection: {}", handler.getThing().getUID(), selection);
             mergedSelection.mergeSelection(selection);
@@ -221,10 +220,13 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
             refreshThermostatsCounter.set(refreshIntervalNormal);
             SummaryResponseDTO summary = api.performThermostatSummaryQuery();
             if (summary != null && summary.hasChanged(previousSummary) && !thermostatIds.isEmpty()) {
-                for (ThermostatDTO thermostat : api.performThermostatQuery(thermostatIds)) {
-                    EcobeeThermostatBridgeHandler handler = thermostatHandlers.get(thermostat.identifier);
-                    if (handler != null) {
-                        handler.updateChannels(thermostat);
+                List<ThermostatDTO> thermostats = api.performThermostatQuery(thermostatIds);
+                if (thermostats != null) {
+                    for (ThermostatDTO thermostat : thermostats) {
+                        EcobeeThermostatBridgeHandler handler = thermostatHandlers.get(thermostat.identifier);
+                        if (handler != null) {
+                            handler.updateChannels(thermostat);
+                        }
                     }
                 }
             }

@@ -33,15 +33,20 @@ import org.osgi.service.component.annotations.Reference;
  * openHAB Cloud.
  *
  * @author Christoph Weitkamp - Initial contribution
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 @Component(service = ModuleHandlerFactory.class)
 public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
 
     private static final Collection<String> TYPES = List.of(SendNotificationActionHandler.TYPE_ID,
-            SendNotificationActionHandler.EXTENDED_TYPE_ID, SendBroadcastNotificationActionHandler.TYPE_ID,
-            SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID, SendLogNotificationActionHandler.TYPE_ID,
-            SendLogNotificationActionHandler.EXTENDED_TYPE_ID);
+            SendNotificationActionHandler.EXTENDED_TYPE_ID, SendNotificationActionHandler.EXTENDED2_TYPE_ID,
+            SendBroadcastNotificationActionHandler.TYPE_ID, SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID,
+            SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID, SendLogNotificationActionHandler.TYPE_ID,
+            SendLogNotificationActionHandler.EXTENDED_TYPE_ID,
+            HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID,
+            HideBroadcastNotificationByTagActionHandler.TYPE_ID, HideNotificationByReferenceIdActionHandler.TYPE_ID,
+            HideNotificationByTagActionHandler.TYPE_ID);
     private final CloudService cloudService;
 
     @Activate
@@ -66,13 +71,23 @@ public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
             switch (module.getTypeUID()) {
                 case SendNotificationActionHandler.TYPE_ID:
                 case SendNotificationActionHandler.EXTENDED_TYPE_ID:
+                case SendNotificationActionHandler.EXTENDED2_TYPE_ID:
                     return new SendNotificationActionHandler(action, cloudService);
                 case SendBroadcastNotificationActionHandler.TYPE_ID:
                 case SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID:
+                case SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID:
                     return new SendBroadcastNotificationActionHandler(action, cloudService);
                 case SendLogNotificationActionHandler.TYPE_ID:
                 case SendLogNotificationActionHandler.EXTENDED_TYPE_ID:
                     return new SendLogNotificationActionHandler(action, cloudService);
+                case HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID:
+                    return new HideBroadcastNotificationByReferenceIdActionHandler(action, cloudService);
+                case HideNotificationByReferenceIdActionHandler.TYPE_ID:
+                    return new HideNotificationByReferenceIdActionHandler(action, cloudService);
+                case HideBroadcastNotificationByTagActionHandler.TYPE_ID:
+                    return new HideBroadcastNotificationByTagActionHandler(action, cloudService);
+                case HideNotificationByTagActionHandler.TYPE_ID:
+                    return new HideNotificationByTagActionHandler(action, cloudService);
                 default:
                     break;
             }
