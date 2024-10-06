@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,8 +36,8 @@ import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
  */
 @NonNullByDefault
 public class AuthenticationApi extends RestManager {
-    public static final URI TOKEN_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_TOKEN).build();
-    public static final URI AUTH_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_AUTHORIZE).build();
+    public static final String TOKEN_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_TOKEN).build().toString();
+    public static final String AUTH_URI = getApiBaseBuilder(PATH_OAUTH, SUB_PATH_AUTHORIZE).build().toString();
 
     private List<Scope> grantedScope = List.of();
     private @Nullable String authorization;
@@ -47,16 +46,9 @@ public class AuthenticationApi extends RestManager {
         super(bridge, FeatureArea.NONE);
     }
 
-    public void setAccessToken(@Nullable String accessToken) {
-        if (accessToken != null) {
-            authorization = "Bearer " + accessToken;
-        } else {
-            authorization = null;
-        }
-    }
-
-    public void setScope(String scope) {
-        grantedScope = Stream.of(scope.split(" ")).map(s -> Scope.valueOf(s.toUpperCase())).toList();
+    public void setAccessToken(@Nullable String accessToken, String scope) {
+        authorization = accessToken != null ? "Bearer " + accessToken : null;
+        grantedScope = Stream.of(scope.toUpperCase().split(" ")).map(Scope::valueOf).toList();
     }
 
     public void dispose() {

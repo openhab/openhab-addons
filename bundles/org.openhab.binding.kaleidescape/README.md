@@ -10,19 +10,19 @@ See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
+It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
 
-The supported thing types are:  
-`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
-`cinemaone` Cinema One (2nd Gen)  
-`alto`  
-`strato` Includes Strato, Strato S, Strato C or Strato V  
+The supported thing types are:
+`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
+`cinemaone` Cinema One (2nd Gen)
+`alto`
+`strato` Includes Strato, Strato S, Strato C or Strato V
 
-The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.  
+The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
 ## Discovery
 
-Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using UPnP.
+Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
 Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
@@ -410,13 +410,13 @@ rule "Bring up Lights when movie is over"
 when
     Item z1_Ui_MovieLocation changed from "Main content" to "End Credits"
 then
-    // fade the lights up slowly while the credits are rolling 
+    // fade the lights up slowly while the credits are rolling
     lightPercent = 0
     while (lightPercent < 100) {
         lightPercent = lightPercent + 5
         logInfo("k rules", "lights at " + lightPercent.toString + " percent")
         // myLightItem.sendCommand(lightPercent)
-        Thread::sleep(5000) 
+        Thread::sleep(5000)
     }
 end
 

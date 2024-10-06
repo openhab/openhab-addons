@@ -55,5 +55,5 @@ demo.items:
 
 ```java
 Dimmer Light_LivingRoom  { channel="milight:rgbLed:milight2:4:ledbrightness", channel="bluetooth:ptm215b:bluegiga0:rocker_livingroom:rocker1" [profile="rawrocker-to-on-off"], channel="bluetooth:ptm215b:bluegiga0:rocker_kitchen:rocker1" [profile="rawrocker-to-on-off"] }  // We have a combined kitchen / livingroom, so we control the living room lights with switches from the living room and from the kitchen
-Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="bluetooth:ptm215b:bluegiga0:rocker_kitchen:rocker2" [profile="rawrocker-to-on-off"] } 
+Switch Light_Kitchen    { channel="hue:group:1:kitchen-bulbs:switch", channel="bluetooth:ptm215b:bluegiga0:rocker_kitchen:rocker2" [profile="rawrocker-to-on-off"] }
 ```

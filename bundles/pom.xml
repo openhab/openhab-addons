@@ -229,6 +229,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
+    <module>org.openhab.binding.linktap</module>
     <module>org.openhab.binding.liquidcheck</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.livisismarthome</module>
@@ -246,8 +247,8 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
-    <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
+    <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>

@@ -2,7 +2,7 @@
 
 Integrates the Home Power Plants from E3/DC GmbH into openHAB.
 See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
-The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
+The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.
 E3DC devices are integrated into the Modbus Binding.
 
 See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup.
@@ -228,7 +228,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Text    item=E3DC_Firmware                  label="Firmware [%s]"
     Text    item=E3DC_SerialNumber              label="Serial Number[%s]"
   }
-  
+
     Frame label="Power Producer" {
       Text    item=E3DC_PVPower                 label="PV Power [%d %unit%]"
       Text    item=E3DC_BatteryDischarge        label="Battery Discharge [%d %unit%]"
@@ -247,7 +247,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_SelfConsumptionLevel    label="Self Consumption [%d %%]"
       Text    item=E3DC_BatterySOC              label="SOC [%d %%]"
     }
-  
+
   Frame label="Wallbox" {
     Switch    item=E3DC_WB_Available            label="Available [%s]"
     Switch    item=E3DC_WB_Sunmode              label="Sunmode [%s]"
@@ -263,7 +263,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
     Switch    item=E3DC_WB_Relay32A             label="Relay 32A [%s]"
     Switch    item=E3DC_WB_1PhaseCharging       label="1-Phase charging [%s]"
   }
-  
+
     Frame label="String 1 Details" {
       Text    item=E3DC_String1V                label="Volt [%d %unit%]"
       Text    item=E3DC_String1A                label="Ampere [%.2f %unit%]"
@@ -279,7 +279,7 @@ sitemap E3DC label="E3DC Binding Sitemap" {
       Text    item=E3DC_String3A                label="Ampere [%.2f %unit%]"
       Text    item=E3DC_String3W                label="Watt [%d %unit%]"
     }
-  
+
   Frame label="EMS" {
     Text      item=E3DC_EMS_Status                      label="Status [%s]"
     Switch    item=E3DC_EMS_BatteryChargingLock         label="Battery Charging Lock [%s]"

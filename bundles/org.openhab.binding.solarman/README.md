@@ -69,7 +69,7 @@ Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", s
 }
 ```
 
-**Please note** As of this writing inverter types besides the `deye_sg04lp3` were not tested to work. 
+**Please note** As of this writing inverter types besides the `deye_sg04lp3` were not tested to work.
 If you have one of those inverters and it works, please drop me a message, if it doesn't work, please open an issue and I'll try to fix it.
 
 ## Channels
@@ -158,7 +158,7 @@ Thing solarman:logger:local [hostname="x.x.x.x",inverterType="deye_sg04lp3",seri
 
 Items file example for a SUN-12K-SG04LP3-EU inverter
 
-```text
+```java
 Number:Temperature        AC_Temperature                  "AC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-ac-temperature", unit="°C"}
 Number                    Alert                           "Alert [%s]"                           (solarman)  {channel="solarman:logger:local:alert-alert"}
 Number:ElectricPotential  Battery_Absorption_V            "Battery Absorption V [%.2f V]"        (solarman)  {channel="solarman:logger:local:battery-battery-absorption-v", unit="V"}
@@ -254,7 +254,7 @@ sitemap solarman label="Solarman"
         Text item=Current_L3 icon="line"
         Text item=Inverter_Frequency icon="line"
     }
-    
+
     Frame label="Battery"{
         Text item=Battery_SOC icon="battery"
         Text item=Battery_Current icon="current"
@@ -273,7 +273,7 @@ sitemap solarman label="Solarman"
         Text item=Battery_Max_A_Charge icon="battery"
         Text item=Battery_Max_A_Discharge icon="battery"
     }
-    
+
     Frame label="Solar"{
         Text item=Total_Solar_Production icon="solar"
         Text item=Daily_Production icon="solar"
@@ -284,7 +284,7 @@ sitemap solarman label="Solarman"
         Text item=PV2_Power icon="solar"
         Text item=PV2_Voltage icon="solar"
     }
-    
+
     Frame label="Grid"{
         Text item=Total_Grid_Production icon="power"
         Text item=Total_Grid_Power icon="power"
@@ -302,7 +302,7 @@ sitemap solarman label="Solarman"
         Text item=Daily_Energy_Bought icon="power"
         Text item=Total_Energy_Bought icon="power"
     }
-    
+
     Frame label="Load"{
         Text item=Daily_Load_Consumption icon="power"
         Text item=Total_Load_Consumption icon="power"

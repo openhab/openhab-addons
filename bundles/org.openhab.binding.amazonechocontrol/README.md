@@ -537,7 +537,7 @@ E.g. to read out the history call from an installation on openhab:8080 with an a
 
 1) Create a rule with a trigger of your choice
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -548,7 +548,7 @@ end
 
 You can also use [SSML](https://docs.aws.amazon.com/polly/latest/dg/supported-ssml.html) to provide a better voice experience
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -563,7 +563,7 @@ end
 
 Simple:
 
-```php
+```java
 rule "Say welcome if the door opens"
 when
     Item Door_Contact changed to OPEN
@@ -576,7 +576,7 @@ Expert:
 
 You can use a json formatted string to control title, sound and volume:
 
-```php
+```json
 {"sound": true, "speak":"<Speak>", "title": "<Title>", "body": "<Body Text>", "volume": 20}
 ```
 

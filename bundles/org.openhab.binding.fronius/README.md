@@ -145,7 +145,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 :::warning
 Battery control uses the battery management's time-dependent battery control settings of the inverter settings and therefore overrides user-specified time of use settings.
-Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings. 
+Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings.
 :::
 
 The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
@@ -159,6 +159,7 @@ You can retrieve the actions as follows:
 ```java
 val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybridge:myinverter")
 ```
+
 :::
 
 ::: tab JS
@@ -208,7 +209,7 @@ demo.things:
 Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
-    Thing ohmpilot myohmpilot [deviceId=0]    
+    Thing ohmpilot myohmpilot [deviceId=0]
 }
 ```
 

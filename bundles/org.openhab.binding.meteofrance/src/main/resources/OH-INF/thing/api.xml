@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>Météo-France API Portal</label>
+		<description>
+			Bridge to the Météo-France API Portal. In order to receive the data, you must register an account on
+			https://portail-api.meteofrance.fr/devportal/apis and get your API token.
+		</description>
+		<config-description>
+			<parameter name="apikey" type="text" required="true">
+				<label>API Key</label>
+				<description>Data-platform token to access the service</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
