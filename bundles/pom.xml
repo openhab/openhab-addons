@@ -229,6 +229,7 @@
     <module>org.openhab.binding.lifx</module>
     <module>org.openhab.binding.linky</module>
     <module>org.openhab.binding.linuxinput</module>
+    <module>org.openhab.binding.linktap</module>
     <module>org.openhab.binding.liquidcheck</module>
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.livisismarthome</module>
@@ -246,8 +247,8 @@
     <module>org.openhab.binding.mecmeter</module>
     <module>org.openhab.binding.melcloud</module>
     <module>org.openhab.binding.mercedesme</module>
-    <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
+    <module>org.openhab.binding.meteofrance</module>
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>
@@ -270,6 +271,7 @@
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.espmilighthub</module>
+    <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
@@ -287,7 +289,6 @@
     <module>org.openhab.binding.network</module>
     <module>org.openhab.binding.networkupstools</module>
     <module>org.openhab.binding.nibeheatpump</module>
-    <module>org.openhab.binding.nibeuplink</module>
     <module>org.openhab.binding.nikobus</module>
     <module>org.openhab.binding.nikohomecontrol</module>
     <module>org.openhab.binding.nobohub</module>
@@ -396,6 +397,7 @@
     <module>org.openhab.binding.speedtest</module>
     <module>org.openhab.binding.spotify</module>
     <module>org.openhab.binding.squeezebox</module>
+    <module>org.openhab.binding.sunsynk</module>
     <module>org.openhab.binding.surepetcare</module>
     <module>org.openhab.binding.synopanalyzer</module>
     <module>org.openhab.binding.systeminfo</module>

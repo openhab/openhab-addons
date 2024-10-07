@@ -40,7 +40,7 @@ In case you would like to setup the service via a text file, create a new file i
 
 Its contents should look similar to:
 
-```
+```ini
 org.openhab.voice.rustpotterks:threshold=0.5
 org.openhab.voice.rustpotterks:averagedthreshold=0.2
 org.openhab.voice.rustpotterks:scoreMode=max
@@ -55,7 +55,7 @@ org.openhab.voice.rustpotterks:gainRef=0.004
 
 ## Magic Word Configuration
 
-The magic word to spot is gathered from your 'Voice' configuration. 
+The magic word to spot is gathered from your 'Voice' configuration.
 
 You can generate your own wakeword files using the [command line utility](https://github.com/GiviMAD/rustpotter-cli).
 
@@ -79,7 +79,7 @@ You can setup your preferred default keyword spotter and default magic word in t
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```ini
 org.openhab.voice:defaultKS=rustpotterks
 org.openhab.voice:keyword=hey openhab
 org.openhab.voice:listeningItem=myItemForDialog

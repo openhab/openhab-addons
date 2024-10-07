@@ -132,7 +132,7 @@ when
      Channel 'dwdunwetter:dwdwarnings:cologne:updated1' triggered NEW
 then
    // New Warning send a push notification to everyone
-end 
+end
 
 ```
 

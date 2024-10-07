@@ -268,7 +268,7 @@ This example defines a sACN/E1.31 bridge in unicast mode which transmits univers
 Bridge dmx:sacn-bridge:mybridge [ mode="unicast", address="192.168.0.60", universe=2 ] {
  color  rgb    [dmxid="5/3", fadetime=1000, dimtime=10000 ]
  dimmer single [dmxid="50", fadetime=1000, turnonvalue="230", turnoffvalue="25" ]
- chaser ampel  [dmxid="10,12,13", steps="100:255,0,0:1000|100:255,255,0:500|100:0,0,255:1000|100:0,255,0:500" ] 
+ chaser ampel  [dmxid="10,12,13", steps="100:255,0,0:1000|100:255,255,0:500|100:0,0,255:1000|100:0,255,0:500" ]
 }
 ```
 
@@ -288,11 +288,11 @@ sitemap demo label="Main Menu"
     Frame {
         // Color
         Colorpicker item=MyColorItem
-        
+
         // Dimmer
         Switch item=MyDimmerItem
         Slider item=MyDimmerItem
-        
+
         // Chaser
         Switch item=MyChaserItem
     }

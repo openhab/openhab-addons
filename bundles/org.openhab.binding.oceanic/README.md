@@ -95,21 +95,21 @@ Within the Oceanic binding two routes are provided:
 1. Connect to the Oceanic softener over a serial port that is outside the scope of the Java Virtual Machine, setup a TCP "proxy" on the host that is connected to the softener, and make openHAB connect to that proxy over a plain TCP connection. This can be achieved with `socat`:
 
     ```shell
-    /usr/bin/socat -v TCP-LISTEN:9000 /dev/ttyUSB0,raw,echo=0           
+    /usr/bin/socat -v TCP-LISTEN:9000 /dev/ttyUSB0,raw,echo=0
     ```
 
     In the above example, the name of the host running socat, and the TCP port number 9000, will be part of the **network** Thing configuration
 1. Connect to the Oceanic softener over a serial port on the openHAB host and use `socat` to pipe the data from that serial port to a pseudo tty, which has to be manipulated in a CommPortIdentifier.PORT_RAW manner.
 
     ```shell
-    /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0            
+    /usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo=0
     ```
 
 Both workarounds can be implemented using a systemd system manager script, for example:
 
-```text
+```ini
 [Install]
-WantedBy=multi-user.target   
+WantedBy=multi-user.target
 
 [Service]
 #Type=forking
@@ -117,7 +117,7 @@ ExecStart=/usr/bin/socat -v /dev/ttyUSB0,raw,echo=0 pty,link=/dev/ttyS1,raw,echo
 #PIDFile=/var/run/socat.pid
 User=root
 Restart=always
-RestartSec=10             
+RestartSec=10
 ```
 
 However, in order to fix permissions at the OS level, one has to issue following commands in order to make /dev/ttyS1 accessible by the 'openhab' system user (that is used to start up the openHAB runtime), and to make the tty both readable and writable.
@@ -125,7 +125,7 @@ However, in order to fix permissions at the OS level, one has to issue following
 ```shell
 sudo useradd  -G dialout openhab
 sudo chgrp dialout /dev/ttyS1
-sudo chmod 777 /dev/ttyS1 
+sudo chmod 777 /dev/ttyS1
 ```
 
 Alternatively, these commands can be executed through a script that is attached to the systemd system manager script.

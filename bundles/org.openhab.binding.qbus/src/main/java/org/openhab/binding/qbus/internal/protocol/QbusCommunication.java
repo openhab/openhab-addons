@@ -244,7 +244,6 @@ public final class QbusCommunication extends BaseThingHandler {
         try {
             while (!Thread.currentThread().isInterrupted() && ((qMessage = reader.readLine()) != null)) {
                 readMessage(qMessage);
-
             }
         } catch (IOException e) {
             if (!listenerStopped) {
@@ -301,7 +300,6 @@ public final class QbusCommunication extends BaseThingHandler {
             }
             if ((writer == null) || (writer.checkError())) {
                 logger.warn("Error resending message");
-
             }
         }
     }
@@ -551,7 +549,6 @@ public final class QbusCommunication extends BaseThingHandler {
                 throw new IOException("Cannot read from socket, reader not connected.");
             }
             readMessage(reader.readLine());
-
         } else {
             QbusBridgeHandler handler = bridgeCallBack;
             if (handler != null) {
@@ -584,7 +581,6 @@ public final class QbusCommunication extends BaseThingHandler {
             if (handler != null) {
                 handler.bridgeOnline();
             }
-
         } else {
             if (handler != null) {
                 handler.bridgeOffline(ThingStatusDetail.CONFIGURATION_ERROR, "No serial nr defined");

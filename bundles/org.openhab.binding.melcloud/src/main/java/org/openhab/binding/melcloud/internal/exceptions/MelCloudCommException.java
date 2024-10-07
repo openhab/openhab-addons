@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.melcloud.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception to encapsulate any issues communicating with MELCloud.
  *
  * @author Pauli Anttila - Initial Contribution
  */
+@NonNullByDefault
 public class MelCloudCommException extends Exception {
     private static final long serialVersionUID = 1L;
 

@@ -184,15 +184,15 @@ sitemap main label="Main"
 {
     Text item=TeslaUsableBatteryLevel label="Car" icon="tesla" valuecolor=[<=20="red",>60="green"]
     {
-        Frame 
+        Frame
         {
             Text item=TeslaState label="State [%s]" icon=""
             Text item=TeslaHomelink label="Homelink Available[%s]" icon=""
             Text item=TeslaSpeed label="Speed [%.1f]"
             Text item=TeslaShiftState label="Shift State [%s]" icon=""
-            Text item=TeslaShiftState 
+            Text item=TeslaShiftState
             Text item=TeslaOdometer label="Odometer [%.1f miles]"
-            Text item=TeslaRange 
+            Text item=TeslaRange
         }
         Frame
         {
@@ -223,15 +223,15 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaDoorLock label="Doorlock"
-            Switch item=TeslaHorn label="Horn" 
+            Switch item=TeslaHorn label="Horn"
             Switch item=TeslaLights label="Lights"
             Switch item=TeslaValet label="Valet Mode"
             Switch item=TeslaSentry label="Sentry Mode"
 
-            Switch item=TeslaFrontDefrost label="Defrost Front"     
-            Switch item=TeslaRearDefrost label="Defrost Rear"                                               
-            Switch item=TeslaLeftSeatHeater label="Seat Heat Left" 
-            Switch item=TeslaRightSeatHeater label="Seat Heat Right" 
+            Switch item=TeslaFrontDefrost label="Defrost Front"
+            Switch item=TeslaRearDefrost label="Defrost Rear"
+            Switch item=TeslaLeftSeatHeater label="Seat Heat Left"
+            Switch item=TeslaRightSeatHeater label="Seat Heat Right"
         }
         Frame
         {

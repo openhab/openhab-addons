@@ -150,5 +150,6 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                     }
                     return true;
                 }).build();
+        finalizeChannels();
     }
 }
