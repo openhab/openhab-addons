@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link Mower}
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public class Mower {

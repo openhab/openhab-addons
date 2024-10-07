@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link MowerDiscoveryService} is a service for discovering your mowers through Worx Landroid API
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  * @author Gaël L'hopital - Added representation property and serialNumber configuration element
  */
 @NonNullByDefault

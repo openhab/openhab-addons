@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link WorxLandroidDayCodes} hosts Landroid days of week
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public enum WorxLandroidDayCodes {
