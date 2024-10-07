@@ -284,6 +284,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
         buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
                 channelConfiguration.powerCommandTopic, null, null, null);
+        finalizeChannels();
     }
 
     @Nullable

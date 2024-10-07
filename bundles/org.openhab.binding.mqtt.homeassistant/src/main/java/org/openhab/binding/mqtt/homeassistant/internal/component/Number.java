@@ -71,7 +71,7 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
     }
 
     public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();
@@ -89,5 +89,6 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                 .build();
+        finalizeChannels();
     }
 }
