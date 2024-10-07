@@ -16,16 +16,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.zway.internal.ZWayBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -61,7 +56,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
 
         List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
         logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
-        
+
         for (final InetAddress address : addressesToScan) {
             scheduler.execute(new ZWayServerScan(address.getHostAddress()));
         }
