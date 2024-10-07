@@ -29,7 +29,8 @@ No binding configuration is required.
 
 The Air Conditioner's IP address is mandatory, all other parameters are optional.
 If the broadcast is not set (default) it will be derived from openHAB's network setting (Check Network Settings in the openHAB UI).
-Encryption type will be filled by the binding proccess automatically in case the bind process to the AC device successed. In case of problems with binding to the AC device the user set manually the encription type.
+The binding tries to automatically detect the encryption type when communicating with the AC.
+If this fails, you might need need to set the encryption type manually.
 Only change this if you have a good reason to.
 
 ## Channels
