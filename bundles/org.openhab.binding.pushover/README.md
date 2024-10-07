@@ -75,7 +75,6 @@ For priority `2` only, the action returns a `String` value (the `receipt`) if th
 For other priorities, the action always returns an empty `String`.
 
 - `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message.
-
 The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
 ## Full Example
