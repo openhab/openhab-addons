@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
