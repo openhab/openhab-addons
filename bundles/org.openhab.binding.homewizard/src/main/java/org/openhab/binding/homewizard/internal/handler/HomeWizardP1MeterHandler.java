@@ -10,14 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.handler;
 
 import java.time.DateTimeException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.dto.DataPayload;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -35,14 +38,17 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
 
     private String meterModel = "";
     private int meterVersion = 0;
+    private TimeZoneProvider timeZoneProvider;
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
+     * @param timeZoneProvider The TimeZoneProvider
      */
-    public HomeWizardP1MeterHandler(Thing thing) {
+    public HomeWizardP1MeterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -87,40 +93,39 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
-        // If no data from the gas meter is present, the json value will be null, which means gson ignores it,
-        // leaving the value in the payload object at 0.
-        long dtv = payload.getGasTimestamp();
-        if (dtv > 0) {
-            updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
+        updateState(HomeWizardBindingConstants.CHANNEL_POWER_FAILURES, new DecimalType(payload.getAnyPowerFailCount()));
+        updateState(HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
+                new DecimalType(payload.getLongPowerFailCount()));
+
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT,
+                new QuantityType<>(payload.getActiveCurrent(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L1,
+                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L2,
+                new QuantityType<>(payload.getActiveCurrentL2(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L3,
+                new QuantityType<>(payload.getActiveCurrentL3(), Units.AMPERE));
+
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE,
+                new QuantityType<>(payload.getActiveVoltage(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L1,
+                new QuantityType<>(payload.getActiveVoltageL1(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L2,
+                new QuantityType<>(payload.getActiveVoltageL2(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L3,
+                new QuantityType<>(payload.getActiveVoltageL3(), Units.VOLT));
+
+        ZonedDateTime gasTimestamp;
+        try {
+            gasTimestamp = payload.getGasTimestamp(timeZoneProvider.getTimeZone());
+        } catch (DateTimeException e) {
+            logger.warn("Unable to parse Gas timestamp: {}", e.getMessage());
+            gasTimestamp = null;
+        }
+        if (gasTimestamp != null) {
+            updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
                     new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-
-            // 210119164000
-            int seconds = (int) (dtv % 100);
-
-            dtv /= 100;
-            int minutes = (int) (dtv % 100);
-
-            dtv /= 100;
-            int hours = (int) (dtv % 100);
-
-            dtv /= 100;
-            int day = (int) (dtv % 100);
-
-            dtv /= 100;
-            int month = (int) (dtv % 100);
-
-            dtv /= 100;
-            int year = (int) (dtv + 2000);
-
-            try {
-                DateTimeType dtt = new DateTimeType(
-                        ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault()));
-                updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
-                updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
-                        new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-            } catch (DateTimeException e) {
-                logger.warn("Unable to parse Gas timestamp: {}", payload.getGasTimestamp());
-            }
+            updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
         }
     }
 }

@@ -10,9 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.dto.DataPayload;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -26,15 +29,16 @@ import org.openhab.core.types.Command;
  * @author Daniël van Os - Initial contribution
  */
 @NonNullByDefault
-public class HomeWizardWaterMeterHandler extends HomeWizardDeviceHandler {
+public class HomeWizardWaterMeterHandler extends HomeWizardP1MeterHandler {
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
+     * @param timeZoneProvider The TimeZoneProvider
      */
-    public HomeWizardWaterMeterHandler(Thing thing) {
-        super(thing);
+    public HomeWizardWaterMeterHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     /**
