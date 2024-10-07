@@ -70,7 +70,7 @@ public class LegacyPollManager {
      * Register a device for polling.
      *
      * @param device device to register for polling
-     * @param mumDev approximate number of total devices
+     * @param numDev approximate number of total devices
      */
     public void startPolling(LegacyDevice device, int numDev) {
         logger.debug("start polling device {}", device);
@@ -169,13 +169,13 @@ public class LegacyPollManager {
     private long findNextExpirationTime(LegacyDevice device, long time) {
         long expTime = time;
         // tailSet finds all those that expire after time - buffer
-        SortedSet<PQEntry> ts = pollQueue.tailSet(new PQEntry(device, time - MIN_MSEC_BETWEEN_POLLS));
-        if (ts.isEmpty()) {
+        SortedSet<PQEntry> expired = pollQueue.tailSet(new PQEntry(device, time - MIN_MSEC_BETWEEN_POLLS));
+        if (expired.isEmpty()) {
             // all entries in the poll queue are ahead of the new element,
             // go ahead and simply add it to the end
             expTime = time;
         } else {
-            Iterator<PQEntry> pqi = ts.iterator();
+            Iterator<PQEntry> pqi = expired.iterator();
             PQEntry prev = pqi.next();
             if (prev.getExpirationTime() > time + MIN_MSEC_BETWEEN_POLLS) {
                 // there is a time slot free before the head of the tail set
@@ -185,11 +185,12 @@ public class LegacyPollManager {
                 // a new poll while maintaining MIN_MSEC_BETWEEN_POLLS
                 while (pqi.hasNext()) {
                     PQEntry pqe = pqi.next();
-                    long tcurr = pqe.getExpirationTime();
-                    long tprev = prev.getExpirationTime();
-                    if (tcurr - tprev >= 2 * MIN_MSEC_BETWEEN_POLLS) {
+                    long currTime = pqe.getExpirationTime();
+                    long prevTime = prev.getExpirationTime();
+                    if (currTime - prevTime >= 2 * MIN_MSEC_BETWEEN_POLLS) {
                         // found gap
-                        logger.trace("device {} time {} found slot between {} and {}", device, time, tprev, tcurr);
+                        logger.trace("device {} time {} found slot between {} and {}", device, time, prevTime,
+                                currTime);
                         break;
                     }
                     prev = pqe;
@@ -233,8 +234,8 @@ public class LegacyPollManager {
             // something is in the queue
             long now = System.currentTimeMillis();
             PQEntry pqe = pollQueue.first();
-            long tfirst = pqe.getExpirationTime();
-            long delta = tfirst - now;
+            long expTime = pqe.getExpirationTime();
+            long delta = expTime - now;
             if (delta > 0) { // must wait for this item to expire
                 logger.trace("waiting for {} msec until {} comes due", delta, pqe);
                 pollQueue.wait(delta);

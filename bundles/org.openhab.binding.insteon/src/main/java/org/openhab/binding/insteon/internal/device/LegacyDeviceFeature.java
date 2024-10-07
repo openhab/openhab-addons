@@ -382,12 +382,11 @@ public class LegacyDeviceFeature {
     /**
      * Factory method for creating DeviceFeatures.
      *
-     * @param s The name of the device feature to create.
+     * @param name The name of the device feature to create.
      * @return The newly created DeviceFeature, or null if requested DeviceFeature does not exist.
      */
-    @Nullable
-    public static LegacyDeviceFeature makeDeviceFeature(String s) {
-        LegacyFeatureTemplate template = LegacyFeatureTemplateLoader.instance().getTemplate(s);
+    public static @Nullable LegacyDeviceFeature makeDeviceFeature(String name) {
+        LegacyFeatureTemplate template = LegacyFeatureTemplateLoader.instance().getTemplate(name);
         return template != null ? template.build() : null;
     }
 }
