@@ -23,7 +23,6 @@ import java.time.format.DateTimeParseException;
 import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.core.library.types.DecimalType;
@@ -32,7 +31,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
- * @author Jørgen Melhus
+ * @author Jørgen Melhus - Initial contribution
  */
 @NonNullByDefault
 public class EntsoeTimeSerie {
@@ -51,10 +50,10 @@ public class EntsoeTimeSerie {
 
     private Instant calculateDateTime(Instant start, int iteration, String resolution) throws EntsoeResponseException {
         try {
-            if (StringUtils.startsWithIgnoreCase(resolution, "PT")) {
+            if (resolution.toUpperCase().startsWith("PT")) {
                 Duration d = Duration.parse(resolution).multipliedBy(iteration);
                 return start.plus(d);
-            } else if (StringUtils.startsWithIgnoreCase(resolution, "P1")) {
+            } else if (resolution.toUpperCase().startsWith("P1")) {
                 return start.plus(Period.parse(resolution).multipliedBy(iteration));
             }
             throw new EntsoeResponseException("Unknown resolution: " + resolution);
@@ -65,12 +64,15 @@ public class EntsoeTimeSerie {
     }
 
     private Unit<Energy> convertEntsoeUnit(String unit) throws EntsoeResponseException {
-        if (unit.equalsIgnoreCase("MWh"))
+        if ("MWh".equalsIgnoreCase(unit)) {
             return Units.MEGAWATT_HOUR;
-        if (unit.equalsIgnoreCase("kWh"))
+        }
+        if ("kWh".equalsIgnoreCase(unit)) {
             return Units.KILOWATT_HOUR;
-        if (unit.equalsIgnoreCase("Wh"))
+        }
+        if ("Wh".equalsIgnoreCase(unit)) {
             return Units.WATT_HOUR;
+        }
 
         throw new EntsoeResponseException("Unit from ENTSO-E is unknown: " + unit);
     }

@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author Miika Jukka - Initial contribution
- * @author Jørgen Melhus
+ * @author Jørgen Melhus - Contribution
  */
 @NonNullByDefault
 public class Client {

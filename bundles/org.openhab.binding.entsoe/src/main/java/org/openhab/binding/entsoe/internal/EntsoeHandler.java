@@ -238,7 +238,7 @@ public class EntsoeHandler extends BaseThingHandler {
             Instant now = Instant.now();
             long millisUntilNextClockHour = Duration
                     .between(now, now.plus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS)).toMillis() + 1;
-            refreshJob = scheduler.schedule(this::refreshPrices, 60000, TimeUnit.MILLISECONDS);
+            refreshJob = scheduler.schedule(this::refreshPrices, millisUntilNextClockHour, TimeUnit.MILLISECONDS);
         }
     }
 
