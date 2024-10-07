@@ -144,7 +144,7 @@ public class DPTUnits {
         DPT_UNIT_MAP.put(DPTXlator4ByteFloat.DPT_ELECTROMAGNETIC_MOMENT.getID(),
                 Units.AMPERE.multiply(SIUnits.SQUARE_METRE).toString());
 
-        // 64 bit signed (DPT 29)
+        // 64-bit signed (DPT 29)
         DPT_UNIT_MAP.put(DPTXlator64BitSigned.DPT_REACTIVE_ENERGY.getID(), Units.VAR_HOUR.toString());
     }
 }

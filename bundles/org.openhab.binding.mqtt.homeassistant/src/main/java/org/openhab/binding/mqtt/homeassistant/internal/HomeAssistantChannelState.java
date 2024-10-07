@@ -22,6 +22,7 @@ import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,11 @@ public class HomeAssistantChannelState extends ChannelState {
      *            <code>false</code> ignored. Can be <code>null</code> to publish all commands.
      */
     public HomeAssistantChannelState(ChannelConfig config, ChannelUID channelUID, Value cachedValue,
-            @Nullable ChannelStateUpdateListener channelStateUpdateListener,
-            @Nullable Predicate<Command> commandFilter) {
-        super(config, channelUID, cachedValue, channelStateUpdateListener);
+            @Nullable ChannelStateUpdateListener channelStateUpdateListener, @Nullable Predicate<Command> commandFilter,
+            @Nullable ChannelTransformation incomingTransformation,
+            @Nullable ChannelTransformation outgoingTransformation) {
+        super(config, channelUID, cachedValue, channelStateUpdateListener, incomingTransformation,
+                outgoingTransformation);
         this.commandFilter = commandFilter;
     }
 

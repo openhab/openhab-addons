@@ -82,7 +82,7 @@ sitemap energenie label="Energenie Devices"
        Switch item=Socket2
        Switch item=Socket3
        Switch item=Socket4
-       
+
        // Power measurement
        Number item=Voltage
        Number item=Current

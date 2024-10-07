@@ -51,7 +51,6 @@ public class Utils {
             int button = (address >> 21) & 0x07;
 
             return leftPadWithZeros(Integer.toHexString(nikobusAddress), 6) + ":" + mapButton(button);
-
         } catch (NumberFormatException e) {
             return "[" + addressString + "]";
         }

@@ -81,27 +81,27 @@ Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
     {
         Type switch-r       : DpId001 "Störung Heizgerät"            [id=1, type="1.001"]
         Type number-r       : DpId002 "Betriebsart"                  [id=2, type="20.105"]
-        Type percentage-r   : DpId003 "Brennerleistung"              [id=3, type="5.001"] 
-        Type temperature-r  : DpId004 "Kesseltemperatur"             [id=4, type="9.001"] 
-        Type temperature-r  : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"] 
-        Type temperature-r  : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"] 
-        Type temperature-r  : DpId008 "Außentemperatur"              [id=8, type="9.001"] 
-        Type switch-r       : DpId009 "Status Flamme"                [id=9, type="1.001"] 
-        Type temperature-r  : DpId013 "Anlagendruck"                 [id=13, type="9.006"] 
-        Type switch-r       : DpId053 "Störung Systemmodul"          [id=53, type="1.001"] 
-        Type temperature-r  : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"] 
-        Type temperature-rw : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"] 
-        Type mode-rw        : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"] 
-        Type mode-rw        : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"] 
-        Type temperature-rw : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"] 
-        Type switch-rw      : DpId148 "CML Störung"                  [id=148, type="1.001"] 
-        Type mode-rw        : DpId149 "CWL Betriebsart"              [id=149, type="20.102"] 
-        Type percentage-r   : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"] 
-        Type temperature-r  : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"] 
+        Type percentage-r   : DpId003 "Brennerleistung"              [id=3, type="5.001"]
+        Type temperature-r  : DpId004 "Kesseltemperatur"             [id=4, type="9.001"]
+        Type temperature-r  : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"]
+        Type temperature-r  : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"]
+        Type temperature-r  : DpId008 "Außentemperatur"              [id=8, type="9.001"]
+        Type switch-r       : DpId009 "Status Flamme"                [id=9, type="1.001"]
+        Type temperature-r  : DpId013 "Anlagendruck"                 [id=13, type="9.006"]
+        Type switch-r       : DpId053 "Störung Systemmodul"          [id=53, type="1.001"]
+        Type temperature-r  : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"]
+        Type temperature-rw : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"]
+        Type mode-rw        : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"]
+        Type mode-rw        : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"]
+        Type temperature-rw : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"]
+        Type switch-rw      : DpId148 "CML Störung"                  [id=148, type="1.001"]
+        Type mode-rw        : DpId149 "CWL Betriebsart"              [id=149, type="20.102"]
+        Type percentage-r   : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"]
+        Type temperature-r  : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"]
         Type temperature-r  : DpId165 "CWL Zulufttemperatur"         [id=165, type="9.001"]
         Type flowrate-r     : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
         Type flowrate-r     : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
-        Type switch-r       : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]    
+        Type switch-r       : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]
     }
 ```
 
@@ -137,7 +137,7 @@ Switch ISM_LueftungFilterwarnung        "CML Filterwarnung"                     
 
 ```perl
 Frame label="Heizung"
-{    
+{
     Text item=ISM_HeizungSysStoerung                icon="siren"
     Text item=ISM_HeizungStoerung                   icon="siren"
     Text item=ISM_HeizungAussentemperatur           icon="temperature"
@@ -151,14 +151,14 @@ Frame label="Heizung"
     Setpoint item=ISM_HeizungSollwertverschiebung   icon="radiator"          minValue=-5 maxValue=5 step=1
 }
 Frame label="Wasser"
-{    
+{
     Text item=ISM_HeizungWarmwassertemperatur       icon="temperature_hot"
     Setpoint item=ISM_HeizungSollwertWarmwasser     icon="temperature"       minValue=40 maxValue=60 step=1
     Selection item=ISM_HeizungBetriebsartWarmwasser icon="faucet"            mappings=[0="Auto", 1="Legionellen Schutz", 2="Normal", 3="Eco", 4="Frost Schutz"]
 }
 Frame label="Lüftung"
-{    
-    Text item=ISM_LueftungStoerung                  icon="siren"        
+{
+    Text item=ISM_LueftungStoerung                  icon="siren"
     Selection item=ISM_LueftungBetriebsart          icon="fan"                mappings=[0="Auto", 1="Minimum", 2="Reduziert", 3="Normal", 4="Intensiv"]
     Text item=ISM_LueftungLueftungsstufe            icon="qualityofservice"
     Text item=ISM_LueftungFilterwarnung             icon="siren"

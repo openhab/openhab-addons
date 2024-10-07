@@ -91,7 +91,6 @@ public class MadokaValue {
                     // unsupported
                     break;
             }
-
         }
         return 0;
     }

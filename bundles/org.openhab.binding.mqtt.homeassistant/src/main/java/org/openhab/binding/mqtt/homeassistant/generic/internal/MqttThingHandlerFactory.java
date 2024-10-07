@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantJinjaFunctionLibrary;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,6 +31,8 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * The {@link MqttThingHandlerFactory} is responsible for creating things and thing
@@ -43,6 +46,7 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
     private final MqttChannelTypeProvider typeProvider;
     private final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final Jinjava jinjava = new Jinjava();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(MqttBindingConstants.HOMEASSISTANT_MQTT_THING).collect(Collectors.toSet());
@@ -54,6 +58,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
         this.typeProvider = typeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
+
+        HomeAssistantJinjaFunctionLibrary.register(jinjava.getGlobalContext());
     }
 
     @Override
@@ -72,8 +78,12 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
 
         if (supportsThingType(thingTypeUID)) {
             return new HomeAssistantThingHandler(thing, typeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    10000, 2000);
+                    jinjava, 10000, 2000);
         }
         return null;
+    }
+
+    public Jinjava getJinjava() {
+        return jinjava;
     }
 }
