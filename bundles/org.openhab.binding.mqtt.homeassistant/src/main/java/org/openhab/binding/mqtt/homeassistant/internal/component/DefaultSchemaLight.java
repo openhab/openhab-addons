@@ -297,8 +297,7 @@ public class DefaultSchemaLight extends Light {
         // channel. all the rest we can just check against the basic ID
         if (channel.equals(onOffChannel.getChannel().getUID())) {
             if (localColorChannel != null) {
-                HSBType newOnState = colorValue.getChannelState() instanceof HSBType newOnStateTmp
-                        ? newOnStateTmp
+                HSBType newOnState = colorValue.getChannelState() instanceof HSBType newOnStateTmp ? newOnStateTmp
                         : HSBType.WHITE;
                 if (state.equals(OnOffType.ON)) {
                     colorValue.update(newOnState);
