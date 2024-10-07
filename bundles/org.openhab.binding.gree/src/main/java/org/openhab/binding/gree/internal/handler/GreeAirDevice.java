@@ -64,7 +64,7 @@ public class GreeAirDevice {
     private final InetAddress ipAddress;
     private int port = 0;
     private String encKey = "";
-    private ENCRYPTION_TYPES encType = ENCRYPTION_TYPES.UNKNOWN;
+    private EncryptionTypes encType = EncryptionTypes.UNKNOWN;
     private Optional<GreeScanResponseDTO> scanResponseGson = Optional.empty();
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
@@ -148,8 +148,7 @@ public class GreeAirDevice {
         }
     }
 
-    public void bindWithDevice(DatagramSocket clientSocket, ENCRYPTION_TYPES encryptionTypeConfig)
-            throws GreeException {
+    public void bindWithDevice(DatagramSocket clientSocket, EncryptionTypes encryptionTypeConfig) throws GreeException {
         try {
             // Prep the Binding Request pack
             GreeBindRequestPackDTO bindReqPackGson = new GreeBindRequestPackDTO();
@@ -176,9 +175,9 @@ public class GreeAirDevice {
             // save the outcome
             isBound = true;
         } catch (IOException | JsonSyntaxException e) {
-            if (encType != ENCRYPTION_TYPES.GCM) {
+            if (encType != EncryptionTypes.GCM) {
                 logger.debug("Unable to bind to device - changing the encryption mode to GCM and trying again", e);
-                bindWithDevice(clientSocket, ENCRYPTION_TYPES.GCM);
+                bindWithDevice(clientSocket, EncryptionTypes.GCM);
             } else {
                 throw new GreeException("Unable to bind to device", e);
             }
@@ -467,7 +466,7 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = data[0];
-        if (encType == ENCRYPTION_TYPES.GCM) {
+        if (encType == EncryptionTypes.GCM) {
             if (data.length > 1) {
                 request.tag = data[1];
             } else {
@@ -526,16 +525,22 @@ public class GreeAirDevice {
         return isBound;
     }
 
-    public void setEncryptionType(ENCRYPTION_TYPES value) {
-        if (value == ENCRYPTION_TYPES.UNKNOWN) {
-            logger.debug("Trying to set encryption type with unknown value for device: {}, current value: {}",
-                    getName(), encType);
-            encType = (encType == ENCRYPTION_TYPES.UNKNOWN ? ENCRYPTION_TYPES.ECB : encType);
-            return;
+    public void setEncryptionType(EncryptionTypes value) {
+        if (value == EncryptionTypes.UNKNOWN) {
+            logger.debug("Trying to set encryption type to 'UNKNOWN' for device: {}, current value: {}", getName(),
+                    encType);
+            if (encType == EncryptionTypes.UNKNOWN) {
+                logger.debug("Falling back to 'ECB' for device: {}", getName());
+                encType = EncryptionTypes.ECB;
+            }
+        } else {
+            logger.debug("Change encryption type for device: {}, from : {}, to: {}", getName(), encType, value);
+            encType = value;
         }
+    }
 
-        logger.debug("Change encryption type for device: {}, from : {}, to: {}", getName(), encType, value);
-        encType = value;
+    public EncryptionTypes getEncryptionType() {
+        return encType;
     }
 
     public byte[] getKey() {

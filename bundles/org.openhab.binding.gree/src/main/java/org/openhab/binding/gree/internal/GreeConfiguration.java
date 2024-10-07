@@ -34,11 +34,11 @@ public class GreeConfiguration {
      * of the temperature sensor.
      */
     public BigDecimal currentTemperatureOffset = new BigDecimal(0.0);
-    public ENCRYPTION_TYPES encryptionType = ENCRYPTION_TYPES.UNKNOWN;
+    public EncryptionTypes encryptionType = EncryptionTypes.UNKNOWN;
 
     @Override
     public String toString() {
         return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh
-                + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encriptionType=" + encryptionType;
+                + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encryptionType=" + encryptionType;
     }
 }

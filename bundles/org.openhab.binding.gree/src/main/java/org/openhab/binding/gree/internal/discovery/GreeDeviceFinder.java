@@ -62,7 +62,7 @@ public class GreeDeviceFinder {
     }
 
     public void scan(DatagramSocket clientSocket, String broadcastAddress, boolean scanNetwork,
-            ENCRYPTION_TYPES encryptionTypeConfig) throws GreeException {
+            EncryptionTypes encryptionTypeConfig) throws GreeException {
         InetAddress ipAddress;
         try {
             ipAddress = InetAddress.getByName(broadcastAddress);
