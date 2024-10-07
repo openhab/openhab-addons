@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link WorxLandroidHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  * @author Gaël L'hopital - Added oAuthFactory
  */
 @NonNullByDefault

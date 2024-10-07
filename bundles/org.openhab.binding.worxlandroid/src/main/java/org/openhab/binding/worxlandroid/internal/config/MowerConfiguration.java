@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link MowerConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  * @author Gaël L'hopital - Added serialNumber configuration element
  */
 @NonNullByDefault

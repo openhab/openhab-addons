@@ -21,7 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link WorxLandroidBindingConstants} class defines datCommon constants, which are
  * used across the whole binding.
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public class WorxLandroidBindingConstants {

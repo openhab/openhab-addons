@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link UsersMeResponse} class
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  *
  */
 @NonNullByDefault

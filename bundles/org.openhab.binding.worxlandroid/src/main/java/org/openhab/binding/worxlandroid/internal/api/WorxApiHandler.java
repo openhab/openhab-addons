@@ -38,7 +38,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  * {@link WorxApiHandler} is a API request
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 @Component(service = WorxApiHandler.class)
