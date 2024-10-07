@@ -1,8 +1,8 @@
 # PegelOnline Binding
 
-Binding to observe water level from german rivers. 
+Binding to observe water level from german rivers.
 Data is provided by german **Water-Route and Shipping Agency** [WSV](https://www.pegelonline.wsv.de/).
-Goal is to monitor actual water levels from rivers nearby your home. 
+Goal is to monitor actual water levels from rivers nearby your home.
 In case of changing water levels the corresponding warning level is lowered or raised.
 
 ## Supported Things
@@ -11,25 +11,23 @@ In case of changing water levels the corresponding warning level is lowered or r
 |---------------------|---------------------------------------------------------------------------------|---------|
 | Measurement Station | Station providing water level measurements                                      | station |
 
-
 ## Discovery
 
 In case your home location coordinates are set the discovery will recognize all measurement stations within a radius of 50 km.
 Found Things are added in your Inbox.
 
-
 ## Thing Configuration
 
 Thing configuration contains 3 sections
 
-* [Station selection](station_selection)
-* [Warning Levels of selected station](warning_levels)
-* [Refresh rate](configuration_parameters)
+- [Station selection](station_selection)
+- [Warning Levels of selected station](warning_levels)
+- [Refresh rate](configuration_parameters)
 
 ### Station selection
 
-Stations can be selected with an Universally Unique Identifier (uuid). 
-It's automatically added by the Discovery. 
+Stations can be selected with an Universally Unique Identifier (uuid).
+It's automatically added by the Discovery.
 Configure a station manually using [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) and choose the uuid of your desired measurement station.
 
 ### Warning Levels
@@ -38,10 +36,10 @@ Configure a station manually using [list of all available stations](https://pege
 
 Each station has specific warning levels
 
-* Warning Levels 1 (*lowest*) to 3 (*highest*) 
-* Flooding Levels
+- Warning Levels 1 (*lowest*) to 3 (*highest*)
+- Flooding Levels
 
-Unfortunately these levels cannot be queried automatically. 
+Unfortunately these levels cannot be queried automatically.
 Please select your [federal state](https://www.hochwasserzentralen.de/) and check if which levels they provide.
 The picture shows the levels of [measurement station Marburg of federal state Hesse](https://www.hlnug.de/static/pegel/wiskiweb2/stations/25830056/station.html?v=20210802152952)
 
@@ -49,7 +47,7 @@ If you cannot evaluate warning or flooding levels leave the parameter empty.
 
 ### Configuration parameters
 
-| configuration    | content   | unit | description               | required | default | 
+| configuration    | content   | unit | description               | required | default |
 |------------------|-----------|------|---------------------------|----------|---------|
 | uuid             | text      |  -   | Unique Station Identifier |     X    | N/A     |
 | warningLevel1    | integer   |  cm  | Warning Level 1           |          | N/A     |
@@ -62,7 +60,6 @@ If you cannot evaluate warning or flooding levels leave the parameter empty.
 
 ## Channels
 
-
 | channel id           | type                 | description                    |
 |----------------------|----------------------|--------------------------------|
 | timestamp            | DateTime             | Last Measurement               |
@@ -74,21 +71,21 @@ If you cannot evaluate warning or flooding levels leave the parameter empty.
 
 Possible values:
 
-* 1 : Rising
-* 0 : Steady
-* -1 : Lowering
+- 1 : Rising
+- 0 : Steady
+- -1 : Lowering
 
 ### Warning
 
 Current warning according to configuration
 
-* 0 : No Warning
-* 1 : Warning level 1
-* 2 : Warning Level 2
-* 3 : Warning Level 3
-* 4 : Decade Flooding
-* 5 : Century Flooding
-* 6 : Extreme Flooding
+- 0 : No Warning
+- 1 : Warning level 1
+- 2 : Warning Level 2
+- 3 : Warning Level 3
+- 4 : Decade Flooding
+- 5 : Century Flooding
+- 6 : Extreme Flooding
 
 ## Full Example
 
@@ -96,12 +93,12 @@ Current warning according to configuration
 
 ```java
 Thing pegelonline:station:giessen "Measurement Station Giessen" [
-    uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4", 
-    refreshInterval=15, 
-    warningLevel1=550, 
-    warningLevel2=600, 
-    warningLevel3=650, 
-    hq10=732, 
+    uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4",
+    refreshInterval=15,
+    warningLevel1=550,
+    warningLevel2=600,
+    warningLevel3=650,
+    hq10=732,
     hq100=786
 ]
 ```
@@ -109,14 +106,12 @@ Thing pegelonline:station:giessen "Measurement Station Giessen" [
 ### Items
 
 ```java
-DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }                                                                           
-Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }                                                                           
+DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }
+Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }
 Number           Lahn_Giessen_Trend          "Water Level Trend Lahn Giessen"       {channel="pegelonline:station:giessen:trend"}
-Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}   
+Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}
 ```
-
 
 ## Links
 
 [PegelOnline API Documentation](https://www.pegelonline.wsv.de/webservice/dokuRestapi#caching)
-

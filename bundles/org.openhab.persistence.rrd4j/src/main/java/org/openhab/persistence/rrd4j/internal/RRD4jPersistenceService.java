@@ -373,9 +373,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (timestamp - 1 > db.getLastUpdateTime()) {
                     // only do it if there is not already a value
                     double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
-                    if (!Double.isNaN(lastValue)) {
-                        Sample sample = db.createSample();
-                        sample.setTime(timestamp - 1);
+                    if (!Double.isNaN(lastValue) && lastValue != value) {
+                        Sample sample = db.createSample(timestamp - 1);
                         sample.setValue(DATASOURCE_STATE, lastValue);
                         sample.update();
                         logger.debug("Stored '{}' as value '{}' with timestamp {} in rrd4j database (again)", name,
@@ -387,12 +386,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
             }
         }
         try {
-            Sample sample = db.createSample();
-            sample.setTime(timestamp);
+            Sample sample = db.createSample(timestamp);
             double storeValue = value;
             if (db.getDatasource(DATASOURCE_STATE).getType() == DsType.COUNTER) {
                 // counter values must be adjusted by stepsize
-                storeValue = value * db.getRrdDef().getStep();
+                storeValue = value * db.getHeader().getStep();
             }
             sample.setValue(DATASOURCE_STATE, storeValue);
             sample.update();
@@ -469,7 +467,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                         && filter.getPageNumber() == 0) {
                     if (filterEndDate == null || Duration.between(filterEndDate, ZonedDateTime.now()).getSeconds() < db
-                            .getRrdDef().getStep()) {
+                            .getHeader().getStep()) {
                         // we are asked only for the most recent value!
                         double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                         if (!Double.isNaN(lastValue)) {
@@ -628,7 +626,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
 
     public ConsolFun getConsolidationFunction(RrdDb db) {
         try {
-            return db.getRrdDef().getArcDefs()[0].getConsolFun();
+            return db.getArchive(0).getConsolFun();
         } catch (IOException e) {
             return ConsolFun.MAX;
         }

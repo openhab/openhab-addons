@@ -56,7 +56,7 @@ The binding can auto-discover the Onkyo AVRs present on your local network.
 The auto-discovery is enabled by default.
 To disable it, you can create a file in the services directory called onkyo.cfg with the following content:
 
-```text
+```ini
 org.openhab.onkyo:enableAutoDiscovery=false
 ```
 
@@ -82,7 +82,7 @@ In the thing file, this looks e.g. like
 
 Model specific
 
-```text
+```java
 onkyo:TX-NR818:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
@@ -90,20 +90,20 @@ or
 
 Generic model
 
-```text
+```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
 Optionally you can specify the refresh interval by `refreshInterval` parameter.
 
-```text
+```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
 Maximum volume level can also be configured by `volumeLimit` parameter.
 This prevent setting receiver volume level too high, which could damage your speakers or receiver.
 
-```text
+```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
 ```
 
@@ -123,7 +123,7 @@ See below for a few examples:
 
 Note that this is applied after the volume limiting took place.
 
-```text
+```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeScale=2]
 ```
 

@@ -14,14 +14,14 @@ package org.openhab.binding.pushbullet.internal.handler;
 
 import static org.openhab.binding.pushbullet.internal.PushbulletBindingConstants.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Properties;
+import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
@@ -29,70 +29,96 @@ import javax.mail.internet.InternetAddress;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.MimeTypes;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pushbullet.internal.PushbulletConfiguration;
+import org.openhab.binding.pushbullet.internal.PushbulletHttpClient;
 import org.openhab.binding.pushbullet.internal.action.PushbulletActions;
-import org.openhab.binding.pushbullet.internal.model.Push;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletApiException;
+import org.openhab.binding.pushbullet.internal.exception.PushbulletAuthenticationException;
+import org.openhab.binding.pushbullet.internal.model.PushRequest;
 import org.openhab.binding.pushbullet.internal.model.PushResponse;
+import org.openhab.binding.pushbullet.internal.model.PushType;
+import org.openhab.binding.pushbullet.internal.model.UploadRequest;
+import org.openhab.binding.pushbullet.internal.model.UploadResponse;
+import org.openhab.binding.pushbullet.internal.model.User;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * The {@link PushbulletHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Hakan Tandogan - Initial contribution
+ * @author Jeremy Setton - Add link and file push type support
  */
 @NonNullByDefault
 public class PushbulletHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(PushbulletHandler.class);
-
-    private final Gson gson = new GsonBuilder().create();
-
-    private static final Version VERSION = FrameworkUtil.getBundle(PushbulletHandler.class).getVersion();
-
     private static final Pattern CHANNEL_PATTERN = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
-    private @Nullable PushbulletConfiguration config;
+    private final Logger logger = LoggerFactory.getLogger(PushbulletHandler.class);
 
-    public PushbulletHandler(Thing thing) {
+    private final PushbulletHttpClient httpClient;
+
+    private int maxUploadSize;
+
+    public PushbulletHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = new PushbulletHttpClient(httpClient);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("About to handle {} on {}", command, channelUID);
-
-        // Future improvement: If recipient is already set, send a push on a command channel change
-        // check reconnect channel of the unifi binding for that
-
-        logger.debug("The Pushbullet binding is a read-only binding and cannot handle command '{}'.", command);
+        // do nothing
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-        config = getConfigAs(PushbulletConfiguration.class);
+        logger.debug("Starting {}", thing.getUID());
 
-        // Name and Token are both "required", so set the Thing immediately ONLINE.
-        updateStatus(ThingStatus.ONLINE);
+        PushbulletConfiguration config = getConfigAs(PushbulletConfiguration.class);
 
-        logger.debug("Finished initializing!");
+        if (config.getAccessToken().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Undefined access token.");
+            return;
+        }
+
+        httpClient.setConfiguration(config);
+
+        scheduler.execute(() -> retrieveAccountInfo());
+
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private void retrieveAccountInfo() {
+        try {
+            User user = httpClient.executeRequest(API_ENDPOINT_USERS_ME, User.class);
+
+            maxUploadSize = Objects.requireNonNullElse(user.getMaxUploadSize(), MAX_UPLOAD_SIZE);
+
+            logger.debug("Set maximum upload size for {} to {} bytes", thing.getUID(), maxUploadSize);
+
+            updateProperty(PROPERTY_NAME, user.getName());
+            updateProperty(PROPERTY_EMAIL, user.getEmail());
+
+            logger.debug("Updated properties for {} to {}", thing.getUID(), thing.getProperties());
+
+            updateStatus(ThingStatus.ONLINE);
+        } catch (PushbulletAuthenticationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid access token.");
+        } catch (PushbulletApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to retrieve account info.");
+        }
     }
 
     @Override
@@ -100,125 +126,227 @@ public class PushbulletHandler extends BaseThingHandler {
         return Set.of(PushbulletActions.class);
     }
 
-    public boolean sendPush(@Nullable String recipient, @Nullable String message, String type) {
-        return sendPush(recipient, "", message, type);
+    /**
+     * Sends a push note
+     *
+     * @param recipient the recipient
+     * @param title the title
+     * @param message the message
+     * @return true if successful
+     */
+    public boolean sendPushNote(@Nullable String recipient, @Nullable String title, String message) {
+        PushRequest request = newPushRequest(recipient, title, message, PushType.NOTE);
+
+        return sendPush(request);
     }
 
-    public boolean sendPush(@Nullable String recipient, @Nullable String title, @Nullable String message, String type) {
-        boolean result = false;
+    /**
+     * Sends a push link
+     *
+     * @param recipient the recipient
+     * @param title the title
+     * @param message the message
+     * @param url the message url
+     * @return true if successful
+     */
+    public boolean sendPushLink(@Nullable String recipient, @Nullable String title, @Nullable String message,
+            String url) {
+        PushRequest request = newPushRequest(recipient, title, message, PushType.LINK);
+        request.setUrl(url);
 
-        logger.debug("sendPush is called for ");
-        logger.debug("Thing {}", thing);
-        logger.debug("Thing Label: '{}'", thing.getLabel());
+        return sendPush(request);
+    }
 
-        PushbulletConfiguration configuration = getConfigAs(PushbulletConfiguration.class);
-        logger.debug("CFG {}", configuration);
-
-        Properties headers = prepareRequestHeaders(configuration);
-
-        String request = prepareMessageBody(recipient, title, message, type);
-
-        try (InputStream stream = new ByteArrayInputStream(request.getBytes(StandardCharsets.UTF_8))) {
-            String pushAPI = configuration.getApiUrlBase() + "/" + API_METHOD_PUSHES;
-
-            String responseString = HttpUtil.executeUrl(HttpMethod.POST.asString(), pushAPI, headers, stream,
-                    MimeTypes.Type.APPLICATION_JSON.asString(), TIMEOUT);
-
-            logger.debug("Got Response: {}", responseString);
-            PushResponse response = gson.fromJson(responseString, PushResponse.class);
-
-            logger.debug("Unpacked Response: {}", response);
-
-            if ((null != response) && (null == response.getPushError())) {
-                result = true;
-            }
-        } catch (IOException e) {
-            logger.warn("IO problems pushing note: {}", e.getMessage());
+    /**
+     * Sends a push file
+     *
+     * @param recipient the recipient
+     * @param title the title
+     * @param message the message
+     * @param content the file content
+     * @param fileName the file name
+     * @return true if successful
+     */
+    public boolean sendPushFile(@Nullable String recipient, @Nullable String title, @Nullable String message,
+            String content, @Nullable String fileName) {
+        UploadResponse upload = uploadFile(content, fileName);
+        if (upload == null) {
+            return false;
         }
 
-        return result;
+        PushRequest request = newPushRequest(recipient, title, message, PushType.FILE);
+        request.setFileName(upload.getFileName());
+        request.setFileType(upload.getFileType());
+        request.setFileUrl(upload.getFileUrl());
+
+        return sendPush(request);
     }
 
     /**
-     * helper method to populate the request headers
+     * Helper method to send a push request
      *
-     * @param configuration
-     * @return
+     * @param request the push request
+     * @return true if successful
      */
-    private Properties prepareRequestHeaders(PushbulletConfiguration configuration) {
-        Properties headers = new Properties();
-        headers.put(HttpHeader.USER_AGENT, "openHAB / Pushbullet binding " + VERSION);
-        headers.put(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString());
-        headers.put("Access-Token", configuration.getToken());
+    private boolean sendPush(PushRequest request) {
+        logger.debug("Sending push notification for {}", thing.getUID());
+        logger.debug("Push Request: {}", request);
 
-        logger.debug("Headers: {}", headers);
-
-        return headers;
+        try {
+            httpClient.executeRequest(API_ENDPOINT_PUSHES, request, PushResponse.class);
+            return true;
+        } catch (PushbulletApiException e) {
+            return false;
+        }
     }
 
     /**
-     * helper method to create a message body from data to be transferred.
+     * Helper method to upload a file to use in push message
      *
-     * @param recipient
-     * @param title
-     * @param message
-     * @param type
-     *
-     * @return the message as a String to be posted
+     * @param content the file content
+     * @param fileName the file name
+     * @return the upload response if successful, otherwise null
      */
-    private String prepareMessageBody(@Nullable String recipient, @Nullable String title, @Nullable String message,
-            String type) {
+    private @Nullable UploadResponse uploadFile(String content, @Nullable String fileName) {
+        RawType data = getContentData(content);
+        if (data == null) {
+            logger.warn("Failed to get content data from '{}'", content);
+            return null;
+        }
+
+        logger.debug("Content Data: {}", data);
+
+        int size = data.getBytes().length;
+        if (size > maxUploadSize) {
+            logger.warn("Content data size {} is greater than maximum upload size {}", size, maxUploadSize);
+            return null;
+        }
+
+        try {
+            UploadRequest request = new UploadRequest();
+            request.setFileName(fileName != null ? fileName : getContentFileName(content));
+            request.setFileType(data.getMimeType());
+
+            logger.debug("Upload Request: {}", request);
+
+            UploadResponse response = httpClient.executeRequest(API_ENDPOINT_UPLOAD_REQUEST, request,
+                    UploadResponse.class);
+
+            String uploadUrl = response.getUploadUrl();
+            if (uploadUrl == null) {
+                throw new PushbulletApiException("Undefined upload url");
+            }
+
+            httpClient.uploadFile(uploadUrl, data);
+
+            return response;
+        } catch (PushbulletApiException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to get the data for a given content
+     *
+     * @param content the file content
+     * @return the data raw type if available, otherwise null
+     */
+    private @Nullable RawType getContentData(String content) {
+        try {
+            if (content.startsWith("data:")) {
+                return RawType.valueOf(content);
+            } else if (content.startsWith("http")) {
+                return HttpUtil.downloadImage(content);
+            } else {
+                Path path = Path.of(content);
+                byte[] bytes = Files.readAllBytes(path);
+                String mimeType = Files.probeContentType(path);
+                return new RawType(bytes, mimeType);
+            }
+        } catch (IllegalArgumentException | IOException e) {
+            logger.debug("Failed to get content data: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to get the file name for a given content
+     *
+     * @param content the file content
+     * @return the file name if available, otherwise null
+     */
+    private @Nullable String getContentFileName(String content) {
+        if (content.startsWith("data:")) {
+            return IMAGE_FILE_NAME;
+        }
+        try {
+            Path fileName = Path.of(content.startsWith("http") ? new URL(content).getPath() : content).getFileName();
+            if (fileName != null) {
+                return fileName.toString();
+            }
+        } catch (MalformedURLException e) {
+            logger.debug("Malformed url content: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to create a push request
+     *
+     * @param recipient the recipient
+     * @param title the title
+     * @param message the message
+     * @param type the push type
+     *
+     * @return the push request object
+     */
+    private PushRequest newPushRequest(@Nullable String recipient, @Nullable String title, @Nullable String message,
+            PushType type) {
         logger.debug("Recipient is '{}'", recipient);
         logger.debug("Title is     '{}'", title);
         logger.debug("Message is   '{}'", message);
+        logger.debug("Type is      '{}'", type);
 
-        Push push = new Push();
-        push.setTitle(title);
-        push.setBody(message);
-        push.setType(type);
+        PushRequest request = new PushRequest();
+        request.setTitle(title);
+        request.setBody(message);
+        request.setType(type);
 
         if (recipient != null) {
             if (isValidEmail(recipient)) {
                 logger.debug("Recipient is an email address");
-                push.setEmail(recipient);
+                request.setEmail(recipient);
             } else if (isValidChannel(recipient)) {
                 logger.debug("Recipient is a channel tag");
-                push.setChannel(recipient);
+                request.setChannel(recipient);
             } else {
                 logger.warn("Invalid recipient: {}", recipient);
                 logger.warn("Message will be broadcast to all user's devices.");
             }
         }
 
-        logger.debug("Push: {}", push);
-
-        String request = gson.toJson(push);
-        logger.debug("Packed Request: {}", request);
-
         return request;
     }
 
     /**
-     * helper method checking if channel tag is valid.
+     * Helper method checking if channel tag is valid
      *
-     * @param channel
-     * @return
+     * @param channel the channel tag
+     * @return true if matches pattern
      */
     private static boolean isValidChannel(String channel) {
-        Matcher m = CHANNEL_PATTERN.matcher(channel);
-        return m.matches();
+        return CHANNEL_PATTERN.matcher(channel).matches();
     }
 
     /**
-     * helper method checking if email address is valid.
+     * Helper method checking if email address is valid
      *
-     * @param email
-     * @return
+     * @param email the email address
+     * @return true if parsed successfully
      */
     private static boolean isValidEmail(String email) {
         try {
-            InternetAddress emailAddr = new InternetAddress(email);
-            emailAddr.validate();
+            new InternetAddress(email, true);
             return true;
         } catch (AddressException e) {
             return false;

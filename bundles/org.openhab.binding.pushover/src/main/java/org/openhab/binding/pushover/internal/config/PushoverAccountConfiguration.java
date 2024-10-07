@@ -47,4 +47,5 @@ public class PushoverAccountConfiguration {
     public int retry = 300;
     public int expire = 3600;
     public int timeout = 10;
+    public int idleTimeout = 300;
 }

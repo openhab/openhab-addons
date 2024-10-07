@@ -1,6 +1,6 @@
 # PHC Binding
 
-This binding allows you to integrate modules(at the Moment AM, EM, JRM and DIM) of PHC, without the PHC control (STM), in openHAB.  
+This binding allows you to integrate modules(at the Moment AM, EM, JRM and DIM) of PHC, without the PHC control (STM), in openHAB.
 
 The serial protocol is mainly extracted, with thanks to the developers from the projects [PHCtoUDP](https://sourceforge.net/projects/phctoudp/) and [OpenHC](https://sourceforge.net/projects/openhc/?source=directory).
 
@@ -9,7 +9,7 @@ While the Wiki is offline you can find a PDF version [here](https://phc-forum.de
 
 ## Serial Communication
 
-The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485) and the Digitus DA-70157 (FTDI/FT323RL) on Raspbian Ubilinux (Up Board) and Windows 10:  
+The binding was tested with QinHeng Electronics HL-340 USB-Serial adapter (RS485) and the Digitus DA-70157 (FTDI/FT323RL) on Raspbian Ubilinux (Up Board) and Windows 10:
 
 | Device/OS                | adaptor       | result       |
 |--------------------------|---------------|--------------|
@@ -25,7 +25,7 @@ If there are many modules on one bridge, the initialization can take a few minut
 Sometimes after initialization, you might have to switch two times or the reaction could be a bit slow, but after you used a channel it should all work fine.
 
 For all devices running with Linux that use the ch341 driver (HL-340), the new version (ch34x) is needed.
-A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).  
+A guide how to install this can be found here: [CH340/341 UART Driver for Raspberry Pi](https://github.com/aperepel/raspberrypi-ch340-driver).
 
 If you don´t have the same kernel as used in the guide you have to compile the module yourself. In the guide is described a specific way for the Raspberry Pi. With another Linux version you can go the normal way with linux-headers.
 

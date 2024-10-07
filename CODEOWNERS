@@ -211,8 +211,8 @@
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
 /bundles/org.openhab.binding.mercedesme/ @weymann
-/bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
+/bundles/org.openhab.binding.meteofrance/ @clinique
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.mffan/ @mark-brooks-180
 /bundles/org.openhab.binding.miele/ @kgoderis @jlaur
@@ -235,6 +235,7 @@
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
+/bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
 /bundles/org.openhab.binding.mqtt.generic/ @ccutrer
 /bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
@@ -252,7 +253,6 @@
 /bundles/org.openhab.binding.network/ @mettke
 /bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
-/bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.nobohub/ @espenaf
@@ -360,6 +360,7 @@
 /bundles/org.openhab.binding.speedtest/ @MikeTheTux
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
+/bundles/org.openhab.binding.sunsynk/ @leeC77
 /bundles/org.openhab.binding.surepetcare/ @renescherer @HerzScheisse
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @mherwege

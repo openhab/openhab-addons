@@ -32,6 +32,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -69,7 +71,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *         {@link Lock} for multi-thread synchronization; globals and openhab-js injection code caching
  */
 public class OpenhabGraalJSScriptEngine
-        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine>
+        implements Lock {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final Source GLOBAL_SOURCE;
@@ -345,5 +348,35 @@ public class OpenhabGraalJSScriptEngine
         }
 
         return new InputStreamReader(ioStream);
+    }
+
+    @Override
+    public void lock() {
+        lock.lock();
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        lock.lockInterruptibly();
+    }
+
+    @Override
+    public boolean tryLock() {
+        return lock.tryLock();
+    }
+
+    @Override
+    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
+        return lock.tryLock(l, timeUnit);
+    }
+
+    @Override
+    public void unlock() {
+        lock.unlock();
+    }
+
+    @Override
+    public Condition newCondition() {
+        return lock.newCondition();
     }
 }

@@ -290,6 +290,7 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         buildOptionalChannel(JSON_ATTRIBUTES_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener, null,
                 null, channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
+        finalizeChannels();
     }
 
     @Nullable

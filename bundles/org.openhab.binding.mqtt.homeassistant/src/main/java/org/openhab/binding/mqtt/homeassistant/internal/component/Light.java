@@ -228,10 +228,10 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
     }
 
     protected final boolean optimistic;
-    protected boolean hasColorChannel = false;
 
     protected @Nullable ComponentChannel onOffChannel;
     protected @Nullable ComponentChannel brightnessChannel;
+    protected @Nullable ComponentChannel colorChannel;
 
     // State has to be stored here, in order to mux multiple
     // MQTT sources into single OpenHAB channels
@@ -251,6 +251,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
                 return new DefaultSchemaLight(builder, newStyleChannels);
             case JSON_SCHEMA:
                 return new JSONSchemaLight(builder, newStyleChannels);
+            case TEMPLATE_SCHEMA:
+                return new TemplateSchemaLight(builder, newStyleChannels);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");
@@ -290,6 +292,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
         colorTempValue = new NumberValue(min, max, BigDecimal.ONE, Units.MIRED);
 
         buildChannels();
+        finalizeChannels();
     }
 
     protected abstract void buildChannels();

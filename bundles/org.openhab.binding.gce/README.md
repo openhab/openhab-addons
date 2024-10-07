@@ -168,7 +168,7 @@ Thing gce:ipx800v3:ipx "IPX800" @ "diningroom" [hostname="192.168.0.144", portNu
             debouncePeriod=2500
         ]
         Type relay : relay#8 [       // Actionneur porte de garage
-            pulse=true    
+            pulse=true
         ]
 }
 ```
@@ -181,7 +181,7 @@ Group gIPXInputs "Inputs" <input>
 Contact input1 "Porte garage ouverte [%s]" <contact> (gIPXInputs) {channel="gce:ipx800v3:ipx:contact#1"}
 Contact input2 "Porte garage fermée [%s]"  <contact> (gIPXInputs) {channel="gce:ipx800v3:ipx:contact#2"}
 
-Group gIPXOutputs "Outputs" <output>          
+Group gIPXOutputs "Outputs" <output>
 Switch output3 "Chaudière" <furnace> (gIPXOutputs) {channel="gce:ipx800v3:ipx:relay#3"}
 Switch output4 "Lumière Porche" <light> (gIPXOutputs) {channel="gce:ipx800v3:ipx:relay#4"}
 
