@@ -74,7 +74,8 @@ Parameter `priority` is the priority to be used (`-2` = lowest priority, `-1` = 
 For priority `2` only, the action returns a `String` value (the `receipt`) if the message was sent successfully, otherwise `null`.
 For other priorities, the action always returns an empty `String`.
 
-- `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message. The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
+- `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message.
+The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
 ## Full Example
 
