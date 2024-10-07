@@ -38,6 +38,10 @@ public class UniFiDevice implements HasId {
 
     private String model;
 
+    private String version;
+
+    private String serial;
+
     private String type;
 
     private String name;
@@ -65,6 +69,14 @@ public class UniFiDevice implements HasId {
 
     public String getModel() {
         return model;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getSerial() {
+        return serial;
     }
 
     public String getName() {

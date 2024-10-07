@@ -132,6 +132,8 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
             final @Nullable E entity = getEntity();
 
             getThing().getChannels().forEach(channel -> updateState(entity, channel.getUID()));
+
+            updateProperties(entity);
         }
     }
 
@@ -182,6 +184,15 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
      * @return state to set or {@link UnDefType#NULL} if channel state should not be updated.
      */
     protected abstract State getChannelState(E entity, String channelId);
+
+    /**
+     * Updates relevant Thing properties from the UniFi entity object.
+     * Default implementation does not update any properties.
+     *
+     * @param entity UniFi entity object to get the properties information from
+     */
+    protected void updateProperties(E entity) {
+    }
 
     /**
      * Send the given command to the UniFi controller.

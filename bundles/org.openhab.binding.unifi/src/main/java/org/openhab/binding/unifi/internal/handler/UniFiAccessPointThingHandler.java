@@ -15,6 +15,8 @@ package org.openhab.binding.unifi.internal.handler;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.UniFiAccessPointThingConfig;
@@ -30,8 +32,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An access point managed by the UniFi controller software.
@@ -40,8 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDevice, UniFiAccessPointThingConfig> {
-
-    private final Logger logger = LoggerFactory.getLogger(UniFiAccessPointThingHandler.class);
 
     private UniFiAccessPointThingConfig config = new UniFiAccessPointThingConfig();
 
@@ -90,6 +88,14 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                 break;
         }
         return state;
+    }
+
+    @Override
+    protected void updateProperties(final UniFiDevice device) {
+        updateProperties(Map.of( //
+                Thing.PROPERTY_MODEL_ID, device.getModel(), //
+                Thing.PROPERTY_FIRMWARE_VERSION, device.getVersion(), //
+                Thing.PROPERTY_SERIAL_NUMBER, device.getSerial()));
     }
 
     @Override
