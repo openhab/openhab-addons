@@ -108,12 +108,12 @@ public class GreeHandler extends BaseThingHandler {
                 clientSocket.get().setSoTimeout(DATAGRAM_SOCKET_TIMEOUT);
             }
             // Find the GREE device
-            deviceFinder.scan(clientSocket.get(), config.ipAddress, false);
+            deviceFinder.scan(clientSocket.get(), config.ipAddress, false, config.encryptionType);
             GreeAirDevice newDevice = deviceFinder.getDeviceByIPAddress(config.ipAddress);
             if (newDevice != null) {
                 // Ok, our device responded, now let's Bind with it
                 device = newDevice;
-                device.bindWithDevice(clientSocket.get());
+                device.bindWithDevice(clientSocket.get(), config.encryptionType);
                 if (device.getIsBound()) {
                     updateStatus(ThingStatus.ONLINE);
                     return;
@@ -138,7 +138,7 @@ public class GreeHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // The thing is updated by the scheduled automatic refresh so do nothing here.
+            initializeThing();
         } else {
             logger.debug("{}: Issue command {} to channe {}", thingId, command, channelUID.getIdWithoutGroup());
             String channelId = channelUID.getIdWithoutGroup();
@@ -377,8 +377,9 @@ public class GreeHandler extends BaseThingHandler {
                 }
             } catch (GreeException e) {
                 String subcode = "";
-                if (e.getCause() != null) {
-                    subcode = " (" + e.getCause().getMessage() + ")";
+                Throwable cause = e.getCause();
+                if (cause != null) {
+                    subcode = " (" + cause.getMessage() + ")";
                 }
                 String message = messages.get("update.exception", e.getMessageString() + subcode);
                 if (getThing().getStatus() == ThingStatus.OFFLINE) {
