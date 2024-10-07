@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -77,6 +78,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
     @Override
     protected void buildChannels() {
+        boolean hasColorChannel = false;
         List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
         if (supportedColorModes != null) {
             if (LightColorMode.hasColorChannel(supportedColorModes)) {
@@ -99,7 +101,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         }
 
         if (hasColorChannel) {
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         } else if (channelConfiguration.brightness) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
@@ -144,7 +146,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                         .divide(new BigDecimal(100), MathContext.DECIMAL128).intValue();
             }
 
-            if (hasColorChannel) {
+            if (colorChannel != null) {
                 json.color = new JSONState.Color();
                 if (channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
@@ -318,12 +320,15 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
         listener.updateChannelState(buildChannelUID(COLOR_MODE_CHANNEL_ID), colorModeValue.getChannelState());
 
-        if (hasColorChannel) {
-            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-        } else if (brightnessChannel != null) {
-            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        if (localColorChannel != null) {
+            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (localBrightnessChannel != null) {
+            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
+                    brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
         }
     }
 }

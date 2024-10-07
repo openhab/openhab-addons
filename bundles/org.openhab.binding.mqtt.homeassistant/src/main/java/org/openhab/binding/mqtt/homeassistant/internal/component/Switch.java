@@ -61,7 +61,7 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
     }
 
     public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
                 : channelConfiguration.stateTopic.isBlank();
@@ -79,5 +79,6 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .build();
+        finalizeChannels();
     }
 }

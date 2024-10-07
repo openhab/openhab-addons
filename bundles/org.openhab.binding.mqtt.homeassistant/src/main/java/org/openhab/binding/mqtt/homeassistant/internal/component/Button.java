@@ -48,7 +48,7 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
     }
 
     public Button(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadPress });
 
@@ -57,5 +57,6 @@ public class Button extends AbstractComponent<Button.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        finalizeChannels();
     }
 }

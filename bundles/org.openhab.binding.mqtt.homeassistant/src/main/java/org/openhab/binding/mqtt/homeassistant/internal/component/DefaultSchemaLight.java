@@ -112,6 +112,7 @@ public class DefaultSchemaLight extends Light {
                     .build();
         }
 
+        boolean hasColorChannel = false;
         if (channelConfiguration.rgbStateTopic != null || channelConfiguration.rgbCommandTopic != null) {
             hasColorChannel = true;
             hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, ComponentChannelType.COLOR,
@@ -167,7 +168,7 @@ public class DefaultSchemaLight extends Light {
             if (localBrightnessChannel != null) {
                 hiddenChannels.add(localBrightnessChannel);
             }
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
                     .commandFilter(this::handleColorCommand).build();
         } else if (localBrightnessChannel != null) {
@@ -280,74 +281,74 @@ public class DefaultSchemaLight extends Light {
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
         ChannelStateUpdateListener listener = this.channelStateUpdateListener;
-        switch (channel.getIdWithoutGroup()) {
-            case ON_OFF_CHANNEL_ID:
-                if (hasColorChannel) {
-                    HSBType newOnState = colorValue.getChannelState() instanceof HSBType
-                            ? (HSBType) colorValue.getChannelState()
-                            : HSBType.WHITE;
-                    if (state.equals(OnOffType.ON)) {
-                        colorValue.update(newOnState);
-                    }
-
-                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID),
-                            state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
-                } else if (brightnessChannel != null) {
-                    listener.updateChannelState(new ChannelUID(channel.getThingUID(), BRIGHTNESS_CHANNEL_ID),
-                            state.equals(OnOffType.ON) ? brightnessValue.getChannelState() : PercentType.ZERO);
-                } else {
-                    listener.updateChannelState(channel, state);
-                }
-                return;
-            case BRIGHTNESS_CHANNEL_ID:
-                onOffValue.update(Objects.requireNonNull(state.as(OnOffType.class)));
-                if (hasColorChannel) {
-                    if (colorValue.getChannelState() instanceof HSBType) {
-                        HSBType hsb = (HSBType) (colorValue.getChannelState());
-                        colorValue.update(new HSBType(hsb.getHue(), hsb.getSaturation(),
-                                (PercentType) brightnessValue.getChannelState()));
-                    } else {
-                        colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
-                                (PercentType) brightnessValue.getChannelState()));
-                    }
-                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                } else {
-                    listener.updateChannelState(channel, state);
-                }
-                return;
-            case COLOR_TEMP_CHANNEL_ID:
-            case EFFECT_CHANNEL_ID:
-                // Real channels; pass through
-                listener.updateChannelState(channel, state);
-                return;
-            case HS_CHANNEL_ID:
-            case XY_CHANNEL_ID:
-                if (brightnessValue.getChannelState() instanceof UnDefType) {
-                    brightnessValue.update(PercentType.HUNDRED);
-                }
-                String[] split = state.toString().split(",");
-                if (split.length != 2) {
-                    throw new IllegalArgumentException(state.toString() + " is not a valid string syntax");
-                }
-                float x = Float.parseFloat(split[0]);
-                float y = Float.parseFloat(split[1]);
-                PercentType brightness = (PercentType) brightnessValue.getChannelState();
-                if (channel.getIdWithoutGroup().equals(HS_CHANNEL_ID)) {
-                    colorValue.update(new HSBType(new DecimalType(x), new PercentType(new BigDecimal(y)), brightness));
-                } else {
-                    HSBType xyColor = HSBType.fromXY(x, y);
-                    colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
-                }
-                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                return;
-            case RGB_CHANNEL_ID:
-                colorValue.update((HSBType) state);
-                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-                break;
-            case RGBW_CHANNEL_ID:
-            case RGBWW_CHANNEL_ID:
-                // TODO: update color value
-                break;
+        String id = channel.getIdWithoutGroup();
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        ChannelUID primaryChannelUID;
+        if (localColorChannel != null) {
+            primaryChannelUID = localColorChannel.getChannel().getUID();
+        } else if (localBrightnessChannel != null) {
+            primaryChannelUID = localBrightnessChannel.getChannel().getUID();
+        } else {
+            primaryChannelUID = onOffChannel.getChannel().getUID();
         }
+        // on_off, brightness, and color might exist as a sole channel, which means
+        // they got renamed. they need to be compared against the actual UID of the
+        // channel. all the rest we can just check against the basic ID
+        if (channel.equals(onOffChannel.getChannel().getUID())) {
+            if (localColorChannel != null) {
+                HSBType newOnState = colorValue.getChannelState() instanceof HSBType newOnStateTmp ? newOnStateTmp
+                        : HSBType.WHITE;
+                if (state.equals(OnOffType.ON)) {
+                    colorValue.update(newOnState);
+                }
+
+                listener.updateChannelState(primaryChannelUID, state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
+            } else if (brightnessChannel != null) {
+                listener.updateChannelState(primaryChannelUID,
+                        state.equals(OnOffType.ON) ? brightnessValue.getChannelState() : PercentType.ZERO);
+            } else {
+                listener.updateChannelState(primaryChannelUID, state);
+            }
+        } else if (localBrightnessChannel != null && localBrightnessChannel.getChannel().getUID().equals(channel)) {
+            onOffValue.update(Objects.requireNonNull(state.as(OnOffType.class)));
+            if (localColorChannel != null) {
+                if (colorValue.getChannelState() instanceof HSBType hsb) {
+                    colorValue.update(new HSBType(hsb.getHue(), hsb.getSaturation(),
+                            (PercentType) brightnessValue.getChannelState()));
+                } else {
+                    colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
+                            (PercentType) brightnessValue.getChannelState()));
+                }
+                listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+            } else {
+                listener.updateChannelState(primaryChannelUID, state);
+            }
+        } else if (id.equals(COLOR_TEMP_CHANNEL_ID) || channel.getIdWithoutGroup().equals(EFFECT_CHANNEL_ID)) {
+            // Real channels; pass through
+            listener.updateChannelState(channel, state);
+        } else if (id.equals(HS_CHANNEL_ID) || id.equals(XY_CHANNEL_ID)) {
+            if (brightnessValue.getChannelState() instanceof UnDefType) {
+                brightnessValue.update(PercentType.HUNDRED);
+            }
+            String[] split = state.toString().split(",");
+            if (split.length != 2) {
+                throw new IllegalArgumentException(state.toString() + " is not a valid string syntax");
+            }
+            float x = Float.parseFloat(split[0]);
+            float y = Float.parseFloat(split[1]);
+            PercentType brightness = (PercentType) brightnessValue.getChannelState();
+            if (channel.getIdWithoutGroup().equals(HS_CHANNEL_ID)) {
+                colorValue.update(new HSBType(new DecimalType(x), new PercentType(new BigDecimal(y)), brightness));
+            } else {
+                HSBType xyColor = HSBType.fromXY(x, y);
+                colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
+            }
+            listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+        } else if (id.equals(RGB_CHANNEL_ID)) {
+            colorValue.update((HSBType) state);
+            listener.updateChannelState(primaryChannelUID, colorValue.getChannelState());
+        }
+        // else rgbw channel, rgbww channel
     }
 }

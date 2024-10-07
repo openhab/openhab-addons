@@ -46,7 +46,7 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
     }
 
     public Scene(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         TextValue value = new TextValue(new String[] { channelConfiguration.payloadOn });
 
@@ -55,5 +55,6 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        finalizeChannels();
     }
 }

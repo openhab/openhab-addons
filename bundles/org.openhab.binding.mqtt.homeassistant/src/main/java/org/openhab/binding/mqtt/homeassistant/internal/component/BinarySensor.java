@@ -69,7 +69,7 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
     }
 
     public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
@@ -77,6 +77,7 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
                 getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        finalizeChannels();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

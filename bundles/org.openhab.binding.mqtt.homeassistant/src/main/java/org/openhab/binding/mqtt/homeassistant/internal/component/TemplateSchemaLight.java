@@ -23,6 +23,7 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
@@ -85,8 +86,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
 
         if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
                 && channelConfiguration.blueTemplate != null) {
-            hasColorChannel = true;
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command)).build();
         } else if (channelConfiguration.brightnessTemplate != null) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
@@ -127,7 +127,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 binding.put(TemplateVariables.BRIGHTNESS,
                         state.getBrightness().toBigDecimal().multiply(factor).intValue());
             }
-            if (hasColorChannel) {
+            if (colorChannel != null) {
                 int[] rgb = ColorUtil.hsbToRgb(state);
                 binding.put(TemplateVariables.RED, rgb[0]);
                 binding.put(TemplateVariables.GREEN, rgb[1]);
@@ -249,13 +249,15 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 colorValue.update(HSBType.fromRGB(red, green, blue));
             }
         }
-
-        if (hasColorChannel) {
-            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-        } else if (brightnessChannel != null) {
-            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        if (localColorChannel != null) {
+            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (localBrightnessChannel != null) {
+            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
+                    brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
         }
 
         template = channelConfiguration.effectTemplate;
