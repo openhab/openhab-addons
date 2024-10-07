@@ -111,7 +111,7 @@ arp -a | grep "MAC_ADDRESS"
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |   
+| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
 
 ## Channels

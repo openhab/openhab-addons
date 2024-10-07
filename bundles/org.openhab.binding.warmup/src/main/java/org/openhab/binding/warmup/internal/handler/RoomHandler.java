@@ -18,8 +18,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.warmup.internal.WarmupBindingConstants.RoomMode;
 import org.openhab.binding.warmup.internal.action.WarmupActions;
 import org.openhab.binding.warmup.internal.api.MyWarmupApi;
 import org.openhab.binding.warmup.internal.api.MyWarmupApiException;
@@ -68,11 +72,11 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         super.handleCommand(channelUID, command);
         if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())
                 && command instanceof QuantityType<?> quantityCommand) {
-            setOverride(quantityCommand);
+            setOverride((QuantityType<Temperature>) quantityCommand);
         }
         if (CHANNEL_FIXED_TEMPERATURE.equals(channelUID.getId())
                 && command instanceof QuantityType<?> quantityCommand) {
-            setFixed(quantityCommand);
+            setFixed((QuantityType<Temperature>) quantityCommand);
         }
         if (CHANNEL_FROST_PROTECTION_MODE.equals(channelUID.getId()) && command instanceof OnOffType onOffCommand) {
             toggleFrostProtectionMode(onOffCommand);
@@ -138,11 +142,11 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         return Set.of(WarmupActions.class);
     }
 
-    private void setOverride(final QuantityType<?> command) {
+    private void setOverride(final QuantityType<Temperature> command) {
         setOverride(command, new QuantityType<>(config.getOverrideDuration(), Units.MINUTE));
     }
 
-    public void setOverride(final QuantityType<?> temperature, final QuantityType<?> duration) {
+    public void setOverride(final QuantityType<Temperature> temperature, final QuantityType<Time> duration) {
         setOverride(formatTemperature(temperature), duration.toUnit(Units.MINUTE).intValue());
     }
 
@@ -163,7 +167,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         }
     }
 
-    private void setFixed(final QuantityType<?> command) {
+    private void setFixed(final QuantityType<Temperature> command) {
         try {
             RoomCallout rc = getCallout();
             rc.api.setFixed(rc.locationId, rc.roomId, formatTemperature(command));

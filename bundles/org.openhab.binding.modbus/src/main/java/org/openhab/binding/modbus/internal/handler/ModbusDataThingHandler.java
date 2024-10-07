@@ -323,7 +323,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 int writeStartRelative = writeStart - pollStart;
                 data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
                         allMutatedBytes[writeStartRelative * 2 + 1]);
-
             } else {
                 data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             }

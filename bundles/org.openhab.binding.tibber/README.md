@@ -3,7 +3,7 @@
 The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and enables users to retrieve electricity data:
 
 - Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
-- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements  
+- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements
 
 Refresh time (poll frequency) is set manually as part of setup, minimum 1 minute.
 

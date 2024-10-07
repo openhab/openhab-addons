@@ -53,7 +53,7 @@ Note, there is a rate limit of 120 queries per hour imposed by Flume so use caut
 | Battery Level         | battery-level     | Number:Dimensionless      | R          | Estimate of percent of remaining battery level                   |
 | Low Battery           | low-battery       | Switch                    | R          | Indicator of low battery level                                   |
 | Last Seen             | last-seen         | DateTime                  | R          | Date/Time when meter was last seen on the network                |
-| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification                     | 
+| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification                     |
 
 ## Full Example
 
@@ -62,22 +62,20 @@ Note, there is a rate limit of 120 queries per hour imposed by Flume so use caut
 Please note that the device meter ID is only available through the API and not available on the Flume portal.
 When the Bridge device is first created, there will be a log message with the ID of the discovered device which can be used in further configuring the device via the text files.
 
-```
+```java
 Bridge flume:cloud:cloudconnector [ username="xxx", password="xxx", clientId="xxx", clientSecret="xxx" ] {
-    
     meter-device meter [ id="xxx" ]
 }
 ```
 
 ### Item Configuration
 
-```
+```java
 Number:VolumetricFlowRate     InstantUsage     "Instant Usage"         { channel = "flume:meter-device:1:meter:instant-usage" }
 Number:Volume                 CumulativeUsed   "Cumulative Used"       { channel = "flume:meter-device:1:meter:cumulative-usage" }
-Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:meter-device:1:meter:battery-level" }   
+Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:meter-device:1:meter:battery-level" }
 DateTime                      LastSeen         "Last Seen"             { channel = "flume:meter-device:1:meter:last-seen" }
-Switch                        LowPower         "Battery Low Power"     { channel = "flume:meter-device:1:meter:low-battery" }  
-
+Switch                        LowPower         "Battery Low Power"     { channel = "flume:meter-device:1:meter:low-battery" }
 ```
 
 ### Rules

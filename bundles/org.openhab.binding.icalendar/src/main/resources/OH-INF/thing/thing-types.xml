@@ -54,6 +54,11 @@
 				<label>Command Authorization Code</label>
 				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
+			<parameter name="userAgent" type="text" required="false">
+				<label>User Agent</label>
+				<description>Some providers require a specific user agent header. If left empty, the default Jetty header is used.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</bridge-type>

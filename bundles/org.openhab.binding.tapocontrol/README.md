@@ -46,12 +46,12 @@ But therefore it set's device-ip and protocol automaticly.
 If you have problems with udp-discovery, try to set the advanced setting 'broadcastAddress' to your local subnet ('e.g. 192.168.0.255').
 Default is '255.255.255.255'
 
-You can combine both discovery methods to get any informations from local devices.  
+You can combine both discovery methods to get any informations from local devices.
 If you enable setting 'onlyLocalOnlineDevices' results will only generated for local online devices but with the combined data of cloud discovery.
 RF-Devices will be discovered by the hub they are connected to.
-You can discover them manually or use ´backgroundDiscovery´ 
+You can discover them manually or use ´backgroundDiscovery´
 
-RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´ 
+RF-Devices will be discovered by the hub they are connected to. You can discover them manually or use ´backgroundDiscovery´
 
 ## Bridge Configuration
 

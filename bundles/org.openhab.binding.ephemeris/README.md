@@ -3,16 +3,16 @@
 The Ephemeris Binding makes the bridge with Ephemeris core actions.
 It provides access to Ephemeris data via Items without requiring usage of a scripting language.
 
-The binding will search your Jollyday event definition files in the sub folder `/misc/ephemeris` located in the configuration folder of openHAB (e.g. for a linux system : /etc/openhab/misc/ephemeris/)
+The binding will search your Jollyday event definition files in the sub folder `/misc/ephemeris` located in the configuration folder of openHAB (e.g. for a linux system: /etc/openhab/misc/ephemeris/)
 
 ## Supported Things
 
 The binding handles the following Things:
 
-* default holiday data (`holiday`)
-* custom holiday file (`custom`)
-* daysets (`dayset`)
-* weekend (`weekend`)
+- default holiday data (`holiday`)
+- custom holiday file (`custom`)
+- daysets (`dayset`)
+- weekend (`weekend`)
 
 ## Discovery
 
@@ -24,21 +24,19 @@ There is no configuration at binding level.
 
 ## Thing Configuration
 
-
 ### `custom` Thing Configuration
 
 | Name            | Type    | Description                                       | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------------------|---------|----------|----------|
 | fileName        | text    | Name of the XML file in the configuration folder  | N/A     | yes      | no       |
 
-The file has to use the syntax described here : https://www.openhab.org/docs/configuration/actions.html#custom-bank-holidays
+The file has to use the syntax described here: https://www.openhab.org/docs/configuration/actions.html#custom-bank-holidays
 
 ### `dayset` Thing Configuration
 
 | Name            | Type    | Description               | Default | Required | Advanced |
 |-----------------|---------|---------------------------|---------|----------|----------|
 | name            | text    | Name of the dayset used   | N/A     | yes      | no       |
-
 
 ## Channels
 
@@ -80,7 +78,7 @@ The file has to use the syntax described here : https://www.openhab.org/docs/con
 
 ## Full Example
 
-### Thing Configuration
+### Thing Example
 
 ```java
 Thing ephemeris:holiday:local "Holidays"
@@ -88,7 +86,7 @@ Thing ephemeris:weekend:local "Week-end"
 Thing ephemeris:custom:events "Event" [fileName="events.xml"]
 ```
 
-### Item Configuration
+### Item Example
 
 ```java
 String         ToD_Event_Current          "Event Today"       <calendar>    (gEvents)                           {channel="ephemeris:custom:events:title-today"}

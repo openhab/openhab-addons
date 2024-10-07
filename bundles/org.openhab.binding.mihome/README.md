@@ -130,7 +130,7 @@ Bridge mihome:bridge:f0b429XXXXXX "Xiaomi Gateway" [ serialNumber="f0b429XXXXXX"
 ```java
 // Replace <GwID> with itemId of gateway from Things file
 // Replace <ID> with itemId of item from Things file
-// Gateway 
+// Gateway
 Switch Gateway_LightSwitch <light> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Dimmer Gateway_Brightness <dimmablelight> { channel="mihome:gateway:<GwID>:<ID>:brightness" }
 Color Gateway_Color <rgb> { channel="mihome:gateway:<GwID>:<ID>:color" }
@@ -238,7 +238,7 @@ rule "Mijia & Aqara Wireless Switch"
 when
     Channel "mihome:sensor_switch:<GwID>:<ID>:button" triggered
 then
-    
+
     switch(receivedEvent) {
         case "SHORT_PRESSED": {
             <ACTION>
@@ -553,7 +553,7 @@ In order to verify that traffic is actually received by the machine use `tcpdump
 
 - List your network interfaces `ifconfig | grep MULTICAST` or `ip link | grep MULTICAST`
 - Use `tcpdump -i <interface> port 9898` for each interface to verify if you receive traffic
-  
+
 If you already know the correct interface, or you found the correct one through tcpdump:
 
 - Configure the `interface` property of the `Bridge` Thing with the correct name (for example `eth0`, etc)

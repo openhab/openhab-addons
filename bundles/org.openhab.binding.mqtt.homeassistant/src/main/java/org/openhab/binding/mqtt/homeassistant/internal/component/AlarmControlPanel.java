@@ -97,5 +97,6 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
         }
+        finalizeChannels();
     }
 }

@@ -17,7 +17,7 @@ The binding has the following configuration options:
 
 Create a `<openHAB-conf>/services/network.cfg` file and use the above options like this:
 
-```text
+```ini
 binding.network:allowSystemPings=true
 binding.network:allowDHCPlisten=false
 binding.network:arpPingToolPath=arping
@@ -217,13 +217,13 @@ sitemap demo label="Main Menu"
         Text item=MyDevice label="Device [%s]"
         Text item=MyDeviceResponseTime label="Device Response Time [%s]"
     }
-    
+
     Frame label="SpeedTest" {
         Text item=Speedtest_Start
         Switch item=Speedtest_Running
         Default item=Speedtest_Progress
         Text item=Speedtest_Running label="Speedtest [%s]" visibility=[Speedtest_Running != "-"]
-    }    
+    }
 
     Frame label="Down" {
         Text item=Speedtest_ResultDown
@@ -238,7 +238,7 @@ sitemap demo label="Main Menu"
         Chart item=Speedtest_ResultUp period=D refresh=30000 service="influxdb" visibility=[sys_chart_period==0, sys_chart_period=="Non initialisé"]
         Chart item=Speedtest_ResultUp period=W refresh=30000 service="influxdb" visibility=[sys_chart_period==1]
         Chart item=Speedtest_ResultUp period=M refresh=30000 service="influxdb" visibility=[sys_chart_period==2]
-        Chart item=Speedtest_ResultUp period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]  
+        Chart item=Speedtest_ResultUp period=Y refresh=30000 service="influxdb" visibility=[sys_chart_period==3]
     }
 }
 ```
@@ -257,7 +257,7 @@ if (actions === null) {
     // Send via MAC address
     actions.sendWakeOnLanPacketViaMac()
     actions.sendWakeOnLanPacket() // deprecated
-    
+
     // Send via IP address
     actions.sendWakeOnLanPacketViaIp()
 }
