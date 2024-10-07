@@ -1,0 +1,173 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.dirigera.internal.network;
+
+import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.Optional;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * {@link Websocket} listens to device changes
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
+@WebSocket
+@NonNullByDefault
+public class Websocket {
+    private static final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
+    private static String STARTS = "starts";
+    private static String STOPS = "stops";
+    private static String DISCONNECTS = "disconnetcs";
+    private static String ERRORS = "errors";
+    private static String PINGS = "pings";
+    private static String MESSAGES = "messages";
+
+    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
+    private Optional<WebSocketClient> websocketClient = Optional.empty();
+    private Optional<Session> session = Optional.empty();
+    private DirigeraConfiguration config;
+    private HttpClient httpClient;
+    private JSONObject statistics = new JSONObject();
+
+    public Websocket(HttpClient httpClient, DirigeraConfiguration config) {
+        this.httpClient = httpClient;
+        this.config = config;
+    }
+
+    public void start() {
+        increase(STARTS);
+        stop();
+        try {
+            WebSocketClient client = new WebSocketClient(httpClient);
+            client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
+            client.setStopTimeout(CONNECT_TIMEOUT_MS);
+
+            ClientUpgradeRequest request = new ClientUpgradeRequest();
+            request.setHeader("Authorization", "Bearer " + config.token);
+
+            String websocketURL = String.format(WS_URL, config.ipAddress);
+            logger.trace("DIRIGERA Websocket start {}", websocketURL);
+            websocketClient = Optional.of(client);
+            client.start();
+            client.connect(this, new URI(websocketURL), request);
+        } catch (Throwable t) {
+            // catch Exceptions of start stop and declare communication error
+            logger.warn("DIRIGERA Websocket handling exception: {}", t.getMessage());
+        }
+    }
+
+    public void stop() {
+        increase(STOPS);
+        websocketClient.ifPresent(client -> {
+            try {
+                logger.info("DIRIGERA stop socket before start");
+                client.stop();
+                client.destroy();
+            } catch (Exception e) {
+                logger.warn("DIRIGERA exception stopping running client");
+            }
+        });
+        websocketClient = Optional.empty();
+        this.session = Optional.empty();
+    }
+
+    public void ping() {
+        session.ifPresentOrElse((session) -> {
+            try {
+                session.getRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
+                increase(PINGS);
+            } catch (IOException e) {
+                logger.info("DIRIGERA ping failed with exception {}", e.getMessage());
+            }
+        }, () -> {
+            logger.info("DIRIGERA ping found no session - restart websocket");
+            start();
+        });
+    }
+
+    public boolean isRunning() {
+        return websocketClient.isPresent() && session.isPresent();
+    }
+
+    /**
+     * endpoints
+     */
+
+    @OnWebSocketMessage
+    public void onTextMessage(String message) {
+        increase(MESSAGES);
+        logger.info("DIRIGERA onBytes {}", message);
+        // try {
+        // Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        // String result = s.hasNext() ? s.next() : "";
+        // s.close();
+        // logger.info("DIRIGERA onBytes {}", result);
+        // } catch (Error err) {
+        // logger.trace("Error caught {}", err.getMessage());
+        // }
+    }
+
+    @OnWebSocketClose
+    public void onDisconnect(Session session, int statusCode, String reason) {
+        logger.info("DIRIGERA onDisconnect Status {} Reason {}", statusCode, reason);
+        this.session = Optional.empty();
+        increase(DISCONNECTS);
+    }
+
+    @OnWebSocketConnect
+    public void onConnect(Session session) {
+        logger.info("DIRIGERA onConnect ");
+        this.session = Optional.of(session);
+    }
+
+    @OnWebSocketError
+    public void onError(Throwable t) {
+        logger.warn("DIRIGERA onError {}", t.getMessage());
+        increase(ERRORS);
+    }
+
+    /**
+     * Helper functions
+     */
+
+    public JSONObject getStatistics() {
+        return statistics;
+    }
+
+    private void increase(String key) {
+        if (statistics.has(key)) {
+            int counter = statistics.getInt(key);
+            statistics.put(key, ++counter);
+        } else {
+            statistics.put(key, 1);
+        }
+    }
+}
