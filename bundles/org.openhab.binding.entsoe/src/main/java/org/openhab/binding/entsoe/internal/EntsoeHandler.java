@@ -18,8 +18,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -58,10 +59,9 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private List<EntsoeTimeSerie> entsoeTimeSeries;
+    private Map<Instant, Optional<EntsoeTimeSerie>> entsoeTimeSeries;
 
-    // Use region-based ZoneId instead of CET to handle transition to CEST automatically
-    private final ZoneId cetZoneId = ZoneId.of("Europe/Paris");
+    private final ZoneId cetZoneId = ZoneId.of("CET");
     private final ZoneId utcZoneId = ZoneId.of("UTC");
 
     private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, cetZoneId);
@@ -71,7 +71,7 @@ public class EntsoeHandler extends BaseThingHandler {
     public EntsoeHandler(Thing thing) {
         super(thing);
         config = new EntsoeConfiguration();
-        entsoeTimeSeries = new ArrayList<>();
+        entsoeTimeSeries = new LinkedHashMap<>();
     }
 
     @Override
@@ -135,22 +135,16 @@ public class EntsoeHandler extends BaseThingHandler {
         return currentUtcTime().truncatedTo(ChronoUnit.HOURS);
     }
 
-    private EntsoeTimeSerie getCurrentHourEntsoeTimeSerie() throws EntsoeResponseMapException {
+    private Optional<EntsoeTimeSerie> getCurrentHourEntsoeTimeSerie() throws EntsoeResponseMapException {
         if (entsoeTimeSeries.isEmpty()) {
             throw new EntsoeResponseMapException("responseMap is empty");
         }
-        var currentUtcTime = currentUtcTime();
-        Integer currentHour = currentUtcTime.getHour();
-        Integer currentDayInYear = currentUtcTime.getDayOfYear();
-        var result = entsoeTimeSeries.stream()
-                .filter(x -> x.getTime().getHour() == currentHour && x.getTime().getDayOfYear() == currentDayInYear)
-                .findFirst();
-        if (result.isEmpty() || result == null || result.get() == null) {
+        Instant currentHourStart = Instant.now().truncatedTo(ChronoUnit.HOURS);
+        if (!entsoeTimeSeries.containsKey(currentHourStart)) {
             throw new EntsoeResponseMapException(
-                    String.format("Could not find a value for hour {} and day in year {} in responseMap", currentHour,
-                            currentDayInYear));
+                    String.format("Could not find a value for instant {} in responseMap", currentHourStart));
         } else {
-            return result.get();
+            return entsoeTimeSeries.getOrDefault(currentHourStart, Optional.empty());
         }
     }
 
@@ -189,10 +183,8 @@ public class EntsoeHandler extends BaseThingHandler {
 
         boolean needsInitialUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, cetZoneId))
                 || needToFetchHistoricDays(true);
-
-        boolean hasNextDayValue = entsoeTimeSeries.stream()
-                .anyMatch(x -> x.getTime().getDayOfYear() == currentUtcTime().plusDays(1).getDayOfYear());
-
+        boolean hasNextDayValue = entsoeTimeSeries
+                .containsKey(currentUtcTimeWholeHours().withHour(22).plusDays(1).toInstant());
         boolean readyForNextDayValue = currentCetTime()
                 .isAfter(currentCetTime().withHour(config.spotPricesAvailableCetHour));
 
@@ -215,12 +207,12 @@ public class EntsoeHandler extends BaseThingHandler {
         boolean success = false;
 
         try {
-            entsoeTimeSeries = client.doGetRequest(request, 30000);
+            entsoeTimeSeries = client.doGetRequest(request, config.requestTimeout * 1000, config.resolution);
 
             TimeSeries baseTimeSeries = new TimeSeries(EntsoeBindingConstants.TIMESERIES_POLICY);
-            for (EntsoeTimeSerie entsoeTimeSerie : entsoeTimeSeries) {
-                baseTimeSeries.add(entsoeTimeSerie.getTime().toInstant(),
-                        entsoeTimeSerie.getState(Units.KILOWATT_HOUR));
+            for (Map.Entry<Instant, Optional<EntsoeTimeSerie>> entry : entsoeTimeSeries.entrySet()) {
+                baseTimeSeries.add(entry.getValue().get().getUtcTime().toInstant(),
+                        entry.getValue().get().getState(Units.KILOWATT_HOUR));
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -246,14 +238,14 @@ public class EntsoeHandler extends BaseThingHandler {
             Instant now = Instant.now();
             long millisUntilNextClockHour = Duration
                     .between(now, now.plus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS)).toMillis() + 1;
-            refreshJob = scheduler.schedule(this::refreshPrices, millisUntilNextClockHour, TimeUnit.MILLISECONDS);
+            refreshJob = scheduler.schedule(this::refreshPrices, 60000, TimeUnit.MILLISECONDS);
         }
     }
 
     private void updateCurrentHourState(String channelID) {
         logger.trace("Updating current hour");
         try {
-            updateState(channelID, getCurrentHourEntsoeTimeSerie().getState(Units.KILOWATT_HOUR));
+            updateState(channelID, getCurrentHourEntsoeTimeSerie().get().getState(Units.KILOWATT_HOUR));
         } catch (EntsoeConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

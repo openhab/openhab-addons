@@ -18,7 +18,7 @@
 		<config-description>
 			<parameter name="securityToken" type="text" required="true">
 				<context>password</context>
-				<label>Security token</label>
+				<label>Security Token</label>
 				<description>Security token for ENTSO-E API</description>
 			</parameter>
 			<parameter name="area" type="text" required="true">
@@ -153,10 +153,26 @@
 				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
 					rate of today)</description>
 			</parameter>
+			<parameter name="resolution" type="text" required="false">
+				<label>Resolution</label>
+				<default>PT60M</default>
+				<description>Data resolution (usually 60 minutes, but for some markets 15 minutes)</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="PT15M">15 minutes</option>
+					<option value="PT60M">60 minutes</option>
+				</options>
+			</parameter>
 			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>
 				<default>13</default>
 				<description>CET hour spot prices will get published on ENTSO-E. Usually at 13 CET.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="10" max="300" required="false">
+				<label>Request Timeout</label>
+				<default>30</default>
+				<description>Request timeout value in seconds</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

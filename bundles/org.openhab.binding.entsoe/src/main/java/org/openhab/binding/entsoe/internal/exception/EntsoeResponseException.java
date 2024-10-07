@@ -27,6 +27,10 @@ public class EntsoeResponseException extends Exception {
         super(message);
     }
 
+    public EntsoeResponseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public EntsoeResponseException(Throwable cause) {
         super(cause);
     }

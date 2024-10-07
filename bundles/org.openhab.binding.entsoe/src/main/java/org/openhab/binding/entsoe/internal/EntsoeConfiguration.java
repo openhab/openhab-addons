@@ -25,4 +25,6 @@ public class EntsoeConfiguration {
     public String area = "";
     public int spotPricesAvailableCetHour = 13;
     public int historicDays = 1;
+    public int requestTimeout = 30;
+    public String resolution = "PT60M";
 }

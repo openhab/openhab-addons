@@ -14,9 +14,13 @@ package org.openhab.binding.entsoe.internal.client;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -45,7 +49,7 @@ public class Client {
 
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-    public List<EntsoeTimeSerie> doGetRequest(Request request, int timeout)
+    public Map<Instant, Optional<EntsoeTimeSerie>> doGetRequest(Request request, int timeout, String configResolution)
             throws EntsoeResponseException, EntsoeConfigurationException {
         try {
             logger.debug("Sending GET request with parameters: {}", request);
@@ -55,7 +59,7 @@ public class Client {
                 throw new EntsoeResponseException("Request failed");
             }
             logger.trace("Response: {}", responseText);
-            return parseXmlResponse(responseText);
+            return parseXmlResponse(responseText, configResolution);
         } catch (IOException e) {
             if (e.getMessage().contains("Authentication challenge without WWW-Authenticate header")) {
                 throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
@@ -66,9 +70,9 @@ public class Client {
         }
     }
 
-    private List<EntsoeTimeSerie> parseXmlResponse(String responseText)
+    private Map<Instant, Optional<EntsoeTimeSerie>> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException {
-        List<EntsoeTimeSerie> responseList = new ArrayList<>();
+        Map<Instant, Optional<EntsoeTimeSerie>> responseMap = new LinkedHashMap<>();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(new InputSource(new StringReader(responseText)));
@@ -91,60 +95,56 @@ public class Client {
             Node timeSeriesNode = listOfTimeSeries.item(i);
             if (timeSeriesNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element timeSeriesElement = (Element) timeSeriesNode;
-
+                NodeList listOfPeriods = timeSeriesElement.getElementsByTagName("Period");
                 String currency = timeSeriesElement.getElementsByTagName("currency_Unit.name").item(0).getTextContent();
                 String measureUnit = timeSeriesElement.getElementsByTagName("price_Measure_Unit.name").item(0)
                         .getTextContent();
 
-                NodeList listOfTimeInterval = timeSeriesElement.getElementsByTagName("timeInterval");
-                Node startTimeNode = listOfTimeInterval.item(0);
-                Element startTimeElement = (Element) startTimeNode;
-                String startTime = startTimeElement.getElementsByTagName("start").item(0).getTextContent();
-                ZonedDateTime zonedStartTime = ZonedDateTime.parse(startTime);
+                for (int j = 0; j < listOfPeriods.getLength(); j++) {
+                    Node periodeNode = listOfPeriods.item(j);
+                    if (periodeNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element periodElement = (Element) periodeNode;
+                        NodeList listOfTimeInterval = periodElement.getElementsByTagName("timeInterval");
+                        Node startTimeNode = listOfTimeInterval.item(0);
+                        Element startTimeElement = (Element) startTimeNode;
+                        String startTime = startTimeElement.getElementsByTagName("start").item(0).getTextContent();
+                        Instant startTimeInstant = ZonedDateTime.parse(startTime, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+                                .toInstant();
 
-                String resolution = timeSeriesElement.getElementsByTagName("resolution").item(0).getTextContent();
+                        String resolution = periodElement.getElementsByTagName("resolution").item(0).getTextContent();
 
-                logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
-                        listOfTimeSeries.getLength(), zonedStartTime, resolution);
+                        logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
+                                listOfTimeSeries.getLength(), startTimeInstant.atZone(ZoneId.of("UTC")), resolution);
 
-                NodeList listOfPoints = timeSeriesElement.getElementsByTagName("Point");
+                        NodeList listOfPoints = periodElement.getElementsByTagName("Point");
 
-                for (int p = 0; p < listOfPoints.getLength() && resolution.equalsIgnoreCase("PT60M"); p++) {
-                    Node pointNode = listOfPoints.item(p);
-                    if (pointNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element pointElement = (Element) pointNode;
-                        ZonedDateTime timeStamp = calculateDateTime(zonedStartTime, p, resolution);
-                        String price = pointElement.getElementsByTagName("price.amount").item(0).getTextContent();
-                        Double priceAsDouble = Double.parseDouble(price);
+                        for (int p = 0; p < listOfPoints.getLength()
+                                && resolution.equalsIgnoreCase(configResolution); p++) {
+                            Node pointNode = listOfPoints.item(p);
+                            if (pointNode.getNodeType() == Node.ELEMENT_NODE) {
+                                Element pointElement = (Element) pointNode;
+                                int position = 0;
+                                try {
+                                    position = Integer.parseInt(
+                                            pointElement.getElementsByTagName("position").item(0).getTextContent());
+                                } catch (NumberFormatException e) {
+                                    position = p;
+                                }
+                                String price = pointElement.getElementsByTagName("price.amount").item(0)
+                                        .getTextContent();
+                                Double priceAsDouble = Double.parseDouble(price);
 
-                        EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble, timeStamp);
-                        responseList.add(t);
-                        logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1),
-                                listOfPoints.getLength(), timeStamp, priceAsDouble, currency, measureUnit);
+                                EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble,
+                                        startTimeInstant, position, resolution);
+                                responseMap.put(t.getInstant(), Optional.ofNullable(t));
+                                logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1),
+                                        listOfPoints.getLength(), t.getUtcTime(), priceAsDouble, currency, measureUnit);
+                            }
+                        }
                     }
                 }
             }
         }
-        return responseList;
-    }
-
-    private ZonedDateTime calculateDateTime(ZonedDateTime start, int iteration, String resolution)
-            throws EntsoeResponseException {
-        switch (resolution) {
-            case "PT15M":
-                return start.plusMinutes(iteration * 15);
-            case "PT30M":
-                return start.plusMinutes(iteration * 30);
-            case "PT60M":
-                return start.plusMinutes(iteration * 60);
-            case "P1D":
-                return start.plusDays(iteration * 1);
-            case "P1M":
-                return start.plusMonths(iteration * 1);
-            case "P1Y":
-                return start.plusYears(iteration * 1);
-            default:
-                throw new EntsoeResponseException("Unknown resolution: " + resolution);
-        }
+        return responseMap;
     }
 }

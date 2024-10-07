@@ -1,6 +1,6 @@
 # ENTSO-E Binding
 
-This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity. Users can select a specific area to retrieve the relevant energy prices. This binding helps users monitor and manage their energy consumption based on real-time pricing data.
+This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity. 
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
 Users can select a specific area to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
@@ -17,7 +17,7 @@ This token ensure secure access to the platform's data and services.
 For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation).
 
 Mandatory parameters of the Thing are security token and area.
-Optional parameter is historic days.
+Optional parameters are historic days and resolution
 
 Thing can be added in graphical user interface of openHAB or manually within a things file.
 
@@ -28,7 +28,9 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                      | N/A       | yes      | no       |
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)     | 0         | no       | no       |
+| resolution                    | text              | Data resolution (usually 60 minutes, but for some markets 15 minutes)     | PT60M     | no       | no       |
 | spotPricesAvailableUtcHour    | integer           | Which UTC hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
+| requestTimeout                | integer           | Request timeout in seconds                                                | 30        | no       | yes      |
 
 ## Channels
 

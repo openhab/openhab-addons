@@ -13,11 +13,17 @@
 package org.openhab.binding.entsoe.internal.client;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.core.library.types.DecimalType;
@@ -33,14 +39,29 @@ public class EntsoeTimeSerie {
     private String currency;
     private Unit<Energy> unit;
     private Double price;
-    private ZonedDateTime time;
+    private Instant time;
 
-    public EntsoeTimeSerie(String currency, String unit, Double price, ZonedDateTime time)
+    public EntsoeTimeSerie(String currency, String unit, Double price, Instant start, int iteration, String resolution)
             throws EntsoeResponseException {
         this.currency = currency;
         this.unit = convertEntsoeUnit(unit);
         this.price = price;
-        this.time = time;
+        this.time = calculateDateTime(start, iteration, resolution);
+    }
+
+    private Instant calculateDateTime(Instant start, int iteration, String resolution) throws EntsoeResponseException {
+        try {
+            if (StringUtils.startsWithIgnoreCase(resolution, "PT")) {
+                Duration d = Duration.parse(resolution).multipliedBy(iteration);
+                return start.plus(d);
+            } else if (StringUtils.startsWithIgnoreCase(resolution, "P1")) {
+                return start.plus(Period.parse(resolution).multipliedBy(iteration));
+            }
+            throw new EntsoeResponseException("Unknown resolution: " + resolution);
+        } catch (DateTimeParseException e) {
+            throw new EntsoeResponseException(
+                    "DateTimeParseException (ENTSOE resolution: " + resolution + "): " + e.getMessage(), e);
+        }
     }
 
     private Unit<Energy> convertEntsoeUnit(String unit) throws EntsoeResponseException {
@@ -54,27 +75,23 @@ public class EntsoeTimeSerie {
         throw new EntsoeResponseException("Unit from ENTSO-E is unknown: " + unit);
     }
 
-    public String getCurrency() {
-        return currency;
-    }
-
-    public Unit<Energy> getUnit() {
-        return unit;
-    }
-
     private BigDecimal getPrice(Unit<Energy> toUnit) {
         return new DecimalType(toUnit.getConverterTo(this.unit).convert(this.price)).toBigDecimal();
     }
 
     public State getState(Unit<Energy> toUnit) {
         try {
-            return new QuantityType<>(getPrice(toUnit) + " " + getCurrency() + "/" + toUnit.toString());
+            return new QuantityType<>(getPrice(toUnit) + " " + this.currency + "/" + toUnit.toString());
         } catch (IllegalArgumentException e) {
             return new DecimalType(getPrice(toUnit));
         }
     }
 
-    public ZonedDateTime getTime() {
-        return time;
+    public ZonedDateTime getUtcTime() {
+        return time.atZone(ZoneId.of("UTC"));
+    }
+
+    public Instant getInstant() {
+        return this.time;
     }
 }
