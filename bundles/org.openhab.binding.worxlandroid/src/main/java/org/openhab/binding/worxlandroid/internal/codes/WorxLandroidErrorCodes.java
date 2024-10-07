@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link WorxLandroidErrorCodes} hosts error codes
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public enum WorxLandroidErrorCodes {

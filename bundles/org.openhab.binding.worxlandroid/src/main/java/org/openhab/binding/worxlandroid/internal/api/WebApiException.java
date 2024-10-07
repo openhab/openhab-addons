@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link WebApiException} is a class for handling the Worx Landroid API exceptions
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public class WebApiException extends Exception {

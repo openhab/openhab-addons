@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link WorxLandroidActionCodes} hosts action codes
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public enum WorxLandroidActionCodes {

@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * {@link ScheduledDay} holds data of the schedule details for a given day
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public class ScheduledDay {

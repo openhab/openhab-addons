@@ -42,7 +42,7 @@ import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 /**
  * {@link AWSClient} AWS client
  *
- * @author Nils - Initial contribution
+ * @author Nils Billing - Initial contribution
  */
 @NonNullByDefault
 public class AWSClient implements MqttClientConnectionEvents {
