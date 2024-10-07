@@ -1,0 +1,684 @@
+{
+	"user": {
+		"uid": "a9b5f615-6261-47ef-a61e-76f88ec1f5a9",
+		"name": "localhost",
+		"audience": "homesmart.local",
+		"email": "",
+		"createdTimestamp": "2024-10-06T17:41:21.000Z",
+		"verifiedUid": "",
+		"role": "home_member",
+		"remoteUser": 0
+	},
+	"hub": {
+		"id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+		"relationId": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+		"type": "gateway",
+		"deviceType": "gateway",
+		"createdAt": "2024-03-08T06:39:04.019Z",
+		"isReachable": true,
+		"lastSeen": "2024-10-06T20:58:00.311Z",
+		"attributes": {
+			"customName": "Townhouse",
+			"model": "DIRIGERA Hub for smart products",
+			"manufacturer": "IKEA of Sweden",
+			"firmwareVersion": "2.615.8",
+			"hardwareVersion": "P2.5",
+			"serialNumber": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+			"identifyStarted": "2024-03-08T06:39:06.000Z",
+			"identifyPeriod": 65534,
+			"otaStatus": "upToDate",
+			"otaState": "readyToCheck",
+			"otaProgress": 0,
+			"otaPolicy": "autoDownload",
+			"otaScheduleStart": "00:00",
+			"otaScheduleEnd": "00:00",
+			"permittingJoin": false,
+			"backendConnected": true,
+			"backendConnectionPersistent": true,
+			"backendOnboardingComplete": true,
+			"backendRegion": "eu-central-1",
+			"backendCountryCode": "DE",
+			"userConsents": [
+				{
+					"name": "analytics",
+					"value": "disabled"
+				},
+				{
+					"name": "diagnostics",
+					"value": "enabled"
+				}
+			],
+			"logLevel": 3,
+			"coredump": false,
+			"timezone": "Europe/Berlin",
+			"nextSunSet": null,
+			"nextSunRise": null,
+			"homestate": "home",
+			"countryCode": "XZ",
+			"isOn": false
+		},
+		"capabilities": {
+			"canSend": [],
+			"canReceive": [
+				"customName",
+				"permittingJoin",
+				"userConsents",
+				"logLevel",
+				"time",
+				"timezone",
+				"countryCode",
+				"coordinates"
+			]
+		},
+		"deviceSet": [],
+		"remoteLinks": [],
+		"environment": "prod"
+	},
+	"devices": [
+		{
+			"id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+			"relationId": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+			"type": "gateway",
+			"deviceType": "gateway",
+			"createdAt": "2024-03-08T06:39:04.019Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-06T20:58:00.311Z",
+			"attributes": {
+				"customName": "Townhouse",
+				"model": "DIRIGERA Hub for smart products",
+				"manufacturer": "IKEA of Sweden",
+				"firmwareVersion": "2.615.8",
+				"hardwareVersion": "P2.5",
+				"serialNumber": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29",
+				"identifyStarted": "2024-03-08T06:39:06.000Z",
+				"identifyPeriod": 65534,
+				"otaStatus": "upToDate",
+				"otaState": "readyToCheck",
+				"otaProgress": 0,
+				"otaPolicy": "autoDownload",
+				"otaScheduleStart": "00:00",
+				"otaScheduleEnd": "00:00",
+				"permittingJoin": false,
+				"backendConnected": true,
+				"backendConnectionPersistent": true,
+				"backendOnboardingComplete": true,
+				"backendRegion": "eu-central-1",
+				"backendCountryCode": "DE",
+				"userConsents": [
+					{
+						"name": "analytics",
+						"value": "disabled"
+					},
+					{
+						"name": "diagnostics",
+						"value": "enabled"
+					}
+				],
+				"logLevel": 3,
+				"coredump": false,
+				"timezone": "Europe/Berlin",
+				"nextSunSet": null,
+				"nextSunRise": null,
+				"homestate": "home",
+				"countryCode": "XZ",
+				"isOn": false
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"customName",
+					"permittingJoin",
+					"userConsents",
+					"logLevel",
+					"time",
+					"timezone",
+					"countryCode",
+					"coordinates"
+				]
+			},
+			"deviceSet": [],
+			"remoteLinks": []
+		},
+		{
+			"id": "338bb721-35bb-4775-8cd0-ba70fc37ab10_1",
+			"type": "speaker",
+			"deviceType": "speaker",
+			"createdAt": "2024-10-04T17:21:49.446Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-04T17:48:26.883Z",
+			"attributes": {
+				"customName": "Loft",
+				"model": "SYMFONISK Bookshelf S21",
+				"manufacturer": "Sonos, Inc.",
+				"firmwareVersion": "80.1-56190",
+				"hardwareVersion": "1.20.3.3-2.0",
+				"serialNumber": "34-7E-5C-F5-45-88:F",
+				"productCode": "S21",
+				"identifyStarted": "2024-10-04T17:21:49.447Z",
+				"identifyPeriod": 0,
+				"playback": "playbackPaused",
+				"playbackLastChangedTimestamp": "2024-10-04T17:48:26.883Z",
+				"playbackAudio": {
+					"serviceType": "sonos",
+					"providerType": "Mixcloud",
+					"playItem": {
+						"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE3OTMyMTc4OSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+						"title": "The Anjunadeep Edition 520 with Omfeel",
+						"artist": "Anjunadeep",
+						"imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2179321789.mp4%3fsid%3d181%26flags%3d8232%26sn%3d3",
+						"duration": 3724000
+					},
+					"nextPlayItem": {
+						"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE3OTE5NzE2NSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+						"title": "Deep House Cat Show - Maya Bay Mix - feat. Patti Kane",
+						"artist": "DEEP HOUSE CAT SHOW",
+						"imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2179197165.mp4%3fsid%3d181%26flags%3d8232%26sn%3d3",
+						"duration": 3600000
+					}
+				},
+				"playbackPosition": {
+					"position": 2955760,
+					"timestamp": "2024-10-04T17:48:26.882Z"
+				},
+				"playbackAvailableActions": {
+					"crossfade": true,
+					"pause": true,
+					"repeat": [
+						"off",
+						"playItem",
+						"playlist"
+					],
+					"seek": true,
+					"shuffle": true,
+					"playbackNext": true,
+					"playbackPrev": true
+				},
+				"playbackModes": {
+					"crossfade": false,
+					"repeat": "off",
+					"shuffle": false
+				},
+				"volume": 20,
+				"isMuted": false,
+				"audioGroup": "1f386990-bb4f-4a00-befd-646b5ef52c47"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"playback",
+					"playbackAudio",
+					"volume",
+					"isMuted"
+				]
+			},
+			"room": {
+				"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+				"name": "Loft",
+				"color": "ikea_green_no_65",
+				"icon": "rooms_sofa"
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
+			"id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+			"type": "light",
+			"deviceType": "light",
+			"createdAt": "2024-10-04T17:41:34.000Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-06T17:18:05.000Z",
+			"attributes": {
+				"customName": "Esszimmer1",
+				"firmwareVersion": "1.0.38",
+				"hardwareVersion": "1",
+				"manufacturer": "IKEA of Sweden",
+				"model": "TRADFRI bulb E27 CWS globe 806lm",
+				"productCode": "LED2109G6",
+				"serialNumber": "7CC6B6FFFE5FFFA2",
+				"isOn": true,
+				"startupOnOff": "startOn",
+				"lightLevel": 100,
+				"startUpCurrentLevel": -1,
+				"colorMode": "color",
+				"colorHue": 119.9981689453125,
+				"colorSaturation": 1,
+				"startupTemperature": -1,
+				"colorTemperature": 2702,
+				"colorTemperatureMax": 2202,
+				"colorTemperatureMin": 4000,
+				"identifyPeriod": 0,
+				"identifyStarted": "2000-01-01T00:00:00.000Z",
+				"permittingJoin": false,
+				"otaPolicy": "autoUpdate",
+				"otaProgress": 0,
+				"otaScheduleEnd": "00:00",
+				"otaScheduleStart": "00:00",
+				"otaState": "readyToCheck",
+				"otaStatus": "upToDate"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"customName",
+					"isOn",
+					"lightLevel",
+					"colorTemperature",
+					"colorHue",
+					"colorSaturation"
+				]
+			},
+			"room": {
+				"id": "921edb07-e344-4c70-a09e-11935c727f58",
+				"name": "Esszimmer",
+				"color": "ikea_lilac_no_3",
+				"icon": "rooms_cutlery"
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
+			"id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+			"type": "light",
+			"deviceType": "light",
+			"createdAt": "2024-10-04T18:00:31.000Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-06T17:18:06.000Z",
+			"attributes": {
+				"customName": "Esszimmer2",
+				"firmwareVersion": "1.0.38",
+				"hardwareVersion": "1",
+				"manufacturer": "IKEA of Sweden",
+				"model": "TRADFRI bulb E27 CWS globe 806lm",
+				"productCode": "LED2109G6",
+				"serialNumber": "8C65A3FFFEC9113D",
+				"isOn": true,
+				"startupOnOff": "startOn",
+				"lightLevel": 100,
+				"startUpCurrentLevel": -1,
+				"colorMode": "color",
+				"colorHue": 0,
+				"colorSaturation": 1,
+				"startupTemperature": -1,
+				"colorTemperature": 2702,
+				"colorTemperatureMax": 2202,
+				"colorTemperatureMin": 4000,
+				"identifyPeriod": 0,
+				"identifyStarted": "2000-01-01T00:00:00.000Z",
+				"permittingJoin": false,
+				"otaPolicy": "autoUpdate",
+				"otaProgress": 0,
+				"otaScheduleEnd": "00:00",
+				"otaScheduleStart": "00:00",
+				"otaState": "readyToCheck",
+				"otaStatus": "upToDate"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"customName",
+					"isOn",
+					"lightLevel",
+					"colorTemperature",
+					"colorHue",
+					"colorSaturation"
+				]
+			},
+			"room": {
+				"id": "921edb07-e344-4c70-a09e-11935c727f58",
+				"name": "Esszimmer",
+				"color": "ikea_lilac_no_3",
+				"icon": "rooms_cutlery"
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
+			"id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+			"type": "light",
+			"deviceType": "light",
+			"createdAt": "2024-10-04T18:20:43.000Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-06T19:56:51.000Z",
+			"attributes": {
+				"customName": "Stehlampe",
+				"firmwareVersion": "2.3.086",
+				"hardwareVersion": "1",
+				"manufacturer": "IKEA of Sweden",
+				"model": "TRADFRI bulb E27 CWS opal 600lm",
+				"productCode": "LED1624G9E27EU",
+				"serialNumber": "EC1BBDFFFEC17EA1",
+				"isOn": false,
+				"startupOnOff": "startOn",
+				"lightLevel": 61,
+				"startUpCurrentLevel": -1,
+				"colorMode": "color",
+				"colorHue": 60.0018310546875,
+				"colorSaturation": 1,
+				"identifyPeriod": 0,
+				"identifyStarted": "2000-01-01T00:00:00.000Z",
+				"permittingJoin": false,
+				"otaPolicy": "autoUpdate",
+				"otaProgress": 0,
+				"otaScheduleEnd": "00:00",
+				"otaScheduleStart": "00:00",
+				"otaState": "readyToCheck",
+				"otaStatus": "upToDate"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"customName",
+					"isOn",
+					"lightLevel",
+					"colorHue",
+					"colorSaturation"
+				]
+			},
+			"room": {
+				"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+				"name": "Loft",
+				"color": "ikea_green_no_65",
+				"icon": "rooms_sofa"
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
+			"id": "03c716a9-900e-4bb0-8694-eaf837bfa3fb_1",
+			"type": "speaker",
+			"deviceType": "speaker",
+			"createdAt": "2024-10-06T09:06:12.272Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-06T15:18:33.014Z",
+			"attributes": {
+				"customName": "Moritz",
+				"model": "SYMFONISK Table lamp S20",
+				"manufacturer": "Sonos, Inc.",
+				"firmwareVersion": "80.1-56190",
+				"hardwareVersion": "1.20.2.3-2.0",
+				"serialNumber": "78-28-CA-81-8E-F2:1",
+				"productCode": "S20",
+				"identifyStarted": "2024-10-06T09:06:12.272Z",
+				"identifyPeriod": 0,
+				"playback": "playbackIdle",
+				"playbackLastChangedTimestamp": "2024-10-06T09:06:12.272Z",
+				"playbackAudio": {
+					
+				},
+				"playbackPosition": {
+					"position": 0,
+					"timestamp": "2024-10-06T09:06:12.032Z"
+				},
+				"playbackAvailableActions": {
+					"crossfade": true,
+					"pause": false,
+					"repeat": [
+						"off",
+						"playItem",
+						"playlist"
+					],
+					"seek": false,
+					"shuffle": true,
+					"playbackNext": false,
+					"playbackPrev": false
+				},
+				"playbackModes": {
+					"crossfade": false,
+					"repeat": "off",
+					"shuffle": false
+				},
+				"volume": 15,
+				"isMuted": false,
+				"audioGroup": "71aa115c-fadd-4c43-aaf7-d537fa939638"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"playback",
+					"playbackAudio",
+					"volume",
+					"isMuted"
+				]
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": true
+		}
+	],
+	"users": [
+		{
+			"uid": "ec555340-5f7c-4226-a8ec-5cab6d4ad56d",
+			"name": "Google, Pixel 7 Pro",
+			"audience": "homesmart.local",
+			"email": "",
+			"createdTimestamp": "2024-10-04T17:23:54.000Z",
+			"verifiedUid": "6b370a03-e17e-52f8-b78f-843afb531f2a",
+			"role": "home_member",
+			"remoteUser": 0
+		},
+		{
+			"uid": "6b370a03-e17e-52f8-b78f-843afb531f2a",
+			"name": "Google, Pixel 7 Pro",
+			"audience": "homesmart.global",
+			"email": "bernd.w@ymann.de",
+			"createdTimestamp": "2024-10-05T12:25:16.000Z",
+			"verifiedUid": "",
+			"role": "host",
+			"remoteUser": 0
+		},
+		{
+			"uid": "36e12446-4d0d-4d9a-b26a-926fbfb79f2f",
+			"name": "openhabian",
+			"audience": "homesmart.local",
+			"email": "",
+			"createdTimestamp": "2024-10-05T12:29:53.000Z",
+			"verifiedUid": "",
+			"role": "home_member",
+			"remoteUser": 0
+		},
+		{
+			"uid": "99b383f4-cac6-485c-aad4-80c6190cc089",
+			"name": "openhabian",
+			"audience": "homesmart.local",
+			"email": "",
+			"createdTimestamp": "2024-10-06T14:01:25.000Z",
+			"verifiedUid": "",
+			"role": "home_member",
+			"remoteUser": 0
+		},
+		{
+			"uid": "a9b5f615-6261-47ef-a61e-76f88ec1f5a9",
+			"name": "localhost",
+			"audience": "homesmart.local",
+			"email": "",
+			"createdTimestamp": "2024-10-06T17:41:21.000Z",
+			"verifiedUid": "",
+			"role": "home_member",
+			"remoteUser": 0
+		}
+	],
+	"scenes": [],
+	"rooms": [
+		{
+			"id": "7bc86420-cf4a-4a58-beff-7dcf462258da",
+			"name": "Badezimmer",
+			"color": "ikea_yellow_no_31",
+			"icon": "rooms_bathtub"
+		},
+		{
+			"id": "921edb07-e344-4c70-a09e-11935c727f58",
+			"name": "Esszimmer",
+			"color": "ikea_lilac_no_3",
+			"icon": "rooms_cutlery"
+		},
+		{
+			"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d",
+			"name": "Loft",
+			"color": "ikea_green_no_65",
+			"icon": "rooms_sofa"
+		},
+		{
+			"id": "4328471f-03cd-4372-aa1e-e3e9f3be3da4",
+			"name": "Schlafzimmer ",
+			"color": "ikea_yellow_no_24",
+			"icon": "rooms_bed"
+		},
+		{
+			"id": "c9e407e5-5bfa-4e73-aaf3-c0258d9ccb5f",
+			"name": "Gäste WC",
+			"color": "ikea_blue_no_58",
+			"icon": "rooms_arm_chair"
+		},
+		{
+			"id": "88f27266-14a8-4d66-8e4f-e10a3318868e",
+			"name": "Küche",
+			"color": "ikea_blue_no_58",
+			"icon": "rooms_kitchen"
+		}
+	],
+	"deviceSets": [],
+	"music": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": {
+		"playlists":[
+		  {
+		      "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+		      "title":"Ritzen für Intellektuelle",
+		      "playItems":[
+		          {
+		              "title":"Ritzen für Intellektuelle",
+		              "artist":"",
+		              "album":"Apokalypse & Filterkaffee"
+	              }
+              ]
+          }
+      ],
+      "favorites":
+        [
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyIn19",
+                "title":"80s80s Radio",
+                "type":"STREAM",
+                "imageURL":"http://cdn-radiotime-logos.tunein.com/s255597q.png"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxNyJ9fQ==",
+                "title":"ANTENNE BAYERN 103.0 (Adult Contemporary)",
+                "type":"STREAM"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxIn19",
+                "title":"Antenne Frankfurt",
+                "type":"STREAM",
+                "imageURL":"http://cdn-radiotime-logos.tunein.com/s202726q.png"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI4In19",
+                "title":"Cocktail Hour",
+                "type":"PROGRAM",
+                "imageURL":"https://sonosradio.imgix.net/placeholders/b41fe048fdceccddf08cb84461ee72a5_09.png?w=200&auto=format,compress"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxMyJ9fQ==",
+                "title":"Deep House Cat Show - Flowering Dogwood Mix - with Alex B. Groove",
+                "type":"TRACK",
+                "imageURL":"https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/7/4/5/a/953f-7a99-4673-b34a-abb706028c69"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI5In19",
+                "title":"German Zeitgeist",
+                "type":"PROGRAM",
+                "imageURL":"https://sonosradio.imgix.net/placeholders/b942fe0202941b29b404901b60c72679_09.png?w=200&auto=format,compress"
+            },
+            {
+                "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI0In19",
+                "title":"Katzenpuff",
+                "type":""
+            },
+            {
+                "id":"e",
+		        "title":"Neue Elektronische",
+		        "type":"PROGRAM",
+		        "imageURL":"https://sonosradio.imgix.net/station-images/775f1afe-d621-42c2-99bf-5dcb1d4b9742.png?w=200&auto=format,compress"
+	        },
+	        {
+	           "id":"eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI2In19",
+	           "title":"planet radio",
+	           "type":"STREAM",
+	           "imageURL":"https://d1uner0r1fcap8.cloudfront.net/image?w=60&image=https%3A%2F%2Fcdn-profiles.tunein.com%2Fs2726%2Fimages%2Flogog.jpg&partnerId=tunein"
+           }
+       ]
+   }
+}
