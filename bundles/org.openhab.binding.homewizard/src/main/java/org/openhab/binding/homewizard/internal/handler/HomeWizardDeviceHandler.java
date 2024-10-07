@@ -10,14 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.handler;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
+import org.openhab.binding.homewizard.internal.dto.DataPayload;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,6 +47,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     protected final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
+    protected ScheduledExecutorService executorService = this.scheduler;
     private HomeWizardConfiguration config = new HomeWizardConfiguration();
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -65,7 +69,8 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(HomeWizardConfiguration.class);
         if (configure()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay, TimeUnit.SECONDS);
+            pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -75,7 +80,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * @return true if the configuration is ok to start polling, false otherwise
      */
     private boolean configure() {
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing ipAddress/host configuration");
             return false;
@@ -106,13 +111,21 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     protected abstract void handleDataPayload(DataPayload payload);
 
     /**
+     * @return json response from the remote server
+     * @throws IOException
+     */
+    public String getData() throws IOException {
+        return HttpUtil.executeUrl("GET", apiURL + "data", 30000);
+    }
+
+    /**
      *
      */
     protected void pollData() {
         final String dataResult;
 
         try {
-            dataResult = HttpUtil.executeUrl("GET", apiURL + "data", 30000);
+            dataResult = getData();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unable to query device data: %s", e.getMessage()));
