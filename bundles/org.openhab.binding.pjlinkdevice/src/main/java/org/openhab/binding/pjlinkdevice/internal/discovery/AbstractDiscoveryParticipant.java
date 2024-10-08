@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
-
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
