@@ -110,13 +110,13 @@ Additionally, these advanced channels are available (not all are available on al
 
 ## Full Example
 
-### `demo.things` Example
+### `demo.things`:
 
 ```java
 teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
 ```
 
-### `example.items` Example
+### `example.items`:
 
 ```java
 String              TeslaVehicleName            {channel="teslascope:vehicle:model3:vehicle-name"}
@@ -177,7 +177,7 @@ Switch              TeslaTPMSSoftWarningRL      {channel="teslascope:vehicle:mod
 Switch              TeslaTPMSSoftWarningRR      {channel="teslascope:vehicle:model3:tpms-soft-warning-rr"}
 ```
 
-### `example.sitemap` Example
+### `example.sitemap`:
 
 ```perl
 sitemap main label="Main"

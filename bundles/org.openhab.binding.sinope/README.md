@@ -105,7 +105,7 @@ Thermostat devices support some of the following channels:
 
 In this example setup the Sinopé Gateway is represented as a Bridge **Home** with thermostat **Room**
 
-### `demo.things` Example
+### demo.things:
 
 ```java
 Bridge sinope:gateway:home [ hostname="sinope", gatewayId="1234-4567-1234-1234", apiKey="0x12 0x34 0x56 0x78 0x9A 0xBC 0xDE 0xF0"] {
@@ -113,7 +113,7 @@ Bridge sinope:gateway:home [ hostname="sinope", gatewayId="1234-4567-1234-1234",
 }
 ```
 
-### `demo.items` Example
+### demo.items:
 
 ```java
 Number Room_In  "Room Temp. [%.2f °C]" <temperature> { channel="sinope:thermostat:home:room:insideTemperature" }
@@ -123,7 +123,7 @@ Number Room_SetPointMode "Room Set Point Mode" { channel="sinope:thermostat:home
 Number Room_HeatLevel "Room Heating level [%d]" <heating> { channel="sinope:thermostat:home:room:heatingLevel" }
 ```
 
-### `d`emo.sitemap` Example
+### demo.sitemap:
 
 ```perl
 sitemap demo label="Main Menu"

@@ -99,6 +99,7 @@ actions:
         var papierDate = items['collectionDay_paper'].getZonedDateTime();
         var restmuellDate = items['collectionDay_generalWaste'].getZonedDateTime();
 
+
         // Check which waste types are collected on the next day
         var biomuellCollection = biomuellDate.equals(tomorrow);
         var leichtverpackungCollection = leichtverpackungDate.equals(tomorrow);
@@ -123,6 +124,7 @@ actions:
         if (restmuellCollection) {
           toBeCollected.push('general waste');
         }
+
 
         // Send message (or something else) if at least one waste type is collected
         if (toBeCollected.length > 0) {

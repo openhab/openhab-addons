@@ -238,6 +238,7 @@ myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!"
 
 If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
+
 ```javascript
 var myVar = 'Hello world!';
 
@@ -698,6 +699,7 @@ actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, f
 - `isCancelled()`: Whether the timer has been cancelled. ⇒ `boolean`
 - `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
 - `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
+
 
 ```javascript
 var now = time.ZonedDateTime.now();

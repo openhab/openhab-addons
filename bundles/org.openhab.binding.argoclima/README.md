@@ -115,6 +115,7 @@ Thing argoclima:remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Livin
     password="<yourArgoPassword>"
 ]
 
+
 Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
     hostname="192.168.0.3"
 ]
@@ -148,6 +149,7 @@ Thing argoclima:local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessibl
     useLocalConnection=false
 ]
 
+
 Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
     hostname="192.168.0.3",             // Direct address of the device (reachable from openHAB)
     connectionMode="REMOTE_API_PROXY",
@@ -168,6 +170,7 @@ Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (acces
     oemServerAddress="uisetup.ddns.net",
     oemServerPort=80
 ]
+
 
 Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
     hostname="192.168.0.3",           // Has to be reachable, since useLocalConnection is true (default)

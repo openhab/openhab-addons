@@ -44,7 +44,6 @@ The `s3bucket` thing has the following configuration options:
 | awsSecret      | AWS Secret           | AWS secret                                         | no       | n/a           |
 | awsRegion      | AWS Region           | AWS region of S3 bucket                            | yes      | ""            |
 | s3Anonymous    | Anonymous Connection | Connect anonymously (works for public buckets)     | yes      | true          |
-
 ## Events
 
 This binding supports the following event:
@@ -64,7 +63,7 @@ folderwatcher:s3bucket:myS3bucket       [ s3BucketName="mypublic-bucket", pollIn
 
 ```
 
-### Using in a Rule
+### Using in a rule:
 
 Local folder example:
 

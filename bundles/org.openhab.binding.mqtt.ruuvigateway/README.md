@@ -24,6 +24,7 @@ This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things
 
 ## Thing Configuration
 
+
 There is only thing type supported by this binding, `ruuvitag_beacon`.
 No manual configuration is needed, and discovery function can be used instead.
 

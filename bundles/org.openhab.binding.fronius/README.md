@@ -60,7 +60,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Channels
 
-### `powerinverter` Thing Channels
+### Channels for `powerinverter` Thing
 
 | Channel ID                           | Item Type                | Description                                                                                                       |
 | ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
@@ -93,7 +93,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
 | `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
 
-### `meter` Thing Channels
+### Channels for `meter` Thing
 
 | Channel ID              | Item Type                | Description                                                                                                                                                                                                              |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -115,7 +115,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `energyrealsumproduced` | Number:Energy            | Real Energy produced                                                                                                                                                                                                     |
 
-### `ohmpilot` Thing Channels
+### Channels for `ohmpilot` Thing
 
 | Channel ID              | Item Type          | Description                                                                                                                                                              |
 | ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -127,14 +127,14 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Properties
 
-### `meter` Thing Properties
+### The `meter` Thing has the following properties:
 
 | Property       | Description                    |
 | -------------- | ------------------------------ |
 | `modelId`      | The model name of the meter    |
 | `serialNumber` | The serial number of the meter |
 
-### `ohmpilot` Thing Properties
+### The `ohmpilot` Thing has the following properties:
 
 | Property       | Description                       |
 | -------------- | --------------------------------- |

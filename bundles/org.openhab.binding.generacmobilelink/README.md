@@ -55,6 +55,7 @@ All channels are read-only.
 | hoursOfProtection    | Number:Time                 | Number of Hours of Protection     |
 | signalStrength       | Number:Dimensionless        | Signal Strength                   |
 
+
 ## Full Example
 
 ### Things

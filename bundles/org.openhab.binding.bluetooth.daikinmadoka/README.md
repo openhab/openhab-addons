@@ -56,7 +56,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Full Example
 
-### `daikinmadoka.things` Example
+### daikinmadoka.things:
 
 ```java
 Bridge bluetooth:dbusbluez:hci0 [ address="00:1A:7D:DA:71:13" ]
@@ -65,7 +65,7 @@ Thing bluetooth:brc1h:hci0:salon (bluetooth:dbusbluez:hci0)     [ address="00:CC
 
 ```
 
-### `daikinmadoka.items` Example
+### daikinmadoka.items:
 
 ```java
 Group g_climSalon "Salon" [ "Thermostat" ]
