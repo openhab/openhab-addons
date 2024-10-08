@@ -35,6 +35,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingTypeProvider;
+import org.openhab.core.thing.type.ThingType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -52,7 +54,7 @@ import com.google.gson.JsonDeserializer;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.linky")
+@Component(immediate = true, service = ThingHandlerFactory.class, configurationPid = "binding.linky")
 public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final DateTimeFormatter LINKY_LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
@@ -63,6 +65,7 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;
     private final ThingRegistry thingRegistry;
+    private final ThingTypeProvider thingTypeProvider;
     private final ComponentContext componentContext;
 
     private final Gson gson = new GsonBuilder()
@@ -90,18 +93,34 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     public LinkyHandlerFactory(final @Reference LocaleProvider localeProvider,
             final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
-            ComponentContext componentContext) {
+            final @Reference ThingTypeProvider thingTypeProvider, ComponentContext componentContext) {
         this.localeProvider = localeProvider;
 
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
+        this.thingTypeProvider = thingTypeProvider;
         this.componentContext = componentContext;
+
+        ThingType tt = this.thingTypeProvider.getThingType(THING_TYPE_API_WEB_ENEDIS_BRIDGE, null);
+        System.out.println("tt:" + tt);
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        // TODO Auto-generated method stub
+        super.activate(componentContext);
+
+        ThingType tt = this.thingTypeProvider.getThingType(THING_TYPE_API_WEB_ENEDIS_BRIDGE, null);
+        System.out.println("tt:" + tt);
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        ThingType tt = this.thingTypeProvider.getThingType(THING_TYPE_API_WEB_ENEDIS_BRIDGE, null);
+        System.out.println("tt:" + tt);
+
         return SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
