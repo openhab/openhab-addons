@@ -68,13 +68,13 @@ You can also add additional tags for structuring your data. For example, you can
 The item configuration will look like this:
 
 ```java
-    Group:Number:AVG gTempSensors
+Group:Number:AVG gTempSensors
 
-    Number:Temperature tempLivingRoom (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
-    Number:Temperature tempKitchen (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
+Number:Temperature tempLivingRoom (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
+Number:Temperature tempKitchen (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
 
-    Number:Temperature tempBedRoom (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
-    Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
+Number:Temperature tempBedRoom (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
+Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
 ```
 
 You can also set the `influxdb` metadata using the UI. From each item configuration screen do:

@@ -236,7 +236,7 @@ They are added dynamically if a player is found. The player and group channels a
 Example
 
  ```java
- Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
+Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
  ```
 
  The {playerUID} has either a P in front of the number which indicates that this is a player or a G to indicate this is a group.
