@@ -70,7 +70,9 @@ public class EnvisalinkBridgeDiscovery {
             return;
         }
 
-        List<InetAddress> addressesToScan = NetUtil.getAddressesRangeByCidrAddress(localCidrAddress, 16);
+        List<InetAddress> addressesToScan = localCidrAddress != null
+                ? NetUtil.getAddressesRangeByCidrAddress(localCidrAddress, 16)
+                : List.of();
 
         logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         for (InetAddress inetAddress : addressesToScan) {
