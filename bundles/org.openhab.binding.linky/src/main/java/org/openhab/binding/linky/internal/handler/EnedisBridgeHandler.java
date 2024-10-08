@@ -39,9 +39,9 @@ import com.google.gson.Gson;
 public class EnedisBridgeHandler extends ApiBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EnedisBridgeHandler.class);
 
-    // private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
-    // public static final String ENEDIS_ACCOUNT_URL = "https://ext.prod-sandbox.api.enedis.fr/";
-    private static final String BASE_URL = "https://ext.prod.api.enedis.fr/";
+    // private static final String BASE_URL = "https://gw.ext.prod-sandbox.api.enedis.fr/";
+    // public static final String ENEDIS_ACCOUNT_URL = "gw.ext.prod-sandbox.api.enedis.fr";
+    private static final String BASE_URL = "https://gw.ext.prod.api.enedis.fr/";
     public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
 
     private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
