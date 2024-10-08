@@ -700,6 +700,7 @@ actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, f
 - `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
 - `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
 
+
 ```javascript
 var now = time.ZonedDateTime.now();
 
