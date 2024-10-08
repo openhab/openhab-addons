@@ -6,10 +6,10 @@ This binding integrates infrared receivers and blasters manufactured by IRtrans 
 
 This binding supports the following Thing types
 
-| Thing    | Thing Type | Description                                                                 |
-|----------|------------|-----------------------------------------------------------------------------|
-| ethernet | Bridge     | Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database. |
-| blaster  | Thing      | Child thing representing an IR Blaster                                       |
+| Thing    | Thing Type | Description                                                                |
+|----------|------------|----------------------------------------------------------------------------|
+| ethernet | Bridge     | Ethernet (PoE) IRtrans transceiver equipped with an on-board IRDB database |
+| blaster  | Thing      | Child thing representing an IR Blaster                                     |
 
 ## Discovery
 
