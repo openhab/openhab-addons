@@ -105,6 +105,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     private static final String ACCEPTED_ITEM_TYPE_DATE_TIME = "DateTime";
     private static final String TEST_HOSTNAME = "127.0.0.1";
     private static final int TEST_PORT = 9002;
+    private static final String WRONG_HOSTNAME = "wrong.hostname";
     static SimpleNTPServer timeServer;
     private ChannelTypeUID channelTypeUID;
 
@@ -465,7 +466,6 @@ public class NtpOSGiTest extends JavaOSGiTest {
 
     private void assertCommunicationError(String acceptedItemType) {
         Configuration configuration = new Configuration();
-        final String WRONG_HOSTNAME = "wrong.hostname";
         if (acceptedItemType.equals(ACCEPTED_ITEM_TYPE_DATE_TIME)) {
             initialize(configuration, NtpBindingConstants.CHANNEL_DATE_TIME, ACCEPTED_ITEM_TYPE_DATE_TIME, null,
                     WRONG_HOSTNAME);

@@ -358,13 +358,13 @@ It will auto-adapt to stick as closely as possible to the last data availability
 | signal        | strength            | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal        | value               | Number:Power         | Signal strength in dBm                           |
 
-(*) Health index values :
+(*) Health index values:
 
-- 0 : healthy
-- 1 : fine
-- 2 : fair
-- 3 : poor
-- 4 : unhealthy
+- 0: healthy
+- 1: fine
+- 2: fair
+- 3: poor
+- 4: unhealthy
 
 All these channels are read only.
 
@@ -449,11 +449,10 @@ All these channels except setpoint and setpoint-mode are read only.
 
 ### Home
 
-A Home is the Thing holding various modules and devices. They can hold two areas of equipments : Security and Energy.
+A Home is the Thing holding various modules and devices. They can hold two areas of equipments: Security and Energy.
 Depending on the way it is configured the behaviour will be adapted and available channels can vary.
 
 **Home Configuration**
-
 The Home thing has the following configuration elements:
 
 | Parameter       | Type    | Required | Description                                                                         |
@@ -463,11 +462,11 @@ The Home thing has the following configuration elements:
 | securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
 | refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 180.                   |
 
-At least one of these parameter must be filled - at most two : 
+At least one of these parameter must be filled - at most two:
 
-* id or securityId
-* id or energyId
-* securityId and energyId
+- id or securityId
+- id or energyId
+- securityId and energyId
 
 (1) this parameter is kept for backward compatibility.
 
@@ -546,7 +545,7 @@ Warnings:
 | last-event     | video-status         | String       | Read-only  | Status of the video (recording, deleted or available)                                                                                       |
 | last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
-(*) This channel is configurable : low, poor, high.
+(*) This channel is configurable: low, poor, high.
 (**) This channel handles the REFRESH command for on demand update.
 
 **Supported channels for the Presence Camera thing:**
@@ -587,7 +586,7 @@ Warnings:
 | sub-event      | snapshot             | Image        | Read-only  | picture of the snapshot                                                                                                                     |
 | sub-event      | vignette             | Image        | Read-only  | picture of the vignette                                                                                                                     |
 
-(*) This channel is configurable : low, poor, high.
+(*) This channel is configurable: low, poor, high.
 
 **Supported channels for the Doorbell thing:**
 
@@ -643,8 +642,8 @@ Note: live feeds either locally or via VPN are not available in Netatmo API.
 
 Netatmo API distinguishes two kinds of persons:
 
-- Known persons : have been identified by the camera and you have defined a name for those.
-- Unknown persons : identified by the camera, but no name defined.
+- Known persons: have been identified by the camera and you have defined a name for those.
+- Unknown persons: identified by the camera, but no name defined.
 
 Person things are automatically created in discovery process for all known persons.
 
@@ -810,7 +809,7 @@ sitemap netatmo label="Netatmo" {
         Text item=Indoor_TimeStamp
         Text item=Indoor_LastSeen
     }
-    Frame label="Outdoor" { 
+    Frame label="Outdoor" {
         Text item=Outdoor_Temperature
         Text item=Outdoor_TempTrend
         Text item=Outdoor_Humidity

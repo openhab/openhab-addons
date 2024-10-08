@@ -115,9 +115,9 @@ sitemap nobo label="Nobø " {
 
     Frame label="Main Bedroom"{
       Switch    item=Zone_ActiveStatus
-      Text      item=Zone_ActiveWeekProfileName           
-      Text      item=Zone_ActiveWeekProfile           
-      Selection item=Zone_ActiveWeekProfile           
+      Text      item=Zone_ActiveWeekProfileName
+      Text      item=Zone_ActiveWeekProfile
+      Selection item=Zone_ActiveWeekProfile
       Setpoint  item=Zone_ComfortTemperatur minValue=7 maxValue=30 step=1 icon="temperature"
       Setpoint  item=Zone_EcoTemperatur     minValue=7 maxValue=30 step=1 icon="temperature"
       Text      item=Zone_CurrentTemperatur
@@ -162,7 +162,7 @@ The binding will now automatically update all available week profile options in 
 sitemap nobo label="Nobø " {
 
     Frame label="Main Bedroom"{
-      Selection item=MainBedroom_Zone_WeekProfile   
+      Selection item=MainBedroom_Zone_WeekProfile
     }
 }
 ```

@@ -217,14 +217,14 @@ The `tap_switch_event` can trigger one of the following events:
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
 There is a separate instance for each light or light group, which can be retrieved e.g. through
 
-```php
+```java
 val hueActions = getActions("hue","hue:0210:00178810d0dc:1")
 ```
 
 where the first parameter always has to be `hue` and the second is the full Thing UID of the light that should be used.
 Once this action instance is retrieved, you can invoke the `fadingLightCommand(String channel, Command command, DecimalType fadeTime)` method on it:
 
-```php
+```java
 hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(1000))
 ```
 
@@ -335,7 +335,7 @@ sitemap demo label="Main Menu"
 
 ### Events
 
- ```php
+ ```java
 rule "example trigger rule"
 when
     Channel "hue:0820:1:dimmer-switch:dimmer_switch_event" triggered <EVENT>
@@ -349,7 +349,7 @@ If ommited the rule gets triggered by any key action and you can determine the e
 Be aware that the events have a '.0' attached to them, like `2001.0` or `34.0`.
 So, testing for specific events looks like this:
 
-```php
+```java
 if (receivedEvent == "1000.0") {
     //do stuff
 }

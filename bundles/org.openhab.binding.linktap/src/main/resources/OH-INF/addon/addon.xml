@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="linktap" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>LinkTap Binding</name>
+	<description>This is the binding for LinkTap.</description>
+	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_http._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>name</name>
+					<regex>^(LinkTapGw_)</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>
