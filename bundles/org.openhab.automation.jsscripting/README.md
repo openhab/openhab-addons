@@ -238,6 +238,7 @@ myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!"
 
 If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
+
 ```javascript
 var myVar = 'Hello world!';
 
