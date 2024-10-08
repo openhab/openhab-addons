@@ -212,7 +212,6 @@ The known measure types are:
 | 16     | dimensionless | [none]  | use for multiplexers, etc                    |
 | 17..   | repeating again from 1, e.g 17==1, 18==2, ...                          |
 
-
 ## Full Example
 
 As there is no common configuration as everything depends on the configuration of the TA devices.
@@ -242,7 +241,6 @@ Sample _.items_-File:
 # APIPage-items
 Number TACMI_Api_tempCollector "Collector temp [%.1f °C]" <temperature> {channel="tacmi:cmiSchema:apiLab:tempCollector"}
 String TACMI_Api_hc1OperationMode "Heating Curcuit 1 Operation Mode [%s]" {channel="tacmi:cmiSchema:apiLab:hc1OperationMode"}
-
 
 # COE-items
 Number TACMI_Analog_In_1     "TA input value 1 [%.1f]"  <temperature> {channel="tacmi:cmi:coe-bridge:cmiTest:analogInput1"}

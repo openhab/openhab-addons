@@ -14,7 +14,6 @@ European iSMART accounts and vehicles.
 - `account`: Bridge representing an iSMART Account
 - `vehicle`: Thing representing an iSMART MG Car
 
-
 ## Discovery
 
 Vehicle discovery is implemented.
@@ -35,7 +34,6 @@ Once an account has been configured it can be scanned for vehicles.
 |---------------|------|--------------------------------------|---------|----------|----------|
 | vin           | text | Vehicle identification number (VIN)  | N/A     | yes      | no       |
 | abrpUserToken | text | User token for A Better Routeplanner | N/A     | no       | no       |
-
 
 ## Channels
 
@@ -122,7 +120,6 @@ Switch		MG5_Force_Refresh 			"MG5 Force Refresh"					{channel="saicismart:vehicl
 DateTime 	MG5_Last_Alarm_Message_Timestamp	"MG5 Last Alarm Message Timestamp"			{channel="saicismart:vehicle:myaccount:mymg5:last-alarm-message-date"}
 String 		MG5_Vehicle_Message			"MG5 Vehicle Message"					{channel="saicismart:vehicle:myaccount:mymg5:last-alarm-message-content"}
 ```
-
 
 ## Limitations
 

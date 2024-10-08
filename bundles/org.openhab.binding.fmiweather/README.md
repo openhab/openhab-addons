@@ -211,7 +211,6 @@ for channel in forecast['channels']:
         print('')
     prev_group = group_name
 
-
     print(('{item_type} {item_name} ' +
      '"{label} [{unit}]" {icon} {{ channel="{channel_id}" }}').format(**locals()))
 -->

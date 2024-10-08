@@ -41,7 +41,6 @@ The binding supports one Thing `player` that represents the Falcon Player.
 | `scheduler-next-playlist`              | String (read only) | Next Scheduled Playlist.                  |
 | `scheduler-next-playlist-start`        | String (read only) | Next Scheduled Start Time.                |
 
-
 ## Full Example
 
 To use these examples for textual configuration, you must already have a configured MQTT `broker` thing, and know its unique ID.
