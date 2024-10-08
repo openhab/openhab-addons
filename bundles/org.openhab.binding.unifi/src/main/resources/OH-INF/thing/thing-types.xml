@@ -171,11 +171,15 @@
 			<channel id="experience" typeId="experience">
 				<description>The average experience of the connected clients</description>
 			</channel>
+			<channel id="ledOverride" typeId="apLedOverride"/>
+			<channel id="ledColor" typeId="system.color">
+				<description>Controls the color and brightness of the LED</description>
+			</channel>
 		</channels>
 
 		<properties>
 			<property name="vendor">Ubiquiti Networks</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:unifi:accessPoint"/>
@@ -485,6 +489,12 @@
 				<option value="11">Isolated</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="apLedOverride">
+		<item-type>Switch</item-type>
+		<label>LED Override</label>
+		<description>If the LED is overridden</description>
 	</channel-type>
 
 </thing:thing-descriptions>

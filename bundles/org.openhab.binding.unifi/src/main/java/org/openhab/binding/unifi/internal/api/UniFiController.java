@@ -224,6 +224,24 @@ public class UniFiController {
         refresh();
     }
 
+    public void setLedOverride(final UniFiDevice device, final String override, final String color,
+            final @Nullable Integer brightness) throws UniFiException {
+        final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.PUT, gson);
+        req.setAPIPath(String.format("/api/s/%s/rest/device/%s", device.getSite().getName(), device.getId()));
+        req.setBodyParameter("_id", device.getId());
+        if (!override.isEmpty()) {
+            req.setBodyParameter("led_override", override);
+        }
+        if (!color.isEmpty()) {
+            req.setBodyParameter("led_override_color", color);
+        }
+        if (brightness != null) {
+            req.setBodyParameter("led_override_color_brightness", brightness);
+        }
+        executeRequest(req);
+        refresh();
+    }
+
     public void generateVouchers(final UniFiSite site, final int count, final int expiration, final int users,
             @Nullable Integer upLimit, @Nullable Integer downLimit, @Nullable Integer dataQuota) throws UniFiException {
         final UniFiControllerRequest<Void> req = newRequest(Void.class, HttpMethod.POST, gson);
