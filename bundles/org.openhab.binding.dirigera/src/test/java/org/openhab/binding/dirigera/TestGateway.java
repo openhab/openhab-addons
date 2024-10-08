@@ -12,8 +12,16 @@
  */
 package org.openhab.binding.dirigera;
 
-import java.util.Iterator;
+import static org.openhab.binding.dirigera.internal.Constants.HOME_URL;
 
+import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -36,6 +44,23 @@ class TestGateway {
         while (entries.hasNext()) {
             JSONObject entry = (JSONObject) entries.next();
             System.out.println(entry.get("type") + " : " + entry.get("id"));
+        }
+    }
+
+    @Test
+    void testHome() {
+        HttpClient insecureClient = new HttpClient(new SslContextFactory.Client(true));
+        insecureClient.setUserAgentField(null);
+        // from https://github.com/jetty-project/jetty-reactive-httpclient/issues/33#issuecomment-777771465
+        insecureClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
+        try {
+            insecureClient.start();
+            ContentResponse response = insecureClient.newRequest(String.format(HOME_URL, "192.168.1.26"))
+                    .header(HttpHeader.AUTHORIZATION, "Bearer abc").timeout(5, TimeUnit.SECONDS).send();
+        } catch (Exception e) {
+            // catching exception is necessary due to the signature of HttpClient.start()
+            // logger.warn("Failed to start http client: {}", e.getMessage());
+            // throw new IllegalStateException("Could not create HttpClient", e);
         }
     }
 }

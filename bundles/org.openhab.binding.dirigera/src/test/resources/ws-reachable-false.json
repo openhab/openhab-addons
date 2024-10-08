@@ -1,0 +1,13 @@
+{
+	"id": "abb2880e-b9c2-4670-b4f5-7219c9966f4a",
+	"time": "2024-10-08T07:01:05.000Z",
+	"specversion": "3.160.0",
+	"source": "urn:com:ikea:homesmart:iotc:zigbee",
+	"type": "deviceStateChanged",
+	"data": {
+		"deviceType": "light",
+		"isReachable": false,
+		"id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+		"lastSeen": "2024-10-08T07:00:04.000Z"
+	}
+}

@@ -13,9 +13,5 @@
 			<label>Device Id</label>
 			<description>Unique id of this gateway</description>
 		</parameter>
-		<parameter name="token" type="text">
-			<label>Token</label>
-			<description>Token exchanged with gateway</description>
-		</parameter>
 	</config-description>
 </config-description:config-descriptions>
