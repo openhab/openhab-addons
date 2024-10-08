@@ -13,7 +13,24 @@
 package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_EXPERIENCE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_IP_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_LASTSEEN;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_NAME;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_ONLINE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_STATE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_UPTIME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_MODEL;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_VERSION;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import java.util.Map;
 
@@ -25,7 +42,11 @@ import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,10 +68,10 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         super(thing);
     }
 
-    private static boolean belongsToSite(final UniFiDevice client, final String siteName) {
+    private static boolean belongsToSite(final UniFiDevice device, final String siteName) {
         boolean result = true;
         if (!siteName.isEmpty()) {
-            final UniFiSite site = client.getSite();
+            final UniFiSite site = device.getSite();
             if (site == null || !site.matchesName(siteName)) {
                 result = false;
             }
@@ -66,7 +87,24 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     "@text/error.thing.ap.offline.configuration_error");
             return false;
         }
+        if (config.getModel() != null) {
+            this.getThing().setProperty(PROPERTY_MODEL, config.getModel());
+        }
+        if (config.getVersion() != null) {
+            this.getThing().setProperty(PROPERTY_VERSION, config.getVersion());
+        }
         return true;
+    }
+
+    @Override
+    protected Map<String, String> updateProperties() {
+        Map<String, String> properties = new HashMap<String, String>();
+        UniFiDevice device = getEntity();
+        if (device != null) {
+            Optional.ofNullable(device.getModel()).ifPresent(v -> properties.put(PROPERTY_MODEL, v));
+            Optional.ofNullable(device.getVersion()).ifPresent(v -> properties.put(PROPERTY_VERSION, v));
+        }
+        return properties;
     }
 
     @Override
@@ -79,12 +117,77 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
     }
 
     @Override
+    protected State getDefaultState(final String channelID) {
+        final State state;
+        switch (channelID) {
+            case CHANNEL_DEV_UPTIME:
+                state = new QuantityType<>(0, Units.SECOND);
+                break;
+            case CHANNEL_DEV_EXPERIENCE:
+                state = new QuantityType<>(0, Units.PERCENT);
+                break;
+            default:
+                state = UnDefType.NULL;
+                break;
+        }
+        return state;
+    }
+
+    @Override
     protected State getChannelState(final UniFiDevice device, final String channelId) {
+        final UniFiSite site = device == null ? null : device.getSite();
         State state = getDefaultState(channelId);
 
         switch (channelId) {
             case CHANNEL_AP_ENABLE:
-                state = OnOffType.from(!device.isDisabled());
+                if (device.isDisabled() != null) {
+                    state = OnOffType.from(!device.isDisabled());
+                }
+                break;
+            case CHANNEL_DEV_ONLINE:
+                if (device.getState() != null) {
+                    state = OnOffType.from(device.getState() == 1);
+                }
+                break;
+            case CHANNEL_DEV_STATE:
+                if (device.getState() != null) {
+                    state = StringType.valueOf(device.getState().toString());
+                }
+                break;
+            case CHANNEL_DEV_NAME:
+                if (device.getName() != null) {
+                    state = StringType.valueOf(device.getName());
+                }
+                break;
+            case CHANNEL_DEV_SITE:
+                if (site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
+                    state = StringType.valueOf(site.getDescription());
+                }
+                break;
+            case CHANNEL_DEV_MAC_ADDRESS:
+                if (device.getMac() != null && !device.getMac().isBlank()) {
+                    state = StringType.valueOf(device.getMac());
+                }
+                break;
+            case CHANNEL_DEV_IP_ADDRESS:
+                if (device.getIp() != null && !device.getIp().isBlank()) {
+                    state = StringType.valueOf(device.getIp());
+                }
+                break;
+            case CHANNEL_DEV_UPTIME:
+                if (device.getUptime() != null) {
+                    state = new QuantityType<>(device.getUptime(), Units.SECOND);
+                }
+                break;
+            case CHANNEL_DEV_LASTSEEN:
+                if (device.getLastSeen() != null) {
+                    state = new DateTimeType(ZonedDateTime.ofInstant(device.getLastSeen(), ZoneId.systemDefault()));
+                }
+                break;
+            case CHANNEL_DEV_EXPERIENCE:
+                if (device.getExperience() != null) {
+                    state = new QuantityType<>(device.getExperience(), Units.PERCENT);
+                }
                 break;
         }
         return state;

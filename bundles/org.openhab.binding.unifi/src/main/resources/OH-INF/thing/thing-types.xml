@@ -150,8 +150,21 @@
 		<description>An access point managed by a UniFi controller</description>
 
 		<channels>
+			<channel id="online" typeId="devOnline"/>
 			<channel id="enable" typeId="apEnable"/>
+			<channel id="state" typeId="devState"/>
+			<channel id="name" typeId="devName"/>
+			<channel id="site" typeId="site"/>
+			<channel id="macAddress" typeId="devMacAddress"/>
+			<channel id="ipAddress" typeId="devIpAddress"/>
+			<channel id="uptime" typeId="devUptime"/>
+			<channel id="lastSeen" typeId="devLastSeen"/>
+			<channel id="experience" typeId="devExperience"/>
 		</channels>
+
+		<properties>
+			<property name="vendor">Ubiquiti Networks</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:unifi:accessPoint"/>
 	</thing-type>
@@ -440,6 +453,77 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the access point is enabled</description>
+	</channel-type>
+
+	<channel-type id="devOnline">
+		<item-type>Switch</item-type>
+		<label>Online</label>
+		<description>Online status of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devState">
+		<item-type>String</item-type>
+		<label>Device State</label>
+		<description>The state of the device</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Offline</option>
+				<option value="1">Connected</option>
+				<option value="2">Pending Adoption</option>
+				<option value="4">Updating</option>
+				<option value="5">Provisioning</option>
+				<option value="6">Unreachable</option>
+				<option value="7">Adopting</option>
+				<option value="9">Adoption Error</option>
+				<option value="10">Adoption Failed</option>
+				<option value="11">Isolated</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="devName">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devMacAddress">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC address of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devIpAddress">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP address of the device</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devUptime">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>Uptime of the device (in seconds)</description>
+		<category>Time</category>
+		<state pattern="%.0f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devLastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Timestamp of when the device was last seen</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="devExperience">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Experience</label>
+		<description>The average experience of the connected clients</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
