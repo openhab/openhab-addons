@@ -45,6 +45,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -165,6 +166,43 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         assertThat(stateChannel.getState().getStateTopic(), is(stateTopic));
         assertThat(stateChannel.getState().getCommandTopic(), is(commandTopic));
         assertThat(stateChannel.getState().getCache(), is(instanceOf(valueClass)));
+    }
+
+    /**
+     * Assert channel topics, label and value class
+     *
+     * @param component component
+     * @param channelId channel
+     * @param stateTopic state topic or empty string
+     * @param commandTopic command topic or empty string
+     * @param label label
+     * @param valueClass value class
+     * @param autoUpdatePolicy Auto Update Policy
+     */
+    protected static void assertChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String stateTopic, String commandTopic, String label, Class<? extends Value> valueClass,
+            @Nullable AutoUpdatePolicy autoUpdatePolicy) {
+        var stateChannel = Objects.requireNonNull(component.getChannel(channelId));
+        assertChannel(stateChannel, stateTopic, commandTopic, label, valueClass);
+    }
+
+    /**
+     * Assert channel topics, label and value class
+     *
+     * @param stateChannel channel
+     * @param stateTopic state topic or empty string
+     * @param commandTopic command topic or empty string
+     * @param label label
+     * @param valueClass value class
+     * @param autoUpdatePolicy Auto Update Policy
+     */
+    protected static void assertChannel(ComponentChannel stateChannel, String stateTopic, String commandTopic,
+            String label, Class<? extends Value> valueClass, @Nullable AutoUpdatePolicy autoUpdatePolicy) {
+        assertThat(stateChannel.getChannel().getLabel(), is(label));
+        assertThat(stateChannel.getState().getStateTopic(), is(stateTopic));
+        assertThat(stateChannel.getState().getCommandTopic(), is(commandTopic));
+        assertThat(stateChannel.getState().getCache(), is(instanceOf(valueClass)));
+        assertThat(stateChannel.getChannel().getAutoUpdatePolicy(), is(autoUpdatePolicy));
     }
 
     /**

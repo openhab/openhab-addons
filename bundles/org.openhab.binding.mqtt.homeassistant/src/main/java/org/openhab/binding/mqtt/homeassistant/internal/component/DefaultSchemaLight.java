@@ -29,6 +29,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -60,13 +61,14 @@ public class DefaultSchemaLight extends Light {
 
     @Override
     protected void buildChannels() {
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         ComponentChannel localOnOffChannel;
         localOnOffChannel = onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue,
                 "On/Off State", this)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
-                .commandFilter(this::handleRawOnOffCommand).build(false);
+                .withAutoUpdatePolicy(autoUpdatePolicy).commandFilter(this::handleRawOnOffCommand).build(false);
 
         @Nullable
         ComponentChannel localBrightnessChannel = null;
@@ -76,7 +78,8 @@ public class DefaultSchemaLight extends Light {
                     .stateTopic(channelConfiguration.brightnessStateTopic, channelConfiguration.brightnessValueTemplate)
                     .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
+                    .withAutoUpdatePolicy(autoUpdatePolicy).withFormat("%.0f")
+                    .commandFilter(this::handleBrightnessCommand).build(false);
         }
 
         if (channelConfiguration.whiteCommandTopic != null) {
@@ -84,14 +87,14 @@ public class DefaultSchemaLight extends Light {
                     "Go directly to white of a specific brightness", this)
                     .commandTopic(channelConfiguration.whiteCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .isAdvanced(true).build();
+                    .withAutoUpdatePolicy(autoUpdatePolicy).isAdvanced(true).build();
         }
 
         if (channelConfiguration.colorModeStateTopic != null) {
             buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "Current color mode",
                     this)
                     .stateTopic(channelConfiguration.colorModeStateTopic, channelConfiguration.colorModeValueTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.colorTempStateTopic != null || channelConfiguration.colorTempCommandTopic != null) {
@@ -99,7 +102,7 @@ public class DefaultSchemaLight extends Light {
                     .stateTopic(channelConfiguration.colorTempStateTopic, channelConfiguration.colorTempValueTemplate)
                     .commandTopic(channelConfiguration.colorTempCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (effectValue != null
@@ -109,7 +112,7 @@ public class DefaultSchemaLight extends Light {
                     .stateTopic(channelConfiguration.effectStateTopic, channelConfiguration.effectValueTemplate)
                     .commandTopic(channelConfiguration.effectCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         boolean hasColorChannel = false;
@@ -170,7 +173,7 @@ public class DefaultSchemaLight extends Light {
             }
             colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                    .commandFilter(this::handleColorCommand).build();
+                    .commandFilter(this::handleColorCommand).withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (localBrightnessChannel != null) {
             hiddenChannels.add(localOnOffChannel);
             channels.put(BRIGHTNESS_CHANNEL_ID, localBrightnessChannel);

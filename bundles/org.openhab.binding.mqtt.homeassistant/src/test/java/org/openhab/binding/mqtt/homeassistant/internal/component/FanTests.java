@@ -27,6 +27,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -72,7 +73,7 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.getName(), is("fan"));
 
         assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
-                "On/Off State", OnOffValue.class);
+                "On/Off State", OnOffValue.class, null);
 
         publishMessage("zigbee2mqtt/fan/state", "ON_");
         assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
@@ -87,6 +88,117 @@ public class FanTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/fan/set/state", "OFF_");
         component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/fan/set/state", "ON_");
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testInferredOptimistic() throws InterruptedException {
+        // @formatter:off
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Fans inc", \
+                    "model": "Fan", \
+                    "name": "FanBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "fan", \
+                  "payload_off": "OFF_", \
+                  "payload_on": "ON_", \
+                  "command_topic": "zigbee2mqtt/fan/set/state"
+                }\
+                """);
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("fan"));
+
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/fan/set/state", "On/Off State",
+                OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testForcedOptimistic() throws InterruptedException {
+        // @formatter:off
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Fans inc", \
+                    "model": "Fan", \
+                    "name": "FanBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "fan", \
+                  "payload_off": "OFF_", \
+                  "payload_on": "ON_", \
+                  "state_topic": "zigbee2mqtt/fan/state", \
+                  "command_topic": "zigbee2mqtt/fan/set/state", \
+                  "optimistic": true \
+                }\
+                """);
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("fan"));
+
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
+                "On/Off State", OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testInferredOptimisticWithPosition() throws InterruptedException {
+        // @formatter:off
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Fans inc", \
+                    "model": "Fan", \
+                    "name": "FanBlower", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "fan", \
+                  "payload_off": "OFF_", \
+                  "payload_on": "ON_", \
+                  "command_topic": "zigbee2mqtt/fan/set/state", \
+                  "percentage_command_topic": "bedroom_fan/speed/percentage" \
+                }\
+                """);
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("fan"));
+
+        assertChannel(component, Fan.SPEED_CHANNEL_ID, "", "bedroom_fan/speed/percentage", "Speed",
+                PercentageValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
     @SuppressWarnings("null")

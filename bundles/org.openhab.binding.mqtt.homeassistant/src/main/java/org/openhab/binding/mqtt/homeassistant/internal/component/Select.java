@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -58,13 +57,6 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
     public Select(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
-
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Select does not support forced optimistic mode");
-        }
-
         TextValue value = new TextValue(channelConfiguration.options);
 
         buildChannel(SELECT_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
@@ -72,7 +64,7 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .build();
+                .inferOptimistic(channelConfiguration.optimistic).build();
         finalizeChannels();
     }
 }
