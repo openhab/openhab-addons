@@ -123,7 +123,7 @@ public class GardenaDeviceDiscoveryService extends AbstractThingHandlerDiscovery
             } catch (CancellationException ex) {
                 // ignore
             } catch (Exception ex) {
-                logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
+                logger.warn("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
             }
         }
     }
