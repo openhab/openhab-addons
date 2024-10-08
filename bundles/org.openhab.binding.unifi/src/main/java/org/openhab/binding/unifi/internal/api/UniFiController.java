@@ -281,7 +281,6 @@ public class UniFiController {
             } else {
                 login();
                 result = (T) executeRequest(request);
-                logout();
             }
         } catch (final UniFiNotAuthorizedException e) {
             logger.warn("Not Authorized! Please make sure your controller credentials have administrator rights");
