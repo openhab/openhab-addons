@@ -93,6 +93,7 @@ public class UniFiDevice implements HasId {
 
     public String getSerial() {
         return serial;
+    }
 
     public Integer getExperience() {
         return experience;
