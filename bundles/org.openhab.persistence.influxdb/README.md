@@ -46,7 +46,7 @@ Attention: The file-based configuration overrides the UI configuration.
 | user            | openhab               | No       | name of the database user, e.g. `openhab`                                                                                                                 |
 | password        |                       | No(\*)   | password of the database user you choose                                                                                                                  |
 | token           |                       | No(\*)   | token to authenticate the database (only for V2) [Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
-| db              | openHAB               | No       | name of the database for V1 and name of the organization for V2                                                                                           |
+| db              | openhab               | No       | name of the database for V1 and name of the organization for V2                                                                                           |
 | retentionPolicy | autogen               | No       | name of the retention policy for V1 and name of the bucket for V2                                                                                         |
 
 (\*) For 1.X version you must provide user and password, for 2.X you can use user and password or a token. That means
