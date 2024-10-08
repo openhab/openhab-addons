@@ -500,17 +500,17 @@ public class OnvifConnection {
         String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
         String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
         String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d'T'H:m:s");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             String time = year + "-" + month + "-" + day + "T" + hour + ":" + minute + ":" + second;
             Date cameraUTC = dateFormat.parse(time);
-            int timeOffset = cameraUTC.compareTo(openHABTime);
+            long timeOffset = cameraUTC.getTime() - openHABTime.getTime();
             logger.debug("Camera  UTC dateTime is: {} openHAB time is {} time is offset by {}ms",
                     dateFormat.format(cameraUTC.getTime()), dateFormat.format(openHABTime.getTime()), timeOffset);
             if (timeOffset > 5000 || timeOffset < -5000) {
                 logger.warn(
-                        "Onvif time in camera does not match openHAB's time, this can cause authentication issues as ONVIF requires the time to be close to each other");
+                        "ONVIF time in camera does not match openHAB's time, this can cause authentication issues as ONVIF requires the time to be close to each other");
             }
         } catch (ParseException e) {
             logger.debug("Cameras time and date could not be parsed");
