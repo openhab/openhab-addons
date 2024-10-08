@@ -57,6 +57,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
             super("MQTT Fan");
         }
 
+        protected @Nullable Boolean optimistic;
+
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
         @SerializedName("command_template")
@@ -136,6 +138,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+                .inferOptimistic(channelConfiguration.optimistic)
                 .build(channelConfiguration.percentageCommandTopic == null);
 
         rawSpeedState = UnDefType.NULL;
@@ -152,7 +155,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.percentageStateTopic, channelConfiguration.percentageValueTemplate)
                     .commandTopic(channelConfiguration.percentageCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.percentageCommandTemplate)
-                    .commandFilter(this::handlePercentageCommand).build();
+                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(this::handlePercentageCommand)
+                    .build();
         } else {
             primaryChannel = onOffChannel;
             speedChannel = null;
@@ -167,7 +171,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.presetModeStateTopic, channelConfiguration.presetModeValueTemplate)
                     .commandTopic(channelConfiguration.presetModeCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.presetModeCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.oscillationCommandTopic != null) {
@@ -179,7 +183,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                             channelConfiguration.oscillationValueTemplate)
                     .commandTopic(channelConfiguration.oscillationCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.oscillationCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
         if (channelConfiguration.directionCommandTopic != null) {
@@ -189,7 +193,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .stateTopic(channelConfiguration.directionStateTopic, channelConfiguration.directionValueTemplate)
                     .commandTopic(channelConfiguration.directionCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
-                    .build();
+                    .inferOptimistic(channelConfiguration.optimistic).build();
         }
         finalizeChannels();
     }
