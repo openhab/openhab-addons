@@ -758,7 +758,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long chargeDuration = loadpoint.getChargeDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_DURATION);
-        updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(chargeDuration, Units.SECOND));
 
         float chargePower = loadpoint.getChargePower();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_POWER);
@@ -766,7 +766,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
-        updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(chargeRemainingDuration, Units.SECOND));
 
         float chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
@@ -786,7 +786,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long connectedDuration = loadpoint.getConnectedDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CONNECTED_DURATION);
-        updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(connectedDuration, Units.SECOND));
 
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_ENABLED);
