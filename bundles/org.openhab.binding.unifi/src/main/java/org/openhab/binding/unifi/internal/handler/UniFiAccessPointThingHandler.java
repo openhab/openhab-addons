@@ -23,15 +23,9 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_D
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_STATE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_UPTIME;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_MODEL;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_VERSION;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,6 +47,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * An access point managed by the UniFi controller software.
@@ -87,24 +82,7 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     "@text/error.thing.ap.offline.configuration_error");
             return false;
         }
-        if (config.getModel() != null) {
-            this.getThing().setProperty(PROPERTY_MODEL, config.getModel());
-        }
-        if (config.getVersion() != null) {
-            this.getThing().setProperty(PROPERTY_VERSION, config.getVersion());
-        }
         return true;
-    }
-
-    @Override
-    protected Map<String, String> updateProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
-        UniFiDevice device = getEntity();
-        if (device != null) {
-            Optional.ofNullable(device.getModel()).ifPresent(v -> properties.put(PROPERTY_MODEL, v));
-            Optional.ofNullable(device.getVersion()).ifPresent(v -> properties.put(PROPERTY_VERSION, v));
-        }
-        return properties;
     }
 
     @Override
