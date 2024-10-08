@@ -1561,6 +1561,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case ONVIF_THING:
                 onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
+                if (onvifCamera.pullMessageRequests.intValue() == 0) {
+                    logger.info("The alarm stream was not running for ONVIF camera {}, re-starting it now",
+                            cameraConfig.getIp());
+                    onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
+                }
                 break;
             case INSTAR_THING:
                 checkCameraConnection();

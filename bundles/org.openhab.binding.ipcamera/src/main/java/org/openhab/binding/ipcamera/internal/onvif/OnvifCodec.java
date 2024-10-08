@@ -14,6 +14,7 @@ package org.openhab.binding.ipcamera.internal.onvif;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private String incomingMessage = "";
     private OnvifConnection onvifConnection;
+    private RequestType requestType = RequestType.GetStatus;
 
     OnvifCodec(OnvifConnection onvifConnection) {
         this.onvifConnection = onvifConnection;
@@ -56,7 +58,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
                 incomingMessage += content.content().toString(CharsetUtil.UTF_8);
             }
             if (msg instanceof LastHttpContent) {
-                onvifConnection.processReply(incomingMessage);
+                onvifConnection.processReply(requestType, incomingMessage);
                 ctx.close();
             }
         } finally {
@@ -86,5 +88,23 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         logger.debug("Exception on ONVIF connection: {}", cause.getMessage());
         ctx.close();
+    }
+
+    @Override
+    public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
+        if (requestType == RequestType.PullMessages) {
+            onvifConnection.pullMessageRequests.decrementAndGet();
+        }
+    }
+
+    public void setRequestType(RequestType requestType) {
+        this.requestType = requestType;
+        if (requestType == RequestType.PullMessages) {
+            onvifConnection.pullMessageRequests.incrementAndGet();
+        }
+    }
+
+    public RequestType getRequestType() {
+        return requestType;
     }
 }

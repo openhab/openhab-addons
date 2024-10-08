@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -31,6 +32,7 @@ import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -137,6 +139,7 @@ public class OnvifConnection {
     private boolean supportsEvents = false; // camera has replied that it can do events
     // Use/skip events even if camera support them. API cameras skip, as their own methods give better results.
     private boolean usingEvents = false;
+    public AtomicInteger pullMessageRequests = new AtomicInteger();
 
     // These hold the cameras PTZ position in the range that the camera uses, ie
     // mine is -1 to +1
@@ -307,87 +310,102 @@ public class OnvifConnection {
         return "notfound";
     }
 
-    public void processReply(String message) {
-        logger.trace("ONVIF reply is: {}", message);
-        if (message.contains("PullMessagesResponse")) {
-            eventRecieved(message);
-            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
-        } else if (message.contains("RenewResponse")) {
-        } else if (message.contains("GetSystemDateAndTimeResponse")) {// 1st to be sent.
-            setIsConnected(true);// Instar profile T only cameras need this
-            parseDateAndTime(message);
-            logger.debug("openHAB UTC dateTime is: {}", getUTCdateTime());
-        } else if (message.contains("GetCapabilitiesResponse")) {// 2nd to be sent.
-            parseXAddr(message);
-            sendOnvifRequest(RequestType.GetProfiles, mediaXAddr);
-        } else if (message.contains("GetProfilesResponse")) {// 3rd to be sent.
-            setIsConnected(true);
-            parseProfiles(message);
-            sendOnvifRequest(RequestType.GetSnapshotUri, mediaXAddr);
-            sendOnvifRequest(RequestType.GetStreamUri, mediaXAddr);
-            if (ptzDevice) {
-                sendPTZRequest(RequestType.GetNodes);
-            }
-            if (usingEvents) {// stops API cameras from getting sent ONVIF events.
-                sendOnvifRequest(RequestType.GetEventProperties, eventXAddr);
-                sendOnvifRequest(RequestType.GetServiceCapabilities, eventXAddr);
-            }
-        } else if (message.contains("GetServiceCapabilitiesResponse")) {
-            if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
-                sendOnvifRequest(RequestType.Subscribe, eventXAddr);
-            }
-        } else if (message.contains("GetEventPropertiesResponse")) {
-            sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
-        } else if (message.contains("CreatePullPointSubscriptionResponse")) {
-            supportsEvents = true;
-            subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
-            int start = message.indexOf("<dom0:SubscriptionId");
-            int end = message.indexOf("</dom0:SubscriptionId>");
-            if (start > -1 && end > start) {
-                subscriptionId = message.substring(start, end + 22);
-            }
-            logger.debug("subscriptionXAddr={} subscriptionId={}", subscriptionXAddr, subscriptionId);
-            sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
-        } else if (message.contains("GetStatusResponse")) {
-            processPTZLocation(message);
-        } else if (message.contains("GetPresetsResponse")) {
-            parsePresets(message);
-        } else if (message.contains("GetConfigurationsResponse")) {
-            sendPTZRequest(RequestType.GetPresets);
-            ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
-            logger.debug("ptzConfigToken={}", ptzConfigToken);
-            sendPTZRequest(RequestType.GetConfigurationOptions);
-        } else if (message.contains("GetNodesResponse")) {
-            sendPTZRequest(RequestType.GetStatus);
-            ptzNodeToken = Helper.fetchXML(message, "", "token=\"");
-            logger.debug("ptzNodeToken={}", ptzNodeToken);
-            sendPTZRequest(RequestType.GetConfigurations);
-        } else if (message.contains("GetDeviceInformationResponse")) {
-            logger.debug("GetDeviceInformationResponse received");
-        } else if (message.contains("GetSnapshotUriResponse")) {
-            String url = Helper.fetchXML(message, ":MediaUri", ":Uri");
-            if (!url.isBlank()) {
-                logger.debug("GetSnapshotUri: {}", url);
-                if (ipCameraHandler.snapshotUri.isEmpty()
-                        && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
-                    ipCameraHandler.snapshotUri = ipCameraHandler.getCorrectUrlFormat(url);
-                    if (ipCameraHandler.getPortFromShortenedUrl(url) != ipCameraHandler.cameraConfig.getPort()) {
-                        logger.warn("ONVIF is reporting the snapshot does not match the things configured port of:{}",
-                                ipCameraHandler.cameraConfig.getPort());
+    public void processReply(RequestType requestType, String message) {
+        logger.trace("ONVIF {} reply is: {}", requestType, message);
+        switch (requestType) {
+            case CreatePullPointSubscription:
+                supportsEvents = true;
+                subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
+                int start = message.indexOf("<dom0:SubscriptionId");
+                int end = message.indexOf("</dom0:SubscriptionId>");
+                if (start > -1 && end > start) {
+                    subscriptionId = message.substring(start, end + 22);
+                }
+                logger.debug("subscriptionXAddr={} subscriptionId={}", subscriptionXAddr, subscriptionId);
+                sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+                break;
+            case GetCapabilities:
+                parseXAddr(message);
+                sendOnvifRequest(RequestType.GetProfiles, mediaXAddr);
+                break;
+            case GetDeviceInformation:
+                break;
+            case GetProfiles:
+                setIsConnected(true);
+                parseProfiles(message);
+                sendOnvifRequest(RequestType.GetSnapshotUri, mediaXAddr);
+                sendOnvifRequest(RequestType.GetStreamUri, mediaXAddr);
+                if (ptzDevice) {
+                    sendPTZRequest(RequestType.GetNodes);
+                }
+                if (usingEvents) {// stops API cameras from getting sent ONVIF events.
+                    sendOnvifRequest(RequestType.GetEventProperties, eventXAddr);
+                    sendOnvifRequest(RequestType.GetServiceCapabilities, eventXAddr);
+                }
+                break;
+            case GetServiceCapabilities:
+                if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
+                    sendOnvifRequest(RequestType.Subscribe, eventXAddr);
+                }
+                break;
+            case GetSnapshotUri:
+                String url = Helper.fetchXML(message, ":MediaUri", ":Uri");
+                if (!url.isBlank()) {
+                    logger.debug("GetSnapshotUri: {}", url);
+                    if (ipCameraHandler.snapshotUri.isEmpty()
+                            && !"ffmpeg".equals(ipCameraHandler.cameraConfig.getSnapshotUrl())) {
+                        ipCameraHandler.snapshotUri = ipCameraHandler.getCorrectUrlFormat(url);
+                        if (ipCameraHandler.getPortFromShortenedUrl(url) != ipCameraHandler.cameraConfig.getPort()) {
+                            logger.warn(
+                                    "ONVIF is reporting the snapshot does not match the things configured port of:{}",
+                                    ipCameraHandler.cameraConfig.getPort());
+                        }
                     }
                 }
-            }
-        } else if (message.contains("GetStreamUriResponse")) {
-            String xml = StringUtils.unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
-            if (xml != null) {
-                rtspUri = xml;
-                logger.debug("GetStreamUri: {}", rtspUri);
-                if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
-                    ipCameraHandler.rtspUri = rtspUri;
+                break;
+            case GetStreamUri:
+                String xml = StringUtils.unEscapeXml(Helper.fetchXML(message, ":MediaUri", ":Uri>"));
+                if (xml != null) {
+                    rtspUri = xml;
+                    logger.debug("GetStreamUri: {}", rtspUri);
+                    if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                        ipCameraHandler.rtspUri = rtspUri;
+                    }
                 }
-            }
-        } else {
-            logger.trace("Unhandled ONVIF reply is: {}", message);
+                break;
+            case GetSystemDateAndTime:
+                setIsConnected(true);// Instar profile T only cameras need this
+                parseDateAndTime(message);
+                break;
+            case PullMessages:
+                eventRecieved(message);
+                sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
+                break;
+            case GetEventProperties:
+                sendOnvifRequest(RequestType.CreatePullPointSubscription, eventXAddr);
+                break;
+            case Renew:
+                break;
+            case GetConfiguration:
+                sendPTZRequest(RequestType.GetPresets);
+                ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
+                logger.debug("ptzConfigToken={}", ptzConfigToken);
+                sendPTZRequest(RequestType.GetConfigurationOptions);
+                break;
+            case GetNodes:
+                sendPTZRequest(RequestType.GetStatus);
+                ptzNodeToken = Helper.fetchXML(message, "", "token=\"");
+                logger.debug("ptzNodeToken={}", ptzNodeToken);
+                sendPTZRequest(RequestType.GetConfigurations);
+                break;
+            case GetStatus:
+                processPTZLocation(message);
+                break;
+            case GetPresets:
+                parsePresets(message);
+                break;
+            default:
+                break;
         }
     }
 
@@ -475,13 +493,28 @@ public class OnvifConnection {
     }
 
     private void parseDateAndTime(String message) {
+        Date openHABTime = new Date();
         String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
         String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
         String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
         String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
         String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
         String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
-        logger.debug("Camera  UTC dateTime is: {}-{}-{}T{}:{}:{}", year, month, day, hour, minute, second);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-d'T'H:m:s");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            String time = year + "-" + month + "-" + day + "T" + hour + ":" + minute + ":" + second;
+            Date cameraUTC = dateFormat.parse(time);
+            long timeOffset = cameraUTC.getTime() - openHABTime.getTime();
+            logger.debug("Camera  UTC dateTime is: {} openHAB time is {} time is offset by {}ms",
+                    dateFormat.format(cameraUTC.getTime()), dateFormat.format(openHABTime.getTime()), timeOffset);
+            if (timeOffset > 5000 || timeOffset < -5000) {
+                logger.warn(
+                        "ONVIF time in camera does not match openHAB's time, this can cause authentication issues as ONVIF requires the time to be close to each other");
+            }
+        } catch (ParseException e) {
+            logger.debug("Cameras time and date could not be parsed");
+        }
     }
 
     private String getUTCdateTime() {
@@ -583,7 +616,7 @@ public class OnvifConnection {
                 public void initChannel(SocketChannel socketChannel) throws Exception {
                     socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 0, 18));
                     socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
-                    socketChannel.pipeline().addLast("OnvifCodec", new OnvifCodec(getHandle()));
+                    socketChannel.pipeline().addLast(ONVIF_CODEC, new OnvifCodec(getHandle()));
                 }
             });
             bootstrap = localBootstap;
@@ -591,6 +624,7 @@ public class OnvifConnection {
         if (!mainEventLoopGroup.isShuttingDown()) {
             // Tapo brand have different ports for the event xAddr to the other xAddr, can't use 1 port for all calls.
             localBootstap.connect(new InetSocketAddress(ipAddress, port)).addListener(new ChannelFutureListener() {
+
                 @Override
                 public void operationComplete(@Nullable ChannelFuture future) {
                     if (future == null) {
@@ -598,6 +632,8 @@ public class OnvifConnection {
                     }
                     if (future.isDone() && future.isSuccess()) {
                         Channel ch = future.channel();
+                        OnvifCodec onvifCodec = (OnvifCodec) ch.pipeline().get(ONVIF_CODEC);
+                        onvifCodec.setRequestType(requestType);
                         ch.writeAndFlush(request);
                     } else { // an error occurred
                         if (future.isDone() && !future.isCancelled()) {
