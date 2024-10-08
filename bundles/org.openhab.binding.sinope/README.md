@@ -123,7 +123,7 @@ Number Room_SetPointMode "Room Set Point Mode" { channel="sinope:thermostat:home
 Number Room_HeatLevel "Room Heating level [%d]" <heating> { channel="sinope:thermostat:home:room:heatingLevel" }
 ```
 
-### `d`emo.sitemap` Example
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu"
