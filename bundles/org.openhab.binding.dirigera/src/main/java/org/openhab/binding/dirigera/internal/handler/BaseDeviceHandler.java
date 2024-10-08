@@ -73,16 +73,19 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
                     gateway = gw;
-                    // gateway.forceUpdate
+                    gateway.registerDevice(this);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Bridgehandler isn't a Gateway");
+                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No BridgeHandler found");
+                return;
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No Bridge found");
+            return;
         }
 
         // check if thing was created by discovery and id is already present
@@ -99,6 +102,14 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
                 }
             }
         }
+        config = getConfigAs(BaseDeviceConfiguration.class);
+        if (!config.id.isBlank()) {
+            gateway().registerDevice(this);
+        }
+    }
+
+    @Override
+    public void dispose() {
     }
 
     public Gateway gateway() {

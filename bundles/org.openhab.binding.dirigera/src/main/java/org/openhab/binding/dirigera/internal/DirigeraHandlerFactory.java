@@ -17,6 +17,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
@@ -47,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandlerFactory.class);
     private final DirigeraDiscoveryManager discoveryManager;
-    private final NetworkAddressService networkService;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
 
@@ -55,11 +55,12 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     public DirigeraHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
             final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager) {
         this.discoveryManager = manager;
-        this.networkService = networkService;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
-        this.insecureClient.setUserAgentField(null);
+        insecureClient.setUserAgentField(null);
         try {
             this.insecureClient.start();
+            // from https://github.com/jetty-project/jetty-reactive-httpclient/issues/33#issuecomment-777771465
+            insecureClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
         } catch (Exception e) {
             // catching exception is necessary due to the signature of HttpClient.start()
             logger.warn("Failed to start http client: {}", e.getMessage());
@@ -77,30 +78,23 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        boolean isSupported = SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        // logger.warn("Request for {} is suppoerted {}", thingTypeUID, isSupported);
+        return isSupported;
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        logger.info("create thing {} e.g type {} equals {}", thingTypeUID, THING_TYPE_GATEWAY,
+                THING_TYPE_GATEWAY.equals(thingTypeUID));
 
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager);
+        } else {
+            logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
         }
 
         return null;
-    }
-
-    public HttpClient getHttpClient() {
-        return insecureClient;
-    }
-
-    public String getIpAddress() {
-        String ipAddress = networkService.getPrimaryIpv4HostAddress();
-        if (ipAddress == null) {
-            return PROPERTY_EMPTY;
-        } else {
-            return ipAddress;
-        }
     }
 }

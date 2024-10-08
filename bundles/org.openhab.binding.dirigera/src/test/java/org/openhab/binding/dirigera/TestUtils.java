@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.dirigera;
 
+import static org.openhab.binding.dirigera.internal.Constants.BINDING_ID;
+
 import org.junit.jupiter.api.Test;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * {@link TestUtils} some basic tests
@@ -26,5 +29,11 @@ class TestUtils {
         String ip = "1.2.3.4";
         int splitIndex = ip.lastIndexOf(".") + 1;
         System.out.println(ip.substring(0, splitIndex));
+    }
+
+    @Test
+    void testThingsTypeUID() {
+        ThingTypeUID ttUID = new ThingTypeUID(BINDING_ID, "gateway");
+        System.out.println(ttUID);
     }
 }

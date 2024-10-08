@@ -17,11 +17,13 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,22 +48,25 @@ public class DirigeraDiscoveryRunnable implements Runnable {
 
     @Override
     public void run() {
-        String oauthUrl = String.format(OAUTH_URL, ipAddress);
+        String homeUrl = String.format(HOME_URL, ipAddress);
         // logger.info("DIRIGERA DISCOVERY check {}", ipAddress);
         ContentResponse response;
         try {
-            response = httpClient.GET(oauthUrl);
-            if (response.getStatus() == 200) {
+            response = httpClient.newRequest(homeUrl).header(HttpHeader.WWW_AUTHENTICATE, "Basic")
+                    .timeout(5, TimeUnit.SECONDS).send();
+            // status shall be unauthorized, not anything else
+            // logger.info("DIRIGERA DISCOVERY check {} responded {}", ipAddress, response.getStatus());
+            if (response.getStatus() == 401) {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PROPERTY_IP_ADDRESS, ipAddress);
-                logger.info("DIRIGERA DISCOVERY possible candidate {}", oauthUrl);
+                logger.info("DIRIGERA DISCOVERY possible candidate {}", homeUrl);
                 discovery.gatewayDiscovered(ipAddress, properties);
                 return;
             } else {
                 // logger.info("DIRIGERA DISCOVERY discard candidate {}", ipAddress);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            // logger.info("DIRIGERA DISCOVERY discard candidate {}", ipAddress);
+            // logger.info("DIRIGERA DISCOVERY discard candidate {} {}", ipAddress, e.getMessage());
         }
     }
 }
