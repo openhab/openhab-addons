@@ -225,6 +225,18 @@ public class ComponentChannel {
             return this;
         }
 
+        // If the component explicitly specifies optimistic, or it's missing a state topic
+        // put it in optimistic mode (which, in openHAB parlance, means to auto-update the
+        // item).
+        public Builder inferOptimistic(@Nullable Boolean optimistic) {
+            String localStateTopic = stateTopic;
+            if (optimistic == null && (localStateTopic == null || localStateTopic.isBlank())
+                    || optimistic != null && optimistic == true) {
+                this.autoUpdatePolicy = AutoUpdatePolicy.RECOMMEND;
+            }
+            return this;
+        }
+
         public ComponentChannel build() {
             return build(true);
         }
