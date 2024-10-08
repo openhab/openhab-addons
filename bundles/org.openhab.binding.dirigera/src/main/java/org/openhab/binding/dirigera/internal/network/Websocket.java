@@ -30,7 +30,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
+import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 @NonNullByDefault
 public class Websocket {
-    private static final int CONNECT_TIMEOUT_MS = 14 * 60 * 1000;
     private static String STARTS = "starts";
     private static String STOPS = "stops";
     private static String DISCONNECTS = "disconnetcs";
@@ -53,27 +52,32 @@ public class Websocket {
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private Optional<WebSocketClient> websocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();
-    private DirigeraConfiguration config;
-    private HttpClient httpClient;
     private JSONObject statistics = new JSONObject();
+    private HttpClient httpClient;
+    private Gateway gateway;
+    private boolean disposed = false;
 
-    public Websocket(HttpClient httpClient, DirigeraConfiguration config) {
+    public Websocket(Gateway gateway, HttpClient httpClient) {
+        this.gateway = gateway;
         this.httpClient = httpClient;
-        this.config = config;
     }
 
     public void start() {
+        if (disposed) {
+            logger.trace("DIRIGERA Websocket start rejected, disposed {}", disposed);
+            return;
+        }
         increase(STARTS);
-        stop();
+        internalStop(); // don't count this internal stopping
         try {
             WebSocketClient client = new WebSocketClient(httpClient);
-            client.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
-            client.setStopTimeout(CONNECT_TIMEOUT_MS);
+            client.setMaxIdleTimeout(0);
+            // client.setStopTimeout(CONNECT_TIMEOUT_MS);
 
             ClientUpgradeRequest request = new ClientUpgradeRequest();
-            request.setHeader("Authorization", "Bearer " + config.token);
+            request.setHeader("Authorization", "Bearer " + gateway.getToken());
 
-            String websocketURL = String.format(WS_URL, config.ipAddress);
+            String websocketURL = String.format(WS_URL, gateway.getIpAddress());
             logger.trace("DIRIGERA Websocket start {}", websocketURL);
             websocketClient = Optional.of(client);
             client.start();
@@ -86,6 +90,10 @@ public class Websocket {
 
     public void stop() {
         increase(STOPS);
+        internalStop();
+    }
+
+    private void internalStop() {
         websocketClient.ifPresent(client -> {
             try {
                 logger.info("DIRIGERA stop socket before start");
@@ -97,6 +105,11 @@ public class Websocket {
         });
         websocketClient = Optional.empty();
         this.session = Optional.empty();
+    }
+
+    public void dispose() {
+        internalStop();
+        disposed = true;
     }
 
     public void ping() {

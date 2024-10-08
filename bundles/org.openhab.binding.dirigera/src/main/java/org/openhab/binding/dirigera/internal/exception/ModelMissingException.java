@@ -10,23 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.config;
+package org.openhab.binding.dirigera.internal.exception;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DirigeraConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ModelMissingException} Exception if no gateway is available
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class DirigeraConfiguration extends BaseDeviceConfiguration {
+public class ModelMissingException extends RuntimeException {
 
-    public String ipAddress = "";
-    // public String token = "";
+    private static final long serialVersionUID = 5184571486237890053L;
 
-    @Override
-    public String toString() {
-        return "IP: " + ipAddress + ", ID: " + id;
+    public ModelMissingException(String message) {
+        super(message);
     }
 }

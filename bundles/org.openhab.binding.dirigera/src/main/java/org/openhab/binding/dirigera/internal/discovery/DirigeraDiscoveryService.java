@@ -45,7 +45,7 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public DirigeraDiscoveryService(final @Reference DirigeraDiscoveryManager manager) {
-        super(DISCOVERABLE_DEVICE_TYPE_UIDS, 60, true);
+        super(DISCOVERABLE_DEVICE_TYPE_UIDS, 90, true);
         dirigeraDiscoveryManager = manager;
         dirigeraDiscoveryManager.setDiscoverService(this);
         logger.info("DIRIGERA DISCOVERY constructor");
@@ -81,14 +81,7 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        logger.info("DIRIGERA DISCOVERY don't search for gateway - ip is blank");
+        logger.info("DIRIGERA DISCOVERY searching manually for gateways");
+        dirigeraDiscoveryManager.scanForHub();
     }
-
-    // @Override
-    // protected void startBackgroundDiscovery() {
-    // if (dirigeraDiscoveryManager.isInitialized()) {
-    // scanForHub();
-    // }
-    // }
-    //
 }
