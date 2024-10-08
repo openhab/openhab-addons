@@ -19,6 +19,12 @@ import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SID;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_SITE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WID;
+<<<<<<< Updated upstream
+=======
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PARAMETER_WIFI_NAME;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_MODEL;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.PROPERTY_VERSION;
+>>>>>>> Stashed changes
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -134,7 +140,8 @@ public class UniFiThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                 final var thingTypeUID = UniFiBindingConstants.THING_TYPE_ACCESS_POINT;
                 final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, stripIdShort(ud.getId()));
                 final Map<String, Object> properties = Map.of(PARAMETER_SITE, ud.getSite().getName(),
-                        PARAMETER_MAC_ADDRESS, ud.getMac());
+                        PARAMETER_MAC_ADDRESS, ud.getMac(), PROPERTY_MODEL, ud.getModel(), PROPERTY_VERSION,
+                        ud.getVersion());
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                         .withBridge(bridgeUID).withRepresentationProperty(PARAMETER_MAC_ADDRESS).withTTL(TTL_SECONDS)
                         .withProperties(properties).withLabel(ud.getName()).build());

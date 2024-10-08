@@ -28,6 +28,10 @@ public class UniFiAccessPointThingConfig {
 
     private String site = "";
 
+    private String model = "";
+
+    private String version = "";
+
     public String getSite() {
         return site;
     }
@@ -35,6 +39,24 @@ public class UniFiAccessPointThingConfig {
     private void setSite(final String site) {
         // method to avoid ide auto format mark the field as final
         this.site = site;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        // method to avoid ide auto format mark the field as final
+        this.model = model;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        // method to avoid ide auto format mark the field as final
+        this.version = version;
     }
 
     public String getMacAddress() {

@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -132,7 +135,6 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
             final @Nullable E entity = getEntity();
 
             getThing().getChannels().forEach(channel -> updateState(entity, channel.getUID()));
-
             updateProperties(entity);
         }
     }
@@ -165,6 +167,16 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
      */
     protected State getDefaultState(final String channelId) {
         return UnDefType.UNDEF;
+    }
+
+    /**
+     * Returns a map of properties for this entity. Returns an empty map by default but can be overridden if required
+     *
+     * @param entity UniFi entity object to get the property information from.
+     */
+    protected Map<String, String> getProperties() {
+        Map<String, String> properties = Collections.emptyMap();
+        return properties;
     }
 
     /**
