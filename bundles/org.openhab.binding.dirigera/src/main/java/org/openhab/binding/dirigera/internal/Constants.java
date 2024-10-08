@@ -28,16 +28,18 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class Constants {
-
     public static final String BINDING_ID = "dirigera";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
+    public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
+    public static final ThingTypeUID THING_TYPE_LIGHT_COLOR = new ThingTypeUID(BINDING_ID, "light-color");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
+            THING_TYPE_LIGHT_COLOR);
 
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY, THING_TYPE_LIGHT_COLOR).collect(Collectors.toSet()));
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -52,6 +54,10 @@ public class Constants {
     public static final String PROPERTY_DEVICE_TYPE = "type";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_EMPTY = "";
+    public static final String PROPERTY_LIGHT = "light";
+    public static final String PROPERTY_ATTRIBUTES = "attributes";
+
+    public static final String ATTRIBUTE_COLOR_MODE = "colorMode";
 
     public static final String DEVICE_TYPE_GATEWAY = "gateway";
 

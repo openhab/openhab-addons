@@ -25,7 +25,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
+import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,24 +40,24 @@ public class RestAPI {
 
     private final Logger logger = LoggerFactory.getLogger(RestAPI.class);
     private HttpClient httpClient;
-    private DirigeraConfiguration config;
+    private Gateway gateway;
 
-    public RestAPI(HttpClient httpClient, DirigeraConfiguration config) {
+    public RestAPI(HttpClient httpClient, Gateway gateway) {
         this.httpClient = httpClient;
-        this.config = config;
+        this.gateway = gateway;
     }
 
     private Request addAuthorizationHeader(Request sourceRequest) {
-        if (!config.token.isBlank()) {
-            return sourceRequest.header(HttpHeader.AUTHORIZATION, "Bearer " + config.token);
+        if (!gateway.getToken().isBlank()) {
+            return sourceRequest.header(HttpHeader.AUTHORIZATION, "Bearer " + gateway.getToken());
         } else {
-            logger.warn("DIRIGERA Cannot operate with token {}", config.token);
+            logger.warn("DIRIGERA Cannot operate with token {}", gateway.getToken());
             return sourceRequest;
         }
     }
 
     public JSONObject readHome() {
-        String url = String.format(HOME_URL, config.ipAddress);
+        String url = String.format(HOME_URL, gateway.getIpAddress());
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -71,7 +71,7 @@ public class RestAPI {
     }
 
     public JSONObject readDevice(String deviceId) {
-        String url = String.format(DEVICE_URL, config.ipAddress, deviceId);
+        String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();

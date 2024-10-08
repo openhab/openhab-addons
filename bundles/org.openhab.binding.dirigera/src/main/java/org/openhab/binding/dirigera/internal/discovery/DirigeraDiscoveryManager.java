@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,13 +56,13 @@ public class DirigeraDiscoveryManager {
         logger.info("DIRIGERA Manager received {}", ipAddress);
         insecureClient = httpClient;
         this.ipAddress = ipAddress;
-        scanForHub();
+        // scanForHub();
     }
 
     public void setDiscoverService(DirigeraDiscoveryService discoveryService) {
         logger.info("DIRIGERA DiscoveryService registered");
         this.discoveryService = discoveryService;
-        scanForHub();
+        // scanForHub();
     }
 
     public void scanForHub() {
@@ -75,35 +76,42 @@ public class DirigeraDiscoveryManager {
             if (!currentIpAddress.isBlank()) {
                 int splitIndex = currentIpAddress.lastIndexOf(".") + 1;
                 String ipPart = currentIpAddress.substring(0, splitIndex);
-                for (int i = 1; i < 50; i++) {
+                ScheduledFuture future = null;
+                for (int i = 1; i < 256; i++) {
                     String investigateIp = ipPart + i;
                     if (!foundGatewayAddresses.contains(investigateIp)) {
                         DirigeraDiscoveryRunnable investigator = new DirigeraDiscoveryRunnable(currentDiscoveryService,
                                 investigateIp, currentInsecureClient);
-                        scheduler.schedule(investigator, 0, TimeUnit.SECONDS);
+                        future = scheduler.schedule(investigator, 0, TimeUnit.SECONDS);
                     } else {
                         logger.info("DIRIGERA DISCOVERY IP Address {} already has a Handler instance", investigateIp);
                     }
                 }
-                logger.info("DIRIGERA DISCOVERY wait for termination");
-                try {
-                    scheduler.awaitTermination(5, TimeUnit.MINUTES);
-                } catch (InterruptedException e) {
-                    logger.info("DIRIGERA DISCOVERY wait for termination interrupted");
-                }
+                // logger.info("DIRIGERA DISCOVERY wait for termination");
+                // if (future != null) {
+                // while (!future.isDone()) {
+                // try {
+                // Thread.sleep(1000);
+                // } catch (InterruptedException e) {
+                // logger.info("DIRIGERA DISCOVERY wait for termination interrupted");
+                // }
+                // }
+                // }
                 logger.info("DIRIGERA DISCOVERY scan finished in {} seconds",
                         Duration.between(startTime, Instant.now()).getSeconds());
             } else {
                 logger.info("DIRIGERA DISCOVERY cannot obtain IP address");
             }
+        } else {
+            logger.info("DIRIGERA DISCOVERY not ready yet");
         }
     }
 
-    public void foundGateway(String ipAddress) {
+    public void ignoreGateway(String ipAddress) {
         foundGatewayAddresses.add(ipAddress);
     }
 
-    public void foundDevice(String id) {
+    public void ignoreDevice(String id) {
         foundDeviceIds.add(id);
     }
 }
