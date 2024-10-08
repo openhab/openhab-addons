@@ -246,7 +246,6 @@ The hub device enables the access point, which can be seen by the linked device.
 The binding could then get access to the secondary device using &lt;ub shelly ip&gt;:&lt;special port&gt;.
 A special port on the hub device will be created for every linked device so one hub device could supported multiple linked devices.
 
-
 The binding communicates with the Shelly hub device, which then forwards the request to the secondary device.
 Once the thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
 This means: The primary Shelly has to complete initialization before linked secondary devices are discovered.
@@ -630,7 +629,6 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 _Note:
 You should calibrate the device if you want to use "neutral current" measurements.
 Check the Shelly documentation for details._
-
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
@@ -1343,7 +1341,6 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-
 ### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
@@ -1352,7 +1349,6 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
-
 
 ## Shelly Pro Series
 
@@ -1606,7 +1602,6 @@ There are no additional channels beside the device group.
 Thing shelly:shelly25-roller:XXXXX1 "Shelly 25 Roller XXXXX1" @ "Home Theater" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-roller:XXXXX2 "Shelly 25 Roller XXXXX2" @ "Living Room"  [deviceIp="x.x.x.x", userId="admin", password="secret"]
 
-
 /* Shelly 2.5 Relays */
 Thing shelly:shelly25-relay:XXXXX3 "Shelly 25 Relay XXXXX3" @ "Hall Way" [deviceIp="x.x.x.x", userId="", password=""]
 Thing shelly:shelly25-relay:XXXXX4 "Shelly 25 Relay XXXXX4" @ "Dining Room" [deviceIp="x.x.x.x", userId="", password=""]
@@ -1616,7 +1611,6 @@ Thing shelly:shelly25-relay:XXXXX5 "Shelly 25 Relay XXXXX5" @ "Bed Room" [device
 Thing shelly:shellyht:e01691 "ShellyChimenea" @ "lowerground" [ deviceIp="10.0.55.101", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
 Thing shelly:shellyht:e01681 "ShellyDormitorio" @ "upperground" [ deviceIp="10.0.55.102", userId="", password="", lowBattery=15 , eventsCoIoT=true ]
 Thing shelly:shellyflood:XXXXXX "ShellyFlood" @ "cellar" [ deviceIp="10.0.0.103", userId="", password="", lowBattery=15, eventsSwitch=true, eventsButton=true, eventsCoIoT=true ]
-
 ```
 
 ### shelly.items
@@ -1777,7 +1771,7 @@ then
 end
 ```
 
-#### Reading colors from Color Picker:
+#### Reading Colors from Color Picker
 
 ```java
 import org.openhab.core.library.types.*

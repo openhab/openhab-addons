@@ -167,7 +167,7 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 | `manualModeState` | Switch    | Has manual mode been enabled                 |
 | `deviceLocked`    | Switch    | Are the Smart Plug controls locked           |
 
-#### Known string responses for specific channels:
+#### Known Responses for Specific Channels
 
 | Channel                      | Known responses                                                    |
 |------------------------------|--------------------------------------------------------------------|
@@ -230,8 +230,6 @@ Number BoostRemaining_GF_Living      "Boost Remaining"    <text>   (GF_Living)  
 
 /* Humidity */
 Number:Humidity livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living) ["Humidity"] {channel="draytonwiser:room:HeatHub:livingroom:currentHumidity"}
-
-
 ```
 
 ### Sitemap

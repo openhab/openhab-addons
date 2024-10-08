@@ -15,6 +15,7 @@ There also are nice tools on the web for visualizing InfluxDB time series, such 
 
 Some example entries for an item with the name "speedtest" without any further configuration would look like this:
 
+```
     > Query using Influx DB 2.0 syntax for 1.0 is different
     > from(bucket: "default")
         |> range(start: -30d)
@@ -25,6 +26,7 @@ Some example entries for an item with the name "speedtest" without any further c
     -----               -----     ------
     1558302027124000000 speedtest 123289369.0
     1558332852716000000 speedtest 80423789.0
+```
 
 ## Prerequisites
 
@@ -41,10 +43,10 @@ Attention: The file-based configuration overrides the UI configuration.
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | version         | V1                    | No       | InfluxDB database version V1 for 1.X and V2 for 2.x                                                                                                       |
 | url             | http://127.0.0.1:8086 | No       | database URL                                                                                                                                              |
-| user            | openhab               | No       | name of the database user, e.g. `openhab`                                                                                                                 |
+| user            | openHAB               | No       | name of the database user, e.g. `openhab`                                                                                                                 |
 | password        |                       | No(\*)   | password of the database user you choose                                                                                                                  |
 | token           |                       | No(\*)   | token to authenticate the database (only for V2) [Intructions about how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
-| db              | openhab               | No       | name of the database for V1 and name of the organization for V2                                                                                           |
+| db              | openHAB               | No       | name of the database for V1 and name of the organization for V2                                                                                           |
 | retentionPolicy | autogen               | No       | name of the retention policy for V1 and name of the bucket for V2                                                                                         |
 
 (\*) For 1.X version you must provide user and password, for 2.X you can use user and password or a token. That means
@@ -65,16 +67,14 @@ You can also add additional tags for structuring your data. For example, you can
 
 The item configuration will look like this:
 
-```
-Group:Number:AVG gTempSensors
+```java
+    Group:Number:AVG gTempSensors
 
-Number:Temperature tempLivingRoom (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
-Number:Temperature tempKitchen (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
+    Number:Temperature tempLivingRoom (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
+    Number:Temperature tempKitchen (gTempSensors) { influxdb="temperature" [floor="groundfloor"] }
 
-
-Number:Temperature tempBedRoom (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
-Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
-
+    Number:Temperature tempBedRoom (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
+    Number:Temperature tempBath (gTempSensors) { influxdb="temperature" [floor="firstfloor"] }
 ```
 
 You can also set the `influxdb` metadata using the UI. From each item configuration screen do:
@@ -95,7 +95,7 @@ temperature,item=tempBath,floor=firstfloor
 
 You can now easily select all temperatures of the firstfloor or the average temperature of the groundfloor.
 
-*Warning: Do **not** override the tag `item` within the metadata. This tag is used internally by openHAB and changing it will lead to problems querying the persisted datapoints.*
+*Warning:* Do **not** override the tag `item` within the metadata. This tag is used internally by openHAB and changing it will lead to problems querying the persisted datapoints.
 
 #### Extended automatic tagging
 
