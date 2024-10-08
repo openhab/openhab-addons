@@ -69,7 +69,7 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
     }
 
     public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
@@ -96,6 +96,7 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         buildChannel(SENSOR_CHANNEL_ID, type, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
+        finalizeChannels();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,

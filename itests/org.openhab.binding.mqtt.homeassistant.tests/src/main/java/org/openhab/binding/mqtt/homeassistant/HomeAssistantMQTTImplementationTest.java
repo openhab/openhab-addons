@@ -155,7 +155,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         // and add the types to the channelTypeProvider, like in the real Thing handler.
         final CountDownLatch latch = new CountDownLatch(1);
         ComponentDiscovered cd = (haID, c) -> {
-            haComponents.put(c.getGroupId(), c);
+            haComponents.put(c.getComponentId(), c);
             latch.countDown();
         };
 
@@ -174,11 +174,10 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         assertNull(failure);
         assertThat(haComponents.size(), is(1));
 
-        String channelGroupId = "switch_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId();
+        String componentId = ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId();
         String channelId = Switch.SWITCH_CHANNEL_ID;
 
-        State value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache()
-                .getChannelState();
+        State value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
         assertThat(value, is(UnDefType.UNDEF));
 
         haComponents.values().stream().map(e -> e.start(haConnection, scheduler, 100))
@@ -191,7 +190,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         verify(channelStateUpdateListener, timeout(4000).times(1)).updateChannelState(any(), any());
 
         // Value should be ON now.
-        value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache().getChannelState();
+        value = haComponents.get(componentId).getChannel(channelId).getState().getCache().getChannelState();
         assertThat(value, is(OnOffType.ON));
     }
 }

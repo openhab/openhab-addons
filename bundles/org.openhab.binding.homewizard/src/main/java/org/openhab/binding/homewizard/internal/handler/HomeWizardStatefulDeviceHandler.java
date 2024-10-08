@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import java.io.InputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homewizard.internal.dto.StatePayload;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -31,15 +33,16 @@ import org.openhab.core.thing.ThingStatusDetail;
  * @author Daniël van Os - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardDeviceHandler {
+public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterHandler {
 
     /**
      * Constructor
      *
      * @param thing The thing to handle
+     * @param timeZoneProvider The TimeZoneProvider
      */
-    public HomeWizardStatefulDeviceHandler(Thing thing) {
-        super(thing);
+    public HomeWizardStatefulDeviceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     /**

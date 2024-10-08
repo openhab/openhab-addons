@@ -26,6 +26,7 @@ You can reach it via [https://pushover.net/apps/clone/openHAB](https://pushover.
 | `retry`                 | integer | The retry parameter specifies how often (in seconds) the Pushover servers will send the same emergency-priority notification to the user (default: `300`). **advanced**                                                                                                                                       |
 | `expire`                | integer | The expire parameter specifies how long (in seconds) your emergency-priority notification will continue to be retried (default: `3600`). **advanced**                                                                                                                                                         |
 | `timeout`               | integer | The timeout parameter specifies maximum number of seconds a request to Pushover can take. **advanced**                                                                                                                                                                                                        |
+| `idleTimeout`           | integer | The idle-timeout parameter specifies maximum number of seconds a connection with Pushover can be idle (default: `300`). **advanced**                                                                                                                                                                          |
 
 ## Channels
 
@@ -56,7 +57,7 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendMonospaceMessage(String message, @Nullable String title, @Nullable Duration ttl)` - This method is used to send a monospace message with TTL.
 
-- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` **mandatory**). Additionally you can pass a data URI scheme to this parameter. Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` mandatory). Additionally you can pass a data URI scheme to this parameter. The content of an Image-type item is also accepted (see demo.rules example). Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
 
 - `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType, @Nullable Duration ttl)` - This method is used to send a message with an attachment and TTL. See previous method for details.
 
@@ -74,7 +75,6 @@ For priority `2` only, the action returns a `String` value (the `receipt`) if th
 For other priorities, the action always returns an empty `String`.
 
 - `cancelPriorityMessage(String receipt)` - This method is used to cancel an emergency priority message.
-
 The action returns a `Boolean` value to indicate if the message was cancelled successfully or not.
 
 ## Full Example
@@ -87,11 +87,33 @@ Thing pushover:pushover-account:account [ apikey="APP_TOKEN", user="USER_KEY" ]
 
 demo.rules:
 
+:::: tabs
+
+::: tab DSL
+
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
 // send HTML message
 actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send HTML message
+pushoverActions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB");
+```
+
+:::
+
+::::
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
@@ -102,6 +124,28 @@ actions.sendAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;b
 // in case you want to send the content of an Image Item (RawType)
 actions.sendAttachmentMessage("Hello World!", "openHAB", myImageItem.state.toFullString, null)
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send message with attachment
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "/path/to/my-local-image.png", "image/png");
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "https://www.openhab.org/openhab-logo-square.png", null);
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;base64],<data>", null);
+// in case you want to send the content of an Image Item (RawType)
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", items.myImageItem.rawState.toFullString(), null);
+```
+
+:::
+
+::::
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 val actions = getActions("pushover", "pushover:pushover-account:account")
@@ -115,6 +159,27 @@ if( receipt !== null ) {
     receipt = null
 }
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
+// send priority message
+var receipt = pushoverActions.sendPriorityMessage("Emergency!!!", "openHAB", 2);
+
+// wait for your cancel condition
+
+if (receipt !== null ) {
+    pushoverActions.cancelPriorityMessage(receipt);
+    receipt = null;
+}
+```
+
+:::
+
+::::
 
 :::: tabs
 

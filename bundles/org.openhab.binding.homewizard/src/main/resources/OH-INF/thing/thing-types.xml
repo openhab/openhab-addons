@@ -4,27 +4,60 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-
 	<thing-type id="p1_wifi_meter">
 		<label>HomeWizard Wi-Fi P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the http interface of the HomeWizard
 			Wi-Fi P1 Meter.</description>
 
 		<channels>
-			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
-			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
-			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
-			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+			<channel id="active_current" typeId="system.electric-current">
+				<label>Current</label>
+				<description>The sum of the current for all phases</description>
+			</channel>
+			<channel id="active_current_l1" typeId="system.electric-current">
+				<label>Current L1</label>
+			</channel>
+			<channel id="active_current_l2" typeId="system.electric-current">
+				<label>Current L2</label>
+			</channel>
+			<channel id="active_current_l3" typeId="system.electric-current">
+				<label>Current L3</label>
+			</channel>
 			<channel id="active_power" typeId="active_power"/>
 			<channel id="active_power_l1" typeId="active_power_l1"/>
 			<channel id="active_power_l2" typeId="active_power_l2"/>
 			<channel id="active_power_l3" typeId="active_power_l3"/>
+			<channel id="active_voltage" typeId="system.electric-voltage">
+				<label>Active Voltage</label>
+			</channel>
+			<channel id="active_voltage_l1" typeId="system.electric-voltage">
+				<label>Active Voltage L1</label>
+			</channel>
+			<channel id="active_voltage_l2" typeId="system.electric-voltage">
+				<label>Active Voltage L2</label>
+			</channel>
+			<channel id="active_voltage_l3" typeId="system.electric-voltage">
+				<label>Active Voltage L3</label>
+			</channel>
+
+			<channel id="power_failures" typeId="power_failures"/>
+			<channel id="long_power_failures" typeId="power_failures">
+				<label>Long Power Failures</label>
+				<description>This channel provides the count of long power failures.</description>
+			</channel>
+
+			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
+			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
+			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+
 			<channel id="total_gas" typeId="total_gas"/>
 			<channel id="gas_timestamp" typeId="gas_timestamp"/>
 		</channels>
 
 		<properties>
 			<property name="meterModel">Unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -97,6 +130,13 @@
 		</config-description>
 
 	</thing-type>
+
+
+	<channel-type id="power_failures">
+		<item-type>Number</item-type>
+		<label>Power Failures</label>
+		<description>This channel provides the count of any type of power failure.</description>
+	</channel-type>
 
 	<channel-type id="total_energy_import_t1">
 		<item-type>Number:Energy</item-type>

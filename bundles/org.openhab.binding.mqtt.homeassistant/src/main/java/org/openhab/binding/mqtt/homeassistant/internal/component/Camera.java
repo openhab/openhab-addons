@@ -46,5 +46,6 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
 
         buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
                 componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
+        finalizeChannels();
     }
 }
