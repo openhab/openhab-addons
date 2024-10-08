@@ -819,7 +819,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-voltage">
-		<item-type>Number:ElectricalPotential</item-type>
+		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current battery voltage</description>
 		<category>Energy</category>

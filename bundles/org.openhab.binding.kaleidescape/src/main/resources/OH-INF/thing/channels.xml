@@ -33,7 +33,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -68,7 +68,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -99,7 +99,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -130,7 +130,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -150,6 +150,7 @@
 			<channel id="title_num" typeId="title_num"/>
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
+			<channel id="endtime" typeId="endtime"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -190,6 +191,7 @@
 			<channel id="title_num" typeId="title_num"/>
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
+			<channel id="endtime" typeId="endtime"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -229,6 +231,7 @@
 			<channel id="title_num" typeId="title_num"/>
 			<channel id="title_length" typeId="title_length"/>
 			<channel id="title_loc" typeId="title_loc"/>
+			<channel id="endtime" typeId="endtime"/>
 			<channel id="chapter_num" typeId="chapter_num"/>
 			<channel id="chapter_length" typeId="chapter_length"/>
 			<channel id="chapter_loc" typeId="chapter_loc"/>
@@ -267,6 +270,7 @@
 			<channel id="track" typeId="track"/>
 			<channel id="artist" typeId="artist"/>
 			<channel id="album" typeId="album"/>
+			<channel id="title" typeId="music_title"/>
 			<channel id="play_mode" typeId="music_play_mode"/>
 			<channel id="play_speed" typeId="music_play_speed"/>
 			<channel id="track_length" typeId="track_length"/>
@@ -374,6 +378,18 @@
 		<label>Title Location</label>
 		<description>The running time elapsed of the currently playing movie</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="endtime">
+		<item-type>DateTime</item-type>
+		<label>Title End Time</label>
+		<description>The date/time when the currently playing movie will end</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="chapter_num">
@@ -599,6 +615,13 @@
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>The name of the currently playing album</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="music_title" advanced="true">
+		<item-type>String</item-type>
+		<label>Music Title</label>
+		<description>The raw output from the MUSIC_TITLE api response</description>
 		<state readOnly="true"/>
 	</channel-type>
 

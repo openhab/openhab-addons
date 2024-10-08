@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
 import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 import javax.script.Compilable;
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
+class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> {
 
     private static final int STACK_TRACE_LENGTH = 5;
@@ -48,8 +49,18 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
     @Override
     protected void beforeInvocation() {
         super.beforeInvocation();
-        if (logger == null) {
-            initializeLogger();
+        // OpenhabGraalJSScriptEngine::beforeInvocation will be executed after
+        // DebuggingGraalScriptEngine::beforeInvocation, because GraalJSScriptEngineFactory::createScriptEngine returns
+        // a DebuggingGraalScriptEngine instance.
+        // We therefore need to synchronize logger setup here and cannot rely on the synchronization in
+        // OpenhabGraalJSScriptEngine.
+        delegate.lock();
+        try {
+            if (logger == null) {
+                initializeLogger();
+            }
+        } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid deadlocks
+            delegate.unlock();
         }
     }
 

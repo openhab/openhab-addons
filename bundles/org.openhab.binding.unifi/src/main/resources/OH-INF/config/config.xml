@@ -108,6 +108,17 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:unifi:accessPoint">
+		<parameter name="macAddress" type="text" required="true">
+			<label>Access Point MAC Address</label>
+			<description>The MAC address of the access point</description>
+		</parameter>
+		<parameter name="site" type="text" required="false">
+			<label>Site</label>
+			<description>The site where the access point should be found (optional)</description>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:unifi:poeEnable">
 		<parameter name="mode" type="text">
 			<label>On Mode</label>

@@ -52,7 +52,7 @@ The query items support the following parameters:
 
 These are described further in the following subsections.
 
-##### query  
+##### query
 
 The query the items represents in the native language of your database:
 
@@ -104,7 +104,7 @@ The `resultString` channel is the only valid one if `scalarResult=false`, and in
 {
     correct : true,
     data : [
-        { 
+        {
             column1 : value,
             column2 : value
         },
@@ -141,14 +141,14 @@ To execute the action you need to pass the following parameters:
 And it returns an `ActionQueryResult` that has the following properties:
 
 - correct (boolean) : True if the query was executed correctly, false otherwise
-- data (List<Map<String,Object>>): A list where each element is a row that is stored in a map with (columnName,value) entries  
+- data (List<Map<String,Object>>): A list where each element is a row that is stored in a map with (columnName,value) entries
 - isScalarResult: It returns if the result is scalar one (only one row with one column)
 - resultAsScalar: It returns the result as a scalar if possible, if not returns null
 
 Example (using Jython script):
 
 ```python
-from core.log import logging, LOG_PREFIX 
+from core.log import logging, LOG_PREFIX
 log = logging.getLogger("{}.action_example".format(LOG_PREFIX))
 map = {"time" : "-2h"}
 influxdb = actions.get("dbquery","dbquery:influxdb2:sampleQuery") //Get bridge thing
@@ -212,8 +212,8 @@ Create a rule that is fired
 - **When** `calculateParameters` is triggered in `myquery`
 - **Then** executes the following script action (in that example Jython):
 
-```text
-map = {"time" : "-2h"}   
-dbquery = actions.get("dbquery","dbquery:query:myquery")   
+```python
+map = {"time" : "-2h"}
+dbquery = actions.get("dbquery","dbquery:query:myquery")
 dbquery.setQueryParameters(map)
 ```

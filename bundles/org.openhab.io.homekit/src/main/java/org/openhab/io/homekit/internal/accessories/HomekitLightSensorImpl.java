@@ -29,7 +29,6 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import io.github.hapjava.accessories.LightSensorAccessory;
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.characteristics.impl.lightsensor.CurrentAmbientLightLevelCharacteristic;
 import io.github.hapjava.services.impl.LightSensorService;
 
 /**
@@ -61,13 +60,13 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public double getMinCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
-                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MIN_LUX)).doubleValue();
     }
 
     @Override
     public double getMaxCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MAX_VALUE,
-                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MAX_LUX)).doubleValue();
     }
 
     @Override

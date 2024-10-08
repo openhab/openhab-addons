@@ -22,14 +22,14 @@ You can also manually create a Thing, and provide the individual component topic
 - [Cover](https://www.home-assistant.io/integrations/cover.mqtt/)
 - [Device Trigger](https://www.home-assistant.io/integrations/device_trigger.mqtt/)
 - [Fan](https://www.home-assistant.io/integrations/fan.mqtt/)<br>
-  Only ON/OFF is supported. JSON attributes are not supported.
-- [Light](https://www.home-assistant.io/integrations/light.mqtt/)<br>
-  Template schema is not supported. Command templates only have access to the `value` variable.
+  JSON attributes are not supported.
+- [Light](https://www.home-assistant.io/integrations/light.mqtt/)
 - [Lock](https://www.home-assistant.io/integrations/lock.mqtt/)
 - [Number](https://www.home-assistant.io/integrations/number.mqtt/)
 - [Scene](https://www.home-assistant.io/integrations/scene.mqtt/)
 - [Select](https://www.home-assistant.io/integrations/select.mqtt/)
-- [Sensor](https://www.home-assistant.io/integrations/sensor.mqtt/)
+- [Sensor](https://www.home-assistant.io/integrations/sensor.mqtt/)<br>
+  JSON attributes are not supported.
 - [Switch](https://www.home-assistant.io/integrations/switch.mqtt/)
 - [Update](https://www.home-assistant.io/integrations/update.mqtt/)<br>
   This is a special component, that will show up as additional properties on the Thing, and add a button on the Thing to initiate an OTA update.

@@ -207,14 +207,14 @@ openhab> openhab:hue hue:bridge-api2:g24 things > myThingsFile.things
 This binding includes a rule action, which implements dynamic (i.e. gradual) transitions to a new scene or light(s) state.
 Each thing has a separate action instance, which can be retrieved as follows.
 
-```php
+```java
 val hueActions = getActions("hue","hue:device:g24:11111111-2222-3333-4444-555555555555")
 ```
 
 Where the first parameter must always be `hue` and the second must be the full thing UID.
 Once the action instance has been retrieved, you can invoke its `dynamicCommand(String channelId, Command command, Long durationMs)` method as follows.
 
-```php
+```java
 hueActions.dynamicCommand("brightness", new PercentType(100), new Long(10000))
 
 hueActions.dynamicCommand("scene", new StringType("SceneName"), new Long(20000))

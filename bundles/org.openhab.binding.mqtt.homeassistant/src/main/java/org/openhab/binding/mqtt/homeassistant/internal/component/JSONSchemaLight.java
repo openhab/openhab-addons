@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -30,6 +31,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -71,15 +73,14 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         protected @Nullable Integer transition;
     }
 
-    TextValue colorModeValue;
-
     public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
         super(builder, newStyleChannels);
-        colorModeValue = new TextValue();
     }
 
     @Override
     protected void buildChannels() {
+        boolean hasColorChannel = false;
+        AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
         if (supportedColorModes != null) {
             if (LightColorMode.hasColorChannel(supportedColorModes)) {
@@ -89,33 +90,38 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             if (supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
                 buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature",
                         this).commandTopic(DUMMY_TOPIC, true, 1)
-                        .commandFilter(command -> handleColorTempCommand(command)).build();
+                        .commandFilter(command -> handleColorTempCommand(command))
+                        .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
                 if (hasColorChannel) {
                     colorModeValue = new TextValue(
                             supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
                     buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
-                            .isAdvanced(true).build();
+                            .withAutoUpdatePolicy(autoUpdatePolicy).isAdvanced(true).build();
 
                 }
             }
         }
 
         if (hasColorChannel) {
-            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
-                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+            colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
+                    .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else if (channelConfiguration.brightness) {
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
-                    "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+                    "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
             onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (effectValue != null) {
             buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, Objects.requireNonNull(effectValue),
                     "Lighting Effect", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(command -> handleEffectCommand(command)).build();
+                    .commandFilter(command -> handleEffectCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy)
+                    .build();
 
         }
     }
@@ -147,7 +153,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                         .divide(new BigDecimal(100), MathContext.DECIMAL128).intValue();
             }
 
-            if (hasColorChannel) {
+            if (colorChannel != null) {
                 json.color = new JSONState.Color();
                 if (channelConfiguration.supportedColorModes.contains(LightColorMode.COLOR_MODE_HS)) {
                     json.color.h = state.getHue().toBigDecimal();
@@ -321,12 +327,15 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
         listener.updateChannelState(buildChannelUID(COLOR_MODE_CHANNEL_ID), colorModeValue.getChannelState());
 
-        if (hasColorChannel) {
-            listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
-        } else if (brightnessChannel != null) {
-            listener.updateChannelState(buildChannelUID(BRIGHTNESS_CHANNEL_ID), brightnessValue.getChannelState());
+        ComponentChannel localBrightnessChannel = brightnessChannel;
+        ComponentChannel localColorChannel = colorChannel;
+        if (localColorChannel != null) {
+            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (localBrightnessChannel != null) {
+            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
+                    brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(buildChannelUID(ON_OFF_CHANNEL_ID), onOffValue.getChannelState());
+            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
         }
     }
 }

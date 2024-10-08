@@ -49,20 +49,16 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
     }
 
     @Test
-    void marshallWithTwoSubscriptionsNoAck() {
-        EmotivaCommandDTO command1 = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
-        EmotivaCommandDTO command2 = new EmotivaCommandDTO(EmotivaControlCommands.power_off);
+    void marshallWithSubscriptionNoAck() {
+        EmotivaCommandDTO command = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
 
-        EmotivaSubscriptionRequest dto = new EmotivaSubscriptionRequest(List.of(command1, command2),
-                PROTOCOL_V2.value());
+        EmotivaSubscriptionRequest dto = new EmotivaSubscriptionRequest(command, PROTOCOL_V2.value());
 
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
         assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
         assertThat(xmlString, containsString("<volume value=\"10\" ack=\"yes\" />"));
-        assertThat(xmlString, containsString("<power_off />"));
         assertThat(xmlString, containsString("</emotivaSubscription>"));
         assertThat(xmlString, not(containsString("<volume>")));
-        assertThat(xmlString, not(containsString("<command>")));
     }
 
     @Test
