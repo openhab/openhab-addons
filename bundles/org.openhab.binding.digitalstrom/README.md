@@ -394,7 +394,7 @@ _Blinds:_
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin", password="mySecretPassword", sensorDataUpdateInterval=180] {
@@ -410,7 +410,7 @@ Bridge digitalstrom:dssBridge:dSS [ dSSAddress="urlOfMyDss",  userName="dssadmin
 }
 ```
 
-### demo.items
+### `demo.items` Example
 
 ```java
 //dSS
@@ -451,7 +451,7 @@ Number HumidityIndoor { channel="digitalstrom:dSiSens200:dSS:dS-iSens200:relativ
 Number Temperature { channel="digitalstrom:zoneTemperatureControl:dSS:zoneTemperatureControl:heating_temperature_controlled" }
 ```
 
-### demo.sitemap
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu"
