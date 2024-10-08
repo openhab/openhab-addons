@@ -102,7 +102,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Start scan for LOGO! bridge");
 
         List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
-
+        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (InetAddress address : addressesToScan) {
             try {
