@@ -36,6 +36,15 @@
 				<description>The average experience of the connected clients</description>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="ledOverride">
+				<type>unifi:ledOverride</type>
+			</add-channel>
+			<add-channel id="ledColor">
+				<type>system:color</type>
+				<description>Controls the color and brightness of the LED</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
