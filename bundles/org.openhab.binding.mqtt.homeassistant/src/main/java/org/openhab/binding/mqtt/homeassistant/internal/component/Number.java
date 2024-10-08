@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -73,13 +72,6 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
     public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
-
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Number does not support forced optimistic mode");
-        }
-
         NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
                 channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
 
@@ -88,7 +80,7 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .build();
+                .inferOptimistic(channelConfiguration.optimistic).build();
         finalizeChannels();
     }
 }

@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -63,13 +62,6 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
     public Switch(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
-        boolean optimistic = channelConfiguration.optimistic != null ? channelConfiguration.optimistic
-                : channelConfiguration.stateTopic.isBlank();
-
-        if (optimistic && !channelConfiguration.stateTopic.isBlank()) {
-            throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
-        }
-
         OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
                 channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
@@ -78,7 +70,7 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
-                .build();
+                .inferOptimistic(channelConfiguration.optimistic).build();
         finalizeChannels();
     }
 }
