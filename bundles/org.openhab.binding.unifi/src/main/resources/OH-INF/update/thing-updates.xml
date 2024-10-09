@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="unifi:accessPoint">
+		<instruction-set targetVersion="1">
+			<add-channel id="online">
+				<type>unifi:devOnline</type>
+				<label>Online</label>
+			</add-channel>
+			<add-channel id="state">
+				<type>unifi:devState</type>
+				<label>Device State</label>
+			</add-channel>
+			<add-channel id="name">
+				<type>unifi:devName</type>
+				<label>Name</label>
+			</add-channel>
+			<add-channel id="site">
+				<type>unifi:site</type>
+				<label>Site Name</label>
+			</add-channel>
+			<add-channel id="macAdress">
+				<type>unifi:devMacAdress</type>
+				<label>MAC Address</label>
+			</add-channel>
+			<add-channel id="ipAdress">
+				<type>unifi:devIpAdress</type>
+				<label>IP Address</label>
+			</add-channel>
+			<add-channel id="uptime">
+				<type>unifi:devUptime</type>
+				<label>Uptime</label>
+			</add-channel>
+			<add-channel id="lastSeen">
+				<type>unifi:devLastSeen</type>
+				<label>Last Seen</label>
+			</add-channel>
+			<add-channel id="experience">
+				<type>unifi:devExperience</type>
+				<label>Experience</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

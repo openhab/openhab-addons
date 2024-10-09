@@ -164,6 +164,7 @@
 
 		<properties>
 			<property name="vendor">Ubiquiti Networks</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:unifi:accessPoint"/>
