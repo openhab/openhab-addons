@@ -13,15 +13,7 @@
 package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_EXPERIENCE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_IP_ADDRESS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_LASTSEEN;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_MAC_ADDRESS;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_NAME;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_ONLINE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_SITE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_STATE;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_DEV_UPTIME;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 
 import java.time.ZoneId;
