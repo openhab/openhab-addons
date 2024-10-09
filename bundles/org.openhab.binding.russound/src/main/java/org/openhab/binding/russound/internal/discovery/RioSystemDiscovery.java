@@ -13,13 +13,8 @@
 package org.openhab.binding.russound.internal.discovery;
 
 import java.io.IOException;
-import java.net.Inet6Address;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Collections;
+import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +22,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.openhab.binding.russound.internal.net.SocketChannelSession;
 import org.openhab.binding.russound.internal.net.SocketSession;
 import org.openhab.binding.russound.internal.net.WaitingSessionListener;
@@ -37,6 +31,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -78,48 +73,14 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
      */
     @Override
     protected void startScan() {
-        final List<NetworkInterface> interfaces;
-        try {
-            interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        } catch (SocketException e1) {
-            logger.debug("Exception getting network interfaces: {}", e1.getMessage(), e1);
-            return;
-        }
-
-        nbrNetworkInterfacesScanning = interfaces.size();
+        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
+        logger.debug("Performing discovery on {} ip addresses", addressesToScan.size());
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 10);
 
-        for (final NetworkInterface networkInterface : interfaces) {
-            try {
-                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                    continue;
-                }
-            } catch (SocketException e) {
-                continue;
-            }
-
-            for (Iterator<InterfaceAddress> it = networkInterface.getInterfaceAddresses().iterator(); it.hasNext();) {
-                final InterfaceAddress interfaceAddress = it.next();
-
-                // don't bother with ipv6 addresses (russound doesn't support)
-                if (interfaceAddress.getAddress() instanceof Inet6Address) {
-                    continue;
-                }
-
-                final String subnetRange = interfaceAddress.getAddress().getHostAddress() + "/"
-                        + interfaceAddress.getNetworkPrefixLength();
-
-                logger.debug("Scanning subnet: {}", subnetRange);
-                final SubnetUtils utils = new SubnetUtils(subnetRange);
-
-                final String[] addresses = utils.getInfo().getAllAddresses();
-
-                for (final String address : addresses) {
-                    executorService.execute(() -> {
-                        scanAddress(address);
-                    });
-                }
-            }
+        for (final InetAddress address : addressesToScan) {
+            executorService.execute(() -> {
+                scanAddress(address.getHostAddress());
+            });
         }
 
         // Finishes the scan and cleans up
