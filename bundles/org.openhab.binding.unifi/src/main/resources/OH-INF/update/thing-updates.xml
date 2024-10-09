@@ -6,40 +6,39 @@
 	<thing-type uid="unifi:accessPoint">
 		<instruction-set targetVersion="1">
 			<add-channel id="online">
-				<type>unifi:devOnline</type>
-				<label>Online</label>
+				<type>unifi:online</type>
+				<description>Online status of the device</description>
 			</add-channel>
 			<add-channel id="state">
 				<type>unifi:devState</type>
 				<label>Device State</label>
 			</add-channel>
 			<add-channel id="name">
-				<type>unifi:devName</type>
-				<label>Name</label>
+				<type>unifi:name</type>
+				<description>Name of the device</description>
 			</add-channel>
 			<add-channel id="site">
 				<type>unifi:site</type>
-				<label>Site Name</label>
 			</add-channel>
 			<add-channel id="macAdress">
-				<type>unifi:devMacAdress</type>
-				<label>MAC Address</label>
+				<type>unifi:macAdress</type>
+				<description>MAC address of the device</description>
 			</add-channel>
 			<add-channel id="ipAdress">
-				<type>unifi:devIpAdress</type>
-				<label>IP Address</label>
+				<type>unifi:ipAdress</type>
+				<description>IP address of the device</description>
 			</add-channel>
 			<add-channel id="uptime">
-				<type>unifi:devUptime</type>
-				<label>Uptime</label>
+				<type>unifi:uptime</type>
+				<description>Uptime of the device (in seconds)</description>
 			</add-channel>
 			<add-channel id="lastSeen">
-				<type>unifi:devLastSeen</type>
-				<label>Last Seen</label>
+				<type>unifi:lastSeen</type>
+				<description>Timestamp of when the device was last seen</description>
 			</add-channel>
 			<add-channel id="experience">
-				<type>unifi:devExperience</type>
-				<label>Experience</label>
+				<type>unifi:experience</type>
+				<description>The average experience of the connected clients</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
