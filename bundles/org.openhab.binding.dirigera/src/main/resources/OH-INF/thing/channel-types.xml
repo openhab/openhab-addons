@@ -22,11 +22,15 @@
 		<item-type>Number</item-type>
 		<label>Simple number</label>
 	</channel-type>
-	<channel-type id="energy-today">
-		<item-type>Number:Energy</item-type>
-		<label>Todays Energy Forecast</label>
-		<description>Today's total energy forecast</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
+	<channel-type id="percent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Number</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="switch-ro">
+		<item-type>Switch</item-type>
+		<label>On Off Switch</label>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="energy-estimate">
 		<item-type>Number:Energy</item-type>

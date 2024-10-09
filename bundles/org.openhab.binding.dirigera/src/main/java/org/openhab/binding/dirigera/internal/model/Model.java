@@ -118,17 +118,35 @@ public class Model {
                         String deviceType = entry.getString(PROPERTY_DEVICE_TYPE);
                         JSONObject attributes = entry.getJSONObject(PROPERTY_ATTRIBUTES);
                         switch (deviceType) {
-                            case PROPERTY_LIGHT:
+                            case DEVICE_TYPE_LIGHT:
                                 if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
-                                    ThingTypeUID ttUID = new ThingTypeUID(BINDING_ID,
-                                            attributes.getString(ATTRIBUTE_COLOR_MODE) + "-" + deviceType);
-                                    logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
-                                    if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
-                                        logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
-                                        return ttUID;
-                                    } else {
-                                        logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please", ttUID);
+                                    String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
+                                    switch (colorMode) {
+                                        case "color":
+                                            ThingTypeUID ttUID = THING_TYPE_COLOR_LIGHT;
+                                            logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
+                                            if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
+                                                logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
+                                                return ttUID;
+                                            } else {
+                                                logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please",
+                                                        ttUID);
+                                            }
+                                            break;
+                                        case "temperature":
+                                            // TODO
+                                            break;
                                     }
+                                }
+                                break;
+                            case DEVICE_TYPE_MOTION_SENSOR:
+                                ThingTypeUID ttUID = THING_TYPE_MOTION_SENSOR;
+                                logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
+                                if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
+                                    logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
+                                    return ttUID;
+                                } else {
+                                    logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please", ttUID);
                                 }
                                 break;
                             default:
@@ -138,6 +156,7 @@ public class Model {
                     }
                 }
             }
+
         }
         return THING_TYPE_UNKNNOWN;
     }

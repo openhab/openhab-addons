@@ -1,0 +1,23 @@
+{
+	"data": {
+		"deviceType": "gateway",
+		"remoteLinks": [],
+		"lastSeen": "2024-10-09T18:51:33.223Z",
+		"attributes": {
+			"coordinates": {
+				"latitude": 50.55855855855856,
+				"accuracy": -1,
+				"longitude": 8.48021169197502
+			},
+			"nextSunRise": "2024-10-10T05:41:00.000Z",
+			"nextSunSet": "2024-10-10T16:45:00.000Z"
+		},
+		"id": "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1",
+		"type": "gateway"
+	},
+	"specversion": "3.163.0",
+	"id": "c06004eb-2911-483c-b0bb-8abd4277a78d",
+	"time": "2024-10-09T18:51:33.223Z",
+	"source": "urn:com:ikea:homesmart:iotc:timeservice",
+	"type": "deviceStateChanged"
+}
