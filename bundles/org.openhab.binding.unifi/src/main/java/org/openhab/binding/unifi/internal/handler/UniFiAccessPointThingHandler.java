@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP_ENABLE;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.DEVICE_TYPE_UAP;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -90,10 +88,10 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
     protected State getDefaultState(final String channelID) {
         final State state;
         switch (channelID) {
-            case CHANNEL_DEV_UPTIME:
+            case CHANNEL_UPTIME:
                 state = new QuantityType<>(0, Units.SECOND);
                 break;
-            case CHANNEL_DEV_EXPERIENCE:
+            case CHANNEL_EXPERIENCE:
                 state = new QuantityType<>(0, Units.PERCENT);
                 break;
             default:
@@ -114,47 +112,47 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     state = OnOffType.from(!device.isDisabled());
                 }
                 break;
-            case CHANNEL_DEV_ONLINE:
+            case CHANNEL_ONLINE:
                 if (device.getState() != null) {
                     state = OnOffType.from(device.getState() == 1);
                 }
                 break;
-            case CHANNEL_DEV_STATE:
+            case CHANNEL_AP_STATE:
                 if (device.getState() != null) {
                     state = StringType.valueOf(device.getState().toString());
                 }
                 break;
-            case CHANNEL_DEV_NAME:
+            case CHANNEL_NAME:
                 if (device.getName() != null) {
                     state = StringType.valueOf(device.getName());
                 }
                 break;
-            case CHANNEL_DEV_SITE:
+            case CHANNEL_SITE:
                 if (site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
                     state = StringType.valueOf(site.getDescription());
                 }
                 break;
-            case CHANNEL_DEV_MAC_ADDRESS:
+            case CHANNEL_MAC_ADDRESS:
                 if (device.getMac() != null && !device.getMac().isBlank()) {
                     state = StringType.valueOf(device.getMac());
                 }
                 break;
-            case CHANNEL_DEV_IP_ADDRESS:
+            case CHANNEL_IP_ADDRESS:
                 if (device.getIp() != null && !device.getIp().isBlank()) {
                     state = StringType.valueOf(device.getIp());
                 }
                 break;
-            case CHANNEL_DEV_UPTIME:
+            case CHANNEL_UPTIME:
                 if (device.getUptime() != null) {
                     state = new QuantityType<>(device.getUptime(), Units.SECOND);
                 }
                 break;
-            case CHANNEL_DEV_LASTSEEN:
+            case CHANNEL_LAST_SEEN:
                 if (device.getLastSeen() != null) {
                     state = new DateTimeType(ZonedDateTime.ofInstant(device.getLastSeen(), ZoneId.systemDefault()));
                 }
                 break;
-            case CHANNEL_DEV_EXPERIENCE:
+            case CHANNEL_EXPERIENCE:
                 if (device.getExperience() != null) {
                     state = new QuantityType<>(device.getExperience(), Units.PERCENT);
                 }

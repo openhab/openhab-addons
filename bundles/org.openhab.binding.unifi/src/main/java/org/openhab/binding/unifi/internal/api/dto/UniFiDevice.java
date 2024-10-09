@@ -55,7 +55,6 @@ public class UniFiDevice implements HasId {
 
     private Integer uptime;
 
-    @SerializedName("last_seen")
     @JsonAdapter(UniFiTimestampDeserializer.class)
     private Instant lastSeen;
 
