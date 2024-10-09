@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_HSB;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -56,7 +56,6 @@ public class LightHandler extends BaseDeviceHandler {
         gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
         JSONObject values = gateway().model().getAllFor(config.id);
-        logger.error("DIRIGERA LIGHT_DEVICE values for initial update {}", values);
         handleUpdate(values);
     }
 
@@ -66,10 +65,7 @@ public class LightHandler extends BaseDeviceHandler {
         logger.trace("DIRIGERA LIGHT_DEVICE handle command {} for {}", command, channel);
         if (command instanceof RefreshType) {
             JSONObject values = gateway().model().getAllFor(config.id);
-            if (values.has(Model.ATTRIBUTES)) {
-                JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
-                handleUpdate(attributes);
-            }
+            handleUpdate(values);
         } else {
             String targetProperty = channel2PropertyMap.get(channel);
             if (targetProperty != null) {
@@ -158,7 +154,7 @@ public class LightHandler extends BaseDeviceHandler {
                                 deliverHSB = true;
                                 break;
                         }
-                    } else if ("on".equals(targetChannel)) {
+                    } else if (CHANNEL_ON.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
                     } else {

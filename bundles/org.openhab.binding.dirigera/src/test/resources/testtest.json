@@ -1,25 +1,55 @@
 {
-	"identifyPeriod": 0,
-	"permittingJoin": false,
-	"serialNumber": "EC1BBDFFFEC17EA1",
-	"otaScheduleStart": "00:00",
-	"otaProgress": 0,
-	"startUpCurrentLevel": -1,
-	"otaScheduleEnd": "00:00",
-	"colorMode": "color",
-	"customName": "Stehlampe",
-	"colorSaturation": 1,
-	"identifyStarted": "2000-01-01T00:00:00.000Z",
-	"otaPolicy": "autoUpdate",
-	"otaStatus": "upToDate",
-	"manufacturer": "IKEA of Sweden",
-	"lightLevel": 100,
-	"colorHue": 45,
-	"productCode": "LED1624G9E27EU",
-	"otaState": "readyToCheck",
-	"isOn": true,
-	"hardwareVersion": "1",
-	"model": "TRADFRI bulb E27 CWS opal 600lm",
-	"startupOnOff": "startOn",
-	"firmwareVersion": "2.3.086"
+	"deviceType": "light",
+	"isReachable": true,
+	"capabilities": {
+		"canReceive": [
+			"customName",
+			"isOn",
+			"lightLevel",
+			"colorHue",
+			"colorSaturation"
+		],
+		"canSend": []
+	},
+	"type": "light",
+	"deviceSet": [],
+	"room": {
+		"color": "ikea_green_no_65",
+		"name": "Loft",
+		"icon": "rooms_sofa",
+		"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d"
+	},
+	"isHidden": false,
+	"remoteLinks": [],
+	"createdAt": "2024-10-04T18:20:43.000Z",
+	"lastSeen": "2024-10-09T11:09:10.000Z",
+	"attributes": {
+		"identifyPeriod": 0,
+		"permittingJoin": false,
+		"serialNumber": "EC1BBDFFFEC17EA1",
+		"otaScheduleStart": "00:00",
+		"otaProgress": 0,
+		"startUpCurrentLevel": -1,
+		"otaScheduleEnd": "00:00",
+		"colorMode": "color",
+		"customName": "Stehlampe",
+		"colorSaturation": 0,
+		"identifyStarted": "2000-01-01T00:00:00.000Z",
+		"otaStatus": "upToDate",
+		"otaPolicy": "autoUpdate",
+		"manufacturer": "IKEA of Sweden",
+		"lightLevel": 100,
+		"colorHue": 90.999755859375,
+		"productCode": "LED1624G9E27EU",
+		"otaState": "readyToCheck",
+		"isOn": true,
+		"model": "TRADFRI bulb E27 CWS opal 600lm",
+		"hardwareVersion": "1",
+		"startupOnOff": "startOn",
+		"firmwareVersion": "2.3.086"
+	},
+	"id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+	"adaptiveProfile": {
+		
+	}
 }
