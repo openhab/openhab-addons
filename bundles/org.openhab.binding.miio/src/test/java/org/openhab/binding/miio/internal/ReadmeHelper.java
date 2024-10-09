@@ -207,7 +207,7 @@ public class ReadmeHelper {
         });
 
         // Remove excess newline
-        if (sw.length() > 2) {
+        if (sw.length() > 1) {
             sw.setLength(sw.length() - 2);
         }
         return sw;
