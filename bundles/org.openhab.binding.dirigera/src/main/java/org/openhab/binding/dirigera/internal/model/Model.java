@@ -49,6 +49,11 @@ public class Model {
         this.gateway = gateway;
     }
 
+    public Model(Gateway gateway, JSONObject model) {
+        this.model = model;
+        this.gateway = gateway;
+    }
+
     public synchronized void update() {
         RestAPI api = gateway.api();
         try {
@@ -123,16 +128,9 @@ public class Model {
                                     String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
                                     switch (colorMode) {
                                         case "color":
-                                            ThingTypeUID ttUID = THING_TYPE_COLOR_LIGHT;
-                                            logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
-                                            if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
-                                                logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
-                                                return ttUID;
-                                            } else {
-                                                logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please",
-                                                        ttUID);
-                                            }
-                                            break;
+                                            logger.info("DIRIGERA MODEL identified {} for {}",
+                                                    THING_TYPE_COLOR_LIGHT.toString(), id);
+                                            return THING_TYPE_COLOR_LIGHT;
                                         case "temperature":
                                             // TODO
                                             break;
@@ -140,15 +138,13 @@ public class Model {
                                 }
                                 break;
                             case DEVICE_TYPE_MOTION_SENSOR:
-                                ThingTypeUID ttUID = THING_TYPE_MOTION_SENSOR;
-                                logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
-                                if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
-                                    logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
-                                    return ttUID;
-                                } else {
-                                    logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please", ttUID);
-                                }
-                                break;
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_MOTION_SENSOR.toString(),
+                                        id);
+                                return THING_TYPE_MOTION_SENSOR;
+                            case DEVICE_TYPE_LIGHT_SENSOR:
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_LIGHT_SENSOR.toString(),
+                                        id);
+                                return THING_TYPE_LIGHT_SENSOR;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);
@@ -180,14 +176,19 @@ public class Model {
         JSONObject deviceObject = getAllFor(id);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+            System.out.println("Attributes " + attributes);
             if (attributes.has(CUSTOM_NAME)) {
-                return attributes.getString(CUSTOM_NAME);
-            } else if (attributes.has(DEVICE_MODEL)) {
+                String customName = attributes.getString(CUSTOM_NAME);
+                if (!customName.isBlank()) {
+                    return customName;
+                }
+            }
+            if (attributes.has(DEVICE_MODEL)) {
                 return attributes.getString(DEVICE_MODEL);
             } else if (deviceObject.has(DEVICE_TYPE)) {
                 return deviceObject.getString(DEVICE_TYPE);
             }
-            // 3 fallback options}
+            // 3 fallback options
         }
         return PROPERTY_EMPTY;
     }
