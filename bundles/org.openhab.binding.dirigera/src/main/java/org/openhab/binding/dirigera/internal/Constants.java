@@ -35,13 +35,15 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "color-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
+    public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
-            THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR);
+            THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR);
 
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections.unmodifiableSet(Stream
-            .of(THING_TYPE_GATEWAY, THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_GATEWAY, THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR)
+                    .collect(Collectors.toSet()));
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -64,6 +66,7 @@ public class Constants {
     public static final String DEVICE_TYPE_GATEWAY = "gateway";
     public static final String DEVICE_TYPE_LIGHT = "light";
     public static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
+    public static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -77,6 +80,7 @@ public class Constants {
 
     // Sensor channels
     public static final String CHANNEL_MOTION_DETECTION = "detection";
+    public static final String CHANNEL_ILLUMINANCE = "illuminance";
 
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
@@ -85,7 +89,7 @@ public class Constants {
     public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_ON, "lightLevel",
             CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
             "color-temperature");
-
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isDetected", CHANNEL_MOTION_DETECTION);
+    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
 }

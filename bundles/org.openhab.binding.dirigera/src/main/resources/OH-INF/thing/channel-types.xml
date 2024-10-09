@@ -32,15 +32,9 @@
 		<label>On Off Switch</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="energy-estimate">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Forecast</label>
-		<description>Energy forecast for next hours/days</description>
-		<state pattern="%.3f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="json" advanced="true">
-		<item-type>String</item-type>
-		<label>Raw JSON Response</label>
-		<description>Plain JSON response without conversions</description>
+	<channel-type id="illuminance">
+		<item-type>Number:Illuminance</item-type>
+		<label>Illiminance</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
