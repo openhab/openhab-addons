@@ -15,6 +15,8 @@ package org.openhab.binding.linky.internal.handler;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -69,6 +71,8 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
+
+    private List<String> registeredPrmId = new ArrayList<>();
 
     public LinkyBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -130,6 +134,16 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     }
 
     protected abstract void connectionInit() throws LinkyException;
+
+    public void registerNewPrmId(String prmId) {
+        if (!registeredPrmId.contains(prmId)) {
+            registeredPrmId.add(prmId);
+        }
+    }
+
+    public List<String> getAllPrmId() {
+        return registeredPrmId;
+    }
 
     public boolean isConnected() {
         return connected;
