@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="scene">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub1"/>
+			<bridge-type-ref id="hub2"/>
+			<bridge-type-ref id="plm"/>
+		</supported-bridge-type-refs>
+
+		<label>Insteon Scene</label>
+		<description>An Insteon scene that controls multiple devices simultaneously.</description>
+
+		<channels>
+			<channel id="scene" typeId="scene"/>
+			<channel id="fast-on-off" typeId="fast-on-off"/>
+			<channel id="manual-change" typeId="manual-change"/>
+		</channels>
+
+		<representation-property>group</representation-property>
+
+		<config-description>
+			<parameter name="group" type="integer" min="2" max="254" required="true">
+				<label>Group</label>
+				<description>Insteon scene group number.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
