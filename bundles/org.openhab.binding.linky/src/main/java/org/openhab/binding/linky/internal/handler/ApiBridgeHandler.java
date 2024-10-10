@@ -66,6 +66,9 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     private static @Nullable HttpServlet servlet;
 
+    protected String tokenUrl = "";
+    protected String authorizeUrl = "";
+
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -79,16 +82,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     @Override
     public void initialize() {
         super.initialize();
-
-        String tokenUrl = "";
-        String authorizeUrl = "";
-        if (this instanceof MyElectricalDataBridgeHandler) {
-            tokenUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
-            authorizeUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
-        } else if (this instanceof EnedisBridgeHandler) {
-            tokenUrl = EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
-            authorizeUrl = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
-        }
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
                 authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
