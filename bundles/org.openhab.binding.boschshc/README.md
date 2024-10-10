@@ -313,14 +313,12 @@ The smoke detector warns you in case of fire.
 | low-battery       | Switch      | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
 | signal-strength   | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
 
-
 ### User-defined States
 
 User-defined states enable automations to be better adapted to specific needs and everyday situations.
 Individual states can be activated/deactivated and can be used as triggers, conditions and actions in automations.
 
 **Thing Type ID**: `user-defined-state`
-
 
 | Channel Type ID | Item Type | Writable | Description                                |
 |-----------------|-----------| :------: |--------------------------------------------|
@@ -402,7 +400,7 @@ The log can also be called using the following command.
 tail -f /var/log/openhab/openhab.log /var/log/openhab/events.log
 ```
 
-Alternatively, the log can be viewed using the OpenHab Log Viewer (frontail) via <http://openhab:9001>.
+Alternatively, the log can be viewed using the openHAB Log Viewer (frontail) via <http://openhab:9001>.
 
 Example:
 

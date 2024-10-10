@@ -56,9 +56,9 @@ This is of course essential if your connection to the remote openHAB server is o
 
 The `thing` thing has the following configuration parameters:
 
-| Parameter            | Required | Description                                 |
-|----------------------|----------|---------------------------------------------|
-| thingUID             | yes      | The thing UID in the remote openHAB server. |
+| Parameter            | Required | Description                                                                                                                                |
+|----------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| thingUID             | yes      | The thing UID in the remote openHAB server.                                                                                                |
 | buildTriggerChannels | no       | If set to true, a trigger channel will be automatically created and linked to each trigger channel from the remote thing. Default is true. |
 
 Please note that if your remote server is an openHAB v3 server, in order for all of your things to be properly initialized, you will need to define on your bridge thing a valid API token in the parameter `token` and also define the parameter `authenticateAnyway` to true in case you are using an unsecured connection (HTTP).
@@ -97,7 +97,7 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 ## Example
 
-### demo.things:
+### `demo.things` Example
 
 Example of connection to a remote server in the local network:
 
@@ -118,7 +118,7 @@ Example of connection to a remote server outside the local network through a myo
 Bridge remoteopenhab:server:oh3 "OH3 server" [ host="myopenhab.org", useHttps=true, port=443, username="myUsername", password="myPassword" ]
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 DateTime MyDate "Date [%1$tA %1$td %1$tR]" <calendar> { channel="remoteopenhab:server:oh2:MyDate" }

@@ -222,7 +222,6 @@ When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel
 | increaseDecrease | Group address for relative movement                                                                                                           | 3.007       |
 | frequency        | Increase/Decrease frequency in milliseconds in case the binding should handle that (0 if the KNX device sends the commands repeatedly itself) | 0           |
 
-
 ##### Channel Type "rollershutter-control"
 
 | Parameter | Description                             | Default DPT |

@@ -530,7 +530,7 @@ Warnings:
 | live           | picture (**)         | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
 | live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
 | live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
-| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
+| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openHAB server and camera are located on the same lan.                          |
 | live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
@@ -562,7 +562,7 @@ Warnings:
 | status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
 | live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
 | live           | picture-url          | String       | Read-only  | Url of the live snapshot for this camera                                                                                                    |
-| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
+| live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openHAB server and camera are located on the same lan.                          |
 | live           | vpn-stream-url (*)   | String       | Read-only  | Url of the live stream for this camera through Netatmo VPN.                                                                                 |
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |

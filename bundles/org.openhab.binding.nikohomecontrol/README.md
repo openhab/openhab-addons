@@ -219,7 +219,6 @@ Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-
 | alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
 | notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
-
 ## Console Commands
 
 To help with further development, a number of console commands allow you to collect information about your current system:

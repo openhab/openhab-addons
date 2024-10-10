@@ -85,7 +85,6 @@ Thing androidtv:philipstv:bedroom [ ipAddress="192.168.1.4" ]
 | ambilightTopColor    | Color  | Color for top Ambilight Side         |    N/A   |    N/A   |     RW    |
 | ambilightBottomColor | Color  | Color for bottom Ambilight Side      |    N/A   |    N/A   |     RW    |
 
-
 ```java
 String ShieldTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:shieldtv:livingroom:keyboard" }
 String ShieldTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:shieldtv:livingroom:keypress" }

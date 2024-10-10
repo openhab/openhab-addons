@@ -111,7 +111,7 @@ password=openhab_password
 The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
-It is advised to create a specific user with sufficient permissions and space for OpenHAB persistence.
+It is advised to create a specific user with sufficient permissions and space for openHAB persistence.
 This is the user that should be in `jdbc.cfg`.
 The user default schema will be used.
 

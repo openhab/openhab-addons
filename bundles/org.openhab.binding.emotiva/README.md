@@ -30,7 +30,6 @@ There are more parameters which all have defaults set.
 | keepAlive             | Time between notification update from device, in milliseconds | 7500    |
 | retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
 
-
 ## Channels
 
 The Emotiva Processor supports the following channels (some channels are model specific):

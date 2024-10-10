@@ -149,7 +149,6 @@ The *repeater* thing requires the following configuration parameters:
 
 The *vm* thing requires the following configuration parameters:
 
-
 | Parameter Label  | Parameter ID    | Description                                                                | Required | Default |
 |------------------|-----------------|----------------------------------------------------------------------------|----------|---------|
 

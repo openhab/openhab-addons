@@ -51,15 +51,14 @@ On a Raspberry PI 5, the approximate transcription times are:
 | small.bin  |      8.5s |
 | medium.bin |       17s |
 
-
 ## Configuring the model
 
 Before you can use this service you should configure your model.
 
 You can download them from the sources provided by the [whisper.cpp](https://github.com/ggerganov/whisper.cpp) author:
 
-- https://huggingface.co/ggerganov/whisper.cpp
-- https://ggml.ggerganov.com
+- <https://huggingface.co/ggerganov/whisper.cpp>
+- <https://ggml.ggerganov.com>
 
 You should place the downloaded .bin model in '\<openHAB userdata\>/whisper/' so the add-ons can find them.
 

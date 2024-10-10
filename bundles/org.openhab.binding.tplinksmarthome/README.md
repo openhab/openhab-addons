@@ -423,7 +423,7 @@ Than the a `RefreshType` command will fetch the device state and update the inte
 
 ## Full Example
 
-### tplinksmarthome.things:
+### `tplinksmarthome.things` Example
 
 ```java
 tplinksmarthome:hs100:tv      "TV"                 [ deviceId="00000000000000000000000000000001", refresh=60 ]
@@ -433,7 +433,7 @@ tplinksmarthome:lb130:bulb2   "Living Room Bulb 2" [ deviceId="00000000000000000
 tplinksmarthome:kp401:outlet  "Outdoor Outlet"     [ ipAddress="192.168.1.101" ]
 ```
 
-### tplinksmarthome.items:
+### `tplinksmarthome.items` Example
 
 ```java
 Switch       TP_L_TV      "TV"                                 { channel="tplinksmarthome:hs100:tv:switch" }

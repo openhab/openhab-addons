@@ -80,7 +80,7 @@ Also note that only commands (e.g. `sendCommand`) to the `input` channel are rec
 
 ## Minimal Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess status", interval=15, timeout=5]
@@ -100,7 +100,7 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to a Number Item.
 
-### demo.things
+### `demo.things` Example
 
 ```java
 // "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.

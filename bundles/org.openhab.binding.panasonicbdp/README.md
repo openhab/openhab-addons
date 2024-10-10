@@ -123,7 +123,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 }
 ```
 
-### Appendix A - 'button' channel command codes:
+### Appendix A - 'button' channel command codes
 
 **List of available button commands for BD players:**
 

@@ -20,7 +20,7 @@ Webex Teams supports two main types of app integration:
 - Person integration: OAuth integration that allows the binding to act on behalf of a persons.
 
 Both of these accounts must be first configured on the [Webex Developers](https://developer.webex.com/my-apps) website.
-When creating a person integration, it's important you customize the redirect URL based on your OpenHab installation.
+When creating a person integration, it's important you customize the redirect URL based on your openHAB installation.
 For example if you run your openHAB server on `http://openhab:8080` you should add [http://openhab:8080/connectwebex](http://openhab:8080/connectwebex) to the redirect URIs.
 
 To use a bot account, only configure the `token` (Authentication token).
