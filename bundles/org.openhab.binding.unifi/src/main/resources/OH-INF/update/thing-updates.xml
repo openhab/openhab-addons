@@ -19,7 +19,7 @@
 			<add-channel id="site">
 				<type>unifi:site</type>
 			</add-channel>
-			<add-channel id="ipAdress">
+			<add-channel id="ipAddress">
 				<type>unifi:ipAdress</type>
 				<description>IP address of the device</description>
 			</add-channel>
