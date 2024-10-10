@@ -96,11 +96,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public String getToken(LinkyHandler handler) throws LinkyException {
         return "";
     }

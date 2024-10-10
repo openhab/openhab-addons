@@ -72,6 +72,14 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public void initialize() {
+        tokenUrl = EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
+        authorizeUrl = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+
+        super.initialize();
+    }
+
+    @Override
     public String getClientId() {
         LinkyConfiguration lcConfig = config;
         if (lcConfig != null) {

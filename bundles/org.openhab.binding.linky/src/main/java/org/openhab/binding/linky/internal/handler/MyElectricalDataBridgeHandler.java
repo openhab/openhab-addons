@@ -83,6 +83,9 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void initialize() {
+        tokenUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
+        authorizeUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
+
         super.initialize();
     }
 
