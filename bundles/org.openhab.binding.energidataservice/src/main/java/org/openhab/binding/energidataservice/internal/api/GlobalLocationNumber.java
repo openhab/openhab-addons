@@ -13,6 +13,7 @@
 package org.openhab.binding.energidataservice.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Global Location Number.
@@ -41,6 +42,16 @@ public class GlobalLocationNumber {
     @Override
     public String toString() {
         return gln;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        return o == this || (o instanceof GlobalLocationNumber other && gln.equals(other.gln));
+    }
+
+    @Override
+    public int hashCode() {
+        return gln.hashCode();
     }
 
     public boolean isEmpty() {

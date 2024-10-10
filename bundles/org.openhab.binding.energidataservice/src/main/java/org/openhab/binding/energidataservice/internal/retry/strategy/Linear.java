@@ -75,10 +75,9 @@ public class Linear implements RetryStrategy {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof Linear)) {
+        if (!(o instanceof Linear other)) {
             return false;
         }
-        Linear other = (Linear) o;
 
         return this.jitter == other.jitter && this.minimum.equals(other.minimum) && this.maximum.equals(other.maximum);
     }
