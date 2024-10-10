@@ -142,6 +142,11 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     return UnDefType.UNDEF;
                 }
                 return new DecimalType(goeResponse.transaction);
+            case AWATTAR_MAX_PRICE:
+                if (goeResponse.awattarMaxPrice == null) {
+                    return UnDefType.UNDEF;
+                }
+                return new DecimalType(goeResponse.awattarMaxPrice);
             case ALLOW_CHARGING:
                 return OnOffType.from(goeResponse.allowCharging);
             case TEMPERATURE_TYPE2_PORT:
@@ -248,6 +253,12 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                     value = String.valueOf(decimalCommand.intValue());
                 } else if (command instanceof QuantityType<?>) {
                     value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                }
+                break;
+            case AWATTAR_MAX_PRICE:
+                key = "awp";
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand);
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
