@@ -231,21 +231,9 @@ public class ProductData {
         ProductData productData = new ProductData();
         productData.setDeviceCategory(deviceCategory);
         productData.setSubCategory(subCategory);
-        return productData;
-    }
-
-    /**
-     * Factory method for creating a ProductData for an Insteon product
-     *
-     * @param deviceCategory the Insteon device category
-     * @param subCategory the Insteon device subcategory
-     * @param srcData the source product data to use
-     * @return the product data
-     */
-    public static ProductData makeInsteonProduct(int deviceCategory, int subCategory, @Nullable ProductData srcData) {
-        ProductData productData = makeInsteonProduct(deviceCategory, subCategory);
-        if (srcData != null) {
-            productData.update(srcData);
+        ProductData resourceData = ProductDataRegistry.getInstance().getProductData(deviceCategory, subCategory);
+        if (resourceData != null) {
+            productData.update(resourceData);
         }
         return productData;
     }

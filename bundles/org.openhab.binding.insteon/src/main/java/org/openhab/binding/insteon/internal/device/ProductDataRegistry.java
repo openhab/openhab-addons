@@ -45,9 +45,9 @@ public class ProductDataRegistry extends InsteonResourceLoader {
      *
      * @param deviceCategory device category to match
      * @param subCategory device subcategory to match
-     * @return product data matching provided parameters
+     * @return product data if matching provided parameters, otherwise null
      */
-    public ProductData getProductData(int deviceCategory, int subCategory) {
+    public @Nullable ProductData getProductData(int deviceCategory, int subCategory) {
         int productId = getProductId(deviceCategory, subCategory);
         if (!products.containsKey(productId)) {
             logger.warn("unknown product for devCat:{} subCat:{} in device products xml file",
@@ -55,19 +55,7 @@ public class ProductDataRegistry extends InsteonResourceLoader {
             // fallback to matching product id using device category only
             productId = getProductId(deviceCategory, ProductData.SUB_CATEGORY_UNKNOWN);
         }
-
-        return ProductData.makeInsteonProduct(deviceCategory, subCategory, products.get(productId));
-    }
-
-    /**
-     * Returns the device type for a given dev/sub category
-     *
-     * @param deviceCategory device category to match
-     * @param subCategory device subcategory to match
-     * @return device type matching provided parameters
-     */
-    public @Nullable DeviceType getDeviceType(int deviceCategory, int subCategory) {
-        return getProductData(deviceCategory, subCategory).getDeviceType();
+        return products.get(productId);
     }
 
     /**
@@ -143,7 +131,9 @@ public class ProductDataRegistry extends InsteonResourceLoader {
             logger.warn("overwriting previous definition of product {}", products.get(productId));
         }
 
-        ProductData productData = ProductData.makeInsteonProduct(deviceCategory, subCategory);
+        ProductData productData = new ProductData();
+        productData.setDeviceCategory(deviceCategory);
+        productData.setSubCategory(subCategory);
         productData.setProductKey(productKey);
         productData.setFirstRecordLocation(firstRecord);
 

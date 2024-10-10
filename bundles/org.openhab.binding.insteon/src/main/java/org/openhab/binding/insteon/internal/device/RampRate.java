@@ -17,6 +17,7 @@ import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,6 +65,8 @@ public enum RampRate {
     SEC_0_2(0x1E, 0.2),
     INSTANT(0x1F, 0.1);
 
+    private static final List<String> SUPPORTED_FEATURE_TYPES = List.of(FEATURE_TYPE_GENERIC_DIMMER);
+
     private static final Map<Integer, RampRate> VALUE_MAP = Arrays.stream(values())
             .collect(Collectors.toUnmodifiableMap(rate -> rate.value, Function.identity()));
 
@@ -105,7 +108,7 @@ public enum RampRate {
      * @return true if supported
      */
     public static boolean supportsFeatureType(String featureType) {
-        return FEATURE_TYPE_GENERIC_DIMMER.equals(featureType);
+        return SUPPORTED_FEATURE_TYPES.contains(featureType);
     }
 
     /**

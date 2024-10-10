@@ -34,22 +34,18 @@ public final class Field {
     private final int offset;
     private final DataType type;
 
+    public Field(String name, int offset, DataType type) {
+        this.name = name;
+        this.offset = offset;
+        this.type = type;
+    }
+
     public String getName() {
         return name;
     }
 
     public int getOffset() {
         return offset;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public Field(String name, DataType type, int offset) {
-        this.name = name;
-        this.type = type;
-        this.offset = offset;
     }
 
     private void check(int len, DataType t) throws FieldException {
@@ -61,16 +57,16 @@ public final class Field {
         }
     }
 
-    public void set(byte[] data, Object o) throws FieldException {
+    public void set(byte[] data, String value) throws FieldException, IllegalArgumentException {
         switch (type) {
             case BYTE:
-                setByte(data, (Byte) o);
+                byte b = value.isEmpty() ? 0x00 : (byte) HexUtils.toInteger(value);
+                setByte(data, b);
                 break;
             case ADDRESS:
-                setAddress(data, (InsteonAddress) o);
+                InsteonAddress address = value.isEmpty() ? InsteonAddress.UNKNOWN : new InsteonAddress(value);
+                setAddress(data, address);
                 break;
-            default:
-                throw new FieldException("field data type unknown");
         }
     }
 
@@ -141,8 +137,6 @@ public final class Field {
                 case ADDRESS:
                     s += getAddress(data).toString();
                     break;
-                default:
-                    throw new FieldException("field data type unknown");
             }
         } catch (FieldException e) {
             s += "NULL";

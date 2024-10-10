@@ -38,38 +38,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Msg {
-
-    public static enum Direction {
-        TO_MODEM,
-        FROM_MODEM
-    }
-
     private final Logger logger = LoggerFactory.getLogger(Msg.class);
 
-    private byte[] data;
-    private int headerLength;
-    private Direction direction;
-    private MsgDefinition definition = new MsgDefinition();
+    private final byte[] data;
+    private final MsgDefinition definition;
     private long quietTime = 0;
     private boolean replayed = false;
     private long timestamp = System.currentTimeMillis();
 
-    public Msg(int headerLength, int dataLength, Direction direction) {
-        this.data = new byte[dataLength];
-        this.headerLength = headerLength;
-        this.direction = direction;
+    public Msg(byte[] data, MsgDefinition definition) {
+        this.data = Arrays.copyOf(data, definition.getLength());
+        this.definition = definition;
     }
 
-    public Msg(Msg msg, byte[] data, int dataLength) {
-        this.data = Arrays.copyOf(data, dataLength);
-        this.headerLength = msg.headerLength;
-        this.direction = msg.direction;
-        // the message definition usually doesn't change, but just to be sure...
-        this.definition = new MsgDefinition(msg.definition);
-    }
-
-    public Msg(Msg msg) {
-        this(msg, msg.data, msg.data.length);
+    public Msg(MsgDefinition definition) {
+        this(definition.getData(), definition);
     }
 
     public byte[] getData() {
@@ -81,15 +64,11 @@ public class Msg {
     }
 
     public int getHeaderLength() {
-        return headerLength;
+        return definition.getHeaderLength();
     }
 
     public Direction getDirection() {
-        return direction;
-    }
-
-    public MsgDefinition getDefinition() {
-        return definition;
+        return definition.getDirection();
     }
 
     public long getQuietTime() {
@@ -129,11 +108,11 @@ public class Msg {
     }
 
     public boolean isInbound() {
-        return direction == Direction.FROM_MODEM;
+        return getDirection() == Direction.FROM_MODEM;
     }
 
     public boolean isOutbound() {
-        return direction == Direction.TO_MODEM;
+        return getDirection() == Direction.TO_MODEM;
     }
 
     public boolean isEcho() {
@@ -244,20 +223,12 @@ public class Msg {
         return replayed;
     }
 
-    public void setDefinition(MsgDefinition definition) {
-        this.definition = definition;
-    }
-
     public void setQuietTime(long quietTime) {
         this.quietTime = quietTime;
     }
 
     public void setIsReplayed(boolean replayed) {
         this.replayed = replayed;
-    }
-
-    public void addField(Field f) {
-        definition.addField(f);
     }
 
     public boolean containsField(String key) {
@@ -283,12 +254,11 @@ public class Msg {
     /**
      * Sets a byte at a specific field
      *
-     * @param key the string key in the message definition
+     * @param key the name of the field
      * @param value the byte to put
      */
     public void setByte(String key, byte value) throws FieldException {
-        Field field = definition.getField(key);
-        field.setByte(data, value);
+        definition.getField(key).setByte(data, value);
     }
 
     /**
@@ -441,27 +411,6 @@ public class Msg {
      */
     public int getInt32(String key) throws FieldException {
         return getInt(key, 4);
-    }
-
-    /**
-     * Returns a byte as a hex string
-     *
-     * @param key the name of the field
-     * @return the hex string
-     */
-    public String getHexString(String key) throws FieldException {
-        return HexUtils.getHexString(getByte(key));
-    }
-
-    /**
-     * Returns a byte array starting from a certain field as a hex string
-     *
-     * @param key the name of the field
-     * @param numBytes number of bytes to get
-     * @return the hex string
-     */
-    public String getHexString(String key, int numBytes) throws FieldException {
-        return HexUtils.getHexString(getBytes(key, numBytes), numBytes);
     }
 
     /**
@@ -644,7 +593,7 @@ public class Msg {
 
     @Override
     public String toString() {
-        String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
+        String s = definition.getDirection() + ":";
         for (Field field : definition.getFields()) {
             if ("messageFlags".equals(field.getName())) {
                 s += field.toString(data) + "=" + getType() + ":" + getHopsLeft() + ":" + getMaxHops() + "|";
@@ -668,8 +617,8 @@ public class Msg {
             return null;
         }
         return Optional
-                .ofNullable(MsgDefinitionRegistry.getInstance().getTemplate(buf[1], isExtended, Direction.FROM_MODEM))
-                .filter(template -> template.getLength() == msgLen).map(template -> new Msg(template, buf, msgLen))
+                .ofNullable(MsgDefinitionRegistry.getInstance().getDefinition(buf[1], isExtended, Direction.FROM_MODEM))
+                .filter(definition -> definition.getLength() == msgLen).map(definition -> new Msg(buf, definition))
                 .orElse(null);
     }
 
@@ -678,10 +627,12 @@ public class Msg {
      *
      * @param cmd the message command received
      * @return the length of the header to expect
+     * @throws InvalidMessageTypeException
      */
-    public static int getHeaderLength(byte cmd) {
-        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getTemplate(cmd, Direction.FROM_MODEM))
-                .map(Msg::getHeaderLength).orElse(-1);
+    public static int getHeaderLength(byte cmd) throws InvalidMessageTypeException {
+        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getDefinition(cmd, Direction.FROM_MODEM))
+                .map(MsgDefinition::getHeaderLength)
+                .orElseThrow(() -> new InvalidMessageTypeException("unknown message command"));
     }
 
     /**
@@ -690,32 +641,27 @@ public class Msg {
      * @param cmd the message command received
      * @param isExtended if is an extended message
      * @return message length, or -1 if length cannot be determined
+     * @throws InvalidMessageTypeException
      */
-    public static int getMessageLength(byte cmd, boolean isExtended) {
+    public static int getMessageLength(byte cmd, boolean isExtended) throws InvalidMessageTypeException {
         return Optional
-                .ofNullable(MsgDefinitionRegistry.getInstance().getTemplate(cmd, isExtended, Direction.FROM_MODEM))
-                .map(Msg::getLength).orElse(-1);
+                .ofNullable(MsgDefinitionRegistry.getInstance().getDefinition(cmd, isExtended, Direction.FROM_MODEM))
+                .map(MsgDefinition::getLength)
+                .orElseThrow(() -> new InvalidMessageTypeException("unknown message command"));
     }
 
     /**
      * Factory method to determine if a message is extended
      *
      * @param buf the received bytes
-     * @param len the number of bytes received so far
-     * @param headerLength the known length of the header
-     * @return true if it is definitely extended, false if cannot be
-     *         determined or if it is a standard message
+     * @param headerLength the header length
+     * @return true if is extended
      */
-    public static boolean isExtended(byte[] buf, int len, int headerLength) {
-        if (headerLength <= 2) {
+    public static boolean isExtended(byte[] buf, int headerLength) {
+        if (headerLength <= 2 || buf.length < headerLength) {
             return false;
-        } // extended messages are longer
-        if (len < headerLength) {
-            return false;
-        } // not enough data to tell if extended
-        byte flags = buf[headerLength - 1]; // last byte says flags
-        boolean isExtended = BinaryUtils.isBitSet(flags & 0xFF, 4);
-        return isExtended;
+        }
+        return BinaryUtils.isBitSet(buf[headerLength - 1] & 0xFF, 4);
     }
 
     /**
@@ -726,7 +672,7 @@ public class Msg {
      * @throws InvalidMessageTypeException
      */
     public static Msg makeMessage(byte cmd) throws InvalidMessageTypeException {
-        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getTemplate(cmd, Direction.TO_MODEM))
+        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getDefinition(cmd, Direction.TO_MODEM))
                 .map(Msg::new).orElseThrow(() -> new InvalidMessageTypeException(
                         "unknown message command: " + HexUtils.getHexString(cmd)));
     }
@@ -739,7 +685,7 @@ public class Msg {
      * @throws InvalidMessageTypeException
      */
     public static Msg makeMessage(String type) throws InvalidMessageTypeException {
-        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getTemplate(type)).map(Msg::new)
+        return Optional.ofNullable(MsgDefinitionRegistry.getInstance().getDefinition(type)).map(Msg::new)
                 .orElseThrow(() -> new InvalidMessageTypeException("unknown message type: " + type));
     }
 

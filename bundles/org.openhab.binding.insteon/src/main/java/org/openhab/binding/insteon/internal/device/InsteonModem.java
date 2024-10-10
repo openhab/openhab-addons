@@ -245,7 +245,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         int deviceCategory = msg.getInt("DeviceCategory");
         int subCategory = msg.getInt("DeviceSubCategory");
 
-        ProductData productData = ProductDataRegistry.getInstance().getProductData(deviceCategory, subCategory);
+        ProductData productData = ProductData.makeInsteonProduct(deviceCategory, subCategory);
         productData.setFirmwareVersion(msg.getInt("FirmwareVersion"));
 
         DeviceType deviceType = productData.getDeviceType();

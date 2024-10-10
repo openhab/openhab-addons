@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
 import org.openhab.binding.insteon.internal.device.ProductData;
-import org.openhab.binding.insteon.internal.device.ProductDataRegistry;
 import org.openhab.binding.insteon.internal.transport.PortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
@@ -290,7 +289,7 @@ public class ModemDBReader implements PortListener {
         int subCategory = Byte.toUnsignedInt(toAddr.getMiddleByte());
         int firmware = Byte.toUnsignedInt(toAddr.getLowByte());
         int hardware = msg.getInt("command2");
-        ProductData productData = ProductDataRegistry.getInstance().getProductData(deviceCategory, subCategory);
+        ProductData productData = ProductData.makeInsteonProduct(deviceCategory, subCategory);
         productData.setFirmwareVersion(firmware);
         productData.setHardwareVersion(hardware);
         // set product data if in modem db
