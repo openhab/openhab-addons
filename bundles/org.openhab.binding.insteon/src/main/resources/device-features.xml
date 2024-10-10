@@ -235,7 +235,7 @@
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<message-handler command="0x19">IOLincRelayModeReplyHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
-		<command-handler command="OnOffType">IOLincRelayModeCommandHandler</command-handler>
+		<command-handler command="StringType">IOLincRelayModeCommandHandler</command-handler>
 		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
 	</feature-type>
@@ -523,6 +523,34 @@
 		<command-handler command="StopMoveType">NoOpCommandHandler</command-handler>
 		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OutletStatusGroup -->
+	</feature-type>
+
+	<feature-type name="RemoteBatteryLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- battery level range 0xA0 => 0xB4 (undocumented) -->
+		<!-- message field data1 0x01 (documented); 0x00 (observed) -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d1="0x00" d2="0x01" field="userData10"
+			min="0xA0" max="0xB4">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="RemoteSceneButtonConfig">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">RemoteSceneButtonConfigReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType">RemoteSceneButtonConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="RemoteSwitchButtonConfig">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">RemoteSwitchButtonConfigReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType">RemoteSwitchButtonConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
 	</feature-type>
 
 	<feature-type name="PowerMeterDataGroup">

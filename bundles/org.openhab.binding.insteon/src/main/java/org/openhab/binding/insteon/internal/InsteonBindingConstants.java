@@ -13,10 +13,13 @@
 package org.openhab.binding.insteon.internal;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSceneButtonConfig;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSwitchButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.VenstarSystemMode;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
@@ -77,7 +80,6 @@ public class InsteonBindingConstants {
     public static final String FEATURE_RAMP_RATE = "rampRate";
     public static final String FEATURE_SCENE_ON_OFF = "sceneOnOff";
     public static final String FEATURE_STAY_AWAKE = "stayAwake";
-    public static final String FEATURE_SYSTEM_MODE = "systemMode";
     public static final String FEATURE_TEMPERATURE_SCALE = "temperatureScale";
     public static final String FEATURE_TWO_GROUPS = "2Groups";
 
@@ -90,6 +92,8 @@ public class InsteonBindingConstants {
     public static final String FEATURE_TYPE_KEYPAD_BUTTON_ON_MASK = "KeypadButtonOnMask";
     public static final String FEATURE_TYPE_KEYPAD_BUTTON_TOGGLE_MODE = "KeypadButtonToggleMode";
     public static final String FEATURE_TYPE_OUTLET_SWITCH = "OutletSwitch";
+    public static final String FEATURE_TYPE_REMOTE_SCENE_BUTTON_CONFIG = "RemoteSceneButtonConfig";
+    public static final String FEATURE_TYPE_REMOTE_SWITCH_BUTTON_CONFIG = "RemoteSwitchButtonConfig";
     public static final String FEATURE_TYPE_THERMOSTAT_FAN_MODE = "ThermostatFanMode";
     public static final String FEATURE_TYPE_THERMOSTAT_SYSTEM_MODE = "ThermostatSystemMode";
     public static final String FEATURE_TYPE_THERMOSTAT_COOL_SETPOINT = "ThermostatCoolSetpoint";
@@ -99,12 +103,9 @@ public class InsteonBindingConstants {
     public static final String FEATURE_TYPE_VENSTAR_COOL_SETPOINT = "VenstarCoolSetpoint";
     public static final String FEATURE_TYPE_VENSTAR_HEAT_SETPOINT = "VenstarHeatSetpoint";
 
-    // List of specific device types
-    public static final String DEVICE_TYPE_CLIMATE_CONTROL_VENSTAR_THERMOSTAT = "ClimateControl_VenstarThermostat";
-
     // Map of custom state description options
-    public static final Map<String, String[]> CUSTOM_STATE_DESCRIPTION_OPTIONS = Map.ofEntries(
-            // Venstar Thermostat System Mode
-            Map.entry(DEVICE_TYPE_CLIMATE_CONTROL_VENSTAR_THERMOSTAT + ":" + FEATURE_SYSTEM_MODE,
-                    VenstarSystemMode.names().toArray(String[]::new)));
+    public static final Map<String, List<String>> CUSTOM_STATE_DESCRIPTION_OPTIONS = Map.ofEntries(
+            Map.entry(FEATURE_TYPE_REMOTE_SCENE_BUTTON_CONFIG, RemoteSceneButtonConfig.names()),
+            Map.entry(FEATURE_TYPE_REMOTE_SWITCH_BUTTON_CONFIG, RemoteSwitchButtonConfig.names()),
+            Map.entry(FEATURE_TYPE_VENSTAR_SYSTEM_MODE, VenstarSystemMode.names()));
 }

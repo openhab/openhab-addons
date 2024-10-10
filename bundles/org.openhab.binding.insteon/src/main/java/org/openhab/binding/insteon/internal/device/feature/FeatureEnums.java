@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -111,24 +112,27 @@ public class FeatureEnums {
         }
     }
 
-    public static enum KeypadButtonConfig {
-        BUTTON_6(0x07, 6),
-        BUTTON_8(0x06, 8);
+    public static enum KeypadButtonConfig implements DeviceTypeRenamer {
+        BUTTON_6(false, "KeypadButton6"),
+        BUTTON_8(true, "KeypadButton8");
 
-        private int value;
-        private int count;
+        private static final Pattern DEVICE_TYPE_NAME_PATTERN = Pattern.compile("KeypadButton[68]$");
 
-        private KeypadButtonConfig(int value, int count) {
-            this.value = value;
-            this.count = count;
+        private boolean setFlag;
+        private String replacement;
+
+        private KeypadButtonConfig(boolean setFlag, String replacement) {
+            this.setFlag = setFlag;
+            this.replacement = replacement;
         }
 
-        public int getValue() {
-            return value;
+        @Override
+        public String getNewDeviceType(String deviceType) {
+            return DEVICE_TYPE_NAME_PATTERN.matcher(deviceType).replaceAll(replacement);
         }
 
-        public int getCount() {
-            return count;
+        public boolean shouldSetFlag() {
+            return setFlag;
         }
 
         public static KeypadButtonConfig from(boolean is8Button) {
@@ -191,6 +195,78 @@ public class FeatureEnums {
                 // return dual momentary, otherwise
                 return MicroModuleOpMode.DUAL_MOMENTARY;
             }
+        }
+    }
+
+    public static enum RemoteSceneButtonConfig implements DeviceTypeRenamer {
+        BUTTON_4("MiniRemoteScene4"),
+        BUTTON_8_ALWAYS_ON("MiniRemoteScene8"),
+        BUTTON_8_TOGGLE("MiniRemoteScene8");
+
+        private static final Pattern DEVICE_TYPE_NAME_PATTERN = Pattern.compile("MiniRemoteScene[48]$");
+
+        private String replacement;
+
+        private RemoteSceneButtonConfig(String replacement) {
+            this.replacement = replacement;
+        }
+
+        @Override
+        public String getNewDeviceType(String deviceType) {
+            return DEVICE_TYPE_NAME_PATTERN.matcher(deviceType).replaceAll(replacement);
+        }
+
+        public static RemoteSceneButtonConfig valueOf(int value) {
+            if (BinaryUtils.isBitSet(value, 6)) {
+                // return button 4, when grouped op flag (6) is on
+                return RemoteSceneButtonConfig.BUTTON_4;
+            } else if (BinaryUtils.isBitSet(value, 4)) {
+                // return button 8 always on, when toggle off op flag (5) is on
+                return RemoteSceneButtonConfig.BUTTON_8_ALWAYS_ON;
+            } else {
+                // return button 8 toggle, otherwise
+                return RemoteSceneButtonConfig.BUTTON_8_TOGGLE;
+            }
+        }
+
+        public static List<String> names() {
+            return Arrays.stream(values()).map(String::valueOf).toList();
+        }
+    }
+
+    public static enum RemoteSwitchButtonConfig implements DeviceTypeRenamer {
+        BUTTON_1("MiniRemoteSwitch"),
+        BUTTON_2_ALWAYS_ON("MiniRemoteSwitch2"),
+        BUTTON_2_TOGGLE("MiniRemoteSwitch2");
+
+        private static final Pattern DEVICE_TYPE_NAME_PATTERN = Pattern.compile("MiniRemoteSwitch[2]?$");
+
+        private String replacement;
+
+        private RemoteSwitchButtonConfig(String replacement) {
+            this.replacement = replacement;
+        }
+
+        @Override
+        public String getNewDeviceType(String deviceType) {
+            return DEVICE_TYPE_NAME_PATTERN.matcher(deviceType).replaceAll(replacement);
+        }
+
+        public static RemoteSwitchButtonConfig valueOf(int value) {
+            if (BinaryUtils.isBitSet(value, 6)) {
+                // return button 1, when grouped op flag (6) is on
+                return RemoteSwitchButtonConfig.BUTTON_1;
+            } else if (BinaryUtils.isBitSet(value, 4)) {
+                // return button 2 always on, when toggle off op flag (5) is on
+                return RemoteSwitchButtonConfig.BUTTON_2_ALWAYS_ON;
+            } else {
+                // return button 2 toggle, otherwise
+                return RemoteSwitchButtonConfig.BUTTON_2_TOGGLE;
+            }
+        }
+
+        public static List<String> names() {
+            return Arrays.stream(values()).map(String::valueOf).toList();
         }
     }
 
@@ -400,5 +476,9 @@ public class FeatureEnums {
             }
             return format;
         }
+    }
+
+    public interface DeviceTypeRenamer {
+        String getNewDeviceType(String deviceType);
     }
 }

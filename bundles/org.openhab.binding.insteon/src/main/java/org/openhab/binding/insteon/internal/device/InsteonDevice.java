@@ -40,10 +40,11 @@ import org.openhab.binding.insteon.internal.device.database.ModemDB;
 import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
 import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.DeviceTypeRenamer;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.GroupMessageStateMachine;
-import org.openhab.binding.insteon.internal.transport.message.GroupMessageStateMachine.GroupMessageType;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.utils.BinaryUtils;
 import org.openhab.core.library.types.DecimalType;
@@ -219,49 +220,32 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     /**
-     * Returns if a broadcast message is duplicate
+     * Returns if an incoming message is duplicate
      *
-     * @param cmd1 the cmd1 from the broadcast message received
-     * @param timestamp the timestamp from the broadcast message received
-     * @return true if the broadcast message is duplicate
+     * @param msg the message received
+     * @return true if group or broadcast message is duplicate
      */
-    public boolean isDuplicateBroadcastMsg(byte cmd1, long timestamp) {
-        synchronized (lastBroadcastReceived) {
-            long timelapse = timestamp - lastBroadcastReceived.getOrDefault(cmd1, timestamp);
-            if (timelapse > 0 && timelapse < BCAST_STATE_TIMEOUT) {
-                return true;
-            } else {
-                lastBroadcastReceived.put(cmd1, timestamp);
-                return false;
+    public boolean isDuplicateMsg(Msg msg) {
+        try {
+            if (msg.isAllLinkBroadcastOrCleanup()) {
+                synchronized (groupState) {
+                    int group = msg.getGroup();
+                    GroupMessageStateMachine stateMachine = groupState.computeIfAbsent(group,
+                            k -> new GroupMessageStateMachine());
+                    return stateMachine != null && stateMachine.isDuplicate(msg);
+                }
+            } else if (msg.isBroadcast()) {
+                synchronized (lastBroadcastReceived) {
+                    byte cmd1 = msg.getByte("command1");
+                    long timestamp = msg.getTimestamp();
+                    Long lastTimestamp = lastBroadcastReceived.put(cmd1, timestamp);
+                    return lastTimestamp != null && Math.abs(timestamp - lastTimestamp) <= BCAST_STATE_TIMEOUT;
+                }
             }
+        } catch (FieldException e) {
+            logger.warn("error parsing msg: {}", msg, e);
         }
-    }
-
-    /**
-     * Returns if a group message is duplicate
-     *
-     * @param cmd1 cmd1 from the group message received
-     * @param timestamp the timestamp from the broadcast message received
-     * @param group the broadcast group
-     * @param type the group message type that was received
-     * @return true if the group message is duplicate
-     */
-    public boolean isDuplicateGroupMsg(byte cmd1, long timestamp, int group, GroupMessageType type) {
-        synchronized (groupState) {
-            GroupMessageStateMachine stateMachine = groupState.get(group);
-            if (stateMachine == null) {
-                stateMachine = new GroupMessageStateMachine();
-                groupState.put(group, stateMachine);
-                logger.trace("{} created group {} state", address, group);
-            }
-            if (stateMachine.getLastCommand() == cmd1 && stateMachine.getLastTimestamp() == timestamp) {
-                logger.trace("{} using previous group {} state for {}", address, group, type);
-                return stateMachine.isDuplicate();
-            } else {
-                logger.trace("{} updating group {} state to {}", address, group, type);
-                return stateMachine.update(address, group, cmd1, timestamp, type);
-            }
-        }
+        return false;
     }
 
     /**
@@ -494,6 +478,13 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             getFeatures().stream().filter(DeviceFeature::isStatusFeature)
                     .forEach(feature -> feature.handleMessage(msg));
         }
+        // poll battery powered device while awake if non-duplicate all link or broadcast message
+        if ((msg.isAllLinkBroadcastOrCleanup() || msg.isBroadcast()) && isBatteryPowered() && isAwake()
+                && !isDuplicateMsg(msg)) {
+            // add poll delay for non-replayed all link broadcast allowing cleanup msg to be be processed beforehand
+            long delay = msg.isAllLinkBroadcast() && !msg.isAllLinkSuccessReport() && !msg.isReplayed() ? 1500L : 0L;
+            doPoll(delay);
+        }
         // notify if responding state changed
         if (isPrevResponding != isResponding()) {
             statusChanged();
@@ -599,9 +590,18 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     /**
      * Updates this device type
      *
+     * @param renamer the device type renamer
+     */
+    public void updateType(DeviceTypeRenamer renamer) {
+        Optional.ofNullable(getType()).map(DeviceType::getName).map(renamer::getNewDeviceType)
+                .map(name -> DeviceTypeRegistry.getInstance().getDeviceType(name)).ifPresent(this::updateType);
+    }
+
+    /**
+     * Updates this device type
+     *
      * @param newType the new device type to use
      */
-
     public void updateType(DeviceType newType) {
         ProductData productData = getProductData();
         DeviceType currentType = getType();
