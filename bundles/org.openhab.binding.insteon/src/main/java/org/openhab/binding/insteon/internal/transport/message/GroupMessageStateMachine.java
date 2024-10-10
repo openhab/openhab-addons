@@ -13,9 +13,6 @@
 package org.openhab.binding.insteon.internal.transport.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Ideally, Insteon ALL LINK messages are received in this order, and
@@ -87,7 +84,7 @@ public class GroupMessageStateMachine {
      * IN:Cmd:0x50|fromAddress:20.AC.99|toAddress:13.03.01|messageFlags:0xCB=ALL_LINK_BROADCAST:3:2|command1:0x06|
      * command2:0x00|
      */
-    public static enum GroupMessageType {
+    private enum GroupMessageType {
         BCAST,
         CLEAN,
         SUCCESS
@@ -97,97 +94,89 @@ public class GroupMessageStateMachine {
      * The state of the machine (i.e. what message we are expecting next).
      * The usual state should be EXPECT_BCAST
      */
-    private static enum State {
+    private enum State {
         EXPECT_BCAST,
         EXPECT_CLEAN,
         EXPECT_SUCCESS
     }
-
-    private final Logger logger = LoggerFactory.getLogger(GroupMessageStateMachine.class);
 
     private State state = State.EXPECT_BCAST;
     private boolean duplicate = false;
     private byte lastCmd1 = 0;
     private long lastTimestamp = 0;
 
-    public boolean isDuplicate() {
+    /**
+     * Returns if group message is duplicate
+     *
+     * @param msg the group message
+     * @return true if the group message is duplicate
+     * @throws FieldException
+     */
+    public boolean isDuplicate(Msg msg) throws FieldException {
+        byte cmd1 = msg.isAllLinkSuccessReport() ? msg.getInsteonAddress("toAddress").getHighByte()
+                : msg.getByte("command1");
+        long timestamp = msg.getTimestamp();
+
+        if (cmd1 != lastCmd1 || timestamp != lastTimestamp) {
+            GroupMessageType type = msg.isAllLinkSuccessReport() ? GroupMessageType.SUCCESS
+                    : msg.isAllLinkCleanup() ? GroupMessageType.CLEAN : GroupMessageType.BCAST;
+
+            update(cmd1, timestamp, type);
+        }
+
         return duplicate;
     }
 
-    public byte getLastCommand() {
-        return lastCmd1;
-    }
-
-    public long getLastTimestamp() {
-        return lastTimestamp;
-    }
-
     /**
-     * Updates the state machine and determine if not duplicate
+     * Updates the state machine
      *
-     * @param address the address of the device that this state machine belongs to
-     * @param group the group that this state machine belongs to
      * @param cmd1 cmd1 from the message received
      * @param timestamp timestamp from the message received
      * @param type the group message type that was received
-     * @return true if the group message is duplicate
      */
-    public boolean update(InsteonAddress address, int group, byte cmd1, long timestamp, GroupMessageType type) {
-        boolean isNewGroupMsg = cmd1 != lastCmd1 || timestamp > lastTimestamp + GROUP_STATE_TIMEOUT;
-
-        switch (state) {
-            case EXPECT_BCAST:
-                switch (type) {
-                    case BCAST:
-                        duplicate = false;
-                        break;
-                    case CLEAN:
-                    case SUCCESS:
-                        duplicate = !isNewGroupMsg;
-                        break;
-                }
-                break;
-            case EXPECT_CLEAN:
-                switch (type) {
-                    case BCAST:
-                        duplicate = !isNewGroupMsg;
-                        break;
-                    case CLEAN:
-                    case SUCCESS:
-                        duplicate = true;
-                        break;
-                }
-                break;
-            case EXPECT_SUCCESS:
-                switch (type) {
-                    case BCAST:
-                        duplicate = false;
-                        break;
-                    case CLEAN:
-                    case SUCCESS:
-                        duplicate = true;
-                        break;
-                }
-                break;
-        }
+    private void update(byte cmd1, long timestamp, GroupMessageType type) {
+        boolean isNewGroupMsg = cmd1 != lastCmd1 || Math.abs(timestamp - lastTimestamp) > GROUP_STATE_TIMEOUT;
 
         switch (type) {
             case BCAST:
+                switch (state) {
+                    case EXPECT_BCAST:
+                    case EXPECT_SUCCESS:
+                        duplicate = false;
+                        break;
+                    case EXPECT_CLEAN:
+                        duplicate = !isNewGroupMsg;
+                        break;
+                }
                 state = State.EXPECT_CLEAN;
                 break;
             case CLEAN:
+                switch (state) {
+                    case EXPECT_BCAST:
+                        duplicate = !isNewGroupMsg;
+                        break;
+                    case EXPECT_CLEAN:
+                    case EXPECT_SUCCESS:
+                        duplicate = true;
+                        break;
+                }
                 state = State.EXPECT_SUCCESS;
                 break;
             case SUCCESS:
+                switch (state) {
+                    case EXPECT_BCAST:
+                        duplicate = !isNewGroupMsg;
+                        break;
+                    case EXPECT_CLEAN:
+                    case EXPECT_SUCCESS:
+                        duplicate = true;
+                        break;
+                }
                 state = State.EXPECT_BCAST;
                 break;
         }
 
         lastCmd1 = cmd1;
         lastTimestamp = timestamp;
-
-        logger.debug("{} group:{} type:{} state:{} duplicate:{}", address, group, type, state, duplicate);
-
-        return duplicate;
     }
 }
