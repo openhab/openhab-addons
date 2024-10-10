@@ -167,23 +167,23 @@
 			<channel id="negative-dc-link-voltage" typeId="electric-potential">
 				<label>Negative DC Link Voltage</label>
 			</channel>
-			<channel id="external-energy-produced-l1" typeId="energy">
-				<label>External Energy Produced L1</label>
+			<channel id="grid-energy-produced-l1" typeId="energy">
+				<label>Grid Energy Produced L1</label>
 			</channel>
-			<channel id="external-energy-produced-l2" typeId="energy">
-				<label>External Energy Produced L2</label>
+			<channel id="grid-energy-produced-l2" typeId="energy">
+				<label>Grid Energy Produced L2</label>
 			</channel>
-			<channel id="external-energy-produced-l3" typeId="energy">
-				<label>External Energy Produced L3</label>
+			<channel id="grid-energy-produced-l3" typeId="energy">
+				<label>Grid Energy Produced L3</label>
 			</channel>
-			<channel id="external-energy-consumed-l1" typeId="energy">
-				<label>External Energy Consumed L1</label>
+			<channel id="grid-energy-consumed-l1" typeId="energy">
+				<label>Grid Energy Consumed L1</label>
 			</channel>
-			<channel id="external-energy-consumed-l2" typeId="energy">
-				<label>External Energy Consumed L2</label>
+			<channel id="grid-energy-consumed-l2" typeId="energy">
+				<label>Grid Energy Consumed L2</label>
 			</channel>
-			<channel id="external-energy-consumed-l3" typeId="energy">
-				<label>External Energy Consumed L3</label>
+			<channel id="grid-energy-consumed-l3" typeId="energy">
+				<label>Grid Energy Consumed L3</label>
 			</channel>
 			<channel id="inverter-energy-produced-l1" typeId="energy">
 				<label>Inverter Energy Produced L1</label>
@@ -221,23 +221,23 @@
 			<channel id="load-energy-consumed-l3" typeId="energy">
 				<label>Load Energy Consumed L3</label>
 			</channel>
-			<channel id="external-energy-produced-3p" typeId="energy">
-				<label>External Energy Produced 3p</label>
+			<channel id="grid-energy-produced-total" typeId="energy">
+				<label>Total Produced Grid Energy</label>
 			</channel>
-			<channel id="external-energy-consumed-3p" typeId="energy">
-				<label>External Energy Consumed 3p</label>
+			<channel id="grid-energy-consumed-total" typeId="energy">
+				<label>Total Consumed Grid Energy</label>
 			</channel>
-			<channel id="inverter-energy-produced-3p" typeId="energy">
-				<label>Inverter Energy Produced 3p</label>
+			<channel id="inverter-energy-produced-total" typeId="energy">
+				<label>Total Produced Inverter Energy</label>
 			</channel>
-			<channel id="inverter-energy-consumed-3p" typeId="energy">
-				<label>Inverter Energy Consumed 3p</label>
+			<channel id="inverter-energy-consumed-total" typeId="energy">
+				<label>Total Consumed Inverter Energy</label>
 			</channel>
-			<channel id="load-energy-produced-3p" typeId="energy">
-				<label>Load Energy Produced 3p</label>
+			<channel id="load-energy-produced-total" typeId="energy">
+				<label>Total Produced Load Energy</label>
 			</channel>
-			<channel id="load-energy-consumed-3p" typeId="energy">
-				<label>Load Energy Consumed 3p</label>
+			<channel id="load-energy-consumed-total" typeId="energy">
+				<label>Total Consumed Load Energy</label>
 			</channel>
 			<channel id="total-solar-energy" typeId="power">
 				<label>Total Solar Energy</label>

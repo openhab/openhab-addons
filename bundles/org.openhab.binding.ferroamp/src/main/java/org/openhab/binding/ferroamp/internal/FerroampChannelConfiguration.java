@@ -145,18 +145,18 @@ public class FerroampChannelConfiguration {
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_POSITIVEDCLINKVOLTAGE, Units.VOLT));
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_NEGATIVEDCLINKVOLTAGE, Units.VOLT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYPRODUCEDL1, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYPRODUCEDL2, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYPRODUCEDL3, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYCONSUMEDL1, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYCONSUMEDL2, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYCONSUMEDL3, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYPRODUCEDL1, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYPRODUCEDL2, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYPRODUCEDL3, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYCONSUMEDL1, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYCONSUMEDL2, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYCONSUMEDL3, Units.WATT));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
                 FerroampBindingConstants.CHANNEL_INVERTERENERGYPRODUCEDL1, Units.WATT));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
@@ -181,18 +181,18 @@ public class FerroampChannelConfiguration {
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYCONSUMEDL2, Units.WATT));
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYCONSUMEDL3, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYPRODUCED3P, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_EXTERNALENERGYCONSUMED3P, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERENERGYPRODUCED3P, Units.WATT));
-        channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERENERGYCONSUMED3P, Units.WATT));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYPRODUCED3P, Units.WATT));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYPRODUCEDTOTAL, Units.WATT));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYCONSUMED3P, Units.WATT));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDENERGYCONSUMEDTOTAL, Units.WATT));
+        channelConfigurationEhub.add(new FerroampChannelConfiguration(
+                FerroampBindingConstants.CHANNEL_INVERTERENERGYPRODUCEDTOTAL, Units.WATT));
+        channelConfigurationEhub.add(new FerroampChannelConfiguration(
+                FerroampBindingConstants.CHANNEL_INVERTERENERGYCONSUMEDTOTAL, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYPRODUCEDTOTAL, Units.WATT));
+        channelConfigurationEhub.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_LOADENERGYCONSUMEDTOTAL, Units.WATT));
         channelConfigurationEhub
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_TOTALSOLARENERGY, Units.WATT));
         channelConfigurationEhub

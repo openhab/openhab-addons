@@ -26,16 +26,16 @@ Discovery is not supported.
 
 The following configuration parameters are available.
 
-| Name            | Type    | Description                              | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------|---------|----------|----------|
-| hostName        | text    | Hostname or IP address of the device     | N/A     | yes      | no       |
-| userName        | text    | Username to access the device            | N/A     | yes      | no       |
-| password        | text    | Password to access the device            | N/A     | yes      | no       |
-| hasBattery      | boolean | Is there a battery connected or not?     | N/A     | no       | yes      |
-| ssoS0           | boolean | Is there a first SSO unit connected?     | N/A     | no       | no       |
-| ssoS1           | boolean | Is there a second SSO unit connected?    | N/A     | no       | no       |
-| ssoS2           | boolean | Is there a third SSO unit connected?     | N/A     | no       | no       |
-| ssoS3           | boolean | Is there a fourth SSO unit connected?    | N/A     | no       | no       |
+| Name            | Type    | Description                                           | Default | Required | Advanced |
+|-----------------|---------|------------------------------------------             |---------|----------|----------|
+| hostName        | text    | Hostname or IP address of the device                  | N/A     | yes      | no       |
+| userName        | text    | Username to access the device                         | N/A     | yes      | no       |
+| password        | text    | Password to access the device                         | N/A     | yes      | no       |
+| hasBattery      | boolean | Has the system a battery connected?                   | N/A     | no       | yes      |
+| ssoS0           | boolean | Has the system, the 1'st Sso Pv-string connected?     | N/A     | no       | no       |
+| ssoS1           | boolean | Has the system, the 2'nd Sso Pv-string connected?     | N/A     | no       | no       |
+| ssoS2           | boolean | Has the system, the 3'rd Sso Pv-string connected?     | N/A     | no       | no       |
+| ssoS3           | boolean | Has the system, the 4'th Sso Pv-string connected?     | N/A     | no       | no       |
 
 | The unique serial number is marked on the side of the SSO unit. Ex. PS00990-A04-S20120476
 
@@ -44,9 +44,9 @@ The following configuration parameters are available.
 | Channel Type ID                       | Item Type                  | Read/Write | Label                                    | Description 
 |----------------------------------------------------------------------------------------------------------------------------------------------
 | grid-frequency                        | Number:Frequency           | R          | Estimated Grid Frequency                 | Estimated Grid Frequency |
-| ace-current-l1                        | Number:ElectricCurrent     | R          | ACE Current L1                           | ACE equalization current set-points in Arms |
-| ace-current-l2                        | Number:ElectricCurrent     | R          | ACE Current L2                           | ACE equalization current set-points in Arms |
-| ace-current-l3                        | Number:ElectricCurrent     | R          | ACE Current L3                           | ACE equalization current set-points in Arms |
+| ace-current-l1                        | Number:ElectricCurrent     | R          | ACE Current L1                           | Adaptive Current Equalization (ACE) equalization current set-points in Amps root mean square (Arms) |
+| ace-current-l2                        | Number:ElectricCurrent     | R          | ACE Current L2                           | Adaptive Current Equalization (ACE) equalization current set-points in Amps root mean square (Arms) |
+| ace-current-l3                        | Number:ElectricCurrent     | R          | ACE Current L3                           | Adaptive Current Equalization (ACE) equalization current set-points in Amps root mean square (Arms) |
 | external-voltage-l1                   | Number:ElectricPotential   | R          | External Voltage L1                      | External voltage |
 | external-voltage-l2                   | Number:ElectricPotential   | R          | External Voltage L2                      | External voltage |
 | external-voltage-l3                   | Number:ElectricPotential   | R          | External Voltage L3                      | External voltage |
@@ -59,15 +59,15 @@ The following configuration parameters are available.
 | inverter-current-active-l1            | Number:ElectricCurrent     | R          | Inverter Active current L1               | Inverter active current |
 | inverter-current-active-l2            | Number:ElectricCurrent     | R          | Inverter Active current L1               | Inverter active current |
 | inverter-current-active-l3            | Number:ElectricCurrent     | R          | Inverter Active current L1               | Inverter active current |
-| grid-current-l1                       | Number:ElectricCurrent     | R          | Grid Current L1                          | External/grid RMS current |
-| grid-current-l2                       | Number:ElectricCurrent     | R          | Grid Current L2                          | External/grid RMS current |
-| grid-current-l3                       | Number:ElectricCurrent     | R          | Grid Current L3                          | External/grid RMS current |
-| grid-current-reactive-l1              | Number:ElectricCurrent     | R          | Grid Current Reactive L1                 | External/grid current reactive |
-| grid-current-reactive-l2              | Number:ElectricCurrent     | R          | Grid Current Reactive L2                 | External/grid current reactive |
-| grid-current-reactive-l3              | Number:ElectricCurrent     | R          | Grid Current Reactive L3                 | External/grid current reactive |
-| grid-current-active-l1                | Number:ElectricCurrent     | R          | Grid Current Active L1                   | External/grid current active |
-| grid-current-active-l2                | Number:ElectricCurrent     | R          | Grid Current Active L2                   | External/grid current active |
-| grid-current-active-l3                | Number:ElectricCurrent     | R          | Grid Current Active L3                   | External/grid current active |
+| grid-current-l1                       | Number:ElectricCurrent     | R          | Grid Current L1                          | Grid RMS current |
+| grid-current-l2                       | Number:ElectricCurrent     | R          | Grid Current L2                          | Grid RMS current |
+| grid-current-l3                       | Number:ElectricCurrent     | R          | Grid Current L3                          | Grid RMS current |
+| grid-current-reactive-l1              | Number:ElectricCurrent     | R          | Grid Current Reactive L1                 | Grid current reactive |
+| grid-current-reactive-l2              | Number:ElectricCurrent     | R          | Grid Current Reactive L2                 | Grid current reactive |
+| grid-current-reactive-l3              | Number:ElectricCurrent     | R          | Grid Current Reactive L3                 | Grid current reactive |
+| grid-current-active-l1                | Number:ElectricCurrent     | R          | Grid Current Active L1                   | Grid current active |
+| grid-current-active-l2                | Number:ElectricCurrent     | R          | Grid Current Active L2                   | Grid current active |
+| grid-current-active-l3                | Number:ElectricCurrent     | R          | Grid Current Active L3                   | Grid current active |
 | inverter-reactive-current-l1          | Number:ElectricCurrent     | R          | Inverter Reactive Current L1             | 
 | inverter-reactive-current-l2          | Number:ElectricCurrent     | R          | Inverter Reactive Current L2             | 
 | inverter-reactive-current-l3          | Number:ElectricCurrent     | R          | Inverter Reactive Current L3             | 
@@ -75,12 +75,12 @@ The following configuration parameters are available.
 | inverter-load-l2                      | Number:ElectricCurrent     | R          | Inverter Load L2                         |
 | inverter-load-l3                      | Number:ElectricCurrent     | R          | Inverter Load L3                         |
 | apparent-power                        | Number:Energy              | R          | Apparent Power                           | Apparent power
-| grid-power-active-l1                  | Number:Power               | R          | Grid Power Active L1                     | External/grid power, active |
-| grid-power-active-l2                  | Number:Power               | R          | Grid Power Active L2                     | External/grid power, active |
-| grid-power-active-l3                  | Number:Power               | R          | Grid Power Active L3                     | External/grid power, active |
-| grid-power-reactive-l1                | Number:Power               | R          | Grid Power Reactive L1                   | External/grid power, reactive |
-| grid-power-reactive-l2                | Number:Power               | R          | Grid Power Reactive L2                   | External/grid power, reactive |
-| grid-power-reactive-l3                | Number:Power               | R          | Grid Power Reactive L3                   | External/grid power, reactive |
+| grid-power-active-l1                  | Number:Power               | R          | Grid Power Active L1                     | Grid power, active |
+| grid-power-active-l2                  | Number:Power               | R          | Grid Power Active L2                     | Grid power, active |
+| grid-power-active-l3                  | Number:Power               | R          | Grid Power Active L3                     | Grid power, active |
+| grid-power-reactive-l1                | Number:Power               | R          | Grid Power Reactive L1                   | Grid power, reactive |
+| grid-power-reactive-l2                | Number:Power               | R          | Grid Power Reactive L2                   | Grid power, reactive |
+| grid-power-reactive-l3                | Number:Power               | R          | Grid Power Reactive L3                   | Grid power, reactive |
 | inverter-power-active-l1              | Number:Power               | R          | Inverter Power Active L1                 | Inverter power, active |
 | inverter-power-active-l2              | Number:Power               | R          | Inverter Power Active L2                 | Inverter power, active |
 | inverter-power-active-l3              | Number:Power               | R          | Inverter Power Active L3                 | Inverter power, active |
@@ -93,15 +93,15 @@ The following configuration parameters are available.
 | consumption-power-reactive-l1         | Number:Power               | R          | Consumption Power Reactive L1            |
 | consumption-power-reactive-l2         | Number:Power               | R          | Consumption Power Reactive L2            |
 | consumption-power-reactive-l3         | Number:Power               | R          | Consumption Power Reactive L3            |
-| solar-pv                              | Number:Power               | R          | Solar Power                              | Only sent when system has PV |
+| solar-pv                              | Number:Power               | R          | Solar Power                                   | Only sent when system has PV |
 | positive-dc-link-voltage              | Number:ElectricPotential   | R          | Positiv DC Link Voltage                  | Positiv DC link voltage |
 | negative-dc-link-voltage              | Number:ElectricPotential   | R          | Negative DC Link Voltage                 | Negative DC link voltage |
-| external-energy-produced-l1           | Number:Energy              | R          | External Energy Produced L1              |
-| external-energy-produced-l2           | Number:Energy              | R          | External Energy Produced L2              |
-| external-energy-produced-l3           | Number:Energy              | R          | External Energy Produced L3              |
-| external-energy-consumed-l1           | Number:Energy              | R          | External Energy Consumed L1              |
-| external-energy-consumed-l2           | Number:Energy              | R          | External Energy Consumed L2              |
-| external-energy-consumed-l3           | Number:Energy              | R          | External Energy Consumed L3              |
+| grid-energy-produced-l1           | Number:Energy              | R          | Grid Energy Produced L1              |
+| grid-energy-produced-l2           | Number:Energy              | R          | Grid Energy Produced L2              |
+| grid-energy-produced-l3           | Number:Energy              | R          | Grid Energy Produced L3              |
+| grid-energy-consumed-l1           | Number:Energy              | R          | Grid Energy Consumed L1              |
+| grid-energy-consumed-l2           | Number:Energy              | R          | Grid Energy Consumed L2              |
+| grid-energy-consumed-l3           | Number:Energy              | R          | Grid Energy Consumed L3              |
 | inverter-energy-produced-l1           | Number:Energy              | R          | Inverter Energy Produced L1              |
 | inverter-energy-produced-l2           | Number:Energy              | R          | Inverter Energy Produced L2              |
 | inverter-energy-produced-l3           | Number:Energy              | R          | Inverter Energy Produced L3              |
@@ -114,12 +114,12 @@ The following configuration parameters are available.
 | load-energy-consumed-l1               | Number:Energy              | R          | Load Energy Consumed L1                  |
 | load-energy-consumed-l2               | Number:Energy              | R          | Load Energy Consumed L2                  |
 | load-energy-consumed-l3               | Number:Energy              | R          | Load Energy Consumed L3                  |
-| external-energy-produced-3p           | Number:Energy              | R          | External Energy Produced 3P              |
-| external-energy-consumed-3p           | Number:Energy              | R          | External Energy Consumed 3P              |
-| inverter-energy-produced-3p           | Number:Energy              | R          | Inverter Energy Produced 3P              |
-| inverter-energy-consumed-3p           | Number:Energy              | R          | Inverter Energy Consumed 3P              |
-| load-energy-produced-3p               | Number:Energy              | R          | Load Energy Produced 3P                  |
-| load-energy-consumed-3p               | Number:Energy              | R          | Load Energy Consumed 3P                  |
+| total-grid-energy-produced            | Number:Energy              | R          | Total produced grid energy              |
+| total-grid-energy-consumed            | Number:Energy              | R          | Total consumed grid energy             |
+| total-inverter-energy-produced        | Number:Energy              | R          | Total produced inverter energy               |
+| total-inverter-energy-consumed        | Number:Energy              | R          | Total consumed inverter energy              |
+| total-load-energy-produced            | Number:Energy              | R          | Total produced load energy                   |
+| total-load-energy-consumed            | Number:Energy              | R          | Total consumed load energy                   |
 | total-solar-energy                    | Number:Energy              | R          | Total Solar Energy                       | Only sent when system has PV |
 | state                                 | String                     | R          | State of the System                      |
 | timestamp                             | DateTime                   | R          | Time Stamp When Message was Published    | Time stamp when message was published |
