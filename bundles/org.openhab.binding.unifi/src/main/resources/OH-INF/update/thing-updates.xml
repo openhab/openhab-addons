@@ -20,7 +20,7 @@
 				<type>unifi:site</type>
 			</add-channel>
 			<add-channel id="ipAddress">
-				<type>unifi:ipAdress</type>
+				<type>unifi:ipAddress</type>
 				<description>IP address of the device</description>
 			</add-channel>
 			<add-channel id="uptime">
