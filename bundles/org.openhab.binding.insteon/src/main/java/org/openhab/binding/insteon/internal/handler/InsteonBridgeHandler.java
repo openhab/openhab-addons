@@ -284,14 +284,14 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     protected void discoverInsteonDevice(InsteonAddress address, @Nullable ProductData productData) {
         InsteonDiscoveryService discoveryService = getDiscoveryService();
-        if (discoveryService != null) {
+        if (discoveryService != null && isDeviceDiscoveryEnabled()) {
             scheduler.execute(() -> discoveryService.discoverInsteonDevice(address, productData));
         }
     }
 
     protected void discoverInsteonScene(int group) {
         InsteonDiscoveryService discoveryService = getDiscoveryService();
-        if (discoveryService != null) {
+        if (discoveryService != null && isSceneDiscoveryEnabled()) {
             scheduler.execute(() -> discoveryService.discoverInsteonScene(group));
         }
     }
