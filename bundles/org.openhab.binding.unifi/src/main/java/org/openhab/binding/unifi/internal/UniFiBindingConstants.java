@@ -65,7 +65,6 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_NAME = "name";
     public static final String CHANNEL_SITE = "site";
-    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
@@ -73,6 +72,7 @@ public final class UniFiBindingConstants {
 
     // List of common wired + wireless client channels
     public static final String CHANNEL_HOSTNAME = "hostname";
+    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_GUEST = "guest";
     public static final String CHANNEL_BLOCKED = "blocked";
     public static final String CHANNEL_RECONNECT = "reconnect";
