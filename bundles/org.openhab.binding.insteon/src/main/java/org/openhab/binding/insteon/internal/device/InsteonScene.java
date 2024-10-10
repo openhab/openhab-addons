@@ -87,9 +87,9 @@ public class InsteonScene implements Scene {
     }
 
     public State getState() {
-        return getEntries().stream().allMatch(entry -> entry.getState() == UnDefType.NULL) ? UnDefType.NULL
-                : OnOffType.from(getEntries().stream().filter(entry -> entry.getState() != UnDefType.NULL)
-                        .allMatch(entry -> entry.getState().equals(entry.getOnState())));
+        return getEntries().stream().noneMatch(SceneEntry::isStateDefined) ? UnDefType.NULL
+                : OnOffType
+                        .from(getEntries().stream().filter(SceneEntry::isStateDefined).allMatch(SceneEntry::isStateOn));
     }
 
     public boolean hasEntry(InsteonAddress address) {
@@ -352,6 +352,14 @@ public class InsteonScene implements Scene {
 
         public State getState() {
             return state;
+        }
+
+        public boolean isStateDefined() {
+            return !UnDefType.NULL.equals(state);
+        }
+
+        public boolean isStateOn() {
+            return getOnState().equals(state);
         }
 
         public void setState(State state) {
