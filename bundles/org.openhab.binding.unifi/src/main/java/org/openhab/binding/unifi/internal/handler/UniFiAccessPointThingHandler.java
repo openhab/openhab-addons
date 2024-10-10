@@ -103,7 +103,7 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
 
     @Override
     protected State getChannelState(final UniFiDevice device, final String channelId) {
-        final UniFiSite site = device == null ? null : device.getSite();
+        final UniFiSite site = device.getSite();
         State state = getDefaultState(channelId);
 
         switch (channelId) {
