@@ -159,9 +159,6 @@
 				<description>Name of the device</description>
 			</channel>
 			<channel id="site" typeId="site"/>
-			<channel id="macAddress" typeId="macAddress">
-				<description>MAC address of the device</description>
-			</channel>
 			<channel id="ipAddress" typeId="ipAddress">
 				<description>IP address of the device</description>
 			</channel>

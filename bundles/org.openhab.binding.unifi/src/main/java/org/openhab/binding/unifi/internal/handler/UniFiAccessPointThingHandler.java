@@ -132,11 +132,6 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     state = StringType.valueOf(site.getDescription());
                 }
                 break;
-            case CHANNEL_MAC_ADDRESS:
-                if (device.getMac() != null && !device.getMac().isBlank()) {
-                    state = StringType.valueOf(device.getMac());
-                }
-                break;
             case CHANNEL_IP_ADDRESS:
                 if (device.getIp() != null && !device.getIp().isBlank()) {
                     state = StringType.valueOf(device.getIp());

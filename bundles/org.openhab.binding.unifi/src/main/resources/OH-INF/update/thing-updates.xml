@@ -19,10 +19,6 @@
 			<add-channel id="site">
 				<type>unifi:site</type>
 			</add-channel>
-			<add-channel id="macAdress">
-				<type>unifi:macAdress</type>
-				<description>MAC address of the device</description>
-			</add-channel>
 			<add-channel id="ipAdress">
 				<type>unifi:ipAdress</type>
 				<description>IP address of the device</description>
