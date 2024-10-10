@@ -123,6 +123,8 @@ public class Model {
                         String deviceType = entry.getString(PROPERTY_DEVICE_TYPE);
                         JSONObject attributes = entry.getJSONObject(PROPERTY_ATTRIBUTES);
                         switch (deviceType) {
+                            case DEVICE_TYPE_GATEWAY:
+                                return THING_TYPE_GATEWAY;
                             case DEVICE_TYPE_LIGHT:
                                 if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
                                     String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
@@ -132,8 +134,9 @@ public class Model {
                                                     THING_TYPE_COLOR_LIGHT.toString(), id);
                                             return THING_TYPE_COLOR_LIGHT;
                                         case "temperature":
-                                            // TODO
-                                            break;
+                                            logger.info("DIRIGERA MODEL identified {} for {}",
+                                                    THING_TYPE_TEMPERATURE_LIGHT.toString(), id);
+                                            return THING_TYPE_TEMPERATURE_LIGHT;
                                     }
                                 }
                                 break;

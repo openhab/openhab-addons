@@ -34,12 +34,17 @@
 	</channel-type>
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
-		<label>Illiminance</label>
+		<label>Illuminance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>
