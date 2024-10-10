@@ -62,8 +62,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
     public void discoverInsteonDevice(InsteonAddress address, @Nullable ProductData productData) {
         InsteonModem modem = handler.getModem();
-        if (handler.isDeviceDiscoveryEnabled() && modem != null && modem.getDB().hasEntry(address)
-                && !modem.hasDevice(address)) {
+        if (modem != null && modem.getDB().hasEntry(address) && !modem.hasDevice(address)) {
             addInsteonDevice(address, productData);
         } else {
             removeInsteonDevice(address);
@@ -72,8 +71,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
     public void discoverInsteonScene(int group) {
         InsteonModem modem = handler.getModem();
-        if (handler.isSceneDiscoveryEnabled() && modem != null && modem.getDB().hasBroadcastGroup(group)
-                && !modem.hasScene(group)) {
+        if (modem != null && modem.getDB().hasBroadcastGroup(group) && !modem.hasScene(group)) {
             addInsteonScene(group);
         } else {
             removeInsteonScene(group);

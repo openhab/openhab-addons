@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.insteon.internal.transport.message;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.insteon.internal.utils.BinaryUtils;
 
 /**
  * Definition (layout) of an Insteon message. Says which bytes go where.
@@ -30,39 +29,76 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MsgDefinition {
-    private Map<String, Field> fields = new HashMap<>();
+    private final byte[] data;
+    private final int headerLength;
+    private final Direction direction;
+    private final Map<String, Field> fields;
 
-    MsgDefinition() {
+    public MsgDefinition(byte[] data, int headerLength, Direction direction, Map<String, Field> fields) {
+        this.data = data;
+        this.headerLength = headerLength;
+        this.direction = direction;
+        this.fields = fields;
     }
 
-    MsgDefinition(MsgDefinition definition) {
-        fields = new HashMap<>(definition.fields);
+    public byte[] getData() {
+        return data;
     }
 
-    public List<Field> getFields() {
-        return fields.values().stream().sorted(Comparator.comparing(Field::getOffset)).toList();
+    public int getLength() {
+        return data.length;
     }
 
-    public boolean containsField(String name) {
-        return fields.containsKey(name);
+    public int getHeaderLength() {
+        return headerLength;
     }
 
-    public void addField(Field field) {
-        fields.put(field.getName(), field);
+    public Direction getDirection() {
+        return direction;
     }
 
-    /**
-     * Finds field of a given name
-     *
-     * @param name name of the field to search for
-     * @return reference to field
-     * @throws FieldException if no such field can be found
-     */
     public Field getField(String name) throws FieldException {
         Field field = fields.get(name);
         if (field == null) {
             throw new FieldException("field " + name + " not found");
         }
         return field;
+    }
+
+    public List<Field> getFields() {
+        return fields.values().stream().toList();
+    }
+
+    public boolean containsField(String name) {
+        return fields.containsKey(name);
+    }
+
+    public byte getByte(String name) throws FieldException {
+        return getField(name).getByte(data);
+    }
+
+    public byte getCommand() {
+        try {
+            return getByte("Cmd");
+        } catch (FieldException e) {
+            return (byte) 0xFF;
+        }
+    }
+
+    public boolean isExtended() {
+        try {
+            return BinaryUtils.isBitSet(getByte("messageFlags"), 4);
+        } catch (FieldException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        String s = direction + ":";
+        for (Field field : getFields()) {
+            s += field.toString(data) + "|";
+        }
+        return s;
     }
 }
