@@ -189,7 +189,7 @@ The color channels support full color control with hue, saturation and brightnes
 For example, brightness of _all_ panels at once can be controlled by defining a dimmer item for the color channel of the _controller thing_.
 The same applies to the color channel of an individual lightpanel.
 
-### Limitations assigning specific colors on individual panels:
+### Limitations Assigning Specific Colors on Individual Panels
 
 - Due to the way the API of the nanoleaf is designed, each time a color is assigned to a panel, it will be directly sent to that panel. The result is that if you send colors to several panels more or less at the same time, they will not be set at the same time but one after the other and rather appear like a sequence but as a one shot.
 - Another important limitation is that individual panels cannot be set while a dynamic effect is running on the panel which means that as soon as you set an individual panel the "static effect" is set, which disables the chosen dynamic effect. The nanoleaf app shows that a static effect is now running, too.

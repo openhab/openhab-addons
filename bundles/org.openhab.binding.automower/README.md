@@ -13,7 +13,7 @@ All Husqvarna Automower models with "Automower Connect" should be supported. It 
 
 ## Discovery
 
-Once the bridge is created and configured, OpenHab will automatically discover all Automowers registered on your account.
+Once the bridge is created and configured, openHAB will automatically discover all Automowers registered on your account.
 
 ## Thing Configuration
 
