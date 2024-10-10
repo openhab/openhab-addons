@@ -101,7 +101,6 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
 | led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
 
-
 ## Full Example
 
 ### Thing Configuration
@@ -118,5 +117,3 @@ Bridge airgradient:airgradient-api:home "My Home" [ token="abc123...." ] {
 Number:Density      AirGradient_Location_PM2        "%.0f kg/m³"                         <density>       {channel="airgradient:location:654321:pm2"}"
 Number:Temperature  AirGradient_Location_PM2        "Temperature [%.1f °C]"              <temperature>   {channel="airgradient:location:654321:atmp"}"
 ```
-
-

@@ -43,7 +43,6 @@ Firmware 5.x.x (some DSL models) is NOT supported (not Asuswrt).
 | macAddress      | text    | Unique MAC address of the device      | N/A                 | yes      | no       |
 | clientNick      | text    | Nickname used by OH                   | N/A                 | no       | no       |
 
-
 ## Properties
 
 All devices support some of the following properties:
@@ -52,7 +51,6 @@ All devices support some of the following properties:
 |------------------|------------------------------|---------------------------------------|
 | vendor           | Vendor of device             | router, client                        |
 | dnsName          | DNS name of device           | router, client                        |
-
 
 ## Channels
 
@@ -83,7 +81,6 @@ All devices support some of the following channels:
 |                  | today-tx             | Number:DataAmount      | Data sent since 0:00 a clock in MB         | interface, client                 |
 |                  | total-rx             | Number:DataAmount      | Data received since reboot in MB           | interface, client                 |
 |                  | total-tx             | Number:DataAmount      | Data sent since reboot in MB               | interface, client                 |
-
 
 ## Events
 

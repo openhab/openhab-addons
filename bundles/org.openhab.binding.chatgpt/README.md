@@ -40,7 +40,6 @@ Each channel of type `chat` takes the following configuration parameters:
 | systemMessage   | text    | The system message helps set the behavior of the assistant.                                                                                                | N/A           | no       | no       |
 | maxTokens       | decimal | The maximum number of tokens to generate in the completion.                                                                                                | 500           | no       | yes      |
 
-
 ## Full Example
 
 ### Thing Configuration
