@@ -33,6 +33,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 public class KNXBindingConstants {
 
     public static final String BINDING_ID = "knx";
+    public static final String ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX = "TpM2-pRoTeCteD-";
 
     // Global config
     public static final String CONFIG_DISABLE_UOM = "disableUoM";
