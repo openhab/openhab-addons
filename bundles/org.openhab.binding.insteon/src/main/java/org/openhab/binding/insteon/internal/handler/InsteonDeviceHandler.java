@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +27,7 @@ import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonDeviceConfiguration;
 import org.openhab.binding.insteon.internal.device.Device;
 import org.openhab.binding.insteon.internal.device.DeviceCache;
-import org.openhab.binding.insteon.internal.device.DeviceType;
+import org.openhab.binding.insteon.internal.device.DeviceFeature;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.openhab.binding.insteon.internal.device.InsteonEngine;
@@ -142,30 +141,30 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
     @Override
     protected void initializeChannels(Device device) {
-        DeviceType deviceType = device.getType();
-        if (deviceType == null) {
-            return;
-        }
-
         super.initializeChannels(device);
 
-        getThing().getChannels().forEach(channel -> setChannelCustomSettings(channel, deviceType.getName()));
+        getThing().getChannels().forEach(channel -> setChannelCustomSettings(channel, device));
     }
 
-    private void setChannelCustomSettings(Channel channel, String deviceTypeName) {
+    private void setChannelCustomSettings(Channel channel, Device device) {
         ChannelUID channelUID = channel.getUID();
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID == null) {
             return;
         }
 
-        String key = deviceTypeName + ":" + channelIdToFeatureName(channelTypeUID.getId());
-        String[] stateDescriptionOptions = CUSTOM_STATE_DESCRIPTION_OPTIONS.get(key);
+        String featureName = channelIdToFeatureName(channelTypeUID.getId());
+        DeviceFeature feature = device.getFeature(featureName);
+        if (feature == null) {
+            return;
+        }
+
+        List<String> stateDescriptionOptions = CUSTOM_STATE_DESCRIPTION_OPTIONS.get(feature.getType());
         if (stateDescriptionOptions == null) {
             return;
         }
 
-        List<StateOption> options = Stream.of(stateDescriptionOptions).map(value -> new StateOption(value,
+        List<StateOption> options = stateDescriptionOptions.stream().map(value -> new StateOption(value,
                 StringUtils.capitalizeByWhitespace(value.replace("_", " ").toLowerCase()))).toList();
 
         logger.trace("setting state options for {} to {}", channelUID, options);

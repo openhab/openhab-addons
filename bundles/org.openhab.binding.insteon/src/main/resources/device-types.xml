@@ -49,11 +49,15 @@
 		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
 		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
 		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="batteryLevel">RemoteBatteryLevel</feature>
+		</feature-group>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
 			<feature name="ledOnOff" bit="1" on="0x02" off="0x03" inverted="true">OpFlags</feature>
 			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+			<feature name="buttonConfig">RemoteSceneButtonConfig</feature>
 		</feature-group>
 		<default-link name="buttonA" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
 		<default-link name="buttonB" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
@@ -62,39 +66,64 @@
 	</device-type>
 
 	<device-type name="GeneralizedController_MiniRemoteScene8" batteryPowered="true">
-		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
-		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
-		<feature name="eventButtonC" group="3">GenericButtonEvent</feature>
-		<feature name="eventButtonD" group="4">GenericButtonEvent</feature>
-		<feature name="eventButtonE" group="5">GenericButtonEvent</feature>
-		<feature name="eventButtonF" group="6">GenericButtonEvent</feature>
-		<feature name="eventButtonG" group="7">GenericButtonEvent</feature>
-		<feature name="eventButtonH" group="8">GenericButtonEvent</feature>
+		<feature name="eventButtonA" group="2">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonC" group="4">GenericButtonEvent</feature>
+		<feature name="eventButtonD" group="3">GenericButtonEvent</feature>
+		<feature name="eventButtonE" group="6">GenericButtonEvent</feature>
+		<feature name="eventButtonF" group="5">GenericButtonEvent</feature>
+		<feature name="eventButtonG" group="8">GenericButtonEvent</feature>
+		<feature name="eventButtonH" group="7">GenericButtonEvent</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="batteryLevel">RemoteBatteryLevel</feature>
+		</feature-group>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
 			<feature name="ledOnOff" bit="1" on="0x02" off="0x03" inverted="true">OpFlags</feature>
 			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+			<feature name="buttonConfig">RemoteSceneButtonConfig</feature>
 		</feature-group>
-		<default-link name="buttonA" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonB" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonC" type="controller" group="3" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonD" type="controller" group="4" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonE" type="controller" group="5" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonF" type="controller" group="6" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonG" type="controller" group="7" data1="0x03" data2="0x00" data3="0x00"/>
-		<default-link name="buttonH" type="controller" group="8" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonA" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonB" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonC" type="controller" group="4" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonD" type="controller" group="3" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonE" type="controller" group="6" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonF" type="controller" group="5" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonG" type="controller" group="8" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonH" type="controller" group="7" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 
 	<device-type name="GeneralizedController_MiniRemoteSwitch" batteryPowered="true">
 		<feature name="eventButton">GenericButtonEvent</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="batteryLevel">RemoteBatteryLevel</feature>
+		</feature-group>
 		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
 			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
 			<feature name="ledOnOff" bit="1" on="0x02" off="0x03" inverted="true">OpFlags</feature>
 			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
 			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+			<feature name="buttonConfig">RemoteSwitchButtonConfig</feature>
 		</feature-group>
 		<default-link name="button" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
+	</device-type>
+
+	<device-type name="GeneralizedController_MiniRemoteSwitch2" batteryPowered="true">
+		<feature name="eventButtonA" group="1">GenericButtonEvent</feature>
+		<feature name="eventButtonB" group="2">GenericButtonEvent</feature>
+		<feature-group name="extDataGroup" type="ExtDataGroup">
+			<feature name="batteryLevel">RemoteBatteryLevel</feature>
+		</feature-group>
+		<feature-group name="opFlagsGroup" type="OpFlagsGroup">
+			<feature name="programLock" bit="0" on="0x00" off="0x01">OpFlags</feature>
+			<feature name="ledOnOff" bit="1" on="0x02" off="0x03" inverted="true">OpFlags</feature>
+			<feature name="buttonBeep" bit="2" on="0x04" off="0x05">OpFlags</feature>
+			<feature name="stayAwake" bit="3" on="0x06" off="0x07">OpFlags</feature>
+			<feature name="buttonConfig">RemoteSwitchButtonConfig</feature>
+		</feature-group>
+		<default-link name="buttonA" type="controller" group="1" data1="0x03" data2="0x00" data3="0x00"/>
+		<default-link name="buttonB" type="controller" group="2" data1="0x03" data2="0x00" data3="0x00"/>
 	</device-type>
 
 	<!-- Dimmable Lighting Control -->
