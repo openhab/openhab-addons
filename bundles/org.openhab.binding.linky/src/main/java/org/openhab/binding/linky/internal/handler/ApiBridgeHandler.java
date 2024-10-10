@@ -13,10 +13,7 @@
 package org.openhab.binding.linky.internal.handler;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,10 +32,8 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.osgi.service.component.ComponentContext;
@@ -200,23 +195,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";
         }
-    }
-
-    public List<String> getAllPrmId() {
-        List<String> result = new ArrayList<>();
-
-        Collection<Thing> col = this.thingRegistry.getAll();
-
-        for (Thing thing : col) {
-            if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-                Configuration config = thing.getConfiguration();
-
-                String prmId = (String) config.get("prmId");
-                result.add(prmId);
-            }
-        }
-
-        return result;
     }
 
     @Override

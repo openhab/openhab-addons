@@ -175,6 +175,7 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         if (config.seemsValid()) {
+            bridgeHandler.registerNewPrmId(config.prmId);
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
