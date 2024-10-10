@@ -35,7 +35,9 @@ import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Aggregate;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
+import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -157,9 +159,13 @@ public class LinkyHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                     if (thing.getProperties().isEmpty()) {
-                        PrmInfo prmInfo = api.getPrmInfo();
-                        updateProperties(Map.of(USER_ID, api.getUserInfo().userProperties.internId, PUISSANCE,
-                                prmInfo.puissanceSouscrite + " kVA", PRM_ID, prmInfo.prmId));
+                        UserInfo userInfo = api.getUserInfo();
+                        PrmInfo prmInfo = api.getPrmInfo(userInfo.userProperties.internId);
+                        PrmDetail details = api.getPrmDetails(userInfo.userProperties.internId, prmInfo.idPrm);
+                        updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                                details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
+                                        + " kVA",
+                                PRM_ID, prmInfo.idPrm));
                     }
 
                     prmId = thing.getProperties().get(PRM_ID);

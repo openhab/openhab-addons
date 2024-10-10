@@ -38,6 +38,7 @@ import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
+import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class EnedisHttpApi {
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
     private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
     private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
+    private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms/api/private/v2/personnes/%s/prms";
     private static final String MEASURE_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
     private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
@@ -81,19 +82,19 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        logger.debug("Starting login process for user : {}", config.username);
+        logger.debug("Starting login process for user: {}", config.username);
 
         try {
             addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
-            logger.debug("Step 1 : getting authentification");
-            String data = getData(URL_ENEDIS_AUTHENTICATE);
+            logger.debug("Step 1: getting authentification");
+            String data = getContent(URL_ENEDIS_AUTHENTICATE);
 
             logger.debug("Reception request SAML");
             Document htmlDocument = Jsoup.parse(data);
             Element el = htmlDocument.select("form").first();
             Element samlInput = el.select("input[name=SAMLRequest]").first();
 
-            logger.debug("Step 2 : send SSO SAMLRequest");
+            logger.debug("Step 2: send SSO SAMLRequest");
             ContentResponse result = httpClient.POST(el.attr("action"))
                     .content(getFormContent("SAMLRequest", samlInput.attr("value"))).send();
             if (result.getStatus() != 302) {
@@ -112,7 +113,7 @@ public class EnedisHttpApi {
                     + reqId + "%26index%3Dnull%26acsURL%3D" + URL_APPS_LINCS
                     + "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
 
-            logger.debug("Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
+            logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
             result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != 200) {
@@ -128,7 +129,7 @@ public class EnedisHttpApi {
             }
 
             authData.callbacks.get(1).input.get(0).value = config.password;
-            logger.debug("Step 4 : auth2 - send the auth data");
+            logger.debug("Step 4: auth2 - send the auth data");
             result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
@@ -145,13 +146,13 @@ public class EnedisHttpApi {
             logger.debug("Add the tokenId cookie");
             addCookie("enedisExt", authResult.tokenId);
 
-            logger.debug("Step 5 : retrieve the SAMLresponse");
-            data = getData(URL_MON_COMPTE + "/" + authResult.successUrl);
+            logger.debug("Step 5: retrieve the SAMLresponse");
+            data = getContent(URL_MON_COMPTE + "/" + authResult.successUrl);
             htmlDocument = Jsoup.parse(data);
             el = htmlDocument.select("form").first();
             samlInput = el.select("input[name=SAMLResponse]").first();
 
-            logger.debug("Step 6 : post the SAMLresponse to finish the authentication");
+            logger.debug("Step 6: post the SAMLresponse to finish the authentication");
             result = httpClient.POST(el.attr("action")).content(getFormContent("SAMLResponse", samlInput.attr("value")))
                     .send();
             if (result.getStatus() != 302) {
@@ -203,76 +204,61 @@ public class EnedisHttpApi {
         return new FormContentProvider(fields);
     }
 
-    private String getData(String url) throws LinkyException {
+    private String getContent(String url) throws LinkyException {
         try {
             ContentResponse result = httpClient.GET(url);
             if (result.getStatus() != 200) {
-                throw new LinkyException("Error requesting '%s' : %s", url, result.getContentAsString());
+                throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
-            return result.getContentAsString();
+            String content = result.getContentAsString();
+            logger.trace("getContent returned {}", content);
+            return content;
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new LinkyException(e, "Error getting url : '%s'", url);
+            throw new LinkyException(e, "Error getting url: '%s'", url);
         }
     }
 
-    public PrmInfo getPrmInfo() throws LinkyException {
+    private <T> T getData(String url, Class<T> clazz) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData(PRM_INFO_URL);
+        String data = getContent(url);
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", PRM_INFO_URL);
+            throw new LinkyException("Requesting '%s' returned an empty response", url);
         }
         try {
-            PrmInfo[] prms = gson.fromJson(data, PrmInfo[].class);
-            if (prms == null || prms.length < 1) {
-                throw new LinkyException("Invalid prms data received");
-            }
-            return prms[0];
+            return Objects.requireNonNull(gson.fromJson(data, clazz));
         } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", PRM_INFO_URL);
+            logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
+    }
+
+    public PrmInfo getPrmInfo(String internId) throws LinkyException {
+        String url = PRM_INFO_URL.formatted(internId);
+        PrmInfo[] prms = getData(url, PrmInfo[].class);
+        if (prms.length < 1) {
+            throw new LinkyException("Invalid prms data received");
+        }
+        return prms[0];
+    }
+
+    public PrmDetail getPrmDetails(String internId, String prmId) throws LinkyException {
+        String url = PRM_INFO_URL.formatted(internId) + "/" + prmId
+                + "?embed=SITALI&embed=SITCOM&embed=SITCON&embed=SYNCON";
+        return getData(url, PrmDetail.class);
     }
 
     public UserInfo getUserInfo() throws LinkyException {
-        if (!connected) {
-            initialize();
-        }
-        String data = getData(USER_INFO_URL);
-        if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", USER_INFO_URL);
-        }
-        try {
-            return Objects.requireNonNull(gson.fromJson(data, UserInfo.class));
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", USER_INFO_URL);
-        }
+        return getData(USER_INFO_URL, UserInfo.class);
     }
 
     private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
             throws LinkyException {
         String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT),
                 to.format(API_DATE_FORMAT));
-        if (!connected) {
-            initialize();
-        }
-        String data = getData(url);
-        if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", url);
-        }
-        logger.trace("getData returned {}", data);
-        try {
-            ConsumptionReport report = gson.fromJson(data, ConsumptionReport.class);
-            if (report == null) {
-                throw new LinkyException("No report data received");
-            }
-            return report.firstLevel.consumptions;
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
-        }
+        ConsumptionReport report = getData(url, ConsumptionReport.class);
+        return report.firstLevel.consumptions;
     }
 
     public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
