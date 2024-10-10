@@ -94,6 +94,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
             super("MQTT HVAC");
         }
 
+        protected @Nullable Boolean optimistic;
+
         @SerializedName("action_template")
         protected @Nullable String actionTemplate;
         @SerializedName("action_topic")
@@ -284,6 +286,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
         buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
                 channelConfiguration.powerCommandTopic, null, null, null);
+        finalizeChannels();
     }
 
     @Nullable
@@ -296,7 +299,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)
-                    .commandFilter(commandFilter).build();
+                    .inferOptimistic(channelConfiguration.optimistic).commandFilter(commandFilter).build();
         }
         return null;
     }

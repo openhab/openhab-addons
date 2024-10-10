@@ -58,7 +58,7 @@ import org.openhab.core.types.StateDescription;
 @NonNullByDefault
 public class ComponentChannel {
     private final ChannelState channelState;
-    private final Channel channel;
+    private Channel channel;
     private final @Nullable StateDescription stateDescription;
     private final @Nullable CommandDescription commandDescription;
     private final ChannelStateUpdateListener channelStateUpdateListener;
@@ -75,6 +75,18 @@ public class ComponentChannel {
 
     public Channel getChannel() {
         return channel;
+    }
+
+    public void resetUID(ChannelUID channelUID) {
+        channel = ChannelBuilder.create(channelUID, channel.getAcceptedItemType()).withType(channel.getChannelTypeUID())
+                .withKind(channel.getKind()).withLabel(Objects.requireNonNull(channel.getLabel()))
+                .withConfiguration(channel.getConfiguration()).withAutoUpdatePolicy(channel.getAutoUpdatePolicy())
+                .build();
+        channelState.setChannelUID(channelUID);
+    }
+
+    public void clearConfiguration() {
+        channel = ChannelBuilder.create(channel).withConfiguration(new Configuration()).build();
     }
 
     public ChannelState getState() {
@@ -210,6 +222,18 @@ public class ComponentChannel {
 
         public Builder withFormat(String format) {
             this.format = format;
+            return this;
+        }
+
+        // If the component explicitly specifies optimistic, or it's missing a state topic
+        // put it in optimistic mode (which, in openHAB parlance, means to auto-update the
+        // item).
+        public Builder inferOptimistic(@Nullable Boolean optimistic) {
+            String localStateTopic = stateTopic;
+            if (optimistic == null && (localStateTopic == null || localStateTopic.isBlank())
+                    || optimistic != null && optimistic == true) {
+                this.autoUpdatePolicy = AutoUpdatePolicy.RECOMMEND;
+            }
             return this;
         }
 

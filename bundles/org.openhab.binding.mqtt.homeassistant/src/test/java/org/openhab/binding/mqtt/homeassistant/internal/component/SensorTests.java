@@ -65,7 +65,7 @@ public class SensorTests extends AbstractComponentTests {
 
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("sensor1"));
-        assertThat(component.getGroupId(), is("sn1"));
+        assertThat(component.getComponentId(), is("sn1"));
 
         assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
                 NumberValue.class);

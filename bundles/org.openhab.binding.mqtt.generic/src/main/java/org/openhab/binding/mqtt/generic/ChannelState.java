@@ -51,13 +51,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
     // Immutable channel configuration
     protected final boolean readOnly;
-    protected final ChannelUID channelUID;
     protected final ChannelConfig config;
 
     /** Channel value **/
     protected final Value cachedValue;
 
     // Runtime variables
+    protected ChannelUID channelUID;
     private @Nullable MqttBrokerConnection connection;
     protected final ChannelTransformation incomingTransformation;
     protected final ChannelTransformation outgoingTransformation;
@@ -130,6 +130,11 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public ChannelUID channelUID() {
         return channelUID;
+    }
+
+    // If the UID of the channel changed after it was initially created
+    public void setChannelUID(ChannelUID channelUID) {
+        this.channelUID = channelUID;
     }
 
     /**

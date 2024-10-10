@@ -116,7 +116,6 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_VOUCHER_DATA_QUOTA = "voucherDataQuota";
     public static final String PARAMETER_PORT_NUMBER = "portNumber";
     public static final String PARAMETER_MAC_ADDRESS = "macAddress";
-    public static final String PARAMETER_WIFI_NAME = "wifi";
 
     // UniFi device types
     public static final String DEVICE_TYPE_UAP = "uap";
