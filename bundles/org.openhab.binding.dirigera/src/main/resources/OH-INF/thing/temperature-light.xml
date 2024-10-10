@@ -4,18 +4,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="color-light">
-		<label>Color Light</label>
-		<description>Light with color support</description>
+	<thing-type id="temperature-light">
+		<label>Temperature Light</label>
+		<description>Light with color temperature support</description>
 
 		<channels>
 			<channel id="state" typeId="switch">
 				<label>Light Powered</label>
 				<description>Power state of light</description>
 			</channel>
-			<channel id="hsb" typeId="color">
-				<label>Hue Saturation Brightness</label>
-				<description>Control light with color, saturation and brightness</description>
+			<channel id="brightness" typeId="dimmer">
+				<label>Light Brightness</label>
+				<description>Control brightness of light</description>
+			</channel>
+			<channel id="temperature" typeId="dimmer">
+				<label>Light Temperature</label>
+				<description>Control temperature of light from cold to warm</description>
 			</channel>
 		</channels>
 

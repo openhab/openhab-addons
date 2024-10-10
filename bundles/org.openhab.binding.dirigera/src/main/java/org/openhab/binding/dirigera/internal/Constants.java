@@ -31,13 +31,15 @@ public class Constants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "color-light");
+    public static final ThingTypeUID THING_TYPE_TEMPERATURE_LIGHT = new ThingTypeUID(BINDING_ID, "temperature-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
-            THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_CONTACT_SENSOR);
+            THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
+            THING_TYPE_CONTACT_SENSOR);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -67,22 +69,25 @@ public class Constants {
     public static final String CHANNEL_STATISTICS = "statistics";
 
     // Generic channels
-    public static final String CHANNEL_ON = "on";
+    public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
 
     // Light channels
     public static final String CHANNEL_LIGHT_HSB = "hsb";
+    public static final String CHANNEL_LIGHT_BRIGHTNESS = "brightness";
+    public static final String CHANNEL_LIGHT_TEMPERATURE = "temperature";
 
     // Sensor channels
     public static final String CHANNEL_MOTION_DETECTION = "detection";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
-    public static final String CHANNEL_STATE = "state";
 
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
 
     // Ikea property to openHAB channel mappings
-    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_ON, "lightLevel",
+    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
+            CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
             CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
             "color-temperature");
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
