@@ -366,3 +366,4 @@ Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { cha
 Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#thisYear" }
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:local:yearly#lastYear" }
 ```
+
