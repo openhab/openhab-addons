@@ -33,8 +33,6 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.DeviceFeature;
-import org.openhab.binding.insteon.internal.device.DeviceType;
-import org.openhab.binding.insteon.internal.device.DeviceTypeRegistry;
 import org.openhab.binding.insteon.internal.device.InsteonEngine;
 import org.openhab.binding.insteon.internal.device.RampRate;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ButtonEvent;
@@ -44,6 +42,8 @@ import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRe
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.MicroModuleOpMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSceneButtonConfig;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSwitchButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlertType;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatFanMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemMode;
@@ -970,10 +970,15 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         public void handleMessage(byte cmd1, Msg msg) {
             // trigger poll if is my command reply message (0x20)
             if (feature.getQueryCommand() == 0x20) {
-                feature.triggerPoll(0L);
+                long delay = getPollDelay();
+                feature.triggerPoll(delay);
             } else {
                 super.handleMessage(cmd1, msg);
             }
+        }
+
+        protected long getPollDelay() {
+            return 0L;
         }
     }
 
@@ -1020,25 +1025,10 @@ public abstract class MessageHandler extends BaseFeatureHandler {
         @Override
         protected State getBitState(boolean is8Button) {
             KeypadButtonConfig config = KeypadButtonConfig.from(is8Button);
-            // update device type based on button count
-            updateDeviceType(config.getCount());
+            // update device type based on button config
+            getInsteonDevice().updateType(config);
             // return button config state
             return new StringType(config.toString());
-        }
-
-        private void updateDeviceType(int buttonCount) {
-            DeviceType deviceType = getInsteonDevice().getType();
-            if (deviceType == null) {
-                logger.warn("{}: unknown device type for {}", nm(), getInsteonDevice().getAddress());
-            } else {
-                String name = deviceType.getName().replaceAll(".$", String.valueOf(buttonCount));
-                DeviceType newType = DeviceTypeRegistry.getInstance().getDeviceType(name);
-                if (newType == null) {
-                    logger.warn("{}: unknown device type {}", nm(), name);
-                } else {
-                    getInsteonDevice().updateType(newType);
-                }
-            }
         }
     }
 
@@ -1309,19 +1299,14 @@ public abstract class MessageHandler extends BaseFeatureHandler {
     /**
      * I/O linc relay mode reply message handler
      */
-    public static class IOLincRelayModeReplyHandler extends CustomMsgHandler {
+    public static class IOLincRelayModeReplyHandler extends OpFlagsReplyHandler {
         IOLincRelayModeReplyHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
-        public void handleMessage(byte cmd1, Msg msg) {
-            // trigger poll if is my command reply message (0x20)
-            if (feature.getQueryCommand() == 0x20) {
-                feature.triggerPoll(5000L); // 5000ms delay to allow all op flag commands to be processed
-            } else {
-                super.handleMessage(cmd1, msg);
-            }
+        protected long getPollDelay() {
+            return 5000L; // delay to allow all op flag commands to be processed
         }
 
         @Override
@@ -1334,19 +1319,14 @@ public abstract class MessageHandler extends BaseFeatureHandler {
     /**
      * Micro module operation mode reply message handler
      */
-    public static class MicroModuleOpModeReplyHandler extends CustomMsgHandler {
+    public static class MicroModuleOpModeReplyHandler extends OpFlagsReplyHandler {
         MicroModuleOpModeReplyHandler(DeviceFeature feature) {
             super(feature);
         }
 
         @Override
-        public void handleMessage(byte cmd1, Msg msg) {
-            // trigger poll if is my command reply message (0x20)
-            if (feature.getQueryCommand() == 0x20) {
-                feature.triggerPoll(2000L); // 2000ms delay to allow all op flag commands to be processed
-            } else {
-                super.handleMessage(cmd1, msg);
-            }
+        protected long getPollDelay() {
+            return 2000L; // delay to allow all op flag commands to be processed
         }
 
         @Override
@@ -1412,6 +1392,52 @@ public abstract class MessageHandler extends BaseFeatureHandler {
 
         private int getPower(int power) {
             return power > 32767 ? power - 65535 : power;
+        }
+    }
+
+    /**
+     * Remote scene button config reply message handler
+     */
+    public static class RemoteSceneButtonConfigReplyHandler extends OpFlagsReplyHandler {
+        RemoteSceneButtonConfigReplyHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        protected long getPollDelay() {
+            return 2000L; // delay to allow all op flag commands to be processed
+        }
+
+        @Override
+        protected @Nullable State getState(byte cmd1, double value) {
+            RemoteSceneButtonConfig config = RemoteSceneButtonConfig.valueOf((int) value);
+            // update device type based on button config
+            getInsteonDevice().updateType(config);
+            // return button config state
+            return new StringType(config.toString());
+        }
+    }
+
+    /**
+     * Remote switch button config reply message handler
+     */
+    public static class RemoteSwitchButtonConfigReplyHandler extends OpFlagsReplyHandler {
+        RemoteSwitchButtonConfigReplyHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        protected long getPollDelay() {
+            return 2000L; // delay to allow all op flag commands to be processed
+        }
+
+        @Override
+        protected @Nullable State getState(byte cmd1, double value) {
+            RemoteSwitchButtonConfig config = RemoteSwitchButtonConfig.valueOf((int) value);
+            // update device type based on button config
+            getInsteonDevice().updateType(config);
+            // return button config state
+            return new StringType(config.toString());
         }
     }
 

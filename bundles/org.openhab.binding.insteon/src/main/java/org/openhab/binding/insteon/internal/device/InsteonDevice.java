@@ -40,6 +40,7 @@ import org.openhab.binding.insteon.internal.device.database.ModemDB;
 import org.openhab.binding.insteon.internal.device.database.ModemDBChange;
 import org.openhab.binding.insteon.internal.device.database.ModemDBEntry;
 import org.openhab.binding.insteon.internal.device.database.ModemDBRecord;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.DeviceTypeRenamer;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
@@ -589,9 +590,18 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     /**
      * Updates this device type
      *
+     * @param renamer the device type renamer
+     */
+    public void updateType(DeviceTypeRenamer renamer) {
+        Optional.ofNullable(getType()).map(DeviceType::getName).map(renamer::getNewDeviceType)
+                .map(name -> DeviceTypeRegistry.getInstance().getDeviceType(name)).ifPresent(this::updateType);
+    }
+
+    /**
+     * Updates this device type
+     *
      * @param newType the new device type to use
      */
-
     public void updateType(DeviceType newType) {
         ProductData productData = getProductData();
         DeviceType currentType = getType();

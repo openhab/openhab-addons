@@ -40,6 +40,8 @@ import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.IOLincRe
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.KeypadButtonToggleMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.MicroModuleOpMode;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSceneButtonConfig;
+import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.RemoteSwitchButtonConfig;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.SirenAlertType;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatFanMode;
 import org.openhab.binding.insteon.internal.device.feature.FeatureEnums.ThermostatSystemMode;
@@ -1154,7 +1156,8 @@ public abstract class CommandHandler extends BaseFeatureHandler {
         protected int getOpFlagCommand(Command cmd) {
             try {
                 String config = ((StringType) cmd).toString();
-                return KeypadButtonConfig.valueOf(config).getValue();
+                return KeypadButtonConfig.valueOf(config).shouldSetFlag() ? getParameterAsInteger("on", -1)
+                        : getParameterAsInteger("off", -1);
             } catch (IllegalArgumentException e) {
                 logger.warn("{}: got unexpected button config command: {}, ignoring request", nm(), cmd);
                 return -1;
@@ -1840,6 +1843,74 @@ public abstract class CommandHandler extends BaseFeatureHandler {
                 }
             } catch (IllegalArgumentException e) {
                 logger.warn("{}: got unexpected operation mode command: {}, ignoring request", nm(), cmd);
+            }
+            return commands;
+        }
+    }
+
+    /**
+     * Remote scene button config command handler
+     */
+    public static class RemoteSceneButtonConfigCommandHandler extends MultiOpFlagsCommandHandler {
+        RemoteSceneButtonConfigCommandHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        protected Map<Integer, String> getOpFlagCommands(Command cmd) {
+            Map<Integer, String> commands = new HashMap<>();
+            try {
+                String mode = ((StringType) cmd).toString();
+                switch (RemoteSceneButtonConfig.valueOf(mode)) {
+                    case BUTTON_4:
+                        commands.put(0x0F, "grouped ON");
+                        commands.put(0x09, "toggle off ON");
+                        break;
+                    case BUTTON_8_ALWAYS_ON:
+                        commands.put(0x0E, "grouped OFF");
+                        commands.put(0x09, "toggle off ON");
+                        break;
+                    case BUTTON_8_TOGGLE:
+                        commands.put(0x0E, "grouped OFF");
+                        commands.put(0x08, "toggle off OFF");
+                        break;
+                }
+            } catch (IllegalArgumentException e) {
+                logger.warn("{}: got unexpected button config command: {}, ignoring request", nm(), cmd);
+            }
+            return commands;
+        }
+    }
+
+    /**
+     * Remote switch button config command handler
+     */
+    public static class RemoteSwitchButtonConfigCommandHandler extends MultiOpFlagsCommandHandler {
+        RemoteSwitchButtonConfigCommandHandler(DeviceFeature feature) {
+            super(feature);
+        }
+
+        @Override
+        protected Map<Integer, String> getOpFlagCommands(Command cmd) {
+            Map<Integer, String> commands = new HashMap<>();
+            try {
+                String mode = ((StringType) cmd).toString();
+                switch (RemoteSwitchButtonConfig.valueOf(mode)) {
+                    case BUTTON_1:
+                        commands.put(0x0F, "grouped ON");
+                        commands.put(0x09, "toggle off ON");
+                        break;
+                    case BUTTON_2_ALWAYS_ON:
+                        commands.put(0x0E, "grouped OFF");
+                        commands.put(0x09, "toggle off ON");
+                        break;
+                    case BUTTON_2_TOGGLE:
+                        commands.put(0x0E, "grouped OFF");
+                        commands.put(0x08, "toggle off OFF");
+                        break;
+                }
+            } catch (IllegalArgumentException e) {
+                logger.warn("{}: got unexpected button config command: {}, ignoring request", nm(), cmd);
             }
             return commands;
         }
