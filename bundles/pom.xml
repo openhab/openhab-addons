@@ -137,6 +137,7 @@
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enphase</module>
+    <module>org.openhab.binding.entsoe</module>
     <module>org.openhab.binding.enturno</module>
     <module>org.openhab.binding.ephemeris</module>
     <module>org.openhab.binding.epsonprojector</module>
