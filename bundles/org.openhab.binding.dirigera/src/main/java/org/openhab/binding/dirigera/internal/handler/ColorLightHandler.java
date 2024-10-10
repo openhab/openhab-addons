@@ -32,17 +32,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LightHandler} basic DeviceHandler for all devices
+ * The {@link ColorLightHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LightHandler extends BaseDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(LightHandler.class);
+public class ColorLightHandler extends BaseDeviceHandler {
+    private final Logger logger = LoggerFactory.getLogger(ColorLightHandler.class);
 
     private HSBType hsbCurrent;
 
-    public LightHandler(Thing thing, Map<String, String> mapping) {
+    public ColorLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
         PercentType pt = new PercentType(50);
@@ -71,14 +71,14 @@ public class LightHandler extends BaseDeviceHandler {
             if (targetProperty != null) {
                 if (command instanceof HSBType hsb) {
                     boolean colorSendToAPI = false;
-                    if (Math.round(hsb.getHue().doubleValue()) == Math.round(hsbCurrent.getHue().doubleValue())
-                            && Math.round(hsb.getSaturation().doubleValue()) == Math
-                                    .round(hsbCurrent.getSaturation().doubleValue())) {
+                    if (Math.round(hsb.getHue().intValue()) == Math.round(hsbCurrent.getHue().intValue())
+                            && Math.round(hsb.getSaturation().intValue()) == Math
+                                    .round(hsbCurrent.getSaturation().intValue())) {
                         logger.trace("DIRIGERA LIGHT_DEVICE hno need to update color, it's the same");
                     } else {
                         JSONObject colorAttributes = new JSONObject();
-                        colorAttributes.put("colorHue", hsb.getHue().doubleValue());
-                        colorAttributes.put("colorSaturation", hsb.getSaturation().doubleValue() / 100);
+                        colorAttributes.put("colorHue", hsb.getHue().intValue());
+                        colorAttributes.put("colorSaturation", Math.round(hsb.getSaturation().doubleValue() / 100));
                         JSONObject colorData = new JSONObject();
                         colorData.put(Model.ATTRIBUTES, colorAttributes);
                         logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorData);
@@ -92,7 +92,7 @@ public class LightHandler extends BaseDeviceHandler {
                             // seems that IKEA lamps cannot handle consecutive calls it really short time frame
                             // so give it 100ms pause until next call
                             try {
-                                Thread.sleep(250);
+                                Thread.sleep(500);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
@@ -135,13 +135,13 @@ public class LightHandler extends BaseDeviceHandler {
                     if (CHANNEL_LIGHT_HSB.equals(targetChannel)) {
                         switch (key) {
                             case "colorHue":
-                                double hueValue = attributes.getDouble(key);
+                                double hueValue = attributes.getInt(key);
                                 hsbCurrent = new HSBType(new DecimalType(hueValue), hsbCurrent.getSaturation(),
                                         hsbCurrent.getBrightness());
                                 deliverHSB = true;
                                 break;
                             case "colorSaturation":
-                                double saturationValue = attributes.getDouble(key) * 100;
+                                double saturationValue = Math.round(attributes.getDouble(key) * 100);
                                 logger.trace("DIRIGERA LIGHT_DEVICE new Saturation value {} {}", saturationValue,
                                         (int) saturationValue);
                                 hsbCurrent = new HSBType(hsbCurrent.getHue(), new PercentType((int) saturationValue),
@@ -155,7 +155,7 @@ public class LightHandler extends BaseDeviceHandler {
                                 deliverHSB = true;
                                 break;
                         }
-                    } else if (CHANNEL_ON.equals(targetChannel)) {
+                    } else if (CHANNEL_STATE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
                     } else {

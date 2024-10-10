@@ -457,6 +457,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
+            } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
+                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
+                // ignore gateway findings
             } else {
                 String customName = model().getCustonNameFor(id);
                 logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
@@ -507,15 +510,25 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             case EVENT_TYPE_STATE_CHANGE:
                 JSONObject data = update.getJSONObject("data");
                 String targetId = data.getString("id");
-                BaseDeviceHandler targetHandler = deviceTree.get(targetId);
-                if (targetHandler != null && targetId != null) {
-                    targetHandler.handleUpdate(data);
-                } else {
-                    logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
+                if (targetId != null) {
+                    if (targetId.equals(config.id)) {
+                        this.handleUpdate(data);
+                    } else {
+                        BaseDeviceHandler targetHandler = deviceTree.get(targetId);
+                        if (targetHandler != null && targetId != null) {
+                            targetHandler.handleUpdate(data);
+                        } else {
+                            logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
+                        }
+                    }
                 }
                 break;
             default:
                 logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
         }
+    }
+
+    private void handleUpdate(JSONObject data) {
+        // TODO Auto-generated method stub
     }
 }
