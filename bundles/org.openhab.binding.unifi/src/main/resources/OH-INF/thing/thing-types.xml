@@ -151,6 +151,10 @@
 
 		<channels>
 			<channel id="enable" typeId="apEnable"/>
+			<channel id="ledOverride" typeId="apLedOverride"/>
+			<channel id="ledColor" typeId="system.color">
+				<description>Controls the color and brightness of the LED</description>
+			</channel>
 		</channels>
 
 		<config-description-ref uri="thing-type:unifi:accessPoint"/>
@@ -440,6 +444,12 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the access point is enabled</description>
+	</channel-type>
+
+	<channel-type id="apLedOverride" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LED Override</label>
+		<description>If the LED is overridden</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -54,6 +54,12 @@ public class UniFiDevice implements HasId {
 
     private boolean disabled;
 
+    private String ledOverride;
+
+    private String ledOverrideColor;
+
+    private Integer ledOverrideColorBrightness;
+
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -101,6 +107,18 @@ public class UniFiDevice implements HasId {
 
     public boolean isDisabled() {
         return disabled;
+    }
+
+    public String getLedOverride() {
+        return ledOverride;
+    }
+
+    public String getLedOverrideColor() {
+        return ledOverrideColor;
+    }
+
+    public Integer getLedOverrideColorBrightness() {
+        return ledOverrideColorBrightness;
     }
 
     @Override
