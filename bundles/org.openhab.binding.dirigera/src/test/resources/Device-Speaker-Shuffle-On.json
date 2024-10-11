@@ -1,0 +1,31 @@
+DIRIGERA BASE_DEVICE no reachable found in {
+	"deviceType": "speaker",
+	"remoteLinks": [],
+	"lastSeen": "2024-10-11T12:53:25.335Z",
+	"attributes": {
+		"playbackModes": {
+			"repeat": "off",
+			"shuffle": true,
+			"crossfade": false
+		},
+		"playbackPosition": {
+			"position": 1451259,
+			"timestamp": "2024-10-11T12:53:25.332Z"
+		},
+		"playbackAvailableActions": {
+			"playbackNext": true,
+			"repeat": [
+				"off",
+				"playItem",
+				"playlist"
+			],
+			"playbackPrev": false,
+			"shuffle": true,
+			"seek": true,
+			"crossfade": true,
+			"pause": true
+		}
+	},
+	"id": "338bb721-35bb-4775-8cd0-ba70fc37ab10_1",
+	"type": "speaker"
+}

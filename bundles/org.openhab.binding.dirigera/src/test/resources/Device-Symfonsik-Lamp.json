@@ -1,0 +1,61 @@
+        {
+            "id": "03c716a9-900e-4bb0-8694-eaf837bfa3fb_1",
+            "type": "speaker",
+            "deviceType": "speaker",
+            "createdAt": "2024-10-06T09:06:12.272Z",
+            "isReachable": false,
+            "lastSeen": "2024-10-08T16:30:36.504Z",
+            "attributes": {
+                "customName": "Moritz",
+                "model": "SYMFONISK Table lamp S20",
+                "manufacturer": "Sonos, Inc.",
+                "firmwareVersion": "80.1-56190",
+                "hardwareVersion": "1.20.2.3-2.0",
+                "serialNumber": "78-28-CA-81-8E-F2:1",
+                "productCode": "S20",
+                "identifyStarted": "2024-10-06T09:06:12.272Z",
+                "identifyPeriod": 0,
+                "playback": "playbackIdle",
+                "playbackLastChangedTimestamp": "2024-10-06T09:06:12.272Z",
+                "playbackAudio": {
+                    
+                },
+                "playbackPosition": {
+                    "position": 0,
+                    "timestamp": "2024-10-06T09:06:12.032Z"
+                },
+                "playbackAvailableActions": {
+                    "crossfade": true,
+                    "pause": false,
+                    "repeat": [
+                        "off",
+                        "playItem",
+                        "playlist"
+                    ],
+                    "seek": false,
+                    "shuffle": true,
+                    "playbackNext": false,
+                    "playbackPrev": false
+                },
+                "playbackModes": {
+                    "crossfade": false,
+                    "repeat": "off",
+                    "shuffle": false
+                },
+                "volume": 15,
+                "isMuted": false,
+                "audioGroup": "71aa115c-fadd-4c43-aaf7-d537fa939638"
+            },
+            "capabilities": {
+                "canSend": [],
+                "canReceive": [
+                    "playback",
+                    "playbackAudio",
+                    "volume",
+                    "isMuted"
+                ]
+            },
+            "deviceSet": [],
+            "remoteLinks": [],
+            "isHidden": true
+        }
