@@ -175,7 +175,7 @@ Bridge metofficedatahub:bridge:metoffice [siteRateDailyLimit=200, siteApiKey="<S
 
 ### Configuration (*.items)
 
-#### Site API for the current time and next hour forecasts
+#### Hourly Forecast `example.items`
 
 ```java
 Group                 gCurrentHourForecast                        "Current Hour Forecast"
@@ -222,7 +222,7 @@ Number:Angle          ForecastLondonPlus0110mWindDirection              (gLondon
 Number:Temperature    ForecastLondonPlus01DewPointTemp                  (gLondonNextHour) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#scn-dew-temp" }
 ```
 
-#### Site API for the current time and next daily forecast
+#### Daily Forecast `example.items`
 
 ```java
 Group                 gdaily-forecast                         "Current Daily Forecast"
@@ -312,7 +312,7 @@ Number:Dimensionless  ForecastLondonPlus01NightProbabilityOfSferics       (gLond
 
 ### Configuration (*.sitemap)
 
-#### Site API for the current hour and next hour from the current time
+#### Hourly Forecast `example.sitemap`
 
 ```perl
 Frame {
@@ -358,7 +358,7 @@ Frame {
 }
 ```
 
-#### Site API for the current time and next daily forecast
+#### Daily Forecast `example.items`
 
 ```perl
 Frame {
