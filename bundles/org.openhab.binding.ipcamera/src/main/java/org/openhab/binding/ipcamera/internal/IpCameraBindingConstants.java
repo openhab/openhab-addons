@@ -35,6 +35,7 @@ public class IpCameraBindingConstants {
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
     public static final String HIKVISION_HANDLER = "hikvisionHandler";
+    public static final String ONVIF_CODEC = "onvifCodec";
 
     public enum FFmpegFormat {
         HLS,
