@@ -8,6 +8,18 @@
 		<item-type>String</item-type>
 		<label>Simple Text</label>
 	</channel-type>
+	<channel-type id="repeat">
+		<item-type>Number</item-type>
+		<label>Repeat Options</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Title</option>
+				<option value="2">Playlist</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>On Off Switch</label>
@@ -17,10 +29,6 @@
 		<item-type>Color</item-type>
 		<label>Color Wheel</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="number">
-		<item-type>Number</item-type>
-		<label>Simple number</label>
 	</channel-type>
 	<channel-type id="percent">
 		<item-type>Number:Dimensionless</item-type>
@@ -37,6 +45,10 @@
 		<label>Illuminance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="player">
+		<item-type>Player</item-type>
+		<label>Player control</label>
+	</channel-type>
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
@@ -50,16 +62,21 @@
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-        <state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="ampere">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Ampere</label>
-        <state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="volts">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Ampere</label>
-        <state pattern="%.0f %unit%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -36,11 +36,12 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
+    public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG);
+            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -66,6 +67,7 @@ public class Constants {
     public static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
     public static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
     public static final String DEVICE_TYPE_SMART_PLUG = "outlet";
+    public static final String DEVICE_TYPE_SPEAKER = "speaker";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -91,10 +93,23 @@ public class Constants {
     public static final String CHANNEL_STATUS_LIGHT = "status-light";
     public static final String CHANNEL_STATUS_BRIGHTNESS = "status-brightness";
 
+    // Speaker channels
+    public static final String CHANNEL_PLAYER = "player";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MUTE = "mute";
+    public static final String CHANNEL_TRACK = "track";
+    public static final String CHANNEL_PLAY_MODES = "modes";
+    public static final String CHANNEL_SHUFFLE = "shuffle";
+    public static final String CHANNEL_REPEAT = "repeat";
+    public static final String CHANNEL_CROSSFADE = "crossfade";
+    public static final String CHANNEL_IMAGE = "image";
+
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
 
     // Ikea property to openHAB channel mappings
+    public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
+            "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES);
     public static final Map<String, String> SMART_PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
             CHANNEL_STATUS_BRIGHTNESS, "currentActivePower", CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL,
             "currentAmps", CHANNEL_CURRENT, "statusLight", CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK);
