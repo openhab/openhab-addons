@@ -43,7 +43,7 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 
 **NOTE:** siteRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration, if you don't reboot / delete and re-add the bridge.
 
-### `site` configuration parameters
+### `site` Configuration Parameters
 
 | Name                     | Type   | Description                                                    | Default Values |
 |--------------------------|--------|----------------------------------------------------------------|----------------|
@@ -94,7 +94,7 @@ current-forecast-**plus01**#site-scn-temp
 current-forecast-**plus02**#site-scn-temp
 
 
-#### Channel groups for Hourly Forecast Channels:
+#### Channel Groups for Hourly Forecast Channels:
 
 | Channel                 | Description                               |
 |-------------------------|-------------------------------------------|
