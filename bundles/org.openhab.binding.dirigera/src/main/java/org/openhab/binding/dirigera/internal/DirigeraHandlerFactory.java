@@ -25,6 +25,7 @@ import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
@@ -103,6 +104,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new LightSensorHandler(thing, LIGHT_SENSOR_MAP);
         } else if (THING_TYPE_CONTACT_SENSOR.equals(thingTypeUID)) {
             return new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);
+        } else if (THING_TYPE_SMART_PLUG.equals(thingTypeUID)) {
+            return new SmartPlugHandler(thing, SMART_PLUG_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
