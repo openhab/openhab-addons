@@ -455,8 +455,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private @Nullable MetOfficeDataHubBridgeHandler getMetOfficeDataHubBridge() {
         Bridge baseBridge = getBridge();
 
-        if (baseBridge != null && baseBridge.getHandler() instanceof MetOfficeDataHubBridgeHandler) {
-            return (MetOfficeDataHubBridgeHandler) baseBridge.getHandler();
+        if (baseBridge != null && baseBridge.getHandler() instanceof MetOfficeDataHubBridgeHandler bridgeHandler) {
+            return bridgeHandler;
         } else {
             return null;
         }
