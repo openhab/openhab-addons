@@ -94,7 +94,7 @@ current-forecast-**plus01**#site-scn-temp
 current-forecast-**plus02**#site-scn-temp
 
 
-#### Channel Groups for Hourly Forecast Channels:
+#### Channel Groups for Hourly Forecast Channels
 
 | Channel                 | Description                               |
 |-------------------------|-------------------------------------------|
@@ -168,7 +168,7 @@ current-forecast-**plus02**#site-scn-temp
 | day-prob-sferics         | Number:Dimensionless  | %    | This is the probability of a strike within a radius of 50km.                                                                                                                                                                                                                                                                                                                                                                            |
 | night-prob-sferics       | Number:Dimensionless  | %    | This is the probability of a strike within a radius of 50km.                                                                                                                                                                                                                                                                                                                                                                            |
 
-#### Channel groups for Daily Forecast Channels:
+#### Channel Groups for Daily Forecast Channels
 
 | Channel               | Description                                       |
 |-----------------------|---------------------------------------------------|
