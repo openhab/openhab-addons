@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 
-import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
+import io.calimero.dptxlator.DPTXlatorBoolean;
 
 /**
  * switch channel type description
