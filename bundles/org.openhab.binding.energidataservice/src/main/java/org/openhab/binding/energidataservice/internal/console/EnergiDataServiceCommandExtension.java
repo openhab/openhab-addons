@@ -126,9 +126,9 @@ public class EnergiDataServiceCommandExtension extends AbstractConsoleCommandExt
         LocalDate startDate;
         LocalDate endDate;
 
-        private int ARGUMENT_POSITION_PRICE_COMPONENT = 1;
-        private int ARGUMENT_POSITION_START_DATE = 2;
-        private int ARGUMENT_POSITION_END_DATE = 3;
+        private static final int ARGUMENT_POSITION_PRICE_COMPONENT = 1;
+        private static final int ARGUMENT_POSITION_START_DATE = 2;
+        private static final int ARGUMENT_POSITION_END_DATE = 3;
 
         ParsedUpdateParameters(String[] args) {
             if (args.length < 3 || args.length > 4) {

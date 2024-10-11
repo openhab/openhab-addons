@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -86,12 +87,12 @@ public class ApiController {
             .create();
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
-    private final String userAgent;
+    private final Supplier<String> userAgentSupplier;
 
     public ApiController(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClient;
         this.timeZoneProvider = timeZoneProvider;
-        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        this.userAgentSupplier = this::getUserAgent;
     }
 
     /**
@@ -116,7 +117,7 @@ public class ApiController {
                 .param("start", start.toString()) //
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "HourUTC,SpotPrice" + currency) //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         if (!end.isEmpty()) {
@@ -136,6 +137,10 @@ public class ApiController {
         } catch (TimeoutException | ExecutionException e) {
             throw new DataServiceException(e);
         }
+    }
+
+    private String getUserAgent() {
+        return "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
     }
 
     private String sendRequest(Request request, Map<String, String> properties)
@@ -210,7 +215,7 @@ public class ApiController {
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
                 .param("filter", mapToFilter(filterMap)) //
                 .param("columns", columns) //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         DateQueryParameter start = tariffFilter.getStart();
@@ -277,7 +282,7 @@ public class ApiController {
                 .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
                 .param("columns", "Minutes5UTC,CO2Emission") //
                 .param("sort", "Minutes5UTC DESC") //
-                .agent(userAgent) //
+                .agent(userAgentSupplier.get()) //
                 .method(HttpMethod.GET);
 
         try {

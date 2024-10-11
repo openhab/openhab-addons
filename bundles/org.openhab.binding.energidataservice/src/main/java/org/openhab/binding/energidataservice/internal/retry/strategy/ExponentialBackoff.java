@@ -82,10 +82,9 @@ public class ExponentialBackoff implements RetryStrategy {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ExponentialBackoff)) {
+        if (!(o instanceof ExponentialBackoff other)) {
             return false;
         }
-        ExponentialBackoff other = (ExponentialBackoff) o;
 
         return this.factor == other.factor && this.jitter == other.jitter && this.minimum.equals(other.minimum)
                 && this.maximum.equals(other.maximum);
