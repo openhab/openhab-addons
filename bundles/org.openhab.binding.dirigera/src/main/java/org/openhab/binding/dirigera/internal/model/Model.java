@@ -152,6 +152,10 @@ public class Model {
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_CONTACT_SENSOR.toString(),
                                         id);
                                 return THING_TYPE_CONTACT_SENSOR;
+                            case DEVICE_TYPE_SMART_PLUG:
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SMART_PLUG.toString(),
+                                        id);
+                                return THING_TYPE_SMART_PLUG;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);
