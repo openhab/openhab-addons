@@ -214,13 +214,13 @@ Example of tomorrow and today prices data structure - an array of tuples:
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}

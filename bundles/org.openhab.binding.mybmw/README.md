@@ -354,7 +354,7 @@ GPS location and heading of the vehicle.
 | gps                 | Location      | Current GPS coordinates of the vehicle                       |
 | heading             | Number:Angle  | Current direction of the vehicle                             |
 | address             | String        | Current address                                              |
-| home-distance       | Number:Length | Calculated distance from configured home position of Openhab |
+| home-distance       | Number:Length | Calculated distance from configured home position of openHAB |
 
 #### Remote Services
 

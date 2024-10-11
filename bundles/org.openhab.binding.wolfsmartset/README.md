@@ -52,7 +52,7 @@ Each of these tabs is treated as one unit.
 
 ## Tested WOLF-Devices
 
-| WOLF Equipment    | openhab Version | Used gateway  |
+| WOLF Equipment    | openHAB Version | Used gateway  |
 |-------------------|-----------------|---------------|
 | CSZ (CGB and SM1) | 3.1             | WOLF Link Pro |
 | CGB-2             | 3.1             | WOLF Link home|

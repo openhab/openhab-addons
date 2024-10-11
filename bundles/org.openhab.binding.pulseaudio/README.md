@@ -67,7 +67,7 @@ This requires the module **module-simple-protocol-tcp** to be present on the ser
 | Config Name                 | Item Type   | Description                                                                                       |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------------|
 | name                        | text        | The name of one specific device. You can also use the description                                 |
-| activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in openHAB                                                     |
 | additionalFilters           | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
 | simpleProtocolIdleModules   | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
 | simpleProtocolMinPort       | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
@@ -86,7 +86,7 @@ This requires the module **module-simple-protocol-tcp** to be present on the tar
 | Config ID                    | Item Type   | Description                                                                                       |
 |------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | name                         | text        | The name of one specific device. You can also use the description                                 |
-| activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in openHAB                                                     |
 | additionalFilters            | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
 | simpleProtocolIdleModules    | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
 | simpleProtocolMinPort        | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |

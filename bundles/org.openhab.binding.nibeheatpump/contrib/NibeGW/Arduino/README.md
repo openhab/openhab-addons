@@ -14,7 +14,7 @@ Both types of modules work fine with NibeGW.
 The difference between the two is, that the Max485 chip needs to be switched between RX mode and TX mode manually while the Max1348 chip do this automatically.
 That is why you need an extra "direction pin" on the Arduino to switch the module with Max485 chip between the two modes.
 
-#### Wiring diagram for Max1348 based modules:
+#### Wiring diagram for Max1348 based modules
 
 ```
  TX  RX   5V  GND    Arduino
@@ -24,7 +24,7 @@ That is why you need an extra "direction pin" on the Arduino to switch the modul
  RX  TX  VCC  GND    Max1348 based module
 ```
 
-#### Wiring diagram for Max485 (PIN2 is used as direction pin here):
+#### Wiring diagram for Max485 (PIN2 is used as direction pin here)
 
 ```
  TX  RX  PIN2      5V  GND    Arduino
@@ -33,7 +33,6 @@ That is why you need an extra "direction pin" on the Arduino to switch the modul
  |   |    |---|    |    |
  DI  RO   DE  RE  VCC  GND    Max485 bases module
 ```
-
 
 ## Ethernet Shield W5100
 

@@ -13,34 +13,25 @@
 package org.openhab.binding.insteon.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link InsteonDeviceConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link InsteonDeviceConfiguration} is the configuration for an insteon device thing.
  *
- * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Initial contribution
  */
 @NonNullByDefault
 public class InsteonDeviceConfiguration {
 
-    // required parameter
     private String address = "";
-
-    // required parameter
-    private String productKey = "";
-
-    // optional parameter
-    private @Nullable String deviceConfig;
 
     public String getAddress() {
         return address;
     }
 
-    public String getProductKey() {
-        return productKey;
-    }
-
-    public @Nullable String getDeviceConfig() {
-        return deviceConfig;
+    @Override
+    public String toString() {
+        String s = "";
+        s += " address=" + address;
+        return s;
     }
 }

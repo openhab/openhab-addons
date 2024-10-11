@@ -78,7 +78,6 @@ Bridge siemenshvac:ozw:ozw672_FF00F445 "Ozw672" [ baseUrl="https://192.168.254.4
 }
 ```
 
-
 Items file `.items`
 
 ```java

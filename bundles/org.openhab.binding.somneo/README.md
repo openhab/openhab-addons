@@ -293,4 +293,4 @@ Thanks to:
 
 - [homebridge-somneo](https://github.com/zackwag/homebridge-somneo) - For creating a similar plugin in another platform and exposing endpoints for control.
 - [somneo-client](https://github.com/DonkerNet/somneo-client) - For creating a similar plugin in another platform and exposing endpoints for control.
-- HTTP Binding and other OpenHAB addons - Which was used as examples.
+- HTTP Binding and other openHAB addons - Which was used as examples.

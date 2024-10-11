@@ -91,7 +91,7 @@ POWERON _(NOTE: POWERON needs to be completely capitalized due to a bug with old
 
 ## Full Example
 
-### roku.things:
+### `roku.things` Example
 
 ```java
 // Roku streaming media player
@@ -102,7 +102,7 @@ roku:roku_tv:mytv1 "My Roku TV" [ hostName="192.168.10.1", refresh=10 ]
 
 ```
 
-### roku.items:
+### `roku.items` Example
 
 ```java
 // Roku streaming media player items:
@@ -135,7 +135,7 @@ String Player_ProgramDescription "Program Description: [%s]" { channel="roku:rok
 String Player_ProgramRating      "Program Rating: [%s]"      { channel="roku:roku_tv:mytv1:programRating" }
 ```
 
-### roku.sitemap:
+### `roku.sitemap` Example
 
 ```perl
 sitemap roku label="Roku" {

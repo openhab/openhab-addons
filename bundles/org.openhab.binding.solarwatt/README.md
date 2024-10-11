@@ -12,7 +12,7 @@ All supported values and devices were discovered while playing with my own energ
 
 - Solarwatt Manager/Manager Flex; ie. the black square device that is wall mounted.
 
-The Solarwatt Manager already contains an OpenHAB installation which can be connected to
+The Solarwatt Manager already contains an openHAB installation which can be connected to
 other installations via [Remote openHAB Binding](https://www.openhab.org/addons/bindings/remoteopenhab/).
 
 ## Supported Things
