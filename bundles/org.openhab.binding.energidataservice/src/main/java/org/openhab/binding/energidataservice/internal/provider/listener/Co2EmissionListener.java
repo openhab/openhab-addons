@@ -27,7 +27,22 @@ import org.openhab.binding.energidataservice.internal.provider.subscription.Co2E
  */
 @NonNullByDefault
 public interface Co2EmissionListener extends SubscriptionListener {
+    /**
+     * Current realtime emission or prognosis has been updated.
+     *
+     * @param type The type (either {@link Co2EmissionSubscription.Type#Realtime} or
+     *            {@link Co2EmissionSubscription.Type#Prognosis})
+     * @param emission Emission in g/kWh
+     */
     void onCurrentEmission(Co2EmissionSubscription.Type type, BigDecimal emission);
 
+    /**
+     * Realtime emissions or prognosis have changed.
+     * Can be used to update time series.
+     *
+     * @param type The type (either {@link Co2EmissionSubscription.Type#Realtime} or
+     *            {@link Co2EmissionSubscription.Type#Prognosis})
+     * @param emissions Emissions in g/kWh
+     */
     void onEmissions(Co2EmissionSubscription.Type type, Map<Instant, BigDecimal> emissions);
 }
