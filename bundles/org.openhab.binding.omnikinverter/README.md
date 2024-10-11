@@ -13,11 +13,12 @@ No autodiscovery available
 
 ## Thing Configuration
 
-| Config   | Description                                                                                                                    | type    | Default   |
-| :------- | :------------                                                                                                                  | :-----  | :-------- |
-| hostname | The hostname or ip through which the inverter can be accessed                                                                  | string  | n/a       |
-| port     | TCP port through which the inverter listens on for incoming connections                                                        | integer | 8899      |
-| serial   | The serial of the wifi module. The Wifi module's SSID contains the number. This is the numerical part only, i.e. without _AP__ | integer | n/a       |
+| Config          | Description                                                                                                                    | type    | Default |
+|:----------------|:-------------------------------------------------------------------------------------------------------------------------------|:--------|:--------|
+| hostname        | The hostname or ip through which the inverter can be accessed                                                                  | string  | n/a     |
+| port            | TCP port through which the inverter listens on for incoming connections                                                        | integer | 8899    |
+| serial          | The serial of the wifi module. The Wifi module's SSID contains the number. This is the numerical part only, i.e. without _AP__ | integer | n/a     |
+| refreshInterval | Interval the device is polled in seconds.                                                                                      | integer | 10      |
 
 ## Channels
 
