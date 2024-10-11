@@ -30,11 +30,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.knxnetip.Discoverer;
-import tuwien.auto.calimero.knxnetip.Discoverer.Result;
-import tuwien.auto.calimero.knxnetip.servicetype.SearchResponse;
-import tuwien.auto.calimero.knxnetip.util.ServiceFamiliesDIB;
-import tuwien.auto.calimero.knxnetip.util.ServiceFamiliesDIB.ServiceFamily;
+import io.calimero.knxnetip.Discoverer;
+import io.calimero.knxnetip.Discoverer.Result;
+import io.calimero.knxnetip.servicetype.SearchResponse;
+import io.calimero.knxnetip.util.ServiceFamiliesDIB;
+import io.calimero.knxnetip.util.ServiceFamiliesDIB.ServiceFamily;
 
 /**
  * Discovers KNXnet/IP interfaces or routers and adds the results to the inbox.
