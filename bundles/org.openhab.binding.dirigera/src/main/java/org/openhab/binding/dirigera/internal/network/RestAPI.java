@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.network;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -29,6 +30,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +74,7 @@ public class RestAPI {
                 statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, 500);
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         return statusObject;
@@ -91,7 +93,7 @@ public class RestAPI {
                 statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, 500);
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         return statusObject;
@@ -117,8 +119,28 @@ public class RestAPI {
             }
             return responseStatus;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.info("DIRIGERA API call to {} failed {}", url, e.getMessage());
+            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
             return 500;
         }
+    }
+
+    public Map<String, ?> getImage(String imageURL) {
+        try {
+            ContentResponse response = httpClient.GET(imageURL);
+            if (response.getStatus() == 200) {
+                logger.info("DIRIGERA API Image call delivers {} {}", response.getMediaType(),
+                        response.getContent() != null);
+                String mimeType = response.getMediaType();
+                if (mimeType == null) {
+                    mimeType = RawType.DEFAULT_MIME_TYPE;
+                }
+                return Map.of("image", response.getContent(), "mimeType", mimeType);
+            } else {
+                logger.warn("DIRIGERA API call to {} failed {}", imageURL, response.getStatus());
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.warn("DIRIGERA API call to {} failed {}", imageURL, e.getMessage());
+        }
+        return Map.of("image", new byte[] {}, "mimeType", "");
     }
 }
