@@ -54,7 +54,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> timerResetScheduler = null;
 
     protected String getApiKey() {
-        return config.siteSpecificApiKey;
+        return config.siteApiKey;
     }
 
     public MetOfficeDataHubBridgeHandler(final Bridge bridge) {
@@ -79,7 +79,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         updateLimiterStats();
         config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
-        forecastDataLimiter.updateLimit(config.siteSpecificRateDailyLimit);
+        forecastDataLimiter.updateLimit(config.siteRateDailyLimit);
 
         updateStatus(ThingStatus.UNKNOWN);
 

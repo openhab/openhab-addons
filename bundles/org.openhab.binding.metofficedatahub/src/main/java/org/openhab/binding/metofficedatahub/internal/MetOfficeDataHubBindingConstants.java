@@ -38,7 +38,7 @@ public class MetOfficeDataHubBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-    public static final ThingTypeUID THING_TYPE_SITE_SPEC_API = new ThingTypeUID(BINDING_ID, "siteSpecificApi");
+    public static final ThingTypeUID THING_TYPE_SITE_SPEC_API = new ThingTypeUID(BINDING_ID, "site");
 
     /**
      * Site Specific API - Shared

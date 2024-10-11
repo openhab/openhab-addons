@@ -25,11 +25,11 @@ public class MetOfficeDataHubBridgeConfiguration {
     /**
      * Site Specific API Subscription - API Key
      */
-    public String siteSpecificApiKey = "";
+    public String siteApiKey = "";
 
     /**
      * Rate limit of API call's in 24 hour period starting from 0000 (Free is capped at 360 - this allows 110 due to
      * reboots)
      */
-    public int siteSpecificRateDailyLimit = 250;
+    public int siteRateDailyLimit = 250;
 }

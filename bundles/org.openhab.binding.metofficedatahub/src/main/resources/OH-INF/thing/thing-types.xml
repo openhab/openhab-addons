@@ -14,12 +14,12 @@
 		</properties>
 
 		<config-description>
-			<parameter name="siteSpecificApiKey" type="text" required="true">
+			<parameter name="siteApiKey" type="text" required="true">
 				<context>password</context>
 				<label>Site Specific API Key</label>
 				<description>The API Key for the Site Specific subscription in your MET Office Data Hub account</description>
 			</parameter>
-			<parameter name="siteSpecificRateDailyLimit" type="integer" unit="s" min="1">
+			<parameter name="siteRateDailyLimit" type="integer" unit="s" min="1">
 				<label>API Daily Limit</label>
 				<description>A limit to the number of daily site specific API requests</description>
 				<default>250</default>
@@ -28,7 +28,7 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="siteSpecificApi">
+	<thing-type id="site">
 
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
