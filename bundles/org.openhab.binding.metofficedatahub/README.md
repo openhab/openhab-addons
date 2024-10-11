@@ -101,26 +101,8 @@ current-forecast-**plus02**#site-scn-temp
 | current-forecast        | Current hours forecast                    |
 | current-forecast-plus01 | 01 hour after the current hours forecast  |
 | current-forecast-plus02 | 02 hours after the current hours forecast |
-| current-forecast-plus03 | 03 hours after the current hours forecast |
-| current-forecast-plus04 | 04 hours after the current hours forecast |
-| current-forecast-plus05 | 05 hours after the current hours forecast |
-| current-forecast-plus06 | 06 hours after the current hours forecast |
-| current-forecast-plus07 | 07 hours after the current hours forecast |
-| current-forecast-plus08 | 08 hours after the current hours forecast |
-| current-forecast-plus09 | 09 hours after the current hours forecast |
-| current-forecast-plus10 | 10 hours after the current hours forecast |
-| current-forecast-plus11 | 11 hours after the current hours forecast |
-| current-forecast-plus12 | 12 hours after the current hours forecast |
-| current-forecast-plus13 | 13 hours after the current hours forecast |
-| current-forecast-plus14 | 14 hours after the current hours forecast |
-| current-forecast-plus15 | 15 hours after the current hours forecast |
-| current-forecast-plus16 | 16 hours after the current hours forecast |
-| current-forecast-plus17 | 17 hours after the current hours forecast |
-| current-forecast-plus18 | 18 hours after the current hours forecast |
-| current-forecast-plus19 | 19 hours after the current hours forecast |
-| current-forecast-plus20 | 20 hours after the current hours forecast |
-| current-forecast-plus21 | 21 hours after the current hours forecast |
-| current-forecast-plus22 | 22 hours after the current hours forecast |
+| ....................... | ......................................... |
+| current-forecast-plus23 | 23 hours after the current hours forecast |
 | current-forecast-plus24 | 24 hours after the current hours forecast |
 
 ### Daily Forecast Channels
@@ -175,8 +157,7 @@ current-forecast-**plus02**#site-scn-temp
 | daily-forecast        | This is the weather forecast for the current day. |
 | daily-forecast-plus01 | This is the weather forecast in 1 day.            |
 | daily-forecast-plus02 | This is the weather forecast in 2 days.           |
-| daily-forecast-plus03 | This is the weather forecast in 3 days.           |
-| daily-forecast-plus04 | This is the weather forecast in 4 days.           |
+| ..................... | ................................................. |
 | daily-forecast-plus05 | This is the weather forecast in 5 days.           |
 | daily-forecast-plus06 | This is the weather forecast in 6 days.           |
 
