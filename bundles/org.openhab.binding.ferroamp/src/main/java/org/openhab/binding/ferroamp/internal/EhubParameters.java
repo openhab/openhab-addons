@@ -57,7 +57,7 @@ public class EhubParameters {
                 "grid-energy-consumed-total", "inverter-energy-produced-total", "inverter-energy-consumed-total",
                 "load-energy-produced-3p", "load-energy-consumed-3p", "total-solar-energy", "state", "timestamp",
                 "battery-energy-produced", "battery-energy-consumed", "soc", "soh", "power-battery",
-                "total-rated-capacity-all-batteries");
+                "total-capacity-batteries");
         return channelParametersEhub;
     }
 }

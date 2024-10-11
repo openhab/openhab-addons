@@ -128,11 +128,11 @@ The following configuration parameters are available.
 | soc                                   | Number:Dimensionless       | R          | System State of Check                    | State of the system |
 | soh                                   | Number:Dimensionless       | R          | System State of Health                   |
 | power-battery                         | Number:Power               | R          | Battery Power                            | Only sent when system has batteries |
-| total-rated-capacity-all-batteries    | Number:Energy              | R          | Total Rated Capacity of All Batteries    |
+| total-capacity-batteries    | Number:Energy              | R          | Total Rated Capacity of All Batteries    |
 
-| s0-id                                 | String                     | R          | S0 ID                                    | Unique identifier of SSO-0 |
-| s0-measured-voltage-on-pv-string-side | Number:ElectricPotential   | R          | S0 Measured Voltage on PV String Side    | Measured on PV string side |
-| s0-measured-current-on-pv-string-side | Number:ElectricCurrent     | R          | S0 Measured Current on PV String Side    | Measured on PV string side |
+| s0-id                                 | String                     | R          | S0 ID                                      | Unique identifier of SSO-0 |
+| s0-pv-voltage                         | Number:ElectricPotential   | R          | S0 Measured Voltage on PV String Side    | Measured on PV string side |
+| s0-pv-current | Number:ElectricCurrent     | R          | S0 Measured Current on PV String Side    | Measured on PV string side |
 | s0-total-solar-energy                 | Number:Energy              | R          | S0 Total Solar Energy                    | Total energy produced by SSO-0 |
 | s0-relay-status                       | String                     | R          | S0 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge |
 | s0-temperature                        | Number:Temperature         | R          | S0 Temperature Measured on PCB           | Temperature Measured on PCB |
@@ -141,8 +141,8 @@ The following configuration parameters are available.
 | s0-timestamp                          | DateTime                   | R          | S0 Time Stamp When Message was Published | Time stamp when message was published |
  |
 | s1-id                                 | String                     | R          | S1 ID                                   | Unique identifier of SSO-1 |
-| s1-measured-voltage-on-pv-string-side | Number:ElectricPotential   | R          | S1 easured Voltage on PV String Side    | Measured on PV string side |
-| s1-measured-current-on-pv-string-side | Number:ElectricCurrent     | R          | S1 Measured Current on PV String Side    | Measured on PV string side |
+| s1-pv-voltage | Number:ElectricPotential   | R          | S1 easured Voltage on PV String Side    | Measured on PV string side |
+| s1-pv-current | Number:ElectricCurrent     | R          | S1 Measured Current on PV String Side    | Measured on PV string side |
 | s1-total-solar-energy                 | Number:Energy              | R          | S1 Total Solar Energy                    | Total energy produced by SSO-1 |
 | s1-relay-status                       | String                     | R          | S1 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge |
 | s1-temperature                        | Number:Temperature         | R          | S1 Temperature Measured on PCB           | Temperature Measured on PCB |
@@ -152,8 +152,8 @@ The following configuration parameters are available.
  |
  
 | s2-id                                 | String                     | R          | S2 ID                                    | Unique identifier of SSO-2 |
-| s2-measured-voltage-on-pv-string-side | Number:ElectricPotential   | R          | S2 Measured Voltage on PV String Side    | Measured on PV string side |
-| s2-measured-current-on-pv-string-side | Number:ElectricCurrent     | R          | S2 Measured Current on PV String Side    | Measured on PV string side |
+| s2-pv-voltage | Number:ElectricPotential   | R          | S2 Measured Voltage on PV String Side    | Measured on PV string side |
+| s2-pv-current | Number:ElectricCurrent     | R          | S2 Measured Current on PV String Side    | Measured on PV string side |
 | s2-total-solar-energy                 | Number:Energy              | R          | S2 Total Solar Energy                    | Total energy produced by SSO-2 |
 | s2-relay-status                       | String                     | R          | S2 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge |
 | s2-temperature                        | Number:Temperature         | R          | S2 Temperature Measured on PCB           | Temperature Measured on PCB |
@@ -163,8 +163,8 @@ The following configuration parameters are available.
  |
 
 | s3-id                                 | String                     | R          | S3 ID                                    | Unique identifier of SSO-3 |
-| s3-measured-voltage-on-pv-string-side | Number:ElectricPotential   | R          | S3 Measured Voltage on PV String Side    | Measured on PV string side |
-| s3-measured-current-on-pv-string-side | Number:ElectricCurrent     | R          | S3 Measured Current on PV String Side    | Measured on PV string side |
+| s3-pv-voltage | Number:ElectricPotential   | R          | S3 Measured Voltage on PV String Side    | Measured on PV string side |
+| s3-pv-current | Number:ElectricCurrent     | R          | S3 Measured Current on PV String Side    | Measured on PV string side |
 | s3-total-solar-energy                 | Number:Energy              | R          | S3 Total Solar Energy                    | Total energy produced by SSO-3 |
 | s3-relay-status                       | String                     | R          | S3 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge |
 | s3-temperature                        | Number:Temperature         | R          | S3 Temperature Measured on PCB           | Temperature Measured on PCB |
@@ -173,9 +173,9 @@ The following configuration parameters are available.
 | s3-timestamp                          | DateTime                   | R          | S3 Time Stamp When Message was Published | Time stamp when message was published |
  |
 
-| eso-unique-identifier         | String                     | R          | Eso Unique Identifier                    | Unique identifier |
-| measured-voltage-battery      | Number:ElectricPotential   | R          | Eso Voltage Measured on Battery Side     | Measured on battery side |
-| measured-current-battery      | Number:ElectricCurrent     | R          | Eso Current Measured on Battery Side     | Measured on battery side |
+| eso-id         | String                     | R          | Eso Unique Identifier                    | Unique identifier |
+| eso-voltage-battery      | Number:ElectricPotential   | R          | Eso Voltage Measured on Battery Side     | Measured on battery side |
+| eso-current-battery      | Number:ElectricCurrent     | R          | Eso Current Measured on Battery Side     | Measured on battery side |
 | eso-battery-energy-produced   | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged |
 | eso-battery-energy-consumed   | Number:Energy              | R          | Eso Battery Energy Consumed              | Total energy consumed by ESO, i.e total energy discharged |
 | eso-soc                       | Number:Dimensionless       | R          | Eso State of Charge                      | State of Charge for ESO |
@@ -187,11 +187,11 @@ The following configuration parameters are available.
 | eso-timestamp                 | DateTime                   | R          | Eso Time Stamp When Message was Published| Time stamp when message was published |
 
 
-| esm-unique-identifier                     | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports.|
+| esm-id                     | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports.|
 | esm-soh                                   | Number:Dimensionless       | R          | Esm System State of Health               | State of Health for ESM |
 | esm-soc                                   | Number:Dimensionless       | R          | Esm System State of Charge               | State of Charge for ESM |
-| esm-total-rated-capacity-all-batteries    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of battery |
-| esm-rated-power-battery                   | Number:Power               | R          | Esm Rated power of battery               | Rated power of battery |
+| esm-total-capacity    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of all batteries |
+| esm-power-battery                   | Number:Power               | R          | Esm Rated power of battery               | Rated power of battery |
 | esm-status                                | String                     | R          | Esm Status                               | Dependent on battery manufacturer |
 | esm-timestamp                             | DateTime                   | R          | Esm Time Stamp When Message was Published| Time stamp when message was published |
 
