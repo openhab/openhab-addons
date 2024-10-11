@@ -65,8 +65,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
-
 /**
  * The {@link MetOfficeDataHubSiteApiHandler} is responsible for handling commands, which are
  * sent to one of the channels.

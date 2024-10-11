@@ -33,8 +33,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
-
 /**
  * The {@link MetOfficeDataHubBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.

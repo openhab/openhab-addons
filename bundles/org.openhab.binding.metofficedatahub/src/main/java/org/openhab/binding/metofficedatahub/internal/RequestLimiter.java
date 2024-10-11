@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package main.java.org.openhab.binding.metofficedatahub.internal;
+package org.openhab.binding.metofficedatahub.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
