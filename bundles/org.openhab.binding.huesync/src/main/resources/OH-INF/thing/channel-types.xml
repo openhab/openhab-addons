@@ -52,27 +52,27 @@
 		<state readOnly="true"></state>
 		<command>
 			<options>
-				<option value="generic"></option>
-				<option value="video"></option>
-				<option value="game"></option>
-				<option value="music"></option>
-				<option value="xbox"></option>
-				<option value="playstation"></option>
-				<option value="nintendoswitch"></option>
-				<option value="phone"></option>
-				<option value="desktop"></option>
-				<option value="laptop"></option>
-				<option value="appletv"></option>
-				<option value="roku"></option>
-				<option value="shield"></option>
-				<option value="chromecast"></option>
-				<option value="firetv"></option>
-				<option value="diskplayer"></option>
-				<option value="settopbox"></option>
-				<option value="satellite"></option>
-				<option value="avreceiver"></option>
-				<option value="soundbar"></option>
-				<option value="hdmiswitch"></option>
+				<option value="generic">Generic</option>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
+				<option value="xbox">XBox</option>
+				<option value="playstation">PlayStation</option>
+				<option value="nintendoswitch">Nintendo Switch</option>
+				<option value="phone">Phone</option>
+				<option value="desktop">Desktop</option>
+				<option value="laptop">Laptop</option>
+				<option value="appletv">Apple TV</option>
+				<option value="roku">Roku</option>
+				<option value="shield">Nvidia Shield</option>
+				<option value="chromecast">Chromecast</option>
+				<option value="firetv">Amazon Fire TV</option>
+				<option value="diskplayer">Disk Player</option>
+				<option value="settopbox">Set-top box</option>
+				<option value="satellite">Satellite</option>
+				<option value="avreceiver">AV receiver</option>
+				<option value="soundbar">Soundbar</option>
+				<option value="hdmiswitch">HDMI switch</option>
 			</options>
 		</command>
 	</channel-type>
