@@ -210,7 +210,7 @@ public class FerroampChannelConfiguration {
         channelConfigurationEhub
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_POWERBATTERY, Units.WATT));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_TOTALRATEDCAPACITYALLBATTERIES, Units.WATT_HOUR));
+                FerroampBindingConstants.CHANNEL_TOTALCAPACITYBATTERIES, Units.WATT_HOUR));
         return channelConfigurationEhub;
     }
 
@@ -218,10 +218,10 @@ public class FerroampChannelConfiguration {
         final List<FerroampChannelConfiguration> channelConfigurationSsoS0 = new ArrayList<>();
         channelConfigurationSsoS0
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0ID, Units.ONE));
-        channelConfigurationSsoS0.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S0MEASUREDVOLTAGEPVSTRING, Units.VOLT));
-        channelConfigurationSsoS0.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S0MEASUREDCURRENTPVSTRING, Units.AMPERE));
+        channelConfigurationSsoS0
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0PVVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS0
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0PVCURRENT, Units.AMPERE));
         channelConfigurationSsoS0
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0TOTALSOLARENERGY, Units.WATT));
         channelConfigurationSsoS0
@@ -241,10 +241,10 @@ public class FerroampChannelConfiguration {
         final List<FerroampChannelConfiguration> channelConfigurationSsoS1 = new ArrayList<>();
         channelConfigurationSsoS1
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S1ID, Units.ONE));
-        channelConfigurationSsoS1.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S1MEASUREDVOLTAGEPVSTRING, Units.VOLT));
-        channelConfigurationSsoS1.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S1MEASUREDCURRENTPVSTRING, Units.AMPERE));
+        channelConfigurationSsoS1
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S1PVVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS1
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S1PVCURRENT, Units.AMPERE));
         channelConfigurationSsoS1
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S1TOTALSOLARENERGY, Units.WATT));
         channelConfigurationSsoS1
@@ -264,10 +264,10 @@ public class FerroampChannelConfiguration {
         final List<FerroampChannelConfiguration> channelConfigurationSsoS2 = new ArrayList<>();
         channelConfigurationSsoS2
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S2ID, Units.ONE));
-        channelConfigurationSsoS2.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S2MEASUREDVOLTAGEPVSTRING, Units.VOLT));
-        channelConfigurationSsoS2.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S2MEASUREDCURRENTPVSTRING, Units.AMPERE));
+        channelConfigurationSsoS2
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S2PVVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS2
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S2PVCURRENT, Units.AMPERE));
         channelConfigurationSsoS2
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S2TOTALSOLARENERGY, Units.WATT));
         channelConfigurationSsoS2
@@ -287,10 +287,10 @@ public class FerroampChannelConfiguration {
         final List<FerroampChannelConfiguration> channelConfigurationSsoS3 = new ArrayList<>();
         channelConfigurationSsoS3
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S3ID, Units.ONE));
-        channelConfigurationSsoS3.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S3MEASUREDVOLTAGEPVSTRING, Units.VOLT));
-        channelConfigurationSsoS3.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_S3MEASUREDCURRENTPVSTRING, Units.AMPERE));
+        channelConfigurationSsoS3
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S3PVVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS3
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S3PVCURRENT, Units.AMPERE));
         channelConfigurationSsoS3
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S3TOTALSOLARENERGY, Units.WATT));
         channelConfigurationSsoS3
@@ -309,11 +309,11 @@ public class FerroampChannelConfiguration {
     public static List<FerroampChannelConfiguration> getChannelConfigurationEso() {
         final List<FerroampChannelConfiguration> channelConfigurationEso = new ArrayList<>();
         channelConfigurationEso
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESOUNIQUEIDENTIFIER, Units.ONE));
-        channelConfigurationEso.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_ESOMEASUREDVOLTAGEBATTERY, Units.VOLT));
-        channelConfigurationEso.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_ESOMEASUREDCURRENTBATTERY, Units.AMPERE));
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESOID, Units.ONE));
+        channelConfigurationEso
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESOVOLTAGEBATTERY, Units.VOLT));
+        channelConfigurationEso.add(
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESOCURRENTBATTERY, Units.AMPERE));
         channelConfigurationEso.add(new FerroampChannelConfiguration(
                 FerroampBindingConstants.CHANNEL_ESOBATTERYENERGYPRODUCED, Units.WATT));
         channelConfigurationEso.add(new FerroampChannelConfiguration(
@@ -336,15 +336,15 @@ public class FerroampChannelConfiguration {
     public static List<FerroampChannelConfiguration> getChannelConfigurationEsm() {
         final List<FerroampChannelConfiguration> channelConfigurationEsm = new ArrayList<>();
         channelConfigurationEsm
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMUNIQUEIDENTIFIER, Units.ONE));
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMID, Units.ONE));
         channelConfigurationEsm
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMSOH, Units.PERCENT));
         channelConfigurationEsm
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMSOC, Units.PERCENT));
-        channelConfigurationEsm.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_ESMTOTALRATEDCAPACITYALLBATTERIES, Units.WATT_HOUR));
         channelConfigurationEsm.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMRATEDPOWERBATTERY, Units.WATT));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMTOTALCAPACITY, Units.WATT_HOUR));
+        channelConfigurationEsm
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMPOWERBATTERY, Units.WATT));
         channelConfigurationEsm
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ESMSTATUS, Units.ONE));
         channelConfigurationEsm

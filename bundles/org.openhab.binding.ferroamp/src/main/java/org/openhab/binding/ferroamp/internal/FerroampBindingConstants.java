@@ -136,12 +136,12 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_SOC = "soc";
     public static final String CHANNEL_SOH = "soh";
     public static final String CHANNEL_POWERBATTERY = "power-battery";
-    public static final String CHANNEL_TOTALRATEDCAPACITYALLBATTERIES = "total-rated-capacity-all-batteries";
+    public static final String CHANNEL_TOTALCAPACITYBATTERIES = "total-capacity-batteries";
 
     // List of SSO Channel ids
     public static final String CHANNEL_S0ID = "s0-id";
-    public static final String CHANNEL_S0MEASUREDVOLTAGEPVSTRING = "s0-measured-voltage-pv-string";
-    public static final String CHANNEL_S0MEASUREDCURRENTPVSTRING = "s0-measured-current-pv-string";
+    public static final String CHANNEL_S0PVVOLTAGE = "s0-pv-voltage";
+    public static final String CHANNEL_S0PVCURRENT = "s0-pv-current";
     public static final String CHANNEL_S0TOTALSOLARENERGY = "s0-total-solar-energy";
     public static final String CHANNEL_S0RELAYSTATUS = "s0-relay-status";
     public static final String CHANNEL_S0TEMPERATURE = "s0-temperature";
@@ -149,8 +149,8 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_S0DCLINKVOLTAGE = "s0-dc-link-voltage";
     public static final String CHANNEL_S0TIMESTAMP = "s0-timestamp";
     public static final String CHANNEL_S1ID = "s1-id";
-    public static final String CHANNEL_S1MEASUREDVOLTAGEPVSTRING = "s1-measured-voltage-pv-string";
-    public static final String CHANNEL_S1MEASUREDCURRENTPVSTRING = "s1-measured-current-pv-string";
+    public static final String CHANNEL_S1PVVOLTAGE = "s1-pv-voltage";
+    public static final String CHANNEL_S1PVCURRENT = "s1-pv-current";
     public static final String CHANNEL_S1TOTALSOLARENERGY = "s1-total-solar-energy";
     public static final String CHANNEL_S1RELAYSTATUS = "s1-relay-status";
     public static final String CHANNEL_S1TEMPERATURE = "s1-temperature";
@@ -158,8 +158,8 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_S1DCLINKVOLTAGE = "s1-dc-link-voltage";
     public static final String CHANNEL_S1TIMESTAMP = "s1-timestamp";
     public static final String CHANNEL_S2ID = "s2-id";
-    public static final String CHANNEL_S2MEASUREDVOLTAGEPVSTRING = "s2-measured-voltage-pv-string";
-    public static final String CHANNEL_S2MEASUREDCURRENTPVSTRING = "s2-measured-current-pv-string";
+    public static final String CHANNEL_S2PVVOLTAGE = "s2-pv-voltage";
+    public static final String CHANNEL_S2PVCURRENT = "s2-pv-current";
     public static final String CHANNEL_S2TOTALSOLARENERGY = "s2-total-solar-energy";
     public static final String CHANNEL_S2RELAYSTATUS = "s2-relay-status";
     public static final String CHANNEL_S2TEMPERATURE = "s2-temperature";
@@ -167,8 +167,8 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_S2DCLINKVOLTAGE = "s2-dc-link-voltage";
     public static final String CHANNEL_S2TIMESTAMP = "s2-timestamp";
     public static final String CHANNEL_S3ID = "s3-id";
-    public static final String CHANNEL_S3MEASUREDVOLTAGEPVSTRING = "s3-measured-voltage-pv-string";
-    public static final String CHANNEL_S3MEASUREDCURRENTPVSTRING = "s3-measured-current-pv-string";
+    public static final String CHANNEL_S3PVVOLTAGE = "s3-pv-voltage";
+    public static final String CHANNEL_S3PVCURRENT = "s3-pv-current";
     public static final String CHANNEL_S3TOTALSOLARENERGY = "s3-total-solar-energy";
     public static final String CHANNEL_S3RELAYSTATUS = "s3-relay-status";
     public static final String CHANNEL_S3TEMPERATURE = "s3-temperature";
@@ -177,9 +177,9 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_S3TIMESTAMP = "s3-timestamp";
 
     // List of ESO Channel ids
-    public static final String CHANNEL_ESOUNIQUEIDENTIFIER = "eso-unique-identifier";
-    public static final String CHANNEL_ESOMEASUREDVOLTAGEBATTERY = "eso-measured-voltage-battery";
-    public static final String CHANNEL_ESOMEASUREDCURRENTBATTERY = "eso-measured-current-battery";
+    public static final String CHANNEL_ESOID = "eso-id";
+    public static final String CHANNEL_ESOVOLTAGEBATTERY = "eso-voltage-battery";
+    public static final String CHANNEL_ESOCURRENTBATTERY = "eso-current-battery";
     public static final String CHANNEL_ESOBATTERYENERGYPRODUCED = "eso-battery-energy-produced";
     public static final String CHANNEL_ESOBATTERYENERGYCONSUMED = "eso-battery-energy-consumed";
     public static final String CHANNEL_ESOSOC = "eso-soc";
@@ -190,11 +190,11 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_ESOTIMESTAMP = "eso-timestamp";
 
     // List of ESM Channel ids
-    public static final String CHANNEL_ESMUNIQUEIDENTIFIER = "esm-unique-identifier";
+    public static final String CHANNEL_ESMID = "esm-id";
     public static final String CHANNEL_ESMSOH = "esm-soh";
     public static final String CHANNEL_ESMSOC = "esm-soc";
-    public static final String CHANNEL_ESMTOTALRATEDCAPACITYALLBATTERIES = "esm-total-rated-capacity-all-batteries";
-    public static final String CHANNEL_ESMRATEDPOWERBATTERY = "esm-rated-power-battery";
+    public static final String CHANNEL_ESMTOTALCAPACITY = "esm-total-capacity";
+    public static final String CHANNEL_ESMPOWERBATTERY = "esm-power-battery";
     public static final String CHANNEL_ESMSTATUS = "esm-status";
     public static final String CHANNEL_ESMTIMESTAMP = "esm-timestamp";
 

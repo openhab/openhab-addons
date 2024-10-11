@@ -263,16 +263,16 @@
 			<channel id="power-battery" typeId="power">
 				<label>Battery Power</label>
 			</channel>
-			<channel id="total-rated-capacity-all-batteries" typeId="energy">
+			<channel id="total-capacity-batteries" typeId="energy">
 				<label>Total Rated Capacity of All Batteries</label>
 			</channel>
 			<channel id="s0-id" typeId="string">
 				<label>S0 ID</label>
 			</channel>
-			<channel id="s0-measured-voltage-pv-string" typeId="electric-potential">
+			<channel id="s0-pv-voltage" typeId="electric-potential">
 				<label>S0 Measured Voltage on PV String Side</label>
 			</channel>
-			<channel id="s0-measured-current-pv-string" typeId="electric-current">
+			<channel id="s0-pv-current" typeId="electric-current">
 				<label>S0 Measured Current on PV String Side</label>
 			</channel>
 			<channel id="s0-total-solar-energy" typeId="energy">
@@ -296,10 +296,10 @@
 			<channel id="s1-id" typeId="string">
 				<label>S1 ID</label>
 			</channel>
-			<channel id="s1-measured-voltage-pv-string" typeId="electric-potential">
+			<channel id="s1-pv-voltage" typeId="electric-potential">
 				<label>S1 Measured Voltage on PV String Side</label>
 			</channel>
-			<channel id="s1-measured-current-pv-string" typeId="electric-current">
+			<channel id="s1-pv-current" typeId="electric-current">
 				<label>S1 Measured Current on PV String Side</label>
 			</channel>
 			<channel id="s1-total-solar-energy" typeId="energy">
@@ -323,10 +323,10 @@
 			<channel id="s2-id" typeId="string">
 				<label>S2 ID</label>
 			</channel>
-			<channel id="s2-measured-voltage-pv-string" typeId="electric-potential">
+			<channel id="s2-pv-voltage" typeId="electric-potential">
 				<label>S2 Measured Voltage on PV String Side</label>
 			</channel>
-			<channel id="s2-measured-current-pv-string" typeId="electric-current">
+			<channel id="s2-pv-current" typeId="electric-current">
 				<label>S2 Measured Current on PV String Side</label>
 			</channel>
 			<channel id="s2-total-solar-energy" typeId="energy">
@@ -350,10 +350,10 @@
 			<channel id="s3-id" typeId="string">
 				<label>S3 ID</label>
 			</channel>
-			<channel id="s3-measured-voltage-pv-string" typeId="electric-potential">
+			<channel id="s3-pv-voltage" typeId="electric-potential">
 				<label>S3 Measured Voltage on PV String Side</label>
 			</channel>
-			<channel id="s3-measured-current-pv-string" typeId="electric-current">
+			<channel id="s3-pv-current" typeId="electric-current">
 				<label>S3 Measured Current on PV String Side</label>
 			</channel>
 			<channel id="s3-total-solar-energy" typeId="energy">
@@ -374,13 +374,13 @@
 			<channel id="s3-timestamp" typeId="date-time">
 				<label>S3 Time Stamp When Message was Published</label>
 			</channel>
-			<channel id="eso-unique-identifier" typeId="string">
+			<channel id="eso-id" typeId="string">
 				<label>Eso Unique Identifier</label>
 			</channel>
-			<channel id="measured-voltage-battery" typeId="electric-potential">
+			<channel id="eso-voltage-battery" typeId="electric-potential">
 				<label>Eso Voltage Measured on Battery Side</label>
 			</channel>
-			<channel id="measured-current-battery" typeId="electric-current">
+			<channel id="eso-current-battery" typeId="electric-current">
 				<label>Eso Current Measured on Battery Side</label>
 			</channel>
 			<channel id="eso-battery-energy-produced" typeId="energy">
@@ -407,7 +407,7 @@
 			<channel id="eso-timestamp" typeId="date-time">
 				<label>Eso Time Stamp When Message was Published</label>
 			</channel>
-			<channel id="esm-unique-identifier" typeId="string">
+			<channel id="esm-id" typeId="string">
 				<label>Esm Unique Identifier</label>
 			</channel>
 			<channel id="esm-soh" typeId="dimensionless">
@@ -416,10 +416,10 @@
 			<channel id="esm-soc" typeId="dimensionless">
 				<label>Esm System State of Charge</label>
 			</channel>
-			<channel id="esm-total-rated-capacity-all-batteries" typeId="energy">
+			<channel id="esm-total-capacity" typeId="energy">
 				<label>Esm Rated Capacity</label>
 			</channel>
-			<channel id="esm-rated-power-battery" typeId="power">
+			<channel id="esm-power-battery" typeId="power">
 				<label>Esm Rated Power of Battery</label>
 			</channel>
 			<channel id="esm-status" typeId="string">

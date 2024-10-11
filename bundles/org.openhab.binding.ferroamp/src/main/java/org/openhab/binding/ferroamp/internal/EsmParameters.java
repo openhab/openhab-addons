@@ -34,8 +34,8 @@ public class EsmParameters {
     }
 
     public static List<String> getChannelParametersEsm() {
-        final List<String> channelParametersEsm = Arrays.asList("esm-unique-identifier", "esm-soh", "esm-soc",
-                "esm-total-rated-capacity-all-batteries", "esm-rated-power-battery", "esm-status", "esm-timestamp");
+        final List<String> channelParametersEsm = Arrays.asList("esm-id", "esm-soh", "esm-soc", "esm-total-capacity",
+                "esm-power-battery", "esm-status", "esm-timestamp");
         return channelParametersEsm;
     }
 }

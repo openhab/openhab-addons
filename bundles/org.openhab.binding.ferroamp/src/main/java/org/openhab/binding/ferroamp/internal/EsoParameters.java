@@ -34,9 +34,9 @@ public class EsoParameters {
     }
 
     public static List<String> getChannelParametersEso() {
-        final List<String> channelParametersEso = Arrays.asList("eso-unique-identifier", "eso-measured-voltage-battery",
-                "eso-measured-current-battery", "eso-battery-energy-produced", "eso-battery-energy-consumed", "eso-soc",
-                "eso-relay-status", "eso-temperature", "eso-fault-code", "eso-dc-link-voltage", "eso-timestamp");
+        final List<String> channelParametersEso = Arrays.asList("eso-id", "eso-voltage-battery", "eso-current-battery",
+                "eso-battery-energy-produced", "eso-battery-energy-consumed", "eso-soc", "eso-relay-status",
+                "eso-temperature", "eso-fault-code", "eso-dc-link-voltage", "eso-timestamp");
         return channelParametersEso;
     }
 }

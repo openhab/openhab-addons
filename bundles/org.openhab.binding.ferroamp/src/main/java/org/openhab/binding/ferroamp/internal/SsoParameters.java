@@ -41,9 +41,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SsoParameters {
 
     public static List<String> getChannelParametersSso() {
-        final List<String> channelParametersSs0 = Arrays.asList("id", "measured-voltage-pv-string",
-                "measured-current-pv-string", "total-solar-energy", "relay-status", "temperature", "fault-code",
-                "dc-link-voltage", "timestamp");
+        final List<String> channelParametersSs0 = Arrays.asList("id", "pv-voltage", "pv-current", "total-solar-energy",
+                "relay-status", "temperature", "fault-code", "dc-link-voltage", "timestamp");
         return channelParametersSs0;
     }
 }
