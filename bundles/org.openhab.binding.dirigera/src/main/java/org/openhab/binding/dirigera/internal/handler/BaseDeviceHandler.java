@@ -99,14 +99,11 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     public void handleUpdate(JSONObject update) {
         if (update.has(Model.REACHABLE)) {
-            logger.trace("DIRIGERA BASE_DEVICE Device switches to reachable {}", update.getBoolean(Model.REACHABLE));
             if (update.getBoolean(Model.REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable");
             }
-        } else {
-            logger.trace("DIRIGERA BASE_DEVICE no reachable found in {}", update);
         }
     }
 

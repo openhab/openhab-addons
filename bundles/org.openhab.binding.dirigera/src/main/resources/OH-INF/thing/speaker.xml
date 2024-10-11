@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="speaker">
+		<label>Speaker</label>
+		<description>Speaker device from Sonos with player activities</description>
+
+		<channels>
+			<channel id="player" typeId="player">
+				<label>Player</label>
+				<description>Player Control</description>
+			</channel>
+			<channel id="volume" typeId="dimmer">
+				<label>Volume Control</label>
+				<description>Handle volume in percent</description>
+			</channel>
+			<channel id="mute" typeId="switch">
+				<label>Mute Control</label>
+				<description>Mute current audio without stop playing</description>
+			</channel>
+			<channel id="shuffle" typeId="switch">
+				<label>Shuffle</label>
+				<description>Control shuffle mode</description>
+			</channel>
+			<channel id="crossfade" typeId="switch">
+				<label>Cross Fade</label>
+				<description>Cross fading between tracks</description>
+			</channel>
+			<channel id="repeat" typeId="repeat">
+				<label>Repeat</label>
+				<description>Repeat Mode</description>
+			</channel>
+			<channel id="track" typeId="text">
+				<label>Track</label>
+				<description>Current playing track</description>
+			</channel>
+			<channel id="image" typeId="image">
+				<label>Image</label>
+				<description>Current playing track image</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

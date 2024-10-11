@@ -54,6 +54,10 @@ public class Model {
         this.gateway = gateway;
     }
 
+    /**
+     * All functions synchronized in order to keep it thread-safe.
+     * No query shall happen in parallel to an update
+     */
     public synchronized void update() {
         RestAPI api = gateway.api();
         try {
@@ -156,6 +160,9 @@ public class Model {
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SMART_PLUG.toString(),
                                         id);
                                 return THING_TYPE_SMART_PLUG;
+                            case DEVICE_TYPE_SPEAKER:
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SPEAKER.toString(), id);
+                                return THING_TYPE_SPEAKER;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);
@@ -183,7 +190,7 @@ public class Model {
         return returnObject;
     }
 
-    public String getCustonNameFor(String id) {
+    public synchronized String getCustonNameFor(String id) {
         JSONObject deviceObject = getAllFor(id);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:dirigera:gateway">
-		<parameter name="ipAddress" type="text">
+		<parameter name="ipAddress" type="text" required="true">
 			<label>DIRIGERA IP Address</label>
 			<description>DIRIGERA IP Address</description>
 		</parameter>
