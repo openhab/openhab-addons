@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="smart-plug">
+		<label>Smart Plug</label>
+		<description>Switchable plug with electricity measurements</description>
+
+		<channels>
+			<channel id="state" typeId="switch">
+				<label>Plug Powered</label>
+				<description>Turn plug on or off </description>
+			</channel>
+			<channel id="status-light" typeId="switch">
+				<label>Status Light</label>
+				<description>Status light of plug on or off</description>
+			</channel>
+			<channel id="status-brightness" typeId="dimmer">
+				<label>Status Light Brightness</label>
+				<description>Control brightness of status light</description>
+			</channel>
+			<channel id="child-lock" typeId="switch">
+				<label>Child Lock</label>
+				<description>Enable or disable child lock</description>
+			</channel>
+			<channel id="power" typeId="power">
+				<label>Plug Power</label>
+				<description>Electric power delivered by plug</description>
+			</channel>
+			<channel id="ampere" typeId="ampere">
+				<label>Plug Ampere</label>
+				<description>Electric current measured by plug</description>
+			</channel>
+			<channel id="voltage" typeId="volts">
+				<label>Plug Voltage</label>
+				<description>Electric potential of plug</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

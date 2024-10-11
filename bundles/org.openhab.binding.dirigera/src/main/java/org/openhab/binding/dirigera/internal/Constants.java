@@ -35,11 +35,12 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
+    public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR);
+            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -64,6 +65,7 @@ public class Constants {
     public static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
     public static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
     public static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
+    public static final String DEVICE_TYPE_SMART_PLUG = "outlet";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -81,10 +83,21 @@ public class Constants {
     public static final String CHANNEL_MOTION_DETECTION = "detection";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
 
+    // Plug channels
+    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_CURRENT = "ampere";
+    public static final String CHANNEL_POTENTIAL = "voltage";
+    public static final String CHANNEL_CHILD_LOCK = "child-lock";
+    public static final String CHANNEL_STATUS_LIGHT = "status-light";
+    public static final String CHANNEL_STATUS_BRIGHTNESS = "status-brightness";
+
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
 
     // Ikea property to openHAB channel mappings
+    public static final Map<String, String> SMART_PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
+            CHANNEL_STATUS_BRIGHTNESS, "currentActivePower", CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL,
+            "currentAmps", CHANNEL_CURRENT, "statusLight", CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK);
     public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
             CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
     public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
