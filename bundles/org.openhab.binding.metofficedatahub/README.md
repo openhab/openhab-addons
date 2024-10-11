@@ -24,10 +24,10 @@ You can then add things to get the forecast's for a specific location (site), us
 
 This binding supports the follow thing types:
 
-| Thing  | Type   | Type UID  | Discovery | Description                                                                                 |
-|--------|--------|-----------|-----------|---------------------------------------------------------------------------------------------|
-| Bridge | Bridge | bridge    | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
-| Site   | Thing  | site      | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
+| Thing  | Type UID  | Discovery | Description                                                                                 |
+|--------|-----------|-----------|---------------------------------------------------------------------------------------------|
+| Bridge | bridge    | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
+| Site   | site      | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
 
 ## Thing Configuration
 
