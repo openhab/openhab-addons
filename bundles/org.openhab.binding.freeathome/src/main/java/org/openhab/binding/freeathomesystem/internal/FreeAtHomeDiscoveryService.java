@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal;
+package org.openhab.binding.freeathomesystem.internal;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -22,9 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathome.internal.handler.FreeAtHomeBridgeHandler;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeHttpCommunicationException;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
+import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;

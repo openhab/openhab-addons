@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.handler;
+package org.openhab.binding.freeathomesystem.internal.handler;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -50,10 +50,10 @@ import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.freeathome.internal.FreeAtHomeDiscoveryService;
-import org.openhab.binding.freeathome.internal.configuration.FreeAtHomeBridgeHandlerConfiguration;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeHttpCommunicationException;
+import org.openhab.binding.freeathomesystem.internal.FreeAtHomeDiscoveryService;
+import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeBridgeHandlerConfiguration;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;

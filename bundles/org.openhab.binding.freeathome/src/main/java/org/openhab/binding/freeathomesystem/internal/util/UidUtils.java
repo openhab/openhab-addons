@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.util;
+package org.openhab.binding.freeathomesystem.internal.util;
 
-import static org.openhab.binding.freeathome.internal.FreeAtHomeBindingConstants.*;
+import static org.openhab.binding.freeathomesystem.internal.FreeAtHomeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;

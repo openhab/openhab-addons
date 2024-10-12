@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.valuestateconverter;
+package org.openhab.binding.freeathomesystem.internal.valuestateconverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.StopMoveType;

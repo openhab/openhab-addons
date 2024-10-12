@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.util;
+package org.openhab.binding.freeathomesystem.internal.util;
 
 import java.util.Map;
 

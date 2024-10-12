@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.datamodel;
+package org.openhab.binding.freeathomesystem.internal.datamodel;
 
-import static org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.*;
-import static org.openhab.binding.freeathome.internal.util.FidTranslationUtils.*;
+import static org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint.*;
+import static org.openhab.binding.freeathomesystem.internal.util.FidTranslationUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeathome.internal.util.FidTranslationUtils;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeGeneralException;
+import org.openhab.binding.freeathomesystem.internal.util.FidTranslationUtils;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

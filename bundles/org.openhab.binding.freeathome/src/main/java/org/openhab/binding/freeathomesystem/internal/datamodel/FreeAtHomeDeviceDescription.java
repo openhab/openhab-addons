@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.datamodel;
+package org.openhab.binding.freeathomesystem.internal.datamodel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal;
+package org.openhab.binding.freeathomesystem.internal;
 
-import static org.openhab.binding.freeathome.internal.FreeAtHomeBindingConstants.*;
+import static org.openhab.binding.freeathomesystem.internal.FreeAtHomeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.freeathome.internal.handler.FreeAtHomeBridgeHandler;
-import org.openhab.binding.freeathome.internal.handler.FreeAtHomeDeviceHandler;
-import org.openhab.binding.freeathome.internal.type.FreeAtHomeChannelTypeProvider;
-import org.openhab.binding.freeathome.internal.type.FreeAtHomeThingTypeProvider;
+import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeBridgeHandler;
+import org.openhab.binding.freeathomesystem.internal.handler.FreeAtHomeDeviceHandler;
+import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
+import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeThingTypeProvider;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;

@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.datamodel;
+package org.openhab.binding.freeathomesystem.internal.datamodel;
 
-import static org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint.*;
+import static org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeGeneralException;
-import org.openhab.binding.freeathome.internal.util.PidTranslationUtils;
-import org.openhab.binding.freeathome.internal.valuestateconverter.BooleanValueStateConverter;
-import org.openhab.binding.freeathome.internal.valuestateconverter.DecimalValueStateConverter;
-import org.openhab.binding.freeathome.internal.valuestateconverter.ShuttercontrolValueStateConverter;
-import org.openhab.binding.freeathome.internal.valuestateconverter.ValueStateConverter;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
+import org.openhab.binding.freeathomesystem.internal.util.PidTranslationUtils;
+import org.openhab.binding.freeathomesystem.internal.valuestateconverter.BooleanValueStateConverter;
+import org.openhab.binding.freeathomesystem.internal.valuestateconverter.DecimalValueStateConverter;
+import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ShuttercontrolValueStateConverter;
+import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
 import org.openhab.core.library.CoreItemFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

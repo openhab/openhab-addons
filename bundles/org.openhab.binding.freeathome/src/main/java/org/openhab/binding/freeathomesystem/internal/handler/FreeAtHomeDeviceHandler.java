@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.handler;
+package org.openhab.binding.freeathomesystem.internal.handler;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -22,16 +22,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeathome.internal.configuration.FreeAtHomeDeviceHandlerConfiguration;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapoint;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDatapointGroup;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceChannel;
-import org.openhab.binding.freeathome.internal.datamodel.FreeAtHomeDeviceDescription;
-import org.openhab.binding.freeathome.internal.type.FreeAtHomeChannelTypeProvider;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeGeneralException;
-import org.openhab.binding.freeathome.internal.util.FreeAtHomeHttpCommunicationException;
-import org.openhab.binding.freeathome.internal.util.UidUtils;
-import org.openhab.binding.freeathome.internal.valuestateconverter.ValueStateConverter;
+import org.openhab.binding.freeathomesystem.internal.configuration.FreeAtHomeDeviceHandlerConfiguration;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapoint;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDatapointGroup;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceChannel;
+import org.openhab.binding.freeathomesystem.internal.datamodel.FreeAtHomeDeviceDescription;
+import org.openhab.binding.freeathomesystem.internal.type.FreeAtHomeChannelTypeProvider;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeGeneralException;
+import org.openhab.binding.freeathomesystem.internal.util.FreeAtHomeHttpCommunicationException;
+import org.openhab.binding.freeathomesystem.internal.util.UidUtils;
+import org.openhab.binding.freeathomesystem.internal.valuestateconverter.ValueStateConverter;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.StopMoveType;

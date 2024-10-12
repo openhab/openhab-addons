@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.freeathome.internal.configuration;
+package org.openhab.binding.freeathomesystem.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
