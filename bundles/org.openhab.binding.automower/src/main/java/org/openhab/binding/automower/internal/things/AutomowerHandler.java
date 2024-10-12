@@ -1264,14 +1264,16 @@ public class AutomowerHandler extends BaseThingHandler {
             j = 0;
             for (int i = 0; i < workAreas.size() && j < CHANNEL_WORKAREAS.size(); i++) {
 
-                //logger.warn("workAreas.size(): {}, getName(): {}", workAreas.size(), workAreas.get(i).getName());
+                // logger.warn("workAreas.size(): {}, getName(): {}", workAreas.size(), workAreas.get(i).getName());
 
                 updateState(CHANNEL_WORKAREAS.get(j++), new DecimalType(workAreas.get(i).getWorkAreaId()));
                 updateState(CHANNEL_WORKAREAS.get(j++), new StringType(workAreas.get(i).getName()));
-                updateState(CHANNEL_WORKAREAS.get(j++), new DecimalType(workAreas.get(i).getCuttingHeight()));
+                updateState(CHANNEL_WORKAREAS.get(j++),
+                        new QuantityType<>(workAreas.get(i).getCuttingHeight(), Units.PERCENT));
                 updateState(CHANNEL_WORKAREAS.get(j++), OnOffType.from(workAreas.get(i).isEnabled() == true));
                 if (workAreas.get(i).getProgress() != null) {
-                    updateState(CHANNEL_WORKAREAS.get(j++), new DecimalType(workAreas.get(i).getProgress()));
+                    updateState(CHANNEL_WORKAREAS.get(j++),
+                            new QuantityType<>(workAreas.get(i).getProgress(), Units.PERCENT));
                 } else {
                     updateState(CHANNEL_WORKAREAS.get(j++), UnDefType.NULL);
                 }
