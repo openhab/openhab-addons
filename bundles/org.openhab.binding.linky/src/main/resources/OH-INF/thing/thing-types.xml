@@ -99,7 +99,7 @@
 		<item-type unitHint="kVA">Number:Power</item-type>
 		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
-		<state readOnly="true" pattern="%.3f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="timestamp">

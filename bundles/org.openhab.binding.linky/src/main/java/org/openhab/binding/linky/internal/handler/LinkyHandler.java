@@ -41,6 +41,7 @@ import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -210,7 +211,7 @@ public class LinkyHandler extends BaseThingHandler {
         if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
             cachedPowerData.getValue().ifPresentOrElse(values -> {
                 Aggregate days = values.aggregats.days;
-                updateVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
+                updatekVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
                 updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
             }, () -> {
                 updateKwhChannel(PEAK_POWER, Double.NaN);
@@ -293,9 +294,10 @@ public class LinkyHandler extends BaseThingHandler {
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
-    private void updateVAChannel(String channelId, double power) {
+    private void updatekVAChannel(String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
-        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, Units.VOLT_AMPERE));
+        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF
+                : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
 
     /**
