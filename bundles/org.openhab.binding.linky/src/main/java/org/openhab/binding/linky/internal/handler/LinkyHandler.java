@@ -276,7 +276,7 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateYearlyData() {
         if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
             cachedYearlyData.getValue().ifPresentOrElse(
-                    values -> setCurrentAndPrevious(values.aggregats.years, THIS_MONTH, LAST_MONTH), () -> {
+                    values -> setCurrentAndPrevious(values.aggregats.years, THIS_YEAR, LAST_YEAR), () -> {
                         if (ZonedDateTime.now().getDayOfYear() == 1) {
                             updateKwhChannel(THIS_YEAR, 0.0);
                             updateKwhChannel(LAST_YEAR, Double.NaN);
