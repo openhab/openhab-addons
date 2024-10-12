@@ -354,10 +354,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                     getQuantityTypeState(data.getMidnightRelativeHumidity(), Units.PERCENT));
 
             updateState(channelPrefix + SITE_DAILY_MIDDAY_PRESSURE,
-                    getQuantityTypeState(data.getMiddaypressure(), SIUnits.PASCAL));
+                    getQuantityTypeState(data.getMiddayPressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_DAILY_MIDNIGHT_PRESSURE,
-                    getQuantityTypeState(data.getMidnightpressure(), SIUnits.PASCAL));
+                    getQuantityTypeState(data.getMidnightPressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_DAILY_DAY_MAX_UV_INDEX, getDecimalTypeState(data.getMaxUvIndex()));
 

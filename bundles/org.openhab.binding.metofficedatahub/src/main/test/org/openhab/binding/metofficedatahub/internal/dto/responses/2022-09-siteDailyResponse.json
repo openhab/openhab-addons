@@ -25,7 +25,7 @@
             "midnight10MWindGust": 5.66,
             "midnightVisibility": 8776,
             "midnightRelativeHumidity": 91.42,
-            "midnightpressure": 102310,
+            "midnightMslp": 102310,
             "nightSignificantWeatherCode": 2,
             "nightMinScreenTemperature": 8.05,
             "nightUpperBoundMinTemp": 12.79,
@@ -53,8 +53,8 @@
             "midnightVisibility": 20277,
             "middayRelativeHumidity": 63.54,
             "midnightRelativeHumidity": 80.83,
-            "middaypressure": 102519,
-            "midnightpressure": 102541,
+            "middayMslp": 102519,
+            "midnightMslp": 102541,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 7,
             "nightSignificantWeatherCode": 7,
@@ -97,8 +97,8 @@
             "midnightVisibility": 16314,
             "middayRelativeHumidity": 51.07,
             "midnightRelativeHumidity": 83.33,
-            "middaypressure": 102680,
-            "midnightpressure": 102713,
+            "middayMslp": 102680,
+            "midnightMslp": 102713,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 7,
             "nightSignificantWeatherCode": 2,
@@ -141,8 +141,8 @@
             "midnightVisibility": 20397,
             "middayRelativeHumidity": 51.33,
             "midnightRelativeHumidity": 90.57,
-            "middaypressure": 102640,
-            "midnightpressure": 102440,
+            "middayMslp": 102640,
+            "midnightMslp": 102440,
             "maxUvIndex": 4,
             "daySignificantWeatherCode": 1,
             "nightSignificantWeatherCode": 2,
@@ -185,8 +185,8 @@
             "midnightVisibility": 25210,
             "middayRelativeHumidity": 61.39,
             "midnightRelativeHumidity": 88.29,
-            "middaypressure": 102164,
-            "midnightpressure": 101816,
+            "middayMslp": 102164,
+            "midnightMslp": 101816,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 7,
             "nightSignificantWeatherCode": 7,
@@ -229,8 +229,8 @@
             "midnightVisibility": 9598,
             "middayRelativeHumidity": 63.53,
             "midnightRelativeHumidity": 92.99,
-            "middaypressure": 101628,
-            "midnightpressure": 101583,
+            "middayMslp": 101628,
+            "midnightMslp": 101583,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 7,
             "nightSignificantWeatherCode": 12,
@@ -273,8 +273,8 @@
             "midnightVisibility": 26745,
             "middayRelativeHumidity": 74.83,
             "midnightRelativeHumidity": 81.26,
-            "middaypressure": 101763,
-            "midnightpressure": 101959,
+            "middayMslp": 101763,
+            "midnightMslp": 101959,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 7,
             "nightSignificantWeatherCode": 0,
@@ -317,8 +317,8 @@
             "midnightVisibility": 24820,
             "middayRelativeHumidity": 60.24,
             "midnightRelativeHumidity": 88.87,
-            "middaypressure": 102022,
-            "midnightpressure": 101654,
+            "middayMslp": 102022,
+            "midnightMslp": 101654,
             "maxUvIndex": 3,
             "daySignificantWeatherCode": 3,
             "nightSignificantWeatherCode": 2,
@@ -487,7 +487,7 @@
           }
         }
       },
-      "middaypressure": {
+      "middayMslp": {
         "type": "Parameter",
         "description": "MeanSeaLevelPressureatLocalMidday",
         "unit": {
@@ -586,7 +586,7 @@
           }
         }
       },
-      "midnightpressure": {
+      "midnightMslp": {
         "type": "Parameter",
         "description": "MeanSeaLevelPressureatLocalMidnight",
         "unit": {
