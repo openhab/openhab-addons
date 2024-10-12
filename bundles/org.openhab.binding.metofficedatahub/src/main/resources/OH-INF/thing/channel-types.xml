@@ -111,7 +111,7 @@
 
 	<channel-type id="air-temp-min-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Min Temperature</label>
+		<label>Min. Temperature</label>
 		<description>Minimum Screen Air Temperature Over Previous Hour</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -119,7 +119,7 @@
 
 	<channel-type id="air-temp-max-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Max Temperature</label>
+		<label>Max. Temperature</label>
 		<description>Maximum Screen Air Temperature Over Previous Hour</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -199,7 +199,7 @@
 
 	<channel-type id="wind-speed-type">
 		<item-type>Number:Speed</item-type>
-		<label>10m Wind</label>
+		<label>Wind Speed</label>
 		<description>10m Wind Speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -207,7 +207,7 @@
 
 	<channel-type id="wind-speed-gust-type">
 		<item-type>Number:Speed</item-type>
-		<label>10m Wind Gust</label>
+		<label>Wind Gust</label>
 		<description>10m Wind Gust Speed</description>
 		<category>Wind</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
@@ -240,7 +240,7 @@
 	<!-- Channels for MetOfficeDataHub Binding - Daily Forecast -->
 	<channel-type id="wind-speed-day-type">
 		<item-type>Number:Speed</item-type>
-		<label>Midday Wind</label>
+		<label>Midday Wind Speed</label>
 		<description>10m Wind Speed at Local Midday - Mean wind speed is equivalent to the mean speed observed over the 10
 			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
@@ -249,7 +249,7 @@
 
 	<channel-type id="wind-speed-night-type">
 		<item-type>Number:Speed</item-type>
-		<label>Midnight Wind</label>
+		<label>Midnight Wind Speed</label>
 		<description>10m Wind Speed at Local Midnight - Mean wind speed is equivalent to the mean speed observed over the 10
 			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
 		<category>Wind</category>
@@ -312,7 +312,7 @@
 
 	<channel-type id="humidity-day-type">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Midday Rel. Humidity</label>
+		<label>Midday Humidity</label>
 		<description>Relative Humidity at Local Midday - Stevenson screen height is approximately 1.5m above ground level.</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%.0f %%"/>
@@ -320,7 +320,7 @@
 
 	<channel-type id="humidity-night-type">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Midnight Rel. Humidity</label>
+		<label>Midnight Humidity</label>
 		<description>Relative Humidity at Local Midnight - Stevenson screen height is approximately 1.5m above ground level.</description>
 		<category>Humidity</category>
 		<state readOnly="true" pattern="%.0f %%"/>
@@ -328,7 +328,7 @@
 
 	<channel-type id="pressure-day-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Midday pressure</label>
+		<label>Midday Pressure</label>
 		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
 			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
@@ -337,7 +337,7 @@
 
 	<channel-type id="pressure-night-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Midnight pressure</label>
+		<label>Midnight Pressure</label>
 		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
 			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
@@ -355,7 +355,7 @@
 
 	<channel-type id="temp-max-ub-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day(UB) Max. Screen</label>
+		<label>Day(UB) Max. Temperature</label>
 		<description>Upper Bound on Day Maximum Screen Air Temperature - This is the upper bound for the maximum value over
 			the day based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be below this upper bound figure. Stevenson screen height is approximately
@@ -366,7 +366,7 @@
 
 	<channel-type id="temp-min-ub-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night(UB) Min. Screen</label>
+		<label>Night(UB) Min. Temperature</label>
 		<description>Upper Bound on Night Minimum Screen Air Temperature - This is the upper bound for the minimum value over
 			the night based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be below this upper bound figure. Stevenson screen height is approximately
@@ -377,7 +377,7 @@
 
 	<channel-type id="temp-max-lb-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day(LB) Max. Screen</label>
+		<label>Day(LB) Max. Temperature</label>
 		<description>Lower Bound on Day Maximum Screen Air Temperature - This is the lower bound for the maximum value over
 			the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
@@ -388,7 +388,7 @@
 
 	<channel-type id="nightLowerBoundMaxTemp">
 		<item-type>Number:Temperature</item-type>
-		<label>Day(LB) Max. Screen</label>
+		<label>Day(LB) Max. Temperature</label>
 		<description>Lower Bound on Day Maximum Screen Air Temperature - This is the lower bound for the minimum value over
 			the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
@@ -399,7 +399,7 @@
 
 	<channel-type id="temp-min-lb-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night(LB) Min. Screen</label>
+		<label>Night(LB) Min. Temperature</label>
 		<description>Lower Bound on Night Minimum Screen Air Temperature - This is the lower bound for the minimum value over
 			the night based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
@@ -410,7 +410,7 @@
 
 	<channel-type id="feels-like-max-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day Max. Feels Like</label>
+		<label>Day Feels Like Max.</label>
 		<description>Day Maximum Feels Like Air Temperature - This is the most likely maximum value over the day based on the
 			ensemble spread. This is the temperature it feels like taking into account humidity and wind chill but not radiation.
 			Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
@@ -420,7 +420,7 @@
 
 	<channel-type id="feels-like-min-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night Min. Feels Like</label>
+		<label>Night Feels Light Min.</label>
 		<description>Night Minimum Feels Like Air Temperature - This is the most likely minimum value over the night based on
 			the ensemble spread. This is the temperature it feels like taking into account humidity and wind chill but not
 			radiation. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
@@ -430,7 +430,7 @@
 
 	<channel-type id="feels-like-max-ub-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day(UB) Max. Feels Like</label>
+		<label>Day(UB) Feels Like Max.</label>
 		<description>Upper Bound on Day Maximum Feels Like Air Temperature - This is the upper bound for the maximum value
 			over the day based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be below this upper bound figure. This is the temperature it feels like
@@ -442,7 +442,7 @@
 
 	<channel-type id="feels-like-min-ub-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night(UB) Min. Feels Like</label>
+		<label>Night(UB) Feels Like Min.</label>
 		<description>Upper Bound on Night Minimum Feels Like Air Temperature - This is the upper bound for the minimum value
 			over the night based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be below this upper bound figure. This is the temperature it feels like
@@ -454,7 +454,7 @@
 
 	<channel-type id="feels-like-max-lb-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day(LB) Max. Feels Like</label>
+		<label>Day Max. Feels Like</label>
 		<description>Lower Bound on Day Maximum Feels Like Air Temperature - This is the lower bound for the maximum value
 			over the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
 			probability that the actual figure will be above this lower bound figure. This is the temperature it feels like
@@ -604,7 +604,7 @@
 
 	<channel-type id="temp-max-day-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Day Max. Screen</label>
+		<label>Day Max. Temperature</label>
 		<description>Day Maximum Screen Air Temperature - Daytime is defined as those forecast times that fall between local
 			dawn and dusk</description>
 		<category>Temperature</category>
@@ -613,7 +613,7 @@
 
 	<channel-type id="temp-min-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night Min. Screen</label>
+		<label>Night Min. Temperature</label>
 		<description>Night Minimum Screen Air Temperature - Night-time is defined as those forecast times that fall between
 			local dusk and dawn</description>
 		<category>Temperature</category>
