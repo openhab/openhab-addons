@@ -165,8 +165,6 @@ current-forecast-**plus02**#air-temp-current
 
 ### Configuration (*.things)
 
-#### Site API
-
 ```java
 Bridge metofficedatahub:bridge:metoffice [siteRateDailyLimit=200, siteApiKey="<Site Specific API Key>"] {
   site londonForecast"London Forecast"[hourlyForecastPollRate=1,dailyForecastPollRate=3,location="51.509865,-0.118092"]
