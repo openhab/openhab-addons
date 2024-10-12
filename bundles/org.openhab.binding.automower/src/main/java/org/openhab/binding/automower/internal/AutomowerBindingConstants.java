@@ -51,7 +51,6 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = GROUP_STATUS + "planner-override-action";
     public static final String CHANNEL_PLANNER_RESTRICTED_REASON = GROUP_STATUS + "planner-restricted-reason";
     public static final String CHANNEL_PLANNER_EXTERNAL_REASON = GROUP_STATUS + "planner-external-reason";
-    public static final String CHANNEL_CALENDAR_TASKS = GROUP_STATUS + "calendar-tasks";
     public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_STATUS + "setting-cutting-height";
     public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_STATUS + "setting-headlight-mode";
     public static final String CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME = GROUP_STATUS
@@ -67,6 +66,62 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATUS + "stat-total-searching-time";
     public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATUS
             + "stat-total-searching-percent";
+
+    // Calendar Task Channels ids
+    public static final String GROUP_CALENDARTASKS = ""; // no channel group in use at the moment, we'll possibly
+    // introduce
+    // this in a future release
+    public static final ArrayList<String> CHANNEL_CALENDARTASKS = new ArrayList<>(List.of(
+            GROUP_CALENDARTASKS + "calendartasks01-start", GROUP_CALENDARTASKS + "calendartasks01-duration",
+            GROUP_CALENDARTASKS + "calendartasks01-monday", GROUP_CALENDARTASKS + "calendartasks01-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks01-wednesday", GROUP_CALENDARTASKS + "calendartasks01-thursday",
+            GROUP_CALENDARTASKS + "calendartasks01-friday", GROUP_CALENDARTASKS + "calendartasks01-saturday",
+            GROUP_CALENDARTASKS + "calendartasks01-sunday", GROUP_CALENDARTASKS + "calendartasks01-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks02-start", GROUP_CALENDARTASKS + "calendartasks02-duration",
+            GROUP_CALENDARTASKS + "calendartasks02-monday", GROUP_CALENDARTASKS + "calendartasks02-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks02-wednesday", GROUP_CALENDARTASKS + "calendartasks02-thursday",
+            GROUP_CALENDARTASKS + "calendartasks02-friday", GROUP_CALENDARTASKS + "calendartasks02-saturday",
+            GROUP_CALENDARTASKS + "calendartasks02-sunday", GROUP_CALENDARTASKS + "calendartasks02-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks03-start", GROUP_CALENDARTASKS + "calendartasks03-duration",
+            GROUP_CALENDARTASKS + "calendartasks03-monday", GROUP_CALENDARTASKS + "calendartasks03-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks03-wednesday", GROUP_CALENDARTASKS + "calendartasks03-thursday",
+            GROUP_CALENDARTASKS + "calendartasks03-friday", GROUP_CALENDARTASKS + "calendartasks03-saturday",
+            GROUP_CALENDARTASKS + "calendartasks03-sunday", GROUP_CALENDARTASKS + "calendartasks03-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks04-start", GROUP_CALENDARTASKS + "calendartasks04-duration",
+            GROUP_CALENDARTASKS + "calendartasks04-monday", GROUP_CALENDARTASKS + "calendartasks04-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks04-wednesday", GROUP_CALENDARTASKS + "calendartasks04-thursday",
+            GROUP_CALENDARTASKS + "calendartasks04-friday", GROUP_CALENDARTASKS + "calendartasks04-saturday",
+            GROUP_CALENDARTASKS + "calendartasks04-sunday", GROUP_CALENDARTASKS + "calendartasks04-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks05-start", GROUP_CALENDARTASKS + "calendartasks05-duration",
+            GROUP_CALENDARTASKS + "calendartasks05-monday", GROUP_CALENDARTASKS + "calendartasks05-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks05-wednesday", GROUP_CALENDARTASKS + "calendartasks05-thursday",
+            GROUP_CALENDARTASKS + "calendartasks05-friday", GROUP_CALENDARTASKS + "calendartasks05-saturday",
+            GROUP_CALENDARTASKS + "calendartasks05-sunday", GROUP_CALENDARTASKS + "calendartasks05-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks06-start", GROUP_CALENDARTASKS + "calendartasks06-duration",
+            GROUP_CALENDARTASKS + "calendartasks06-monday", GROUP_CALENDARTASKS + "calendartasks06-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks06-wednesday", GROUP_CALENDARTASKS + "calendartasks06-thursday",
+            GROUP_CALENDARTASKS + "calendartasks06-friday", GROUP_CALENDARTASKS + "calendartasks06-saturday",
+            GROUP_CALENDARTASKS + "calendartasks06-sunday", GROUP_CALENDARTASKS + "calendartasks06-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks07-start", GROUP_CALENDARTASKS + "calendartasks07-duration",
+            GROUP_CALENDARTASKS + "calendartasks07-monday", GROUP_CALENDARTASKS + "calendartasks07-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks07-wednesday", GROUP_CALENDARTASKS + "calendartasks07-thursday",
+            GROUP_CALENDARTASKS + "calendartasks07-friday", GROUP_CALENDARTASKS + "calendartasks07-saturday",
+            GROUP_CALENDARTASKS + "calendartasks07-sunday", GROUP_CALENDARTASKS + "calendartasks07-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks08-start", GROUP_CALENDARTASKS + "calendartasks08-duration",
+            GROUP_CALENDARTASKS + "calendartasks08-monday", GROUP_CALENDARTASKS + "calendartasks08-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks08-wednesday", GROUP_CALENDARTASKS + "calendartasks08-thursday",
+            GROUP_CALENDARTASKS + "calendartasks08-friday", GROUP_CALENDARTASKS + "calendartasks08-saturday",
+            GROUP_CALENDARTASKS + "calendartasks08-sunday", GROUP_CALENDARTASKS + "calendartasks08-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks09-start", GROUP_CALENDARTASKS + "calendartasks09-duration",
+            GROUP_CALENDARTASKS + "calendartasks09-monday", GROUP_CALENDARTASKS + "calendartasks09-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks09-wednesday", GROUP_CALENDARTASKS + "calendartasks09-thursday",
+            GROUP_CALENDARTASKS + "calendartasks09-friday", GROUP_CALENDARTASKS + "calendartasks09-saturday",
+            GROUP_CALENDARTASKS + "calendartasks09-sunday", GROUP_CALENDARTASKS + "calendartasks09-workAreaId",
+            GROUP_CALENDARTASKS + "calendartasks10-start", GROUP_CALENDARTASKS + "calendartasks10-duration",
+            GROUP_CALENDARTASKS + "calendartasks10-monday", GROUP_CALENDARTASKS + "calendartasks10-tuesday",
+            GROUP_CALENDARTASKS + "calendartasks10-wednesday", GROUP_CALENDARTASKS + "calendartasks10-thursday",
+            GROUP_CALENDARTASKS + "calendartasks10-friday", GROUP_CALENDARTASKS + "calendartasks10-saturday",
+            GROUP_CALENDARTASKS + "calendartasks10-sunday", GROUP_CALENDARTASKS + "calendartasks10-workAreaId"));
 
     // Position Channels ids
     public static final String GROUP_POSITIONS = ""; // no channel group in use at the moment, we'll possibly

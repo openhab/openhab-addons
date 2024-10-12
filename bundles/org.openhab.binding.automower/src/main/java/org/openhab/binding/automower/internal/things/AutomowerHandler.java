@@ -35,10 +35,13 @@ import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
+<<<<<<< HEAD
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Headlight;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Message;
+=======
+>>>>>>> full calendar read support
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
@@ -104,7 +107,12 @@ public class AutomowerHandler extends BaseThingHandler {
     private long maxQueryFrequencyNanos = TimeUnit.SECONDS.toNanos(1);
 
     private @Nullable Mower mowerState;
+<<<<<<< HEAD
     private @Nullable MowerMessages mowerMessages;
+=======
+
+    // private Gson gson = new Gson();
+>>>>>>> full calendar read support
 
     private Runnable automowerPollingRunnable = () -> {
         Bridge bridge = getBridge();
@@ -125,7 +133,16 @@ public class AutomowerHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing channel '{}'", channelUID);
+<<<<<<< HEAD
             // refreshChannels(channelUID); // causes >100 channel updates during setup
+=======
+            refreshChannels(channelUID);
+            /*
+             * } else if (CHANNEL_CALENDAR_TASKS.equals(channelUID.getId())) {
+             * logger.debug("Sending calendar '{}'", command);
+             * sendAutomowerCalendar(command.toString());
+             */
+>>>>>>> full calendar read support
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
@@ -1048,10 +1065,13 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_PLANNER_EXTERNAL_REASON,
                     new DecimalType(mower.getAttributes().getPlanner().getExternalReason()));
 
+<<<<<<< HEAD
 >>>>>>> reverted logic
             updateState(CHANNEL_CALENDAR_TASKS,
                     new StringType(gson.toJson(mower.getAttributes().getCalendar().getTasks())));
 
+=======
+>>>>>>> full calendar read support
             updateState(CHANNEL_SETTING_CUTTING_HEIGHT,
                     new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
             updateState(CHANNEL_SETTING_HEADLIGHT_MODE,
@@ -1276,8 +1296,44 @@ public class AutomowerHandler extends BaseThingHandler {
             updateState(CHANNEL_STAYOUTZONES_DIRTY,
                     OnOffType.from(mower.getAttributes().getStayOutZones().isDirty() == true));
 
-            List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
+            /*
+             * updateState(CHANNEL_CALENDAR_TASKS,
+             * new StringType(gson.toJson(mower.getAttributes().getCalendar().getTasks())));
+             * 
+             * - start
+             * - duration
+             * - monday
+             * - tuesday
+             * - wednesday
+             * - thursday
+             * - friday
+             * - saturday
+             * - sunday
+             */
+            List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
             int j = 0;
+            for (int i = 0; i < calendarTasks.size() && j < CHANNEL_CALENDARTASKS.size(); i++) {
+                updateState(CHANNEL_CALENDARTASKS.get(j++),
+                        new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
+                updateState(CHANNEL_CALENDARTASKS.get(j++),
+                        new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getMonday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getTuesday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++),
+                        OnOffType.from(calendarTasks.get(i).getWednesday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getThursday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getFriday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSaturday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSunday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), new DecimalType(calendarTasks.get(i).getWorkAreaId()));
+            }
+            // clear remaining channels
+            for (; j < CHANNEL_CALENDARTASKS.size(); j++) {
+                updateState(CHANNEL_CALENDARTASKS.get(j), UnDefType.NULL);
+            }
+
+            List<StayOutZone> stayOutZones = mower.getAttributes().getStayOutZones().getZones();
+            j = 0;
             for (int i = 0; i < stayOutZones.size() && j < CHANNEL_STAYOUTZONES.size(); i++) {
                 updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getId()));
                 updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getName()));

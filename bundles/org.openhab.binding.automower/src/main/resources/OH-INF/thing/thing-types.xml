@@ -58,7 +58,6 @@
 			<channel id="planner-override-action" typeId="plannerOverrideActionType"/>
 			<channel id="planner-restricted-reason" typeId="plannerRestrictedReasonType"/>
 			<channel id="planner-external-reason" typeId="plannerExternalReasonType"/>
-			<channel id="calendar-tasks" typeId="calendarTasksType"/>
 			<channel id="setting-cutting-height" typeId="settingCuttingHeightType"/>
 			<channel id="setting-headlight-mode" typeId="settingHeadlightModeType"/>
 			<channel id="stat-cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
@@ -71,6 +70,117 @@
 			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
 			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
 			<channel id="stat-total-searching-percent" typeId="statTotalSearchingPercentType"/>
+
+			<!-- Calendar Tasks -->
+			<channel id="calendartasks01-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks01-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks01-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks01-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks01-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks01-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks01-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks01-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks01-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks01-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks02-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks02-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks02-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks02-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks02-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks02-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks02-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks02-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks02-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks02-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks03-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks03-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks03-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks03-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks03-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks03-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks03-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks03-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks03-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks03-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks04-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks04-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks04-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks04-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks04-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks04-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks04-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks04-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks04-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks04-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks05-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks05-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks05-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks05-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks05-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks05-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks05-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks05-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks05-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks05-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks06-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks06-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks06-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks06-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks06-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks06-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks06-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks06-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks06-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks06-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks07-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks07-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks07-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks07-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks07-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks07-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks07-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks07-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks07-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks07-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks08-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks08-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks08-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks08-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks08-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks08-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks08-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks08-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks08-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks08-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks09-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks09-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks09-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks09-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks09-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks09-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks09-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks09-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks09-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks09-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks10-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks10-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks10-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks10-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks10-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks10-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks10-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks10-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks10-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks10-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
 
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>
@@ -415,13 +525,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="calendarTasksType">
-		<item-type>String</item-type>
-		<label>Planner Info JSON</label>
-		<description>The channel providing a JSON with the information about the planner tasks.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="settingCuttingHeightType">
 		<item-type>Number</item-type>
 		<label>Cutting Height</label>
@@ -510,6 +613,61 @@
 		<item-type>Location</item-type>
 		<label>GPS Position</label>
 		<description>The channel providing a waypoint of the mower's activity.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Calendar Tasks -->
+	<channel-type id="calendarTasksStartType">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Start Time</label>
+		<description>Start time relative to midnight</description>
+		<state pattern="%d min"/>
+	</channel-type>
+	<channel-type id="calendarTasksDurationType">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration time</description>
+		<state pattern="%d min"/>
+	</channel-type>
+	<channel-type id="calendarTasksMondayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Mondays</label>
+		<description>Enabled on Mondays</description>
+	</channel-type>
+	<channel-type id="calendarTasksTuesdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Tuesdays</label>
+		<description>Enabled on Tuesdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksWednesdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Wednesdays</label>
+		<description>Enabled on Wednesdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksThursdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Thursdays</label>
+		<description>Enabled on Thursdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksFridayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Fridays</label>
+		<description>Enabled on Fridays</description>
+	</channel-type>
+	<channel-type id="calendarTasksSaturdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Saturdays</label>
+		<description>Enabled on Saturdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksSundayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Sundays</label>
+		<description>Enabled on Sundays</description>
+	</channel-type>
+	<channel-type id="calendarTasksWorkAreaIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id of Calendar</label>
+		<description>Work Area Id mapped to this calendar</description>
 		<state readOnly="true"/>
 	</channel-type>
 

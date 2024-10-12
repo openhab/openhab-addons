@@ -32,6 +32,7 @@ public class CalendarTask {
     private Boolean friday;
     private Boolean saturday;
     private Boolean sunday;
+    private int workAreaId;
 
     public Short getStart() {
         return start;
@@ -69,6 +70,10 @@ public class CalendarTask {
         return sunday;
     }
 
+    public int getWorkAreaId() {
+        return workAreaId;
+    }
+
     public void setStart(Short start) {
         this.start = start;
     }
@@ -103,5 +108,9 @@ public class CalendarTask {
 
     public void setSunday(Boolean sunday) {
         this.sunday = sunday;
+    }
+
+    public void setWorkAreaId(int workAreaId) {
+        this.workAreaId = workAreaId;
     }
 }
