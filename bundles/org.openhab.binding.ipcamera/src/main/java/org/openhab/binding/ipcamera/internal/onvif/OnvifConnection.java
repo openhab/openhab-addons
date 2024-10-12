@@ -124,7 +124,7 @@ public class OnvifConnection {
     private String user = "";
     private String password = "";
     private int onvifPort = 80;
-    private String deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
+    public String deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String eventXAddr = "http://" + ipAddress + "/onvif/device_service";
     private String mediaXAddr = "http://" + ipAddress + "/onvif/device_service";
     @SuppressWarnings("unused")

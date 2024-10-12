@@ -241,7 +241,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (contentType.contains("multipart")) {
                                 boundary = Helper.searchString(contentType, "boundary=");
-                                if (mjpegUri.equals(requestUrl)) {
+                                if (mjpegUri.endsWith(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         mjpegContentType = contentType;
