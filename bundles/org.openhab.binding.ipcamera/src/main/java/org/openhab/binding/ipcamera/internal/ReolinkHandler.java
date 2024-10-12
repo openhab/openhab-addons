@@ -452,7 +452,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"Off\"}}}]");
-                } else if (OnOffType.ON.equals(command) || command instanceof PercentType percentCommand) {
+                } else if (OnOffType.ON.equals(command) || command instanceof PercentType) {
                     ipCameraHandler.sendHttpPOST("/api.cgi?cmd=SetIrLights" + ipCameraHandler.reolinkAuth,
                             "[{\"cmd\": \"SetIrLights\",\"action\": 0,\"param\": {\"IrLights\": {\"channel\": "
                                     + ipCameraHandler.cameraConfig.getNvrChannel() + ",\"state\": \"On\"}}}]");

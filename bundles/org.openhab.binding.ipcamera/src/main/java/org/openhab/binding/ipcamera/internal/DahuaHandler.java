@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -156,6 +157,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "SceneChange":
             case "VideoAbnormalDetection":
                 if ("Start".equals(action)) {
                     ipCameraHandler.setChannelState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
@@ -191,10 +193,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "LensMaskClose":
                 ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
                 break;
-            // Skip these so they are not logged.
             case "TimeChange":
+                // Check updated time matches openHAB's and store the offset which is needed for ONVIF
+                ipCameraHandler.onvifCamera.sendOnvifRequest(RequestType.GetSystemDateAndTime,
+                        ipCameraHandler.onvifCamera.deviceXAddr);
+                break;
+            // Skip these so they are not logged.
+            case "NTPAdjustTime": // will trigger a TimeChange event no need to check twice
             case "IntelliFrame":
-            case "NTPAdjustTime":
             case "StorageChange":
             case "Reboot":
             case "NewFile":
@@ -202,6 +208,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "RtspSessionDisconnect":
             case "LeFunctionStatusSync":
             case "RecordDelete":
+            case "InterVideoAccess":
                 break;
             default:
                 ipCameraHandler.logger.debug("Unrecognised Dahua event, Code={}, action={}", code, action);
@@ -324,7 +331,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 } else if (command instanceof PercentType percentCommand) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode=Manual&Lighting_V2[" + nvrChannelAdjusted
-                            + "][0][1].NearLight[0].Light=" + command.toString());
+                            + "][0][1].NearLight[0].Light=" + percentCommand.toString());
                 }
                 return;
             case CHANNEL_AUTO_WHITE_LED:
