@@ -1067,6 +1067,9 @@ public class AutomowerHandler extends BaseThingHandler {
                     new QuantityType<>(mower.getAttributes().getStatistics().getTotalSearchingTime(), Units.SECOND));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> relative statistics and patterns
             if (mower.getAttributes().getStatistics().getTotalRunningTime() != 0) {
                 updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT,
                         new QuantityType<>(
@@ -1082,6 +1085,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 updateState(CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT, new QuantityType<>(0, Units.PERCENT));
                 updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, new QuantityType<>(0, Units.PERCENT));
             }
+<<<<<<< HEAD
             updateState(CHANNEL_STATISTIC_UP_TIME,
                     new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
 
@@ -1236,6 +1240,9 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateIndexedState(GROUP_MESSAGE, i + 1, CHANNEL_MESSAGE.get(j++), UnDefType.NULL);
                 }
 =======
+=======
+
+>>>>>>> relative statistics and patterns
             updateState(LAST_POSITION,
                     new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
                             new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));

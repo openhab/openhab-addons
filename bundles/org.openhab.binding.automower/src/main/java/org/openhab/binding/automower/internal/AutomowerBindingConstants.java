@@ -61,9 +61,12 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATUS + "stat-number-of-collisions";
     public static final String CHANNEL_STATISTIC_TOTAL_CHARGING_TIME = GROUP_STATUS + "stat-total-charging-time";
     public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_TIME = GROUP_STATUS + "stat-total-cutting-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT = GROUP_STATUS + "stat-total-cutting-percent";
     public static final String CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE = GROUP_STATUS + "stat-total-drive-distance";
     public static final String CHANNEL_STATISTIC_TOTAL_RUNNING_TIME = GROUP_STATUS + "stat-total-running-time";
     public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATUS + "stat-total-searching-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATUS
+            + "stat-total-searching-percent";
 
     // Position Channels ids
     public static final String GROUP_POSITIONS = ""; // no channel group in use at the moment, we'll possibly

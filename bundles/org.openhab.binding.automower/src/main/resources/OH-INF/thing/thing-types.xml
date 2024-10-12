@@ -66,9 +66,11 @@
 			<channel id="stat-number-of-collisions" typeId="statNumberOfCollisionsType"/>
 			<channel id="stat-total-charging-time" typeId="statTotalChargingTimeType"/>
 			<channel id="stat-total-cutting-time" typeId="statTotalCuttingTimeType"/>
+			<channel id="stat-total-cutting-percent" typeId="statTotalCuttingPercentType"/>
 			<channel id="stat-total-drive-distance" typeId="statTotalDriveDistanceType"/>
 			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
 			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
+			<channel id="stat-total-searching-percent" typeId="statTotalSearchingPercentType"/>
 
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>
@@ -438,7 +440,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Cutting Blade Usage Time</label>
 		<description>The time since the last reset of the cutting blade usage counter</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="statNumberOfChargingCyclesType">
@@ -459,35 +461,49 @@
 		<item-type>Number:Time</item-type>
 		<label>Total Charging Time</label>
 		<description>Total charging time</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="statTotalCuttingTimeType">
 		<item-type>Number:Time</item-type>
 		<label>Total Cutting Time</label>
 		<description>Total cutting time</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Cutting Time</label>
+		<description>Total cutting time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="statTotalDriveDistanceType">
 		<item-type>Number:Length</item-type>
 		<label>Total Drive Distance</label>
 		<description>Total driven distance</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f km"/>
 	</channel-type>
 
 	<channel-type id="statTotalRunningTimeType">
 		<item-type>Number:Time</item-type>
 		<label>Total Running Time</label>
 		<description>The total running time (the wheel motors have been running)</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f h"/>
 	</channel-type>
 
 	<channel-type id="statTotalSearchingTimeType">
 		<item-type>Number:Time</item-type>
 		<label>Total Searching Time</label>
 		<description>The total searching time</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Searching Time</label>
+		<description>The total searching time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="positionType">
@@ -546,7 +562,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting height in percent</label>
 		<description>Cutting height in percent. 0-100</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareasEnabledType">
@@ -560,7 +576,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Work Area Progress</label>
 		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareasLastTimeCompletedType">
