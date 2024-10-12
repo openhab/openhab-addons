@@ -285,7 +285,7 @@
 		<state readOnly="true">
 			<options>
 				<option value="UNKNOWN">Unknown</option>
-				<option value="NOT_APPLICABLE">N/A</option>
+				<option value="NOT_APPLICABLE">Not Applicable</option>
 				<option value="MOWING">Mowing</option>
 				<option value="GOING_HOME">Returning to charging station</option>
 				<option value="CHARGING">Charging</option>
