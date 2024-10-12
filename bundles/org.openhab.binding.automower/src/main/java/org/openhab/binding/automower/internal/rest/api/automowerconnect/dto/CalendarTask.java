@@ -19,12 +19,12 @@ public class CalendarTask {
     /**
      * Start time expressed in minutes after midnight.
      */
-    private Integer start;
+    private Short start;
 
     /**
      * Duration time expressed in minutes
      */
-    private Integer duration;
+    private Short duration;
     private Boolean monday;
     private Boolean tuesday;
     private Boolean wednesday;
@@ -33,11 +33,11 @@ public class CalendarTask {
     private Boolean saturday;
     private Boolean sunday;
 
-    public Integer getStart() {
+    public Short getStart() {
         return start;
     }
 
-    public Integer getDuration() {
+    public Short getDuration() {
         return duration;
     }
 
@@ -69,11 +69,11 @@ public class CalendarTask {
         return sunday;
     }
 
-    public void setStart(Integer start) {
+    public void setStart(Short start) {
         this.start = start;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Short duration) {
         this.duration = duration;
     }
 

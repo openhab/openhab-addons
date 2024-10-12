@@ -115,33 +115,42 @@ public class AutomowerBindingConstants {
             List.of(GROUP_WORKAREAS + "workareas01-id", GROUP_WORKAREAS + "workareas01-name",
                     GROUP_WORKAREAS + "workareas01-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
                     GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas02-id", GROUP_WORKAREAS + "workareas02-name",
-                    GROUP_WORKAREAS + "workareas02-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas02-cutting-height", GROUP_WORKAREAS + "workareas02-enabled",
+                    GROUP_WORKAREAS + "workareas02-progress", GROUP_WORKAREAS + "workareas02-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas03-id", GROUP_WORKAREAS + "workareas03-name",
-                    GROUP_WORKAREAS + "workareas03-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas03-cutting-height", GROUP_WORKAREAS + "workareas03-enabled",
+                    GROUP_WORKAREAS + "workareas03-progress", GROUP_WORKAREAS + "workareas03-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas04-id", GROUP_WORKAREAS + "workareas04-name",
-                    GROUP_WORKAREAS + "workareas04-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas04-cutting-height", GROUP_WORKAREAS + "workareas04-enabled",
+                    GROUP_WORKAREAS + "workareas04-progress", GROUP_WORKAREAS + "workareas04-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas05-id", GROUP_WORKAREAS + "workareas05-name",
-                    GROUP_WORKAREAS + "workareas05-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas05-cutting-height", GROUP_WORKAREAS + "workareas05-enabled",
+                    GROUP_WORKAREAS + "workareas05-progress", GROUP_WORKAREAS + "workareas05-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas06-id", GROUP_WORKAREAS + "workareas06-name",
-                    GROUP_WORKAREAS + "workareas06-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas06-cutting-height", GROUP_WORKAREAS + "workareas06-enabled",
+                    GROUP_WORKAREAS + "workareas06-progress", GROUP_WORKAREAS + "workareas06-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas07-id", GROUP_WORKAREAS + "workareas07-name",
-                    GROUP_WORKAREAS + "workareas07-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas07-cutting-height", GROUP_WORKAREAS + "workareas07-enabled",
+                    GROUP_WORKAREAS + "workareas07-progress", GROUP_WORKAREAS + "workareas07-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas08-id", GROUP_WORKAREAS + "workareas08-name",
-                    GROUP_WORKAREAS + "workareas08-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas08-cutting-height", GROUP_WORKAREAS + "workareas08-enabled",
+                    GROUP_WORKAREAS + "workareas08-progress", GROUP_WORKAREAS + "workareas08-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas09-id", GROUP_WORKAREAS + "workareas09-name",
-                    GROUP_WORKAREAS + "workareas09-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+                    GROUP_WORKAREAS + "workareas09-cutting-height", GROUP_WORKAREAS + "workareas09-enabled",
+                    GROUP_WORKAREAS + "workareas09-progress", GROUP_WORKAREAS + "workareas09-last-time-completed",
+
                     GROUP_WORKAREAS + "workareas10-id", GROUP_WORKAREAS + "workareas10-name",
-                    GROUP_WORKAREAS + "workareas10-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed"));
+                    GROUP_WORKAREAS + "workareas10-cutting-height", GROUP_WORKAREAS + "workareas10-enabled",
+                    GROUP_WORKAREAS + "workareas10-progress", GROUP_WORKAREAS + "workareas10-last-time-completed"));
 
     // Command Channel ids
     public static final String GROUP_COMMANDS = ""; // no channel group in use at the moment, we'll possibly introduce

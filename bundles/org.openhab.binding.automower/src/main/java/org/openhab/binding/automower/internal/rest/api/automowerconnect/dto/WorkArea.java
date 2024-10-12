@@ -18,10 +18,10 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 public class WorkArea {
     private long workAreaId;
     private String name;
-    private int cuttingHeight;
+    private byte cuttingHeight;
     private Boolean enabled;
-    private int progress; // Only available for EPOS mowers and systematic mowing work areas.
-    private long lastTimeCompleted;
+    private Byte progress; // Only available for EPOS mowers and systematic mowing work areas.
+    private Long lastTimeCompleted; // Only available for EPOS mowers and systematic mowing work areas.
 
     public long getWorkAreaId() {
         return workAreaId;
@@ -39,11 +39,11 @@ public class WorkArea {
         this.name = name;
     }
 
-    public int getCuttingHeight() {
+    public byte getCuttingHeight() {
         return cuttingHeight;
     }
 
-    public void setCuttingHeight(int cuttingHeight) {
+    public void setCuttingHeight(byte cuttingHeight) {
         this.cuttingHeight = cuttingHeight;
     }
 
@@ -55,19 +55,19 @@ public class WorkArea {
         this.enabled = enabled;
     }
 
-    public int getProgress() {
+    public Byte getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(Byte progress) {
         this.progress = progress;
     }
 
-    public long getLastTimeCompleted() {
+    public Long getLastTimeCompleted() {
         return lastTimeCompleted;
     }
 
-    public void setLastTimeCompleted(long lastTimeCompleted) {
+    public void setLastTimeCompleted(Long lastTimeCompleted) {
         this.lastTimeCompleted = lastTimeCompleted;
     }
 }

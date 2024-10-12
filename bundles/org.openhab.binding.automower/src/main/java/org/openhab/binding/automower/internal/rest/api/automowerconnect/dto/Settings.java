@@ -16,14 +16,14 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author Markus Pfleger - Initial contribution
  */
 public class Settings {
-    private int cuttingHeight;
+    private byte cuttingHeight;
     private Headlight headlight;
 
-    public int getCuttingHeight() {
+    public byte getCuttingHeight() {
         return cuttingHeight;
     }
 
-    public void setCuttingHeight(int cuttingHeight) {
+    public void setCuttingHeight(byte cuttingHeight) {
         this.cuttingHeight = cuttingHeight;
     }
 

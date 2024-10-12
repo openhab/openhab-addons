@@ -135,8 +135,8 @@ public class AutomowerBridge {
         for (JsonElement task : calendarJson) {
             CalendarTask calendarTask = new CalendarTask();
             JsonObject taskObj = task.getAsJsonObject();
-            calendarTask.setStart(taskObj.get("start").getAsInt());
-            calendarTask.setDuration(taskObj.get("duration").getAsInt());
+            calendarTask.setStart(taskObj.get("start").getAsShort());
+            calendarTask.setDuration(taskObj.get("duration").getAsShort());
             calendarTask.setMonday(taskObj.get("monday").getAsBoolean());
             calendarTask.setTuesday(taskObj.get("tuesday").getAsBoolean());
             calendarTask.setWednesday(taskObj.get("wednesday").getAsBoolean());

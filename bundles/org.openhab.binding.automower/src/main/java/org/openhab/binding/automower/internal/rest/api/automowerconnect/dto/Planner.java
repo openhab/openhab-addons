@@ -26,35 +26,31 @@ public class Planner {
         return nextStartTimestamp;
     }
 
-    public Planner setNextStartTimestamp(long nextStartTimestamp) {
+    public void setNextStartTimestamp(long nextStartTimestamp) {
         this.nextStartTimestamp = nextStartTimestamp;
-        return this;
     }
 
     public RestrictedReason getRestrictedReason() {
         return restrictedReason;
     }
 
-    public Planner setRestrictedReason(RestrictedReason restrictedReason) {
+    public void setRestrictedReason(RestrictedReason restrictedReason) {
         this.restrictedReason = restrictedReason;
-        return this;
     }
 
     public PlannerOverride getOverride() {
         return override;
     }
 
-    public Planner setOverride(PlannerOverride override) {
+    public void setOverride(PlannerOverride override) {
         this.override = override;
-        return this;
     }
 
     public int getExternalReason() {
         return externalReason;
     }
 
-    public Planner setExternalReason(int externalReason) {
+    public void setExternalReason(int externalReason) {
         this.externalReason = externalReason;
-        return this;
     }
 }

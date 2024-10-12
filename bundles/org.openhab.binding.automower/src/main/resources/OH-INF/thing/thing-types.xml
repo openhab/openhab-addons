@@ -69,6 +69,7 @@
 			<channel id="stat-total-drive-distance" typeId="statTotalDriveDistanceType"/>
 			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
 			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
+
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>
 			<channel id="resume_schedule" typeId="resumeSchedule"/>
@@ -132,7 +133,6 @@
 			<channel id="position49" typeId="positionType"/>
 			<channel id="position50" typeId="positionType"/>
 
-
 			<!-- Stayout Zones -->
 			<channel id="dirty" typeId="zoneDirtyType"/>
 			<channel id="zone01-id" typeId="zoneIdType"/>
@@ -172,7 +172,61 @@
 			<channel id="workareas01-cutting-height" typeId="workareasCuttingHeightType"/>
 			<channel id="workareas01-enabled" typeId="workareasEnabledType"/>
 			<channel id="workareas01-progress" typeId="workareasProgressType"/>
-			<channel id="workareas01-last-time-completed" typeId="workareasLasTimeCompletedType"/>
+			<channel id="workareas01-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas02-id" typeId="workareasIdType"/>
+			<channel id="workareas02-name" typeId="workareasNameType"/>
+			<channel id="workareas02-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas02-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas02-progress" typeId="workareasProgressType"/>
+			<channel id="workareas02-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas03-id" typeId="workareasIdType"/>
+			<channel id="workareas03-name" typeId="workareasNameType"/>
+			<channel id="workareas03-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas03-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas03-progress" typeId="workareasProgressType"/>
+			<channel id="workareas03-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas04-id" typeId="workareasIdType"/>
+			<channel id="workareas04-name" typeId="workareasNameType"/>
+			<channel id="workareas04-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas04-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas04-progress" typeId="workareasProgressType"/>
+			<channel id="workareas04-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas05-id" typeId="workareasIdType"/>
+			<channel id="workareas05-name" typeId="workareasNameType"/>
+			<channel id="workareas05-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas05-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas05-progress" typeId="workareasProgressType"/>
+			<channel id="workareas05-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas06-id" typeId="workareasIdType"/>
+			<channel id="workareas06-name" typeId="workareasNameType"/>
+			<channel id="workareas06-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas06-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas06-progress" typeId="workareasProgressType"/>
+			<channel id="workareas06-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas07-id" typeId="workareasIdType"/>
+			<channel id="workareas07-name" typeId="workareasNameType"/>
+			<channel id="workareas07-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas07-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas07-progress" typeId="workareasProgressType"/>
+			<channel id="workareas07-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas08-id" typeId="workareasIdType"/>
+			<channel id="workareas08-name" typeId="workareasNameType"/>
+			<channel id="workareas08-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas08-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas08-progress" typeId="workareasProgressType"/>
+			<channel id="workareas08-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas09-id" typeId="workareasIdType"/>
+			<channel id="workareas09-name" typeId="workareasNameType"/>
+			<channel id="workareas09-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas09-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas09-progress" typeId="workareasProgressType"/>
+			<channel id="workareas09-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas10-id" typeId="workareasIdType"/>
+			<channel id="workareas10-name" typeId="workareasNameType"/>
+			<channel id="workareas10-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas10-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas10-progress" typeId="workareasProgressType"/>
+			<channel id="workareas10-last-time-completed" typeId="workareasLastTimeCompletedType"/>
 		</channels>
 
 		<properties>
@@ -198,9 +252,7 @@
 				<description>How often the current automower state should be polled in seconds</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
-
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
@@ -267,13 +319,17 @@
 				<option value="IN_OPERATION">Working</option>
 				<option value="WAIT_UPDATING">Downloading new firmware</option>
 				<option value="WAIT_POWER_UP">Booting mower</option>
-				<option value="RESTRICTED_NONE">Waiting</option>
+				<option value="RESTRICTED_NONE">No restricted reason</option>
 				<option value="RESTRICTED_WEEK_SCHEDULE">Restricted by week schedule</option>
 				<option value="RESTRICTED_PARK_OVERRIDE">Forced to park</option>
 				<option value="RESTRICTED_SENSOR">Restricted by sensor</option>
 				<option value="RESTRICTED_DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="RESTRICTED_FOTA">Restricted by FOTA transfer</option>
+				<option value="RESTRICTED_FROST">Restricted by frost sensor</option>
+				<option value="RESTRICTED_ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="RESTRICTED_EXTERNAL">Restricted by external reason</option>
 				<option value="OFF">Off</option>
-				<option value="STOPPED">Stopped- Manual intervention required</option>
+				<option value="STOPPED">Stopped: Manual intervention required</option>
 				<option value="ERROR">Error</option>
 				<option value="FATAL_ERROR">Fatal error</option>
 				<option value="ERROR_AT_POWER_UP">Boot error</option>
@@ -335,7 +391,19 @@
 		<item-type>String</item-type>
 		<label>Restricted Reason</label>
 		<description>The channel providing an reason that restrics current planner operation.</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No restricted reason</option>
+				<option value="WEEK_SCHEDULE">Restricted by week schedule</option>
+				<option value="PARK_OVERRIDE">Forced to park</option>
+				<option value="SENSOR">Restricted by sensor</option>
+				<option value="DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="FOTA">Restricted by FOTA transfer</option>
+				<option value="FROST">Restricted by frost sensor</option>
+				<option value="ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="EXTERNAL">Restricted by external reason</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="plannerExternalReasonType">
@@ -430,7 +498,6 @@
 	</channel-type>
 
 	<!-- Stayout Zones -->
-
 	<channel-type id="zoneDirtyType">
 		<item-type>Switch</item-type>
 		<label>Stayout zones Dirty Flag</label>
@@ -496,9 +563,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareasLasTimeCompletedType">
+	<channel-type id="workareasLastTimeCompletedType">
 		<item-type>DateTime</item-type>
-		<label>Stayout Zone Id</label>
+		<label>Last Time Completed</label>
 		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only.</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -540,5 +607,4 @@
 		<label>Park and Pause the Schedule</label>
 		<description>Park and pause the mower schedule until manual resume</description>
 	</channel-type>
-
 </thing:thing-descriptions>
