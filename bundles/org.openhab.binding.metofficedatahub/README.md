@@ -45,11 +45,11 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 
 ### `site` Configuration Parameters
 
-| Name                     | Type   | Description                                                    | Default Values                                        |
-|--------------------------|--------|----------------------------------------------------------------|-------------------------------------------------------|
-| hourlyForecastPollRate   | Number | The number of hours between polling for each sites hourly data | 1                                                     |
-| dailyForecastPollRate    | Number | The number of hours between polling for each sites daily data  | 3                                                     |
-| location                 | String | The lat/long of the site e.g. "51.5072,0.1276"                 | openHAB's user configured location is used when unset |
+| Name                     | Type   | Description                                                    | Default Values |
+|--------------------------|--------|----------------------------------------------------------------|----------------|
+| hourlyForecastPollRate   | Number | The number of hours between polling for each sites hourly data | 1              |
+| dailyForecastPollRate    | Number | The number of hours between polling for each sites daily data  | 3              |
+| location                 | String | The lat/long of the site e.g. "51.5072,0.1276"                 |                |
 
 ## Channels
 
