@@ -195,7 +195,7 @@ Number:Pressure       ForecastLondonpressure                          (gLondonCu
 Number:Speed          ForecastLondon10mWindSpeed                  (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-speed" }
 Number:Speed          ForecastLondon10mGustWindSpeed              (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-speed-gust" }
 Number:Speed          ForecastLondon10mMaxGustWindSpeed           (gLondonCurrentHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-gust-max" }
-Number:Angle          ForecastLondon10mWindDirection              (gLondonCurrentHour) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast# wind-direction" }
+Number:Angle          ForecastLondon10mWindDirection              (gLondonCurrentHour) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#wind-direction" }
 Number:Temperature    ForecastLondonDewPointTemp                  (gLondonCurrentHour) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast#dewpoint" }
 
 Group                 gCurrentHourPlus01Forecast                        "Next Hours Forecast"
@@ -216,7 +216,7 @@ Number:Pressure       ForecastLondonPlus01pressure                          (gLo
 Number:Speed          ForecastLondonPlus0110mWindSpeed                  (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed" }
 Number:Speed          ForecastLondonPlus0110mGustWindSpeed              (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-speed-gust" }
 Number:Speed          ForecastLondonPlus0110mMaxGustWindSpeed           (gLondonNextHour) { unit="m/s",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-gust-max" }
-Number:Angle          ForecastLondonPlus0110mWindDirection              (gLondonNextHour) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01# wind-direction" }
+Number:Angle          ForecastLondonPlus0110mWindDirection              (gLondonNextHour) { unit="°",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#wind-direction" }
 Number:Temperature    ForecastLondonPlus01DewPointTemp                  (gLondonNextHour) { unit="°C",channel="metofficedatahub:site:metoffice:londonForecast:current-forecast-plus01#dewpoint" }
 ```
 

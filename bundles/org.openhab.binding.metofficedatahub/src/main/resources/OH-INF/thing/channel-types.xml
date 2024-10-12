@@ -191,7 +191,7 @@
 
 	<channel-type id="pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>pressure</label>
+		<label>Pressure</label>
 		<description>Mean Sea Level Pressure</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
