@@ -275,7 +275,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             updateState(channelPrefix + SITE_HOURLY_TOTAL_SNOW_AMOUNT,
                     getQuantityTypeState(data.getTotalSnowAmount(), MILLI(METRE)));
 
-            updateState(channelPrefix + SITE_HOURLY_PRESSURE, getQuantityTypeState(data.getpressure(), SIUnits.PASCAL));
+            updateState(channelPrefix + SITE_HOURLY_PRESSURE, getQuantityTypeState(data.getPressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_HOURLY_WIND_SPEED_10M,
                     getQuantityTypeState(data.getWindSpeed10m(), Units.METRE_PER_SECOND));

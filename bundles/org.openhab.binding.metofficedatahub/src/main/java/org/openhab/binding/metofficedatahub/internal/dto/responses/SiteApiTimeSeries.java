@@ -109,10 +109,10 @@ public class SiteApiTimeSeries {
         return screenRelativeHumidity;
     }
 
-    @SerializedName("pressure")
+    @SerializedName("mslp")
     private Integer pressure;
 
-    public Integer getpressure() {
+    public Integer getPressure() {
         return pressure;
     }
 

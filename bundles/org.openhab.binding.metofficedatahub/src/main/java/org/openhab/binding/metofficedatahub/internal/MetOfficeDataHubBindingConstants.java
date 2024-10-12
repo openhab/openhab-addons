@@ -70,7 +70,7 @@ public class MetOfficeDataHubBindingConstants {
 
     public static final String SITE_HOURLY_UV_INDEX = "uv-index";
 
-    public static final String SITE_HOURLY_PRESSURE = "mslp";
+    public static final String SITE_HOURLY_PRESSURE = "pressure";
 
     public static final String SITE_HOURLY_WIND_SPEED_10M = "wind-speed";
 
