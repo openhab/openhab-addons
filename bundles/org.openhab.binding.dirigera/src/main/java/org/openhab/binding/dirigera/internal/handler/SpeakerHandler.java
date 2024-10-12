@@ -31,6 +31,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +140,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
                         }
+                        break;
                     case CHANNEL_CROSSFADE:
                         if (command instanceof OnOffType onOff) {
                             JSONObject mode = new JSONObject();
@@ -153,6 +155,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
                         }
+                        break;
                     case CHANNEL_REPEAT:
                         if (command instanceof DecimalType decimal) {
                             int repeatModeInt = decimal.intValue();
@@ -256,6 +259,13 @@ public class SpeakerHandler extends BaseDeviceHandler {
                                         new StringType(playItem.getString("title")));
                                 continue;
                             }
+                        } else if (audio.has("playlist")) {
+                            JSONObject playlist = audio.getJSONObject("playlist");
+                            if (playlist.has("title")) {
+                                updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                        new StringType(playlist.getString("title")));
+                                continue;
+                            }
                         }
                         updateState(new ChannelUID(thing.getUID(), targetChannel), UnDefType.UNDEF);
                     } else {
@@ -266,6 +276,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
                 }
             }
             // outside of channel mapping - image
+            State imageState = UnDefType.UNDEF;
             if (attributes.has("playbackAudio")) {
                 JSONObject playbackAudio = attributes.getJSONObject("playbackAudio");
                 if (playbackAudio.has("playItem")) {
@@ -277,13 +288,14 @@ public class SpeakerHandler extends BaseDeviceHandler {
                         if (!mimeType.isBlank()) {
                             byte[] imageBytes = (byte[]) image.get("image");
                             if (imageBytes != null) {
-                                updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE),
-                                        new RawType(imageBytes, RawType.DEFAULT_MIME_TYPE));
+                                imageState = new RawType(imageBytes, RawType.DEFAULT_MIME_TYPE);
                             }
                         }
                     }
                 }
             }
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE), imageState);
+
         }
     }
 }

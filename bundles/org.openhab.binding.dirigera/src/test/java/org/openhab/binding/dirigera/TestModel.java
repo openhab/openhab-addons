@@ -14,10 +14,13 @@ package org.openhab.binding.dirigera;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.concurrent.ExecutorService;
+
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.core.common.ThreadPoolManager;
 
 /**
  * {@link TestModel} some basic tests
@@ -33,5 +36,10 @@ class TestModel {
         Model model = new Model(mock(Gateway.class), modelJson);
         System.out.println(
                 "Custom name for light sensor " + model.getCustonNameFor("5ac5e131-44a4-4d75-be78-759a095d31fb_3"));
+    }
+
+    @Test
+    void testModelStress() {
+        ExecutorService scheduler = ThreadPoolManager.getPool("ModelStressTest");
     }
 }
