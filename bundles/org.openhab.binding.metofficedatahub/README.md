@@ -95,9 +95,11 @@ The channels under "Forecast for the current hour" will be mirrored for future h
 
 The channel naming follows the following format:
 
-```<Site Specific API Thing Id ><Plus 0x>#<Channel Name>```
+```current-forecast<Optional Offset Id>#air-temp-current```
 
-For a thing called "current-forecast":
+The current hours forecast to get the air-temp-current would be:
+
+current-forecast#air-temp-current
 
 1 hour into the future to get the air-temp-current it would be:
 
