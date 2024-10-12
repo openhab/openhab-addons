@@ -27,35 +27,37 @@ The apiVersion 2 is only available for go-e Charger with new hardware revision (
 
 ## Channels
 
-Currently available channels are
-| Channel ID               | Item Type                | Description                                                   | API version       |
-|--------------------------|--------------------------|---------------------------------------------------------------|-------------------|
-| maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w)  |
-| maxCurrentTemp           | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             | 1 (r)             |
-| pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)      |
-| error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)      |
-| voltageL1                | Number:ElectricPotential | Voltage on L1                                                 | 1 (r), 2 (r)      |
-| voltageL2                | Number:ElectricPotential | Voltage on L2                                                 | 1 (r), 2 (r)      |
-| voltageL3                | Number:ElectricPotential | Voltage on L3                                                 | 1 (r), 2 (r)      |
-| currentL1                | Number:ElectricCurrent   | Current on L1                                                 | 1 (r), 2 (r)      |
-| currentL2                | Number:ElectricCurrent   | Current on L2                                                 | 1 (r), 2 (r)      |
-| currentL3                | Number:ElectricCurrent   | Current on L3                                                 | 1 (r), 2 (r)      |
-| powerL1                  | Number:Power             | Power on L1                                                   | 1 (r), 2 (r)      |
-| powerL2                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
-| powerL3                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)      |
-| powerAll                 | Number:Power             | Power over all three phases                                   | 1 (r), 2 (r)      |
-| phases                   | Number                   | Amount of phases currently used for charging                  | 1 (r), 2 (r/w)    |
-| sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w)  |
-| sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)      |
-| totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)      |
-| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)           |
-| allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)    |
-| cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)      |
-| temperature              | Number:Temperature       | Temperature of the curciuit board of the go-e Charger          | 1 (r), 2 (r)      |
-| temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the go-e Charger             | 2 (r)             |
-| firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)      |
-| accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)           |
-| forceState               | Number                   | Force state  (Neutral=0, Off=1, On=2)                         | 2 (r/w)           |
+Currently available channels are:
+
+| Channel ID               | Item Type                | Description                                                   | API version      |
+|--------------------------|--------------------------|---------------------------------------------------------------|------------------|
+| maxCurrent               | Number:ElectricCurrent   | Maximum current allowed to use for charging                   | 1 (r/w), 2 (r/w) |
+| maxCurrentTemp           | Number:ElectricCurrent   | Maximum current temporary (not written to EEPROM)             | 1 (r)            |
+| pwmSignal                | String                   | Signal status for PWM signal                                  | 1 (r), 2 (r)     |
+| error                    | String                   | Error code of charger                                         | 1 (r), 2 (r)     |
+| voltageL1                | Number:ElectricPotential | Voltage on L1                                                 | 1 (r), 2 (r)     |
+| voltageL2                | Number:ElectricPotential | Voltage on L2                                                 | 1 (r), 2 (r)     |
+| voltageL3                | Number:ElectricPotential | Voltage on L3                                                 | 1 (r), 2 (r)     |
+| currentL1                | Number:ElectricCurrent   | Current on L1                                                 | 1 (r), 2 (r)     |
+| currentL2                | Number:ElectricCurrent   | Current on L2                                                 | 1 (r), 2 (r)     |
+| currentL3                | Number:ElectricCurrent   | Current on L3                                                 | 1 (r), 2 (r)     |
+| powerL1                  | Number:Power             | Power on L1                                                   | 1 (r), 2 (r)     |
+| powerL2                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)     |
+| powerL3                  | Number:Power             | Power on L2                                                   | 1 (r), 2 (r)     |
+| powerAll                 | Number:Power             | Power over all three phases                                   | 1 (r), 2 (r)     |
+| phases                   | Number                   | Amount of phases currently used for charging                  | 1 (r), 2 (r/w)   |
+| sessionChargeEnergyLimit | Number:Energy            | Wallbox stops charging after defined value, disable with 0    | 1 (r/w), 2 (r/w) |
+| sessionChargedEnergy     | Number:Energy            | Amount of energy that has been charged in this session        | 1 (r), 2 (r)     |
+| totalChargedEnergy       | Number:Energy            | Amount of energy that has been charged since installation     | 1 (r), 2 (r)     |
+| transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)          |
+| allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)   |
+| cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)     |
+| temperature              | Number:Temperature       | Temperature of the curciuit board of the go-e Charger         | 1 (r), 2 (r)     |
+| temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the go-e Charger            | 2 (r)            |
+| firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)     |
+| accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)          |
+| forceState               | Number                   | Force state  (Neutral=0, Off=1, On=2)                         | 2 (r/w)          |
+| awattarMaxPrice          | Number                   | Awattar Max Price in ct                                       | 2 (r/w)          |
 
 ## Full Example
 
