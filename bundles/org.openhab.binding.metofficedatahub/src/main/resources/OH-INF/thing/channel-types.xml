@@ -38,31 +38,6 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="site-hr-forecast-current-grp">
-		<label>Hourly Forecast</label>
-		<description>Site Specific Location weather forecast - Hourly basis</description>
-		<channels>
-			<channel id="forecast-ts" typeId="time-type"/>
-			<channel id="air-temp-current" typeId="air-temp-current-type"/>
-			<channel id="air-temp-min" typeId="air-temp-min-type"/>
-			<channel id="air-temp-max" typeId="air-temp-max-type"/>
-			<channel id="feels-like" typeId="feels-like-type"/>
-			<channel id="humidity" typeId="humidity-type"/>
-			<channel id="visibility" typeId="visibility-type"/>
-			<channel id="precip-prob" typeId="precip-prob-type"/>
-			<channel id="precip-rate" typeId="precip-rate-type"/>
-			<channel id="precip-total" typeId="precip-total-type"/>
-			<channel id="snow-total" typeId="snow-total-type"/>
-			<channel id="uv-index" typeId="uv-index-type"/>
-			<channel id="pressure" typeId="pressure-type"/>
-			<channel id="wind-speed" typeId="wind-speed-type"/>
-			<channel id="wind-speed-gust" typeId="wind-speed-gust-type"/>
-			<channel id="wind-gust-max" typeId="wind-gust-max-type"/>
-			<channel id="wind-direction" typeId="wind-direction-type"/>
-			<channel id="dewpoint" typeId="dewpoint-type"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="site-daily-forecast-grp">
 		<label>Daily Forecast</label>
 		<description>Site Specific Location weather forecast - Daily basis</description>

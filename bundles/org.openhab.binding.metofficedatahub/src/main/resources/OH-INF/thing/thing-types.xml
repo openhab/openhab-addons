@@ -42,7 +42,7 @@
 				<label>Common Forecast Data</label>
 				<description>This is common data to all forecast data.</description>
 			</channel-group>
-			<channel-group id="current-forecast" typeId="site-hr-forecast-current-grp">
+			<channel-group id="current-forecast" typeId="site-hr-forecast-grp">
 				<label>Forecast Current Hour</label>
 				<description>This is the weather forecast for the current hour.</description>
 			</channel-group>
@@ -179,13 +179,13 @@
 				<description>Location of weather forecast in geographical coordinates (latitude/longitude).</description>
 			</parameter>
 			<parameter name="hourlyForecastPollRate" type="integer" min="1" max="24">
-				<label>Hourly Poll Cycle</label>
+				<label>Hourly Poll Interval</label>
 				<description>The default number of hours to wait between retrieving hourly forecast data</description>
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="dailyForecastPollRate" type="integer" min="1" max="24">
-				<label>Daily Poll Cycle</label>
+				<label>Daily Poll Interval</label>
 				<description>The default number of hours to wait between retrieving daily forecast data</description>
 				<default>3</default>
 				<advanced>true</advanced>
