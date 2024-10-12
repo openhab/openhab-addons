@@ -302,7 +302,7 @@ public class RouterosDevice {
         if (response != null) {
             capsmanRegistrationCache.clear();
             response.forEach(reg -> capsmanRegistrationCache.add(new RouterosCapsmanRegistration(reg)));
-        }        
+        }
     }
 
     private void updateWirelessRegistrations() throws MikrotikApiException {
@@ -319,7 +319,7 @@ public class RouterosDevice {
                 props.put(PROP_SSID_KEY, wlanSsidName);
             }
             wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
-        });        
+        });
     }
 
     private void updateWifiRegistrations() throws MikrotikApiException {
@@ -336,7 +336,7 @@ public class RouterosDevice {
                 props.put("configuration.ssid", wlanSsidName);
             }
             wirelessRegistrationCache.add(new RouterosWirelessRegistration(props));
-        });        
+        });
     }
 
     private void updateResources() throws MikrotikApiException {
