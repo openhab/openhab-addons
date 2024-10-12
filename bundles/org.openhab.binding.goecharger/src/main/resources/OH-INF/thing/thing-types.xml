@@ -9,6 +9,7 @@
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
 
 		<channels>
+			<channel id="awattarMaxPrice" typeId="awp"/>
 			<channel id="maxCurrent" typeId="current"/>
 			<channel id="maxCurrentTemp" typeId="maxCurrTmp"/>
 			<channel id="pwmSignal" typeId="pwm"/>
@@ -36,6 +37,10 @@
 			<channel id="temperatureType2Port" typeId="tmpT2p"/>
 			<channel id="temperature" typeId="tmp"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="ip" type="text" required="true">
@@ -177,6 +182,11 @@
 		<label>Force state</label>
 		<description>Force state (Neutral=0, Off=1, On=2)</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="awp">
+		<item-type>Number</item-type>
+		<label>Awatttar Max Price</label>
+		<state pattern="%.2f"/>
 	</channel-type>
 	<channel-type id="scl">
 		<item-type>Number:Energy</item-type>
