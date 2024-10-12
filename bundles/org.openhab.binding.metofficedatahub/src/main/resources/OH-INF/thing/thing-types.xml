@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="bridge">
+	<bridge-type id="account">
 
-		<label>MetOffice DataHub Bridge</label>
-		<description>MetOffice DataHub API Bridge</description>
+		<label>MetOffice DataHub Account</label>
+		<description>MetOffice DataHub API Account</description>
 
 		<properties>
 			<property name="Site Specific API Call Count"/>
@@ -31,7 +31,7 @@
 	<thing-type id="site">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Forecast Data</label>

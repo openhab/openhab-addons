@@ -37,7 +37,7 @@ public class MetOfficeDataHubBindingConstants {
     private static final String BINDING_ID = "metofficedatahub";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_SITE_SPEC_API = new ThingTypeUID(BINDING_ID, "site");
 
     /**

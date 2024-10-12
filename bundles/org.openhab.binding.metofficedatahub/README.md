@@ -24,14 +24,14 @@ You can then add things to get the forecast's for a specific location (site), us
 
 This binding supports the follow thing types:
 
-| Thing  | Type UID  | Discovery | Description                                                                                 |
-|--------|-----------|-----------|---------------------------------------------------------------------------------------------|
-| Bridge | bridge    | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
-| Site   | site      | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
+| Type UID  | Discovery | Description                                                                                 |
+|-----------|-----------|---------------------------------------------------------------------------------------------|
+| bridge    | Manual    | A single connection to the Met Office DataHub API with daily poll limiting for the Site API |
+| site      | Manual    | Provides the hourly and daily forecast data for a give location (site)                      |
 
-## Thing Configuration
+## Configuration
 
-### `bridge` configuration parameters
+### `bridge` Configuration
 
 The bridge counts the total number of requests from 00:00 -> 23:59 under its properties during the runtime of the system.
 (This reset's if OH restarts, or the binding resets).
