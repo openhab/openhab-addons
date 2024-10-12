@@ -53,6 +53,20 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 
 ## Channels
 
+### Common Forecast Data Channels
+
+Data in this group is relevant to all forecast's received for the given `Site`.
+
+| Channel Id | Type               | Description      |
+|------------|--------------------|------------------|
+| location   | String             | Name of location |
+
+#### Channel Group for Common Forecast Data
+
+| Channel Id  | Description                                  |
+|-------------|----------------------------------------------|
+| common-data | Represents common data to all site forecasts |
+
 ### Hourly Forecast Channels
 
 | Channel Id       | Type                 | Description                                  | Unit |
@@ -92,7 +106,6 @@ current-forecast-**plus01**#air-temp-current
 2 hour's into the future to get the air-temp-current it would be:
 
 current-forecast-**plus02**#air-temp-current
-
 
 #### Channel Groups for Hourly Forecast Channels
 
