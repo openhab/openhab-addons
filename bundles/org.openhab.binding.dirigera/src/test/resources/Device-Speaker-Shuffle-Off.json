@@ -1,4 +1,4 @@
-DIRIGERA HANDLER update received for type deviceStateChanged - {
+{
 	"data": {
 		"deviceType": "speaker",
 		"remoteLinks": [],
