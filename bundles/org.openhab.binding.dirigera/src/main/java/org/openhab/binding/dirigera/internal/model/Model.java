@@ -49,8 +49,8 @@ public class Model {
         this.gateway = gateway;
     }
 
-    public Model(Gateway gateway, JSONObject model) {
-        this.model = model;
+    public Model(Gateway gateway, String model) {
+        this.model = new JSONObject(model);
         this.gateway = gateway;
     }
 
