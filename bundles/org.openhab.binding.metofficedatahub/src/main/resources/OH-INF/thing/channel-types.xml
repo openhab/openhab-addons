@@ -5,14 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel Groups for MetOfficeDataHub Binding - Site API -->
-	<channel-group-type id="site-common-data-grp">
-		<label>Common Site Data</label>
-		<description>Site Specific Location weather forecast - Common Data</description>
-		<channels>
-			<channel id="loc-name" typeId="loc-name-type"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="site-hr-forecast-grp">
 		<label>Hourly Forecast</label>
 		<description>Site Specific Location weather forecast - Hourly basis</description>

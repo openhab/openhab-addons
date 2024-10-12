@@ -48,7 +48,6 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -231,8 +230,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        updateCommonData(props);
-
         final String startOfHour = MetOfficeDataHubSiteApiHandler.getLastHour();
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
 
@@ -307,7 +304,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         if (props == null) {
             return;
         }
-        updateCommonData(props);
 
         final String startOfHour = MetOfficeDataHubSiteApiHandler.getStartOfDay();
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
@@ -532,14 +528,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                 }
             }
         });
-    }
-
-    private void updateCommonData(final SiteApiFeatureProperties responseProps) {
-        String name = null;
-        if (responseProps.getLocation() != null) {
-            name = responseProps.getLocation().getName();
-        }
-        updateState("common-data#" + SITE_HOURLY_LOCATION_NAME, new StringType(name));
     }
 
     private static String calculatePrefix(final String prefix, final int plusOffset) {

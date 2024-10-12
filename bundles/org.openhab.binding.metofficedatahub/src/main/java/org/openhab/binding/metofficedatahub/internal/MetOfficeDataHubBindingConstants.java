@@ -82,8 +82,6 @@ public class MetOfficeDataHubBindingConstants {
 
     public static final String SITE_HOURLY_SCREEN_DEW_POINT_TEMPERATURE = "dewpoint";
 
-    public static final String SITE_HOURLY_LOCATION_NAME = "loc-name";
-
     public static final String SITE_DAILY_MIDDAY_WIND_SPEED_10M = "wind-speed-day";
 
     public static final String SITE_DAILY_MIDNIGHT_WIND_SPEED_10M = "wind-speed-night";
@@ -166,8 +164,8 @@ public class MetOfficeDataHubBindingConstants {
     public static final String GROUP_POSTFIX_BOTH_FORECASTS = "-plus";
     public static final char GROUP_PREFIX_TO_ITEM = '#';
 
-    public static final String GET_FORECAST_URL_DAILY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/daily?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
-    public static final String GET_FORECAST_URL_HOURLY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
+    public static final String GET_FORECAST_URL_DAILY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/daily?latitude=<LATITUDE>&longitude=<LONGITUDE>";
+    public static final String GET_FORECAST_URL_HOURLY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly?latitude=<LATITUDE>&longitude=<LONGITUDE>";
 
     public static final long DAY_IN_MILLIS = 86400000;
 

@@ -38,10 +38,6 @@
 		<description>Site Specific forecast data</description>
 
 		<channel-groups>
-			<channel-group id="common-data" typeId="site-common-data-grp">
-				<label>Common Forecast Data</label>
-				<description>This is common data to all forecast data.</description>
-			</channel-group>
 			<channel-group id="current-forecast" typeId="site-hr-forecast-grp">
 				<label>Forecast Current Hour</label>
 				<description>This is the weather forecast for the current hour.</description>
