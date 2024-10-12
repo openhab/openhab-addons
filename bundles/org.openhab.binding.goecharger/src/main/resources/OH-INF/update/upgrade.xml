@@ -6,7 +6,7 @@
 	<thing-type uid="goecharger:goe">
 		<instruction-set targetVersion="1">
 			<add-channel id="awattarMaxPrice">
-				<type>unifi:awp</type>
+				<type>goecharger:awp</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
