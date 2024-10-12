@@ -14,13 +14,19 @@ package org.openhab.binding.linky.internal.dto;
 
 import java.util.ArrayList;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link PrmDetail} holds detailed informations about prm configuration
  *
  * @author Gaël L'hopital - Initial contribution
  */
 public class PrmDetail {
-    public record Adresse(String ligne2, String ligne3, String ligne4, String ligne5, String ligne6) {
+    public record Adresse(@SerializedName("ligne2") String line2, //
+            @SerializedName("ligne3") String line3, //
+            @SerializedName("ligne4") String line4, //
+            @SerializedName("ligne5") String line5, //
+            @SerializedName("ligne6") String line6) {
     }
 
     public record DicEntry(String code, String libelle) {
