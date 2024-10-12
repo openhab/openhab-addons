@@ -18,23 +18,23 @@
 		<description>Site Specific Location weather forecast - Hourly basis</description>
 		<channels>
 			<channel id="forecast-ts" typeId="time-type"/>
-			<channel id="site-scn-temp" typeId="site-scn-temp-type"/>
-			<channel id="site-min-scn-temp" typeId="site-min-scn-temp-type"/>
-			<channel id="site-max-scn-temp" typeId="site-max-scn-temp-type"/>
-			<channel id="feels-like-temp" typeId="feels-like-temp-type"/>
-			<channel id="scn-rel-humidity" typeId="scn-rel-humidity-type"/>
+			<channel id="air-temp-current" typeId="air-temp-current-type"/>
+			<channel id="air-temp-min" typeId="air-temp-min-type"/>
+			<channel id="air-temp-max" typeId="air-temp-max-type"/>
+			<channel id="feels-like" typeId="feels-like-type"/>
+			<channel id="humidity" typeId="humidity-type"/>
 			<channel id="visibility" typeId="visibility-type"/>
-			<channel id="prob-precip" typeId="prob-precip-type"/>
+			<channel id="precip-prob" typeId="precip-prob-type"/>
 			<channel id="precip-rate" typeId="precip-rate-type"/>
-			<channel id="total-precip" typeId="total-precip-type"/>
-			<channel id="total-snow" typeId="total-snow-type"/>
+			<channel id="precip-total" typeId="precip-total-type"/>
+			<channel id="snow-total" typeId="snow-total-type"/>
 			<channel id="uv-index" typeId="uv-index-type"/>
-			<channel id="mslp" typeId="mslp-type"/>
-			<channel id="wind-sp-10m" typeId="wind-sp-10m-type"/>
-			<channel id="wind-gst-sp-10m" typeId="wind-gst-sp-10m-type"/>
-			<channel id="max-10m-wind-gst" typeId="max-10m-wind-gst-type"/>
-			<channel id="wind-dir-10m" typeId="wind-dir-10m-type"/>
-			<channel id="scn-dew-temp" typeId="scn-dew-temp-type"/>
+			<channel id="pressure" typeId="pressure-type"/>
+			<channel id="wind-speed" typeId="wind-speed-type"/>
+			<channel id="wind-speed-gust" typeId="wind-speed-gust-type"/>
+			<channel id="wind-gust-max" typeId="wind-gust-max-type"/>
+			<channel id=" wind-direction" typeId="wind-direction-type"/>
+			<channel id="dewpoint" typeId="dewpoint-type"/>
 		</channels>
 	</channel-group-type>
 
@@ -43,23 +43,23 @@
 		<description>Site Specific Location weather forecast - Hourly basis</description>
 		<channels>
 			<channel id="forecast-ts" typeId="time-type"/>
-			<channel id="site-scn-temp" typeId="site-scn-temp-type"/>
-			<channel id="site-min-scn-temp" typeId="site-min-scn-temp-type"/>
-			<channel id="site-max-scn-temp" typeId="site-max-scn-temp-type"/>
-			<channel id="feels-like-temp" typeId="feels-like-temp-type"/>
-			<channel id="scn-rel-humidity" typeId="scn-rel-humidity-type"/>
+			<channel id="air-temp-current" typeId="air-temp-current-type"/>
+			<channel id="air-temp-min" typeId="air-temp-min-type"/>
+			<channel id="air-temp-max" typeId="air-temp-max-type"/>
+			<channel id="feels-like" typeId="feels-like-type"/>
+			<channel id="humidity" typeId="humidity-type"/>
 			<channel id="visibility" typeId="visibility-type"/>
-			<channel id="prob-precip" typeId="prob-precip-type"/>
+			<channel id="precip-prob" typeId="precip-prob-type"/>
 			<channel id="precip-rate" typeId="precip-rate-type"/>
-			<channel id="total-precip" typeId="total-precip-type"/>
-			<channel id="total-snow" typeId="total-snow-type"/>
+			<channel id="precip-total" typeId="precip-total-type"/>
+			<channel id="snow-total" typeId="snow-total-type"/>
 			<channel id="uv-index" typeId="uv-index-type"/>
-			<channel id="mslp" typeId="mslp-type"/>
-			<channel id="wind-sp-10m" typeId="wind-sp-10m-type"/>
-			<channel id="wind-gst-sp-10m" typeId="wind-gst-sp-10m-type"/>
-			<channel id="max-10m-wind-gst" typeId="max-10m-wind-gst-type"/>
-			<channel id="wind-dir-10m" typeId="wind-dir-10m-type"/>
-			<channel id="scn-dew-temp" typeId="scn-dew-temp-type"/>
+			<channel id="pressure" typeId="pressure-type"/>
+			<channel id="wind-speed" typeId="wind-speed-type"/>
+			<channel id="wind-speed-gust" typeId="wind-speed-gust-type"/>
+			<channel id="wind-gust-max" typeId="wind-gust-max-type"/>
+			<channel id="wind-direction" typeId="wind-direction-type"/>
+			<channel id="dewpoint" typeId="dewpoint-type"/>
 		</channels>
 	</channel-group-type>
 
@@ -68,45 +68,45 @@
 		<description>Site Specific Location weather forecast - Daily basis</description>
 		<channels>
 			<channel id="forecast-ts" typeId="time-type"/>
-			<channel id="midday-wind-sp-10m" typeId="midday-wind-sp-10m-type"/>
-			<channel id="midnight-wind-sp-10m" typeId="midnight-wind-sp-10m-type"/>
-			<channel id="midday-10m-wind-dir" typeId="midday-10m-wind-dir-type"/>
-			<channel id="midnight-10m-wind-dir" typeId="midnight-10m-wind-dir-type"/>
-			<channel id="midday-10m-wind-gst" typeId="midday-10m-wind-gst-type"/>
-			<channel id="midnight-10m-wind-gst" typeId="midnight-10m-wind-gst-type"/>
-			<channel id="midday-vis" typeId="midday-vis-type"/>
-			<channel id="midnight-vis" typeId="midnight-vis-type"/>
-			<channel id="midday-rel-hum" typeId="midday-rel-hum-type"/>
-			<channel id="midnight-rel-hum" typeId="midnight-rel-hum-type"/>
-			<channel id="midday-mslp" typeId="midday-mslp-type"/>
-			<channel id="midnight-mslp" typeId="midnight-mslp-type"/>
-			<channel id="max-uv-idx" typeId="max-uv-idx-type"/>
-			<channel id="day-ub-max-temp" typeId="day-ub-max-temp-type"/>
-			<channel id="night-ub-min-temp" typeId="night-ub-min-temp-type"/>
-			<channel id="day-lb-max-temp" typeId="day-lb-max-temp-type"/>
-			<channel id="night-lb-min-temp" typeId="night-lb-min-temp-type"/>
-			<channel id="day-max-feels-temp" typeId="day-max-feels-temp-type"/>
-			<channel id="night-min-feels-temp" typeId="night-min-feels-temp-type"/>
-			<channel id="day-max-scn-temp" typeId="day-max-scn-temp-type"/>
-			<channel id="night-min-scn-temp" typeId="night-min-scn-temp-type"/>
-			<channel id="day-ub-max-feels-temp" typeId="day-ub-max-feels-temp-type"/>
-			<channel id="night-ub-min-feels-temp" typeId="night-ub-min-feels-temp-type"/>
-			<channel id="day-lb-max-feels-temp" typeId="day-lb-max-feels-temp-type"/>
-			<channel id="night-lb-min-feels-temp" typeId="night-lb-min-feels-temp-type"/>
-			<channel id="day-prob-precip" typeId="day-prob-precip-type"/>
-			<channel id="night-prob-precip" typeId="night-prob-precip-type"/>
-			<channel id="day-prob-snow" typeId="day-prob-snow-type"/>
-			<channel id="night-prob-snow" typeId="night-prob-snow-type"/>
-			<channel id="day-prob-heavy-snow" typeId="day-prob-heavy-snow-type"/>
-			<channel id="night-prob-heavy-snow" typeId="night-prob-heavy-snow-type"/>
-			<channel id="day-prob-rain" typeId="day-prob-rain-type"/>
-			<channel id="night-prob-rain" typeId="night-prob-rain-type"/>
+			<channel id="wind-speed-day" typeId="wind-speed-day-type"/>
+			<channel id="wind-speed-night" typeId="wind-speed-night-type"/>
+			<channel id="wind-direction-day" typeId="wind-direction-day-type"/>
+			<channel id="wind-direction-night" typeId="wind-direction-night-type"/>
+			<channel id="wind-gust-day" typeId="wind-gust-day-type"/>
+			<channel id="wind-gust-night" typeId="wind-gust-night-type"/>
+			<channel id="visibility-day" typeId="visibility-day-type"/>
+			<channel id="visibility-night" typeId="visibility-night-type"/>
+			<channel id="humidity-day" typeId="humidity-day-type"/>
+			<channel id="humidity-night" typeId="humidity-night-type"/>
+			<channel id="pressure-day" typeId="pressure-day-type"/>
+			<channel id="pressure-night" typeId="pressure-night-type"/>
+			<channel id="uv-max" typeId="uv-max-type"/>
+			<channel id="temp-max-ub-day" typeId="temp-max-ub-day-type"/>
+			<channel id="temp-min-ub-night" typeId="temp-min-ub-night-type"/>
+			<channel id="temp-max-lb-day" typeId="temp-max-lb-day-type"/>
+			<channel id="temp-min-lb-night" typeId="temp-min-lb-night-type"/>
+			<channel id="feels-like-max-day" typeId="feels-like-max-day-type"/>
+			<channel id="feels-like-min-night" typeId="feels-like-min-night-type"/>
+			<channel id="temp-max-day" typeId="temp-max-day-type"/>
+			<channel id="temp-min-night" typeId="temp-min-night-type"/>
+			<channel id="feels-like-max-ub-day" typeId="feels-like-max-ub-day-type"/>
+			<channel id="feels-like-min-ub-night" typeId="feels-like-min-ub-night-type"/>
+			<channel id="feels-like-max-lb-day" typeId="feels-like-max-lb-day-type"/>
+			<channel id="feels-like-min-lb-night" typeId="feels-like-min-lb-night-type"/>
+			<channel id="precip-prob-day" typeId="precip-prob-day-type"/>
+			<channel id="precip-prob-night" typeId="precip-prob-night-type"/>
+			<channel id="snow-prob-day" typeId="snow-prob-day-type"/>
+			<channel id="snow-prob-night" typeId="snow-prob-night-type"/>
+			<channel id="heavy-snow-prob-day" typeId="heavy-snow-prob-day-type"/>
+			<channel id="heavy-snow-prob-night" typeId="heavy-snow-prob-night-type"/>
+			<channel id="rain-prob-day" typeId="rain-prob-day-type"/>
+			<channel id="rain-prob-night" typeId="rain-prob-night-type"/>
 			<channel id="day-prob-heavy-rain" typeId="day-prob-heavy-rain-type"/>
 			<channel id="night-prob-heavy-rain" typeId="night-prob-heavy-rain-type"/>
-			<channel id="day-prob-hail" typeId="day-prob-hail-type"/>
-			<channel id="night-prob-hail" typeId="night-prob-hail-type"/>
-			<channel id="day-prob-sferics" typeId="day-prob-sferics-type"/>
-			<channel id="night-prob-sferics" typeId="night-prob-sferics-type"/>
+			<channel id="hail-prob-day" typeId="hail-prob-day-type"/>
+			<channel id="hail-prob-night" typeId="hail-prob-night-type"/>
+			<channel id="sferics-prob-day" typeId="sferics-prob-day-type"/>
+			<channel id="sferics-prob-night" typeId="sferics-prob-night-type"/>
 		</channels>
 	</channel-group-type>
 
@@ -126,7 +126,7 @@
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
-	<channel-type id="site-scn-temp-type">
+	<channel-type id="air-temp-current-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Air Temperature</description>
@@ -134,7 +134,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="site-min-scn-temp-type">
+	<channel-type id="air-temp-min-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Min Temperature</label>
 		<description>Minimum Screen Air Temperature Over Previous Hour</description>
@@ -142,7 +142,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="site-max-scn-temp-type">
+	<channel-type id="air-temp-max-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Max Temperature</label>
 		<description>Maximum Screen Air Temperature Over Previous Hour</description>
@@ -150,7 +150,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="feels-like-temp-type">
+	<channel-type id="feels-like-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Feels Like Temperature</label>
 		<description>Feels Like Temperature</description>
@@ -158,7 +158,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="scn-rel-humidity-type">
+	<channel-type id="humidity-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Screen Relative Humidity</description>
@@ -174,7 +174,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="prob-precip-type">
+	<channel-type id="precip-prob-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precip. Probability</label>
 		<description>Probability of Precipitation</description>
@@ -190,7 +190,7 @@
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
 
-	<channel-type id="total-precip-type">
+	<channel-type id="precip-total-type">
 		<item-type>Number:Length</item-type>
 		<label>Previous Hour Precip.</label>
 		<description>Total Precipitation Amount Over Previous Hour</description>
@@ -198,7 +198,7 @@
 		<state readOnly="true" pattern="%.4f %unit%"/>
 	</channel-type>
 
-	<channel-type id="total-snow-type">
+	<channel-type id="snow-total-type">
 		<item-type>Number:Length</item-type>
 		<label>Previous Hour Snowfall</label>
 		<description>Total Snowfall Amount Over Previous Hour</description>
@@ -214,15 +214,15 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="mslp-type">
+	<channel-type id="pressure-type">
 		<item-type>Number:Pressure</item-type>
-		<label>MSLP</label>
+		<label>pressure</label>
 		<description>Mean Sea Level Pressure</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wind-sp-10m-type">
+	<channel-type id="wind-speed-type">
 		<item-type>Number:Speed</item-type>
 		<label>10m Wind</label>
 		<description>10m Wind Speed</description>
@@ -230,7 +230,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wind-gst-sp-10m-type">
+	<channel-type id="wind-speed-gust-type">
 		<item-type>Number:Speed</item-type>
 		<label>10m Wind Gust</label>
 		<description>10m Wind Gust Speed</description>
@@ -238,7 +238,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="max-10m-wind-gst-type">
+	<channel-type id="wind-gust-max-type">
 		<item-type>Number:Speed</item-type>
 		<label>Max Wind Gust Prev.Hr</label>
 		<description>Maximum 10m Wind Gust Speed of Previous Hour</description>
@@ -246,7 +246,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="scn-dew-temp-type">
+	<channel-type id="dewpoint-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
 		<description>Dew Point Temperature</description>
@@ -254,7 +254,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wind-dir-10m-type">
+	<channel-type id="wind-direction-type">
 		<item-type>Number:Angle</item-type>
 		<label>Wind From</label>
 		<description>10m Wind From Direction</description>
@@ -263,7 +263,7 @@
 	</channel-type>
 
 	<!-- Channels for MetOfficeDataHub Binding - Daily Forecast -->
-	<channel-type id="midday-wind-sp-10m-type">
+	<channel-type id="wind-speed-day-type">
 		<item-type>Number:Speed</item-type>
 		<label>Midday Wind</label>
 		<description>10m Wind Speed at Local Midday - Mean wind speed is equivalent to the mean speed observed over the 10
@@ -272,7 +272,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midnight-wind-sp-10m-type">
+	<channel-type id="wind-speed-night-type">
 		<item-type>Number:Speed</item-type>
 		<label>Midnight Wind</label>
 		<description>10m Wind Speed at Local Midnight - Mean wind speed is equivalent to the mean speed observed over the 10
@@ -281,7 +281,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midday-10m-wind-dir-type">
+	<channel-type id="wind-direction-day-type">
 		<item-type>Number:Angle</item-type>
 		<label>Midday Wind Direction</label>
 		<description>10m Wind Direction at Local Midday - Mean wind direction is equivalent to the mean direction observed
@@ -291,7 +291,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midnight-10m-wind-dir-type">
+	<channel-type id="wind-direction-night-type">
 		<item-type>Number:Angle</item-type>
 		<label>Midnight Wind Direction</label>
 		<description>10m Wind Direction at Local Midnight - Mean wind direction is equivalent to the mean direction observed
@@ -301,7 +301,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midday-10m-wind-gst-type">
+	<channel-type id="wind-gust-day-type">
 		<item-type>Number:Speed</item-type>
 		<label>Midday Wind Gust</label>
 		<description>10m Wind Gust Speed at Local Midday - The gust speed is equivalent to the maximum 3 second mean wind
@@ -310,7 +310,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midnight-10m-wind-gst-type">
+	<channel-type id="wind-gust-night-type">
 		<item-type>Number:Speed</item-type>
 		<label>Midnight Wind Gust</label>
 		<description>10m Wind Gust Speed at Local Midnight - The gust speed is equivalent to the maximum 3 second mean wind
@@ -319,7 +319,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midday-vis-type">
+	<channel-type id="visibility-day-type">
 		<item-type>Number:Length</item-type>
 		<label>Midday Visibility</label>
 		<description>Visibility at Local Midday - Minimal horizontal distance at which a known object can be seen.</description>
@@ -327,7 +327,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midnight-vis-type">
+	<channel-type id="visibility-night-type">
 		<item-type>Number:Length</item-type>
 		<label>Midnight Visibility</label>
 		<description>Visibility at Local Midnight - Minimal horizontal distance at which a known object can be seen.</description>
@@ -335,7 +335,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midday-rel-hum-type">
+	<channel-type id="humidity-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Midday Rel. Humidity</label>
 		<description>Relative Humidity at Local Midday - Stevenson screen height is approximately 1.5m above ground level.</description>
@@ -343,7 +343,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="midnight-rel-hum-type">
+	<channel-type id="humidity-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Midnight Rel. Humidity</label>
 		<description>Relative Humidity at Local Midnight - Stevenson screen height is approximately 1.5m above ground level.</description>
@@ -351,25 +351,25 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="midday-mslp-type">
+	<channel-type id="pressure-day-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Midday MSLP</label>
+		<label>Midday pressure</label>
 		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
-			sea areas. Air pressure at sea level is the quantity often abbreviated as MSLP or PMSL.</description>
+			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="midnight-mslp-type">
+	<channel-type id="pressure-night-type">
 		<item-type>Number:Pressure</item-type>
-		<label>Midnight MSLP</label>
+		<label>Midnight pressure</label>
 		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
-			sea areas. Air pressure at sea level is the quantity often abbreviated as MSLP or PMSL.</description>
+			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
 		<category>Pressure</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="max-uv-idx-type">
+	<channel-type id="uv-max-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Max. UV</label>
 		<description>Day Maximum UV Index - Usually a value from 0 to 13 but higher values are possible in extreme situations.
@@ -378,7 +378,7 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="day-ub-max-temp-type">
+	<channel-type id="temp-max-ub-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day(UB) Max. Screen</label>
 		<description>Upper Bound on Day Maximum Screen Air Temperature - This is the upper bound for the maximum value over
@@ -389,7 +389,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-ub-min-temp-type">
+	<channel-type id="temp-min-ub-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night(UB) Min. Screen</label>
 		<description>Upper Bound on Night Minimum Screen Air Temperature - This is the upper bound for the minimum value over
@@ -400,7 +400,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="day-lb-max-temp-type">
+	<channel-type id="temp-max-lb-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day(LB) Max. Screen</label>
 		<description>Lower Bound on Day Maximum Screen Air Temperature - This is the lower bound for the maximum value over
@@ -422,7 +422,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-lb-min-temp-type">
+	<channel-type id="temp-min-lb-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night(LB) Min. Screen</label>
 		<description>Lower Bound on Night Minimum Screen Air Temperature - This is the lower bound for the minimum value over
@@ -433,7 +433,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="day-max-feels-temp-type">
+	<channel-type id="feels-like-max-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day Max. Feels Like</label>
 		<description>Day Maximum Feels Like Air Temperature - This is the most likely maximum value over the day based on the
@@ -443,7 +443,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-min-feels-temp-type">
+	<channel-type id="feels-like-min-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night Min. Feels Like</label>
 		<description>Night Minimum Feels Like Air Temperature - This is the most likely minimum value over the night based on
@@ -453,7 +453,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="day-ub-max-feels-temp-type">
+	<channel-type id="feels-like-max-ub-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day(UB) Max. Feels Like</label>
 		<description>Upper Bound on Day Maximum Feels Like Air Temperature - This is the upper bound for the maximum value
@@ -465,7 +465,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-ub-min-feels-temp-type">
+	<channel-type id="feels-like-min-ub-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night(UB) Min. Feels Like</label>
 		<description>Upper Bound on Night Minimum Feels Like Air Temperature - This is the upper bound for the minimum value
@@ -477,7 +477,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="day-lb-max-feels-temp-type">
+	<channel-type id="feels-like-max-lb-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day(LB) Max. Feels Like</label>
 		<description>Lower Bound on Day Maximum Feels Like Air Temperature - This is the lower bound for the maximum value
@@ -489,7 +489,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-lb-min-feels-temp-type">
+	<channel-type id="feels-like-min-lb-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night(LB) Min. Feels Like</label>
 		<description>Lower Bound on Night Minimum Feels Like Air Temperature - This is the lower bound for the minimum value
@@ -501,7 +501,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-precip-type">
+	<channel-type id="precip-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Precip. Probab.</label>
 		<description>Probability of Precipitation During The Day - Daytime is defined as those forecast times that fall
@@ -510,7 +510,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-precip-type">
+	<channel-type id="precip-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Precip. Probab.</label>
 		<description>Probability of Precipitation During The Night - Night-time is defined as those forecast times that fall
@@ -519,7 +519,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-snow-type">
+	<channel-type id="snow-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Snow Probab.</label>
 		<description>Probability of Snow During The Day - Daytime is defined as those forecast times that fall between local
@@ -528,7 +528,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-snow-type">
+	<channel-type id="snow-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Snow Probab.</label>
 		<description>Probability of Snow During The Night - Night-time is defined as those forecast times that fall between
@@ -537,7 +537,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-heavy-snow-type">
+	<channel-type id="heavy-snow-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day H.Snow Probab.</label>
 		<description>Probability of Heavy Snow During The Day - Heavy snow is defined as &gt;1mm/hr liquid water equivalent
@@ -547,7 +547,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-heavy-snow-type">
+	<channel-type id="heavy-snow-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night H.Snow Probab.</label>
 		<description>Probability of Heavy Snow During The Night - Heavy snow is defined as &gt;1mm/hr liquid water equivalent
@@ -557,7 +557,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-rain-type">
+	<channel-type id="rain-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Rain Probab.</label>
 		<description>Probability of Rain During The Day - Daytime is defined as those forecast times that fall between local
@@ -566,7 +566,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-rain-type">
+	<channel-type id="rain-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Rain Probab.</label>
 		<description>Probability of Rain During The Night - Night-time is defined as those forecast times that fall between
@@ -593,7 +593,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-hail-type">
+	<channel-type id="hail-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Hail Probab.</label>
 		<description>Probability of Hail During The Day - Daytime is defined as those forecast times that fall between local
@@ -602,7 +602,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-hail-type">
+	<channel-type id="hail-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Hail Probab.</label>
 		<description>Probability of Hail During The Night - Night-time is defined as those forecast times that fall between
@@ -611,7 +611,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-prob-sferics-type">
+	<channel-type id="sferics-prob-day-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Day Sferics Probab.</label>
 		<description>Probability of Sferics During The Day - This is the probability of a strike within a radius of 50km.</description>
@@ -619,7 +619,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="night-prob-sferics-type">
+	<channel-type id="sferics-prob-night-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Night Sferics Probab.</label>
 		<description>Probability of Sferics During The Night - This is the probability of a strike within a radius of 50km.</description>
@@ -627,7 +627,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="day-max-scn-temp-type">
+	<channel-type id="temp-max-day-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Day Max. Screen</label>
 		<description>Day Maximum Screen Air Temperature - Daytime is defined as those forecast times that fall between local
@@ -636,7 +636,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="night-min-scn-temp-type">
+	<channel-type id="temp-min-night-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Night Min. Screen</label>
 		<description>Night Minimum Screen Air Temperature - Night-time is defined as those forecast times that fall between

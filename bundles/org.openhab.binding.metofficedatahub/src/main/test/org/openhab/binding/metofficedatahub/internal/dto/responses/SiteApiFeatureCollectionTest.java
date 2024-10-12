@@ -179,7 +179,7 @@ public class SiteApiFeatureCollectionTest {
         assertEquals( 6.43,response.getFeature()[0].getProperties().getTimeSeries()[0].getMax10mWindGust());
         assertEquals( 19040,response.getFeature()[0].getProperties().getTimeSeries()[0].getVisibility());
         assertEquals( 76.51,response.getFeature()[0].getProperties().getTimeSeries()[0].getScreenRelativeHumidity());
-        assertEquals( 102230,response.getFeature()[0].getProperties().getTimeSeries()[0].getMslp());
+        assertEquals( 102230,response.getFeature()[0].getProperties().getTimeSeries()[0].getpressure());
         assertEquals( 1,response.getFeature()[0].getProperties().getTimeSeries()[0].getUvIndex());
         assertEquals( 2,response.getFeature()[0].getProperties().getTimeSeries()[0].getSignificantWeatherCode());
         assertEquals( 3,response.getFeature()[0].getProperties().getTimeSeries()[0].getPrecipitationRate());
@@ -202,7 +202,7 @@ public class SiteApiFeatureCollectionTest {
         assertEquals( 5.66,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnight10MWindGust());
         assertEquals( 8776,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightVisibility());
         assertEquals( 91.42,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightRelativeHumidity());
-        assertEquals( 102310,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightMslp());
+        assertEquals( 102310,response.getFeature()[0].getProperties().getTimeSeries()[0].getMidnightpressure());
         assertEquals( 2,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightSignificantWeatherCode());
         assertEquals( 8.05,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightMinScreenTemperature());
         assertEquals( 12.79,response.getFeature()[0].getProperties().getTimeSeries()[0].getNightUpperBoundMinTemp());

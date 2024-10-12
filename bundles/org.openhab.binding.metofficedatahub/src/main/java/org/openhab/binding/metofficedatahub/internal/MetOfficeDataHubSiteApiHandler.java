@@ -270,7 +270,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             updateState(channelPrefix + SITE_HOURLY_TOTAL_SNOW_AMOUNT,
                     getQuantityTypeState(data.getTotalSnowAmount(), MILLI(METRE)));
 
-            updateState(channelPrefix + SITE_HOURLY_MSLP, getQuantityTypeState(data.getMslp(), SIUnits.PASCAL));
+            updateState(channelPrefix + SITE_HOURLY_pressure, getQuantityTypeState(data.getpressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_HOURLY_WIND_SPEED_10M,
                     getQuantityTypeState(data.getWindSpeed10m(), Units.METRE_PER_SECOND));
@@ -348,11 +348,11 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             updateState(channelPrefix + SITE_DAILY_MIDNIGHT_REL_HUMIDITY,
                     getQuantityTypeState(data.getMidnightRelativeHumidity(), Units.PERCENT));
 
-            updateState(channelPrefix + SITE_DAILY_MIDDAY_MSLP,
-                    getQuantityTypeState(data.getMiddayMslp(), SIUnits.PASCAL));
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_pressure,
+                    getQuantityTypeState(data.getMiddaypressure(), SIUnits.PASCAL));
 
-            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_MSLP,
-                    getQuantityTypeState(data.getMidnightMslp(), SIUnits.PASCAL));
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_pressure,
+                    getQuantityTypeState(data.getMidnightpressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_DAILY_DAY_MAX_UV_INDEX, getDecimalTypeState(data.getMaxUvIndex()));
 

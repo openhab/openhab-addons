@@ -109,11 +109,11 @@ public class SiteApiTimeSeries {
         return screenRelativeHumidity;
     }
 
-    @SerializedName("mslp")
-    private Integer mslp;
+    @SerializedName("pressure")
+    private Integer pressure;
 
-    public Integer getMslp() {
-        return mslp;
+    public Integer getpressure() {
+        return pressure;
     }
 
     @SerializedName("uvIndex")
@@ -232,18 +232,18 @@ public class SiteApiTimeSeries {
         return midnightRelativeHumidity;
     }
 
-    @SerializedName("middayMslp")
-    private Integer middayMslp;
+    @SerializedName("middaypressure")
+    private Integer middaypressure;
 
-    public Integer getMiddayMslp() {
-        return middayMslp;
+    public Integer getMiddaypressure() {
+        return middaypressure;
     }
 
-    @SerializedName("midnightMslp")
-    private Integer midnightMslp;
+    @SerializedName("midnightpressure")
+    private Integer midnightpressure;
 
-    public Integer getMidnightMslp() {
-        return midnightMslp;
+    public Integer getMidnightpressure() {
+        return midnightpressure;
     }
 
     @SerializedName("maxUvIndex")
