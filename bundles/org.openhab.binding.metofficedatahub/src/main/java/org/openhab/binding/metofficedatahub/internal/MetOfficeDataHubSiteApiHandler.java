@@ -569,35 +569,38 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         latitude = "";
         longitude = "";
 
+        String newLatitude = "";
+        String newLongitude = "";
+
         if (config.location.isBlank()) {
             final PointType userLocation = locationProvider.getLocation();
             if (userLocation != null) {
-                latitude = String.valueOf(userLocation.getLatitude());
-                longitude = String.valueOf(userLocation.getLongitude());
+                newLatitude = String.valueOf(userLocation.getLatitude());
+                newLongitude = String.valueOf(userLocation.getLongitude());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         getLocalizedText("site.error.no-user-location"));
                 return;
             }
+        } else {
+            String[] coordinates = config.location.split(",");
+            if (coordinates.length != 2) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        getLocalizedText("site.error.config"));
+                return;
+            }
+            newLatitude = coordinates[0].trim();
+            newLongitude = coordinates[1].trim();
         }
 
-        String[] coordinates = config.location.split(",");
-        if (coordinates.length != 2) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    getLocalizedText("site.error.config"));
-            return;
-        }
-        String latitude = coordinates[0].trim();
-
-        if (latitude.length() > 1) {
+        if (newLatitude.length() > 1) {
             double trueVal;
             try {
-                trueVal = Double.parseDouble(latitude);
+                trueVal = Double.parseDouble(newLatitude);
                 if (trueVal > 85 || trueVal < -85) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             getLocalizedText("site.error.lat"));
                 }
-                this.latitude = latitude;
             } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         getLocalizedText("site.error.lat-type"));
@@ -607,17 +610,14 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                     getLocalizedText("site.error.lat-missing"));
         }
 
-        String longitude = coordinates[1].trim();
-
-        if (longitude.length() > 1) {
+        if (newLongitude.length() > 1) {
             double trueVal;
             try {
-                trueVal = Double.parseDouble(longitude);
+                trueVal = Double.parseDouble(newLongitude);
                 if (trueVal > 180 || trueVal < -180) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             getLocalizedText("site.error.long"));
                 }
-                this.longitude = longitude;
             } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         getLocalizedText("site.error.long-type"));
@@ -631,6 +631,9 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
             return;
         }
+
+        latitude = newLatitude;
+        longitude = newLongitude;
 
         /**
          * Setup the initial device's status

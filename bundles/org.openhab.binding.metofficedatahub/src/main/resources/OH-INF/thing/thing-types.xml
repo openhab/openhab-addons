@@ -173,7 +173,7 @@
 		</channel-groups>
 
 		<config-description>
-			<parameter name="location" type="text" required="true">
+			<parameter name="location" type="text">
 				<context>location</context>
 				<label>Weather Location</label>
 				<description>Location of weather forecast in geographical coordinates (latitude/longitude).</description>
