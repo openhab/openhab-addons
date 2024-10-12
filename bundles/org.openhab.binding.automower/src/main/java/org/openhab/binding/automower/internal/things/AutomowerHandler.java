@@ -1031,6 +1031,13 @@ public class AutomowerHandler extends BaseThingHandler {
                     new QuantityType<>(mower.getAttributes().getStatistics().getTotalCuttingTime(), Units.SECOND));
             updateState(CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
                     new QuantityType<>(mower.getAttributes().getStatistics().getTotalDriveDistance(), SIUnits.METRE));
+<<<<<<< HEAD
+=======
+            logger.warn("mower.getAttributes().getStatistics().getTotalDrivenDistance(): {}, QuantityType(): {}",
+                    mower.getAttributes().getStatistics().getTotalDriveDistance(),
+                    new QuantityType<>(mower.getAttributes().getStatistics().getTotalDriveDistance(), SIUnits.METRE)
+                            .toString());
+>>>>>>> workaround for bug in automower API (issue created)
             updateState(CHANNEL_STATISTIC_TOTAL_RUNNING_TIME,
                     new QuantityType<>(mower.getAttributes().getStatistics().getTotalRunningTime(), Units.SECOND));
             updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,

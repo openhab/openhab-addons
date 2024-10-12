@@ -66,7 +66,7 @@
 			<channel id="stat-number-of-collisions" typeId="statNumberOfCollisionsType"/>
 			<channel id="stat-total-charging-time" typeId="statTotalChargingTimeType"/>
 			<channel id="stat-total-cutting-time" typeId="statTotalCuttingTimeType"/>
-			<channel id="stat-total-driven-distance" typeId="statTotalDrivenDistanceType"/>
+			<channel id="stat-total-drive-distance" typeId="statTotalDriveDistanceType"/>
 			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
 			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
 			<!-- Commands -->
@@ -401,9 +401,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="statTotalDrivenDistanceType">
+	<channel-type id="statTotalDriveDistanceType">
 		<item-type>Number:Length</item-type>
-		<label>Total Driven Distance</label>
+		<label>Total Drive Distance</label>
 		<description>Total driven distance</description>
 		<state readOnly="true"/>
 	</channel-type>

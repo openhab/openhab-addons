@@ -21,7 +21,7 @@ public class Statistics {
     private int numberOfCollisions;
     private long totalChargingTime;
     private long totalCuttingTime;
-    private long totalDrivenDistance;
+    private long totalDriveDistance; // docu states totalDrivenDistance which does not work
     private long totalRunningTime;
     private long totalSearchingTime;
 
@@ -65,12 +65,12 @@ public class Statistics {
         this.totalCuttingTime = totalCuttingTime;
     }
 
-    public long getTotalDrivenDistance() {
-        return totalDrivenDistance;
+    public long getTotalDriveDistance() {
+        return totalDriveDistance;
     }
 
-    public void setTotalDrivenDistance(long totalDrivenDistance) {
-        this.totalDrivenDistance = totalDrivenDistance;
+    public void setTotalDriveDistance(long totalDriveDistance) {
+        this.totalDriveDistance = totalDriveDistance;
     }
 
     public long getTotalRunningTime() {
