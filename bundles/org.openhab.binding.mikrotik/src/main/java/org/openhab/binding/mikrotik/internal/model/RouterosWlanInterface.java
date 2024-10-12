@@ -54,6 +54,7 @@ public class RouterosWlanInterface extends RouterosInterfaceBase {
     }
 
     public @Nullable String getCurrentState() {
+        // maybe state not status in newer version 7????
         return getProp("status");
     }
 
