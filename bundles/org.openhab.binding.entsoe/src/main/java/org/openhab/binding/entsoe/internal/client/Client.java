@@ -14,6 +14,7 @@ package org.openhab.binding.entsoe.internal.client;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -71,7 +72,8 @@ public class Client {
     }
 
     private Map<Instant, Optional<EntsoeTimeSerie>> parseXmlResponse(String responseText, String configResolution)
-            throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException {
+            throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
+            EntsoeConfigurationException {
         Map<Instant, Optional<EntsoeTimeSerie>> responseMap = new LinkedHashMap<>();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -91,59 +93,82 @@ public class Client {
 
         // Get all "timeSeries" nodes from document
         NodeList listOfTimeSeries = document.getElementsByTagName("TimeSeries");
+        boolean resolutionFound = false;
         for (int i = 0; i < listOfTimeSeries.getLength(); i++) {
             Node timeSeriesNode = listOfTimeSeries.item(i);
             if (timeSeriesNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element timeSeriesElement = (Element) timeSeriesNode;
-                NodeList listOfPeriods = timeSeriesElement.getElementsByTagName("Period");
+
                 String currency = timeSeriesElement.getElementsByTagName("currency_Unit.name").item(0).getTextContent();
                 String measureUnit = timeSeriesElement.getElementsByTagName("price_Measure_Unit.name").item(0)
                         .getTextContent();
 
-                for (int j = 0; j < listOfPeriods.getLength(); j++) {
-                    Node periodeNode = listOfPeriods.item(j);
-                    if (periodeNode.getNodeType() == Node.ELEMENT_NODE) {
-                        Element periodElement = (Element) periodeNode;
-                        NodeList listOfTimeInterval = periodElement.getElementsByTagName("timeInterval");
-                        Node startTimeNode = listOfTimeInterval.item(0);
-                        Element startTimeElement = (Element) startTimeNode;
-                        String startTime = startTimeElement.getElementsByTagName("start").item(0).getTextContent();
-                        Instant startTimeInstant = ZonedDateTime.parse(startTime, DateTimeFormatter.ISO_ZONED_DATE_TIME)
-                                .toInstant();
+                NodeList listOfPeriod = timeSeriesElement.getElementsByTagName("Period");
+                Node periodNode = listOfPeriod.item(0);
+                Element periodElement = (Element) periodNode;
 
-                        String resolution = periodElement.getElementsByTagName("resolution").item(0).getTextContent();
+                NodeList listOfTimeInterval = periodElement.getElementsByTagName("timeInterval");
+                Node startTimeNode = listOfTimeInterval.item(0);
+                Element startTimeElement = (Element) startTimeNode;
+                String startTime = startTimeElement.getElementsByTagName("start").item(0).getTextContent();
+                Instant startTimeInstant = ZonedDateTime.parse(startTime, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+                        .toInstant();
+                Node endTimeNode = listOfTimeInterval.item(0);
+                Element endTimeElement = (Element) endTimeNode;
+                String endTime = endTimeElement.getElementsByTagName("end").item(0).getTextContent();
+                Instant endTimeInstant = ZonedDateTime.parse(endTime, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+                        .toInstant();
 
-                        logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
-                                listOfTimeSeries.getLength(), startTimeInstant.atZone(ZoneId.of("UTC")), resolution);
+                String resolution = periodElement.getElementsByTagName("resolution").item(0).getTextContent();
+                Duration durationResolution = Duration.parse(resolution);
+                Duration durationTotal = Duration.between(startTimeInstant, endTimeInstant);
+                int numberOfDurations = Math.round(durationTotal.toMinutes() / durationResolution.toMinutes());
 
-                        NodeList listOfPoints = periodElement.getElementsByTagName("Point");
+                logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
+                        listOfTimeSeries.getLength(), startTimeInstant.atZone(ZoneId.of("UTC")), resolution);
 
-                        for (int p = 0; p < listOfPoints.getLength()
-                                && resolution.equalsIgnoreCase(configResolution); p++) {
-                            Node pointNode = listOfPoints.item(p);
-                            if (pointNode.getNodeType() == Node.ELEMENT_NODE) {
-                                Element pointElement = (Element) pointNode;
-                                int position = 0;
-                                try {
-                                    position = Integer.parseInt(
-                                            pointElement.getElementsByTagName("position").item(0).getTextContent());
-                                } catch (NumberFormatException e) {
-                                    position = p;
-                                }
-                                String price = pointElement.getElementsByTagName("price.amount").item(0)
-                                        .getTextContent();
-                                Double priceAsDouble = Double.parseDouble(price);
+                NodeList listOfPoints = periodElement.getElementsByTagName("Point");
 
-                                EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble,
-                                        startTimeInstant, position, resolution);
-                                responseMap.put(t.getInstant(), Optional.ofNullable(t));
-                                logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1),
-                                        listOfPoints.getLength(), t.getUtcTime(), priceAsDouble, currency, measureUnit);
+                /*
+                 * EntsoE changed their API on October 1 2024 so that they use the A03 curve type instead of A01. The
+                 * difference between these curve types is that in A03 they don’t repeat an hour if it has the same
+                 * price
+                 * as the previous hour.
+                 */
+                int pointNr = 0;
+                for (int p = 0; p < numberOfDurations && resolution.equalsIgnoreCase(configResolution); p++) {
+                    resolutionFound = true;
+                    Node pointNode = listOfPoints.item(pointNr);
+
+                    int multiplier = p;
+                    if (pointNode != null) {
+                        Element pointElement = (Element) pointNode;
+                        String price = pointElement.getElementsByTagName("price.amount").item(0).getTextContent();
+                        Double priceAsDouble = Double.parseDouble(price);
+                        EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble, startTimeInstant,
+                                multiplier, resolution);
+                        responseMap.put(t.getInstant(), Optional.ofNullable(t));
+                        logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
+                                t.getUtcTime(), priceAsDouble, currency, measureUnit);
+                    }
+
+                    Node nextPointNode = listOfPoints.item(pointNr + 1);
+                    if (nextPointNode != null) {
+                        Element nextPointElement = (Element) nextPointNode;
+                        Node nextPositionNode = nextPointElement.getElementsByTagName("position").item(0);
+                        if (nextPositionNode != null) {
+                            int nextPosition = Integer.parseInt(nextPositionNode.getTextContent());
+                            if (nextPosition == p + 2) {
+                                pointNr++;
                             }
                         }
                     }
+
                 }
             }
+        }
+        if (!resolutionFound) {
+            throw new EntsoeConfigurationException("Resolution " + configResolution + " not found in ENTSOE response");
         }
         return responseMap;
     }

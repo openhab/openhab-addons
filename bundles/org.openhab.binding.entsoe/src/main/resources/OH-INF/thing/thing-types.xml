@@ -156,10 +156,11 @@
 			<parameter name="resolution" type="text" required="false">
 				<label>Resolution</label>
 				<default>PT60M</default>
-				<description>Data resolution (usually 60 minutes, but for some markets 15 minutes)</description>
+				<description>Data resolution</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="PT15M">15 minutes</option>
+					<option value="PT30M">30 minutes</option>
 					<option value="PT60M">60 minutes</option>
 				</options>
 			</parameter>

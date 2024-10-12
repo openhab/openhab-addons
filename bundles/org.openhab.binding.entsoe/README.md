@@ -28,7 +28,7 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                      | N/A       | yes      | no       |
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)     | 0         | no       | no       |
-| resolution                    | text              | Data resolution (usually 60 minutes, but for some markets 15 minutes)     | PT60M     | no       | no       |
+| resolution                    | text              | Data resolution                                                           | PT60M     | no       | no       |
 | spotPricesAvailableUtcHour    | integer           | Which UTC hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
 | requestTimeout                | integer           | Request timeout in seconds                                                | 30        | no       | yes      |
 
