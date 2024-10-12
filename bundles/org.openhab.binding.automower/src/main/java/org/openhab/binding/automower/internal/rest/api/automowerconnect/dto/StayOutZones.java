@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,16 +17,24 @@ import java.util.List;
 
 /**
  * @author Markus Pfleger - Initial contribution
- * @author Marcin Czeczko - Added support for planner and calendar data
  */
-public class Calendar {
-    private List<CalendarTask> tasks = new ArrayList<>();
+public class StayOutZones {
+    private Boolean dirty;
+    private List<StayOutZone> zones = new ArrayList<>();
 
-    public List<CalendarTask> getTasks() {
-        return tasks;
+    public Boolean isDirty() {
+        return dirty;
     }
 
-    public void setTasks(List<CalendarTask> tasks) {
-        this.tasks = tasks;
+    public void setDirty(Boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    public List<StayOutZone> getZones() {
+        return zones;
+    }
+
+    public void setZones(List<StayOutZone> zones) {
+        this.zones = zones;
     }
 }

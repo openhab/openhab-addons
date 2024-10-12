@@ -20,6 +20,7 @@ public class Planner {
     private long nextStartTimestamp;
     private RestrictedReason restrictedReason;
     private PlannerOverride override;
+    private int externalReason;
 
     public long getNextStartTimestamp() {
         return nextStartTimestamp;
@@ -45,6 +46,15 @@ public class Planner {
 
     public Planner setOverride(PlannerOverride override) {
         this.override = override;
+        return this;
+    }
+
+    public int getExternalReason() {
+        return externalReason;
+    }
+
+    public Planner setExternalReason(int externalReason) {
+        this.externalReason = externalReason;
         return this;
     }
 }

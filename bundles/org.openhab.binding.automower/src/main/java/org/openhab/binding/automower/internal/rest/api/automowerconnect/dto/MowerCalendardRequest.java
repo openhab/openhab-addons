@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,16 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author Markus Pfleger - Initial contribution
  */
-public enum RestrictedReason {
-    NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+public class MowerCalendardRequest {
+    private MowerCalendar data;
+
+    public MowerCalendar getData() {
+        return data;
+    }
+
+    public void setData(MowerCalendar data) {
+        this.data = data;
+    }
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,10 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Marcin Czeczko - Initial Contribution
+ * @author Markus Pfleger - Initial contribution
  */
-public enum RestrictedReason {
+public enum InactiveReason {
     NONE,
-    WEEK_SCHEDULE,
-    PARK_OVERRIDE,
-    SENSOR,
-    DAILY_LIMIT,
-    FOTA,
-    FROST,
-    ALL_WORK_AREAS_COMPLETED,
-    EXTERNAL
+    PLANNING,
+    SEARCHING_FOR_SATELLITES
 }

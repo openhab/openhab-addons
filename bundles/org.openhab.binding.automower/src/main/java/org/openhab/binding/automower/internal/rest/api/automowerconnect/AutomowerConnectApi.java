@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCalendardRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
@@ -72,6 +73,18 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         request.content(new StringContentProvider(gson.toJson(command)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendCalendar(String appKey, String token, String id, MowerCalendardRequest calendar)
+            throws AutomowerCommunicationException {
+        final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + id + "/calendar");
+        request.method(HttpMethod.POST);
+
+        request.content(new StringContentProvider(gson.toJson(calendar)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 

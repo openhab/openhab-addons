@@ -47,14 +47,28 @@
 			<channel id="name" typeId="nameType"/>
 			<channel id="mode" typeId="modeType"/>
 			<channel id="activity" typeId="activityType"/>
+			<channel id="inactive-reason" typeId="inactiveReasonType"/>
 			<channel id="state" typeId="stateType"/>
 			<channel id="last-update" typeId="lastUpdateType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-timestamp" typeId="errorTimestampType"/>
+			<channel id="error-confirmable" typeId="errorConfirmableType"/>
 			<channel id="planner-next-start" typeId="plannerNextStartTimestampType"/>
 			<channel id="planner-override-action" typeId="plannerOverrideActionType"/>
+			<channel id="planner-restricted-reason" typeId="plannerRestrictedReasonType"/>
+			<channel id="planner-external-reason" typeId="plannerExternalReasonType"/>
 			<channel id="calendar-tasks" typeId="calendarTasksType"/>
+			<channel id="setting-cutting-height" typeId="settingCuttingHeightType"/>
+			<channel id="setting-headlight-mode" typeId="settingHeadlightModeType"/>
+			<channel id="stat-cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
+			<channel id="stat-number-of-charging-cycles" typeId="statNumberOfChargingCyclesType"/>
+			<channel id="stat-number-of-collisions" typeId="statNumberOfCollisionsType"/>
+			<channel id="stat-total-charging-time" typeId="statTotalChargingTimeType"/>
+			<channel id="stat-total-cutting-time" typeId="statTotalCuttingTimeType"/>
+			<channel id="stat-total-driven-distance" typeId="statTotalDrivenDistanceType"/>
+			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
+			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>
 			<channel id="resume_schedule" typeId="resumeSchedule"/>
@@ -117,6 +131,48 @@
 			<channel id="position48" typeId="positionType"/>
 			<channel id="position49" typeId="positionType"/>
 			<channel id="position50" typeId="positionType"/>
+
+
+			<!-- Stayout Zones -->
+			<channel id="dirty" typeId="zoneDirtyType"/>
+			<channel id="zone01-id" typeId="zoneIdType"/>
+			<channel id="zone01-name" typeId="zoneNameType"/>
+			<channel id="zone01-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone02-id" typeId="zoneIdType"/>
+			<channel id="zone02-name" typeId="zoneNameType"/>
+			<channel id="zone02-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone03-id" typeId="zoneIdType"/>
+			<channel id="zone03-name" typeId="zoneNameType"/>
+			<channel id="zone03-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone04-id" typeId="zoneIdType"/>
+			<channel id="zone04-name" typeId="zoneNameType"/>
+			<channel id="zone04-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone05-id" typeId="zoneIdType"/>
+			<channel id="zone05-name" typeId="zoneNameType"/>
+			<channel id="zone05-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone06-id" typeId="zoneIdType"/>
+			<channel id="zone06-name" typeId="zoneNameType"/>
+			<channel id="zone06-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone07-id" typeId="zoneIdType"/>
+			<channel id="zone07-name" typeId="zoneNameType"/>
+			<channel id="zone07-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone08-id" typeId="zoneIdType"/>
+			<channel id="zone08-name" typeId="zoneNameType"/>
+			<channel id="zone08-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone09-id" typeId="zoneIdType"/>
+			<channel id="zone09-name" typeId="zoneNameType"/>
+			<channel id="zone09-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone19-id" typeId="zoneIdType"/>
+			<channel id="zone10-name" typeId="zoneNameType"/>
+			<channel id="zone10-enabled" typeId="zoneEnabledType"/>
+
+			<!-- Work Areas -->
+			<channel id="workareas01-id" typeId="workareasIdType"/>
+			<channel id="workareas01-name" typeId="workareasNameType"/>
+			<channel id="workareas01-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas01-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas01-progress" typeId="workareasProgressType"/>
+			<channel id="workareas01-last-time-completed" typeId="workareasLasTimeCompletedType"/>
 		</channels>
 
 		<properties>
@@ -124,6 +180,11 @@
 			<property name="mowerName">N/A</property>
 			<property name="mowerModel">N/A</property>
 			<property name="mowerSerialNumber">N/A</property>
+			<property name="mowerCanConfirmError">N/A</property>
+			<property name="mowerHasHeadlights">N/A</property>
+			<property name="mowerHasPosition">N/A</property>
+			<property name="mowerHasStayOutZones">N/A</property>
+			<property name="mowerHasWorkAreas">N/A</property>
 		</properties>
 
 		<config-description>
@@ -177,6 +238,19 @@
 				<option value="LEAVING">Leaving charging station</option>
 				<option value="PARKED_IN_CS">Parked in charging station</option>
 				<option value="STOPPED_IN_GARDEN">Stopped in garden</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="inactiveReasonType">
+		<item-type>String</item-type>
+		<label>Inactive Reason</label>
+		<description>The current reason for being inactive</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No inactive reason</option>
+				<option value="PLANNING">The mower is planning a path or a work area</option>
+				<option value="SEARCHING_FOR_SATELLITES">Waiting for fix when using EPOS</option>
 			</options>
 		</state>
 	</channel-type>
@@ -235,6 +309,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="errorConfirmableType">
+		<item-type>Switch</item-type>
+		<label>Error Confirmable</label>
+		<description>If the mower has an Error Code this attribute states if the error is confirmable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="plannerNextStartTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Next Auto Start</label>
@@ -250,6 +331,20 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="plannerRestrictedReasonType">
+		<item-type>String</item-type>
+		<label>Restricted Reason</label>
+		<description>The channel providing an reason that restrics current planner operation.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="plannerExternalReasonType">
+		<item-type>Number</item-type>
+		<label>External Reason</label>
+		<description>The channel providing an external reason that restrics current planner operation.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="calendarTasksType">
 		<item-type>String</item-type>
 		<label>Planner Info JSON</label>
@@ -257,10 +352,154 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="settingCuttingHeightType">
+		<item-type>Number</item-type>
+		<label>Cutting Height</label>
+		<description>Prescaled cutting height, Range: 1-9</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="settingHeadlightModeType">
+		<item-type>String</item-type>
+		<label>Headlight Mode</label>
+		<description>Information about headlights</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statCuttingBladeUsageTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Cutting Blade Usage Time</label>
+		<description>The time since the last reset of the cutting blade usage counter</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfChargingCyclesType">
+		<item-type>Number</item-type>
+		<label>Number of Charging Cycles</label>
+		<description>Number of charging cycles</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfCollisionsType">
+		<item-type>Number</item-type>
+		<label>Number of Collisions</label>
+		<description>The total number of collisions</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalChargingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Charging Time</label>
+		<description>Total charging time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Cutting Time</label>
+		<description>Total cutting time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalDrivenDistanceType">
+		<item-type>Number:Length</item-type>
+		<label>Total Driven Distance</label>
+		<description>Total driven distance</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalRunningTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Running Time</label>
+		<description>The total running time (the wheel motors have been running)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Searching Time</label>
+		<description>The total searching time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="positionType">
 		<item-type>Location</item-type>
 		<label>GPS Position</label>
 		<description>The channel providing a waypoint of the mower's activity.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Stayout Zones -->
+
+	<channel-type id="zoneDirtyType">
+		<item-type>Switch</item-type>
+		<label>Stayout zones Dirty Flag</label>
+		<description>If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable
+			or disable a stay-out zone.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneIdType">
+		<item-type>String</item-type>
+		<label>Stayout Zone Id</label>
+		<description>Id of the Stayout zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneNameType">
+		<item-type>String</item-type>
+		<label>Stayout Zone Name</label>
+		<description>The name of the Stayout zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneEnabledType">
+		<item-type>Switch</item-type>
+		<label>Stayout Zone Enabled</label>
+		<description>If the Stayout zone is enabled, the Automower® will not access the zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Work Areas -->
+	<channel-type id="workareasIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasNameType">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the work area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasCuttingHeightType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cutting height in percent</label>
+		<description>Cutting height in percent. 0-100</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasEnabledType">
+		<item-type>Switch</item-type>
+		<label>Work Area Enabled</label>
+		<description>If the work area is enabled or disabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasProgressType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Work Area Progress</label>
+		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasLasTimeCompletedType">
+		<item-type>DateTime</item-type>
+		<label>Stayout Zone Id</label>
+		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

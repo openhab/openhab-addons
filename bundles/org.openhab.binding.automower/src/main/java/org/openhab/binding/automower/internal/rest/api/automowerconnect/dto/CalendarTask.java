@@ -68,4 +68,40 @@ public class CalendarTask {
     public Boolean getSunday() {
         return sunday;
     }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public void setMonday(Boolean monday) {
+        this.monday = monday;
+    }
+
+    public void setTuesday(Boolean tuesday) {
+        this.tuesday = tuesday;
+    }
+
+    public void setWednesday(Boolean wednesday) {
+        this.wednesday = wednesday;
+    }
+
+    public void setThursday(Boolean thursday) {
+        this.thursday = thursday;
+    }
+
+    public void setFriday(Boolean friday) {
+        this.friday = friday;
+    }
+
+    public void setSaturday(Boolean saturday) {
+        this.saturday = saturday;
+    }
+
+    public void setSunday(Boolean sunday) {
+        this.sunday = sunday;
+    }
 }
