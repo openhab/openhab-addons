@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -50,15 +51,17 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public MetOfficeDataHubHandlerFactory(@Reference LocationProvider locationProvider,
             @Reference HttpClientFactory httpClientFactory, @Reference TranslationProvider translationProvider,
-            @Reference LocaleProvider localeProvider) {
+            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
         this.locationProvider = locationProvider;
         this.httpClientFactory = httpClientFactory;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
             return new MetOfficeDataHubBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_SITE_SPEC_API.equals(thingTypeUID)) {
             return new MetOfficeDataHubSiteApiHandler(thing, this, locationProvider, translationProvider,
-                    localeProvider);
+                    localeProvider, timeZoneProvider);
         }
 
         return null;

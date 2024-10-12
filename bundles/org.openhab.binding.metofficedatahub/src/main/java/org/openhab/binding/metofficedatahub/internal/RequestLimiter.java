@@ -48,7 +48,7 @@ public class RequestLimiter {
         requestLimit = newLimit;
     }
 
-    public synchronized int getRequestId() {
+    public synchronized int getRequestKey() {
         final int requestId = currentRequestCount;
         ++currentRequestCount;
         if (currentRequestCount > requestLimit) {

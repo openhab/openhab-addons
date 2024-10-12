@@ -28,6 +28,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +45,7 @@ import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatur
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -84,8 +87,9 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
     private final LocationProvider locationProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
-    private IHttpClientProvider httpClientProvider;
+    private HttpClient httpClient;
     private boolean requiresDailyData = false;
     private boolean requiresHourlyData = false;
 
@@ -97,8 +101,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private volatile long lastDailyForecastPoll = -1;
     private volatile long lastHourlyForecastPoll = -1;
 
-    private String latitude = "";
-    private String longitude = "";
+    private PointType location = new PointType();
     private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
     private @Nullable ScheduledFuture<?> dailyScheduler = null;
 
@@ -116,13 +119,14 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider,
             @Reference LocationProvider locationProvider, @Reference TranslationProvider translationProvider,
-            @Reference LocaleProvider localeProvider) {
+            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.locationProvider = locationProvider;
-        this.httpClientProvider = httpClientProvider;
+        this.httpClient = httpClientProvider.getHttpClient();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -478,7 +482,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        if (!authFailed && uplinkBridge.forecastDataLimiter.getRequestId() == RequestLimiter.INVALID_REQUEST_ID) {
+        if (!authFailed && uplinkBridge.forecastDataLimiter.getRequestKey() == RequestLimiter.INVALID_REQUEST_ID) {
             logger.debug("Disabled requesting data - request limit has been hit");
             return;
         } else {
@@ -487,12 +491,12 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
         authFailed = false;
         String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
-                .replace("<LATITUDE>", String.valueOf(latitude)).replace("<LONGITUDE>", String.valueOf(longitude));
+                .replace("<LATITUDE>", location.getLongitude().toString())
+                .replace("<LONGITUDE>", location.getLongitude().toString());
 
-        HttpClient httpClient = httpClientProvider.getHttpClient();
-
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("Accept", "application/json")
-                .header("apikey", uplinkBridge.getApiKey()).idleTimeout(3, TimeUnit.SECONDS);
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
+                .header("apikey", uplinkBridge.getApiKey()).timeout(3, TimeUnit.SECONDS);
 
         request.send(new BufferingResponseListener() { // 4.5kb buffer will cover both requests
             @Override
@@ -550,88 +554,33 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
         config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
 
-        /**
-         * Validate latitude and longitude
-         */
-
-        latitude = "";
-        longitude = "";
-
-        String newLatitude = "";
-        String newLongitude = "";
-
         if (config.location.isBlank()) {
-            final PointType userLocation = locationProvider.getLocation();
-            if (userLocation != null) {
-                newLatitude = String.valueOf(userLocation.getLatitude());
-                newLongitude = String.valueOf(userLocation.getLongitude());
-            } else {
+            @Nullable
+            PointType userLocation = locationProvider.getLocation();
+            if (userLocation == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         getLocalizedText("site.error.no-user-location"));
                 return;
+            } else {
+                location = userLocation;
             }
         } else {
-            String[] coordinates = config.location.split(",");
-            if (coordinates.length != 2) {
+            try {
+                location = new PointType(config.location);
+            } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.config"));
+                        getLocalizedText("site.error.invalid-location"));
                 return;
             }
-            newLatitude = coordinates[0].trim();
-            newLongitude = coordinates[1].trim();
         }
-
-        if (newLatitude.length() > 1) {
-            double trueVal;
-            try {
-                trueVal = Double.parseDouble(newLatitude);
-                if (trueVal > 85 || trueVal < -85) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            getLocalizedText("site.error.lat"));
-                }
-            } catch (final NumberFormatException | NullPointerException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.lat-type"));
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    getLocalizedText("site.error.lat-missing"));
-        }
-
-        if (newLongitude.length() > 1) {
-            double trueVal;
-            try {
-                trueVal = Double.parseDouble(newLongitude);
-                if (trueVal > 180 || trueVal < -180) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            getLocalizedText("site.error.long"));
-                }
-            } catch (final NumberFormatException | NullPointerException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.long-type"));
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    getLocalizedText("site.error.long-missing"));
-        }
-
-        // In case of errors - fail fast and set the device to be offline
-        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
-            return;
-        }
-
-        latitude = newLatitude;
-        longitude = newLongitude;
 
         /**
          * Setup the initial device's status
          */
         scheduler.execute(() -> {
-            scheduler.execute(() -> {
-                updateStatus(ThingStatus.ONLINE);
-                checkDataRequired();
-                reconfigurePolling();
-            });
+            updateStatus(ThingStatus.ONLINE);
+            checkDataRequired();
+            reconfigurePolling();
         });
     }
 
@@ -786,7 +735,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * This runs every day at the start of the day
      */
     private void scheduleDailyDataPoll() {
-        long delayToNextExecution = DAY_IN_MILLIS - getMillisSinceDayStart(); // Will be a negative number
+        long delayToNextExecution = DAY_IN_MILLIS - getMillisSinceDayStart();
         delayToNextExecution += RANDOM_GENERATOR.nextInt(60000); // Randomise the poll's to be within a min
         logger.debug("Delay in millis till next daily cycle is {} at {}", delayToNextExecution,
                 millisToLocalDateTime(System.currentTimeMillis() + delayToNextExecution));
@@ -807,7 +756,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     }
 
     private String millisToLocalDateTime(final long milliseconds) {
-        LocalDateTime cvDate = Instant.ofEpochMilli(milliseconds).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime cvDate = Instant.ofEpochMilli(milliseconds).atZone(timeZoneProvider.getTimeZone())
+                .toLocalDateTime();
         return cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT));
     }
 
@@ -828,13 +778,13 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * at that time.
      */
     private void scheduleNextHourlyForecastPoll() {
-        long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
+        long millisToDayEnd = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
         long pollRateMillis = config.hourlyForecastPollRate * 3600000L;
-        long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
-                + pollRateMillis) - millisSinceDayStart;
+        long initialDelayTimeToFirstCycle = ((millisToDayEnd - (millisToDayEnd % pollRateMillis)) + pollRateMillis)
+                - millisToDayEnd;
         initialDelayTimeToFirstCycle += RANDOM_GENERATOR.nextInt(60000);
 
-        if (initialDelayTimeToFirstCycle + millisSinceDayStart >= DAY_IN_MILLIS) {
+        if (initialDelayTimeToFirstCycle + millisToDayEnd >= DAY_IN_MILLIS) {
             logger.debug("Not scheduling poll after next daily cycle reset");
         } else {
             logger.debug("Can scheduling next Hourly forecast data poll to be in {} milliseconds at {}",
@@ -863,7 +813,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         if (initialDelayTimeToFirstCycle + millisSinceDayStart > DAY_IN_MILLIS) {
             logger.debug("Not scheduling poll after next daily cycle reset");
         } else {
-            logger.debug("Can scheduling next Daily forecast data poll to be in {} milliseconds at {}",
+            logger.debug("Scheduling next Daily forecast data poll to be in {} milliseconds at {}",
                     initialDelayTimeToFirstCycle,
                     millisToLocalDateTime(System.currentTimeMillis() + initialDelayTimeToFirstCycle));
 
