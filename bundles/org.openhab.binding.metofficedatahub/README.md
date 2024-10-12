@@ -55,7 +55,7 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 
 ### Hourly Forecast Channels
 
-| Channel          | Type                 | Description                                  | Unit |
+| Channel Id       | Type                 | Description                                  | Unit |
 |------------------|----------------------|----------------------------------------------|------|
 | forecast-ts      | String               | Time of forecast window start                |      |
 | air-temp-current | Number:Temperature   | Air Temperature                              | °C   |
@@ -96,7 +96,7 @@ current-forecast-**plus02**#air-temp-current
 
 #### Channel Groups for Hourly Forecast Channels
 
-| Channel                 | Description                               |
+| Channel Id              | Description                               |
 |-------------------------|-------------------------------------------|
 | current-forecast        | Current hours forecast                    |
 | current-forecast-plus01 | 01 hour after the current hours forecast  |
@@ -107,7 +107,7 @@ current-forecast-**plus02**#air-temp-current
 
 ### Daily Forecast Channels
 
-| Channel                 | Type                 | Unit | MET Office Data Description                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Channel Id              | Type                 | Unit | MET Office Data Description                                                                                                                                                                                                                                                                                                                                                                                                             |
 |-------------------------|----------------------|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | forecast-ts             | String               |      | Calculated from the MET provided UTZ time of when the forecast is applicable, mapped to the local system TZ.                                                                                                                                                                                                                                                                                                                            |
 | wind-speed-day          | Number:Speed         | m/s  | Mean wind speed is equivalent to the mean speed observed over the 10 minutes preceding the validity time. 10m wind is the considered surface wind.                                                                                                                                                                                                                                                                                      |
@@ -152,7 +152,7 @@ current-forecast-**plus02**#air-temp-current
 
 #### Channel Groups for Daily Forecast Channels
 
-| Channel               | Description                                       |
+| Channel Id            | Description                                       |
 |-----------------------|---------------------------------------------------|
 | daily-forecast        | This is the weather forecast for the current day. |
 | daily-forecast-plus01 | This is the weather forecast in 1 day.            |
