@@ -42,9 +42,11 @@ import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatur
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperties;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -82,6 +84,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
+    private final LocationProvider locationProvider;
 
     private IHttpClientProvider httpClientProvider;
     private boolean requiresDailyData = false;
@@ -113,8 +116,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
 
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+            @Reference LocationProvider locationProvider, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
         super(thing);
+        this.locationProvider = locationProvider;
         this.httpClientProvider = httpClientProvider;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
@@ -270,7 +275,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             updateState(channelPrefix + SITE_HOURLY_TOTAL_SNOW_AMOUNT,
                     getQuantityTypeState(data.getTotalSnowAmount(), MILLI(METRE)));
 
-            updateState(channelPrefix + SITE_HOURLY_pressure, getQuantityTypeState(data.getpressure(), SIUnits.PASCAL));
+            updateState(channelPrefix + SITE_HOURLY_PRESSURE, getQuantityTypeState(data.getpressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_HOURLY_WIND_SPEED_10M,
                     getQuantityTypeState(data.getWindSpeed10m(), Units.METRE_PER_SECOND));
@@ -348,10 +353,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             updateState(channelPrefix + SITE_DAILY_MIDNIGHT_REL_HUMIDITY,
                     getQuantityTypeState(data.getMidnightRelativeHumidity(), Units.PERCENT));
 
-            updateState(channelPrefix + SITE_DAILY_MIDDAY_pressure,
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_PRESSURE,
                     getQuantityTypeState(data.getMiddaypressure(), SIUnits.PASCAL));
 
-            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_pressure,
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_PRESSURE,
                     getQuantityTypeState(data.getMidnightpressure(), SIUnits.PASCAL));
 
             updateState(channelPrefix + SITE_DAILY_DAY_MAX_UV_INDEX, getDecimalTypeState(data.getMaxUvIndex()));
@@ -563,6 +568,18 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
         latitude = "";
         longitude = "";
+
+        if (config.location.isBlank()) {
+            final PointType userLocation = locationProvider.getLocation();
+            if (userLocation != null) {
+                latitude = String.valueOf(userLocation.getLatitude());
+                longitude = String.valueOf(userLocation.getLongitude());
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        getLocalizedText("site.error.no-user-location"));
+                return;
+            }
+        }
 
         String[] coordinates = config.location.split(",");
         if (coordinates.length != 2) {

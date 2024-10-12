@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -45,14 +46,16 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_SITE_SPEC_API);
 
+    private final LocationProvider locationProvider;
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
 
     @Activate
-    public MetOfficeDataHubHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
-        super();
+    public MetOfficeDataHubHandlerFactory(@Reference LocationProvider locationProvider,
+            @Reference HttpClientFactory httpClientFactory, @Reference TranslationProvider translationProvider,
+            @Reference LocaleProvider localeProvider) {
+        this.locationProvider = locationProvider;
         this.httpClientFactory = httpClientFactory;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
@@ -70,7 +73,8 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new MetOfficeDataHubBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_SITE_SPEC_API.equals(thingTypeUID)) {
-            return new MetOfficeDataHubSiteApiHandler(thing, this, translationProvider, localeProvider);
+            return new MetOfficeDataHubSiteApiHandler(thing, this, locationProvider, translationProvider,
+                    localeProvider);
         }
 
         return null;

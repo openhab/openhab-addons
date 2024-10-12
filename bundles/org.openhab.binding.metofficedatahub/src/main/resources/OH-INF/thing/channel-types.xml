@@ -33,7 +33,7 @@
 			<channel id="wind-speed" typeId="wind-speed-type"/>
 			<channel id="wind-speed-gust" typeId="wind-speed-gust-type"/>
 			<channel id="wind-gust-max" typeId="wind-gust-max-type"/>
-			<channel id=" wind-direction" typeId="wind-direction-type"/>
+			<channel id="wind-direction" typeId="wind-direction-type"/>
 			<channel id="dewpoint" typeId="dewpoint-type"/>
 		</channels>
 	</channel-group-type>
