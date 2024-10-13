@@ -44,6 +44,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,13 +211,24 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
      */
     protected void updateStateIfLinked(ChannelUID channelUID, @Nullable BigDecimal value, @Nullable Unit<?> unit) {
         if (isLinked(channelUID)) {
-            if (value == null) {
-                updateState(channelUID, UnDefType.UNDEF);
-            } else if (unit == null) {
-                updateState(channelUID, new DecimalType(value));
-            } else {
-                updateState(channelUID, new QuantityType<>(value, unit));
-            }
+            updateState(channelUID, getState(value, unit));
+        }
+    }
+
+    /**
+     * Return QuantityType or DecimalType channel state
+     *
+     * @param value value to update
+     * @param unit unit associated with the value
+     * @return UNDEF state when value is null, otherwise QuantityType or DecimalType
+     */
+    protected State getState(@Nullable BigDecimal value, @Nullable Unit<?> unit) {
+        if (value == null) {
+            return UnDefType.UNDEF;
+        } else if (unit == null) {
+            return new DecimalType(value);
+        } else {
+            return new QuantityType<>(value, unit);
         }
     }
 

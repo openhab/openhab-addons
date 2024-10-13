@@ -35,6 +35,9 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
     public static final ThingUID UID_LOCAL_FORECAST = new ThingUID(BINDING_ID, "forecast", "local");
 
+    // List of all static Channel Group IDs
+    public static final String CHANNEL_GROUP_FORECAST = "forecast";
+
     // List of all Channel ids
     public static final String CHANNEL_TIME = "time";
     public static final String CHANNEL_TEMPERATURE = "temperature";
