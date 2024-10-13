@@ -266,7 +266,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 if (msg instanceof HttpContent content) {
-                    if (mjpegUri.equals(requestUrl) && !(content instanceof LastHttpContent)) {
+                    if (mjpegUri.endsWith(requestUrl) && !(content instanceof LastHttpContent)) {
                         // multiple MJPEG stream packets come back as this.
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
                         content.content().getBytes(content.content().readerIndex(), chunkedFrame);
