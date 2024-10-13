@@ -32,7 +32,7 @@ public class CalendarTask {
     private boolean friday;
     private boolean saturday;
     private boolean sunday;
-    private Integer workAreaId;
+    private Long workAreaId;
 
     public short getStart() {
         return start;
@@ -70,7 +70,7 @@ public class CalendarTask {
         return sunday;
     }
 
-    public Integer getWorkAreaId() {
+    public Long getWorkAreaId() {
         return workAreaId;
     }
 
@@ -110,7 +110,7 @@ public class CalendarTask {
         this.sunday = sunday;
     }
 
-    public void setWorkAreaId(Integer workAreaId) {
+    public void setWorkAreaId(Long workAreaId) {
         this.workAreaId = workAreaId;
     }
 }

@@ -30,6 +30,9 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -118,23 +121,15 @@ public class AutomowerBridge {
     }
 
     /**
-     * Sends a calendar to the automower
+     * Sends a calendarTask to the automower
      *
      * @param id The id of the mower
-     * @param calendar The calendar that should be sent. It is using the same json structure (start, duration, ...)
+     * @param workAreaId The Id of the work area this calendar belongs to (or null, if there is no work area support)
+     * @param calendarTask The calendar that should be sent. It is using the same json structure (start, duration, ...)
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-
-    /**
-     * Sends a calendar to the automower
-     *
-     * @param id The id of the mower
-     * @param calendar The calendar that should be sent. It is using the same json structure (start, duration, ...)
-     *            as provided when reading the channel
-     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
-     */
-    public void sendAutomowerCalendarTask(String id, Integer workAreaId, CalendarTask calendarTask)
+    public void sendAutomowerCalendarTask(String id, Long workAreaId, CalendarTask calendarTask)
             throws AutomowerCommunicationException {
         List<CalendarTask> tasks = new ArrayList<>();
         tasks.add(calendarTask);
@@ -151,5 +146,26 @@ public class AutomowerBridge {
         logger.debug("request '{}'", gson.toJson(request));
 
         automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, workAreaId, request);
+    }
+
+    /**
+     * Sends Settings to the automower
+     *
+     * @param id The id of the mower
+     * @param settings The Settings that should be sent. It is using the same json structure
+     *            as provided when reading the channel
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerSettings(String id, Settings settings) throws AutomowerCommunicationException {
+        MowerSettings mowerSettings = new MowerSettings();
+        mowerSettings.setType("settings");
+        mowerSettings.setAttributes(settings);
+
+        MowerSettingsRequest request = new MowerSettingsRequest();
+        request.setData(mowerSettings);
+
+        logger.debug("request '{}'", gson.toJson(request));
+
+        automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, request);
     }
 }

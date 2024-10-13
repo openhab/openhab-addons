@@ -28,6 +28,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
-    public void sendCalendar(String appKey, String token, String id, Integer workAreaId, MowerCalendardRequest calendar)
+    public void sendCalendar(String appKey, String token, String id, Long workAreaId, MowerCalendardRequest calendar)
             throws AutomowerCommunicationException {
         String url;
         if (workAreaId == null) {
@@ -94,6 +95,20 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         request.content(new StringContentProvider(gson.toJson(calendar)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendSettings(String appKey, String token, String id, MowerSettingsRequest settings)
+            throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/settings";
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        request.content(new StringContentProvider(gson.toJson(settings)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 

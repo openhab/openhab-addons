@@ -19,7 +19,7 @@ public class WorkArea {
     private long workAreaId;
     private String name;
     private byte cuttingHeight;
-    private Boolean enabled;
+    private boolean enabled;
     private Byte progress; // Only available for EPOS mowers and systematic mowing work areas.
     private Long lastTimeCompleted; // Only available for EPOS mowers and systematic mowing work areas.
 
@@ -47,11 +47,11 @@ public class WorkArea {
         this.cuttingHeight = cuttingHeight;
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 

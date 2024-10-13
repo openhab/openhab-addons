@@ -36,12 +36,17 @@ import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Headlight;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Message;
 =======
 >>>>>>> full calendar read support
+=======
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Headlight;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
+>>>>>>> implemented sendAutomowerSettings
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
@@ -140,6 +145,7 @@ public class AutomowerHandler extends BaseThingHandler {
             // refreshChannels(channelUID); // causes >100 channel updates during setup
 =======
             refreshChannels(channelUID);
+<<<<<<< HEAD
             /*
              * } else if (CHANNEL_CALENDAR_TASKS.equals(channelUID.getId())) {
              * logger.debug("Sending calendar '{}'", command);
@@ -151,6 +157,13 @@ public class AutomowerHandler extends BaseThingHandler {
         } else if (CHANNEL_CALENDARTASKS.contains(channelUID.getId())) {
             sendAutomowerCalendarTask(command, channelUID.getId());
 >>>>>>> implementation of CalendarTask POST
+=======
+        } else if (CHANNEL_CALENDARTASKS.contains(channelUID.getId())) {
+            sendAutomowerCalendarTask(command, channelUID.getId());
+        } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)
+                || channelUID.getId().equals(CHANNEL_SETTING_HEADLIGHT_MODE)) {
+            sendAutomowerSettings(command, channelUID.getId());
+>>>>>>> implemented sendAutomowerSettings
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
@@ -572,6 +585,7 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     /**
+<<<<<<< HEAD
      * Sends StayOutZone Setting to the automower
      *
      * @param index Index of zone
@@ -761,6 +775,12 @@ public class AutomowerHandler extends BaseThingHandler {
 
     /**
      * Reset the cutting blade usage time
+=======
+     * Sends a CalendarTask to the automower
+     *
+     * @param command The command that should be sent. E.g. a duration in min for the Start channel
+     * @param channelID The triggering channel
+>>>>>>> implemented sendAutomowerSettings
      */
     public void sendAutomowerResetCuttingBladeUsageTime() {
         logger.debug("Sending ResetCuttingBladeUsageTime");
@@ -835,6 +855,51 @@ public class AutomowerHandler extends BaseThingHandler {
             updateAutomowerState();
         }
 >>>>>>> implementation of CalendarTask POST
+    }
+
+    /**
+     * Sends Settings to the automower
+     *
+     * @param command The command that should be sent. E.g. a number for the cuttingHeight channel
+     * @param channelID The triggering channel
+     */
+    public void sendAutomowerSettings(Command command, String channelID) {
+        String[] channelIDSplit = channelID.split("-");
+        int index = Integer.parseInt(channelIDSplit[0].substring("calendartasks".length())) - 1;
+        String param = channelIDSplit[1];
+        logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
+                command.toString());
+
+        if (mowerState != null) {
+            Settings settings = mowerState.getAttributes().getSettings();
+
+            if (command instanceof DecimalType cmd) {
+                if (CHANNEL_SETTING_HEADLIGHT_MODE.equals(channelID)) {
+                    settings.setCuttingHeight((byte) cmd.intValue());
+                }
+            } else if (command instanceof StringType cmd) {
+                if (CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME.equals(channelID)) {
+                    Headlight headlight = new Headlight();
+                    headlight.setHeadlightMode(HeadlightMode.valueOf(cmd.toString()));
+                    settings.setHeadlight(headlight);
+                }
+            }
+
+            String id = automowerId.get();
+            try {
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    automowerBridge.sendAutomowerSettings(id, settings);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/conf-error-no-bridge");
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
+            }
+
+            updateAutomowerState();
+        }
     }
 
     private String restrictedState(RestrictedReason reason) {
@@ -1417,7 +1482,11 @@ public class AutomowerHandler extends BaseThingHandler {
                 updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getFriday() == true));
                 updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSaturday() == true));
                 updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSunday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), new DecimalType(calendarTasks.get(i).getWorkAreaId()));
+                if (calendarTasks.get(i).getWorkAreaId() == null) {
+                    updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
+                } else {
+                    updateState(CHANNEL_CALENDARTASKS.get(j++), new DecimalType(calendarTasks.get(i).getWorkAreaId()));
+                }
             }
             // clear remaining channels
             for (; j < CHANNEL_CALENDARTASKS.size(); j++) {
