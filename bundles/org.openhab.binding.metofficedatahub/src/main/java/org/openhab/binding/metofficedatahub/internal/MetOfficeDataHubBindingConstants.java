@@ -166,6 +166,7 @@ public class MetOfficeDataHubBindingConstants {
 
     public static final String GET_FORECAST_URL_DAILY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/daily?latitude=<LATITUDE>&longitude=<LONGITUDE>";
     public static final String GET_FORECAST_URL_HOURLY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly?latitude=<LATITUDE>&longitude=<LONGITUDE>";
+    public static final String GET_FORECAST_API_KEY_HEADER = "apikey";
 
     public static final long DAY_IN_MILLIS = 86400000;
 

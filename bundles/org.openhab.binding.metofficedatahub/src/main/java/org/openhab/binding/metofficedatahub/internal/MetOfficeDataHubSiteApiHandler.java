@@ -78,6 +78,7 @@ import org.slf4j.LoggerFactory;
 public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements IForecastDataPollable {
 
     public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
+    public static final int REQUEST_TIMEOUT_SECONDS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
     private final Object checkDataRequiredSchedulerLock = new Object();
@@ -490,15 +491,9 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         }
 
         authFailed = false;
-        String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
-                .replace("<LATITUDE>", location.getLongitude().toString())
-                .replace("<LONGITUDE>", location.getLongitude().toString());
 
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
-                .header("apikey", uplinkBridge.getApiKey()).timeout(3, TimeUnit.SECONDS);
-
-        request.send(new BufferingResponseListener() { // 4.5kb buffer will cover both requests
+        final Response.CompleteListener listener = new BufferingResponseListener() { // 4.5kb buffer will cover both
+                                                                                     // requests
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null && !result.isFailed()) {
@@ -531,7 +526,22 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                     }
                 }
             }
-        });
+        };
+
+        sendAsyncRequest(httpClient, daily, uplinkBridge.getApiKey(), location, listener);
+    }
+
+    protected static void sendAsyncRequest(final HttpClient httpClient, final boolean daily, final String apiKey,
+            final PointType location, final Response.CompleteListener listener) {
+        final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
+                .replace("<LATITUDE>", location.getLongitude().toString())
+                .replace("<LONGITUDE>", location.getLongitude().toString());
+
+        final Request request = httpClient.newRequest(url).method(HttpMethod.GET)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
+                .header(GET_FORECAST_API_KEY_HEADER, apiKey).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+        request.send(listener);
     }
 
     private static String calculatePrefix(final String prefix, final int plusOffset) {
