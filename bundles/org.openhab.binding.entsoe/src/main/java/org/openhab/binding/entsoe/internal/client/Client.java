@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -50,7 +49,7 @@ public class Client {
 
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-    public Map<Instant, Optional<EntsoeTimeSerie>> doGetRequest(Request request, int timeout, String configResolution)
+    public Map<Instant, EntsoeTimeSerie> doGetRequest(Request request, int timeout, String configResolution)
             throws EntsoeResponseException, EntsoeConfigurationException {
         try {
             logger.debug("Sending GET request with parameters: {}", request);
@@ -71,10 +70,10 @@ public class Client {
         }
     }
 
-    private Map<Instant, Optional<EntsoeTimeSerie>> parseXmlResponse(String responseText, String configResolution)
+    private Map<Instant, EntsoeTimeSerie> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
             EntsoeConfigurationException {
-        Map<Instant, Optional<EntsoeTimeSerie>> responseMap = new LinkedHashMap<>();
+        Map<Instant, EntsoeTimeSerie> responseMap = new LinkedHashMap<>();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(new InputSource(new StringReader(responseText)));
@@ -147,7 +146,7 @@ public class Client {
                         Double priceAsDouble = Double.parseDouble(price);
                         EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble, startTimeInstant,
                                 multiplier, resolution);
-                        responseMap.put(t.getInstant(), Optional.ofNullable(t));
+                        responseMap.put(t.getInstant(), t);
                         logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
                                 t.getUtcTime(), priceAsDouble, currency, measureUnit);
                     }

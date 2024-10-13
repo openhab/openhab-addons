@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.entsoe.internal.client;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,10 +32,10 @@ public class Request {
 
     private final String securityToken;
     private final String area;
-    private final ZonedDateTime periodStart;
-    private final ZonedDateTime periodEnd;
+    private final Instant periodStart;
+    private final Instant periodEnd;
 
-    public Request(String securityToken, String area, ZonedDateTime periodStart, ZonedDateTime periodEnd) {
+    public Request(String securityToken, String area, Instant periodStart, Instant periodEnd) {
         this.securityToken = securityToken;
         this.area = area;
         this.periodStart = periodStart;
@@ -48,8 +49,8 @@ public class Request {
                 .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
                 .append("&in_domain=").append(area)
                 .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.format(requestFormat))
-                .append("&periodEnd=").append(periodEnd.format(requestFormat));
+                .append("&periodStart=").append(periodStart.atZone(ZoneOffset.UTC).format(requestFormat))
+                .append("&periodEnd=").append(periodEnd.atZone(ZoneOffset.UTC).format(requestFormat));  
         return urlBuilder.toString();
     }
 
@@ -60,8 +61,8 @@ public class Request {
                 .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
                 .append("&in_domain=").append(area)
                 .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.format(requestFormat))
-                .append("&periodEnd=").append(periodEnd.format(requestFormat));
+                .append("&periodStart=").append(periodStart.atZone(ZoneOffset.UTC).format(requestFormat))  
+                .append("&periodEnd=").append(periodEnd.atZone(ZoneOffset.UTC).format(requestFormat));  
         return urlBuilder.toString();
      // @formatter:on
     }
