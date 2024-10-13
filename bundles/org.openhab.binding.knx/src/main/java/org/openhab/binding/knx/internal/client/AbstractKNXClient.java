@@ -152,6 +152,32 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     }
 
     public void initialize() {
+        /*
+         * TpmInterface.SecuredPassword passKey = new TpmInterface.SecuredPassword("", "", "");
+         * try {
+         * TpmInterface tpmIf = new TpmInterface();
+         * String tpmRev = tpmIf.getTpmVersion();
+         * String tpmModel = "unknown";
+         * try {
+         * tpmModel = tpmIf.getTpmModel();
+         * } catch (KNXException ignored) {
+         * }
+         * logger.info("TPM rev. {} detected, based on {}", tpmRev, tpmModel);
+         * 
+         * passKey = tpmIf.encryptSecret("habOpen");
+         * logger.warn("{}", passKey);
+         * } catch (KNXException e) {
+         * logger.warn("TPM exception", e);
+         * }
+         * try {
+         * TpmInterface tpmIf = new TpmInterface();
+         * String pass = tpmIf.decryptSecret(passKey);
+         * logger.warn("TPM decoded: {}", pass);
+         * } catch (KNXException e) {
+         * logger.warn("TPM exception", e);
+         * }
+         */
+
         connect();
     }
 
