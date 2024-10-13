@@ -16,6 +16,7 @@ import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.client.ForecastRequest.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -41,6 +42,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,35 +142,79 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
             properties.put(PROP_LATITUDE, location.latitude.toPlainString());
             properties.put(PROP_LONGITUDE, location.longitude.toPlainString());
             updateProperties(properties);
-            for (Channel channel : getThing().getChannels()) {
-                ChannelUID channelUID = channel.getUID();
-                int hours = getHours(channelUID);
-                int timeIndex = getTimeIndex(hours);
-                if (channelUID.getIdWithoutGroup().equals(CHANNEL_TIME)) {
-                    // All parameters and locations should share the same timestamps. We use temperature to figure out
-                    // timestamp for the group of channels
-                    String field = ForecastRequest.PARAM_TEMPERATURE;
-                    Data data = unwrap(response.getData(location, field),
-                            "Field %s not present for location %s in response. Bug?", field, location);
-                    updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[timeIndex]);
-                } else {
-                    String field = getDataField(channelUID);
-                    Unit<?> unit = getUnit(channelUID);
-                    if (field == null) {
-                        logger.error("Channel {} not handled. Bug?", channelUID.getId());
-                        continue;
-                    }
-                    Data data = unwrap(response.getData(location, field),
-                            "Field %s not present for location %s in response. Bug?", field, location);
-                    updateStateIfLinked(channelUID, data.values[timeIndex], unit);
-                }
-            }
+            updateHourlyChannels(response, location);
+            updateTimeSeriesChannels(response, location);
             updateStatus(ThingStatus.ONLINE);
         } catch (FMIUnexpectedResponseException e) {
             // Unexpected (possibly bug) issue with response
             logger.warn("Unexpected response encountered: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unexpected API response: %s", e.getMessage()));
+        }
+    }
+
+    private void updateHourlyChannels(FMIResponse response, Location location) throws FMIUnexpectedResponseException {
+        for (Channel channel : getThing().getChannels()) {
+            ChannelUID channelUID = channel.getUID();
+            if (CHANNEL_GROUP_FORECAST.equals(channelUID.getGroupId())) {
+                // Skip time series group
+                continue;
+            }
+            int hours = getHours(channelUID);
+            int timeIndex = getTimeIndex(hours);
+            if (channelUID.getIdWithoutGroup().equals(CHANNEL_TIME)) {
+                // All parameters and locations should share the same timestamps. We use temperature to figure out
+                // timestamp for the group of channels
+                final String field = ForecastRequest.PARAM_TEMPERATURE;
+                Data data = unwrap(response.getData(location, field),
+                        "Field %s not present for location %s in response. Bug?", field, location);
+                updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[timeIndex]);
+            } else {
+                String field = getDataField(channelUID);
+                Unit<?> unit = getUnit(channelUID);
+                if (field == null) {
+                    logger.error("Channel {} not handled. Bug?", channelUID.getId());
+                    continue;
+                }
+                Data data = unwrap(response.getData(location, field),
+                        "Field %s not present for location %s in response. Bug?", field, location);
+                updateStateIfLinked(channelUID, data.values[timeIndex], unit);
+            }
+        }
+    }
+
+    private void updateTimeSeriesChannels(FMIResponse response, Location location)
+            throws FMIUnexpectedResponseException {
+        for (Channel channel : getThing().getChannelsOfGroup(CHANNEL_GROUP_FORECAST)) {
+            ChannelUID channelUID = channel.getUID();
+            if (CHANNEL_TIME.equals(channelUID.getIdWithoutGroup())) {
+                // All parameters and locations should share the same timestamps. We use temperature to figure out
+                // timestamp for the group of channels
+                final String field = ForecastRequest.PARAM_TEMPERATURE;
+                Data data = unwrap(response.getData(location, field),
+                        "Field %s not present for location %s in response. Bug?", field, location);
+                updateEpochSecondStateIfLinked(channelUID, data.timestampsEpochSecs[0]);
+                continue;
+            }
+            String field = getDataField(channelUID);
+            Unit<?> unit = getUnit(channelUID);
+            if (field == null) {
+                logger.error("Channel {} not handled. Bug?", channelUID.getId());
+                continue;
+            }
+            Data data = unwrap(response.getData(location, field),
+                    "Field %s not present for location %s in response. Bug?", field, location);
+            if (data.values.length != data.timestampsEpochSecs.length) {
+                logger.warn("Number of values ({}) doesn't match number of timestamps ({})", data.values.length,
+                        data.timestampsEpochSecs.length);
+                continue;
+            }
+            updateStateIfLinked(channelUID, data.values[0], unit);
+            TimeSeries timeSeries = new TimeSeries(REPLACE);
+            for (int i = 0; i < data.values.length; i++) {
+                timeSeries.add(Instant.ofEpochSecond(data.timestampsEpochSecs[i]), getState(data.values[i], unit));
+            }
+            sendTimeSeries(channelUID, timeSeries);
         }
     }
 
