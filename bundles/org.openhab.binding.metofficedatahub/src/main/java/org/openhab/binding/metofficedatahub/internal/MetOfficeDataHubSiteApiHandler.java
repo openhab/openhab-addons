@@ -104,6 +104,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private PointType location = new PointType();
     private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
     private @Nullable ScheduledFuture<?> dailyScheduler = null;
+    private @Nullable ScheduledFuture initTask = null;
 
     /**
      * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
@@ -135,6 +136,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         hourlyForecastJob.cancelScheduledTask(true);
         cancelDataRequiredCheck();
         cancelScheduleDailyDataPoll(true);
+        if (initTask != null) {
+            initTask.cancel(true);
+            initTask = null;
+        }
         super.dispose();
     }
 
@@ -528,10 +533,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             }
         };
 
-        sendAsyncRequest(httpClient, daily, uplinkBridge.getApiKey(), location, listener);
+        sendAsyncSiteApiRequest(httpClient, daily, uplinkBridge.getApiKey(), location, listener);
     }
 
-    protected static void sendAsyncRequest(final HttpClient httpClient, final boolean daily, final String apiKey,
+    protected static void sendAsyncSiteApiRequest(final HttpClient httpClient, final boolean daily, final String apiKey,
             final PointType location, final Response.CompleteListener listener) {
         final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
                 .replace("<LATITUDE>", location.getLongitude().toString())
@@ -587,11 +592,11 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         /**
          * Setup the initial device's status
          */
-        scheduler.execute(() -> {
+        initTask = scheduler.schedule(() -> {
             updateStatus(ThingStatus.ONLINE);
             checkDataRequired();
             reconfigurePolling();
-        });
+        }, 1, TimeUnit.SECONDS);
     }
 
     private void reconfigurePolling() {

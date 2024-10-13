@@ -20,16 +20,28 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,21 +53,38 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
-    private final Object timerResetSchedulerLock = new Object();
-    protected final RequestLimiter forecastDataLimiter = new RequestLimiter();
-
     private volatile MetOfficeDataHubBridgeConfiguration config = getConfigAs(
             MetOfficeDataHubBridgeConfiguration.class);
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+    private final HttpClient httpClient;
+
+    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
+    private final Object timerResetSchedulerLock = new Object();
+
     private @Nullable ScheduledFuture<?> timerResetScheduler = null;
+    private @Nullable ScheduledFuture initTask;
+
+    protected final RequestLimiter forecastDataLimiter = new RequestLimiter();
+
+    public MetOfficeDataHubBridgeHandler(final Bridge bridge, IHttpClientProvider httpClientProvider,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+        super(bridge);
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+        this.httpClient = httpClientProvider.getHttpClient();
+    }
 
     protected String getApiKey() {
         return config.siteApiKey;
     }
 
-    public MetOfficeDataHubBridgeHandler(final Bridge bridge) {
-        super(bridge);
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 
     public void updateLimiterStats() {
@@ -79,15 +108,36 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         forecastDataLimiter.updateLimit(config.siteRateDailyLimit);
 
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> updateStatus(ThingStatus.ONLINE));
-
         scheduleResetDailyLimiters();
+
+        initTask = scheduler.schedule(() -> {
+            final PointType siteApiTestLocation = new PointType("51.5072,0.1276");
+            updateLimiterStats();
+
+            final Response.CompleteListener siteResponseListener = new BufferingResponseListener() { // 4.5kb buffer
+                @Override
+                public void onComplete(@Nullable Result result) {
+                    if (result != null && !result.isFailed()) {
+                        updateStatus(ThingStatus.ONLINE);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                getLocalizedText("bridge.error.site-specific.auth-issue"));
+                    }
+                }
+            };
+            MetOfficeDataHubSiteApiHandler.sendAsyncSiteApiRequest(httpClient, true, getApiKey(), siteApiTestLocation,
+                    siteResponseListener);
+            initTask = null;
+        }, 1, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
         cancelResetDailyLimiters();
+        if (initTask != null) {
+            initTask.cancel(true);
+            initTask = null;
+        }
     }
 
     @Override

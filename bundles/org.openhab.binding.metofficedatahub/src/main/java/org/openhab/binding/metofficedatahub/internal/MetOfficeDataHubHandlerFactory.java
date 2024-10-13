@@ -74,7 +74,7 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new MetOfficeDataHubBridgeHandler((Bridge) thing);
+            return new MetOfficeDataHubBridgeHandler((Bridge) thing, this, translationProvider, localeProvider);
         } else if (THING_TYPE_SITE_SPEC_API.equals(thingTypeUID)) {
             return new MetOfficeDataHubSiteApiHandler(thing, this, locationProvider, translationProvider,
                     localeProvider, timeZoneProvider);
