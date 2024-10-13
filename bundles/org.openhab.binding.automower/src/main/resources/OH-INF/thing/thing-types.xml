@@ -363,6 +363,10 @@
 				<default>600</default>
 				<description>How often the current automower state should be polled in seconds</description>
 			</parameter>
+			<parameter name="mowerZoneId" type="text" required="false">
+				<label>TimeZone</label>
+				<description>Time zone of the mower (e.g. Europe/Berlin)</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

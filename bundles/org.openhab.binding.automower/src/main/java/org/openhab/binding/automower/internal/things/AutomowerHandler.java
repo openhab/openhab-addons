@@ -997,9 +997,19 @@ public class AutomowerHandler extends BaseThingHandler {
              * }
              * }
              */
+<<<<<<< HEAD
             updateState(CHANNEL_STATUS_LAST_UPDATE,
                     new DateTimeType(toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp())));
 >>>>>>> reverted logic
+=======
+            /*
+             * logger.warn("CHANNEL_STATUS_LAST_UPDATE: {}, zoneID(): {}",
+             * mower.getAttributes().getMetadata().getStatusTimestamp(),
+             * ZoneId.of("UTC").toString());
+             */
+            updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
+                    toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
+>>>>>>> new mowerZoneId config parameter
             updateState(CHANNEL_STATUS_BATTERY,
                     new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
 
@@ -1030,7 +1040,15 @@ public class AutomowerHandler extends BaseThingHandler {
             if (nextStartTimestamp == 0L) {
                 updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
             } else {
+<<<<<<< HEAD
                 updateState(CHANNEL_STATUS_NEXT_START,
+=======
+                /*
+                 * logger.warn("CHANNEL_PLANNER_NEXT_START: {}, zoneID(): {}", nextStartTimestamp,
+                 * timeZoneProvider.getTimeZone().toString());
+                 */
+                updateState(CHANNEL_PLANNER_NEXT_START,
+>>>>>>> new mowerZoneId config parameter
                         new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
             }
             updateState(CHANNEL_STATUS_OVERRIDE_ACTION,
@@ -1365,7 +1383,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 if ((workAreas.get(i).getLastTimeCompleted() != null)
                         && (workAreas.get(i).getLastTimeCompleted() != 0)) {
                     updateState(CHANNEL_WORKAREAS.get(j++),
-                            new DateTimeType(toZonedDateTime(workAreas.get(i).getLastTimeCompleted())));
+                            new DateTimeType(toZonedDateTime(workAreas.get(i).getLastTimeCompleted(), mowerZoneId)));
                 } else {
                     updateState(CHANNEL_WORKAREAS.get(j++), UnDefType.NULL);
                 }
@@ -1436,6 +1454,7 @@ public class AutomowerHandler extends BaseThingHandler {
 
     /**
      * Converts timestamp returned by the Automower API into ZonedDateTime of the specified timezone.
+<<<<<<< HEAD
      * Timestamp returned by the API is a mix of timezone specified via zoneId and UTC timezone.
      * Method builds a valid ZonedDateTime object according to the provided zoneId parameter.
      *
@@ -1539,5 +1558,24 @@ public class AutomowerHandler extends BaseThingHandler {
         } else {
             return false;
         }
+=======
+     * Timestamp returned by the API is a mix of local and UTC timezone.
+     * Method builds a valid ZonedDateTime object according to the provided ZoneId.
+     *
+     * @param timestamp - Automower API timestamp
+     * @param zoneId - Timezone of the timestamp
+     * @return ZonedDateTime using provided timezone
+     */
+    private ZonedDateTime toZonedDateTime(long timestamp, ZoneId zoneId) {
+        Instant timestampInstant = Instant.ofEpochMilli(timestamp);
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(timestampInstant, zoneId);
+        long timeDiff = zonedDateTime.getOffset().getTotalSeconds();
+        ZonedDateTime convertedTimeInMowerTimeZone = zonedDateTime.minusSeconds(timeDiff);
+        logger.debug(
+                "toZonedDateTime() - timestamp: {}, zoneId: {}, zonedDateTime: {}, timeDiff: {}, convertedTimeInMowerTimeZone: {}",
+                timestamp, zoneId.toString(), zonedDateTime.toString(), timeDiff,
+                convertedTimeInMowerTimeZone.toString());
+        return convertedTimeInMowerTimeZone;
+>>>>>>> new mowerZoneId config parameter
     }
 }
