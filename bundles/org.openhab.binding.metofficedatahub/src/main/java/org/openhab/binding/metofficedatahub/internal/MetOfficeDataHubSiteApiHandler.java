@@ -19,7 +19,6 @@ import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -482,7 +481,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        if (!authFailed && uplinkBridge.forecastDataLimiter.getRequestKey() == RequestLimiter.INVALID_REQUEST_ID) {
+        if (!authFailed
+                && uplinkBridge.forecastDataLimiter.getRequestCountIfAvailable() == RequestLimiter.INVALID_REQUEST_ID) {
             logger.debug("Disabled requesting data - request limit has been hit");
             return;
         } else {
@@ -590,18 +590,18 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     }
 
     private void reconfigureHourlyPolling() {
-        long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
+        final long millisSinceDayStart = getMillisSinceDayStart();
         long pollRateMillis = config.hourlyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
 
-        LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(ZoneId.systemDefault())
+        LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(timeZoneProvider.getTimeZone())
                 .toLocalDateTime();
         logger.trace("Last hourly poll expected time should have been : {}",
                 cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
-        LocalDateTime cvDate2 = Instant.ofEpochMilli(lastHourlyForecastPoll).atZone(ZoneId.systemDefault())
+        LocalDateTime cvDate2 = Instant.ofEpochMilli(lastHourlyForecastPoll).atZone(timeZoneProvider.getTimeZone())
                 .toLocalDateTime();
         logger.trace("Last hourly daily poll time should have been : {}",
                 cvDate2.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
@@ -623,18 +623,18 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     }
 
     private void reconfigureDailyPolling() {
-        long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
+        final long millisSinceDayStart = getMillisSinceDayStart();
         long pollRateMillis = config.dailyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
 
-        LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(ZoneId.systemDefault())
+        LocalDateTime cvDate = Instant.ofEpochMilli(lastPollExpectedTime).atZone(timeZoneProvider.getTimeZone())
                 .toLocalDateTime();
         logger.trace("Last daily poll expected time should have been : {}",
                 cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
 
-        LocalDateTime cvDate2 = Instant.ofEpochMilli(lastDailyForecastPoll).atZone(ZoneId.systemDefault())
+        LocalDateTime cvDate2 = Instant.ofEpochMilli(lastDailyForecastPoll).atZone(timeZoneProvider.getTimeZone())
                 .toLocalDateTime();
         logger.trace("Last daily poll time should have been : {}",
                 cvDate2.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT)));
@@ -778,13 +778,13 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * at that time.
      */
     private void scheduleNextHourlyForecastPoll() {
-        long millisToDayEnd = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
+        final long millisSinceDayStart = getMillisSinceDayStart();
         long pollRateMillis = config.hourlyForecastPollRate * 3600000L;
-        long initialDelayTimeToFirstCycle = ((millisToDayEnd - (millisToDayEnd % pollRateMillis)) + pollRateMillis)
-                - millisToDayEnd;
+        long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
+                + pollRateMillis) - millisSinceDayStart;
         initialDelayTimeToFirstCycle += RANDOM_GENERATOR.nextInt(60000);
 
-        if (initialDelayTimeToFirstCycle + millisToDayEnd >= DAY_IN_MILLIS) {
+        if (initialDelayTimeToFirstCycle + millisSinceDayStart >= DAY_IN_MILLIS) {
             logger.debug("Not scheduling poll after next daily cycle reset");
         } else {
             logger.debug("Can scheduling next Hourly forecast data poll to be in {} milliseconds at {}",
@@ -806,7 +806,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * at that time.
      */
     private void scheduleNextDailyForecastPoll() {
-        long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
+        final long millisSinceDayStart = getMillisSinceDayStart();
         long pollRateMillis = config.dailyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
