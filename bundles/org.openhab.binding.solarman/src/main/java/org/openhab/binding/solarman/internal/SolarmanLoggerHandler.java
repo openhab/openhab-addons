@@ -33,8 +33,9 @@ import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
 import org.openhab.binding.solarman.internal.defmodel.Validation;
+import org.openhab.binding.solarman.internal.modbus.ISolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
-import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
+import org.openhab.binding.solarman.internal.modbus.SolarmanProtocolFactory;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
 import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
 import org.openhab.core.thing.Channel;
@@ -94,7 +95,12 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 logger.debug("Found definition for {}", config.inverterType);
             }
         }
-        SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(config);
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("Raw Type {}", config.rawLanMode);
+        }
+        
+        ISolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.CreateSolarmanProtocol(config);
 
         String additionalRequests = Objects.requireNonNullElse(config.getAdditionalRequests(), "");
 
@@ -110,17 +116,17 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         scheduledFuture = scheduler
                 .scheduleWithFixedDelay(
-                        () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanV5Protocol, mergedRequests,
+                        () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanProtocol, mergedRequests,
                                 paramToChannelMapping, solarmanChannelUpdater),
                         0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
-            SolarmanV5Protocol solarmanV5Protocol, List<Request> mergedRequests,
+    		ISolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
-                    solarmanLoggerConnector, solarmanV5Protocol, paramToChannelMapping);
+                    solarmanLoggerConnector, solarmanProtocol, paramToChannelMapping);
 
             if (solarmanProcessResult.hasSuccessfulResponses()) {
                 updateStatus(ThingStatus.ONLINE);

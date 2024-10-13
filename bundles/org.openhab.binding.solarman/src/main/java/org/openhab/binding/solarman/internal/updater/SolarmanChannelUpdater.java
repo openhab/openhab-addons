@@ -35,9 +35,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
+import org.openhab.binding.solarman.internal.modbus.ISolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
-import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
@@ -64,7 +64,7 @@ public class SolarmanChannelUpdater {
     }
 
     public SolarmanProcessResult fetchDataFromLogger(List<Request> requests,
-            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanV5Protocol solarmanV5Protocol,
+            SolarmanLoggerConnector solarmanLoggerConnector, ISolarmanProtocol solarmanProtocol,
             Map<ParameterItem, ChannelUID> paramToChannelMapping) {
         try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
             logger.debug("Fetching data from logger");
@@ -77,7 +77,7 @@ public class SolarmanChannelUpdater {
             SolarmanProcessResult solarmanProcessResult = requests.stream().map(request -> {
                 try {
                     return SolarmanProcessResult.ofValue(request,
-                            solarmanV5Protocol.readRegisters(solarmanLoggerConnection,
+                            solarmanProtocol.readRegisters(solarmanLoggerConnection,
                                     (byte) request.getMbFunctioncode().intValue(), request.getStart(),
                                     request.getEnd()));
                 } catch (SolarmanException e) {
