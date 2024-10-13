@@ -1455,6 +1455,7 @@ public class AutomowerHandler extends BaseThingHandler {
     /**
      * Converts timestamp returned by the Automower API into ZonedDateTime of the specified timezone.
 <<<<<<< HEAD
+<<<<<<< HEAD
      * Timestamp returned by the API is a mix of timezone specified via zoneId and UTC timezone.
      * Method builds a valid ZonedDateTime object according to the provided zoneId parameter.
      *
@@ -1561,12 +1562,17 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
      * Timestamp returned by the API is a mix of local and UTC timezone.
      * Method builds a valid ZonedDateTime object according to the provided ZoneId.
+=======
+     * Timestamp returned by the API is a mix of timezone specified via zoneId and UTC timezone.
+     * Method builds a valid ZonedDateTime object according to the provided zoneId parameter.
+>>>>>>> cleaned up time zone handling
      *
      * @param timestamp - Automower API timestamp
-     * @param zoneId - Timezone of the timestamp
+     * @param zoneId - Intended timezone of the timestamp
      * @return ZonedDateTime using provided timezone
      */
     private ZonedDateTime toZonedDateTime(long timestamp, ZoneId zoneId) {
+<<<<<<< HEAD
         Instant timestampInstant = Instant.ofEpochMilli(timestamp);
         ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(timestampInstant, zoneId);
         long timeDiff = zonedDateTime.getOffset().getTotalSeconds();
@@ -1577,5 +1583,8 @@ public class AutomowerHandler extends BaseThingHandler {
                 convertedTimeInMowerTimeZone.toString());
         return convertedTimeInMowerTimeZone;
 >>>>>>> new mowerZoneId config parameter
+=======
+        return ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC")).withZoneSameLocal(zoneId);
+>>>>>>> cleaned up time zone handling
     }
 }
