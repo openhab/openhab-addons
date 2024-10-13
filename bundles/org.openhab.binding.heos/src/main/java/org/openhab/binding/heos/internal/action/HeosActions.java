@@ -27,7 +27,6 @@ import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HeosActions implements ThingActions {
 
-    private static final Logger logger = LoggerFactory.getLogger(HeosActions.class);
+    private final Logger logger = LoggerFactory.getLogger(HeosActions.class);
 
     private @Nullable HeosBridgeHandler handler;
 

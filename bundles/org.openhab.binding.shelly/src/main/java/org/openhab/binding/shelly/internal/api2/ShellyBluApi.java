@@ -44,7 +44,6 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -54,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
-    private static final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
     private boolean connected = false; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private int lastPid = -1;

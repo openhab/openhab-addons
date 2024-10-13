@@ -19,7 +19,6 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import org.openhab.binding.sinope.internal.util.ByteUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -29,8 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SinopeAnswer extends SinopeRequest {
 
-    /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
+    private final Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
 
     /**
      * Instantiates a new sinope answer.

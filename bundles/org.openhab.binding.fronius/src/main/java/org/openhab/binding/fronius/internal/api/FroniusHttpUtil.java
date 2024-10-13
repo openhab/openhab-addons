@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class FroniusHttpUtil {
-    private static final Logger logger = LoggerFactory.getLogger(FroniusHttpUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FroniusHttpUtil.class);
 
     /**
      * Issue a HTTP request and retry on failure.
@@ -82,17 +81,17 @@ public class FroniusHttpUtil {
 
                 if (result != null) {
                     if (attemptCount > 1) {
-                        logger.debug("Attempt #{} successful {}", attemptCount, url);
+                        LOGGER.debug("Attempt #{} successful {}", attemptCount, url);
                     }
                     return result;
                 }
 
                 if (attemptCount >= 3) {
-                    logger.debug("Failed connecting to {} after {} attempts.", url, attemptCount, lastException);
+                    LOGGER.debug("Failed connecting to {} after {} attempts.", url, attemptCount, lastException);
                     throw new FroniusCommunicationException("Unable to connect", lastException);
                 }
 
-                logger.debug("HTTP error on attempt #{} {}", attemptCount, url);
+                LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, url);
                 Thread.sleep(500 * attemptCount);
                 attemptCount++;
             }

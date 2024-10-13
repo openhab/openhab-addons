@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,16 +26,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.bluetooth.gattparser.BluetoothGattParser;
 import org.openhab.bluetooth.gattparser.FieldHolder;
 import org.openhab.bluetooth.gattparser.GattRequest;
-import org.openhab.bluetooth.gattparser.spec.Enumeration;
-import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.bluetooth.gattparser.spec.FieldFormat;
 import org.openhab.bluetooth.gattparser.spec.FieldType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -46,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BluetoothChannelUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(BluetoothChannelUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BluetoothChannelUtils.class);
 
     public static String encodeFieldID(Field field) {
         String requirements = Optional.ofNullable(field.getRequirements()).orElse(Collections.emptyList()).stream()
@@ -130,7 +127,7 @@ public class BluetoothChannelUtils {
         if (fieldType == FieldType.BOOLEAN) {
             OnOffType onOffType = convert(state, OnOffType.class);
             if (onOffType == null) {
-                logger.debug("Could not convert state to OnOffType: {} : {} : {} ", request.getCharacteristicUUID(),
+                LOGGER.debug("Could not convert state to OnOffType: {} : {} : {} ", request.getCharacteristicUUID(),
                         fieldName, state);
                 return;
             }
@@ -144,7 +141,7 @@ public class BluetoothChannelUtils {
                 request.setField(fieldName, enumeration);
                 return;
             } else {
-                logger.debug("Could not convert state to enumeration: {} : {} : {} ", request.getCharacteristicUUID(),
+                LOGGER.debug("Could not convert state to enumeration: {} : {} : {} ", request.getCharacteristicUUID(),
                         fieldName, state);
             }
             // fall back to simple types
@@ -154,7 +151,7 @@ public class BluetoothChannelUtils {
             case SINT: {
                 DecimalType decimalType = convert(state, DecimalType.class);
                 if (decimalType == null) {
-                    logger.debug("Could not convert state to DecimalType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to DecimalType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -165,7 +162,7 @@ public class BluetoothChannelUtils {
             case FLOAT_IEE11073: {
                 DecimalType decimalType = convert(state, DecimalType.class);
                 if (decimalType == null) {
-                    logger.debug("Could not convert state to DecimalType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to DecimalType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -176,7 +173,7 @@ public class BluetoothChannelUtils {
             case UTF16S: {
                 StringType textType = convert(state, StringType.class);
                 if (textType == null) {
-                    logger.debug("Could not convert state to StringType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to StringType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }
@@ -186,7 +183,7 @@ public class BluetoothChannelUtils {
             case STRUCT:
                 StringType textType = convert(state, StringType.class);
                 if (textType == null) {
-                    logger.debug("Could not convert state to StringType: {} : {} : {} ",
+                    LOGGER.debug("Could not convert state to StringType: {} : {} : {} ",
                             request.getCharacteristicUUID(), fieldName, state);
                     return;
                 }

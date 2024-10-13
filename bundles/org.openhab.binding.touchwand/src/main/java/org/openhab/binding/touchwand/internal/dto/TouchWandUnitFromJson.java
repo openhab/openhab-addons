@@ -17,7 +17,6 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -34,7 +33,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class TouchWandUnitFromJson {
 
-    private static final Logger logger = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TouchWandUnitFromJson.class);
 
     public TouchWandUnitFromJson() {
     }
@@ -93,7 +92,7 @@ public class TouchWandUnitFromJson {
             unitObj = JsonParser.parseString(JsonUnit).getAsJsonObject();
             myTouchWandUnitData = parseResponse(unitObj);
         } catch (JsonParseException | IllegalStateException e) {
-            logger.warn("Could not parse response {}", JsonUnit);
+            LOGGER.warn("Could not parse response {}", JsonUnit);
             myTouchWandUnitData = new TouchWandUnknownTypeUnitData(); // Return unknown type
         }
         return myTouchWandUnitData;

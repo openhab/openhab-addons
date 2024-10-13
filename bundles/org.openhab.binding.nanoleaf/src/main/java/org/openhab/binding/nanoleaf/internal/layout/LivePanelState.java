@@ -15,7 +15,6 @@ package org.openhab.binding.nanoleaf.internal.layout;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nanoleaf.internal.colors.NanoleafPanelColors;
 import org.openhab.core.library.types.HSBType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -26,7 +25,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivePanelState implements PanelState {
 
-    private static final Logger logger = LoggerFactory.getLogger(LivePanelState.class);
+    private final Logger logger = LoggerFactory.getLogger(LivePanelState.class);
     private final NanoleafPanelColors panelColors;
 
     public LivePanelState(NanoleafPanelColors panelColors) {

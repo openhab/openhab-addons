@@ -18,12 +18,9 @@ import javax.measure.quantity.Energy;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.config.EnOceanChannelTotalusageConfig;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -33,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class EEPHelper {
-    private static final Logger logger = LoggerFactory.getLogger(EEPHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EEPHelper.class);
 
     public static State validateTotalUsage(State value, @Nullable State currentState, Configuration config) {
         EnOceanChannelTotalusageConfig c = config.as(EnOceanChannelTotalusageConfig.class);
@@ -71,10 +68,10 @@ public abstract class EEPHelper {
 
     public static boolean validateUnscaledValue(int unscaledValue, double unscaledMin, double unscaledMax) {
         if (unscaledValue < unscaledMin) {
-            logger.debug("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
+            LOGGER.debug("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
             return false;
         } else if (unscaledValue > unscaledMax) {
-            logger.debug("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
+            LOGGER.debug("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
             return false;
         }
 

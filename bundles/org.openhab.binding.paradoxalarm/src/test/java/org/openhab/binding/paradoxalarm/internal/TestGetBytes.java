@@ -28,7 +28,6 @@ import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.Zon
 import org.openhab.binding.paradoxalarm.internal.communication.messages.zone.ZoneCommandPayload;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -45,7 +44,7 @@ public class TestGetBytes {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "TRACE");
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
+    private final Logger logger = LoggerFactory.getLogger(ParadoxUtil.class);
 
     private static final byte[] EXPECTED1 = { (byte) 0xAA, 0x0A, 0x00, 0x03, 0x08, (byte) 0xF0, 0x00, 0x00, 0x01,
             (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, 0x01, 0x02, 0x03,
