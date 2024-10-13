@@ -533,14 +533,12 @@
 		<item-type>Number</item-type>
 		<label>Cutting Height</label>
 		<description>Prescaled cutting height, Range: 1-9</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="settingHeadlightModeType">
 		<item-type>String</item-type>
 		<label>Headlight Mode</label>
 		<description>Information about headlights</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="statCuttingBladeUsageTimeType">
