@@ -30,6 +30,8 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -40,6 +42,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
+    private final Logger logger = LoggerFactory.getLogger(AutomowerConnectApi.class);
+
     public AutomowerConnectApi(HttpClient httpClient) {
         super(httpClient);
     }
@@ -63,7 +67,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-
         return parseResponse(response, MowerResult.class);
     }
 
@@ -79,9 +82,15 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
-    public void sendCalendar(String appKey, String token, String id, MowerCalendardRequest calendar)
+    public void sendCalendar(String appKey, String token, String id, Integer workAreaId, MowerCalendardRequest calendar)
             throws AutomowerCommunicationException {
-        final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + id + "/calendar");
+        String url;
+        if (workAreaId == null) {
+            url = getBaseUrl() + "/mowers/" + id + "/calendar";
+        } else {
+            url = getBaseUrl() + "/mowers/" + id + "/workAreas/" + workAreaId + "/calendar";
+        }
+        final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.POST);
 
         request.content(new StringContentProvider(gson.toJson(calendar)));
@@ -116,7 +125,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         int statusCode = response.getStatus();
 
         checkForError(response, statusCode);
-
+        logger.warn("response: {}", response.getContentAsString());
         try {
             return gson.fromJson(response.getContentAsString(), type);
         } catch (JsonSyntaxException e) {

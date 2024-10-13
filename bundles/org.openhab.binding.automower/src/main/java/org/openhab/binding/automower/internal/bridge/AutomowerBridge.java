@@ -40,9 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * The {@link AutomowerBridge} allows the communication to the various Husqvarna rest apis like the
@@ -128,37 +125,31 @@ public class AutomowerBridge {
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerCalendar(String id, String calendar) throws AutomowerCommunicationException {
+
+    /**
+     * Sends a calendar to the automower
+     *
+     * @param id The id of the mower
+     * @param calendar The calendar that should be sent. It is using the same json structure (start, duration, ...)
+     *            as provided when reading the channel
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerCalendarTask(String id, Integer workAreaId, CalendarTask calendarTask)
+            throws AutomowerCommunicationException {
         List<CalendarTask> tasks = new ArrayList<>();
-
-        JsonArray calendarJson = new Gson().fromJson(calendar, JsonArray.class);
-        for (JsonElement task : calendarJson) {
-            CalendarTask calendarTask = new CalendarTask();
-            JsonObject taskObj = task.getAsJsonObject();
-            calendarTask.setStart(taskObj.get("start").getAsShort());
-            calendarTask.setDuration(taskObj.get("duration").getAsShort());
-            calendarTask.setMonday(taskObj.get("monday").getAsBoolean());
-            calendarTask.setTuesday(taskObj.get("tuesday").getAsBoolean());
-            calendarTask.setWednesday(taskObj.get("wednesday").getAsBoolean());
-            calendarTask.setThursday(taskObj.get("thursday").getAsBoolean());
-            calendarTask.setFriday(taskObj.get("friday").getAsBoolean());
-            calendarTask.setSaturday(taskObj.get("saturday").getAsBoolean());
-            calendarTask.setSunday(taskObj.get("sunday").getAsBoolean());
-            tasks.add(calendarTask);
-        }
-
-        Calendar cal = new Calendar();
-        cal.setTasks(tasks);
+        tasks.add(calendarTask);
+        Calendar calendar = new Calendar();
+        calendar.setTasks(tasks);
 
         MowerCalendar mowerCalendar = new MowerCalendar();
         mowerCalendar.setType("calendar");
-        mowerCalendar.setAttributes(cal);
+        mowerCalendar.setAttributes(calendar);
 
         MowerCalendardRequest request = new MowerCalendardRequest();
         request.setData(mowerCalendar);
 
         logger.debug("request '{}'", gson.toJson(request));
 
-        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, request);
+        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, workAreaId, request);
     }
 }

@@ -19,98 +19,98 @@ public class CalendarTask {
     /**
      * Start time expressed in minutes after midnight.
      */
-    private Short start;
+    private short start;
 
     /**
      * Duration time expressed in minutes
      */
-    private Short duration;
-    private Boolean monday;
-    private Boolean tuesday;
-    private Boolean wednesday;
-    private Boolean thursday;
-    private Boolean friday;
-    private Boolean saturday;
-    private Boolean sunday;
-    private int workAreaId;
+    private short duration;
+    private boolean monday;
+    private boolean tuesday;
+    private boolean wednesday;
+    private boolean thursday;
+    private boolean friday;
+    private boolean saturday;
+    private boolean sunday;
+    private Integer workAreaId;
 
-    public Short getStart() {
+    public short getStart() {
         return start;
     }
 
-    public Short getDuration() {
+    public short getDuration() {
         return duration;
     }
 
-    public Boolean getMonday() {
+    public boolean getMonday() {
         return monday;
     }
 
-    public Boolean getTuesday() {
+    public boolean getTuesday() {
         return tuesday;
     }
 
-    public Boolean getWednesday() {
+    public boolean getWednesday() {
         return wednesday;
     }
 
-    public Boolean getThursday() {
+    public boolean getThursday() {
         return thursday;
     }
 
-    public Boolean getFriday() {
+    public boolean getFriday() {
         return friday;
     }
 
-    public Boolean getSaturday() {
+    public boolean getSaturday() {
         return saturday;
     }
 
-    public Boolean getSunday() {
+    public boolean getSunday() {
         return sunday;
     }
 
-    public int getWorkAreaId() {
+    public Integer getWorkAreaId() {
         return workAreaId;
     }
 
-    public void setStart(Short start) {
+    public void setStart(short start) {
         this.start = start;
     }
 
-    public void setDuration(Short duration) {
+    public void setDuration(short duration) {
         this.duration = duration;
     }
 
-    public void setMonday(Boolean monday) {
+    public void setMonday(boolean monday) {
         this.monday = monday;
     }
 
-    public void setTuesday(Boolean tuesday) {
+    public void setTuesday(boolean tuesday) {
         this.tuesday = tuesday;
     }
 
-    public void setWednesday(Boolean wednesday) {
+    public void setWednesday(boolean wednesday) {
         this.wednesday = wednesday;
     }
 
-    public void setThursday(Boolean thursday) {
+    public void setThursday(boolean thursday) {
         this.thursday = thursday;
     }
 
-    public void setFriday(Boolean friday) {
+    public void setFriday(boolean friday) {
         this.friday = friday;
     }
 
-    public void setSaturday(Boolean saturday) {
+    public void setSaturday(boolean saturday) {
         this.saturday = saturday;
     }
 
-    public void setSunday(Boolean sunday) {
+    public void setSunday(boolean sunday) {
         this.sunday = sunday;
     }
 
-    public void setWorkAreaId(int workAreaId) {
+    public void setWorkAreaId(Integer workAreaId) {
         this.workAreaId = workAreaId;
     }
 }
