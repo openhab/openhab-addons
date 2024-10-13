@@ -57,6 +57,13 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="rawLanMode" type="boolean" required="false">
+				<label>Raw LAN Modbus</label>
+				<description>Use raw Modbus for LAN Stick an V5 for Wifi Stick. Unchecked for Wifi V5 Protocol, Checked for LAN Raw
+					Protocol.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="additionalRequests" type="text" required="false">
 				<label>Additional Requests</label>
 				<description>Additional requests besides the ones defined in the inverter definition.
