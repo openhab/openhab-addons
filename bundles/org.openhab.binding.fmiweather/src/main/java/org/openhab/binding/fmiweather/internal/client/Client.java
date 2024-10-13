@@ -133,10 +133,12 @@ public class Client {
             throws FMIExceptionReportException, FMIUnexpectedResponseException, FMIIOException {
         try {
             String url = request.toUrl();
+            logger.trace("GET request for {}", url);
             String responseText = HttpUtil.executeUrl("GET", url, timeoutMillis);
             if (responseText == null) {
                 throw new FMIIOException(String.format("HTTP error with %s", request.toUrl()));
             }
+            logger.trace("Response content: '{}'", responseText);
             FMIResponse response = parseMultiPointCoverageXml(responseText);
             logger.debug("Request {} translated to url {}. Response: {}", request, url, response);
             return response;

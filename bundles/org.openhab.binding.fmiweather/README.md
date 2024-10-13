@@ -36,9 +36,10 @@ The binding automatically discovers weather stations and forecasts for nearby pl
 
 ### `forecast` Thing Configuration
 
-| Parameter  | Type | Required | Description                                                                                          | Example                           |
-| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Parameter  | Type | Required | Description                                                                                          | Example                               |
+| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `location` | text | ✓        | Latitude longitude location for the forecast. The parameter is given in format `LATITUDE,LONGITUDE`. | `"60.192059, 24.945831"` for Helsinki |
+| `query`    | text |          | Stored query for official FMI forecast, either `harmonie` or `edited`.                               |                                       |
 
 ## Channels
 
