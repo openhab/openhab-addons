@@ -22,12 +22,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -97,7 +100,7 @@ public class EnedisHttpApi {
             logger.debug("Step 2: send SSO SAMLRequest");
             ContentResponse result = httpClient.POST(el.attr("action"))
                     .content(getFormContent("SAMLRequest", samlInput.attr("value"))).send();
-            if (result.getStatus() != 302) {
+            if (result.getStatus() != HttpStatus.FOUND_302) {
                 throw new LinkyException("Connection failed step 2");
             }
 
@@ -116,8 +119,8 @@ public class EnedisHttpApi {
             logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
             result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
-            if (result.getStatus() != 200) {
-                throw new LinkyException("Connection failed step 3 - auth1 : %s", result.getContentAsString());
+            if (result.getStatus() != HttpStatus.OK_200) {
+                throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
@@ -130,12 +133,12 @@ public class EnedisHttpApi {
 
             authData.callbacks.get(1).input.get(0).value = config.password;
             logger.debug("Step 4: auth2 - send the auth data");
-            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
+            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
-            if (result.getStatus() != 200) {
-                throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
+            if (result.getStatus() != HttpStatus.OK_200) {
+                throw new LinkyException("Connection failed step 3 - auth2: %s", result.getContentAsString());
             }
 
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
@@ -155,7 +158,7 @@ public class EnedisHttpApi {
             logger.debug("Step 6: post the SAMLresponse to finish the authentication");
             result = httpClient.POST(el.attr("action")).content(getFormContent("SAMLResponse", samlInput.attr("value")))
                     .send();
-            if (result.getStatus() != 302) {
+            if (result.getStatus() != HttpStatus.FOUND_302) {
                 throw new LinkyException("Connection failed step 6");
             }
             connected = true;
@@ -207,7 +210,7 @@ public class EnedisHttpApi {
     private String getContent(String url) throws LinkyException {
         try {
             ContentResponse result = httpClient.GET(url);
-            if (result.getStatus() != 200) {
+            if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
             String content = result.getContentAsString();
