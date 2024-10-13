@@ -64,6 +64,9 @@
 			<channel id="configAutoRoomSize" typeId="deviceAFConfigAutoPrefRoomSizeType"/>
 			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
 			<channel id="nightLightMode" typeId="deviceAFNightLight"/>
+			<channel id="lightDetection" typeId="deviceAFLightDetection"/>
+			<channel id="lightDetected" typeId="deviceAFLightDetected"/>
+
 		</channels>
 
 		<properties>
@@ -109,6 +112,8 @@
 			<channel id="humiditySetpoint" typeId="deviceConfigTargetHumidity"/>
 			<channel id="warmEnabled" typeId="warmModeEnabled"/>
 			<channel id="warmLevel" typeId="warmLevel"/>
+			<channel id="schedulesCount" typeId="deviceAFConfigAutoScheduleCountType"/>
+			<channel id="timerExpiry" typeId="deviceAFTimerExpiry"/>
 		</channels>
 
 		<properties>
@@ -169,6 +174,7 @@
 				<option value="auto">Auto</option>
 				<option value="manual">Manual Fan Control</option>
 				<option value="sleep">Sleeping Auto</option>
+				<option value="pet">Pet Auto</option>
 			</options>
 		</state>
 	</channel-type>
@@ -219,6 +225,20 @@
 		<item-type>Switch</item-type>
 		<label>Config: Display Forever</label>
 		<description>Configuration: If the devices display is enabled forever</description>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetection">
+		<item-type>Switch</item-type>
+		<label>Light Detection</label>
+		<description>If the devices light detection is enabled</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="deviceAFLightDetected">
+		<item-type>Switch</item-type>
+		<label>Light Detected</label>
+		<description>Indicator if the device detects light</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="deviceAFConfigAutoPrefType">
@@ -331,6 +351,5 @@
 		<description>Warm Level</description>
 		<state readOnly="false" pattern="%.0f"/>
 	</channel-type>
-
 
 </thing:thing-descriptions>
