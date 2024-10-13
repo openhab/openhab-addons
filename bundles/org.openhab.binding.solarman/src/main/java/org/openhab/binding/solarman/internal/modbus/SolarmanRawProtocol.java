@@ -31,24 +31,24 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
  */
 @NonNullByDefault
 public class SolarmanRawProtocol implements ISolarmanProtocol {
-	private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
+    private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
-    	this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
+        this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
     }
 
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException {
-    	byte[] solarmanRawFrame = buildSolarmanRawFrame(mbFunctionCode, firstReg, lastReg);
+        byte[] solarmanRawFrame = buildSolarmanRawFrame(mbFunctionCode, firstReg, lastReg);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanRawFrame);
         if (respFrame.length > 0) {
             byte[] modbusRespFrame = extractModbusRawResponseFrame(respFrame, solarmanRawFrame);
             return parseRawModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg);
         } else {
-        	throw new SolarmanConnectionException("Response frame was empty");
+            throw new SolarmanConnectionException("Response frame was empty");
         }
     }
-    
+
     protected byte[] extractModbusRawResponseFrame(byte @Nullable [] responseFrame, byte[] requestFrame)
             throws SolarmanException {
         if (responseFrame == null || responseFrame.length == 0) {
@@ -61,7 +61,7 @@ public class SolarmanRawProtocol implements ISolarmanProtocol {
 
         return Arrays.copyOfRange(responseFrame, 6, responseFrame.length);
     }
-    
+
     protected Map<Integer, byte[]> parseRawModbusReadHoldingRegistersResponse(byte @Nullable [] frame, int firstReg,
             int lastReg) throws SolarmanProtocolException {
         int regCount = lastReg - firstReg + 1;
@@ -80,20 +80,21 @@ public class SolarmanRawProtocol implements ISolarmanProtocol {
 
         return registers;
     }
-    
+
     /**
      * Builds a SolarMAN Raw frame to request data from firstReg to lastReg.
      * Frame format is based on
      * <a href="https://github.com/StephanJoubert/home_assistant_solarman/issues/247">Solarman RAW Protocol</a>
-     *     Request send: 
-     * Header       03e8: Transaction identifier
-     * Header       0000: Protocol identifier
-     * Header       0006: Message length (w/o CRC)
-     * Payload         01: Slave ID
-     * Payload         03: Read function
-     * Payload      0003: 1st register address
-     * Payload      006e: Nb of registers to read 
-     * Trailer      3426: CRC-16 ModBus
+     * Request send:
+     * Header 03e8: Transaction identifier
+     * Header 0000: Protocol identifier
+     * Header 0006: Message length (w/o CRC)
+     * Payload 01: Slave ID
+     * Payload 03: Read function
+     * Payload 0003: 1st register address
+     * Payload 006e: Nb of registers to read
+     * Trailer 3426: CRC-16 ModBus
+     * 
      * @param mbFunctionCode
      * @param firstReg - the start register
      * @param lastReg - the end register
@@ -102,52 +103,52 @@ public class SolarmanRawProtocol implements ISolarmanProtocol {
     protected byte[] buildSolarmanRawFrame(byte mbFunctionCode, int firstReg, int lastReg) {
         byte[] requestPayload = buildSolarmanRawFrameRequestPayload(mbFunctionCode, firstReg, lastReg);
         byte[] header = buildSolarmanRawFrameHeader(requestPayload.length);
-        
-        return ByteBuffer.allocate(header.length + requestPayload.length).put(header)
-                .put(requestPayload).array();
+
+        return ByteBuffer.allocate(header.length + requestPayload.length).put(header).put(requestPayload).array();
     }
-    
+
     /**
      * Builds a SolarMAN Raw frame Header
      * Frame format is based on
      * <a href="https://github.com/StephanJoubert/home_assistant_solarman/issues/247">Solarman RAW Protocol</a>
-     *     Request send: 
-     * Header       03e8: Transaction identifier
-     * Header       0000: Protocol identifier
-     * Header       0006: Message length (w/o CRC)
+     * Request send:
+     * Header 03e8: Transaction identifier
+     * Header 0000: Protocol identifier
+     * Header 0006: Message length (w/o CRC)
+     * 
      * @param payloadSize th
      * @return byte array containing the Solarman Raw frame header
      */
     private byte[] buildSolarmanRawFrameHeader(int payloadSize) {
         // (two byte) Denotes the start of the Raw frame. Always 0x03 0xE8.
-        byte[] transactionId = new byte[]{(byte) 0x03, (byte) 0xE8};
+        byte[] transactionId = new byte[] { (byte) 0x03, (byte) 0xE8 };
 
         // (two bytes) – Always 0x00 0x00
-        byte[] protocolId = new byte[]{(byte) 0x00, (byte) 0x00};
-        
+        byte[] protocolId = new byte[] { (byte) 0x00, (byte) 0x00 };
+
         // (two bytes) Payload length
-        byte[] messageLength = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.BIG_ENDIAN).putShort((short) payloadSize)
-                .array();
+        byte[] messageLength = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.BIG_ENDIAN)
+                .putShort((short) payloadSize).array();
 
         // Append all fields into the header
-        return ByteBuffer
-                .allocate(transactionId.length + protocolId.length + messageLength.length)
-                .put(transactionId).put(protocolId).put(messageLength).array();
+        return ByteBuffer.allocate(transactionId.length + protocolId.length + messageLength.length).put(transactionId)
+                .put(protocolId).put(messageLength).array();
     }
-    
+
     /**
      * Builds a SolarMAN Raw frame payload
      * Frame format is based on
      * <a href="https://github.com/StephanJoubert/home_assistant_solarman/issues/247">Solarman RAW Protocol</a>
-     *     Request send: 
-     * Payload         01: Slave ID
-     * Payload         03: Read function
-     * Payload      0003: 1st register address
-     * Payload      006e: Nb of registers to read 
-     * Trailer      3426: CRC-16 ModBus
+     * Request send:
+     * Payload 01: Slave ID
+     * Payload 03: Read function
+     * Payload 0003: 1st register address
+     * Payload 006e: Nb of registers to read
+     * Trailer 3426: CRC-16 ModBus
+     * 
      * @param mbFunctionCode
-     * @param firstReg       - the start register
-     * @param lastReg        - the end register
+     * @param firstReg - the start register
+     * @param lastReg - the end register
      * @return byte array containing the Solarman Raw frame payload
      */
     protected byte[] buildSolarmanRawFrameRequestPayload(byte mbFunctionCode, int firstReg, int lastReg) {

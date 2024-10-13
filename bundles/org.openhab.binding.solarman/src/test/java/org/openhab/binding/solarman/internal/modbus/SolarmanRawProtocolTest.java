@@ -46,8 +46,9 @@ class SolarmanRawProtocolTest {
     @Test
     void testbuildSolarmanRawFrame() {
         byte[] requestFrame = solarmanRawProtocol.buildSolarmanRawFrame((byte) 0x03, 0x0063, 0x006D);
-        byte[] expectedFrame = { (byte) 0x03, (byte) 0xE8, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x08, (byte) 0x01,
-        		(byte) 0x03, (byte) 0x00, (byte) 0x63, (byte) 0x00, (byte) 0x0B, (byte) 0xF4, (byte) 0x13 };
+        byte[] expectedFrame = { (byte) 0x03, (byte) 0xE8, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x08,
+                (byte) 0x01, (byte) 0x03, (byte) 0x00, (byte) 0x63, (byte) 0x00, (byte) 0x0B, (byte) 0xF4,
+                (byte) 0x13 };
 
         assertArrayEquals(requestFrame, expectedFrame);
     }
@@ -55,8 +56,8 @@ class SolarmanRawProtocolTest {
     @Test
     void testReadRegister0x01() throws SolarmanException {
         // given
-        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
-                hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
+        when(solarmanLoggerConnection.sendRequest(any()))
+                .thenReturn(hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
 
         // when
         Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 1, 1);
@@ -70,8 +71,8 @@ class SolarmanRawProtocolTest {
     @Test
     void testReadRegisters0x02to0x03() throws SolarmanException {
         // given
-        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
-                hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
+        when(solarmanLoggerConnection.sendRequest(any()))
+                .thenReturn(hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
 
         // when
         Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 2, 3);

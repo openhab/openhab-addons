@@ -23,6 +23,6 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 @NonNullByDefault
 public interface ISolarmanProtocol {
 
-	Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
-			int firstReg, int lastReg) throws SolarmanException;
+    Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
+            int firstReg, int lastReg) throws SolarmanException;
 }

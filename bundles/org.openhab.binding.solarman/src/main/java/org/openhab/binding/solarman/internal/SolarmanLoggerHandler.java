@@ -95,11 +95,11 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 logger.debug("Found definition for {}", config.inverterType);
             }
         }
-        
+
         if (logger.isDebugEnabled()) {
             logger.debug("Raw Type {}", config.rawLanMode);
         }
-        
+
         ISolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.CreateSolarmanProtocol(config);
 
         String additionalRequests = Objects.requireNonNullElse(config.getAdditionalRequests(), "");
@@ -122,7 +122,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     }
 
     private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
-    		ISolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
+            ISolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
