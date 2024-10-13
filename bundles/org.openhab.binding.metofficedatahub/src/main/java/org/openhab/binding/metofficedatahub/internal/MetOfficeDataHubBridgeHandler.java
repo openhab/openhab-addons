@@ -34,8 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MetOfficeDataHubBridgeHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link MetOfficeDataHubBridgeHandler} models the account(s) to the MetOfficeDataHub services.
  *
  * @author David Goodyear - Initial contribution
  */
