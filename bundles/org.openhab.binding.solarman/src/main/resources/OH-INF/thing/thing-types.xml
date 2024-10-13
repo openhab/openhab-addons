@@ -59,8 +59,8 @@
 			</parameter>
 			<parameter name="rawLanMode" type="boolean" required="false">
 				<label>Raw LAN Modbus</label>
-				<description>Use raw Modbus for LAN Stick LSE-3 and V5 for Wifi Stick. Unchecked for Wifi V5 Protocol, Checked for LAN Raw
-					Protocol.</description>
+				<description>Use raw Modbus for LAN Stick LSE-3 and V5 for Wifi Stick. Unchecked for Wifi V5 Protocol, Checked for
+					LAN Raw Protocol.</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
