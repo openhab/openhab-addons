@@ -49,7 +49,7 @@ public class Client {
 
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-    public Map<Instant, EntsoeTimeSerie> doGetRequest(Request request, int timeout, String configResolution)
+    public Map<Instant, SpotPrice> doGetRequest(Request request, int timeout, String configResolution)
             throws EntsoeResponseException, EntsoeConfigurationException {
         try {
             logger.debug("Sending GET request with parameters: {}", request);
@@ -61,7 +61,8 @@ public class Client {
             logger.trace("Response: {}", responseText);
             return parseXmlResponse(responseText, configResolution);
         } catch (IOException e) {
-            if (e.getMessage().contains("Authentication challenge without WWW-Authenticate header")) {
+            String message = e.getMessage();
+            if (message != null && message.contains("Authentication challenge without WWW-Authenticate header")) {
                 throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
             }
             throw new EntsoeResponseException(e);
@@ -70,10 +71,10 @@ public class Client {
         }
     }
 
-    private Map<Instant, EntsoeTimeSerie> parseXmlResponse(String responseText, String configResolution)
+    private Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
             EntsoeConfigurationException {
-        Map<Instant, EntsoeTimeSerie> responseMap = new LinkedHashMap<>();
+        Map<Instant, SpotPrice> responseMap = new LinkedHashMap<>();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(new InputSource(new StringReader(responseText)));
@@ -144,11 +145,11 @@ public class Client {
                         Element pointElement = (Element) pointNode;
                         String price = pointElement.getElementsByTagName("price.amount").item(0).getTextContent();
                         Double priceAsDouble = Double.parseDouble(price);
-                        EntsoeTimeSerie t = new EntsoeTimeSerie(currency, measureUnit, priceAsDouble, startTimeInstant,
-                                multiplier, resolution);
+                        SpotPrice t = new SpotPrice(currency, measureUnit, priceAsDouble, startTimeInstant, multiplier,
+                                resolution);
                         responseMap.put(t.getInstant(), t);
                         logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
-                                t.getUtcTime(), priceAsDouble, currency, measureUnit);
+                                t.getInstant(), priceAsDouble, currency, measureUnit);
                     }
 
                     Node nextPointNode = listOfPoints.item(pointNr + 1);

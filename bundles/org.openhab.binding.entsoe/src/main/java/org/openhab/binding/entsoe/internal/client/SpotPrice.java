@@ -16,8 +16,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
 import javax.measure.Unit;
@@ -34,13 +32,13 @@ import org.openhab.core.types.State;
  * @author Jørgen Melhus - Initial contribution
  */
 @NonNullByDefault
-public class EntsoeTimeSerie {
+public class SpotPrice {
     private String currency;
     private Unit<Energy> unit;
     private Double price;
     private Instant time;
 
-    public EntsoeTimeSerie(String currency, String unit, Double price, Instant start, int iteration, String resolution)
+    public SpotPrice(String currency, String unit, Double price, Instant start, int iteration, String resolution)
             throws EntsoeResponseException {
         this.currency = currency;
         this.unit = convertEntsoeUnit(unit);
@@ -87,10 +85,6 @@ public class EntsoeTimeSerie {
         } catch (IllegalArgumentException e) {
             return new DecimalType(getPrice(toUnit));
         }
-    }
-
-    public ZonedDateTime getUtcTime() {
-        return time.atZone(ZoneId.of("UTC"));
     }
 
     public Instant getInstant() {

@@ -27,8 +27,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.entsoe.internal.client.Client;
-import org.openhab.binding.entsoe.internal.client.EntsoeTimeSerie;
 import org.openhab.binding.entsoe.internal.client.Request;
+import org.openhab.binding.entsoe.internal.client.SpotPrice;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseMapException;
@@ -59,10 +59,9 @@ public class EntsoeHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    private Map<Instant, EntsoeTimeSerie> entsoeTimeSeries = new LinkedHashMap<>();
+    private Map<Instant, SpotPrice> entsoeTimeSeries = new LinkedHashMap<>();
 
     private final ZoneId cetZoneId = ZoneId.of("CET");
-    private final ZoneId utcZoneId = ZoneId.of("UTC");
 
     private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, cetZoneId);
 
@@ -137,7 +136,7 @@ public class EntsoeHandler extends BaseThingHandler {
         Instant nextHour = now.truncatedTo(ChronoUnit.HOURS).plus(1, ChronoUnit.HOURS);
         long millis = Duration.between(now, nextHour).toMillis();
         try {
-            Instant nextInstant = getActualTimeSerie(true).getInstant();
+            Instant nextInstant = getNextSpotPrice().getInstant();
             millis = Duration.between(now, nextInstant).toMillis();
         } catch (EntsoeResponseMapException e) {
             logger.warn("Using millis to next whole hour");
@@ -145,29 +144,32 @@ public class EntsoeHandler extends BaseThingHandler {
         return millis;
     }
 
-    private EntsoeTimeSerie getActualTimeSerie() throws EntsoeResponseMapException {
-        return getActualTimeSerie(false);
+    private SpotPrice getCurrentSpotPrice() throws EntsoeResponseMapException {
+        Duration duration = Duration.parse(config.resolution);
+        Instant now = Instant.now();
+
+        for (Map.Entry<Instant, SpotPrice> entry : entsoeTimeSeries.entrySet()) {
+            Instant entryStart = entry.getKey();
+            Instant entryEnd = entryStart.plus(duration);
+
+            if (!now.isBefore(entryStart) && now.isBefore(entryEnd)) {
+                return entry.getValue();
+            }
+        }
+        throw new EntsoeResponseMapException("Could not get current SpotPrice");
     }
 
-    private EntsoeTimeSerie getActualTimeSerie(boolean getNext) throws EntsoeResponseMapException {
-        if (entsoeTimeSeries.isEmpty()) {
-            throw new EntsoeResponseMapException("responseMap is empty");
-        }
-        Duration duration = Duration.parse(config.resolution);
-        for (Map.Entry<Instant, EntsoeTimeSerie> entry : entsoeTimeSeries.entrySet()) {
-            Instant thisEntry = entry.getKey();
-            Instant now = Instant.now();
-            Instant nowPlusNext = now.plus(duration);
-            Instant nowMinusNext = now.minus(duration);
+    private SpotPrice getNextSpotPrice() throws EntsoeResponseMapException {
+        Instant now = Instant.now();
 
-            if (getNext && thisEntry.isAfter(now)) {
-                return entry.getValue();
-            }
-            if (!getNext && thisEntry.isAfter(nowMinusNext) && thisEntry.isBefore(nowPlusNext)) {
+        for (Map.Entry<Instant, SpotPrice> entry : entsoeTimeSeries.entrySet()) {
+            Instant entryStart = entry.getKey();
+
+            if (entryStart.isAfter(now)) {
                 return entry.getValue();
             }
         }
-        throw new EntsoeResponseMapException("Could not get actual ENTSOE TimeSerie");
+        throw new EntsoeResponseMapException("Could not get next SpotPrice");
     }
 
     private boolean needToFetchHistoricDays() {
@@ -196,8 +198,6 @@ public class EntsoeHandler extends BaseThingHandler {
             return;
         }
 
-        config = getConfigAs(EntsoeConfiguration.class);
-
         if (entsoeTimeSeries.isEmpty()) {
             fetchNewPrices();
             return;
@@ -206,8 +206,7 @@ public class EntsoeHandler extends BaseThingHandler {
         boolean needsInitialUpdate = lastDayAheadReceived.equals(ZonedDateTime.of(LocalDateTime.MIN, cetZoneId))
                 || needToFetchHistoricDays(true);
         Instant nextDayInstant = ZonedDateTime.now(cetZoneId).plusDays(1).with(LocalTime.MIDNIGHT).toInstant();
-        boolean hasNextDayValue = entsoeTimeSeries.keySet().stream()
-                .anyMatch(instant -> instant.isAfter(nextDayInstant));
+        boolean hasNextDayValue = entsoeTimeSeries.containsKey(nextDayInstant);
         boolean readyForNextDayValue = currentCetTime()
                 .isAfter(currentCetTimeWholeHours().withHour(config.spotPricesAvailableCetHour));
 
@@ -235,7 +234,7 @@ public class EntsoeHandler extends BaseThingHandler {
             entsoeTimeSeries = client.doGetRequest(request, config.requestTimeout * 1000, config.resolution);
 
             TimeSeries baseTimeSeries = new TimeSeries(EntsoeBindingConstants.TIMESERIES_POLICY);
-            for (Map.Entry<Instant, EntsoeTimeSerie> entry : entsoeTimeSeries.entrySet()) {
+            for (Map.Entry<Instant, SpotPrice> entry : entsoeTimeSeries.entrySet()) {
                 baseTimeSeries.add(entry.getValue().getInstant(), entry.getValue().getState(Units.KILOWATT_HOUR));
             }
 
@@ -266,7 +265,7 @@ public class EntsoeHandler extends BaseThingHandler {
     private void updateCurrentState(String channelID) {
         logger.trace("Updating current state");
         try {
-            updateState(channelID, getActualTimeSerie().getState(Units.KILOWATT_HOUR));
+            updateState(channelID, getCurrentSpotPrice().getState(Units.KILOWATT_HOUR));
         } catch (EntsoeConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }

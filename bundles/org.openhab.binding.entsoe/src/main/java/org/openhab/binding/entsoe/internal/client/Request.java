@@ -42,28 +42,21 @@ public class Request {
         this.periodEnd = periodEnd;
     }
 
-    // @formatter:off
     public String toUrl() {
-        StringBuilder urlBuilder = new StringBuilder(BASE_URL)
-                .append("securityToken=").append(securityToken)
-                .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
-                .append("&in_domain=").append(area)
-                .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.atZone(ZoneOffset.UTC).format(requestFormat))
-                .append("&periodEnd=").append(periodEnd.atZone(ZoneOffset.UTC).format(requestFormat));  
-        return urlBuilder.toString();
+        return urlBuilder(this.securityToken);
     }
 
     @Override
     public String toString() {
-        StringBuilder urlBuilder = new StringBuilder(BASE_URL)
-                .append("securityToken=").append("xxxxx-xxxxx-xxxxx")
-                .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
-                .append("&in_domain=").append(area)
-                .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.atZone(ZoneOffset.UTC).format(requestFormat))  
-                .append("&periodEnd=").append(periodEnd.atZone(ZoneOffset.UTC).format(requestFormat));  
+        return urlBuilder("xxxxx-xxxxx-xxxxx");
+    }
+
+    private String urlBuilder(String securityToken) {
+        StringBuilder urlBuilder = new StringBuilder(BASE_URL).append("securityToken=").append(securityToken)
+                .append("&documentType=").append(DOCUMENT_TYPE_PRICE).append("&in_domain=").append(area)
+                .append("&out_domain=").append(area).append("&periodStart=")
+                .append(periodStart.atZone(ZoneOffset.UTC).format(requestFormat)).append("&periodEnd=")
+                .append(periodEnd.atZone(ZoneOffset.UTC).format(requestFormat));
         return urlBuilder.toString();
-     // @formatter:on
     }
 }

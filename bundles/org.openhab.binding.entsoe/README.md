@@ -1,10 +1,10 @@
 # ENTSO-E Binding
 
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity. 
-This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
+
 Users can select a specific area to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
-It is recommended to use this binding together with a currency provider (g.e. Freecurrency binding) for exchanging euro spot prices to local currency.
+It is recommended to use this binding together with a currency provider (e.g. [Freecurrency binding](https://www.openhab.org/addons/bindings/freecurrency/)) for exchanging euro spot prices to local currency.
 
 ## Supported Things
 
@@ -13,13 +13,11 @@ It is recommended to use this binding together with a currency provider (g.e. Fr
 ## Thing Configuration
 
 To access the ENTSO-E Transparency Platform API, users need a **security token** for authentication and authorization.
-This token ensure secure access to the platform's data and services.
+This token ensures secure access to the platform's data and services.
 For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation).
 
 Mandatory parameters of the Thing are security token and area.
-Optional parameters are historic days and resolution
-
-Thing can be added in graphical user interface of openHAB or manually within a things file.
+Optional parameters are historic days, resolution, availability hour for day ahead spot prices and request timeout.
 
 ### `entsoe` Thing Configuration
 
@@ -29,7 +27,7 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)     | 0         | no       | no       |
 | resolution                    | text              | Data resolution                                                           | PT60M     | no       | no       |
-| spotPricesAvailableUtcHour    | integer           | Which UTC hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
+| spotPricesAvailableCetHour    | integer           | Which CET hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
 | requestTimeout                | integer           | Request timeout in seconds                                                | 30        | no       | yes      |
 
 ## Channels
