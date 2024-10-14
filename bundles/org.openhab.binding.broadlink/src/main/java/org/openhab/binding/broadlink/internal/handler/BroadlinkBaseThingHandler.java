@@ -97,7 +97,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         updateStatus(ThingStatus.UNKNOWN);
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         // Validate whether the configuration makes any sense
-        if (thingConfig.isValidConfiguration().length() != 0) {
+        if (thingConfig.isValidConfiguration().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     thingConfig.isValidConfiguration());
             return;

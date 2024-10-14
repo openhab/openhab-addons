@@ -22,9 +22,9 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
-	<thing-type id="sp2s">
-		<label>Broadlink SP2s</label>
-		<description>The Broadlink SP2s is a Wi-Fi smart socket with power consumption measurement.</description>
+	<thing-type id="sp2-s">
+		<label>Broadlink SP2-s</label>
+		<description>The Broadlink SP2-s is a Wi-Fi smart socket with power consumption measurement.</description>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="power-consumption" typeId="system.electric-energy"/>
@@ -44,9 +44,9 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>
 	</thing-type>
-	<thing-type id="sp3s">
-		<label>Broadlink SP3s</label>
-		<description>The Broadlink SP3s is a Wi-Fi smart socket with power consumption measurement</description>
+	<thing-type id="sp3-s">
+		<label>Broadlink SP3-s</label>
+		<description>The Broadlink SP3-s is a Wi-Fi smart socket with power consumption measurement</description>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
 			<channel id="power-consumption" typeId="system.electric-energy"/>

@@ -25,7 +25,7 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
-	<thing-type id="rm3q">
+	<thing-type id="rm3-q">
 		<label>Broadlink RM3 v44057</label>
 		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter running v44057 firmware.</description>
 		<channels>
@@ -35,7 +35,7 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
-	<thing-type id="rm4mini">
+	<thing-type id="rm4-mini">
 		<label>Broadlink RM4 Mini</label>
 		<description>The Broadlink RM 4 Mini is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
 		<channels>
@@ -47,7 +47,7 @@
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
 	</thing-type>
-	<thing-type id="rm4pro">
+	<thing-type id="rm4-pro">
 		<label>Broadlink RM4 Pro</label>
 		<description>The Broadlink RM 4 Pro is a Wi-Fi IR and RF transmitter with temperature and humidity sensors.</description>
 		<channels>

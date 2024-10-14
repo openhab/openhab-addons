@@ -36,18 +36,18 @@ public class BroadlinkBindingConstants {
     public static final String BINDING_ID = "broadlink";
     public static final ThingTypeUID THING_TYPE_RM_PRO = new ThingTypeUID(BINDING_ID, "rm-pro");
     public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID(BINDING_ID, "rm3");
-    public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID(BINDING_ID, "rm3q");
-    public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID(BINDING_ID, "rm4mini");
-    public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID(BINDING_ID, "rm4pro");
+    public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID(BINDING_ID, "rm3-q");
+    public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID(BINDING_ID, "rm4-mini");
+    public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID(BINDING_ID, "rm4-pro");
     public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID(BINDING_ID, "a1");
     public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID(BINDING_ID, "mp1");
     public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID(BINDING_ID, "mp1-1k3s2u");
     public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID(BINDING_ID, "mp2");
     public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID(BINDING_ID, "sp1");
     public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID(BINDING_ID, "sp2");
-    public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID(BINDING_ID, "sp2s");
+    public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID(BINDING_ID, "sp2-s");
     public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID(BINDING_ID, "sp3");
-    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID(BINDING_ID, "sp3s");
+    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID(BINDING_ID, "sp3-s");
 
     public static final String RM_PRO = "Broadlink RM pro / pro+ / plus";
     public static final String RM3 = "Broadlink RM3";
@@ -61,9 +61,9 @@ public class BroadlinkBindingConstants {
 
     public static final String SP1 = "Broadlink SP1";
     public static final String SP2 = "Broadlink SP2";
-    public static final String SP2S = "Broadlink SP2s";
+    public static final String SP2S = "Broadlink SP2-s";
     public static final String SP3 = "Broadlink SP3";
-    public static final String SP3S = "Broadlink SP3s";
+    public static final String SP3S = "Broadlink SP3-s";
 
     public static final String BROADLINK_AUTH_KEY = "097628343fe99e23765c1513accf8b02";
     public static final String BROADLINK_IV = "562e17996d093d28ddb3ba695a2e6f58";
