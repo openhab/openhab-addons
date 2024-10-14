@@ -109,7 +109,7 @@ public class BroadlinkDeviceConfiguration {
         if (port == 0) {
             return "Port cannot be 0";
         }
-        if (macAddress.length() == 0) {
+        if (macAddress.isBlank()) {
             return "No MAC address defined";
         }
         // Regex to check valid MAC address
