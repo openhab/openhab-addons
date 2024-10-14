@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.sso;
+package org.openhab.binding.tesla.internal.protocol.dto.sso;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link RefreshTokenRequest} is a datastructure to refresh
@@ -21,12 +23,15 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
  * @author Christian Güdel - Initial contribution
  */
 public class RefreshTokenRequest {
-    public String grant_type = "refresh_token";
-    public String client_id = CLIENT_ID;
-    public String refresh_token;
+    @SerializedName("grant_type")
+    public String grantType = "refresh_token";
+    @SerializedName("client_id")
+    public String clientId = CLIENT_ID;
+    @SerializedName("refresh_token")
+    public String refreshToken;
     public String scope = SSO_SCOPES;
 
-    public RefreshTokenRequest(String refresh_token) {
-        this.refresh_token = refresh_token;
+    public RefreshTokenRequest(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }
