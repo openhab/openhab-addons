@@ -2,7 +2,7 @@
 
 This binding uses the API provided by Enedis to retrieve your energy consumption data.
 You need to create an Enedis account [here](https://mon-compte-client.enedis.fr/) if you don't have one already.
-
+ 
 Please ensure that you have accepted their conditions, and check that you can see graphs on the website.
 Especially, check hourly view/graph. Enedis may ask for permission the first time to start collecting hourly data.
 
