@@ -118,7 +118,7 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_MODE_SURROUND = "general#mode-surround";
     public static final String CHANNEL_SPEAKER_PRESET = "general#speaker-preset";
     public static final String CHANNEL_MAIN_VOLUME = "main-zone#volume";
-    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume_db";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume-db";
     public static final String CHANNEL_LOUDNESS = "general#loudness";
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";
