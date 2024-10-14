@@ -112,7 +112,7 @@ Items file example; `sockets.items`:
 Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:power-on" } 
 ```
 
-## Migrating legacy map file
+## Migrating Legacy Map File
 
 Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution.
 It stored the IR/RF commands in a different place and a different format.
