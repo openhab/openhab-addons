@@ -86,7 +86,7 @@ The binding is also capable of modifying a previously stored code, and to delete
 
 To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
 
-*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. 
+*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command.
 This is done to avoid accidentally overwriting commands*
 
 In order to delete a previously stored code, the procedure is as follows:
