@@ -16,7 +16,7 @@
 		"deviceType": "gateway",
 		"createdAt": "2024-03-08T06:39:04.019Z",
 		"isReachable": true,
-		"lastSeen": "2024-10-11T22:13:00.617Z",
+		"lastSeen": "2024-10-14T05:29:00.066Z",
 		"attributes": {
 			"customName": "Townhouse",
 			"model": "DIRIGERA Hub for smart products",
@@ -51,8 +51,8 @@
 			"logLevel": 3,
 			"coredump": false,
 			"timezone": "Europe/Berlin",
-			"nextSunSet": "2024-10-12T16:42:00.000Z",
-			"nextSunRise": "2024-10-12T05:45:00.000Z",
+			"nextSunSet": "2024-10-14T16:37:00.000Z",
+			"nextSunRise": "2024-10-14T05:48:00.000Z",
 			"homestate": "home",
 			"countryCode": "XZ",
 			"coordinates": {
@@ -86,7 +86,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-09T18:04:54.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T20:19:24.000Z",
+			"lastSeen": "2024-10-13T20:08:02.000Z",
 			"attributes": {
 				"customName": "Lampe Rechts",
 				"model": "TRADFRI bulb E14 WS candle 470lm",
@@ -144,7 +144,7 @@
 			"deviceType": "lightController",
 			"createdAt": "2024-10-11T11:33:27.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T11:33:30.000Z",
+			"lastSeen": "2024-10-13T11:22:41.000Z",
 			"attributes": {
 				"customName": "Remote Control Loft",
 				"firmwareVersion": "2.4.16",
@@ -153,7 +153,7 @@
 				"model": "Remote Control N2",
 				"productCode": "E2001",
 				"serialNumber": "94B216FFFE6F9BA6",
-				"batteryPercentage": 80,
+				"batteryPercentage": 85,
 				"isOn": false,
 				"lightLevel": 1,
 				"permittingJoin": false,
@@ -190,7 +190,7 @@
 			"deviceType": "repeater",
 			"createdAt": "2024-10-10T10:10:37.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T17:17:48.000Z",
+			"lastSeen": "2024-10-13T10:12:28.000Z",
 			"attributes": {
 				"customName": "Reaper",
 				"model": "TRADFRI Signal Repeater",
@@ -231,7 +231,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-09T18:09:58.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T20:19:22.000Z",
+			"lastSeen": "2024-10-13T20:02:56.000Z",
 			"attributes": {
 				"customName": "Lampe Links",
 				"model": "TRADFRI bulb E14 WS candle 470lm",
@@ -289,7 +289,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-04T17:41:34.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T17:16:41.000Z",
+			"lastSeen": "2024-10-14T05:17:01.000Z",
 			"customIcon": "lighting_pendant_light",
 			"attributes": {
 				"customName": "Esszimmer Hinten",
@@ -334,7 +334,7 @@
 			"room": {
 				"id": "921edb07-e344-4c70-a09e-11935c727f58",
 				"name": "Esszimmer",
-				"color": "ikea_lilac_no_3",
+				"color": "ikea_yellow_no_31",
 				"icon": "rooms_cutlery"
 			},
 			"deviceSet": [],
@@ -352,7 +352,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-04T18:20:43.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T17:17:34.000Z",
+			"lastSeen": "2024-10-14T05:17:01.000Z",
 			"attributes": {
 				"customName": "Stehlampe",
 				"model": "TRADFRI bulb E27 CWS opal 600lm",
@@ -409,7 +409,7 @@
 			"deviceType": "speaker",
 			"createdAt": "2024-10-04T17:21:49.446Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T22:12:46.516Z",
+			"lastSeen": "2024-10-13T21:09:15.285Z",
 			"attributes": {
 				"customName": "Loft",
 				"model": "SYMFONISK Bookshelf S21",
@@ -420,28 +420,33 @@
 				"productCode": "S21",
 				"identifyStarted": "2024-10-04T17:21:49.447Z",
 				"identifyPeriod": 0,
-				"playback": "playbackPlaying",
-				"playbackLastChangedTimestamp": "2024-10-11T22:00:40.621Z",
+				"playback": "playbackIdle",
+				"playbackLastChangedTimestamp": "2024-10-13T21:09:15.284Z",
 				"playbackAudio": {
 					"serviceType": "sonos",
-					"providerType": "80s80s - REAL 80s Radio",
-					"playlist": {
-						"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8yIiwib2JqZWN0SWQiOiI5NzhlYjVmYi02ZjJiLTRlYzItOTllNi04YzhhYzZjNjhhNDUiLCJzZXJ2aWNlSWQiOiIzMjEiLCJ0eXBlIjoic3RhdGlvbiJ9fX0=",
-						"title": "80s80s digital"
+					"providerType": "Mixcloud",
+					"playItem": {
+						"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE3OTQzNDcxNCIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+						"title": "The Anjunadeep Edition 521 with Leaving Laurel & yehno",
+						"artist": "Anjunadeep",
+						"imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2179434714.unknown%3fsid%3d181%26flags%3d0%26sn%3d3",
+						"duration": 3617000
 					}
 				},
 				"playbackPosition": {
-					"position": 25,
-					"timestamp": "2024-10-11T22:12:46.512Z"
+					"position": 0,
+					"timestamp": "2024-10-13T21:09:15.284Z"
 				},
 				"playbackAvailableActions": {
-					"crossfade": false,
-					"pause": false,
+					"crossfade": true,
+					"pause": true,
 					"repeat": [
-						"off"
+						"off",
+						"playItem",
+						"playlist"
 					],
-					"seek": false,
-					"shuffle": false,
+					"seek": true,
+					"shuffle": true,
 					"playbackNext": false,
 					"playbackPrev": false
 				},
@@ -540,7 +545,7 @@
 			"deviceType": "openCloseSensor",
 			"createdAt": "2024-10-09T21:23:19.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T21:57:17.000Z",
+			"lastSeen": "2024-10-14T05:22:08.000Z",
 			"customIcon": "placement_door",
 			"attributes": {
 				"customName": "Door Sensor Kitchen",
@@ -578,7 +583,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-04T18:00:31.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T17:16:42.000Z",
+			"lastSeen": "2024-10-14T05:17:02.000Z",
 			"customIcon": "lighting_cone_pendant",
 			"attributes": {
 				"customName": "Esszimmer Vorne",
@@ -623,7 +628,7 @@
 			"room": {
 				"id": "921edb07-e344-4c70-a09e-11935c727f58",
 				"name": "Esszimmer",
-				"color": "ikea_lilac_no_3",
+				"color": "ikea_yellow_no_31",
 				"icon": "rooms_cutlery"
 			},
 			"deviceSet": [],
@@ -700,7 +705,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-09T17:38:43.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T17:30:12.000Z",
+			"lastSeen": "2024-10-13T17:18:25.000Z",
 			"attributes": {
 				"customName": "LED Band Sideboard",
 				"model": "ORMANAS LED Strip",
@@ -762,8 +767,8 @@
 			"type": "sensor",
 			"deviceType": "motionSensor",
 			"createdAt": "2024-10-09T17:29:53.000Z",
-			"isReachable": true,
-			"lastSeen": "2024-10-11T20:19:23.000Z",
+			"isReachable": false,
+			"lastSeen": "2024-10-13T18:39:59.000Z",
 			"attributes": {
 				"customName": "Motion Sensor Gäste WC",
 				"model": "VALLHORN Wireless Motion Sensor",
@@ -815,8 +820,8 @@
 			"type": "unknown",
 			"deviceType": "lightSensor",
 			"createdAt": "2024-10-09T17:29:53.000Z",
-			"isReachable": true,
-			"lastSeen": "2024-10-11T20:19:23.000Z",
+			"isReachable": false,
+			"lastSeen": "2024-10-13T18:39:59.000Z",
 			"attributes": {
 				"customName": "",
 				"model": "VALLHORN Wireless Motion Sensor",
@@ -847,7 +852,7 @@
 			"deviceType": "gateway",
 			"createdAt": "2024-03-08T06:39:04.019Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T22:13:00.617Z",
+			"lastSeen": "2024-10-14T05:29:00.066Z",
 			"attributes": {
 				"customName": "Townhouse",
 				"model": "DIRIGERA Hub for smart products",
@@ -882,8 +887,8 @@
 				"logLevel": 3,
 				"coredump": false,
 				"timezone": "Europe/Berlin",
-				"nextSunSet": "2024-10-12T16:42:00.000Z",
-				"nextSunRise": "2024-10-12T05:45:00.000Z",
+				"nextSunSet": "2024-10-14T16:37:00.000Z",
+				"nextSunRise": "2024-10-14T05:48:00.000Z",
 				"homestate": "home",
 				"countryCode": "XZ",
 				"coordinates": {
@@ -915,7 +920,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-10T13:46:04.000Z",
 			"isReachable": false,
-			"lastSeen": "2024-10-11T22:02:19.000Z",
+			"lastSeen": "2024-10-13T23:06:16.000Z",
 			"attributes": {
 				"customName": "Bathroom Panel",
 				"firmwareVersion": "2.3.087",
@@ -971,7 +976,7 @@
 			"deviceType": "light",
 			"createdAt": "2024-10-10T13:48:44.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T20:53:17.000Z",
+			"lastSeen": "2024-10-13T23:21:17.000Z",
 			"customIcon": "lighting_fan",
 			"attributes": {
 				"customName": "HWR Panel",
@@ -1030,7 +1035,7 @@
 			"deviceType": "motionSensor",
 			"createdAt": "2024-10-10T14:56:23.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T20:50:16.000Z",
+			"lastSeen": "2024-10-13T23:18:17.000Z",
 			"attributes": {
 				"customName": "HWR Motion",
 				"firmwareVersion": "24.4.5",
@@ -1089,7 +1094,7 @@
 			"deviceType": "openCloseSensor",
 			"createdAt": "2024-10-10T14:00:00.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T13:52:12.000Z",
+			"lastSeen": "2024-10-13T13:31:10.000Z",
 			"customIcon": "placement_door",
 			"attributes": {
 				"customName": "Door Dining Room",
@@ -1114,7 +1119,7 @@
 			"room": {
 				"id": "921edb07-e344-4c70-a09e-11935c727f58",
 				"name": "Esszimmer",
-				"color": "ikea_lilac_no_3",
+				"color": "ikea_yellow_no_31",
 				"icon": "rooms_cutlery"
 			},
 			"deviceSet": [],
@@ -1127,7 +1132,7 @@
 			"deviceType": "openCloseSensor",
 			"createdAt": "2024-10-10T14:05:20.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T20:57:33.000Z",
+			"lastSeen": "2024-10-13T21:36:48.000Z",
 			"customIcon": "placement_door",
 			"attributes": {
 				"customName": "Entry Door",
@@ -1166,7 +1171,7 @@
 			"deviceType": "motionSensor",
 			"createdAt": "2024-10-10T14:24:07.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T18:25:36.000Z",
+			"lastSeen": "2024-10-14T05:15:44.000Z",
 			"attributes": {
 				"customName": "Bedroom Motion",
 				"firmwareVersion": "1.0.64",
@@ -1211,7 +1216,7 @@
 			"deviceType": "lightSensor",
 			"createdAt": "2024-10-10T14:24:07.000Z",
 			"isReachable": true,
-			"lastSeen": "2024-10-11T18:25:36.000Z",
+			"lastSeen": "2024-10-14T05:15:44.000Z",
 			"attributes": {
 				"customName": "",
 				"firmwareVersion": "1.0.64",
@@ -1230,6 +1235,52 @@
 				"canReceive": [
 					"customName"
 				]
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
+			"id": "9e9cb6b1-7981-443a-bd1e-5301815a25bd_1",
+			"type": "controller",
+			"deviceType": "lightController",
+			"createdAt": "2024-10-13T20:09:35.000Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-14T00:32:59.000Z",
+			"attributes": {
+				"customName": "HWR Remote",
+				"firmwareVersion": "24.4.5",
+				"hardwareVersion": "1",
+				"manufacturer": "IKEA of Sweden",
+				"model": "TRADFRI remote control",
+				"productCode": "E1810",
+				"serialNumber": "BC33ACFFFE9B308C",
+				"batteryPercentage": 30,
+				"isOn": false,
+				"lightLevel": 1,
+				"permittingJoin": false,
+				"otaPolicy": "autoUpdate",
+				"otaProgress": 0,
+				"otaScheduleEnd": "00:00",
+				"otaScheduleStart": "00:00",
+				"otaState": "readyToCheck",
+				"otaStatus": "upToDate",
+				"circadianPresets": []
+			},
+			"capabilities": {
+				"canSend": [
+					"isOn",
+					"lightLevel"
+				],
+				"canReceive": [
+					"customName"
+				]
+			},
+			"room": {
+				"id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+				"name": "Lobby HWR",
+				"color": "ikea_pink_no_4",
+				"icon": "rooms_drill"
 			},
 			"deviceSet": [],
 			"remoteLinks": [],
@@ -1370,7 +1421,7 @@
 				{
 					"id": "30e42a65-52e5-4001-9a50-210abeba6e43",
 					"type": "event",
-					"triggeredAt": "2024-10-11T20:13:52.479Z",
+					"triggeredAt": "2024-10-13T10:19:28.434Z",
 					"disabled": false,
 					"trigger": {
 						"days": [
@@ -1391,7 +1442,7 @@
 					}
 				},
 				{
-					"id": "e66ff1dd-0f89-4d2d-874d-d08b3228895c",
+					"id": "9926844c-e0e3-44d0-905a-64ed597cb730",
 					"type": "app",
 					"disabled": false
 				}
@@ -1422,8 +1473,49 @@
 			],
 			"commands": [],
 			"createdAt": "2024-10-11T15:20:24.636Z",
-			"lastCompleted": "2024-10-11T20:13:52.481Z",
-			"lastTriggered": "2024-10-11T20:13:52.481Z",
+			"lastCompleted": "2024-10-13T10:19:28.453Z",
+			"lastTriggered": "2024-10-13T10:19:28.453Z",
+			"undoAllowedDuration": 30
+		},
+		{
+			"id": "df203818-82bb-43a1-b591-8be6d2440664",
+			"info": {
+				"name": "test",
+				"icon": "scenes_briefcase"
+			},
+			"type": "userScene",
+			"triggers": [
+				{
+					"id": "91534b40-62ac-47e1-b1b0-9de25817a162",
+					"type": "app",
+					"disabled": false,
+					"endTrigger": {
+						"type": "duration",
+						"trigger": {
+							"duration": 1800
+						}
+					},
+					"endTriggerEvent": {
+						"type": "duration",
+						"trigger": {
+							"duration": 1800
+						}
+					}
+				}
+			],
+			"actions": [
+				{
+					"id": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+					"type": "device",
+					"deviceId": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+					"enabled": true,
+					"attributes": {
+						"isOn": true
+					}
+				}
+			],
+			"commands": [],
+			"createdAt": "2024-10-13T18:52:07.446Z",
 			"undoAllowedDuration": 30
 		}
 	],
@@ -1431,7 +1523,7 @@
 		{
 			"id": "921edb07-e344-4c70-a09e-11935c727f58",
 			"name": "Esszimmer",
-			"color": "ikea_lilac_no_3",
+			"color": "ikea_yellow_no_31",
 			"icon": "rooms_cutlery"
 		},
 		{
@@ -1470,5 +1562,71 @@
 			"color": "ikea_blue_no_58",
 			"icon": "rooms_sink"
 		}
-	]
+	],
+	"deviceSets": [],
+	"music": {
+		"playlists": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJwbGF5bGlzdCIsImNvbnRlbnQiOnsicGxheWxpc3QiOiIzIn19",
+				"title": "Ritzen für Intellektuelle",
+				"playItems": [
+					{
+						"title": "Ritzen für Intellektuelle",
+						"artist": "",
+						"album": "Apokalypse & Filterkaffee"
+					}
+				]
+			}
+		],
+		"favorites": [
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIyIn19",
+				"title": "80s80s Radio",
+				"type": "STREAM",
+				"imageURL": "http://cdn-radiotime-logos.tunein.com/s255597q.png"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxNyJ9fQ==",
+				"title": "ANTENNE BAYERN 103.0 (Adult Contemporary)",
+				"type": "STREAM"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxIn19",
+				"title": "Antenne Frankfurt",
+				"type": "STREAM",
+				"imageURL": "http://cdn-radiotime-logos.tunein.com/s202726q.png"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI4In19",
+				"title": "Cocktail Hour",
+				"type": "PROGRAM",
+				"imageURL": "https://sonosradio.imgix.net/placeholders/b41fe048fdceccddf08cb84461ee72a5_09.png?w=200&auto=format,compress"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxMyJ9fQ==",
+				"title": "Deep House Cat Show - Flowering Dogwood Mix - with Alex B. Groove",
+				"type": "TRACK",
+				"imageURL": "https://thumbnailer.mixcloud.com/unsafe/300x300/extaudio/7/4/5/a/953f-7a99-4673-b34a-abb706028c69"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI5In19",
+				"title": "German Zeitgeist",
+				"type": "PROGRAM",
+				"type": ""
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiIxMCJ9fQ==",
+				"title": "Neue Elektronische",
+				"type": "PROGRAM",
+				"imageURL": "https://sonosradio.imgix.net/station-images/775f1afe-d621-42c2-99bf-5dcb1d4b9742.png?w=200&auto=format,compress"
+			},
+			{
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJmYXZvcml0ZSIsImNvbnRlbnQiOnsiZmF2b3JpdGUiOiI2In19",
+				"title": "planet radio",
+				"type": "STREAM",
+				"imageURL": "https://d1uner0r1fcap8.cloudfront.net/image?w=60&image=https%3A%2F%2Fcdn-profiles.tunein.com%2Fs2726%2Fimages%2Flogog.jpg&partnerId=tunein"
+			}
+		]
+	},
+	"adaptiveProfiles": []
 }

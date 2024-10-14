@@ -453,6 +453,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void newDevice(String id) {
+        if (!config.discovery) {
+            // don't discover anything if not configured
+            return;
+        }
         if (!knownDevices.contains(id)) {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
