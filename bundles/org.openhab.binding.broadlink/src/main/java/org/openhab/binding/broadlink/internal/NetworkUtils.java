@@ -33,25 +33,6 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class NetworkUtils {
-
-    /**
-     * Check whether the host is available.
-     *
-     * @param host hostname or ip address of the host to check for availability
-     * @param timeout time in milliseconds for the check to timeout
-     * @param logger the logger to use for logging any issues
-     * @throws IOException if there is an unexpected error
-     * @throws BroadlinkHostNotReachableException when the device is not responding
-     */
-
-    public static void hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger)
-            throws IOException, BroadlinkHostNotReachableException {
-        InetAddress address = InetAddress.getByName(host);
-        if (!address.isReachable(timeout)) {
-            throw new BroadlinkHostNotReachableException("Cannot reach " + host);
-        }
-    }
-
     /**
      * Finds an InetAddress that is associated to a non-loopback device.
      *
