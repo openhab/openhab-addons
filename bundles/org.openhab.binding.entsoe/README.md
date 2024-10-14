@@ -27,7 +27,7 @@ Optional parameters are historic days, resolution, availability hour for day ahe
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)     | 0         | no       | no       |
 | resolution                    | text              | Data resolution                                                           | PT60M     | no       | no       |
-| spotPricesAvailableCetHour    | integer           | Which CET hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
+| spotPricesAvailableCetHour    | integer           | Which CET hour binding assumes new spot prices for next day is available  | 13        | no       | yes      |
 | requestTimeout                | integer           | Request timeout in seconds                                                | 30        | no       | yes      |
 
 ## Channels
