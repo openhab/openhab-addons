@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.handler;
 
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
+import java.awt.Color;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -27,7 +28,10 @@ import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.dto.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.dto.UniFiSite;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -38,6 +42,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An access point managed by the UniFi controller software.
@@ -46,6 +53,10 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDevice, UniFiAccessPointThingConfig> {
+
+    private static final int LED_BRIGHTNESS_STEP_PERCENT = 5;
+
+    private final Logger logger = LoggerFactory.getLogger(UniFiAccessPointThingHandler.class);
 
     private UniFiAccessPointThingConfig config = new UniFiAccessPointThingConfig();
 
@@ -152,8 +163,28 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     state = new QuantityType<>(device.getExperience(), Units.PERCENT);
                 }
                 break;
+            case CHANNEL_AP_LED_OVERRIDE:
+                state = OnOffType.from(!"default".equals(device.getLedOverride()));
+                break;
+            case CHANNEL_AP_LED_COLOR:
+                state = getLedColorState(device);
+                break;
         }
         return state;
+    }
+
+    private State getLedColorState(final UniFiDevice device) {
+        if ("off".equals(device.getLedOverride())) {
+            return HSBType.BLACK;
+        }
+        String overrideColor = device.getLedOverrideColor();
+        Integer overrideBrightness = device.getLedOverrideColorBrightness();
+        if (overrideColor == null || overrideBrightness == null) {
+            return UnDefType.UNDEF;
+        }
+        Color color = Color.decode(overrideColor);
+        HSBType hsb = HSBType.fromRGB(color.getRed(), color.getGreen(), color.getBlue());
+        return new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(overrideBrightness));
     }
 
     @Override
@@ -171,6 +202,10 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
 
         if (CHANNEL_AP_ENABLE.equals(channelID) && command instanceof OnOffType onOffCommand) {
             return handleEnableCommand(controller, device, channelUID, onOffCommand);
+        } else if (CHANNEL_AP_LED_OVERRIDE.equals(channelID) && command instanceof OnOffType onOffCommand) {
+            return handleLedOverrideCommand(controller, device, channelUID, onOffCommand);
+        } else if (CHANNEL_AP_LED_COLOR.equals(channelID)) {
+            return handleLedColorCommand(controller, device, channelUID, command);
         }
         return false;
     }
@@ -180,5 +215,60 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
         controller.disableAccessPoint(device, command == OnOffType.OFF);
         refresh();
         return true;
+    }
+
+    private boolean handleLedOverrideCommand(final UniFiController controller, final UniFiDevice device,
+            final ChannelUID channelUID, final OnOffType command) throws UniFiException {
+        controller.setLedOverride(device, command == OnOffType.ON ? "on" : "default", "", null);
+        refresh();
+        return true;
+    }
+
+    private boolean handleLedColorCommand(final UniFiController controller, final UniFiDevice device,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
+        String newOverride = "", newColor = "";
+        Integer newBrightness = null;
+
+        if (command instanceof HSBType hsbCommand) {
+            int brightness = hsbCommand.getBrightness().intValue();
+            HSBType fullColor = new HSBType(hsbCommand.getHue(), hsbCommand.getSaturation(), PercentType.HUNDRED);
+            Color color = new Color(ColorUtil.hsbTosRgb(fullColor));
+            newOverride = brightness == 0 ? "off" : "on";
+            newBrightness = brightness;
+            newColor = "#%02x%02x%02x".formatted(color.getRed(), color.getGreen(), color.getBlue());
+        } else if (command instanceof PercentType brightnessCommand) {
+            int brightness = brightnessCommand.intValue();
+            newOverride = brightness == 0 ? "off" : "on";
+            newBrightness = brightness;
+        } else {
+            Integer currentOverrideBrightness = device.getLedOverrideColorBrightness();
+            if (currentOverrideBrightness == null) {
+                logger.warn("Failed to handle command {} since current state is missing", command);
+                return false;
+            }
+            int currentBrightness = currentOverrideBrightness.intValue();
+
+            if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                int brightness = switch (increaseDecreaseCommand) {
+                    case INCREASE -> currentBrightness + LED_BRIGHTNESS_STEP_PERCENT;
+                    case DECREASE -> currentBrightness - LED_BRIGHTNESS_STEP_PERCENT;
+                };
+                brightness = brightness < 0 ? 0 : brightness > 100 ? 100 : brightness;
+                newOverride = brightness == 0 ? "off" : "on";
+                newBrightness = brightness;
+            } else if (command instanceof OnOffType) {
+                newOverride = command == OnOffType.ON ? "on" : "off";
+                newBrightness = command == OnOffType.ON && currentBrightness == 0 ? 100 : null;
+            }
+        }
+
+        boolean isOverridden = !"default".equals(device.getLedOverride());
+        if ((!newOverride.isEmpty() && isOverridden) || !newColor.isEmpty() || newBrightness != null) {
+            controller.setLedOverride(device, isOverridden ? newOverride : "", newColor, newBrightness);
+            refresh();
+            return true;
+        } else {
+            return false;
+        }
     }
 }
