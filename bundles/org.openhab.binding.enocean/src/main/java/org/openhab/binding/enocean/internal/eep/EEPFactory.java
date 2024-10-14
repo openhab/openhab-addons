@@ -36,6 +36,7 @@ import org.openhab.binding.enocean.internal.messages.EventMessage;
 import org.openhab.binding.enocean.internal.messages.EventMessage.EventMessageType;
 import org.openhab.binding.enocean.internal.messages.responses.SMACKTeachInResponse;
 import org.openhab.core.util.HexUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

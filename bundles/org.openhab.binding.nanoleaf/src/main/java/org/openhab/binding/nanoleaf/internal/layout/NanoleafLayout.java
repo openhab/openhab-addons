@@ -30,6 +30,7 @@ import org.openhab.binding.nanoleaf.internal.model.GlobalOrientation;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
 import org.openhab.binding.nanoleaf.internal.model.PositionDatum;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

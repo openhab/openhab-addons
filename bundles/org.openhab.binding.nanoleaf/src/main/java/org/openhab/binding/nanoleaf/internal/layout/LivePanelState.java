@@ -15,6 +15,7 @@ package org.openhab.binding.nanoleaf.internal.layout;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nanoleaf.internal.colors.NanoleafPanelColors;
 import org.openhab.core.library.types.HSBType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

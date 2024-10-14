@@ -44,6 +44,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluSensorHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

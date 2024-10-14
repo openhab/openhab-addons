@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import javax.measure.Unit;
 
+import org.bson.Document;
 import org.bson.types.Binary;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,8 +53,10 @@ import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria.Operator;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

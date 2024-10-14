@@ -29,6 +29,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

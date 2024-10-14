@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.model.script.engine.action.ActionDoc;
 import org.openhab.io.openhabcloud.internal.CloudService;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

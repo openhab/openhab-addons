@@ -43,8 +43,10 @@ import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

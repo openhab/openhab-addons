@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.daikinmadoka.internal.model.commands.BRC1HCommand;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

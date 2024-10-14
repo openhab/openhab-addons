@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.core.thing.ThingTypeUID;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

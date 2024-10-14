@@ -17,12 +17,12 @@ import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
-import java.net.http.HttpClient;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
@@ -30,6 +30,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

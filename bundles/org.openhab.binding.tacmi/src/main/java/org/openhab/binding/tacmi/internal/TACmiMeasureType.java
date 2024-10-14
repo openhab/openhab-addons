@@ -13,6 +13,7 @@
 package org.openhab.binding.tacmi.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

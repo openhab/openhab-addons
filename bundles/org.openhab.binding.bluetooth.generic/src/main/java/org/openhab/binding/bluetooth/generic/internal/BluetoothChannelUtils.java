@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,12 +25,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.bluetooth.gattparser.BluetoothGattParser;
 import org.openhab.bluetooth.gattparser.FieldHolder;
 import org.openhab.bluetooth.gattparser.GattRequest;
+import org.openhab.bluetooth.gattparser.spec.Enumeration;
+import org.openhab.bluetooth.gattparser.spec.Field;
 import org.openhab.bluetooth.gattparser.spec.FieldFormat;
 import org.openhab.bluetooth.gattparser.spec.FieldType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

@@ -19,6 +19,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import org.openhab.binding.sinope.internal.util.ByteUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
