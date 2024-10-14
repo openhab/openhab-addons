@@ -12,14 +12,14 @@ This binding supports a range of home networking devices made by (and occasional
 | mp2        | Broadlink MP2 WiFi Smart Power Strip (3 sockets, 3 USB)                       |
 | sp1        | Broadlink SP1 WiFi Smart Socket                                               |
 | sp2        | Broadlink SP2 WiFi Smart Socket with night light                              |
-| sp2s       | OEM SP2 Mini WiFi Smart Socket with night light                               |
+| sp2-s      | OEM SP2 Mini WiFi Smart Socket with night light                               |
 | sp3        | Broadlink SP3/Mini WiFi Smart Socket with night light                         |
-| sp3s       | Broadlink SP3s WiFi Smart Socket with Power Meter                             |
+| sp3-s      | Broadlink SP3s WiFi Smart Socket with Power Meter                             |
 | rm-pro     | Broadline RM Pro WiFi IR/RF Transmitter with temperature sensor               |
 | rm3        | Broadlink RM3/Mini WiFi IR Transmitter                                        |
-| rm3q       | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                        |
-| rm4pro     | Broadlink RM4 Pro WiFi RF/IR Transmitter with temperature and humidity sensors|
-| rm4mini    | Broadlink RM4 mini WiFi IR Transmitter                                        |
+| rm3-q      | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                        |
+| rm4-pro    | Broadlink RM4 Pro WiFi RF/IR Transmitter with temperature and humidity sensors|
+| rm4-mini   | Broadlink RM4 mini WiFi IR Transmitter                                        |
 
 ## Discovery
 
