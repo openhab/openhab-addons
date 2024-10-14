@@ -1,38 +1,24 @@
-DIRIGERA HANDLER update received for type deviceStateChanged - {
-	"data": {
-		"deviceType": "speaker",
-		"remoteLinks": [],
-		"lastSeen": "2024-10-11T12:55:19.777Z",
-		"attributes": {
-			"playbackModes": {
-				"repeat": "off",
-				"shuffle": false,
-				"crossfade": false
-			},
-			"playbackPosition": {
-				"position": 1565710,
-				"timestamp": "2024-10-11T12:55:19.770Z"
-			},
-			"playbackAvailableActions": {
-				"playbackNext": true,
-				"repeat": [
-					"off",
-					"playItem",
-					"playlist"
-				],
-				"playbackPrev": true,
-				"shuffle": true,
-				"seek": true,
-				"crossfade": true,
-				"pause": true
-			}
-		},
-		"id": "338bb721-35bb-4775-8cd0-ba70fc37ab10_1",
-		"type": "speaker"
+{
+	"playbackModes": {
+		"repeat": "playlist",
+		"shuffle": false,
+		"crossfade": false
 	},
-	"specversion": "3.163.0",
-	"id": "104f9876-1c46-4673-98f0-b956544b751b",
-	"time": "2024-10-11T12:55:19.777Z",
-	"source": "urn:com:ikea:homesmart:iotc:sonosd",
-	"type": "deviceStateChanged"
-}
+	"playbackPosition": {
+		"position": 536107,
+		"timestamp": "2024-10-11T13:19:34.931Z"
+	},
+	"playbackAvailableActions": {
+		"playbackNext": true,
+		"repeat": [
+			"off",
+			"playItem",
+			"playlist"
+		],
+		"playbackPrev": true,
+		"shuffle": true,
+		"seek": true,
+		"crossfade": true,
+		"pause": true
+	}
+},"id":"338bb721-35bb-4775-8cd0-ba70fc37ab10_1","type":"speaker"}

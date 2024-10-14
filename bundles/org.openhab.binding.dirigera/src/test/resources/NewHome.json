@@ -83,7 +83,7 @@
 			"isReachable": true,
 			"lastSeen": "2024-10-09T17:28:16.000Z",
 			"attributes": {
-				"customName": "Stehlampe",
+				"customName": "Floor Lamp",
 				"model": "TRADFRI bulb E27 CWS opal 600lm",
 				"manufacturer": "IKEA of Sweden",
 				"firmwareVersion": "2.3.086",
@@ -584,8 +584,8 @@
 			"isReachable": true,
 			"lastSeen": "2024-10-09T17:39:39.000Z",
 			"attributes": {
-				"customName": "Lampe Links",
-				"model": "TRADFRI bulb E14 WS candle 470lm",
+				"customName": "",
+				"model": "",
 				"manufacturer": "IKEA of Sweden",
 				"firmwareVersion": "3.0.8",
 				"hardwareVersion": "1",

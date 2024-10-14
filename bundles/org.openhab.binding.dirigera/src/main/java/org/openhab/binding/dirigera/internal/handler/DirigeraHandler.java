@@ -124,7 +124,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         // get token from storage
         token = getTokenFromStorage();
         if (token.isBlank()) {
-            logger.info("DIRIGERA HANDLER no token in storage");
+            logger.warn("DIRIGERA HANDLER no token in storage");
         } else {
             logger.info("DIRIGERA HANDLER obtained token {} from storage", token);
         }
