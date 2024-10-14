@@ -49,11 +49,6 @@ public class Model {
         this.gateway = gateway;
     }
 
-    public Model(Gateway gateway, String model) {
-        this.model = new JSONObject(model);
-        this.gateway = gateway;
-    }
-
     /**
      * All functions synchronized in order to keep it thread-safe.
      * No query shall happen in parallel to an update
@@ -75,6 +70,17 @@ public class Model {
         } catch (Throwable t) {
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
+    }
+
+    /**
+     * only used for unit testing
+     */
+    public synchronized void update(String modelString) {
+        this.model = new JSONObject(modelString);
+        List<Object> newDevices = getAllIds().toList();
+        newDevices.forEach(deviceId -> {
+            gateway.newDevice(deviceId.toString());
+        });
     }
 
     public synchronized JSONArray getAllIds() {
@@ -201,12 +207,16 @@ public class Model {
                 }
             }
             if (attributes.has(DEVICE_MODEL)) {
-                return attributes.getString(DEVICE_MODEL);
-            } else if (deviceObject.has(DEVICE_TYPE)) {
+                String deviceModel = attributes.getString(DEVICE_MODEL);
+                if (!deviceModel.isBlank()) {
+                    return deviceModel;
+                }
+            }
+            if (deviceObject.has(DEVICE_TYPE)) {
                 return deviceObject.getString(DEVICE_TYPE);
             }
             // 3 fallback options
         }
-        return PROPERTY_EMPTY;
+        return id;
     }
 }
