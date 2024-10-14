@@ -19,12 +19,11 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.broadlink.internal.handler.BroadlinkHostNotReachableException;
 import org.openhab.core.net.NetUtil;
-import org.slf4j.Logger;
 
 /**
  * Utilities for working with the local network.
@@ -84,14 +83,22 @@ public class NetworkUtils {
      * @param from port number of the start of the range
      * @param to port number of the end of the range
      * @return number of the available port
+     * @throws TimeoutException when no available port can be found in 30 seconds
      */
-    public static int nextFreePort(InetAddress host, int from, int to) {
+    public static int nextFreePort(InetAddress host, int from, int to) throws TimeoutException {
+        if (to < from) {
+            throw new IllegalArgumentException("To value is smaller than from value.");
+        }
         int port = randInt(from, to);
+        long startTime = System.currentTimeMillis();
         do {
             if (isLocalPortFree(host, port)) {
                 return port;
             }
             port = ThreadLocalRandom.current().nextInt(from, to);
+            if (System.currentTimeMillis() - startTime > 30000) {
+                throw new TimeoutException("Cannot find an available port in the specified range");
+            }
         } while (true);
     }
 

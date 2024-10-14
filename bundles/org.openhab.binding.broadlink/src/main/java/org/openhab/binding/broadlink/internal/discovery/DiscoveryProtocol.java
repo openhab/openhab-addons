@@ -14,6 +14,7 @@ package org.openhab.binding.broadlink.internal.discovery;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.broadlink.internal.BroadlinkProtocol;
@@ -67,6 +68,10 @@ public class DiscoveryProtocol {
             BroadlinkSocket.sendMessage(message, "255.255.255.255", 80, logger);
         } catch (UnknownHostException e) {
             logger.warn("Failed to initiate discovery: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Failed to find free port: {}", e.getMessage());
+        } catch (TimeoutException e) {
+            logger.warn("Cannot find a port to discovber new devices");
         }
     }
 
