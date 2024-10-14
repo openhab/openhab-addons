@@ -540,6 +540,22 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
                     logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
+                if (cx2e == null) {
+                    // switch channel to readOnly
+                    this.fieldType = FieldType.READ_ONLY;
+                    if (type == Type.NUMERIC_FORM || type == Type.TIME_PERIOD) {
+                        if ("DateTime".equals(channelType)) {
+                            ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_DATE_TIME_RO_UID;
+                        } else {
+                            ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID;
+                        }
+                        type = Type.READ_ONLY_NUMERIC;
+                    } else {
+                        ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
+                        type = Type.READ_ONLY_STATE;
+                    }
+
+                }
             }
             if (e != null && !channelType.equals(e.channel.getAcceptedItemType())) {
                 // channel type has changed. we have to rebuild the channel.
