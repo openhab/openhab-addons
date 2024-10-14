@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DirigeraConfiguration extends BaseDeviceConfiguration {
 
     public String ipAddress = "";
-    // public String token = "";
+    public boolean discovery = true;
 
     @Override
     public String toString() {
