@@ -225,6 +225,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
             Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
             if (vehicleArray == null) {
+                logger.debug("Response resulted in unexpected null array");
                 return new Vehicle[0];
             }
             for (Vehicle vehicle : vehicleArray) {

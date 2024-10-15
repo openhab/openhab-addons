@@ -66,6 +66,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -150,17 +151,13 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected String lastState = "";
     protected boolean isInactive = false;
 
-    @Nullable
-    protected TeslaAccountHandler account;
+    protected @NonNullByDefault({}) TeslaAccountHandler account;
 
-    @Nullable
-    protected QueueChannelThrottler stateThrottler;
-    protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
-    @Nullable
-    protected Thread eventThread;
-    @Nullable
-    protected ScheduledFuture<?> stateJob;
+    protected @Nullable QueueChannelThrottler stateThrottler;
+    protected @Nullable Thread eventThread;
+    protected @Nullable ScheduledFuture<?> stateJob;
     protected WebSocketFactory webSocketFactory;
+    protected TeslaChannelSelectorProxy teslaChannelSelectorProxy = new TeslaChannelSelectorProxy();
 
     private final Gson gson = new Gson();
 
@@ -184,8 +181,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 .requireNonNullElse((boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDRIVESTATE), false);
         useAdvancedStates = Objects
                 .requireNonNullElse((boolean) getConfig().get(TeslaBindingConstants.CONFIG_USEDADVANCEDSTATES), false);
-
-        account = (TeslaAccountHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null || !(bridge.getHandler() instanceof TeslaAccountHandler teslaAccountHandler)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            return;
+        }
+        account = teslaAccountHandler;
         lock = new ReentrantLock();
         scheduler.execute(this::queryVehicleAndUpdate);
 
@@ -202,8 +203,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 TimeUnit.MILLISECONDS);
 
         if (enableEvents) {
-            eventThread = new Thread(eventRunnable, "OH-binding-" + getThing().getUID() + "-events");
+            Thread eventThread = new Thread(eventRunnable, "OH-binding-" + getThing().getUID() + "-events");
             eventThread.start();
+            this.eventThread = eventThread;
         }
     }
 
@@ -251,7 +253,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             setActive();
 
             // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
-            // throttled so we are safe not to break the Tesla SLA
+            // throbridgettled so we are safe not to break the Tesla SLA
             requestAllData();
         } else if (selector != null) {
             if (!isAwake() && allowWakeUpForCommands) {
@@ -812,6 +814,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
                     Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
                     if (vehicleArray == null) {
+                        logger.debug("Response resulted in unexpected null array");
                         return null;
                     }
                     for (Vehicle vehicle : vehicleArray) {
@@ -907,11 +910,11 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
                     logger.trace("Drive state: {}", driveState.shiftState);
 
-                    if ((driveState.shiftState == null) && (lastValidDriveStateNotNull)) {
+                    if ((driveState != null && driveState.shiftState == null) && (lastValidDriveStateNotNull)) {
                         logger.debug("Set NULL shiftstate time");
                         lastValidDriveStateNotNull = false;
                         lastDriveStateChangeToNullTimestamp = System.currentTimeMillis();
-                    } else if (driveState.shiftState != null) {
+                    } else if (driveState != null && driveState.shiftState != null) {
                         logger.trace("Clear NULL shiftstate time");
                         lastValidDriveStateNotNull = true;
                     }
@@ -1044,7 +1047,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
         @Override
         public void run() {
-            eventEndpoint = new TeslaEventEndpoint(getThing().getUID(), webSocketFactory);
+            TeslaEventEndpoint eventEndpoint = new TeslaEventEndpoint(getThing().getUID(), webSocketFactory);
             eventEndpoint.addEventHandler(new TeslaEventEndpoint.EventHandler() {
                 @Override
                 public void handleEvent(@Nullable Event event) {
@@ -1136,7 +1139,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
                 }
             });
-
+            this.eventEndpoint = eventEndpoint;
             while (true) {
                 try {
                     if (getThing().getStatus() == ThingStatus.ONLINE) {
@@ -1214,6 +1217,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 if (Thread.interrupted()) {
                     logger.debug("Event : The event thread was interrupted");
                     eventEndpoint.close();
+                    this.eventEndpoint = eventEndpoint;
                     return;
                 }
             }

@@ -62,16 +62,12 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
     private final Gson gson = new Gson();
 
     public TeslaEventEndpoint(ThingUID uid, WebSocketFactory webSocketFactory) {
-        try {
-            this.endpointId = "TeslaEventEndpoint-" + uid.getAsString();
+        this.endpointId = "TeslaEventEndpoint-" + uid.getAsString();
 
-            String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
-            client = webSocketFactory.createWebSocketClient(name);
-            this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
-            this.client.setMaxIdleTimeout(IDLE_TIMEOUT_MILLISECONDS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        String name = ThingWebClientUtil.buildWebClientConsumerName(uid, null);
+        client = webSocketFactory.createWebSocketClient(name);
+        this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
+        this.client.setMaxIdleTimeout(IDLE_TIMEOUT_MILLISECONDS);
     }
 
     public void close() {
@@ -125,9 +121,9 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
     }
 
     public void closeConnection() {
+        Session session = this.session;
         try {
             connectionState = ConnectionState.CLOSING;
-            Session session = this.session;
             if (session != null && session.isOpen()) {
                 logger.debug("{} : Closing the session", endpointId);
                 session.close(StatusCode.NORMAL, "bye");
@@ -179,10 +175,9 @@ public class TeslaEventEndpoint implements WebSocketListener, WebSocketPingPongL
     }
 
     @Override
-    public void onWebSocketError(@Nullable Throwable cause) {
+    public void onWebSocketError(Throwable cause) {
+        logger.error("{} : An error occurred in the session : {}", endpointId, cause.getMessage());
         Session session = this.session;
-        logger.error("{} : An error occurred in the session : {}", endpointId,
-                (cause != null) ? cause.getMessage() : "Unknown");
         if (session != null && session.isOpen()) {
             session.close(StatusCode.ABNORMAL, "Session Error");
         }
