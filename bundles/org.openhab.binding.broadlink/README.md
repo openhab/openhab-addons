@@ -112,6 +112,54 @@ Items file example; `sockets.items`:
 Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:power-on" } 
 ```
 
+
+Thing file example; `rm.things`:
+
+```java
+Thing broadlink:rm4pro:IR_Downstairs "RM 4 Pro IR controller"  [ macAddress="e8:16:56:1c:7e:b9", ipAddress="192.168.178.234" ]
+Thing broadlink:rm3q:IR_Upstairs "RM 3 IR controller"  [ macAddress="24:df:a7:df:0d:53", ipAddress="192.168.178.232" ]
+```
+
+Items file example; `rm.items`:
+
+```java
+Switch DownstairsAC
+
+Number:Temperature DownstairsTemperature "Temperature downstairs" <temperature> ["Temperature", "Measurement"] { channel="broadlink:rm4pro:IR_Downstairs:temperature", unit="°C", stateDescription=" " [pattern="%.1f %unit%"]} 
+Number:Dimensionless DownstairsHumidity "Humidity downstairs" <humidity> { channel="broadlink:rm4pro:IR_Downstairs:humidity", unit="%" }
+
+String IR_Downstairs "Downstairs IR control" { channel="broadlink:rm4pro:IR_Downstairs:command" }
+```
+
+Rule file example; `AC.rules`:
+
+```java
+rule " AC_Control started"
+when
+  System started
+then
+  DownstairsAC.sendCommand(OFF)
+  IR_Downstairs.sendCommand("AC_OFF")
+end
+
+rule "Downstairs AC Off"
+when
+  Item DownstairsAC changed to OFF
+then
+  IR_Downstairs.sendCommand("AC_OFF")
+end
+
+rule "Downstairs AC On"
+when
+  Item DownstairsAC changed to ON
+then
+  IR_Downstairs.sendCommand("AC_ON")
+end
+```
+
+This rule file assumes you previously have learned the "AC_ON" and "AC_OFF" IR commands.
+
+
 ## Migrating Legacy Map File
 
 Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution.
