@@ -78,19 +78,15 @@ public class SpeakerHandler extends BaseDeviceHandler {
                                     : "playbackPaused");
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else if (command instanceof NextPreviousType nextPrevious) {
                             String playState = (NextPreviousType.NEXT.equals(nextPrevious) ? "playbackNext"
                                     : "playbackPrevious");
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -100,10 +96,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
                         if (command instanceof PercentType percent) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, percent.intValue());
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -113,10 +107,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
                         if (command instanceof OnOffType onOff) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -132,10 +124,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
                             mode.put("shuffle", onOff.equals(OnOffType.ON));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -147,10 +137,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
                             mode.put("crossfade", onOff.equals(OnOffType.ON));
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -176,10 +164,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
                                 mode.put("repeat", repeatModeStr);
                                 JSONObject attributes = new JSONObject();
                                 attributes.put("playbackModes", mode);
-                                JSONObject data = new JSONObject();
-                                data.put(Model.ATTRIBUTES, attributes);
-                                logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", data);
-                                gateway().api().sendPatch(config.id, data);
+                                logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
+                                gateway().api().sendPatch(config.id, attributes);
                             }
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,

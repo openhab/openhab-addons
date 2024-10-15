@@ -91,10 +91,8 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                         if (command instanceof OnOffType onOff) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
                                     command, channel);
@@ -104,10 +102,8 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                         if (command instanceof PercentType percent) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, percent.intValue());
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
                                     command, channel);
@@ -118,10 +114,8 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                             int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, kelvin);
-                            JSONObject data = new JSONObject();
-                            data.put(Model.ATTRIBUTES, attributes);
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", data);
-                            gateway().api().sendPatch(config.id, data);
+                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
                                     command, channel);

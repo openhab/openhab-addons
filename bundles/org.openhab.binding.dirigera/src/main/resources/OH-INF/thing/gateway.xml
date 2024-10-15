@@ -21,6 +21,10 @@
 				<label>Sunset</label>
 				<description>Date and time of sunset but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
 			</channel>
+			<channel id="pairing" typeId="switch">
+				<label>Pairing</label>
+				<description>Sets DIRIGERA hub into pairing mode</description>
+			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
@@ -29,7 +33,7 @@
 				<label>OTA State</label>
 				<description>Over-the-air current state</description>
 			</channel>
-			<channel id="ota-progress" typeId="percent">
+            <channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
 				<description>Over-the-air current progress if state is download in progress</description>
 			</channel>
