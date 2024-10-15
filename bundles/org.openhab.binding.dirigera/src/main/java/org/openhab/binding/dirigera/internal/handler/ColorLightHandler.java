@@ -79,10 +79,8 @@ public class ColorLightHandler extends BaseDeviceHandler {
                         JSONObject colorAttributes = new JSONObject();
                         colorAttributes.put("colorHue", hsb.getHue().intValue());
                         colorAttributes.put("colorSaturation", Math.round(hsb.getSaturation().doubleValue() / 100));
-                        JSONObject colorData = new JSONObject();
-                        colorData.put(Model.ATTRIBUTES, colorAttributes);
-                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorData);
-                        gateway().api().sendPatch(config.id, colorData);
+                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
+                        gateway().api().sendPatch(config.id, colorAttributes);
                         colorSendToAPI = true;
                     }
                     if (hsb.getBrightness().intValue() == hsbCurrent.getBrightness().intValue()) {
@@ -99,18 +97,14 @@ public class ColorLightHandler extends BaseDeviceHandler {
                         }
                         JSONObject brightnessattributes = new JSONObject();
                         brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                        JSONObject brightnesssData = new JSONObject();
-                        brightnesssData.put(Model.ATTRIBUTES, brightnessattributes);
-                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnesssData);
-                        gateway().api().sendPatch(config.id, brightnesssData);
+                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnessattributes);
+                        gateway().api().sendPatch(config.id, brightnessattributes);
                     }
                 } else if (command instanceof OnOffType onOff) {
                     JSONObject attributes = new JSONObject();
                     attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                    JSONObject data = new JSONObject();
-                    data.put(Model.ATTRIBUTES, attributes);
-                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", data);
-                    gateway().api().sendPatch(config.id, data);
+                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
+                    gateway().api().sendPatch(config.id, attributes);
                 }
             } else {
                 logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);

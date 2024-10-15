@@ -56,6 +56,7 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
@@ -67,6 +68,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +115,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String channel = channelUID.getIdWithoutGroup();
+        if (command instanceof RefreshType) {
+            JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
+            handleUpdate(values);
+        } else if (CHANNEL_PAIRING.equals(channel)) {
+            JSONObject permissionAttributes = new JSONObject();
+            permissionAttributes.put(PROPERTY_PERMIT_JOIN, OnOffType.ON.equals(command));
+            api().sendPatch(config.id, permissionAttributes);
+        }
     }
 
     @Override
@@ -214,6 +225,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             // when done do:
             modelUpdater = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 5, 5, TimeUnit.MINUTES));
             heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
+
+            // update latest model data
+            System.out.println("ID " + config.id);
+            JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
+            handleUpdate(values);
+
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -475,7 +492,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
             } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
-                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
                 // ignore gateway findings
             } else {
                 String customName = model().getCustonNameFor(id);
@@ -579,6 +595,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         if (data.has(Model.ATTRIBUTES)) {
             JSONObject attributes = data.getJSONObject(Model.ATTRIBUTES);
             // check ota for each device
+            if (attributes.has(PROPERTY_PERMIT_JOIN)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_PAIRING),
+                        OnOffType.from(attributes.getBoolean(PROPERTY_PERMIT_JOIN)));
+            }
             if (attributes.has(PROPERTY_OTA_STATUS)) {
                 String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
                 if (OTA_STATUS_MAP.containsKey(otaStatusString)) {

@@ -40,6 +40,7 @@ import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.RepeaterHandler;
 import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
@@ -119,12 +120,12 @@ class TestDeviceHandler {
         // prepare persistence data
         JSONObject storageObject = new JSONObject();
         JSONArray knownDevices = new JSONArray();
-        knownDevices.put("1234");
+        knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
         storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "1234");
         // now mock it
         Storage<String> mockStorage = mock(Storage.class);
-        when(mockStorage.get("1234")).thenReturn(storageObject.toString());
+        when(mockStorage.get("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1")).thenReturn(storageObject.toString());
 
         // prepare instances
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
@@ -138,7 +139,7 @@ class TestDeviceHandler {
         // set handler to full configured with token, ipAddress and if
         Map<String, Object> config = new HashMap<>();
         config.put("ipAddress", ipAddress);
-        config.put("id", "1234");
+        config.put("id", "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
         hubHandler.handleConfigurationUpdate(config);
 
         hubHandler.initialize();
@@ -398,5 +399,39 @@ class TestDeviceHandler {
         assertNotNull(dateTimeState);
         assertTrue(dateTimeState instanceof DateTimeType);
         assertEquals("2024-10-15T14:49:03.028+0200", ((DateTimeType) dateTimeState).toFullString(), "Last trigger");
+    }
+
+    @Test
+    void testRepeater() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_REPEATER, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        RepeaterHandler handler = new RepeaterHandler(thing, REPEATER_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "044b63e7-999d-4caa-8a76-fb8cfd32b381_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+
+        // test only ota
+        State otaStatus = callback.getState("dirigera:repeater:test-device:ota-status");
+        assertNotNull(otaStatus);
+        assertTrue(otaStatus instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
+        State otaState = callback.getState("dirigera:repeater:test-device:ota-state");
+        assertNotNull(otaState);
+        assertTrue(otaState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
+        State otaProgess = callback.getState("dirigera:repeater:test-device:ota-progress");
+        assertNotNull(otaProgess);
+        assertTrue(otaProgess instanceof QuantityType);
+        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
     }
 }

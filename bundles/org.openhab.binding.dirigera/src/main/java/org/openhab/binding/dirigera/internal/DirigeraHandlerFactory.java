@@ -25,6 +25,7 @@ import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.RepeaterHandler;
 import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
@@ -117,6 +118,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new SpeakerHandler(thing, SPEAKER_MAP);
         } else if (THING_TYPE_SCENE.equals(thingTypeUID)) {
             return new SceneHandler(thing, SCENE_MAP, timeZoneProvider);
+        } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
+            return new RepeaterHandler(thing, REPEATER_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;

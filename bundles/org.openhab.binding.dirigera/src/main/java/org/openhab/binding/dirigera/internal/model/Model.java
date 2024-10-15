@@ -204,6 +204,9 @@ public class Model {
                             case DEVICE_TYPE_SPEAKER:
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SPEAKER.toString(), id);
                                 return THING_TYPE_SPEAKER;
+                            case DEVICE_TYPE_REPEATER:
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_REPEATER.toString(), id);
+                                return THING_TYPE_REPEATER;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);

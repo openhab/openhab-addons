@@ -16,7 +16,6 @@ import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -121,10 +120,11 @@ public class Websocket {
                 JSONObject pingObject = new JSONObject();
                 pingObject.put("id", UUID.randomUUID().toString());
                 pingObject.put("time", Instant.now().toString());
-                // pingObject.put("specversion", session.getProtocolVersion());
+                pingObject.put("specversion", session.getProtocolVersion());
                 pingObject.put("source", "urn:openhab:dirigera");
                 logger.info("DIRIGERA_WS ping {}", pingObject.toString());
-                session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+                // session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+                session.getRemote().sendString(pingObject.toString());
                 increase(PINGS);
             } catch (IOException e) {
                 logger.info("DIRIGERA ping failed with exception {}", e.getMessage());
