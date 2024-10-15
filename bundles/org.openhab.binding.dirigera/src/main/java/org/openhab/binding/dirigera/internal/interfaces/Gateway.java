@@ -42,4 +42,6 @@ public interface Gateway {
     public void newDevice(String id);
 
     public void websocketUpdate(JSONObject update);
+
+    public void newScene(String id, String name);
 }

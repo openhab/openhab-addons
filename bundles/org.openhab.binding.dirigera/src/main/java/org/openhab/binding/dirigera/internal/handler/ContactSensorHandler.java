@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_STATE;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class ContactSensorHandler extends BaseDeviceHandler {
         super.initialize();
         gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
-        JSONObject values = gateway().model().getAllFor(config.id);
+        JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
         logger.warn("DIRIGERA MOTION_DEVICE values for initial update {}", values);
         handleUpdate(values);
     }
@@ -59,7 +59,7 @@ public class ContactSensorHandler extends BaseDeviceHandler {
         String channel = channelUID.getIdWithoutGroup();
         logger.trace("DIRIGERA MOTION_DEVICE handle command {} for {}", command, channel);
         if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id);
+            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
             handleUpdate(values);
         }
     }
