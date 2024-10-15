@@ -37,11 +37,12 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
     public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
+    public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER);
+            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -49,9 +50,11 @@ public class Constants {
     public static final String TOKEN_URL = BASE_URL + "/oauth/token";
     public static final String HOME_URL = BASE_URL + "/home";
     public static final String DEVICE_URL = BASE_URL + "/devices/%s";
+    public static final String SCENE_URL = BASE_URL + "/scenes/%s";
 
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_DEVICES = "devices";
+    public static final String PROPERTY_SCENES = "scenes";
     public static final String PROPERTY_DEVICE_ID = "id";
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_TOKEN = "token";
@@ -116,8 +119,13 @@ public class Constants {
     public static final String CHANNEL_CROSSFADE = "crossfade";
     public static final String CHANNEL_IMAGE = "image";
 
+    // Scene channels
+    public static final String CHANNEL_TRIGGER = "trigger";
+    public static final String CHANNEL_LAST_TRIGGER = "last-trigger";
+
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
+    public static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";
 
     // Mappings for ota
     public static final Map<String, Integer> OTA_STATUS_MAP = Map.of("upToDate", 0, "updateAvailable", 1);
@@ -148,4 +156,5 @@ public class Constants {
             "isDetected", CHANNEL_MOTION_DETECTION);
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isOpen", CHANNEL_STATE);
+    public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
 }

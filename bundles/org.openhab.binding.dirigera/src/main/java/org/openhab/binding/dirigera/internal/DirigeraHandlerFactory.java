@@ -25,6 +25,7 @@ import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
@@ -114,6 +115,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new SmartPlugHandler(thing, SMART_PLUG_MAP);
         } else if (THING_TYPE_SPEAKER.equals(thingTypeUID)) {
             return new SpeakerHandler(thing, SPEAKER_MAP);
+        } else if (THING_TYPE_SCENE.equals(thingTypeUID)) {
+            return new SceneHandler(thing, SCENE_MAP, timeZoneProvider);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;

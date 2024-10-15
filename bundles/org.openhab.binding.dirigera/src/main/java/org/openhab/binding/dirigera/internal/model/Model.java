@@ -40,6 +40,7 @@ public class Model {
 
     public final static String REACHABLE = "isReachable";
     public final static String ATTRIBUTES = "attributes";
+    public final static String SCENES = "scenes";
     public final static String CUSTOM_NAME = "customName";
     public final static String DEVICE_MODEL = "model";
     public final static String DEVICE_TYPE = "deviceType";
@@ -68,6 +69,7 @@ public class Model {
                 newDevices.forEach(deviceId -> {
                     gateway.newDevice(deviceId.toString());
                 });
+                sceneUpdate();
             }
         } catch (Throwable t) {
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
@@ -107,6 +109,26 @@ public class Model {
             }
         }
         return returnArray;
+    }
+
+    private void sceneUpdate() {
+        if (!model.isNull(SCENES)) {
+            JSONArray scenes = model.getJSONArray(SCENES);
+            Iterator<Object> sceneIterator = scenes.iterator();
+            while (sceneIterator.hasNext()) {
+                JSONObject entry = (JSONObject) sceneIterator.next();
+
+                if (entry.has(PROPERTY_DEVICE_ID)) {
+                    String id = entry.getString(PROPERTY_DEVICE_ID);
+                    if (entry.has("info")) {
+                        JSONObject info = entry.getJSONObject("info");
+                        if (info.has("name")) {
+                            gateway.newScene(id, info.getString("name"));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public synchronized JSONArray getIdsForType(String type) {
@@ -194,10 +216,10 @@ public class Model {
         return THING_TYPE_UNKNNOWN;
     }
 
-    public synchronized JSONObject getAllFor(String id) {
+    public synchronized JSONObject getAllFor(String id, String type) {
         JSONObject returnObject = new JSONObject();
-        if (!model.isNull(PROPERTY_DEVICES)) {
-            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
+        if (model.has(type)) {
+            JSONArray devices = model.getJSONArray(type);
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
@@ -210,7 +232,7 @@ public class Model {
     }
 
     public synchronized String getCustonNameFor(String id) {
-        JSONObject deviceObject = getAllFor(id);
+        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
             if (attributes.has(CUSTOM_NAME)) {
@@ -235,7 +257,7 @@ public class Model {
 
     public synchronized Map<String, Object> getPropertiesFor(String id) {
         Map<String, Object> properties = new HashMap<>();
-        JSONObject deviceObject = getAllFor(id);
+        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
             if (attributes.has("model")) {

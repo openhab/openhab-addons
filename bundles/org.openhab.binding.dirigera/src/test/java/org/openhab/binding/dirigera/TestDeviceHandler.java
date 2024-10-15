@@ -40,11 +40,13 @@ import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -65,7 +67,7 @@ import org.openhab.core.types.State;
  * @author Bernd Weymann - Initial Contribution
  */
 class TestDeviceHandler {
-    private final TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    private static final TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
 
         @Override
         public ZoneId getTimeZone() {
@@ -371,5 +373,30 @@ class TestDeviceHandler {
         // assertTrue(luxState instanceof QuantityType);
         // assertTrue(((QuantityType) luxState).getUnit().equals(Units.LUX));
         // assertEquals(1, ((QuantityType) luxState).intValue(), "Lux level");
+    }
+
+    @Test
+    void testSceneHandler() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_SCENE, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        SceneHandler handler = new SceneHandler(thing, SPEAKER_MAP, timeZoneProvider);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+        // TODO tbd
+
+        State dateTimeState = callback.getState("dirigera:scene:test-device:last-trigger");
+        assertNotNull(dateTimeState);
+        assertTrue(dateTimeState instanceof DateTimeType);
+        assertEquals("2024-10-15T14:49:03.028+0200", ((DateTimeType) dateTimeState).toFullString(), "Last trigger");
     }
 }

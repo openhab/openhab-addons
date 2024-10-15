@@ -467,9 +467,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         if (!knownDevices.contains(id)) {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
-                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
+                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
             } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
-                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
+                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
                 // ignore gateway findings
             } else {
                 String customName = model().getCustonNameFor(id);
@@ -485,6 +485,21 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
         } else {
             logger.info("DIRIGERA HANDLER received new device id from model but already known");
+        }
+    }
+
+    @Override
+    public void newScene(String id, String name) {
+        if (!knownDevices.contains(id)) {
+            logger.info("DIRIGERA HANDLER deliver scene result {} with name {} and is supported {}",
+                    THING_TYPE_SCENE.getAsString(), name, SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_SCENE));
+            DiscoveryResult result = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_SCENE, this.getThing().getUID(), id))
+                    .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
+                    .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(name).build();
+            discoveryManager.forward(result);
+        } else {
+            logger.info("DIRIGERA HANDLER received new scene id from model but already known");
         }
     }
 
@@ -534,6 +549,18 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         // special case: if custom name is changed in attributes force model update
                         // in order to present the updated name in discovery
                         model().checkForUpdate(data);
+                    }
+                }
+                break;
+            case EVENT_TYPE_SCENE_UPDATE:
+                JSONObject sceneData = update.getJSONObject("data");
+                String sceneId = sceneData.getString("id");
+                if (sceneId != null) {
+                    BaseDeviceHandler targetHandler = deviceTree.get(sceneId);
+                    if (targetHandler != null && sceneId != null) {
+                        targetHandler.handleUpdate(sceneData);
+                    } else {
+                        logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
                     }
                 }
                 break;
