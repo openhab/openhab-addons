@@ -101,7 +101,8 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             gateway().registerDevice(this);
         }
 
-        updateStatus(ThingStatus.ONLINE);
+        // shall be handled by initial update
+        // updateStatus(ThingStatus.ONLINE);
     }
 
     public void handleUpdate(JSONObject update) {

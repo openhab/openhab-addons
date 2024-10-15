@@ -113,4 +113,15 @@
 		<label>Date Time</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
+	<channel-type id="scene-trigger">
+		<item-type>Number</item-type>
+		<label>Scene Trigger</label>
+		<command>
+			<options>
+				<option value="0">Trigger</option>
+				<option value="1">Undo</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 </thing:thing-descriptions>

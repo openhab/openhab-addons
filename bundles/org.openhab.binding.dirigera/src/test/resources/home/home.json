@@ -1288,7 +1288,80 @@
 		}
 	],
 	"users": [],
-	"scenes": [],
+	"scenes": [
+    {
+        "id": "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58",
+        "info": {
+            "name": "Christmas Lightmode",
+            "icon": "scenes_tree"
+        },
+        "type": "userScene",
+        "triggers": [
+            {
+                "id": "747e9565-61e9-4050-afb0-a0e9684da76e",
+                "type": "app",
+                "triggeredAt": "2024-10-15T12:49:46.401Z",
+                "disabled": false
+            }
+        ],
+        "actions": [
+            {
+                "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                "type": "device",
+                "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                "enabled": true,
+                "attributes": {
+                    "isOn": true,
+                    "lightLevel": 100,
+                    "colorHue": 0,
+                    "colorSaturation": 1
+                }
+            },
+            {
+                "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                "type": "device",
+                "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                "enabled": true,
+                "attributes": {
+                    "isOn": true,
+                    "lightLevel": 100,
+                    "colorHue": 90,
+                    "colorSaturation": 1
+                }
+            },
+            {
+                "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                "type": "device",
+                "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                "enabled": true,
+                "attributes": {
+                    "isOn": true,
+                    "lightLevel": 100,
+                    "colorHue": 90,
+                    "colorSaturation": 1
+                }
+            },
+            {
+                "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                "type": "device",
+                "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                "enabled": true,
+                "attributes": {
+                    "isOn": true,
+                    "lightLevel": 100,
+                    "colorHue": 90,
+                    "colorSaturation": 1
+                }
+            }
+        ],
+        "commands": [],
+        "createdAt": "2024-10-15T11:13:42.273Z",
+        "lastCompleted": "2024-10-15T12:49:03.028Z",
+        "lastTriggered": "2024-10-15T12:49:03.028Z",
+        "undoAllowedDuration": 30,
+        "lastUndo": "2024-10-15T12:49:46.416Z"
+    }
+	],
 	"rooms": [
 		{
 			"id": "921edb07-e344-4c70-a09e-11935c727f58",
