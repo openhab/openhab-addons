@@ -27,28 +27,6 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="ota-status">
-		<item-type>Number</item-type>
-		<label>OTA Status</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">up to date</option>
-				<option value="1">update available</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="ota-state">
-		<item-type>Number</item-type>
-		<label>OTA State</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">ready to check</option>
-				<option value="1">check in progress</option>
-				<option value="2">ready to download</option>
-				<option value="2">download in progress</option>
-			</options>
-		</state>
-	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>On Off Switch</label>
@@ -123,5 +101,32 @@
 			</options>
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
+    </channel-type>
+    <channel-type id="ota-status" advanced="true">
+        <item-type>Number</item-type>
+        <label>OTA Status</label>
+        <state readOnly="true">
+            <options>
+                <option value="0">up to date</option>
+                <option value="1">update available</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="ota-state" advanced="true">
+        <item-type>Number</item-type>
+        <label>OTA State</label>
+        <state readOnly="true">
+            <options>
+                <option value="0">ready to check</option>
+                <option value="1">check in progress</option>
+                <option value="2">ready to download</option>
+                <option value="2">download in progress</option>
+            </options>
+        </state>
+    </channel-type>
+    <channel-type id="ota-percent" advanced="true">
+        <item-type>Number:Dimensionless</item-type>
+        <label>Percent Number</label>
+        <state pattern="%.0f %unit%" readOnly="true"/>
+    </channel-type>
 </thing:thing-descriptions>

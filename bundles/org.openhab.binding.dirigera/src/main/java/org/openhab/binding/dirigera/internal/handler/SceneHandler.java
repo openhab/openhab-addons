@@ -69,6 +69,14 @@ public class SceneHandler extends BaseDeviceHandler {
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+        sceneObserver.ifPresent(job -> {
+            job.cancel(false);
+        });
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
