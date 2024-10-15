@@ -29,7 +29,8 @@ import org.openhab.core.io.transport.modbus.ValueBuffer;
 public class DataConverter {
 
     /**
-     * Retrieves a double value from the first two bytes of the provided {@link ValueBuffer} using the given correction factor.
+     * Retrieves a double value from the first two bytes of the provided {@link ValueBuffer} using the given correction
+     * factor.
      *
      * @param wrap The {@link ValueBuffer} from which to extract the bytes.
      * @param factor The correction factor to apply to the extracted value.
@@ -40,12 +41,17 @@ public class DataConverter {
     }
 
     /**
-     * Retrieves a signed double value from the first two bytes of the provided {@link ValueBuffer} using the given correction factor.
+     * Retrieves a signed double value from the first two bytes of the provided {@link ValueBuffer} using the given
+     * correction factor.
      *
-     * @param wrap The {@link ValueBuffer} from which to extract the bytes. This {@link ValueBuffer} should contain at least two bytes.
-     * @param factor The correction factor to apply to the extracted value. This factor is used to adjust the calculated value.
-     * @return The calculated signed double value. The value is obtained by extracting the first two bytes from the {@link ValueBuffer},
-     *         converting them to a signed 16-bit integer, multiplying it by the correction factor, and rounding the result to two decimal places.
+     * @param wrap The {@link ValueBuffer} from which to extract the bytes. This {@link ValueBuffer} should contain at
+     *            least two bytes.
+     * @param factor The correction factor to apply to the extracted value. This factor is used to adjust the calculated
+     *            value.
+     * @return The calculated signed double value. The value is obtained by extracting the first two bytes from the
+     *         {@link ValueBuffer},
+     *         converting them to a signed 16-bit integer, multiplying it by the correction factor, and rounding the
+     *         result to two decimal places.
      */
     public static double getSDoubleValue(ValueBuffer wrap, double factor) {
         return round(wrap.getSInt16() * factor, 2);
