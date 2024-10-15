@@ -37,13 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Websocket} listens to device changes
+ * {@link Websocket2} listens to device changes
  *
  * @author Bernd Weymann - Initial contribution
  */
 @WebSocket
 @NonNullByDefault
-public class Websocket {
+public class Websocket2 {
     private static String STARTS = "starts";
     private static String STOPS = "stops";
     private static String DISCONNECTS = "disconnetcs";
@@ -51,7 +51,7 @@ public class Websocket {
     private static String PINGS = "pings";
     private static String MESSAGES = "messages";
 
-    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
+    private final Logger logger = LoggerFactory.getLogger(Websocket2.class);
     private Optional<WebSocketClient> websocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();
     private JSONObject statistics = new JSONObject();
@@ -59,7 +59,7 @@ public class Websocket {
     private Gateway gateway;
     private boolean disposed = false;
 
-    public Websocket(Gateway gateway, HttpClient httpClient) {
+    public Websocket2(Gateway gateway, HttpClient httpClient) {
         this.gateway = gateway;
         this.httpClient = httpClient;
     }
@@ -124,7 +124,7 @@ public class Websocket {
                 // pingObject.put("specversion", session.getProtocolVersion());
                 pingObject.put("source", "urn:openhab:dirigera");
                 logger.info("DIRIGERA_WS ping {}", pingObject.toString());
-                session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
+                session.getRemote().sendPing(ByteBuffer.wrap(pingObject.toString().getBytes()));
                 increase(PINGS);
             } catch (IOException e) {
                 logger.info("DIRIGERA ping failed with exception {}", e.getMessage());
