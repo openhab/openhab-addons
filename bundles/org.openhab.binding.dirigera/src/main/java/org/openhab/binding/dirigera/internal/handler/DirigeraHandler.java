@@ -53,6 +53,11 @@ import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -80,27 +85,29 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     public static final Gson GSON = new Gson();
 
+    private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
+    private final DirigeraDiscoveryManager discoveryManager;
+    private final TimeZoneProvider timeZoneProvider;
+
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<RestAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
     private Optional<ScheduledFuture<?>> modelUpdater = Optional.empty();
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
 
-    private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
     private List<Object> knownDevices = new ArrayList<>();
-    private final DirigeraDiscoveryManager discoveryManager;
     private DirigeraConfiguration config;
     private Storage<String> storage;
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
-            DirigeraDiscoveryManager discoveryManager) {
+            DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
         super(bridge);
-        logger.info("DIRIGERA HANDLER onstructor");
+        this.discoveryManager = discoveryManager;
+        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
-        this.discoveryManager = discoveryManager;
         config = new DirigeraConfiguration();
     }
 
@@ -466,12 +473,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 // ignore gateway findings
             } else {
                 String customName = model().getCustonNameFor(id);
+                Map<String, Object> properties = model().getPropertiesFor(id);
                 logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
                         discoveredThingTypeUID.getAsString(), customName,
                         SUPPORTED_THING_TYPES_UIDS.contains(discoveredThingTypeUID));
                 DiscoveryResult result = DiscoveryResultBuilder
                         .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
-                        .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
+                        .withBridge(this.getThing().getUID()).withProperties(properties)
                         .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
                 discoveryManager.forward(result);
             }
@@ -509,7 +517,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void websocketUpdate(JSONObject update) {
         String type = update.getString("type");
-        logger.info("DIRIGERA HANDLER update received for type {} - {}", type, update);
         switch (type) {
             case EVENT_TYPE_STATE_CHANGE:
                 JSONObject data = update.getJSONObject("data");
@@ -524,6 +531,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         } else {
                             logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
                         }
+                        // special case: if custom name is changed in attributes force model update
+                        // in order to present the updated name in discovery
+                        model().checkForUpdate(data);
                     }
                 }
                 break;
@@ -533,6 +543,42 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void handleUpdate(JSONObject data) {
-        // TODO Auto-generated method stub
+        if (data.has(Model.ATTRIBUTES)) {
+            JSONObject attributes = data.getJSONObject(Model.ATTRIBUTES);
+            // check ota for each device
+            if (attributes.has(PROPERTY_OTA_STATUS)) {
+                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
+                if (OTA_STATUS_MAP.containsKey(otaStatusString)) {
+                    int otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
+                } else {
+                    logger.warn("Cannot decode ota status {}", otaStatusString);
+                }
+            }
+            if (attributes.has(PROPERTY_OTA_STATE)) {
+                String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
+                if (OTA_STATE_MAP.containsKey(otaStateString)) {
+                    int otaState = OTA_STATE_MAP.get(otaStateString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                } else {
+                    logger.warn("Cannot decode ota state {}", otaStateString);
+                }
+            }
+            if (attributes.has(PROPERTY_OTA_PROGRESS)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
+                        QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
+            }
+            // sunrise & sunset
+            if (attributes.has("nextSunRise")) {
+                Instant sunriseInstant = Instant.parse(attributes.getString("nextSunRise"));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
+                        new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
+            }
+            if (attributes.has("nextSunSet")) {
+                Instant sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET),
+                        new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+            }
+        }
     }
 }
