@@ -30,6 +30,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,8 +116,11 @@ public class RestAPI {
         }
     }
 
-    public int sendPatch(String id, JSONObject data) {
+    public int sendPatch(String id, JSONObject attributes) {
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
+        // pack attributes into correct send data
+        JSONObject data = new JSONObject();
+        data.put(Model.ATTRIBUTES, attributes);
         JSONArray dataArray = new JSONArray();
         dataArray.put(data);
         StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
@@ -140,11 +144,11 @@ public class RestAPI {
         }
     }
 
-    public Map<String, ?> getImage(String imageURL) {
+    public synchronized Map<String, ?> getImage(String imageURL) {
         try {
             ContentResponse response = httpClient.GET(imageURL);
             if (response.getStatus() == 200) {
-                logger.info("DIRIGERA API Image call delivers {} {}", response.getMediaType(),
+                logger.info("DIRIGERA API Image call {} delivers {} {}", imageURL, response.getMediaType(),
                         response.getContent() != null);
                 String mimeType = response.getMediaType();
                 if (mimeType == null) {

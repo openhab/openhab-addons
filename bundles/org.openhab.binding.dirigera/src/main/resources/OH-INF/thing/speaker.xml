@@ -41,18 +41,6 @@
 				<label>Image</label>
 				<description>Current playing track image</description>
 			</channel>
-			<channel id="ota-status" typeId="ota-status">
-				<label>OTA Status</label>
-				<description>Over-the-air overall status</description>
-			</channel>
-			<channel id="ota-state" typeId="ota-state">
-				<label>OTA State</label>
-				<description>Over-the-air current state</description>
-			</channel>
-			<channel id="ota-progress" typeId="percent">
-				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
-			</channel>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>

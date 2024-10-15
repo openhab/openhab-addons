@@ -38,11 +38,13 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
     public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
     public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
+    public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE);
+            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE,
+            THING_TYPE_REPEATER);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -64,6 +66,7 @@ public class Constants {
     public static final String PROPERTY_OTA_STATE = "otaState";
     public static final String PROPERTY_OTA_PROGRESS = "otaProgress";
     public static final String PROPERTY_BATTERY_PERCENTAGE = "batteryPercentage";
+    public static final String PROPERTY_PERMIT_JOIN = "permittingJoin";
 
     public static final String PROPERTY_EMPTY = "";
 
@@ -76,6 +79,7 @@ public class Constants {
     public static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
     public static final String DEVICE_TYPE_SMART_PLUG = "outlet";
     public static final String DEVICE_TYPE_SPEAKER = "speaker";
+    public static final String DEVICE_TYPE_REPEATER = "repeater";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -90,6 +94,7 @@ public class Constants {
     // Gateway channels
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_PAIRING = "pairing";
 
     // Light channels
     public static final String CHANNEL_LIGHT_HSB = "hsb";
@@ -157,4 +162,6 @@ public class Constants {
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isOpen", CHANNEL_STATE);
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
+    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 }
