@@ -14,8 +14,10 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
@@ -69,6 +71,17 @@ public class Model {
             }
         } catch (Throwable t) {
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
+        }
+    }
+
+    public synchronized void checkForUpdate(JSONObject data) {
+        if (data.has(ATTRIBUTES)) {
+            JSONObject attributes = data.getJSONObject(ATTRIBUTES);
+            if (attributes.has(CUSTOM_NAME)) {
+                // name updated - update model
+                logger.warn("DIRIGERA MODEL upadte due to name change {}", attributes.get(CUSTOM_NAME));
+                this.update();
+            }
         }
     }
 
@@ -218,5 +231,30 @@ public class Model {
             // 3 fallback options
         }
         return id;
+    }
+
+    public synchronized Map<String, Object> getPropertiesFor(String id) {
+        Map<String, Object> properties = new HashMap<>();
+        JSONObject deviceObject = getAllFor(id);
+        if (deviceObject.has(ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+            if (attributes.has("model")) {
+                properties.put("model", attributes.get("model"));
+            }
+            if (attributes.has("manufacturer")) {
+                properties.put("manufacturer", attributes.get("manufacturer"));
+            }
+            if (attributes.has("firmwareVersion")) {
+                properties.put("firmwareVersion", attributes.get("firmwareVersion"));
+            }
+            if (attributes.has("hardwareVersion")) {
+                properties.put("hardwareVersion", attributes.get("hardwareVersion"));
+            }
+            if (attributes.has("serialNumber")) {
+                properties.put("serialNumber", attributes.get("serialNumber"));
+            }
+            properties.put(PROPERTY_DEVICE_ID, id);
+        }
+        return properties;
     }
 }

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +44,7 @@ import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -63,6 +65,13 @@ import org.openhab.core.types.State;
  * @author Bernd Weymann - Initial Contribution
  */
 class TestDeviceHandler {
+    private final TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+
+        @Override
+        public ZoneId getTimeZone() {
+            return ZoneId.systemDefault();
+        }
+    };
 
     /**
      * Prepare operational bridge where device handlers can be connected to
@@ -119,7 +128,7 @@ class TestDeviceHandler {
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
         hubBridge.setBridgeUID(new ThingUID(BINDING_ID + ":" + "gateway:9876"));
         DirigeraHandler hubHandler = new DirigeraHandler(hubBridge, httpMock, mockStorage,
-                mock(DirigeraDiscoveryManager.class));
+                mock(DirigeraDiscoveryManager.class), timeZoneProvider);
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
         hubHandler.setCallback(bridgeCallback);

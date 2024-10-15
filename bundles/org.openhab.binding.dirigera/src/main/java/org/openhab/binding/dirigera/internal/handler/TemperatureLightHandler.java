@@ -154,6 +154,10 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                                 new PercentType(attributes.getInt(key)));
                     } else if (CHANNEL_LIGHT_TEMPERATURE.equals(targetChannel)) {
                         int kelvin = attributes.getInt(key);
+                        // seems some lamps are delivering temperature values out of range
+                        // keep it in range with min/max
+                        kelvin = Math.min(kelvin, colorTemperatureMin);
+                        kelvin = Math.max(kelvin, colorTemperatureMax);
                         int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
                         updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
                     } else {
