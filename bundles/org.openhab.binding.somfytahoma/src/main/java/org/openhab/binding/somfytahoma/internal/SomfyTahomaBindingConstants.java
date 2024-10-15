@@ -371,6 +371,9 @@ public class SomfyTahomaBindingConstants {
     // Constants
     public static final String COZYTOUCH_PORTAL = "ha110-1.overkiz.com";
     public static final String TAHOMA_PORTAL = "www.tahomalink.com";
+    public static final String SOMFY_OAUTH2_URL = "accounts.somfy.com/oauth/oauth/v2/token";
+    public static final String SOMFY_OAUTH2_CLIENT_ID = "1e2d830f-4c65-11e7-bd0c-02dd59bd3041_5n78r5nnwaw4wc0kskkg0csogkk8cwocswg84c0gowcgossogw";
+    public static final String SOMFY_OAUTH2_CLIENT_SECRET = "4txucwsv29a8o0co8s8kw8ggswkks8ossccockgcckokw8ck00";
     public static final String COZYTOUCH_OAUTH2_URL = "api.groupe-atlantic.com";
     public static final String COZYTOUCH_OAUTH2_BASICAUTH = "czduc0RZZXdWbjVGbVV4UmlYN1pVSUM3ZFI4YTphSDEzOXZmbzA1ZGdqeDJkSFVSQkFTbmhCRW9h";
     public static final String COZYTOUCH_OAUTH2_TOKEN_URL = "/token";
