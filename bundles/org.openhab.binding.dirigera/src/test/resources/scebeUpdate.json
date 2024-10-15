@@ -1,0 +1,84 @@
+ {
+	"data": {
+		"createdAt": "2024-10-13T18:52:07.446Z",
+		"lastTriggered": "2024-10-14T20:44:27.177Z",
+		"undoAllowedDuration": 30,
+		"lastCompleted": "2024-10-14T20:44:27.177Z",
+		"id": "df203818-82bb-43a1-b591-8be6d2440664",
+		"type": "userScene",
+		"triggers": [
+			{
+				"disabled": false,
+				"id": "f63a545d-8007-4bd8-a03b-adb1f7388dd9",
+				"trigger": {
+					"filter": {
+						"attribute": {
+							"isOpen": true
+						}
+					},
+					"days": [
+						"Mon",
+						"Tue",
+						"Wed",
+						"Thu",
+						"Fri",
+						"Sat",
+						"Sun"
+					],
+					"deviceId": "3267c0f3-069a-4894-b5d0-a30d26386af8_1"
+				},
+				"type": "event",
+				"endTriggerEvent": {
+					"trigger": {
+						"duration": 1800
+					},
+					"type": "duration"
+				},
+				"endTrigger": {
+					"trigger": {
+						"duration": 1800
+					},
+					"type": "duration"
+				}
+			},
+			{
+				"disabled": false,
+				"id": "5a803fab-6279-4db1-9a27-073216d9d77c",
+				"type": "app",
+				"endTriggerEvent": {
+					"trigger": {
+						"duration": 1800
+					},
+					"type": "duration"
+				},
+				"endTrigger": {
+					"trigger": {
+						"duration": 1800
+					},
+					"type": "duration"
+				}
+			}
+		],
+		"actions": [
+			{
+				"attributes": {
+					"isOn": true
+				},
+				"id": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+				"type": "device",
+				"deviceId": "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1",
+				"enabled": true
+			}
+		],
+		"commands": [],
+		"info": {
+			"name": "test",
+			"icon": "scenes_briefcase"
+		}
+	},
+	"specversion": "3.163.0",
+	"id": "a0449373-fc64-4b33-b18f-a6255df1b636",
+	"time": "2024-10-14T20:46:26.723Z",
+	"source": "urn:com:ikea:homesmart:iotc:rulesengine",
+	"type": "sceneUpdated"
+}
