@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * Blade information from the mower.
  *
- * @author Christian Jonak-Moechel
+ * @author Christian Jonak-Moechel - Initial contribution
  */
 @NonNullByDefault
 public class Blades {

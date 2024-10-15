@@ -161,7 +161,7 @@
 	</channel-type>
 
 	<channel-type id="blades-quality">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Blade Quality</label>
 		<description>The quality of the blades</description>
 		<state readOnly="true" pattern="%d %%"/>
