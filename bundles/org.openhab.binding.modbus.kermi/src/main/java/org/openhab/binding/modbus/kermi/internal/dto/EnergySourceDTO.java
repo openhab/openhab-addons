@@ -32,8 +32,8 @@ public class EnergySourceDTO implements Data {
 
     public EnergySourceDTO(byte[] bArray) {
         ValueBuffer wrap = ValueBuffer.wrap(bArray);
-        exitTemperature = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
-        incomingTemperature = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
-        outsideTemperature = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
+        exitTemperature = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
+        incomingTemperature = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
+        outsideTemperature = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
     }
 }

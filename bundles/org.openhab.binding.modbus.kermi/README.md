@@ -2,32 +2,29 @@
 
 Integrates the X-Center Device (x-center pro) of Kermi Heat pump.
 Kermi X-Center & other attached devices (in progress) are integrated into the Modbus Binding.
-Requirement is contacting Kermi Support to activate Modbus-TCP which can be connected directly by network.
-Older devices (non-Pro ?) were connected by Modbus-RCP - maybe you can try to connect them here using a Modbus-TCP modulator (e.x. from waveshare or similar).
+
 This binding was tested and developed with Kermi x-change dynamic pro heat pump (build 2023).
 
-See chapter [Thing Configuration](#thing-configuration) how to set them up.
+## Prerequisite
+Requirement is contacting Kermi Support to activate Modbus-TCP which can be connected directly by network.
+Older devices (non-Pro ?) were connected by Modbus-RCP - maybe you can try to connect them here using a Modbus-TCP modulator (e.x. from waveshare or similar).
 
 ## Supported Things
-
-First you need a TCP-Bridge which establishes the basic connection towards your X-Center device
+First you need a "Modbus TCP-Bridge" which establishes the basic connection towards your X-Center device.
 
 | Name                     | Thing Type ID | Description                                                                                                                 |
 |--------------------------|---------------|-----------------------------------------------------------------------------------------------------------------------------|
 | Kermi Heat Pump X-Center | kermi-xcenter | Provides (electric) Power values, Flow-information, PV-States, Temperatures and general Information of your Kermi Heat Pump |
-| StorageSystemModule      | kermi-storage | Provides temperatures of your water-storage (drinking water), heating and cooling and details about your heating-circuit    |
 
 ## Discovery
-
-There's no discovery.
-Modbus registers are available for all devices.
+This binding does not support autodiscovery.
 
 ## Device IDs
 
-| Device              | device ID | Comment                                          |
-|---------------------|-----------|--------------------------------------------------|
+| Device              | Device ID | Comment                                         |
+|---------------------|-----------|-------------------------------------------------|
 | X-Center            | 40        | on cascade-circuits: slave1: 41, slave2: 42, ... |
-| StorageSystemModule | 50 or 51  |                                                  |
+
 
 ## Thing Configuration
 
@@ -36,13 +33,10 @@ The needed Things can be found in the **Modbus Binding** and have to be added ma
 1. Create _Modbus TCP Bridge_ with matching Settings of your Kermi Device
 
 - IP Address
-- Device ID
+- Device ID (see [Device IDs](#device-ids))
 - Port ID
 
-1. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000. If it's too fast, you may experience errors in openhab or your x-center ! (Reboot if x-center stops responding on network access). You can enable "PV Modulation" if you want to read the values (default: disabled)
-
-2. If you have a StorageSystemModule add _StorageSystemModule_ Thing, you have to create a separate _Modbus TCP Bridge_ because of the other device-id. (todo)
-
+2. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000. If it's too fast, you may experience errors in openhab or your x-center ! (Reboot if x-center stops responding on network access). You can enable "PV Modulation" if you want to read the values (default: disabled)
 
 ### Modbus TCP Slave
 
@@ -60,9 +54,9 @@ Select as Bridge your previously created Modbus TCP Slave.
 |-----------------|---------|-------------------------------------------------------------------------|
 | refresh         | integer | Refresh Rate of x-center values in Milliseconds                         |
 
-### Kermi StorageSystemModule (todo)
+### Kermi StorageSystemModule (support planned in future releases)
 
-Select as Bridge a seperate (second) Modbus TCP Slave.
+Select as Bridge a separate (second) Modbus TCP Slave.
 
 | Parameter | Type    | Description                                                        |
 |-----------|---------|--------------------------------------------------------------------|
@@ -71,11 +65,13 @@ Select as Bridge a seperate (second) Modbus TCP Slave.
 | deviceid  | integer | Modbus ID of your Kermi device Modbus Settings. Default is 50      |
 
 
-### Things
+## Full Example
+
+### kermi.things
 
 ```java
 Bridge modbus:tcp:device "Kermi X-Center Modbus TCP" [ host="xcenter", port=502, id=40 ] {
- Bridge kermi-xcenter "Kermi X-Center Heat Pump" [ refresh=5000 ]
+  Bridge kermi-xcenter heatpump "Kermi X-Center Heat Pump" [ refresh=5000 ]
 }
 ```
 

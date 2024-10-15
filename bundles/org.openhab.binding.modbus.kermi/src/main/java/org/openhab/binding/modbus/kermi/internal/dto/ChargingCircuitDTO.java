@@ -35,8 +35,8 @@ public class ChargingCircuitDTO implements Data {
 
     public ChargingCircuitDTO(byte[] bArray) {
         ValueBuffer wrap = ValueBuffer.wrap(bArray);
-        flowTemperature = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
-        returnFlowTemperature = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
-        flowSpeed = QuantityType.valueOf(DataConverter.getUDoubleValue(wrap, 0.1), LITRE_PER_MINUTE);
+        flowTemperature = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
+        returnFlowTemperature = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), SIUnits.CELSIUS);
+        flowSpeed = QuantityType.valueOf(DataConverter.getSDoubleValue(wrap, 0.1), LITRE_PER_MINUTE);
     }
 }
