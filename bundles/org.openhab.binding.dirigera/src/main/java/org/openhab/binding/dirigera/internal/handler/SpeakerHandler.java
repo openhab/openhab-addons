@@ -57,7 +57,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
         gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
         JSONObject values = gateway().model().getAllFor(config.id);
-        logger.error("DIRIGERA SPEAKER_DEVICE values for initial update {}", values);
+        logger.trace("DIRIGERA SPEAKER_DEVICE values for initial update {}", values);
         handleUpdate(values);
     }
 

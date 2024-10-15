@@ -49,7 +49,7 @@ public class MotionSensorHandler extends BaseDeviceHandler {
         gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
         JSONObject values = gateway().model().getAllFor(config.id);
-        logger.error("DIRIGERA MOTION_DEVICE values for initial update {}", values);
+        logger.trace("DIRIGERA MOTION_DEVICE values for initial update {}", values);
         handleUpdate(values);
     }
 
