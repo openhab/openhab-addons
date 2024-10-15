@@ -4,14 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="light-sensor">
-		<label>Light Sensor</label>
-		<description>Sensor to detect illuminance in your room</description>
+	<thing-type id="scene">
+		<label>Scene</label>
+		<description>Scene which can be triggered</description>
 
 		<channels>
-			<channel id="illuminance" typeId="illuminance">
-				<label>Illuminance</label>
-				<description>Shows illuminance in Lux </description>
+			<channel id="trigger" typeId="scene-trigger">
+				<label>Scene Trigger</label>
+				<description>Trigger / undo scene execution </description>
+			</channel>
+			<channel id="last-trigger" typeId="datetime">
+				<label>Last Trigger</label>
+				<description>Date and time when last trigger occured</description>
 			</channel>
 		</channels>
 

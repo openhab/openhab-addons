@@ -61,7 +61,7 @@ public class RestAPI {
         }
     }
 
-    public JSONObject readHome() {
+    public synchronized JSONObject readHome() {
         JSONObject statusObject = new JSONObject();
         String url = String.format(HOME_URL, gateway.getIpAddress());
         try {
@@ -80,7 +80,7 @@ public class RestAPI {
         return statusObject;
     }
 
-    public JSONObject readDevice(String deviceId) {
+    public synchronized JSONObject readDevice(String deviceId) {
         JSONObject statusObject = new JSONObject();
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
         try {
@@ -97,6 +97,22 @@ public class RestAPI {
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         return statusObject;
+    }
+
+    public synchronized void triggerScene(String sceneId, String trigger) {
+        JSONObject statusObject = new JSONObject();
+        String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId) + "/" + trigger;
+        try {
+            Request homeRequest = httpClient.POST(url);
+            ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
+            int responseStatus = response.getStatus();
+            if (responseStatus != 200) {
+                logger.warn("DIRIGERA Scene trigger failed with  {}", responseStatus);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
+            logger.warn("DIRIGERA Exception calling  {}", url);
+        }
     }
 
     public int sendPatch(String id, JSONObject data) {
