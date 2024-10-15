@@ -28,6 +28,7 @@ import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
@@ -55,13 +56,16 @@ import org.slf4j.LoggerFactory;
 public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandlerFactory.class);
     private final DirigeraDiscoveryManager discoveryManager;
+    private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
 
     @Activate
     public DirigeraHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
-            final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager) {
+            final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager,
+            final @Reference TimeZoneProvider timeZoneProvider) {
         this.discoveryManager = manager;
+        this.timeZoneProvider = timeZoneProvider;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         insecureClient.setUserAgentField(null);
         try {
@@ -94,7 +98,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
-            return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager);
+            return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager,
+                    timeZoneProvider);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
