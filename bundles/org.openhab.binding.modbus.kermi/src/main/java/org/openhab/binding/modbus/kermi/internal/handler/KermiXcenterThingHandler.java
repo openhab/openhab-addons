@@ -393,16 +393,10 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             return null;
         }
 
-        ThingHandler handler = bridge.getHandler();
-        if (handler == null) {
-            logger.debug("Bridge handler is null");
-            return null;
-        }
-
-        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+        if (bridge.getHandler() instanceof ModbusEndpointThingHandler thingHandler) {
             return thingHandler;
         } else {
-            logger.debug("Unexpected bridge handler: {}", handler);
+            logger.debug("Bridge handler null or unexpected type: {}", handler);
             return null;
         }
     }
