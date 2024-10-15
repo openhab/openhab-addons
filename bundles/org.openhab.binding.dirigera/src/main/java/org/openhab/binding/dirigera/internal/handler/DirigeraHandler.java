@@ -234,6 +234,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         });
     }
 
+    @Override
+    public void handleRemoval() {
+        super.handleRemoval();
+        // todo clear storage
+    }
+
     private String getTokenFromStorage() {
         logger.info("DIRIGERA HANDLER try to get token from storage");
         config = getConfigAs(DirigeraConfiguration.class);
@@ -420,7 +426,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      */
     @Override
     public void registerDevice(BaseDeviceHandler deviceHandler) {
-        logger.info("DIRIGERA HANDLER device {} regsitered", deviceHandler.getThing().getThingTypeUID());
+        logger.info("DIRIGERA HANDLER device {} registered", deviceHandler.getThing().getThingTypeUID());
         String deviceId = deviceHandler.getId();
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
