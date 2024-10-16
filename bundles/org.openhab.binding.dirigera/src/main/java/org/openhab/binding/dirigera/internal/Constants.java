@@ -39,12 +39,13 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
     public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
+    public static final ThingTypeUID THING_TYPE_LIGHT_CONTROLLER = new ThingTypeUID(BINDING_ID, "light-controller");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE,
-            THING_TYPE_REPEATER);
+            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER,
+            THING_TYPE_LIGHT_CONTROLLER);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -80,6 +81,7 @@ public class Constants {
     public static final String DEVICE_TYPE_SMART_PLUG = "outlet";
     public static final String DEVICE_TYPE_SPEAKER = "speaker";
     public static final String DEVICE_TYPE_REPEATER = "repeater";
+    public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -164,4 +166,7 @@ public class Constants {
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
     public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
             PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
 }
