@@ -64,7 +64,7 @@
 
 		<properties>
 			<property name="vendor">tado°</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>id</representation-property>
 
