@@ -94,7 +94,7 @@ public class EmotivaCommandHelper {
 
     public static String updateProgress(double progressPercentage) {
         final int width = 30;
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("[");
         int i = 0;
