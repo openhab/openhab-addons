@@ -434,4 +434,43 @@ class TestDeviceHandler {
         assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
     }
+
+    @Test
+    void testLightController() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_LIGHT_CONTROLLER, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        RepeaterHandler handler = new RepeaterHandler(thing, LIGHT_CONTROLLER_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+
+        // test ota & battery
+        State otaStatus = callback.getState("dirigera:light-controller:test-device:ota-status");
+        assertNotNull(otaStatus);
+        assertTrue(otaStatus instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
+        State otaState = callback.getState("dirigera:light-controller:test-device:ota-state");
+        assertNotNull(otaState);
+        assertTrue(otaState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
+        State otaProgess = callback.getState("dirigera:light-controller:test-device:ota-progress");
+        assertNotNull(otaProgess);
+        assertTrue(otaProgess instanceof QuantityType);
+        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+        State batteryState = callback.getState("dirigera:light-controller:test-device:battery-level");
+        assertNotNull(batteryState);
+        assertTrue(batteryState instanceof QuantityType);
+        assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
+        assertEquals(85, ((QuantityType) batteryState).intValue(), "Battery level");
+    }
 }
