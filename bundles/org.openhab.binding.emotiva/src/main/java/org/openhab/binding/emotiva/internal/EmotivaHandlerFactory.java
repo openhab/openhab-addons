@@ -57,7 +57,7 @@ public class EmotivaHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        var thingTypeUID = thing.getThingTypeUID();
 
         if (THING_PROCESSOR.equals(thingTypeUID)) {
             try {

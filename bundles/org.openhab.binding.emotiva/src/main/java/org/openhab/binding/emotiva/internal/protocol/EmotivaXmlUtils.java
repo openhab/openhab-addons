@@ -27,9 +27,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
@@ -54,7 +52,6 @@ import org.openhab.binding.emotiva.internal.dto.EmotivaUpdateRequest;
 import org.openhab.binding.emotiva.internal.dto.EmotivaUpdateResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -83,7 +80,7 @@ public class EmotivaXmlUtils {
 
     public String marshallEmotivaDTO(Object objectInstanceType) {
         try {
-            StringWriter out = new StringWriter();
+            var out = new StringWriter();
             marshaller.marshal(objectInstanceType, out);
             return out.toString();
         } catch (JAXBException e) {
@@ -94,12 +91,12 @@ public class EmotivaXmlUtils {
 
     public String marshallJAXBElementObjects(AbstractJAXBElementDTO jaxbElementDTO) {
         try {
-            StringWriter out = new StringWriter();
+            var out = new StringWriter();
 
             List<JAXBElement<String>> commandsAsJAXBElement = new ArrayList<>();
 
             if (jaxbElementDTO.getCommands() != null) {
-                for (EmotivaCommandDTO command : jaxbElementDTO.getCommands()) {
+                for (var command : jaxbElementDTO.getCommands()) {
                     if (command.getName() != null) {
                         StringBuilder sb = new StringBuilder();
                         if (command.getValue() != null) {
@@ -114,7 +111,7 @@ public class EmotivaXmlUtils {
                         if (command.getAck() != null) {
                             sb.append(" ack=\"").append(command.getAck()).append("\"");
                         }
-                        QName name = new QName("%s%s".formatted(command.getName().trim(), sb));
+                        var name = new QName("%s%s".formatted(command.getName().trim(), sb));
                         commandsAsJAXBElement.add(jaxbElementDTO.createJAXBElement(name));
                     }
                 }
@@ -137,14 +134,14 @@ public class EmotivaXmlUtils {
 
     public Object unmarshallToEmotivaDTO(String xmlAsString) throws JAXBException {
         Object object;
-        Unmarshaller unmarshaller = context.createUnmarshaller();
+        var unmarshaller = context.createUnmarshaller();
 
         if (xmlAsString.isEmpty()) {
             throw new JAXBException("Could not unmarshall value, xml value is null or empty");
         }
 
-        StringReader xmlAsStringReader = new StringReader(xmlAsString);
-        StreamSource xmlAsStringStream = new StreamSource(xmlAsStringReader);
+        var xmlAsStringReader = new StringReader(xmlAsString);
+        var xmlAsStringStream = new StreamSource(xmlAsStringReader);
         object = unmarshaller.unmarshal(xmlAsStringStream);
         return object;
     }
@@ -153,10 +150,10 @@ public class EmotivaXmlUtils {
         List<EmotivaCommandDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
-                    EmotivaCommandDTO commandDTO = getEmotivaCommandDTO(xmlElement);
+                    var commandDTO = getEmotivaCommandDTO(xmlElement);
                     commands.add(commandDTO);
                 } catch (IllegalArgumentException e) {
                     LOGGER.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
@@ -172,10 +169,10 @@ public class EmotivaXmlUtils {
         List<EmotivaNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
-                    EmotivaNotifyDTO tagDTO = getEmotivaNotifyTags(xmlElement);
+                    var tagDTO = getEmotivaNotifyTags(xmlElement);
                     commands.add(tagDTO);
                 } catch (IllegalArgumentException e) {
                     LOGGER.debug("Notify tag {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
@@ -191,10 +188,10 @@ public class EmotivaXmlUtils {
         List<EmotivaBarNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
-                    EmotivaBarNotifyDTO tagDTO = getEmotivaBarNotify(xmlElement);
+                    var tagDTO = getEmotivaBarNotify(xmlElement);
                     commands.add(tagDTO);
                 } catch (IllegalArgumentException e) {
                     LOGGER.debug("Bar notify type {} is unknown or not defined, skipping.", xmlElement.getTagName(), e);
@@ -209,16 +206,16 @@ public class EmotivaXmlUtils {
     public List<EmotivaCommandDTO> unmarshallToCommands(String elementAsString) {
         List<EmotivaCommandDTO> commands = new ArrayList<>();
         try {
-            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = builderFactory.newDocumentBuilder();
+            var builderFactory = DocumentBuilderFactory.newInstance();
+            var db = builderFactory.newDocumentBuilder();
 
-            String[] lines = elementAsString.split("\n");
-            for (String line : lines) {
+            var lines = elementAsString.split("\n");
+            for (var line : lines) {
 
                 if (line.trim().startsWith("<") && line.trim().endsWith("/>")) {
-                    Document doc = db.parse(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)));
+                    var doc = db.parse(new ByteArrayInputStream(line.getBytes(StandardCharsets.UTF_8)));
                     doc.getDocumentElement();
-                    EmotivaCommandDTO commandDTO = getEmotivaCommandDTO(doc.getDocumentElement());
+                    var commandDTO = getEmotivaCommandDTO(doc.getDocumentElement());
                     commands.add(commandDTO);
                 }
             }
@@ -236,7 +233,7 @@ public class EmotivaXmlUtils {
             LOGGER.debug("Could not create EmotivaCommand, unknown command {}", xmlElement.getTagName());
             commandType = EmotivaControlCommands.none;
         }
-        EmotivaCommandDTO commandDTO = new EmotivaCommandDTO(commandType);
+        var commandDTO = new EmotivaCommandDTO(commandType);
         if (xmlElement.hasAttribute("status")) {
             commandDTO.setStatus(xmlElement.getAttribute("status"));
         }
@@ -250,7 +247,7 @@ public class EmotivaXmlUtils {
     }
 
     private static EmotivaBarNotifyDTO getEmotivaBarNotify(Element xmlElement) {
-        EmotivaBarNotifyDTO barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName().trim());
+        var barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName().trim());
         if (xmlElement.hasAttribute("type")) {
             barNotify.setType(xmlElement.getAttribute("type"));
         }
@@ -280,7 +277,7 @@ public class EmotivaXmlUtils {
             LOGGER.debug("Could not create EmotivaNotify, unknown subscription tag {}", xmlElement.getTagName());
             notifyTagName = UNKNOWN_TAG;
         }
-        EmotivaNotifyDTO commandDTO = new EmotivaNotifyDTO(notifyTagName);
+        var commandDTO = new EmotivaNotifyDTO(notifyTagName);
         if (xmlElement.hasAttribute("status")) {
             commandDTO.setStatus(xmlElement.getAttribute("status"));
         }

@@ -73,19 +73,19 @@ public class EmotivaUdpBroadcastService {
      */
     public Optional<DiscoveryResult> discoverThings() {
         try {
-            final DatagramPacket receivePacket = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+            final var receivePacket = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
             // No need to call close first, because the caller of this method already has done it.
 
             discoverSocket = new DatagramSocket(
                     new InetSocketAddress(EmotivaBindingConstants.DEFAULT_TRANSPONDER_PORT));
-            final InetAddress broadcast = InetAddress.getByName(broadcastAddress);
+            final var broadcast = InetAddress.getByName(broadcastAddress);
 
             byte[] emotivaPingDTO = xmlUtils.marshallEmotivaDTO(new EmotivaPingDTO(PROTOCOL_V3.name()))
                     .getBytes(Charset.defaultCharset());
-            final DatagramPacket discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
+            final var discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
                     EmotivaBindingConstants.DEFAULT_PING_PORT);
 
-            DatagramSocket localDatagramSocket = discoverSocket;
+            var localDatagramSocket = discoverSocket;
             while (localDatagramSocket != null && discoverSocket != null) {
                 localDatagramSocket.setBroadcast(true);
                 localDatagramSocket.setSoTimeout(DEFAULT_UDP_SENDING_TIMEOUT);
@@ -130,7 +130,7 @@ public class EmotivaUdpBroadcastService {
      * synchronized context.
      */
     public void closeDiscoverSocket() {
-        final DatagramSocket localDiscoverSocket = discoverSocket;
+        final var localDiscoverSocket = discoverSocket;
         if (localDiscoverSocket != null) {
             discoverSocket = null;
             if (!localDiscoverSocket.isClosed()) {
@@ -145,8 +145,8 @@ public class EmotivaUdpBroadcastService {
      * @param packet containing data of detected device
      */
     private Optional<DiscoveryResult> thingDiscovered(DatagramPacket packet) {
-        final String ipAddress = packet.getAddress().getHostAddress();
-        String udpResponse = new String(packet.getData(), 0, packet.getLength() - 1, StandardCharsets.UTF_8);
+        final var ipAddress = packet.getAddress().getHostAddress();
+        final var udpResponse = new String(packet.getData(), 0, packet.getLength() - 1, StandardCharsets.UTF_8);
 
         Object object;
         try {
@@ -159,10 +159,9 @@ public class EmotivaUdpBroadcastService {
         if (object instanceof EmotivaTransponderDTO answerDto) {
             logger.trace("Processing Received '{}' with '{}' ", EmotivaTransponderDTO.class.getSimpleName(),
                     udpResponse);
-            final ThingUID thingUid = new ThingUID(
-                    THING_PROCESSOR + AbstractUID.SEPARATOR + ipAddress.replace(".", ""));
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                    .withThingType(THING_PROCESSOR).withProperty("ipAddress", ipAddress)
+            final var thingUid = new ThingUID(THING_PROCESSOR + AbstractUID.SEPARATOR + ipAddress.replace(".", ""));
+            final var discoveryResult = DiscoveryResultBuilder.create(thingUid).withThingType(THING_PROCESSOR)
+                    .withProperty("ipAddress", ipAddress)
                     .withProperty("controlPort", answerDto.getControl().getControlPort())
                     .withProperty("notifyPort", answerDto.getControl().getNotifyPort())
                     .withProperty("infoPort", answerDto.getControl().getInfoPort())

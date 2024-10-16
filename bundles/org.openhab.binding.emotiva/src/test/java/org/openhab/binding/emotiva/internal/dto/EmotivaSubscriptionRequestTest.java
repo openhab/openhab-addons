@@ -17,8 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_RDS;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.PROTOCOL_V2;
 
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,9 +38,10 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshalFromChannelUID() {
-        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
-        EmotivaSubscriptionRequest emotivaSubscriptionRequest = new EmotivaSubscriptionRequest(subscriptionChannel);
-        String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
+        var subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
+        var emotivaSubscriptionRequest = new EmotivaSubscriptionRequest(subscriptionChannel);
+        var xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
+
         assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
         assertThat(xmlString, containsString("<tuner_RDS ack=\"yes\" />"));
         assertThat(xmlString, containsString("</emotivaSubscription>"));
@@ -50,11 +49,10 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithSubscriptionNoAck() {
-        EmotivaCommandDTO command = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
+        var command = new EmotivaCommandDTO(EmotivaControlCommands.volume, "10", "yes");
+        var dto = new EmotivaSubscriptionRequest(command, PROTOCOL_V2.value());
+        var xmlString = xmlUtils.marshallJAXBElementObjects(dto);
 
-        EmotivaSubscriptionRequest dto = new EmotivaSubscriptionRequest(command, PROTOCOL_V2.value());
-
-        String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
         assertThat(xmlString, containsString("<emotivaSubscription protocol=\"2.0\">"));
         assertThat(xmlString, containsString("<volume value=\"10\" ack=\"yes\" />"));
         assertThat(xmlString, containsString("</emotivaSubscription>"));
@@ -64,11 +62,12 @@ class EmotivaSubscriptionRequestTest extends AbstractDTOTestBase {
     @Test
     void unmarshall() throws JAXBException {
         var dto = (EmotivaSubscriptionResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaSubscriptionRequest);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getTags().size(), is(3));
         assertThat(dto.getProperties(), is(nullValue()));
 
-        List<EmotivaNotifyDTO> commands = xmlUtils.unmarshallToNotification(dto.getTags());
+        var commands = xmlUtils.unmarshallToNotification(dto.getTags());
 
         assertThat(commands.get(0).getName(), is(EmotivaSubscriptionTags.selected_mode.name()));
         assertThat(commands.get(0).getStatus(), is(nullValue()));

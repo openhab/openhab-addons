@@ -15,8 +15,6 @@ package org.openhab.binding.emotiva.internal.dto;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,16 +35,20 @@ class EmotivaAckDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallValidCommand() throws JAXBException {
-        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOff);
+        var dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOff);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getCommands().size(), is(1));
     }
 
     @Test
     void unmarshallOneValidCommand() throws JAXBException {
-        EmotivaAckDTO dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOffAndNotRealCommand);
+        var dto = (EmotivaAckDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaAckPowerOffAndNotRealCommand);
+
         assertThat(dto, is(notNullValue()));
-        List<EmotivaCommandDTO> commands = xmlUtils.unmarshallXmlObjectsToControlCommands(dto.getCommands());
+
+        var commands = xmlUtils.unmarshallXmlObjectsToControlCommands(dto.getCommands());
+
         assertThat(commands.size(), is(2));
 
         assertThat(commands.get(0), is(notNullValue()));

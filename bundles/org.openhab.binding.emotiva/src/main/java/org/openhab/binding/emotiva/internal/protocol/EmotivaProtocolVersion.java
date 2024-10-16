@@ -32,7 +32,7 @@ public enum EmotivaProtocolVersion {
     }
 
     public static EmotivaProtocolVersion protocolFromConfig(String protocolVersion) {
-        for (EmotivaProtocolVersion value : values()) {
+        for (var value : values()) {
             if (protocolVersion.equals(value.protocolVersion)) {
                 return value;
             }

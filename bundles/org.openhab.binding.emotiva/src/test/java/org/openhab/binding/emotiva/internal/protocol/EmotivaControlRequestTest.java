@@ -19,10 +19,8 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlComman
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
-import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +30,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.emotiva.internal.EmotivaCommandHelper;
 import org.openhab.binding.emotiva.internal.EmotivaProcessorState;
-import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -41,7 +38,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Unit tests for EmotivaControl requests.
@@ -216,7 +213,6 @@ class EmotivaControlRequestTest {
             EmotivaControlCommands.class);
     private static final EnumMap<EmotivaControlCommands, String> RADIO_BAND_MAP = new EnumMap<>(
             EmotivaControlCommands.class);
-    private static final Map<String, State> STATE_MAP = Collections.synchronizedMap(new HashMap<>());
     private static final EmotivaProcessorState state = new EmotivaProcessorState();
 
     @BeforeAll
@@ -244,19 +240,19 @@ class EmotivaControlRequestTest {
         RADIO_BAND_MAP.put(band_fm, "FM");
         state.setTunerBands(RADIO_BAND_MAP);
 
-        STATE_MAP.put(CHANNEL_TREBLE, new DecimalType(-3));
-        STATE_MAP.put(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
-        STATE_MAP.put(CHANNEL_FREQUENCY, QuantityType.valueOf(107.90, Units.HERTZ));
+        state.updateChannel(CHANNEL_TREBLE, new DecimalType(-3));
+        state.updateChannel(CHANNEL_TUNER_CHANNEL, new StringType("FM    87.50MHz"));
+        state.updateChannel(CHANNEL_FREQUENCY, QuantityType.valueOf(107.90, Units.HERTZ));
     }
 
     @ParameterizedTest
     @MethodSource("channelToDTOs")
     void createDTO(String channel, Command ohValue, EmotivaControlCommands controlCommand,
             EmotivaProtocolVersion protocolVersion, String requestValue) {
-        EmotivaControlRequest controlRequest = EmotivaCommandHelper.channelToControlRequest(channel, state,
-                protocolVersion);
+        var controlRequest = EmotivaCommandHelper.channelToControlRequest(channel, state, protocolVersion);
 
-        EmotivaControlDTO dto = controlRequest.createDTO(ohValue, STATE_MAP.get(channel));
+        var previousState = state.getChannel(channel).or(() -> Optional.of(UnDefType.UNDEF));
+        var dto = controlRequest.createDTO(ohValue, previousState.get());
         assertThat(dto.getCommands().size(), is(1));
         assertThat(dto.getCommands().get(0).getName(), is(controlCommand.name()));
         assertThat(dto.getCommands().get(0).getValue(), is(requestValue));

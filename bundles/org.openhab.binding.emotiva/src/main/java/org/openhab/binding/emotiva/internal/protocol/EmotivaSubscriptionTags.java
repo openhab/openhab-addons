@@ -113,7 +113,7 @@ public enum EmotivaSubscriptionTags {
 
     public static boolean hasChannel(String name) {
         try {
-            EmotivaSubscriptionTags type = EmotivaSubscriptionTags.valueOf(name);
+            var type = EmotivaSubscriptionTags.valueOf(name);
             if (!type.channel.isEmpty()) {
                 return true;
             }
@@ -124,7 +124,7 @@ public enum EmotivaSubscriptionTags {
     }
 
     public static EmotivaSubscriptionTags fromChannelUID(String id) {
-        for (EmotivaSubscriptionTags value : values()) {
+        for (var value : values()) {
             if (id.equals(value.getChannel())) {
                 return value;
             }
@@ -132,19 +132,24 @@ public enum EmotivaSubscriptionTags {
         return EmotivaSubscriptionTags.unknown;
     }
 
-    public static List<EmotivaSubscriptionTags> channels(String zonePrefix) {
+    public static List<EmotivaSubscriptionTags> channels(String prefix) {
         List<EmotivaSubscriptionTags> tags = new ArrayList<>();
-        for (EmotivaSubscriptionTags value : values()) {
-            if (value.channel.startsWith(zonePrefix)) {
+        for (var value : values()) {
+            if (value.channel.startsWith(prefix)) {
                 tags.add(value);
             }
+        }
+
+        // Always add keepAlive tag to the general prefix
+        if ("general".equals(prefix)) {
+            tags.add(EmotivaSubscriptionTags.keepAlive);
         }
         return tags;
     }
 
     public static EmotivaSubscriptionTags[] speakerChannels() {
         List<EmotivaSubscriptionTags> tags = new ArrayList<>();
-        for (EmotivaSubscriptionTags value : values()) {
+        for (var value : values()) {
             if (value.getDataType().equals(DIMENSIONLESS_DECIBEL)) {
                 tags.add(value);
             }
@@ -161,7 +166,7 @@ public enum EmotivaSubscriptionTags {
     }
 
     public String getEmotivaName() {
-        String retVal = name.replaceAll("-", "_");
+        var retVal = name.replaceAll("-", "_");
         logger.debug("Converting OH channel '{}' to Emotiva command '{}'", name, retVal);
         return retVal;
     }

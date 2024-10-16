@@ -18,10 +18,7 @@ import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumePe
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaCommandType.*;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.FREQUENCY_HERTZ;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.emotiva.internal.EmotivaProcessorState;
 import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
 import org.openhab.core.library.types.OnOffType;
@@ -105,7 +102,7 @@ public class EmotivaControlRequest {
         }
     }
 
-    public EmotivaControlDTO createDTO(Command ohCommand, @Nullable State previousState) {
+    public EmotivaControlDTO createDTO(Command ohCommand, State previousState) {
         switch (defaultCommand.getCommandType()) {
             case CYCLE -> {
                 return EmotivaControlDTO.create(defaultCommand);
@@ -115,16 +112,22 @@ public class EmotivaControlRequest {
                     try {
                         return EmotivaControlDTO.create(EmotivaControlCommands.valueOf(value.toString().toLowerCase()));
                     } catch (IllegalArgumentException e) {
+                        logger.debug(
+                                "OH command {}:{} mapped to Emotiva Command type {} threw exception trying to map to a valid Emotiva control command",
+                                channel, ohCommand.getClass().getSimpleName(), MENU_CONTROL);
                         return EmotivaControlDTO.create(EmotivaControlCommands.none);
                     }
                 }
+                logger.debug(
+                        "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, is not of OH String type",
+                        channel, ohCommand.getClass().getSimpleName(), MENU_CONTROL);
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
             case MODE -> {
                 if (ohCommand instanceof StringType value) {
                     // Check if value can be interpreted as a mode-<command>
                     try {
-                        OHChannelToEmotivaCommand ohChannelToEmotivaCommand = OHChannelToEmotivaCommand
-                                .valueOf(value.toString());
+                        var ohChannelToEmotivaCommand = OHChannelToEmotivaCommand.valueOf(value.toString());
                         return EmotivaControlDTO.create(ohChannelToEmotivaCommand.getCommand());
                     } catch (IllegalArgumentException e) {
                         if ("1".equals(value.toString())) {
@@ -132,6 +135,9 @@ public class EmotivaControlRequest {
                         } else if ("-1".equals(value.toString())) {
                             return EmotivaControlDTO.create(getDownCommand(), -1);
                         }
+                        logger.debug(
+                                "OH command {}:{} mapped to Emotiva Command type {} threw exception trying to map to a valid Emotiva control command",
+                                channel, ohCommand.getClass().getSimpleName(), MODE);
                         return EmotivaControlDTO.create(EmotivaControlCommands.none);
                     }
                 } else if (ohCommand instanceof Number value) {
@@ -141,13 +147,18 @@ public class EmotivaControlRequest {
                         return EmotivaControlDTO.create(getDownCommand(), -1);
                     }
                 }
+                logger.debug(
+                        "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, is not a OH String or Number type",
+                        channel, ohCommand.getClass().getSimpleName(), MODE);
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
             case NUMBER -> {
                 if (ohCommand instanceof Number value) {
                     return handleNumberTypes(getSetCommand(), ohCommand, value);
                 } else {
-                    logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                            NUMBER, ohCommand.getClass().getSimpleName());
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, not a OH Number type",
+                            channel, ohCommand.getClass().getSimpleName(), NUMBER);
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 }
             }
@@ -166,6 +177,9 @@ public class EmotivaControlRequest {
                         return matchToCommandMap(ohCommand, MAP_SOURCES_ZONE_2);
                     }
                     default -> {
+                        logger.debug(
+                                "OH command {}:{} mapped to Emotiva Command type {}, is not a supported OH channel type",
+                                channel, ohCommand.getClass().getSimpleName(), NONE);
                         return EmotivaControlDTO.create(EmotivaControlCommands.none);
                     }
                 }
@@ -182,10 +196,26 @@ public class EmotivaControlRequest {
                         return EmotivaControlDTO.create(getOffCommand());
                     }
                 } else {
-                    logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name, SET,
-                            ohCommand.getClass().getSimpleName());
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command",
+                            channel, ohCommand.getClass().getSimpleName(), SET);
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 }
+            }
+            case SOURCE_MAIN_ZONE -> {
+                logger.debug("OH command {}:{} mapped to Emotiva Command type {} always defaults to none command",
+                        channel, ohCommand.getClass().getSimpleName(), SOURCE_MAIN_ZONE);
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
+            }
+            case SOURCE_USER -> {
+                logger.debug("OH command {}:{} mapped to Emotiva Command type {} always defaults to none command",
+                        channel, ohCommand.getClass().getSimpleName(), SOURCE_USER);
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
+            }
+            case SOURCE_ZONE2 -> {
+                logger.debug("OH command {}:{} mapped to Emotiva Command type {} always defaults to none command",
+                        channel, ohCommand.getClass().getSimpleName(), SOURCE_ZONE2);
+                return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
             case SPEAKER_PRESET -> {
                 if (ohCommand instanceof StringType value) {
@@ -207,8 +237,9 @@ public class EmotivaControlRequest {
                         return EmotivaControlDTO.create(getOffCommand());
                     }
                 } else {
-                    logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                            TOGGLE, ohCommand.getClass().getSimpleName());
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, not a OH OnOff type",
+                            channel, ohCommand.getClass().getSimpleName(), TOGGLE);
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 }
             }
@@ -231,6 +262,9 @@ public class EmotivaControlRequest {
                         }
                     }
                     // Reached max or min value, not sending anything
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} reached max or min value, no change",
+                            channel, ohCommand.getClass().getSimpleName(), UP_DOWN_SINGLE);
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 } else if (ohCommand instanceof StringType value) {
                     if ("1".equals(value.toString())) {
@@ -244,48 +278,56 @@ public class EmotivaControlRequest {
                     } else {
                         return EmotivaControlDTO.create(getDownCommand(), -1);
                     }
-                } else {
-                    logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                            UP_DOWN_SINGLE, ohCommand.getClass().getSimpleName());
                 }
+                logger.debug(
+                        "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command",
+                        channel, ohCommand.getClass().getSimpleName(), UP_DOWN_SINGLE);
                 return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
             case UP_DOWN_HALF -> {
-                if (ohCommand instanceof Number value) {
-                    if (value.intValue() <= maxValue || value.intValue() >= minValue) {
-                        Number pre = (Number) previousState;
-                        if (pre == null) {
-                            if (value.doubleValue() > 0) {
+                if (ohCommand instanceof Number ohCommandDecimalType) {
+                    if (ohCommandDecimalType.intValue() <= maxValue || ohCommandDecimalType.intValue() >= minValue) {
+
+                        if (previousState instanceof Number previousStateValue) {
+                            if (ohCommandDecimalType.doubleValue() > previousStateValue.doubleValue()) {
                                 return EmotivaControlDTO.create(getUpCommand());
-                            } else if (value.doubleValue() < 0) {
+                            } else if (ohCommandDecimalType.doubleValue() < previousStateValue.doubleValue()) {
                                 return EmotivaControlDTO.create(getDownCommand());
                             }
                         } else {
-                            if (value.doubleValue() > pre.doubleValue()) {
+                            if (ohCommandDecimalType.doubleValue() > 0) {
                                 return EmotivaControlDTO.create(getUpCommand());
-                            } else if (value.doubleValue() < pre.doubleValue()) {
+                            } else if (ohCommandDecimalType.doubleValue() < 0) {
                                 return EmotivaControlDTO.create(getDownCommand());
                             }
                         }
                     }
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} with value {} reached max or min value, no change",
+                            channel, ohCommand.getClass().getSimpleName(), UP_DOWN_HALF,
+                            ohCommandDecimalType.intValue());
+                    return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 } else {
-                    logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                            UP_DOWN_HALF, ohCommand.getClass().getSimpleName());
+                    logger.debug(
+                            "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, not a OH Number type",
+                            channel, ohCommand.getClass().getSimpleName(), UP_DOWN_HALF);
                     return EmotivaControlDTO.create(EmotivaControlCommands.none);
                 }
             }
             default -> {
+                logger.debug(
+                        "OH command {}:{} has no Emotiva Command type, could not be matched to a Emotiva control command",
+                        channel, ohCommand.getClass().getSimpleName());
                 return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
         }
-        return EmotivaControlDTO.create(EmotivaControlCommands.none);
     }
 
     private EmotivaControlDTO matchToCommandMap(Command ohCommand, String mapName) {
         if (ohCommand instanceof StringType value) {
-            Map<EmotivaControlCommands, String> commandMap = state.getCommandMap(mapName);
+            var commandMap = state.getCommandMap(mapName);
             for (EmotivaControlCommands command : commandMap.keySet()) {
-                String map = commandMap.get(command);
+                var map = commandMap.get(command);
                 if (map != null && map.equals(value.toString())) {
                     return EmotivaControlDTO.create(EmotivaControlCommands.matchToInput(command.toString()));
                 } else if (command.name().equalsIgnoreCase(value.toString())) {
@@ -293,6 +335,9 @@ public class EmotivaControlRequest {
                 }
             }
         }
+        logger.debug(
+                "OH command {}:{} mapped to Emotiva Command type {} could not be matched to a Emotiva control command, not a OH String type",
+                channel, ohCommand.getClass().getSimpleName(), NONE);
         return EmotivaControlDTO.create(EmotivaControlCommands.none);
     }
 
@@ -331,8 +376,9 @@ public class EmotivaControlRequest {
                 return EmotivaControlDTO.create(getDefaultCommand(), value.intValue());
             }
             default -> {
-                logger.debug("Could not create EmotivaControlDTO for {}:{}:{}, ohCommand is {}", channel, name,
-                        setCommand.getDataType(), ohCommand.getClass().getSimpleName());
+                logger.debug(
+                        "OH command {}:{} mapped to Emotiva Command type:datatype {}:{} could not be matched to a Emotiva control command",
+                        channel, ohCommand.getClass().getSimpleName(), NUMBER, setCommand.getDataType());
                 return EmotivaControlDTO.create(EmotivaControlCommands.none);
             }
         }

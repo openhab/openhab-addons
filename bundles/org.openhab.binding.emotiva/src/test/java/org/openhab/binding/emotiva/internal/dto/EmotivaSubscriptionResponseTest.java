@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.power_on;
 
 import java.util.Collections;
-import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
@@ -41,7 +40,8 @@ class EmotivaSubscriptionResponseTest extends AbstractDTOTestBase {
     @Test
     void marshallNoProperty() {
         var dto = new EmotivaSubscriptionResponse(Collections.emptyList());
-        String xmlString = xmlUtils.marshallEmotivaDTO(dto);
+        var xmlString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlString, containsString("<emotivaSubscription/>"));
         assertThat(xmlString, not(containsString("</emotivaSubscription>")));
         assertThat(xmlString, not(containsString("<property")));
@@ -51,9 +51,10 @@ class EmotivaSubscriptionResponseTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithOneProperty() {
-        EmotivaPropertyDTO emotivaPropertyDTO = new EmotivaPropertyDTO(power_on.name(), "On", "true");
+        var emotivaPropertyDTO = new EmotivaPropertyDTO(power_on.name(), "On", "true");
         var dto = new EmotivaSubscriptionResponse(Collections.singletonList(emotivaPropertyDTO));
-        String xmlString = xmlUtils.marshallEmotivaDTO(dto);
+        var xmlString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlString, containsString("<emotivaSubscription>"));
         assertThat(xmlString, containsString("<property name=\"power_on\" value=\"On\" visible=\"true\"/>"));
         assertThat(xmlString, not(containsString("<property>")));
@@ -64,9 +65,12 @@ class EmotivaSubscriptionResponseTest extends AbstractDTOTestBase {
     @Test
     void unmarshall() throws JAXBException {
         var dto = (EmotivaSubscriptionResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaSubscriptionResponse);
+
         assertThat(dto.tags, is(notNullValue()));
         assertThat(dto.tags.size(), is(5));
-        List<EmotivaNotifyDTO> commands = xmlUtils.unmarshallToNotification(dto.getTags());
+
+        var commands = xmlUtils.unmarshallToNotification(dto.getTags());
+
         assertThat(commands, is(notNullValue()));
         assertThat(commands.size(), is(dto.tags.size()));
         assertThat(commands.get(0), instanceOf(EmotivaNotifyDTO.class));
