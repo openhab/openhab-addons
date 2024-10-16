@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="broadlink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="a1">
+		<label>Broadlink A1</label>
+		<description>The Broadlink A1 is a multi sensor that can can detect temperature, humidity, illumination, background
+			noise and air quality.</description>
+		<channels>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="noise" typeId="noise"/>
+			<channel id="light" typeId="light"/>
+			<channel id="air" typeId="air"/>
+		</channels>
+		<representation-property>macAddress</representation-property>
+		<config-description-ref uri="thing-type:broadlink:config"/>
+	</thing-type>
+</thing:thing-descriptions>
