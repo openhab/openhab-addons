@@ -6,10 +6,12 @@ Kermi X-Center & other attached devices (in progress) are integrated into the Mo
 This binding was tested and developed with Kermi x-change dynamic pro heat pump (build 2023).
 
 ## Prerequisite
+
 Requirement is contacting Kermi Support to activate Modbus-TCP which can be connected directly by network.
 Older devices (non-Pro ?) were connected by Modbus-RCP - maybe you can try to connect them here using a Modbus-TCP modulator (e.x. from waveshare or similar).
 
 ## Supported Things
+
 First you need a "Modbus TCP-Bridge" which establishes the basic connection towards your X-Center device.
 
 | Name                     | Thing Type ID | Description                                                                                                                 |
@@ -17,6 +19,7 @@ First you need a "Modbus TCP-Bridge" which establishes the basic connection towa
 | Kermi Heat Pump X-Center | kermi-xcenter | Provides (electric) Power values, Flow-information, PV-States, Temperatures and general Information of your Kermi Heat Pump |
 
 ## Discovery
+
 This binding does not support autodiscovery.
 
 ## Device IDs
@@ -30,13 +33,15 @@ This binding does not support autodiscovery.
 
 The needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
 
-1. Create _Modbus TCP Bridge_ with matching Settings of your Kermi Device
+1. Create _Modbus TCP Slave (Bridge)_ with matching Settings of your Kermi Device
 
-- IP Address
-- Device ID (see [Device IDs](#device-ids))
-- Port ID
+- **IP Address** - IP Address or hostname of your heatpump
+- **Port** - Port of modbus on your heatpump (normally 502) 
+- **Device ID** - ID on modbus, 40 is default for Kermi (see [Device IDs](#device-ids))
 
-2. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000. If it's too fast, you may experience errors in openhab or your x-center ! (Reboot if x-center stops responding on network access). You can enable "PV Modulation" if you want to read the values (default: disabled)
+2. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Slave (Bridge)_. Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000. If it's too fast, you may experience errors in openhab or your x-center ! (Reboot if x-center stops responding on network access). You can enable "PV Modulation" if you want to read the values (default: disabled)
+
+Details on Configurations explained below.
 
 ### Modbus TCP Slave
 
@@ -66,6 +71,8 @@ Select as Bridge a separate (second) Modbus TCP Slave.
 
 
 ## Full Example
+
+Attention: Configuration by file is not recommended. You can configure everything in the main UI.
 
 ### kermi.things
 
