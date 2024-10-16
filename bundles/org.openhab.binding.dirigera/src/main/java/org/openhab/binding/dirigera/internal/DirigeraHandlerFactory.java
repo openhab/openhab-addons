@@ -23,6 +23,7 @@ import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
+import org.openhab.binding.dirigera.internal.handler.LightControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.RepeaterHandler;
@@ -120,6 +121,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new SceneHandler(thing, SCENE_MAP, timeZoneProvider);
         } else if (THING_TYPE_REPEATER.equals(thingTypeUID)) {
             return new RepeaterHandler(thing, REPEATER_MAP);
+        } else if (THING_TYPE_LIGHT_CONTROLLER.equals(thingTypeUID)) {
+            return new LightControllerHandler(thing, LIGHT_CONTROLLER_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
