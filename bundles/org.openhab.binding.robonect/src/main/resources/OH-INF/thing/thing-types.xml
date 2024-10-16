@@ -45,6 +45,10 @@
 
 			<channel id="health-temperature" typeId="temperatureType"/>
 			<channel id="health-humidity" typeId="humidityType"/>
+
+			<channel id="blades-quality" typeId="blades-quality"/>
+			<channel id="blades-replacement-days" typeId="blades-replacement-days"/>
+			<channel id="blades-usage-hours" typeId="blades-usage-hours"/>
 		</channels>
 
 		<properties>
@@ -52,6 +56,7 @@
 			<property name="firmwareVersion">N/A</property>
 			<property name="compiled">N/A</property>
 			<property name="serialNumber">N/A</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -153,6 +158,27 @@
 		<label>Humidity</label>
 		<description>The relative humidity in the mower in percent</description>
 		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blades-quality">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Blade Quality</label>
+		<description>The quality of the blades</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="blades-usage-hours">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Blade Usage Hours</label>
+		<description>The usage time in hours of the blades</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="blades-replacement-days">
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Blade In Use Days</label>
+		<description>The number of days since the blades have been replaced</description>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="modeType">

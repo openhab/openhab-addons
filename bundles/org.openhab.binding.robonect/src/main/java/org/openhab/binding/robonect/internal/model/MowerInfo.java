@@ -15,7 +15,7 @@ package org.openhab.binding.robonect.internal.model;
 /**
  * The mower information holds the main information from the majority of the available channels. This class is a POJO
  * to deserialize the JSON response from the module.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class MowerInfo extends RobonectAnswer {
@@ -25,6 +25,7 @@ public class MowerInfo extends RobonectAnswer {
     private Timer timer;
     private Wlan wlan;
     private Health health;
+    private Blades blades;
     private ErrorEntry error;
 
     /**
@@ -69,6 +70,13 @@ public class MowerInfo extends RobonectAnswer {
         return health;
     }
 
+    /**
+     * @return - the blades status information.
+     */
+    public Blades getBlades() {
+        return blades;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -87,6 +95,10 @@ public class MowerInfo extends RobonectAnswer {
 
     public void setHealth(Health health) {
         this.health = health;
+    }
+
+    public void setBlades(Blades blades) {
+        this.blades = blades;
     }
 
     public void setError(ErrorEntry error) {
