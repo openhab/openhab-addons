@@ -25,6 +25,17 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class KermiBindingConstants {
 
+    public static final String STATE_AND_ALARM_READ_ERRORS = "Status And Alarm Modbus Read Errors";
+    public static final String STATE_READ_ERROR = "Information Modbus Read Error";
+    public static final String DATA_READ_ERROR = "Data Modbus Read Error";
+    static final String PV_READ_ERROR = "PV Modbus Read Error";
+    public static final String ALARM_GROUP = "xcenter-alarm";
+    public static final String STATE_GROUP = "xcenter-state";
+    public static final String ENERGYSOURCE_GROUP = "xcenter-energysource";
+    public static final String CHARGINGCIRCUIT_GROUP = "xcenter-chargingcircuit";
+    public static final String POWER_GROUP = "xcenter-power";
+    public static final String WORKHOURS_GROUP = "xcenter-workhours";
+    public static final String PV_GROUP = "xcenter-pvmodulation";
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
 
     // Supported Thing Types

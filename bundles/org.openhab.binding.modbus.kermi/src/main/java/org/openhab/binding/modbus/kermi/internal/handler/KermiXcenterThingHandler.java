@@ -64,6 +64,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.binding.modbus.kermi.internal.KermiBindingConstants;
 import org.openhab.binding.modbus.kermi.internal.KermiConfiguration;
 import org.openhab.binding.modbus.kermi.internal.dto.AlarmDTO;
 import org.openhab.binding.modbus.kermi.internal.dto.ChargingCircuitDTO;
@@ -103,19 +104,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         READ_SUCCESS,
         READ_FAILED
     }
-
-    static final String STATE_AND_ALARM_READ_ERRORS = "Status And Alarm Modbus Read Errors";
-    static final String STATE_READ_ERROR = "Information Modbus Read Error";
-    static final String DATA_READ_ERROR = "Data Modbus Read Error";
-    static final String PV_READ_ERROR = "PV Modbus Read Error";
-
-    static final String ALARM_GROUP = "xcenter-alarm";
-    static final String STATE_GROUP = "xcenter-state";
-    static final String ENERGYSOURCE_GROUP = "xcenter-energysource";
-    static final String CHARGINGCIRCUIT_GROUP = "xcenter-chargingcircuit";
-    static final String POWER_GROUP = "xcenter-power";
-    static final String WORKHOURS_GROUP = "xcenter-workhours";
-    static final String PV_GROUP = "xcenter-pvmodulation";
 
     // Energy source
     private ChannelUID exitTemperatureChannel;
@@ -200,47 +188,57 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         super(thing);
 
         // STATE
-        globalStateIdChannel = channelUID(thing, STATE_GROUP, GLOBAL_STATE_ID_CHANNEL);
+        globalStateIdChannel = channelUID(thing, KermiBindingConstants.STATE_GROUP, GLOBAL_STATE_ID_CHANNEL);
 
         // ALARM
-        alarmStateChannel = channelUID(thing, ALARM_GROUP, ALARM_STATE_CHANNEL);
+        alarmStateChannel = channelUID(thing, KermiBindingConstants.ALARM_GROUP, ALARM_STATE_CHANNEL);
 
         // Energy source
-        exitTemperatureChannel = channelUID(thing, ENERGYSOURCE_GROUP, EXIT_TEMPERATURE_CHANNEL);
-        incomingTemperatureChannel = channelUID(thing, ENERGYSOURCE_GROUP, INCOMING_TEMPERATURE_CHANNEL);
-        outsideTemperatureChannel = channelUID(thing, ENERGYSOURCE_GROUP, TEMPERATURE_SENSOR_OUTSIDE_CHANNEL);
+        exitTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP, EXIT_TEMPERATURE_CHANNEL);
+        incomingTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP,
+                INCOMING_TEMPERATURE_CHANNEL);
+        outsideTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP,
+                TEMPERATURE_SENSOR_OUTSIDE_CHANNEL);
 
         // Loading circuit
-        flowTemperatureChannel = channelUID(thing, CHARGINGCIRCUIT_GROUP, FLOW_TEMPERATURE_CHANNEL);
-        returnFlowTemperatureChannel = channelUID(thing, CHARGINGCIRCUIT_GROUP, RETURN_TEMPERATURE_CHANNEL);
-        flowSpeedChannel = channelUID(thing, CHARGINGCIRCUIT_GROUP, FLOW_SPEED_CHANNEL);
+        flowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP,
+                FLOW_TEMPERATURE_CHANNEL);
+        returnFlowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP,
+                RETURN_TEMPERATURE_CHANNEL);
+        flowSpeedChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP, FLOW_SPEED_CHANNEL);
 
         // Power
-        copChannel = channelUID(thing, POWER_GROUP, COP_CHANNEL);
-        copHeatingChannel = channelUID(thing, POWER_GROUP, COP_HEATING_CHANNEL);
-        copDrinkingWaterChannel = channelUID(thing, POWER_GROUP, COP_DRINKINGWATER_CHANNEL);
-        copCoolingChannel = channelUID(thing, POWER_GROUP, COP_COOLING_CHANNEL);
+        copChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, COP_CHANNEL);
+        copHeatingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, COP_HEATING_CHANNEL);
+        copDrinkingWaterChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, COP_DRINKINGWATER_CHANNEL);
+        copCoolingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, COP_COOLING_CHANNEL);
 
-        powerChannel = channelUID(thing, POWER_GROUP, POWER_CHANNEL);
-        powerHeatingChannel = channelUID(thing, POWER_GROUP, POWER_HEATING_CHANNEL);
-        powerDrinkingWaterChannel = channelUID(thing, POWER_GROUP, POWER_DRINKINGWATER_CHANNEL);
-        powerCoolingChannel = channelUID(thing, POWER_GROUP, POWER_COOLING_CHANNEL);
+        powerChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, POWER_CHANNEL);
+        powerHeatingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, POWER_HEATING_CHANNEL);
+        powerDrinkingWaterChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, POWER_DRINKINGWATER_CHANNEL);
+        powerCoolingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, POWER_COOLING_CHANNEL);
 
-        electricPowerChannel = channelUID(thing, POWER_GROUP, ELECTRIC_POWER_CHANNEL);
-        electricPowerHeatingChannel = channelUID(thing, POWER_GROUP, ELECTRIC_POWER_HEATING_CHANNEL);
-        electricPowerDrinkingWaterChannel = channelUID(thing, POWER_GROUP, ELECTRIC_POWER_DRINKINGWATER_CHANNEL);
-        electricPowerCoolingChannel = channelUID(thing, POWER_GROUP, ELECTRIC_POWER_COOLING_CHANNEL);
+        electricPowerChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, ELECTRIC_POWER_CHANNEL);
+        electricPowerHeatingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP,
+                ELECTRIC_POWER_HEATING_CHANNEL);
+        electricPowerDrinkingWaterChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP,
+                ELECTRIC_POWER_DRINKINGWATER_CHANNEL);
+        electricPowerCoolingChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP,
+                ELECTRIC_POWER_COOLING_CHANNEL);
 
         // Work hours
-        workHoursFanChannel = channelUID(thing, WORKHOURS_GROUP, WORKHOURS_FAN_CHANNEL);
-        workHoursStorageLoadingPumpChannel = channelUID(thing, WORKHOURS_GROUP, WORKHOURS_STORAGE_LOADING_PUMP_CHANNEL);
-        workHoursCompressorChannel = channelUID(thing, WORKHOURS_GROUP, WORKHOURS_COMPRESSOR_CHANNEL);
+        workHoursFanChannel = channelUID(thing, KermiBindingConstants.WORKHOURS_GROUP, WORKHOURS_FAN_CHANNEL);
+        workHoursStorageLoadingPumpChannel = channelUID(thing, KermiBindingConstants.WORKHOURS_GROUP,
+                WORKHOURS_STORAGE_LOADING_PUMP_CHANNEL);
+        workHoursCompressorChannel = channelUID(thing, KermiBindingConstants.WORKHOURS_GROUP,
+                WORKHOURS_COMPRESSOR_CHANNEL);
 
         // PV Modulation
-        pvStateChannel = channelUID(thing, PV_GROUP, PV_STATE_CHANNEL);
-        pvPowerChannel = channelUID(thing, PV_GROUP, PV_POWER_CHANNEL);
-        pvTargetTemperatureHeatingChannel = channelUID(thing, PV_GROUP, PV_TARGET_TEMPERATURE_HEATING_CHANNEL); // READ-WRITE
-        pvTargetTemperatureDrinkingWaterChannel = channelUID(thing, PV_GROUP,
+        pvStateChannel = channelUID(thing, KermiBindingConstants.PV_GROUP, PV_STATE_CHANNEL);
+        pvPowerChannel = channelUID(thing, KermiBindingConstants.PV_GROUP, PV_POWER_CHANNEL);
+        pvTargetTemperatureHeatingChannel = channelUID(thing, KermiBindingConstants.PV_GROUP,
+                PV_TARGET_TEMPERATURE_HEATING_CHANNEL); // READ-WRITE
+        pvTargetTemperatureDrinkingWaterChannel = channelUID(thing, KermiBindingConstants.PV_GROUP,
                 PV_TARGET_TEMPERATURE_DRINKINGWATER_CHANNEL); // READ-WRITE
     }
 
@@ -642,7 +640,8 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             if (stateRead == ReadStatus.READ_SUCCESS) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATE_READ_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        KermiBindingConstants.STATE_READ_ERROR);
             }
             if (stateRead == alarmRead) {
                 // both reads are ok or else both failed
@@ -650,14 +649,16 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            STATE_AND_ALARM_READ_ERRORS);
+                            KermiBindingConstants.STATE_AND_ALARM_READ_ERRORS);
                 }
             } else {
                 // either info or data read failed - update status with details
                 if (stateRead == ReadStatus.READ_FAILED) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATE_READ_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            KermiBindingConstants.STATE_READ_ERROR);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, DATA_READ_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            KermiBindingConstants.DATA_READ_ERROR);
                 }
             }
         } // else - one status isn't received yet - wait until both Modbus polls returns either success or error
