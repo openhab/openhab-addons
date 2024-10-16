@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -143,17 +144,18 @@ public class Websocket {
      * endpoints
      */
 
-    @OnWebSocketMessage
-    public void onTextMessage(String message) {
-        increase(MESSAGES);
-        // logger.info("DIRIGERA oneMessage {}", message);
-        gateway.websocketUpdate(new JSONObject(message));
-    }
-
-    // @OnWe
-    // public void onByteMessage(ByteBuffer message) {
-    // logger.info("DIRIGERA oneMessage {}", message);
+    // @OnWebSocketMessage
+    // public void onTextMessage(String message) {
+    // increase(MESSAGES);
+    // // logger.info("DIRIGERA onMessage {}", message);
+    // gateway.websocketUpdate(new JSONObject(message));
     // }
+
+    @OnWebSocketMessage
+    public void onByteMessage(ByteBuffer message) {
+        logger.info("DIRIGERA onByteMessage {}", message);
+        logger.info("DIRIGERA onByteMessage {}", new String(message.array()));
+    }
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
