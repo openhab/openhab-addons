@@ -132,12 +132,17 @@ public enum EmotivaSubscriptionTags {
         return EmotivaSubscriptionTags.unknown;
     }
 
-    public static List<EmotivaSubscriptionTags> channels(String zonePrefix) {
+    public static List<EmotivaSubscriptionTags> channels(String prefix) {
         List<EmotivaSubscriptionTags> tags = new ArrayList<>();
         for (EmotivaSubscriptionTags value : values()) {
-            if (value.channel.startsWith(zonePrefix)) {
+            if (value.channel.startsWith(prefix)) {
                 tags.add(value);
             }
+        }
+
+        // Always add keepAlive tag to the general prefix
+        if ("general".equals(prefix)) {
+            tags.add(EmotivaSubscriptionTags.keepAlive);
         }
         return tags;
     }

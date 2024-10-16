@@ -28,7 +28,7 @@ public record EmotivaUdpResponse(String answer, String ipAddress) {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        EmotivaUdpResponse that = (EmotivaUdpResponse) o;
+        var that = (EmotivaUdpResponse) o;
         return answer.equals(that.answer) && ipAddress.equals(that.ipAddress);
     }
 }
