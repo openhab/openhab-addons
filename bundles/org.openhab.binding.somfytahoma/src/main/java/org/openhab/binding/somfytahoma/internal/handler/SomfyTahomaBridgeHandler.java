@@ -146,6 +146,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     // Last login timestamp
     private Instant lastLoginTimestamp = Instant.MIN;
 
+    // Token expiration time
+    private Instant tokenExpirationTime = Instant.MAX;
+
     /**
      * Our configuration
      */
@@ -270,7 +273,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
             } else {
-                loginOAUTH();
+                loginTahoma();
             }
 
             if (thingConfig.isDevMode()) {
@@ -306,6 +309,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     "Getting login cookie interrupted");
             Thread.currentThread().interrupt();
         }
+    }
+
+    private void doOAuthLogin() throws ExecutionException, InterruptedException, TimeoutException {
+        lastLoginTimestamp = Instant.now();
+
+        loginTahoma();
     }
 
     private boolean loginCozyTouch()
@@ -587,11 +596,31 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        if (tokenNeedsRefresh()) {
+            logger.debug("The access token expires soon, refreshing the cloud access token");
+            refreshToken();
+        }
+
         List<SomfyTahomaEvent> events = getEvents();
         logger.trace("Got total of {} events", events.size());
         for (SomfyTahomaEvent event : events) {
             processEvent(event);
         }
+    }
+
+    private void refreshToken() {
+        try {
+            doOAuthLogin();
+        } catch (ExecutionException | TimeoutException e) {
+            logger.debug("Token refresh failed");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private boolean tokenNeedsRefresh() {
+        return !thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)
+                && Instant.now().plusSeconds(thingConfig.getRefresh()).isAfter(tokenExpirationTime);
     }
 
     private void processEvent(SomfyTahomaEvent event) {
@@ -923,7 +952,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private void loginOAUTH() throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    private void loginTahoma() throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String authBaseUrl = "https://" + SOMFY_OAUTH2_URL;
 
         String urlParameters = "client_id=" + SOMFY_OAUTH2_CLIENT_ID + "&client_secret=" + SOMFY_OAUTH2_CLIENT_SECRET
@@ -954,7 +983,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
                 SomfyTahomaOauth2Reponse.class);
 
-        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
+        tokenExpirationTime = Instant.now().plusSeconds(oauth2response.getExpiresIn());
+        logger.debug("OAuth2 Access Token: {}, expires: {}", oauth2response.getAccessToken(), tokenExpirationTime);
 
         accessToken = oauth2response.getAccessToken();
     }
