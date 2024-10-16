@@ -158,6 +158,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
     private String localToken = "";
 
+    private String accessToken = "";
+
     private Map<String, SomfyTahomaDevice> devicePlaces = new HashMap<>();
 
     private ExpiringCache<List<SomfyTahomaDevice>> cachedDevices = new ExpiringCache<>(Duration.ofSeconds(30),
@@ -261,62 +263,29 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         cloudFallback = false;
 
         try {
-            String urlParameters = "";
-
-            // if cozytouch, must use oauth server
-            if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
-                logger.debug("CozyTouch Oauth2 authentication flow");
-                urlParameters = "jwt=" + loginCozytouch();
-            } else {
-                urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
-                        + urlEncode(thingConfig.getPassword());
-            }
-
-            ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
-                    .content(new StringContentProvider(urlParameters),
-                            "application/x-www-form-urlencoded; charset=UTF-8")
-                    .send();
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("Login response: {}", response.getContentAsString());
-            }
-
-            SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(),
-                    SomfyTahomaLoginResponse.class);
-
             lastLoginTimestamp = Instant.now();
 
-            if (data == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Received invalid data (login)");
-            } else if (!data.getErrorCode().isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, data.getError());
-                if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
-                    setTooManyRequests();
+            if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
+                if (!loginCozyTouch()) {
+                    return;
                 }
             } else {
-                if (thingConfig.isDevMode()) {
-                    initializeLocalMode();
-                }
+                loginOAUTH();
+            }
 
-                String id = registerEvents();
-                if (id != null && !UNAUTHORIZED.equals(id)) {
-                    eventsId = id;
-                    logger.debug("Events id: {}", eventsId);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                            isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
-                } else {
-                    logger.debug("Events id error: {}", id);
-                    if (!thingConfig.isDevMode()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "unable to register events");
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "LAN mode is not properly configured");
-                        logger.debug("Forcing the gateway discovery");
-                        discoverGateway();
-                    }
-                }
+            if (thingConfig.isDevMode()) {
+                initializeLocalMode();
+            }
+
+            String id = registerEvents();
+            if (id != null && !UNAUTHORIZED.equals(id)) {
+                eventsId = id;
+                logger.debug("Events id: {}", eventsId);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
+            } else {
+                logger.debug("Events id error: {}", id);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "unable to register events");
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Received invalid data (login)", e);
@@ -337,6 +306,33 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                     "Getting login cookie interrupted");
             Thread.currentThread().interrupt();
         }
+    }
+
+    private boolean loginCozyTouch()
+            throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
+        logger.debug("CozyTouch Oauth2 authentication flow");
+        String urlParameters = "jwt=" + getCozytouchJWT();
+        ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
+                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .send();
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Login response: {}", response.getContentAsString());
+        }
+
+        SomfyTahomaLoginResponse data = gson.fromJson(response.getContentAsString(), SomfyTahomaLoginResponse.class);
+
+        if (data == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
+            return false;
+        } else if (!data.getErrorCode().isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, data.getError());
+            if (data.getError().startsWith(TOO_MANY_REQUESTS)) {
+                setTooManyRequests();
+            }
+            return false;
+        }
+        return true;
     }
 
     public boolean isDevModeReady() {
@@ -507,6 +503,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         // Clean access data
         localToken = "";
+        accessToken = "";
     }
 
     @Override
@@ -852,10 +849,16 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private Request sendRequestBuilderCloud(String subUrl, HttpMethod method) {
-        return httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
+        Request request = httpClient.newRequest(getApiFullUrl(subUrl)).method(method)
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
                 .agent(TAHOMA_AGENT);
+
+        if (!thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
+            // user OAuth token if not cozytouch
+            request = request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+        }
+        return request;
     }
 
     private Request sendRequestBuilderLocal(String subUrl, HttpMethod method) {
@@ -872,7 +875,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * @throws InterruptedException
      * @throws JsonSyntaxException
      */
-    private String loginCozytouch()
+    private String getCozytouchJWT()
             throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String authBaseUrl = "https://" + COZYTOUCH_OAUTH2_URL;
 
@@ -918,6 +921,42 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             throw new ExecutionException(String.format("Failed to retrieve JWT token. ResponseCode=%d, ResponseText=%s",
                     response.getStatus(), response.getContentAsString()), null);
         }
+    }
+
+    private void loginOAUTH() throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+        String authBaseUrl = "https://" + SOMFY_OAUTH2_URL;
+
+        String urlParameters = "client_id=" + SOMFY_OAUTH2_CLIENT_ID + "&client_secret=" + SOMFY_OAUTH2_CLIENT_SECRET
+                + "&grant_type=password&username=" + urlEncode(thingConfig.getEmail()) + "&password="
+                + urlEncode(thingConfig.getPassword());
+
+        ContentResponse response = httpClient.newRequest(authBaseUrl).method(HttpMethod.POST)
+                .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
+                .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
+                .agent(TAHOMA_AGENT)
+                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .send();
+
+        if (response.getStatus() != 200) {
+            // Login error
+            if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                    .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                try {
+                    SomfyTahomaOauth2Error error = gson.fromJson(response.getContentAsString(),
+                            SomfyTahomaOauth2Error.class);
+                    throw new ExecutionException(error.getErrorDescription(), null);
+                } catch (JsonSyntaxException e) {
+                }
+            }
+            throw new ExecutionException("Unknown error while attempting to log in.", null);
+        }
+
+        SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
+                SomfyTahomaOauth2Reponse.class);
+
+        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
+
+        accessToken = oauth2response.getAccessToken();
     }
 
     private String getApiFullUrl(String subUrl) {
@@ -1036,6 +1075,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing relogin");
         reLoginNeeded = true;
         localToken = "";
+        accessToken = "";
         login();
         return ThingStatus.OFFLINE != thing.getStatus();
     }
