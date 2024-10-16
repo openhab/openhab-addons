@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.HueSyncConstants.CHANNELS.COMMANDS;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
@@ -55,7 +54,7 @@ public class HueSyncDeviceConnection {
 
     private HueSyncConnection connection;
 
-    private Map<String, Consumer<ExecutionPayload>> DeviceCommandExecutors = new HashMap<>();
+    private Map<String, Consumer<Command>> DeviceCommandExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
@@ -68,16 +67,21 @@ public class HueSyncDeviceConnection {
     // #region private
 
     private void registerCommandHandlers() {
-        this.DeviceCommandExecutors.put(COMMANDS.MODE, defaultHandler());
-        this.DeviceCommandExecutors.put(COMMANDS.SOURCE, defaultHandler());
-        this.DeviceCommandExecutors.put(COMMANDS.BRIGHTNESS, defaultHandler());
-        this.DeviceCommandExecutors.put(COMMANDS.SYNC, defaultHandler());
-        this.DeviceCommandExecutors.put(COMMANDS.HDMI, defaultHandler());
+        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.MODE,
+                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.MODE));
+        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SOURCE,
+                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SOURCE));
+        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS,
+                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.BRIGHTNESS));
+        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
+                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SYNC));
+        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.HDMI,
+                defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.HDMI));
     }
 
-    private Consumer<ExecutionPayload> defaultHandler() {
-        return payload -> {
-            execute(payload.API, payload.Command);
+    private Consumer<Command> defaultHandler(String endpoint) {
+        return command -> {
+            execute(endpoint, command);
         };
     }
 
@@ -120,7 +124,7 @@ public class HueSyncDeviceConnection {
         }
 
         if (this.DeviceCommandExecutors.containsKey(commandId)) {
-            this.DeviceCommandExecutors.get(commandId).accept(new ExecutionPayload(commandId, command));
+            this.DeviceCommandExecutors.get(commandId).accept(command);
         } else {
             this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
         }

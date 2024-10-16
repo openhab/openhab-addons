@@ -28,6 +28,14 @@ public class HueSyncConstants {
         public static final String REGISTRATIONS = "registrations";
         public static final String HDMI = "hdmi";
         public static final String EXECUTION = "execution";
+
+        public static class EXECUTION_ENDPOINTS {
+            public static final String MODE = "mode";
+            public static final String SYNC = "syncActive";
+            public static final String HDMI = "hdmiActive";
+            public static final String SOURCE = "hdmiSource";
+            public static final String BRIGHTNESS = "brightness";
+        }
     }
 
     public static class CHANNELS {
@@ -40,9 +48,9 @@ public class HueSyncConstants {
 
         public static class COMMANDS {
             public static final String MODE = "device-commands#mode";
-            public static final String SYNC = "device-commands#syncActive";
-            public static final String HDMI = "device-commands#hdmiActive";
-            public static final String SOURCE = "device-commands#hdmiSource";
+            public static final String SYNC = "device-commands#sync-active";
+            public static final String HDMI = "device-commands#hdmi-active";
+            public static final String SOURCE = "device-commands#hdmi-source";
             public static final String BRIGHTNESS = "device-commands#brightness";
         }
 

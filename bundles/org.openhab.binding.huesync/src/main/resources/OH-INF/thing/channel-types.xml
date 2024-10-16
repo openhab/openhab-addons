@@ -77,7 +77,7 @@
 		</command>
 	</channel-type>
 
-	<channel-type id="connection-lastSyncMode">
+	<channel-type id="connection-last-sync-mode">
 		<item-type>String</item-type>
 		<label>Last sync mode</label>
 		<description>Last sync mode used for this channel</description>
@@ -137,7 +137,7 @@
 		</command>
 	</channel-type>
 
-	<channel-type id="execution-syncActive">
+	<channel-type id="execution-sync-active">
 		<item-type>Switch</item-type>
 		<label>Synchronization Active</label>
 		<description>
@@ -154,7 +154,7 @@
 		<category>switch</category>
 	</channel-type>
 
-	<channel-type id="executioin-hdmiActive">
+	<channel-type id="executioin-hdmi-active">
 		<item-type>Switch</item-type>
 		<label>HDMI Active</label>
 		<description>
@@ -171,7 +171,7 @@
 		<category>switch</category>
 	</channel-type>
 
-	<channel-type id="execution-hdmiSource">
+	<channel-type id="execution-hdmi-source">
 		<item-type>String</item-type>
 		<label>HDMI input</label>
 		<description>
