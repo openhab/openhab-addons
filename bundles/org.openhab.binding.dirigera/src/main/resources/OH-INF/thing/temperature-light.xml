@@ -29,7 +29,7 @@
 				<label>OTA State</label>
 				<description>Over-the-air current state</description>
 			</channel>
-			<channel id="ota-progress" typeId="percent">
+			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
 				<description>Over-the-air current progress if state is download in progress</description>
 			</channel>

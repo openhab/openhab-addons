@@ -15,7 +15,6 @@ package org.openhab.binding.dirigera.internal.network;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -32,6 +31,8 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,23 +145,23 @@ public class RestAPI {
         }
     }
 
-    public synchronized Map<String, ?> getImage(String imageURL) {
+    public synchronized State getImage(String imageURL) {
         try {
             ContentResponse response = httpClient.GET(imageURL);
             if (response.getStatus() == 200) {
-                logger.info("DIRIGERA API Image call {} delivers {} {}", imageURL, response.getMediaType(),
-                        response.getContent() != null);
+                logger.warn("DIRIGERA API Image call {} delivers {} {}", imageURL, response.getMediaType(),
+                        response.getContent().length);
                 String mimeType = response.getMediaType();
                 if (mimeType == null) {
                     mimeType = RawType.DEFAULT_MIME_TYPE;
                 }
-                return Map.of("image", response.getContent(), "mimeType", mimeType);
+                return new RawType(response.getContent(), mimeType);
             } else {
                 logger.warn("DIRIGERA API call to {} failed {}", imageURL, response.getStatus());
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("DIRIGERA API call to {} failed {}", imageURL, e.getMessage());
         }
-        return Map.of("image", new byte[] {}, "mimeType", "");
+        return UnDefType.UNDEF;
     }
 }

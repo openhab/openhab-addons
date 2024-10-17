@@ -120,7 +120,7 @@
 				<option value="0">ready to check</option>
 				<option value="1">check in progress</option>
 				<option value="2">ready to download</option>
-				<option value="2">download in progress</option>
+				<option value="3">download in progress</option>
 			</options>
 		</state>
 	</channel-type>
