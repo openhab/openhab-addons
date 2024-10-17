@@ -59,6 +59,10 @@ public class SomfyTahomaBindingConstants {
     // Venetian Blind
     public static final ThingTypeUID THING_TYPE_VENETIANBLIND = new ThingTypeUID(BINDING_ID, "venetianblind");
 
+    // Up Down Venetian Blind
+    public static final ThingTypeUID THING_TYPE_UPDOWNVENETIANBLIND = new ThingTypeUID(BINDING_ID,
+            "updownvenetianblind");
+
     // Exterior Screen
     public static final ThingTypeUID THING_TYPE_EXTERIORSCREEN = new ThingTypeUID(BINDING_ID, "exteriorscreen");
 
@@ -194,6 +198,9 @@ public class SomfyTahomaBindingConstants {
     // Roller shutter, Shutter, Awning, Screen, Blind, Garage door, Window, Curtain
     public static final String CONTROL = "control";
     public static final String MOVING = "moving";
+
+    // Up down venetian blind
+    public static final String TILT = "tilt";
 
     // Adjustable slats roller shutter
     public static final String ROCKER = "rocker";
@@ -399,7 +406,6 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_BOOLEAN = 6;
     public static final String UNAVAILABLE = "unavailable";
     public static final String TEMPORARILY_BANNED = "Too many attempts with an invalid token, temporarily banned.";
-
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
     public static final String EVENT_LISTENER_TIMEOUT = "No registered event listener";
     public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
@@ -439,6 +445,9 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature";
     public static final String COMMAND_REFRESH_DHWMODE = "refreshDHWMode";
     public static final String COMMAND_REFRESH_BOOST_MODE_DURATION = "refreshBoostModeDuration";
+    public static final String COMMAND_TILT_POSITIVE = "tiltPositive";
+    public static final String COMMAND_TILT_NEGATIVE = "tiltNegative";
+    public static final String COMMAND_REST = "rest";
 
     // States
     public static final String OPERATING_MODE_STATE = "core:OperatingModeState";
@@ -537,7 +546,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
             THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM, THING_TYPE_HITACHI_ATWHZ,
             THING_TYPE_HITACHI_DHW, THING_TYPE_HITACHI_ATWMC, THING_TYPE_RAINSENSOR, THING_TYPE_SHUTTER,
-            THING_TYPE_CARBON_DIOXIDE_SENSOR, THING_TYPE_NOISE_SENSOR));
+            THING_TYPE_CARBON_DIOXIDE_SENSOR, THING_TYPE_NOISE_SENSOR, THING_TYPE_UPDOWNVENETIANBLIND));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<>() {

@@ -208,6 +208,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractThingHandlerDiscove
                 // widget: DynamicVenetianBlind
                 if (hasCommmand(device, "setOrientation")) {
                     deviceDiscovered(device, THING_TYPE_VENETIANBLIND, place);
+                } else if ("UpDownVenetianBlind".equals(widget)) {
+                    // widget: UpDownVenetianBlind
+                    deviceDiscovered(device, THING_TYPE_UPDOWNVENETIANBLIND, place);
                 } else {
                     // simple venetian blind without orientation
                     deviceDiscovered(device, THING_TYPE_SHUTTER, place);

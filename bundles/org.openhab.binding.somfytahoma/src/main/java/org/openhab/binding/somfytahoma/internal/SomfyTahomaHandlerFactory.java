@@ -55,6 +55,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaSmokeSensorHa
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaTemperatureSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaThermostatHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaUnoRollerShutterHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaUpDownVenetianBlindHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaValveHeatingSystemHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaVenetianBlindHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaWaterHeatingSystemHandler;
@@ -126,6 +127,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_VENETIANBLIND)
                 || thingTypeUID.equals(THING_TYPE_EXTERIORVENETIANBLIND)) {
             return new SomfyTahomaVenetianBlindHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_UPDOWNVENETIANBLIND)) {
+            return new SomfyTahomaUpDownVenetianBlindHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_GARAGEDOOR)) {
             return new SomfyTahomaRollerShutterHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_AWNING)) {
