@@ -18,12 +18,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link AbstractMultiRateChannelThrottler} is abstract class implementing
  * a throttler with multiple global execution rates, or rate limiters
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 abstract class AbstractMultiRateChannelThrottler implements ChannelThrottler {
 
     protected final TimeProvider timeProvider;
@@ -43,7 +47,7 @@ abstract class AbstractMultiRateChannelThrottler implements ChannelThrottler {
         this.rates.add(rate);
     }
 
-    protected synchronized long callTime(Rate channel) {
+    protected synchronized long callTime(@Nullable Rate channel) {
         long maxCallTime = 0;
         long finalCallTime = 0;
         long now = timeProvider.getCurrentTimeInMillis();

@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol.sso;
+package org.openhab.binding.tesla.internal.protocol.dto.sso;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link TokenExchangeRequest} is a datastructure to exchange
@@ -19,7 +21,10 @@ package org.openhab.binding.tesla.internal.protocol.sso;
  * @author Christian Güdel - Initial contribution
  */
 public class TokenExchangeRequest {
-    public String grant_type = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-    public String client_id = "81527cff06843c8634fdc09e8ac0abefb46ac849f38fe1e431c2ef2106796384";
-    public String client_secret = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3";
+    @SerializedName("grant_type")
+    public String grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer";
+    @SerializedName("client_id")
+    public String clientId = "81527cff06843c8634fdc09e8ac0abefb46ac849f38fe1e431c2ef2106796384";
+    @SerializedName("client_secret")
+    public String clientSecret = "c7257eb71a564034f9419ee651c7d0e5f7aa6bfbd18bafb5c5c033b093bb2fa3";
 }

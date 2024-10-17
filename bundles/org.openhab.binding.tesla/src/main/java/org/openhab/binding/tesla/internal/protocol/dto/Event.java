@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol;
+package org.openhab.binding.tesla.internal.protocol.dto;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Event} is a datastructure to capture
@@ -19,9 +21,11 @@ package org.openhab.binding.tesla.internal.protocol;
  * @author Karel Goderis - Initial contribution
  */
 public class Event {
-    public String msg_type;
+    @SerializedName("msg_type")
+    public String msgType;
     public String value;
     public String tag;
-    public String error_type;
+    @SerializedName("error_type")
+    public String errorType;
     public int connectionTimeout;
 }
