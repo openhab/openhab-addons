@@ -448,7 +448,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     protected abstract byte[] serializePacket(BasePacket packet) throws EnOceanException;
 
     public synchronized void addPacketListener(PacketListener listener, long senderIdToListenTo) {
-        if (listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>()).add(listener)) {
+        HashSet<PacketListener> lst = listeners.computeIfAbsent(senderIdToListenTo, k -> new HashSet<>());
+        if (lst != null && lst.add(listener)) {
             logger.debug("Listener added: {}", senderIdToListenTo);
         }
     }
