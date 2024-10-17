@@ -272,25 +272,15 @@ public class Model {
     }
 
     public synchronized Map<String, Object> getPropertiesFor(String id) {
-        Map<String, Object> properties = new HashMap<>();
+        final Map<String, Object> properties = new HashMap<>();
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
-            if (attributes.has("model")) {
-                properties.put("model", attributes.get("model"));
-            }
-            if (attributes.has("manufacturer")) {
-                properties.put("manufacturer", attributes.get("manufacturer"));
-            }
-            if (attributes.has("firmwareVersion")) {
-                properties.put("firmwareVersion", attributes.get("firmwareVersion"));
-            }
-            if (attributes.has("hardwareVersion")) {
-                properties.put("hardwareVersion", attributes.get("hardwareVersion"));
-            }
-            if (attributes.has("serialNumber")) {
-                properties.put("serialNumber", attributes.get("serialNumber"));
-            }
+            THING_PROPERTIES.forEach(property -> {
+                if (attributes.has(property)) {
+                    properties.put(property, attributes.get(property));
+                }
+            });
             properties.put(PROPERTY_DEVICE_ID, id);
         }
         return properties;

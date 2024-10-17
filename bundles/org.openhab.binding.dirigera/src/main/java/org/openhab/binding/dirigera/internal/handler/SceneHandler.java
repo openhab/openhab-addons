@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +44,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SceneHandler extends BaseDeviceHandler {
     private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
 
     private Optional<ScheduledFuture<?>> sceneObserver = Optional.empty();
-    private final TimeZoneProvider timeZoneProvider;
+    private Instant lastTrigger = Instant.MAX;
+    private int undoDuration = 30;
 
     public SceneHandler(Thing thing, Map<String, String> mapping, TimeZoneProvider timeZoneProvider) {
         super(thing, mapping);
@@ -64,6 +68,11 @@ public class SceneHandler extends BaseDeviceHandler {
         } else {
             updateStatus(ThingStatus.ONLINE);
             sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5, TimeUnit.MINUTES));
+        }
+
+        // check if different undo duration is configured
+        if (values.has("undoAllowedDuration")) {
+            undoDuration = values.getInt("undoAllowedDuration");
         }
     }
 
@@ -86,9 +95,13 @@ public class SceneHandler extends BaseDeviceHandler {
                 switch (commandNumber) {
                     case 0:
                         gateway().api().triggerScene(config.id, "trigger");
+                        lastTrigger = Instant.now();
+                        scheduler.schedule(this::countDown, 1, TimeUnit.SECONDS);
                         break;
                     case 1:
                         gateway().api().triggerScene(config.id, "undo");
+                        lastTrigger = Instant.MAX;
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_TRIGGER), UnDefType.UNDEF);
                         break;
                 }
             }
@@ -101,6 +114,15 @@ public class SceneHandler extends BaseDeviceHandler {
             Instant sunsetInstant = Instant.parse(update.getString("lastTriggered"));
             updateState(new ChannelUID(thing.getUID(), CHANNEL_LAST_TRIGGER),
                     new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+        }
+    }
+
+    private void countDown() {
+        long seconds = Duration.between(lastTrigger, Instant.now()).toSeconds();
+        if (seconds >= 0 && seconds <= 30) {
+            long countDown = undoDuration - seconds;
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_TRIGGER), new DecimalType(countDown));
+            scheduler.schedule(this::countDown, 1, TimeUnit.SECONDS);
         }
     }
 
