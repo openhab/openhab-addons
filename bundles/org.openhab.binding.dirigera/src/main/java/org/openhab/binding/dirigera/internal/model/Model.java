@@ -164,7 +164,6 @@ public class Model {
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
                 if (id.equals(entry.get(PROPERTY_DEVICE_ID))) {
-                    logger.info("DIRIGERA MODEL found entry for {}", id);
                     if (!entry.isNull(PROPERTY_DEVICE_TYPE)) {
                         String deviceType = entry.getString(PROPERTY_DEVICE_TYPE);
                         JSONObject attributes = entry.getJSONObject(PROPERTY_ATTRIBUTES);
@@ -187,9 +186,9 @@ public class Model {
                                 }
                                 break;
                             case DEVICE_TYPE_MOTION_SENSOR:
-                                // if product code is E2134 sensor contains an additional light sensor!
-                                String productCode = getStringAttribute(id, "productCode");
-                                if ("E2134".equals(productCode)) {
+                                // if product code is E2134 (VALLHORN) sensor contains an additional light sensor!
+                                String motionSensorProductCode = getStringAttribute(id, "productCode");
+                                if ("E2134".equals(motionSensorProductCode)) {
                                     return THING_TYPE_MOTION_LIGHT_SENSOR;
                                 } else {
                                     return THING_TYPE_MOTION_SENSOR;
@@ -202,10 +201,14 @@ public class Model {
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_CONTACT_SENSOR.toString(),
                                         id);
                                 return THING_TYPE_CONTACT_SENSOR;
-                            case DEVICE_TYPE_SMART_PLUG:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SMART_PLUG.toString(),
-                                        id);
-                                return THING_TYPE_SMART_PLUG;
+                            case DEVICE_TYPE_OUTLET:
+                                // if product code is E2206 (INSPELNING) plug contains an additional light sensor!
+                                String pluGroductCode = getStringAttribute(id, "productCode");
+                                if ("E2206".equals(pluGroductCode)) {
+                                    return THING_TYPE_SMART_PLUG;
+                                } else {
+                                    return THING_TYPE_PLUG;
+                                }
                             case DEVICE_TYPE_SPEAKER:
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SPEAKER.toString(), id);
                                 return THING_TYPE_SPEAKER;
