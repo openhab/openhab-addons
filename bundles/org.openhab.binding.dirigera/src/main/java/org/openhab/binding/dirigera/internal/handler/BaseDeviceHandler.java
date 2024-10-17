@@ -171,10 +171,6 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
     }
 
-    // public String getId() {
-    // return config.id;
-    // }
-
     private Map<String, String> reverse(Map<String, String> mapping) {
         final Map<String, String> reverseMap = new HashMap<>();
         mapping.forEach((key, value) -> {

@@ -73,4 +73,21 @@ class TestModel {
         twinList = model.getTwins(tradfriId);
         assertEquals(0, twinList.size(), "Twins");
     }
+
+    @Test
+    void testPlugs() {
+        Model model = new Model(mock(Gateway.class));
+        String modelString = FileReader.readFileInString("src/test/resources/NewestHome.json");
+        model.update(modelString);
+
+        // VALLHORN
+        String tretaktId = "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1";
+        ThingTypeUID plugTTUID = model.identifyDevice(tretaktId);
+        assertEquals(THING_TYPE_PLUG, plugTTUID, "TRETAKT TTUID");
+
+        // TRADFRI
+        String inspelningId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
+        ThingTypeUID motionUID = model.identifyDevice(inspelningId);
+        assertEquals(THING_TYPE_SMART_PLUG, motionUID, "INSPELNING TTUID");
+    }
 }
