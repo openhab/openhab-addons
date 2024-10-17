@@ -55,9 +55,10 @@ public class SmartPlugHandler extends PlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // handling done in PlugHandler - this handler only provides additional read-only channels
+        super.handleCommand(channelUID, command);
+
         // only handle RefreshType
-        String channel = channelUID.getIdWithoutGroup();
-        logger.trace("DIRIGERA SMART_PLUG handle command {} for {}", command, channel);
         if (command instanceof RefreshType) {
             JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
             handleUpdate(values);
