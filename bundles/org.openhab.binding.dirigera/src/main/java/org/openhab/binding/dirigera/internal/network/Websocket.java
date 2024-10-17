@@ -156,7 +156,6 @@ public class Websocket {
 
     @OnWebSocketFrame
     public void onFrame(Frame frame) {
-        // logger.trace("DIRIGERA onFrame {} {} {}", frame.getType(), frame.hasPayload(), frame.getPayloadLength());
         if (Frame.Type.PONG.equals(frame.getType())) {
             ByteBuffer buffer = frame.getPayload();
             byte[] bytes = new byte[frame.getPayloadLength()];
