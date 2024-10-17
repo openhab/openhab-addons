@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,9 +66,9 @@ public class Model {
                         home.get(PROPERTY_HTTP_ERROR_STATUS));
             } else {
                 model = home;
-                List<Object> newDevices = getAllIds().toList();
+                List<String> newDevices = getAllIds();
                 newDevices.forEach(deviceId -> {
-                    gateway.newDevice(deviceId.toString());
+                    gateway.newDevice(deviceId);
                 });
                 sceneUpdate();
             }
@@ -92,23 +93,23 @@ public class Model {
      */
     public synchronized void update(String modelString) {
         this.model = new JSONObject(modelString);
-        List<Object> newDevices = getAllIds().toList();
+        List<String> newDevices = getAllIds();
         newDevices.forEach(deviceId -> {
             gateway.newDevice(deviceId.toString());
         });
     }
 
-    public synchronized JSONArray getAllIds() {
-        JSONArray returnArray = new JSONArray();
+    public synchronized List<String> getAllIds() {
+        List<String> deviceList = new ArrayList<>();
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray("devices");
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                returnArray.put(entry.get(PROPERTY_DEVICE_ID));
+                deviceList.add(entry.getString(PROPERTY_DEVICE_ID));
             }
         }
-        return returnArray;
+        return deviceList;
     }
 
     private void sceneUpdate() {
@@ -186,9 +187,13 @@ public class Model {
                                 }
                                 break;
                             case DEVICE_TYPE_MOTION_SENSOR:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_MOTION_SENSOR.toString(),
-                                        id);
-                                return THING_TYPE_MOTION_SENSOR;
+                                // if product code is E2134 sensor contains an additional light sensor!
+                                String productCode = getStringAttribute(id, "productCode");
+                                if ("E2134".equals(productCode)) {
+                                    return THING_TYPE_MOTION_LIGHT_SENSOR;
+                                } else {
+                                    return THING_TYPE_MOTION_SENSOR;
+                                }
                             case DEVICE_TYPE_LIGHT_SENSOR:
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_LIGHT_SENSOR.toString(),
                                         id);
@@ -221,6 +226,18 @@ public class Model {
 
         }
         return THING_TYPE_UNKNNOWN;
+    }
+
+    private String getStringAttribute(String id, String attribute) {
+        String attributeValue = "";
+        JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
+        if (deviceObject.has(ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+            if (attributes.has(attribute)) {
+                attributeValue = attributes.getString(attribute);
+            }
+        }
+        return attributeValue;
     }
 
     public synchronized JSONObject getAllFor(String id, String type) {
@@ -285,5 +302,21 @@ public class Model {
             properties.put(PROPERTY_DEVICE_ID, id);
         }
         return properties;
+    }
+
+    public synchronized List<String> getTwins(String id) {
+        final List<String> twins = new ArrayList<>();
+        String serialNumber = getStringAttribute(id, "serialNumber");
+        List<String> allDevices = getAllIds();
+        allDevices.forEach(deviceId -> {
+            if (!id.equals(deviceId)) {
+                String investigateSerialNumber = getStringAttribute(deviceId, "serialNumber");
+                if (!investigateSerialNumber.isBlank() && serialNumber.equals(investigateSerialNumber)) {
+                    twins.add(deviceId);
+                    logger.info("DIRIGERA MODEL twin {} found for {}", deviceId, id);
+                }
+            }
+        });
+        return twins;
     }
 }
