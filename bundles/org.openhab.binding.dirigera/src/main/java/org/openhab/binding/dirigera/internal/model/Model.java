@@ -208,6 +208,8 @@ public class Model {
                                 return THING_TYPE_LIGHT_CONTROLLER;
                             case DEVICE_TYPE_ENVIRONMENT_SENSOR:
                                 return THING_TYPE_AIR_QUALITY;
+                            case DEVICE_TYPE_WATER_SENSOR:
+                                return THING_TYPE_WATER_SENSOR;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);

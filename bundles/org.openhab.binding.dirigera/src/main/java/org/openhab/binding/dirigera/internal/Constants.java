@@ -45,12 +45,14 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROLLER = new ThingTypeUID(BINDING_ID, "light-controller");
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
+    public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_CONTACT_SENSOR,
             THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER,
-            THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_PLUG, THING_TYPE_AIR_QUALITY);
+            THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_PLUG, THING_TYPE_AIR_QUALITY,
+            THING_TYPE_WATER_SENSOR);
 
     public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
 
@@ -93,6 +95,7 @@ public class Constants {
     public static final String DEVICE_TYPE_REPEATER = "repeater";
     public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
     public static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
+    public static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -115,7 +118,7 @@ public class Constants {
     public static final String CHANNEL_LIGHT_TEMPERATURE = "temperature";
 
     // Sensor channels
-    public static final String CHANNEL_MOTION_DETECTION = "detection";
+    public static final String CHANNEL_DETECTION = "detection";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
 
     // Plug channels
@@ -184,9 +187,9 @@ public class Constants {
 
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isDetected", CHANNEL_MOTION_DETECTION);
+            "isDetected", CHANNEL_DETECTION);
     public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isDetected", CHANNEL_MOTION_DETECTION, "illuminance", CHANNEL_ILLUMINANCE);
+            "isDetected", CHANNEL_DETECTION, "illuminance", CHANNEL_ILLUMINANCE);
 
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isOpen", CHANNEL_STATE);
@@ -201,4 +204,7 @@ public class Constants {
             "currentRH", CHANNEL_HUMIDITY, "currentPM25", CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX,
             PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
             CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> WATER_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
+            "waterLeakDetected", CHANNEL_DETECTION, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 }
