@@ -241,7 +241,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             }
                             if (contentType.contains("multipart")) {
                                 boundary = Helper.searchString(contentType, "boundary=");
-                                if (mjpegUri.equals(requestUrl)) {
+                                if (mjpegUri.endsWith(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         mjpegContentType = contentType;
@@ -266,7 +266,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
                 if (msg instanceof HttpContent content) {
-                    if (mjpegUri.equals(requestUrl) && !(content instanceof LastHttpContent)) {
+                    if (mjpegUri.endsWith(requestUrl) && !(content instanceof LastHttpContent)) {
                         // multiple MJPEG stream packets come back as this.
                         byte[] chunkedFrame = new byte[content.content().readableBytes()];
                         content.content().getBytes(content.content().readerIndex(), chunkedFrame);
@@ -1561,6 +1561,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case ONVIF_THING:
                 onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
+                if (onvifCamera.pullMessageRequests.intValue() == 0) {
+                    logger.info("The alarm stream was not running for ONVIF camera {}, re-starting it now",
+                            cameraConfig.getIp());
+                    onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
+                }
                 break;
             case INSTAR_THING:
                 checkCameraConnection();

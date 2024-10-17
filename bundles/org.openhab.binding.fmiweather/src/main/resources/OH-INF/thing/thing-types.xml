@@ -28,6 +28,10 @@
 		<description>Finnish Meteorological Institute (FMI) weather forecast</description>
 
 		<channel-groups>
+			<channel-group id="forecast" typeId="group-forecast">
+				<label>Forecast</label>
+				<description>This is the weather forecast</description>
+			</channel-group>
 			<channel-group id="forecastNow" typeId="group-forecast">
 				<label>Forecast for the Current Time</label>
 				<description>This is the weather forecast for the current time</description>
@@ -233,6 +237,10 @@
 				<description>This is the weather forecast in 50 hours.</description>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="location" type="text" required="true">

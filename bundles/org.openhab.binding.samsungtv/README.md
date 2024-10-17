@@ -98,7 +98,7 @@ TVs support the following channels:
 
 Some channels do not work on some TV's. It depends on the age of your TV, and what kind of interface it has. Only link channels that work on your TV, polling channels that your TV doesn't have may cause errors, and other problems. see [Tested TV Models](#tested-tv-models).
 
-### keyCode channel:
+### keyCode channel
 
 `keyCode` is a String channel, that emulates a remote control. it allows you to send keys to the TV, as if they were from the remote control, hence it is send only.
 
@@ -164,7 +164,7 @@ The power channel is available on all TV's. Depending on the age of your TV, you
 Frame TV's have additional channels.
 **NOTE:** If you don't have a Frame TV, don't link the `art` channels, it will confuse the binding, especially power control.
 
-### artMode:
+### artMode
 
 `artMode` is a Switch channel. When `power` is ON, `artMode` will be OFF. If the `artMode` channel is commanded `OFF`, then the TV will power down to standby/off mode (this takes 4 seconds).
 Commanding ON to `artMode` will try to power up the TV in art mode, and commanding ON to `power` will try to power the TV up in ON mode, but see WOL limitations.
@@ -173,7 +173,7 @@ To determine the ON/ART/OFF state of your TV, you have to read both `power` and 
 
 **NOTE:** If you don't have a Frame TV, don't use the `artMode` channel, it will confuse the power handling logic.
 
-### setArtMode:
+### setArtMode
 
 **NOTE** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's. If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not neccessary.
 
@@ -184,11 +184,11 @@ This input allows you to set the internal art mode state from an external source
 
 **NOTE:** If you don't have a >2021 Frame TV, don't use the `setArtMode` channel, it will confuse the power handling logic.
 
-### artImage:
+### artImage
 
 `artImage` is an Image channel that receives a thumbnail of the art that would be displayed in artMode (even if the TV is on). It receives iimages only (you can't send a command to it due to openHAB lmitations).
 
-### artLabel:
+### artLabel
 
 `artlabel` is a String channel that receives the *intenal* lable of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
 You have to figure out what the label actually represents.
@@ -208,7 +208,7 @@ here is an example `sitemap` entry:
 Selection item=TV_ArtLabel mappings=["MY_F0061"="Large Bauble","MY_F0063"="Small Bauble","MY_F0062"="Presents","MY_F0060"="Single Bauble","MY_F0055"="Gold Bauble","MY_F0057"="Snowflake","MY_F0054"="Stag","MY_F0056"="Pine","MY_F0059"="Cabin","SAM-S4632"="Snowy Trees","SAM-S2607"="Icy Trees","SAM-S0109"="Whale"]
 ```
 
-### artJson:
+### artJson
 
 `artJson` is a String channel that receives the output of the art websocket channel on the TV. You can also send commands to this channel.
 
@@ -287,7 +287,7 @@ TV_ArtJson.sendCommand("{\"request\":\"select_image\", \"content_id\":\"MY_0009\
 
 These are just the commands I know, there are probably others, let me know if you find more that work.
 
-### artbrightness:
+### artbrightness
 
 `artBrightness` is a dimmer channel that sets the brightness of the art in ArtMode. It does not affect the TV brightness. Normally the brightness of the artwork is controlled automatically, and the current value is polled and reported via this channel.
 You can change the brightness of the artwork (but automatic control is still enabled, unless you turn it off).
@@ -299,7 +299,7 @@ Slider item=TV_ArtBrightness visibility=[TV_ArtMode==ON]
 Setpoint item=TV_ArtBrightness minValue=0 maxValue=100 step=10 visibility=[TV_ArtMode==ON]
 ```
 
-### artColorTemperature:
+### artColorTemperature
 
 `artColorTemperature` is a Number channel, it reports the "warmth" of the artwork from -5 to 5 (default 0). It's not polled, but is updated when artmode status is updated.
 You can use a `Setpoint` contol for this item in your `sitemap` eg:
@@ -308,7 +308,7 @@ You can use a `Setpoint` contol for this item in your `sitemap` eg:
 Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[TV_ArtMode==ON]
 ```
 
-### artOrientation:
+### artOrientation
 
 `artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.  
 For 2023- TV's `orientationKey` should be KEY_MULTI_VIEW (default), for 2024+ TV's this should be KEY_HOME.

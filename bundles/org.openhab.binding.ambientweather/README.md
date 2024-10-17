@@ -149,7 +149,6 @@ Number:Temperature WS1400IP_IndoorTemperature "Indoor Temperature [%.1f %unit%]"
 Number:Dimensionless WS1400IP_IndoorHumidity "Indoor Humidity [%.1f %%]" { channel="ambientweather:ws1400ip:account:1400:indoorSensor#relativeHumidity" }
 String WS1400IP_IndoorBattery "Indoor Battery [MAP(ambient-battery.map):%s]" { channel="ambientweather:ws1400ip:account:1400:indoorSensor#batteryIndicator" }
 
-
 // WS-8482 Weather Station
 String WS8482_StationName "Station Name [%s]" { channel="ambientweather:ws8482:ws8482:station#name" }
 String WS8482_StationLocation "Station Location [%s]" { channel="ambientweather:ws8482:ws8482:station#location" }
