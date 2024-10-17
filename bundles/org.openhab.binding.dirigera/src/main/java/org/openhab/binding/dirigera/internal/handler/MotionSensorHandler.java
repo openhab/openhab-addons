@@ -76,7 +76,7 @@ public class MotionSensorHandler extends BaseDeviceHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_MOTION_DETECTION.equals(targetChannel)) {
+                    if (CHANNEL_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
                     } else {
