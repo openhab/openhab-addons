@@ -81,6 +81,47 @@
 	},
 	"devices": [
 		{
+			"id": "9af826ad-a8ad-40bf-8aed-125300bccd20_1",
+			"type": "sensor",
+			"deviceType": "waterSensor",
+			"createdAt": "2024-10-17T12:38:02.000Z",
+			"isReachable": true,
+			"lastSeen": "2024-10-17T14:22:17.000Z",
+			"attributes": {
+				"customName": "Washy",
+				"firmwareVersion": "1.0.7",
+				"hardwareVersion": "1",
+				"manufacturer": "IKEA of Sweden",
+				"model": "BADRING Water Leakage Sensor",
+				"productCode": "E2202",
+				"serialNumber": "D44867FFFE147386",
+				"batteryPercentage": 55,
+				"waterLeakDetected": false,
+				"permittingJoin": false,
+				"otaPolicy": "autoUpdate",
+				"otaProgress": 0,
+				"otaScheduleEnd": "00:00",
+				"otaScheduleStart": "00:00",
+				"otaState": "readyToCheck",
+				"otaStatus": "upToDate"
+			},
+			"capabilities": {
+				"canSend": [],
+				"canReceive": [
+					"customName"
+				]
+			},
+			"room": {
+				"id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+				"name": "Lobby HWR",
+				"color": "ikea_pink_no_4",
+				"icon": "rooms_drill"
+			},
+			"deviceSet": [],
+			"remoteLinks": [],
+			"isHidden": false
+		},
+		{
 			"deviceType": "environmentSensor",
 			"remoteLinks": [],
 			"createdAt": "2024-10-17T08:00:25.000Z",

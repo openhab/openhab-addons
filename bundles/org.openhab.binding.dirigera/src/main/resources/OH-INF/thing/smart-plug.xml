@@ -17,14 +17,14 @@
 				<label>Plug Powered</label>
 				<description>Turn plug on or off </description>
 			</channel>
-            <channel id="status-light" typeId="switch">
-                <label>Status Light</label>
-                <description>Disable status light on plug</description>
-            </channel>
-            <channel id="child-lock" typeId="switch">
-                <label>Child Lock</label>
-                <description>Child lock for button on plug</description>
-            </channel>
+			<channel id="status-light" typeId="switch">
+				<label>Status Light</label>
+				<description>Disable status light on plug</description>
+			</channel>
+			<channel id="child-lock" typeId="switch">
+				<label>Child Lock</label>
+				<description>Child lock for button on plug</description>
+			</channel>
 			<channel id="power" typeId="power">
 				<label>Plug Power</label>
 				<description>Electric power delivered by plug</description>

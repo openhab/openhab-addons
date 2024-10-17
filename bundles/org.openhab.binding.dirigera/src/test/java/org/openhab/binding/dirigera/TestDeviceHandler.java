@@ -47,6 +47,7 @@ import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
+import org.openhab.binding.dirigera.internal.handler.WaterSensorHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -564,5 +565,49 @@ class TestDeviceHandler {
         assertTrue(vocState instanceof QuantityType);
         assertTrue(((QuantityType) vocState).getUnit().toString().equals("mg/m³"));
         assertEquals(100, ((QuantityType) vocState).intValue(), "VOC Index");
+    }
+
+    @Test
+    void testWaterSensor() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_WATER_SENSOR, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        WaterSensorHandler handler = new WaterSensorHandler(thing, WATER_SENSOR_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "9af826ad-a8ad-40bf-8aed-125300bccd20_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+
+        // test ota & battery
+        State otaStatus = callback.getState("dirigera:water-sensor:test-device:ota-status");
+        assertNotNull(otaStatus);
+        assertTrue(otaStatus instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
+        State otaState = callback.getState("dirigera:water-sensor:test-device:ota-state");
+        assertNotNull(otaState);
+        assertTrue(otaState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
+        State otaProgess = callback.getState("dirigera:water-sensor:test-device:ota-progress");
+        assertNotNull(otaProgess);
+        assertTrue(otaProgess instanceof QuantityType);
+        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+
+        State onOffState = callback.getState("dirigera:water-sensor:test-device:detection");
+        assertNotNull(onOffState);
+        assertTrue(onOffState instanceof OnOffType);
+        assertTrue(OnOffType.OFF.equals((onOffState)), "Off");
+        State batteryState = callback.getState("dirigera:water-sensor:test-device:battery-level");
+        assertNotNull(batteryState);
+        assertTrue(batteryState instanceof QuantityType);
+        assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
+        assertEquals(55, ((QuantityType) batteryState).intValue(), "Battery level");
     }
 }
