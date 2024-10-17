@@ -46,7 +46,6 @@ public class ContactSensorHandler extends BaseDeviceHandler {
     public void initialize() {
         // handle general initialize like setting bridge
         super.initialize();
-        gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
         JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
         logger.warn("DIRIGERA MOTION_DEVICE values for initial update {}", values);

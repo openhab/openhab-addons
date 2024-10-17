@@ -34,6 +34,8 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_LIGHT = new ThingTypeUID(BINDING_ID, "temperature-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
+    public static final ThingTypeUID THING_TYPE_MOTION_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
+            "motion-light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
     public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
@@ -43,9 +45,11 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
-            THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR,
-            THING_TYPE_CONTACT_SENSOR, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER,
-            THING_TYPE_LIGHT_CONTROLLER);
+            THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_CONTACT_SENSOR,
+            THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER,
+            THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR);
+
+    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -156,11 +160,11 @@ public class Constants {
             CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
             "color-temperature", PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
             PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isDetected", CHANNEL_MOTION_DETECTION);
+    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
+            "isDetected", CHANNEL_MOTION_DETECTION, "illuminance", CHANNEL_ILLUMINANCE);
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isOpen", CHANNEL_STATE);
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);

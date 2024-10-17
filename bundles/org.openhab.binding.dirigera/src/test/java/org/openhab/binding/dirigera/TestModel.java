@@ -14,13 +14,16 @@ package org.openhab.binding.dirigera;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * {@link TestModel} some basic tests
@@ -47,5 +50,27 @@ class TestModel {
     void testModelStress() {
         String mdoelString = FileReader.readFileInString("src/test/resources/NewHome.json");
         ExecutorService scheduler = ThreadPoolManager.getPool("ModelStressTest");
+    }
+
+    @Test
+    void testMotionSensors() {
+        Model model = new Model(mock(Gateway.class));
+        String modelString = FileReader.readFileInString("src/test/resources/NewestHome.json");
+        model.update(modelString);
+
+        // VALLHORN
+        String vallhornId = "5ac5e131-44a4-4d75-be78-759a095d31fb_1";
+        ThingTypeUID motionLightUID = model.identifyDevice(vallhornId);
+        assertEquals(THING_TYPE_MOTION_LIGHT_SENSOR, motionLightUID, "VALLHORN TTUID");
+        List<String> twinList = model.getTwins(vallhornId);
+        assertEquals(1, twinList.size(), "Twins");
+        assertEquals("5ac5e131-44a4-4d75-be78-759a095d31fb_3", twinList.get(0), "Twin id");
+
+        // TRADFRI
+        String tradfriId = "ee61c57f-8efa-44f4-ba8a-d108ae054138_1";
+        ThingTypeUID motionUID = model.identifyDevice(tradfriId);
+        assertEquals(THING_TYPE_MOTION_SENSOR, motionUID, "TRADFRI TTUID");
+        twinList = model.getTwins(tradfriId);
+        assertEquals(0, twinList.size(), "Twins");
     }
 }
