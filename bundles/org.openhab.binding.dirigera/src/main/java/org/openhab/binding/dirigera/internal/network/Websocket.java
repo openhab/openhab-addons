@@ -17,7 +17,10 @@ import static org.openhab.binding.dirigera.internal.Constants.WS_URL;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,8 +30,10 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.json.JSONObject;
@@ -52,6 +57,8 @@ public class Websocket {
     private static String MESSAGES = "messages";
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
+    private final Map<String, Instant> pingPongMap = new HashMap<>();
+
     private Optional<WebSocketClient> websocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();
     private JSONObject statistics = new JSONObject();
@@ -72,6 +79,7 @@ public class Websocket {
         increase(STARTS);
         internalStop(); // don't count this internal stopping
         try {
+            pingPongMap.clear();
             WebSocketClient client = new WebSocketClient(httpClient);
             client.setMaxIdleTimeout(0);
             // client.setStopTimeout(CONNECT_TIMEOUT_MS);
@@ -88,6 +96,10 @@ public class Websocket {
             // catch Exceptions of start stop and declare communication error
             logger.warn("DIRIGERA Websocket handling exception: {}", t.getMessage());
         }
+    }
+
+    public boolean isRunning() {
+        return websocketClient.isPresent() && session.isPresent() && session.get().isOpen();
     }
 
     public void stop() {
@@ -118,43 +130,62 @@ public class Websocket {
         session.ifPresentOrElse((session) -> {
             try {
                 // build ping message
-                JSONObject pingObject = new JSONObject();
-                pingObject.put("id", UUID.randomUUID().toString());
-                pingObject.put("time", Instant.now().toString());
-                pingObject.put("specversion", session.getProtocolVersion());
-                pingObject.put("source", "urn:openhab:dirigera");
-                logger.info("DIRIGERA_WS ping {}", pingObject.toString());
-                // session.getRemote().sendPing(ByteBuffer.wrap(Instant.now().toString().getBytes()));
-                session.getRemote().sendString(pingObject.toString());
+                String pingId = UUID.randomUUID().toString();
+                pingPongMap.put(pingId, Instant.now());
+                session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
                 increase(PINGS);
             } catch (IOException e) {
                 logger.info("DIRIGERA ping failed with exception {}", e.getMessage());
             }
         }, () -> {
             logger.info("DIRIGERA ping found no session - restart websocket");
-            start();
         });
-    }
-
-    public boolean isRunning() {
-        return websocketClient.isPresent() && session.isPresent() && session.get().isOpen();
     }
 
     /**
      * endpoints
      */
 
-    // @OnWebSocketMessage
-    // public void onTextMessage(String message) {
-    // increase(MESSAGES);
-    // // logger.info("DIRIGERA onMessage {}", message);
-    // gateway.websocketUpdate(new JSONObject(message));
-    // }
-
     @OnWebSocketMessage
-    public void onByteMessage(ByteBuffer message) {
-        logger.info("DIRIGERA onByteMessage {}", message);
-        logger.info("DIRIGERA onByteMessage {}", new String(message.array()));
+    public void onTextMessage(String message) {
+        increase(MESSAGES);
+        // logger.info("DIRIGERA onMessage {}", message);
+        gateway.websocketUpdate(new JSONObject(message));
+    }
+
+    @OnWebSocketFrame
+    public void onFrame(Frame frame) {
+        // logger.trace("DIRIGERA onFrame {} {} {}", frame.getType(), frame.hasPayload(), frame.getPayloadLength());
+        if (Frame.Type.PONG.equals(frame.getType())) {
+            ByteBuffer buffer = frame.getPayload();
+            byte[] bytes = new byte[frame.getPayloadLength()];
+            for (int i = 0; i < frame.getPayloadLength(); i++) {
+                bytes[i] = buffer.get(i);
+            }
+            String paylodString = new String(bytes);
+            Instant sent = pingPongMap.remove(paylodString);
+            if (sent != null) {
+                long durationMS = Duration.between(sent, Instant.now()).toMillis();
+                logger.trace("DIRIGERA ping answered after {} ms", Duration.between(sent, Instant.now()).toMillis());
+                statistics.put("latency", durationMS);
+            } else {
+                logger.trace("DIRIGERA receiced pong without ping {}", paylodString);
+            }
+            logger.trace("DIRIGERA unanswered pings {}", pingPongMap.size());
+        } else if (Frame.Type.PING.equals(frame.getType())) {
+            session.ifPresentOrElse((session) -> {
+                logger.trace("DIRIGERA onPing ");
+                ByteBuffer buffer = frame.getPayload();
+                try {
+                    session.getRemote().sendPong(buffer);
+                    logger.trace("DIRIGERA onPing answered");
+                } catch (IOException e) {
+                    logger.trace("DIRIGERA onPing answer exception {}", e.getMessage());
+                }
+            }, () -> {
+                logger.trace("DIRIGERA onPing answer cannot be initiated");
+            });
+        }
     }
 
     @OnWebSocketClose
@@ -192,5 +223,9 @@ public class Websocket {
         } else {
             statistics.put(key, 1);
         }
+    }
+
+    public Map<String, Instant> getPingPongMap() {
+        return pingPongMap;
     }
 }

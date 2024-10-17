@@ -25,7 +25,6 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -269,15 +268,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
                     JSONObject playItem = playbackAudio.getJSONObject("playItem");
                     if (playItem.has("imageURL")) {
                         String imageURL = playItem.getString("imageURL");
-                        System.out.println(imageURL);
-                        Map<String, ?> image = gateway().api().getImage(imageURL);
-                        String mimeType = (String) image.get("mimeType");
-                        if (!mimeType.isBlank()) {
-                            byte[] imageBytes = (byte[]) image.get("image");
-                            if (imageBytes != null) {
-                                imageState = new RawType(imageBytes, RawType.DEFAULT_MIME_TYPE);
-                            }
-                        }
+                        imageState = gateway().api().getImage(imageURL);
                     }
                 }
             }

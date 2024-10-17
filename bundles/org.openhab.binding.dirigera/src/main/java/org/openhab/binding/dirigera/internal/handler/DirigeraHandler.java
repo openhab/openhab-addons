@@ -337,16 +337,25 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     "Gateway HTTP Status " + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS));
         } else {
             updateStatus(ThingStatus.ONLINE);
-            websocket.ifPresentOrElse((client) -> {
-                if (!client.isRunning()) {
-                    logger.info("DIRIGERA HANDLER WS restart necessary");
-                    client.start();
+            websocket.ifPresentOrElse((wsClient) -> {
+                if (!wsClient.isRunning()) {
+                    logger.trace("DIRIGERA HANDLER WS restart necessary");
+                    wsClient.start();
                 } else {
-                    logger.info("DIRIGERA HANDLER WS running fine");
-                    client.ping();
+                    Map<String, Instant> pingPnogMap = wsClient.getPingPongMap();
+                    if (pingPnogMap.size() > 1) {
+                        logger.warn("DIRIGERA HANDLER WS HEARTBEAT PANIC! - {} pings not answered", pingPnogMap.size());
+                        wsClient.dispose();
+                        Websocket ws = new Websocket(this, httpClient);
+                        ws.start();
+                        websocket = Optional.of(ws);
+                    } else {
+                        logger.trace("DIRIGERA HANDLER WS running fine - send ping");
+                        wsClient.ping();
+                    }
                 }
             }, () -> {
-                logger.info("DIRIGERA HANDLER WS creation necessary");
+                logger.warn("DIRIGERA HANDLER WS no websocket present - start new one");
                 Websocket ws = new Websocket(this, httpClient);
                 ws.start();
                 websocket = Optional.of(ws);
