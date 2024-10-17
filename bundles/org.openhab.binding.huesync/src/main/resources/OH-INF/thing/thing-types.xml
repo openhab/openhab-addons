@@ -33,7 +33,7 @@
 
 		<representation-property>host</representation-property>
 
-		<config-description-ref uri="thing-type:huesync:thing"/>
+		<config-description-ref uri="thing-type:huesyncbox:thing"/>
 	</thing-type>
 
 	<channel-group-type id="device-firmware">
