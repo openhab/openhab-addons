@@ -5,8 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="plug">
-		<label>Plug</label>
-		<description>Switchable plug</description>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Power Plug</label>
+		<description>Switchable power plug</description>
 
 		<channels>
 			<channel id="state" typeId="switch">
@@ -15,11 +19,11 @@
 			</channel>
 			<channel id="status-light" typeId="switch">
 				<label>Status Light</label>
-				<description>Status light of plug on or off</description>
+				<description>Disable status light on plug</description>
 			</channel>
 			<channel id="child-lock" typeId="switch">
 				<label>Child Lock</label>
-				<description>Enable or disable child lock</description>
+				<description>Child lock for button on plug</description>
 			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>

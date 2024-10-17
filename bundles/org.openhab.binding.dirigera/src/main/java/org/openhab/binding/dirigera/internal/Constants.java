@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,6 +53,9 @@ public class Constants {
             THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_PLUG, THING_TYPE_AIR_QUALITY);
 
     public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
+
+    public static final List<String> THING_PROPERTIES = List.of("model", "manufacturer", "firmwareVersion",
+            "hardwareVersion", "serialNumber", "productCode");
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
