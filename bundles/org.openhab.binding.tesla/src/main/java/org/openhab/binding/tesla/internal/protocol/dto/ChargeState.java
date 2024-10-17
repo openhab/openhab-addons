@@ -84,7 +84,7 @@ public class ChargeState {
     @SerializedName("charger_phases")
     public int chargerPhases;
     @SerializedName("charger_pilot_current")
-    public int charger_pilot_current;
+    public int chargerPilotCurrent;
     @SerializedName("charger_power")
     public int chargerPower;
     @SerializedName("charger_voltage")

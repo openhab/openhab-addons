@@ -947,7 +947,7 @@ public class TeslaChannelSelectorProxy {
                     BigDecimal value = ((DecimalType) someState).toBigDecimal();
                     return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
                 } else {
-                    return null;
+                    return UnDefType.UNDEF;
                 }
             }
         },
@@ -1129,7 +1129,8 @@ public class TeslaChannelSelectorProxy {
         public static TeslaChannelSelector getValueSelectorFromRESTID(String valueSelectorText)
                 throws IllegalArgumentException {
             for (TeslaChannelSelector c : TeslaChannelSelector.values()) {
-                if (c.restID != null && c.restID.equals(valueSelectorText)) {
+                String restID = c.restID;
+                if (restID != null && restID.equals(valueSelectorText)) {
                     return c;
                 }
             }

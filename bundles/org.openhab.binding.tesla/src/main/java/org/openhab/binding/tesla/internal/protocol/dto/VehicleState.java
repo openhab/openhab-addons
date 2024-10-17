@@ -86,7 +86,8 @@ public class VehicleState {
     @SerializedName("wheel_type")
     public String wheelType;
 
-    public SoftwareUpdate software_update;
+    @SerializedName("software_update")
+    public SoftwareUpdate softwareUpdate;
 
     VehicleState() {
     }

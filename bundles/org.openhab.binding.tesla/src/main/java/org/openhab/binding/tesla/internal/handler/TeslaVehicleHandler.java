@@ -231,6 +231,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
      * @return the vehicle id
      */
     public @Nullable String getVehicleId() {
+        Vehicle vehicle = this.vehicle;
         if (vehicle != null) {
             return vehicle.id;
         } else {
@@ -255,7 +256,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             // Request the state of all known variables. This is sub-optimal, but the requests get scheduled and
             // throbridgettled so we are safe not to break the Tesla SLA
             requestAllData();
-        } else if (selector != null) {
+        } else {
             if (!isAwake() && allowWakeUpForCommands) {
                 logger.debug("Waking vehicle to send command.");
                 wakeUp();
@@ -272,10 +273,16 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             setChargeLimit(0);
                         } else if (command instanceof IncreaseDecreaseType
                                 && command == IncreaseDecreaseType.INCREASE) {
-                            setChargeLimit(Math.min(chargeState.chargeLimitSoc + 1, 100));
+                            ChargeState chargeState = this.chargeState;
+                            if (chargeState != null) {
+                                setChargeLimit(Math.min(chargeState.chargeLimitSoc + 1, 100));
+                            }
                         } else if (command instanceof IncreaseDecreaseType
                                 && command == IncreaseDecreaseType.DECREASE) {
-                            setChargeLimit(Math.max(chargeState.chargeLimitSoc - 1, 0));
+                            ChargeState chargeState = this.chargeState;
+                            if (chargeState != null) {
+                                setChargeLimit(Math.max(chargeState.chargeLimitSoc - 1, 0));
+                            }
                         }
                         break;
                     }
@@ -303,23 +310,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         break;
                     case COMBINED_TEMP: {
                         QuantityType<Temperature> quantity = commandToQuantityType(command);
-                        if (quantity != null) {
-                            setCombinedTemperature(quanityToRoundedFloat(quantity));
-                        }
+                        setCombinedTemperature(quanityToRoundedFloat(quantity));
                         break;
                     }
                     case DRIVER_TEMP: {
                         QuantityType<Temperature> quantity = commandToQuantityType(command);
-                        if (quantity != null) {
-                            setDriverTemperature(quanityToRoundedFloat(quantity));
-                        }
+                        setDriverTemperature(quanityToRoundedFloat(quantity));
                         break;
                     }
                     case PASSENGER_TEMP: {
                         QuantityType<Temperature> quantity = commandToQuantityType(command);
-                        if (quantity != null) {
-                            setPassengerTemperature(quanityToRoundedFloat(quantity));
-                        }
+                        setPassengerTemperature(quanityToRoundedFloat(quantity));
                         break;
                     }
                     case SENTRY_MODE: {
@@ -416,11 +417,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
                     case RT: {
                         if (command instanceof OnOffType onOffCommand) {
+                            VehicleState vehicleState = this.vehicleState;
                             if (onOffCommand == OnOffType.ON) {
-                                if (vehicleState.rt == 0) {
+                                if (vehicleState != null && vehicleState.rt == 0) {
                                     openTrunk();
                                 }
-                            } else if (vehicleState.rt == 1) {
+                            } else if (vehicleState != null && vehicleState.rt == 1) {
                                 closeTrunk();
                             }
                         }
@@ -467,6 +469,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     public void sendCommand(String command, @Nullable String payLoad, WebTarget target) {
         if (COMMAND_WAKE_UP.equals(command) || isAwake() || allowWakeUpForCommands) {
             Request request = account.newRequest(this, command, payLoad, target, allowWakeUpForCommands);
+            QueueChannelThrottler stateThrottler = this.stateThrottler;
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -480,6 +483,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     public void sendCommand(String command, String payLoad) {
         if (COMMAND_WAKE_UP.equals(command) || isAwake() || allowWakeUpForCommands) {
             Request request = account.newRequest(this, command, payLoad, account.commandTarget, allowWakeUpForCommands);
+            QueueChannelThrottler stateThrottler = this.stateThrottler;
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -489,6 +493,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     public void sendCommand(String command, WebTarget target) {
         if (COMMAND_WAKE_UP.equals(command) || isAwake() || allowWakeUpForCommands) {
             Request request = account.newRequest(this, command, "{}", target, allowWakeUpForCommands);
+            QueueChannelThrottler stateThrottler = this.stateThrottler;
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -499,6 +504,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         if (COMMAND_WAKE_UP.equals(command) || isAwake()
                 || (!"vehicleData".equals(command) && allowWakeUpForCommands)) {
             Request request = account.newRequest(this, command, payLoad, account.dataRequestTarget, false);
+            QueueChannelThrottler stateThrottler = this.stateThrottler;
             if (stateThrottler != null) {
                 stateThrottler.submit(DATA_THROTTLE, request);
             }
@@ -565,9 +571,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected boolean notReadyForSleep() {
         boolean status;
         int computedInactivityPeriod = inactivity;
-
+        VehicleState vehicleState = this.vehicleState;
         if (useAdvancedStates) {
-            if (vehicleState.isUserPresent && !isInMotion()) {
+            if (vehicleState != null && vehicleState.isUserPresent && !isInMotion()) {
                 logger.debug("Car is occupied but stationary.");
                 if (lastAdvModesTimestamp < (System.currentTimeMillis()
                         - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {
@@ -576,7 +582,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     return (backOffCounter++ % 6 == 0); // using 6 should make sure 1 out of 5 pollers get serviced,
                                                         // about every min.
                 }
-            } else if (vehicleState.sentryMode) {
+            } else if (vehicleState != null && vehicleState.sentryMode) {
                 logger.debug("Car is in sentry mode.");
                 if (lastAdvModesTimestamp < (System.currentTimeMillis()
                         - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {
@@ -584,7 +590,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 } else {
                     return (backOffCounter++ % 6 == 0);
                 }
-            } else if ((vehicleState.centerDisplayState != 0) && (!isInMotion())) {
+            } else if (vehicleState != null && (vehicleState.centerDisplayState != 0) && (!isInMotion())) {
                 logger.debug("Car is in camp, climate keep, dog, or other mode preventing sleep. Mode {}",
                         vehicleState.centerDisplayState);
                 return (backOffCounter++ % 6 == 0);
@@ -598,9 +604,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             logger.debug("Car is at home. Movement or drive state threshold is {} min.",
                     MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT);
         }
-
+        DriveState driveState = this.driveState;
         if (useDriveState) {
-            if (driveState.shiftState != null) {
+            if (driveState != null && driveState.shiftState != null) {
                 logger.debug("Car drive state not null and not ready to sleep.");
                 return true;
             } else {
@@ -640,7 +646,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         lastLongitude = 0;
     }
 
-    protected boolean checkResponse(Response response, boolean immediatelyFail) {
+    protected boolean checkResponse(@Nullable Response response, boolean immediatelyFail) {
         if (response != null && response.getStatus() == 200) {
             return true;
         } else if (response != null && response.getStatus() == 401) {
@@ -719,10 +725,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void setDriverTemperature(float temperature) {
+        ClimateState climateState = this.climateState;
         setTemperature(temperature, climateState != null ? climateState.passengerTempSetting : temperature);
     }
 
     public void setPassengerTemperature(float temperature) {
+        ClimateState climateState = this.climateState;
         setTemperature(climateState != null ? climateState.passengerTempSetting : temperature, temperature);
     }
 
@@ -742,7 +750,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         openTrunk();
     }
 
-    public void setValetMode(boolean b, Integer pin) {
+    public void setValetMode(boolean b, @Nullable Integer pin) {
         JsonObject payloadObject = new JsonObject();
         payloadObject.addProperty("on", b);
         if (pin != null) {
@@ -842,9 +850,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         vehicle = queryVehicle();
     }
 
-    public void parseAndUpdate(String request, @Nullable String payLoad, @Nullable String result) {
+    public void parseAndUpdate(@Nullable String request, @Nullable String payLoad, @Nullable String result) {
         final double locationThreshold = .0000001;
-
+        Vehicle vehicle = this.vehicle;
         try {
             if (request != null && result != null && !"null".equals(result)) {
                 updateStatus(ThingStatus.ONLINE);
@@ -859,12 +867,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         return;
                     }
 
-                    if (vehicle != null && ("asleep".equals(vehicle.state) || "offline".equals(vehicle.state))) {
+                    if ("asleep".equals(vehicle.state) || "offline".equals(vehicle.state)) {
                         logger.debug("Vehicle is {}", vehicle.state);
                         return;
                     }
 
-                    if (vehicle != null && !lastState.equals(vehicle.state)) {
+                    if (!lastState.equals(vehicle.state)) {
                         lastState = vehicle.state;
 
                         // in case vehicle changed to awake, refresh all data
@@ -899,16 +907,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         return;
                     }
 
-                    driveState = vehicleData.driveState;
-                    if (Math.abs(lastLatitude - driveState.latitude) > locationThreshold
-                            || Math.abs(lastLongitude - driveState.longitude) > locationThreshold) {
+                    DriveState driveState = this.driveState = vehicleData.driveState;
+
+                    if (driveState != null && (Math.abs(lastLatitude - driveState.latitude) > locationThreshold
+                            || Math.abs(lastLongitude - driveState.longitude) > locationThreshold)) {
                         logger.debug("Vehicle moved, resetting last location timestamp");
 
                         lastLatitude = driveState.latitude;
                         lastLongitude = driveState.longitude;
                         lastLocationChangeTimestamp = System.currentTimeMillis();
                     }
-                    logger.trace("Drive state: {}", driveState.shiftState);
+                    logger.trace("Drive state: {}", driveState != null ? driveState.shiftState : "null");
 
                     if ((driveState != null && driveState.shiftState == null) && (lastValidDriveStateNotNull)) {
                         logger.debug("Set NULL shiftstate time");
@@ -921,7 +930,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                     guiState = vehicleData.guiSettings;
 
-                    vehicleState = vehicleData.vehicleState;
+                    VehicleState vehicleState = this.vehicleState = vehicleData.vehicleState;
 
                     chargeState = vehicleData.chargeState;
                     if (isCharging()) {
@@ -930,12 +939,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         updateState(CHANNEL_CHARGE, OnOffType.OFF);
                     }
 
-                    climateState = vehicleData.climateState;
+                    ClimateState climateState = this.climateState = vehicleData.climateState;
                     BigDecimal avgtemp = roundBigDecimal(new BigDecimal(
                             (climateState.passengerTempSetting + climateState.passengerTempSetting) / 2.0f));
                     updateState(CHANNEL_COMBINED_TEMP, new QuantityType<>(avgtemp, SIUnits.CELSIUS));
 
-                    softwareUpdate = vehicleState.software_update;
+                    SoftwareUpdate softwareUpdate = this.softwareUpdate = vehicleState.softwareUpdate;
 
                     try {
                         lock.lock();
@@ -1085,7 +1094,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                             if (!selector.isProperty()) {
                                                 State newState = teslaChannelSelectorProxy.getState(vals[i], selector,
                                                         editProperties());
-                                                if (newState != null && !"".equals(vals[i])) {
+                                                if (!"".equals(vals[i])) {
                                                     updateState(selector.getChannelID(), newState);
                                                 } else {
                                                     updateState(selector.getChannelID(), UnDefType.UNDEF);
@@ -1145,7 +1154,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     if (getThing().getStatus() == ThingStatus.ONLINE) {
                         if (isAwake()) {
                             eventEndpoint.connect(new URI(URI_EVENT));
-
                             if (eventEndpoint.isConnected()) {
                                 if (!isAuthenticated) {
                                     logger.debug("Event : Authenticating vehicle {}", vehicle.vehicleId);
