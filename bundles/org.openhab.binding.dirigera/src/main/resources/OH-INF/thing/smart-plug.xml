@@ -4,8 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="plug">
-		<label>Smart Plug</label>
+	<thing-type id="smart-plug">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Smart Power Plug</label>
 		<description>Switchable plug with electricity measurements</description>
 
 		<channels>
@@ -13,14 +17,14 @@
 				<label>Plug Powered</label>
 				<description>Turn plug on or off </description>
 			</channel>
-			<channel id="status-light" typeId="switch">
-				<label>Status Light</label>
-				<description>Status light of plug on or off</description>
-			</channel>
-			<channel id="child-lock" typeId="switch">
-				<label>Child Lock</label>
-				<description>Enable or disable child lock</description>
-			</channel>
+            <channel id="status-light" typeId="switch">
+                <label>Status Light</label>
+                <description>Disable status light on plug</description>
+            </channel>
+            <channel id="child-lock" typeId="switch">
+                <label>Child Lock</label>
+                <description>Child lock for button on plug</description>
+            </channel>
 			<channel id="power" typeId="power">
 				<label>Plug Power</label>
 				<description>Electric power delivered by plug</description>
