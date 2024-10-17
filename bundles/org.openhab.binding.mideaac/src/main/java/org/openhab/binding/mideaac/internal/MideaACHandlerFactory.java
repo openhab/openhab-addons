@@ -21,7 +21,6 @@ import org.openhab.binding.mideaac.internal.handler.MideaACHandler;
 import org.openhab.binding.mideaac.internal.security.Clouds;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -30,8 +29,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MideaACHandlerFactory} is responsible for creating things and thing
@@ -43,12 +40,9 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.mideaac", service = ThingHandlerFactory.class)
 public class MideaACHandlerFactory extends BaseThingHandlerFactory {
 
-    private final NetworkAddressService networkAddressService;
     private UnitProvider unitProvider;
     private final HttpClient httpClient;
     private final Clouds clouds;
-
-    private final Logger logger = LoggerFactory.getLogger(MideaACHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,14 +52,11 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
     /**
      * The MideaACHandlerFactory class parameters
      * 
-     * @param networkAddressService OH networkAddressService
      * @param unitProvider OH unitProvider
      * @param httpClientFactory OH httpClientFactory
      */
     @Activate
-    public MideaACHandlerFactory(@Reference NetworkAddressService networkAddressService,
-            @Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
-        this.networkAddressService = networkAddressService;
+    public MideaACHandlerFactory(@Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
         this.unitProvider = unitProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         clouds = new Clouds();
@@ -75,12 +66,7 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            String primaryIpv4HostAddress = networkAddressService.getPrimaryIpv4HostAddress();
-            if (primaryIpv4HostAddress != null) {
-                logger.debug("Primary Address {}", primaryIpv4HostAddress);
-
-                return new MideaACHandler(thing, primaryIpv4HostAddress, unitProvider, httpClient, clouds);
-            }
+            return new MideaACHandler(thing, unitProvider, httpClient, clouds);
         }
         return null;
     }

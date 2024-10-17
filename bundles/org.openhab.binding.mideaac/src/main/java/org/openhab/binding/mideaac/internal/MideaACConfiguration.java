@@ -18,236 +18,34 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link MideaACConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jacek Dobrowolski - Initial contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - OH addons changes
  */
 @NonNullByDefault
 public class MideaACConfiguration {
 
-    private String ipAddress = "";
+    public String ipAddress = "";
 
-    /**
-     * Device IP Address
-     * 
-     * @return ipAddress
-     */
-    public String getIpAddress() {
-        return ipAddress;
-    }
+    public String ipPort = "6444";
 
-    /**
-     * Device IP Address
-     * 
-     * @param ipAddress Device IP Address
-     */
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
+    public String deviceId = "";
 
-    private String ipPort = "";
+    public String email = "";
 
-    /**
-     * Device IP Port
-     * 
-     * @return ipPort
-     */
-    public String getIpPort() {
-        return ipPort;
-    }
+    public String password = "";
 
-    /**
-     * Set Device IP port
-     * 
-     * @param ipPort Device IP port
-     */
-    public void setIpPort(String ipPort) {
-        this.ipPort = ipPort;
-    }
+    public String cloud = "";
 
-    private String deviceId = "";
+    public String token = "";
 
-    /**
-     * Device Device ID
-     * 
-     * @return deviceId
-     */
-    public String getDeviceId() {
-        return deviceId;
-    }
+    public String key = "";
 
-    /**
-     * Sets device ID
-     * 
-     * @param deviceId device id
-     */
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
+    public int pollingTime = 60;
 
-    private String email = "";
+    public int timeout = 4;
 
-    /**
-     * Your email for your cloud provider.
-     * 
-     * @return email
-     */
-    public String getEmail() {
-        return email;
-    }
+    public boolean promptTone;
 
-    /**
-     * Sets email
-     * 
-     * @param email email for your cloud provider
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    private String password = "";
-
-    /**
-     * Password for your cloud provider.
-     * 
-     * @return password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Sets Password for your cloud provider.
-     * 
-     * @param password Password for your cloud provider
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    private String cloud = "";
-
-    /**
-     * Your cloud provider Name from supported options. Required V3 devices.
-     * 
-     * @return cloud
-     * 
-     */
-    public String getCloud() {
-        return cloud;
-    }
-
-    /**
-     * Sets Cloud Provider
-     * 
-     * @param cloud Cloud provider
-     */
-    public void setCloud(String cloud) {
-        this.cloud = cloud;
-    }
-
-    private String token = "";
-
-    /**
-     * Required V3 devices. Get/Set.
-     * Discovery possible with email and password
-     * 
-     * @return token
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * Sets token
-     * 
-     * @param token cloud provider token
-     */
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    private String key = "";
-
-    /**
-     * Required for V3 devices.
-     * Discovery possible with email and password
-     * 
-     * @return key
-     * 
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Sets Could provider key
-     * 
-     * @param key Cloud provider key
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    private int pollingTime;
-
-    /**
-     * Frequency in seconds Thirty seconds minimum
-     * 
-     * @return pollingTime
-     * 
-     */
-    public int getPollingTime() {
-        return pollingTime;
-    }
-
-    /**
-     * Sets polling frequency 30 seconds minimum
-     * 
-     * @param pollingTime frequency of polling
-     */
-    public void setPollingTime(int pollingTime) {
-        this.pollingTime = pollingTime;
-    }
-
-    private int timeout;
-
-    /**
-     * How long after message is sent will the socket wait Get/Set. Two to 10 seconds
-     * 
-     * @return timeout
-     */
-    public int getTimeout() {
-        return timeout;
-    }
-
-    /**
-     * Sets length of time socket is open for reading
-     * 
-     * @param timeout socket timeout
-     */
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    private boolean promptTone;
-
-    /**
-     * Status of device to "ding" when command is received.
-     * 
-     * @return promptTone
-     * 
-     */
-    public boolean getPromptTone() {
-        return promptTone;
-    }
-
-    /**
-     * Set device to chime with Set command
-     * 
-     * @param promptTone indoor unit chime
-     */
-    public void setPromptTone(boolean promptTone) {
-        this.promptTone = promptTone;
-    }
+    public String version = "";
 
     /**
      * Check during initialization that the params are valid

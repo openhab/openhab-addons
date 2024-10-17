@@ -18,24 +18,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TokenKey} returns the active Token and Key.
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - JavaDoc and OH addons review
  */
 @NonNullByDefault
-public class TokenKey {
-    String token;
-    String key;
-
-    /**
-     * Parameters for TokenKey class
-     * 
-     * @param token Cloud Provider token
-     * @param key Cloud Provider key
-     */
-    public TokenKey(String token, String key) {
-        super();
-        this.token = token;
-        this.key = key;
-    }
+public record TokenKey(String token, String key) {
 
     /**
      * Gets token

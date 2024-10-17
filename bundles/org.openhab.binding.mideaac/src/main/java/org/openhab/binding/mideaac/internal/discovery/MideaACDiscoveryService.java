@@ -119,7 +119,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         } catch (SocketTimeoutException e) {
             logger.debug("Discovering poller timeout...");
         } catch (IOException e) {
-            // logger.debug("Error during discovery: {}", e.getMessage());
+            logger.debug("Error during discovery: {}", e.getMessage());
         } finally {
             closeDiscoverSocket();
             removeOlderResults(getTimestampOfLastScan());
@@ -156,7 +156,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         } catch (SocketTimeoutException e) {
             logger.debug("Discovering poller timeout...");
         } catch (IOException e) {
-            // logger.debug("Error during discovery: {}", e.getMessage());
+            logger.debug("Error during discovery: {}", e.getMessage());
         } finally {
             closeDiscoverSocket();
         }
@@ -212,7 +212,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * Closes the discovery socket and cleans the value. No need for synchronization as this method is called from a
      * synchronized context.
      */
-    @SuppressWarnings("null")
     private void closeDiscoverSocket() {
         if (discoverSocket != null) {
             discoverSocket.close();
@@ -225,7 +224,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      *
      * @param packet containing data of detected device
      */
-    @SuppressWarnings("null")
     private void thingDiscovered(DatagramPacket packet) {
         DiscoveryResult dr = discoveryPacketReceived(packet);
         if (dr != null) {
@@ -334,8 +332,13 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * Collects properties into a map.
      *
      * @param ipAddress IP address of the thing
-     * @param mac mac address of the thing
-     * @return map with properties
+     * @param version Version 2 or 3
+     * @param id ID of the device
+     * @param port Port of the device
+     * @param sn Serial number of the device
+     * @param ssid Serial id converted with StandardCharsets.UTF_8
+     * @param type Type of device (ac)
+     * @return Map with properties
      */
     private Map<String, Object> collectProperties(String ipAddress, String version, String id, String port, String sn,
             String ssid, String type) {

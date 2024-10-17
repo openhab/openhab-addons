@@ -28,30 +28,18 @@ import org.openhab.binding.mideaac.internal.security.TokenKey;
 @NonNullByDefault
 public class MideaACConfigurationTest {
 
-    MideaACConfiguration mideaACConfiguration = new MideaACConfiguration();
+    MideaACConfiguration config = new MideaACConfiguration();
 
     /**
      * Test for valid Configs
      */
     @Test
     public void testValidConfigs() {
-        String ip = "192.168.0.1";
-        String port = "6444";
-        String deviceId = "1234567890";
-        mideaACConfiguration.setIpAddress(ip);
-        mideaACConfiguration.setIpPort(port);
-        mideaACConfiguration.setDeviceId(deviceId);
-        String ipTest = "";
-        String portTest = "";
-        String idTest = "";
-        ipTest = mideaACConfiguration.getIpAddress();
-        portTest = mideaACConfiguration.getIpPort();
-        idTest = mideaACConfiguration.getDeviceId();
-        assertEquals(ip, ipTest);
-        assertEquals(port, portTest);
-        assertEquals(deviceId, idTest);
-        assertTrue(mideaACConfiguration.isValid());
-        assertFalse(mideaACConfiguration.isDiscoveryNeeded());
+        config.ipAddress = "192.168.0.1";
+        config.ipPort = "6444";
+        config.deviceId = "1234567890";
+        assertTrue(config.isValid());
+        assertFalse(config.isDiscoveryNeeded());
     }
 
     /**
@@ -59,23 +47,11 @@ public class MideaACConfigurationTest {
      */
     @Test
     public void testnonValidConfigs() {
-        String ip = "192.168.0.1";
-        String port = "";
-        String deviceId = "1234567890";
-        mideaACConfiguration.setIpAddress(ip);
-        mideaACConfiguration.setIpPort(port);
-        mideaACConfiguration.setDeviceId(deviceId);
-        String ipTest = "";
-        String portTest = "";
-        String idTest = "";
-        ipTest = mideaACConfiguration.getIpAddress();
-        portTest = mideaACConfiguration.getIpPort();
-        idTest = mideaACConfiguration.getDeviceId();
-        assertEquals(ip, ipTest);
-        assertEquals(port, portTest);
-        assertEquals(deviceId, idTest);
-        assertFalse(mideaACConfiguration.isValid());
-        assertTrue(mideaACConfiguration.isDiscoveryNeeded());
+        config.ipAddress = "192.168.0.1";
+        config.ipPort = "";
+        config.deviceId = "1234567890";
+        assertFalse(config.isValid());
+        assertTrue(config.isDiscoveryNeeded());
     }
 
     /**
@@ -83,23 +59,11 @@ public class MideaACConfigurationTest {
      */
     @Test
     public void testBadIpConfigs() {
-        String ip = "192.1680.1";
-        String port = "6444";
-        String deviceId = "1234567890";
-        mideaACConfiguration.setIpAddress(ip);
-        mideaACConfiguration.setIpPort(port);
-        mideaACConfiguration.setDeviceId(deviceId);
-        String ipTest = "";
-        String portTest = "";
-        String idTest = "";
-        ipTest = mideaACConfiguration.getIpAddress();
-        portTest = mideaACConfiguration.getIpPort();
-        idTest = mideaACConfiguration.getDeviceId();
-        assertEquals(ip, ipTest);
-        assertEquals(port, portTest);
-        assertEquals(deviceId, idTest);
-        assertTrue(mideaACConfiguration.isValid());
-        assertTrue(mideaACConfiguration.isDiscoveryNeeded());
+        config.ipAddress = "192.1680.1";
+        config.ipPort = "6444";
+        config.deviceId = "1234567890";
+        assertTrue(config.isValid());
+        assertTrue(config.isDiscoveryNeeded());
     }
 
     /**
@@ -107,34 +71,21 @@ public class MideaACConfigurationTest {
      */
     @Test
     public void testCloudProvider() {
-        String cloudProvider = "NetHome Plus";
-        mideaACConfiguration.setCloud(cloudProvider);
-        String cloudTest = "";
-        cloudTest = mideaACConfiguration.getCloud();
-        assertEquals(cloudProvider, cloudTest);
+        config.cloud = "NetHome Plus";
+        assertEquals(config.cloud, "NetHome Plus");
     }
 
     /**
-     * Test token and key pair
+     * Test to return token and key pair
      */
     @Test
     public void testTokenKey() {
-        String token = "D24046B597DB9C8A7CA029660BC606F3FD7EBF12693E73B2EF1FFE4C3B7CA00C824E408C9F3CE972CC0D3F8250AD79D0E67B101B47AC2DD84B396E52EA05193F";
-        String key = "97c65a4eed4f49fda06a1a51d5cbd61d2c9b81d103ca4ca689f352a07a16fae6";
-        String tokenTest = "";
-        String keyTest = "";
-        String tokenTest1 = "";
-        String keyTest1 = "";
-        TokenKey tokenKey = new TokenKey(token, key);
-        mideaACConfiguration.setToken(token);
-        mideaACConfiguration.setKey(key);
-        tokenTest = tokenKey.getToken();
-        keyTest = tokenKey.getKey();
-        tokenTest1 = mideaACConfiguration.getToken();
-        keyTest1 = mideaACConfiguration.getKey();
-        assertEquals(token, tokenTest);
-        assertEquals(key, keyTest);
-        assertEquals(token, tokenTest1);
-        assertEquals(key, keyTest1);
+        config.token = "D24046B597DB9C8A7CA029660BC606F3FD7EBF12693E73B2EF1FFE4C3B7CA00C824E408C9F3CE972CC0D3F8250AD79D0E67B101B47AC2DD84B396E52EA05193F";
+        config.key = "97c65a4eed4f49fda06a1a51d5cbd61d2c9b81d103ca4ca689f352a07a16fae6";
+        TokenKey tokenKey = new TokenKey(config.token, config.key);
+        String tokenTest = tokenKey.getToken();
+        String keyTest = tokenKey.getKey();
+        assertEquals(config.token, tokenTest);
+        assertEquals(config.key, keyTest);
     }
 }

@@ -90,7 +90,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private String ipAddress = "";
     private String ipPort = "";
     private String deviceId = "";
-    private int version = 0;
+    private int version = 3;
 
     /**
      * Create new nonnull cloud provider to start
@@ -193,14 +193,13 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param httpClient http Client
      * @param clouds cloud
      */
-    public MideaACHandler(Thing thing, String ipv4Address, UnitProvider unitProvider, HttpClient httpClient,
-            Clouds clouds) {
+    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, Clouds clouds) {
         super(thing);
         this.thing = thing;
         this.systemOfUnits = unitProvider.getMeasurementSystem();
         this.httpClient = httpClient;
         this.clouds = clouds;
-        connectionManager = new ConnectionManager(ipv4Address, this);
+        connectionManager = new ConnectionManager(this);
     }
 
     /**
@@ -679,7 +678,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         config = getConfigAs(MideaACConfiguration.class);
         properties = editProperties();
 
-        setCloudProvider(CloudProvider.getCloudProvider(config.getCloud()));
+        setCloudProvider(CloudProvider.getCloudProvider(config.cloud));
         setSecurity(new Security(cloudProvider));
 
         logger.debug("MideaACHandler config for {} is {}", thing.getUID(), config);
@@ -693,7 +692,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
 
                 try {
-                    discoveryService.discoverThing(config.getIpAddress(), this);
+                    discoveryService.discoverThing(config.ipAddress, this);
                 } catch (Exception e) {
                     logger.error("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
                 }
@@ -708,10 +707,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Configuration valid for {}", thing.getUID());
         }
 
-        ipAddress = config.getIpAddress();
-        ipPort = config.getIpPort();
-        deviceId = config.getDeviceId();
-        version = Integer.parseInt(properties.get(PROPERTY_VERSION).toString());
+        ipAddress = config.ipAddress;
+        ipPort = config.ipPort;
+        deviceId = config.deviceId;
+        version = Integer.parseInt(config.version);
 
         logger.debug("IPAddress: {}", ipAddress);
         logger.debug("IPPort: {}", ipPort);
@@ -876,13 +875,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * indoor AC unit evaporator.
      *
      * @author Jacek Dobrowolski - Initial Contribution
-     * 
      * @author Bob Eckhoff - Revised logic to reconnect with security before each poll or command
      * 
      *         This gets around the issue that any command needs to be within 30 seconds of the authorization
      *         in testing this only adds 50 ms, but allows polls at longer intervals
      */
-    public class ConnectionManager {
+    private class ConnectionManager {
         private Logger logger = LoggerFactory.getLogger(ConnectionManager.class);
 
         private boolean deviceIsConnected;
@@ -921,10 +919,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         /**
          * Set the parameters for the connection manager
          * 
-         * @param ipv4Address IP4 Address
          * @param mideaACHandler mideaACHandler class
          */
-        public ConnectionManager(String ipv4Address, MideaACHandler mideaACHandler) {
+        public ConnectionManager(MideaACHandler mideaACHandler) {
             deviceIsConnected = false;
             this.mideaACHandler = mideaACHandler;
         }
@@ -971,10 +968,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             // Open socket
             try {
                 socket = new Socket();
-                socket.setSoTimeout(config.getTimeout() * 1000);
+                socket.setSoTimeout(config.timeout * 1000);
                 if (ipPort != null) {
                     int port = Integer.parseInt(ipPort);
-                    socket.connect(new InetSocketAddress(ipAddress, port), config.getTimeout() * 1000);
+                    socket.connect(new InetSocketAddress(ipAddress, port), config.timeout * 1000);
                 }
             } catch (IOException e) {
                 logger.debug("IOException connecting to  {} at {}: {}", thing.getUID(), ipAddress, e.getMessage());
@@ -1009,7 +1006,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             deviceIsConnected = true;
             markOnline();
             if (getVersion() != 3) {
-                logger.debug("Device {}@{} not require authentication, getting status", thing.getUID(), ipAddress);
+                logger.debug("Device {}@{} does not require authentication, updating status", thing.getUID(),
+                        ipAddress);
                 requestStatus(mideaACHandler.getDoPoll());
             } else {
                 logger.debug("Device {}@{} require authentication, going to authenticate", thing.getUID(), ipAddress);
@@ -1018,68 +1016,41 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
 
         /**
-         * For V3 devices only this method checks for the Cloud Provider
-         * key and token (and prompts if missing). It will retrieve the
-         * missing key and token if the account email and password are provided
+         * For V3 devices only. This method checks for the Cloud Provider
+         * key and token (and goes offline if any are missing). It will retrieve the
+         * missing key and/or token if the account email and password are provided.
          */
         @SuppressWarnings("null")
         public void authenticate() {
             logger.trace("Version: {}", getVersion());
-            logger.trace("Key: {}", config.getKey());
-            logger.trace("Token: {}", config.getToken());
+            logger.trace("Key: {}", config.key);
+            logger.trace("Token: {}", config.token);
 
-            if (getVersion() == 3) {
-                if (!isBlank(config.getToken()) && !isBlank(config.getKey()) && !config.getCloud().equals("")) {
-                    logger.debug("Device {}@{} authenticating", thing.getUID(), ipAddress);
-                    doAuthentication();
-                } else {
-                    if (isBlank(config.getToken()) && isBlank(config.getKey())) {
-                        if (isBlank(config.getEmail()) || isBlank(config.getPassword())) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Token and Key missing in configuration.");
-                            logger.warn("Device {}@{} cannot authenticate, token and key missing", thing.getUID(),
-                                    ipAddress);
-                        } else {
-                            if (isBlank(config.getCloud()) || config.getCloud().equals("")) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Cloud Provider missing in configuration.");
-                                logger.warn("Device {}@{} cannot authenticate, Cloud Provider missing", thing.getUID(),
-                                        ipAddress);
-                            } else {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                        "Retrieving Token and Key from cloud.");
-                                logger.info("Retrieving Token and Key from cloud");
-                                CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.getCloud());
-                                getTokenKeyCloud(cloudProvider);
-                            }
-                        }
-                    } else if (isBlank(config.getToken())) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Token missing in configuration.");
-                        logger.warn("Device {}@{} cannot authenticate, token missing", thing.getUID(), ipAddress);
-                    } else if (isBlank(config.getKey())) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Key missing in configuration.");
-                        logger.warn("Device {}@{} cannot authenticate, key missing", thing.getUID(), ipAddress);
-                    } else if (config.getCloud().equals("")) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Cloud Provider Required for V3 Device");
-                        logger.warn("Device {}@{} cannot authenticate, Cloud Provider missing", thing.getUID(),
-                                ipAddress);
-                    }
-                }
+            if (!isBlank(config.token) && !isBlank(config.key) && !config.cloud.equals("")) {
+                logger.debug("Device {}@{} authenticating", thing.getUID(), ipAddress);
+                doAuthentication();
             } else {
-                logger.debug("Device {}@{} with version {} does not require authentication, not going to authenticate",
-                        thing.getUID(), ipAddress, getVersion());
+                if (!isBlank(config.email) && !isBlank(config.password) && !config.cloud.equals("")) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "Retrieving Token and/or Key from cloud.");
+                    logger.info("Retrieving Token and/or Key from cloud");
+                    CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
+                    getTokenKeyCloud(cloudProvider);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Token and/or Key missing, missing cloud provider information to fetch it");
+                    logger.warn("Token, Key and or Cloud provider data missing, V3 device {}@{} cannot authenticate",
+                            thing.getUID(), ipAddress);
+                }
             }
         }
 
         @SuppressWarnings("null")
         private void getTokenKeyCloud(CloudProvider cloudProvider) {
-            CloudDTO cloud = mideaACHandler.getClouds().get(config.getEmail(), config.getPassword(), cloudProvider);
+            CloudDTO cloud = mideaACHandler.getClouds().get(config.email, config.password, cloudProvider);
             cloud.setHttpClient(httpClient);
             if (cloud.login()) {
-                TokenKey tk = cloud.getToken(config.getDeviceId());
+                TokenKey tk = cloud.getToken(config.deviceId);
                 Configuration configuration = editConfiguration();
 
                 configuration.put(CONFIG_TOKEN, tk.getToken());
@@ -1105,7 +1076,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          */
         @SuppressWarnings("null")
         private void doAuthentication() {
-            byte[] request = mideaACHandler.getSecurity().encode8370(Utils.hexStringToByteArray(config.getToken()),
+            byte[] request = mideaACHandler.getSecurity().encode8370(Utils.hexStringToByteArray(config.token),
                     MsgType.MSGTYPE_HANDSHAKE_REQUEST);
             try {
                 logger.trace("Device {}@{} writing handshake_request: {}", thing.getUID(), ipAddress,
@@ -1119,7 +1090,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                             response.length);
                     if (response.length == 72) {
                         boolean success = mideaACHandler.getSecurity().tcpKey(Arrays.copyOfRange(response, 8, 72),
-                                Utils.hexStringToByteArray(config.getKey()));
+                                Utils.hexStringToByteArray(config.key));
                         if (success) {
                             logger.debug("Authentication successful");
                             // Altering the sleep caused or can cause write errors problems. Use caution.
@@ -1198,7 +1169,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         @SuppressWarnings("null")
         public void sendCommand(CommandBase command) {
             if (command instanceof CommandSet) {
-                ((CommandSet) command).setPromptTone(config.getPromptTone());
+                ((CommandSet) command).setPromptTone(config.promptTone);
             }
             Packet packet = new Packet(command, deviceId, mideaACHandler);
             packet.compose();
@@ -1364,7 +1335,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         /**
          * Closes all elements of the connection before starting a new one
          */
-        @SuppressWarnings("null")
         protected synchronized void disconnect() {
             // Make sure writer, inputStream and socket are closed before each command is started
             logger.debug("Disconnecting from {} at {}", thing.getUID(), ipAddress);
@@ -1429,7 +1399,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * 
          * @return byte array
          */
-        @SuppressWarnings("null")
         public synchronized byte @Nullable [] read() {
             byte[] bytes = new byte[512];
 
@@ -1481,8 +1450,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         private void scheduleConnectionMonitorJob() {
             if (connectionMonitorJob == null) {
                 logger.debug("Starting connection monitor job in {} seconds for {} at {} after 30 second delay",
-                        config.getPollingTime(), thing.getUID(), ipAddress);
-                long frequency = config.getPollingTime();
+                        config.pollingTime, thing.getUID(), ipAddress);
+                long frequency = config.pollingTime;
                 long delay = 30L;
                 connectionMonitorJob = scheduler.scheduleWithFixedDelay(connectionMonitorRunnable, delay, frequency,
                         TimeUnit.SECONDS);

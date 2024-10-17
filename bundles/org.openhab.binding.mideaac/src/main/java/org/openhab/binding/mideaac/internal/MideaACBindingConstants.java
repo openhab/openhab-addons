@@ -54,7 +54,6 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_SWING_MODE = "swing-mode";
     public static final String CHANNEL_AUXILIARY_HEAT = "auxiliary-heat";
     public static final String CHANNEL_ECO_MODE = "eco-mode";
-    public static final String CHANNEL_CLEAN_UP = "clean-up";
     public static final String CHANNEL_TEMPERATURE_UNIT = "temperature-unit";
     public static final String CHANNEL_SLEEP_FUNCTION = "sleep-function";
     public static final String CHANNEL_TURBO_MODE = "turbo-mode";
@@ -78,6 +77,7 @@ public class MideaACBindingConstants {
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_IP_PORT = "ipPort";
     public static final String CONFIG_DEVICEID = "deviceId";
+    public static final String CONFIG_CLOUD = "cloud";
     public static final String CONFIG_EMAIL = "email";
     public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_TOKEN = "token";
@@ -85,8 +85,8 @@ public class MideaACBindingConstants {
     public static final String CONFIG_POLLING_TIME = "pollingTime";
     public static final String CONFIG_CONNECTING_TIMEOUT = "timeout";
     public static final String CONFIG_PROMPT_TONE = "promptTone";
-
     public static final String PROPERTY_VERSION = "version";
+
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
     public static final String PROPERTY_TYPE = "type";

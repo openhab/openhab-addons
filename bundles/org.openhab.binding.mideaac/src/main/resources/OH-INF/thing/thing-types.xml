@@ -22,12 +22,12 @@
 			<channel id="indoor-temperature" typeId="indoor-temperature"/>
 			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
 			<channel id="sleep-function" typeId="sleep-function"/>
+			<channel id="temperature-unit" typeId="temperature-unit"/>
 
 			<channel id="on-timer" typeId="on-timer"/>
 			<channel id="off-timer" typeId="off-timer"/>
 			<channel id="appliance-error" typeId="appliance-error"/>
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
-			<channel id="temperature-unit" typeId="temperature-unit"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="screen-display" typeId="screen-display"/>
 			<channel id="alternate-target-temperature" typeId="alternate-target-temperature"/>
@@ -110,6 +110,12 @@
 				<label>Prompt tone</label>
 				<description>After sending a command device will play "ding" tone when command is received and executed.</description>
 				<default>false</default>
+			</parameter>
+			<parameter name="version" type="text" required="true">
+				<context>version</context>
+				<label>AC Version</label>
+				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't. Leave blank to discover</description>
+				<default>3</default>
 			</parameter>
 		</config-description>
 
