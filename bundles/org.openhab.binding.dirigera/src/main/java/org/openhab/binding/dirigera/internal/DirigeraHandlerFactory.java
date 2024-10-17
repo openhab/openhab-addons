@@ -24,7 +24,7 @@ import org.openhab.binding.dirigera.internal.handler.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightControllerHandler;
-import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.MotionLightSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.RepeaterHandler;
 import org.openhab.binding.dirigera.internal.handler.SceneHandler;
@@ -109,8 +109,10 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);
         } else if (THING_TYPE_MOTION_SENSOR.equals(thingTypeUID)) {
             return new MotionSensorHandler(thing, MOTION_SENSOR_MAP);
-        } else if (THING_TYPE_LIGHT_SENSOR.equals(thingTypeUID)) {
-            return new LightSensorHandler(thing, LIGHT_SENSOR_MAP);
+            // } else if (THING_TYPE_LIGHT_SENSOR.equals(thingTypeUID)) {
+            // return new LightSensorHandler(thing, LIGHT_SENSOR_MAP);
+        } else if (THING_TYPE_MOTION_LIGHT_SENSOR.equals(thingTypeUID)) {
+            return new MotionLightSensorHandler(thing, MOTION_LIGHT_SENSOR_MAP);
         } else if (THING_TYPE_CONTACT_SENSOR.equals(thingTypeUID)) {
             return new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);
         } else if (THING_TYPE_SMART_PLUG.equals(thingTypeUID)) {

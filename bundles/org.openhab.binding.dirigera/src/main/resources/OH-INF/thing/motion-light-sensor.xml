@@ -4,18 +4,22 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="motion-sensor">
+	<thing-type id="motion-light-sensor">
 		<label>Motion Sensor</label>
 		<description>Sensor detecting motion event to trigger actions</description>
 
 		<channels>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the sensor</description>
-			</channel>
 			<channel id="detection" typeId="switch-ro">
 				<label>Detection Flag</label>
 				<description>Flag if detection happened.</description>
+			</channel>
+			<channel id="illuminance" typeId="illuminance">
+				<label>Illuminance</label>
+				<description>Shows illuminance in Lux </description>
+			</channel>
+			<channel id="battery-level" typeId="percent">
+				<label>Battery Level</label>
+				<description>State of the battery powering the sensor</description>
 			</channel>
 		</channels>
 

@@ -54,6 +54,7 @@ public class Websocket {
     private static String DISCONNECTS = "disconnetcs";
     private static String ERRORS = "errors";
     private static String PINGS = "pings";
+    private static String LAST_LATENCY = "ping-latency";
     private static String MESSAGES = "messages";
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
@@ -167,7 +168,7 @@ public class Websocket {
             if (sent != null) {
                 long durationMS = Duration.between(sent, Instant.now()).toMillis();
                 logger.trace("DIRIGERA ping answered after {} ms", Duration.between(sent, Instant.now()).toMillis());
-                statistics.put("latency", durationMS);
+                statistics.put(LAST_LATENCY, durationMS);
             } else {
                 logger.trace("DIRIGERA receiced pong without ping {}", paylodString);
             }
