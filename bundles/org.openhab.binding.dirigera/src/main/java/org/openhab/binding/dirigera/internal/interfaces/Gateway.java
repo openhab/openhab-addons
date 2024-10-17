@@ -25,11 +25,11 @@ import org.openhab.binding.dirigera.internal.network.RestAPI;
  */
 @NonNullByDefault
 public interface Gateway {
-    public void registerDevice(BaseDeviceHandler deviceHandler);
+    public void registerDevice(BaseDeviceHandler deviceHandler, String deviceId);
 
-    public void unregisterDevice(BaseDeviceHandler deviceHandler);
+    public void unregisterDevice(BaseDeviceHandler deviceHandler, String deviceId);
 
-    public void deleteDevice(BaseDeviceHandler deviceHandler);
+    public void deleteDevice(BaseDeviceHandler deviceHandler, String deviceId);
 
     public RestAPI api();
 
