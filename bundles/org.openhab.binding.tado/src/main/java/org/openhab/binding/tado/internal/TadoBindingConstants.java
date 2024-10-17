@@ -130,6 +130,8 @@ public class TadoBindingConstants {
     public static final String CHANNEL_ZONE_BATTERY_LOW_ALARM = "batteryLowAlarm";
     // open window detected channel
     public static final String CHANNEL_ZONE_OPEN_WINDOW_DETECTED = "openWindowDetected";
+    // open window heating/cooling override remaining time channel
+    public static final String CHANNEL_ZONE_OPEN_WINDOW_REMAINING_TIME = "openWindowRemainingTime";
 
     public static final String CHANNEL_MOBILE_DEVICE_AT_HOME = "atHome";
 
