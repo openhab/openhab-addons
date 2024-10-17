@@ -33,6 +33,7 @@ import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
+import org.openhab.binding.dirigera.internal.handler.WaterSensorHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
@@ -131,6 +132,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new LightControllerHandler(thing, LIGHT_CONTROLLER_MAP);
         } else if (THING_TYPE_AIR_QUALITY.equals(thingTypeUID)) {
             return new AirQualityHandler(thing, AIR_QUALITY_MAP);
+        } else if (THING_TYPE_WATER_SENSOR.equals(thingTypeUID)) {
+            return new WaterSensorHandler(thing, WATER_SENSOR_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
