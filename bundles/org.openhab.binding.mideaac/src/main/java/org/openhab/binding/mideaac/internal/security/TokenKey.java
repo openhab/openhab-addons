@@ -22,22 +22,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public record TokenKey(String token, String key) {
-
-    /**
-     * Gets token
-     * 
-     * @return token
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * Gets key
-     * 
-     * @return key
-     */
-    public String getKey() {
-        return key;
-    }
 }

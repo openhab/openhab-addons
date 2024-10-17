@@ -83,8 +83,8 @@ public class MideaACConfigurationTest {
         config.token = "D24046B597DB9C8A7CA029660BC606F3FD7EBF12693E73B2EF1FFE4C3B7CA00C824E408C9F3CE972CC0D3F8250AD79D0E67B101B47AC2DD84B396E52EA05193F";
         config.key = "97c65a4eed4f49fda06a1a51d5cbd61d2c9b81d103ca4ca689f352a07a16fae6";
         TokenKey tokenKey = new TokenKey(config.token, config.key);
-        String tokenTest = tokenKey.getToken();
-        String keyTest = tokenKey.getKey();
+        String tokenTest = tokenKey.token();
+        String keyTest = tokenKey.key();
         assertEquals(config.token, tokenTest);
         assertEquals(config.key, keyTest);
     }

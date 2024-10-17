@@ -95,7 +95,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     /**
      * Performs the actual discovery of Midea AC devices (things).
      */
-    @SuppressWarnings("null")
     private void discoverThings() {
         try {
             final DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
@@ -106,6 +105,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             while (true) {
                 // Set packet length in case a previous call reduced the size.
                 receivePacket.setLength(buffer.length);
+                DatagramSocket discoverSocket = this.discoverSocket;
                 if (discoverSocket == null) {
                     break;
                 } else {
@@ -132,7 +132,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * @param ipAddress IP Address
      * @param discoveryHandler Discovery Handler
      */
-    @SuppressWarnings("null")
     public void discoverThing(String ipAddress, DiscoveryHandler discoveryHandler) {
         try {
             final DatagramPacket receivePacket = new DatagramPacket(buffer, buffer.length);
@@ -143,6 +142,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             while (true) {
                 // Set packet length in case a previous call reduced the size.
                 receivePacket.setLength(buffer.length);
+                DatagramSocket discoverSocket = this.discoverSocket;
                 if (discoverSocket == null) {
                     break;
                 } else {
@@ -213,6 +213,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * synchronized context.
      */
     private void closeDiscoverSocket() {
+        DatagramSocket discoverSocket = this.discoverSocket;
         if (discoverSocket != null) {
             discoverSocket.close();
             discoverSocket = null;
@@ -226,6 +227,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      */
     private void thingDiscovered(DatagramPacket packet) {
         DiscoveryResult dr = discoveryPacketReceived(packet);
+        DiscoveryHandler discoveryHandler = this.discoveryHandler;
         if (dr != null) {
             if (discoveryHandler != null) {
                 discoveryHandler.discovered(dr);

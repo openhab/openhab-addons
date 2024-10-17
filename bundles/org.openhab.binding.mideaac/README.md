@@ -1,16 +1,14 @@
-## Midea AC Binding
+# Midea AC Binding
 
 This binding integrates Air Conditioners that use the Midea protocol. Midea is an OEM for many brands.
 
 An AC device is likely supported if it uses one of the following Android apps or it's iOS equivalent.
 
- ```
 | Application                                  | Comment                               |
 |-:--------------------------------------------|-:-------------------------------------|
 | Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates |
 | NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates |
 | SmartHome/MSmartHome (com.midea.ai.overseas) | Full Support of key and token updates |
-```
 
 Note: The Air Conditioner must already be set-up on the WiFi network and have a fixed IP Address with one of the three apps listed above for full discovery and key and token updates.
 
@@ -22,7 +20,7 @@ This binding supports one Thing type `ac`.
 
 Once the Air Conditioner is on the network (WiFi active) the other required parameters can be discovered automatically.
 An IP broadcast message is sent and every responding unit gets added to the Inbox.
-As an alternative use the python application msmart-ng from https://github.com/mill1000/midea-msmart with the msmart-ng discover ipAddress option.
+As an alternative use the python application msmart-ng from <https://github.com/mill1000/midea-msmart> with the msmart-ng discover ipAddress option.
 
 ## Binding Configuration
 
@@ -30,28 +28,25 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-```
-| Parameter   | Required ?       | Comment                                                                            |
-|--:----------|--:---------------|--:---------------------------------------------------------------------------------|
-| ipAddress   | Required         | IP Address of the device.                                                          |
-| ipPort      | Required         | IP port of the device (typically: 6444).                                           |
-| deviceId    | Required         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).                     |
-| cloud       | Required for V.3 | Cloud Provider name for email and password                                         |
-| email       | Optional         | Email for cloud account chosen in Cloud Provider.                                  |
-| password    | Optional         | Password for cloud account chosen in Cloud Provider.                               |
-| token       | Required for V.3 | Secret Token (length 128 HEX)                                                      |
-| key         | Required for V.3 | Secret Key (length 64 HEX)                                                         |
-| pollingTime | Required         | Polling time in seconds. Minimum time is 30 seconds, default is 60 seconds.        |
-| timeout     | Required         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds (4 secs default). |
-| promptTone  | Optional         | "Ding" tone when command is received and executed.                                 |
-| version     | Required         | Version 3 has tokey, key and cloud requirements.                                   |
-```
+| Parameter   | Required ?       | Comment                                                           | Default |
+|--:----------|--:---------------|--:----------------------------------------------------------------|---------|
+| ipAddress   | Required         | IP Address of the device.                                         |         |
+| ipPort      | Required         | IP port of the device                                             | 6444    |
+| deviceId    | Required         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
+| cloud       | Required for V.3 | Cloud Provider name for email and password                        |         |
+| email       | Optional         | Email for cloud account chosen in Cloud Provider.                 |         |
+| password    | Optional         | Password for cloud account chosen in Cloud Provider.              |         |
+| token       | Required for V.3 | Secret Token (length 128 HEX)                                     |         |
+| key         | Required for V.3 | Secret Key (length 64 HEX)                                        |         |
+| pollingTime | Required         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
+| timeout     | Required         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
+| promptTone  | Optional         | "Ding" tone when command is received and executed.                | False   |
+| version     | Required         | Version 3 has tokey, key and cloud requirements.                  | 3       |
 
 ## Channels
 
 Following channels are available:
 
-```
 | Channel                      | Type               | Description                                                                                            | Read only | Advanced |
 |--:---------------------------|--:-----------------|--:-----------------------------------------------------------------------------------------------------|--:--------|--:-------|
 | power                        | Switch             | Turn the AC on and off.                                                                                |           |          |
@@ -73,7 +68,6 @@ Following channels are available:
 | appliance-error              | Switch             | If device supports, appliance error                                                                    | Yes       | Yes      |
 | auxiliary-heat               | Switch             | If device supports, auxiliary heat                                                                     | Yes       | Yes      |
 | alternate-target-temperature | Number:Temperature | Alternate Target Temperature - not currently used                                                      | Yes       | Yes      |
-```
 
 ## Examples
 

@@ -216,7 +216,6 @@ public class Utils {
         StringBuilder sb = new StringBuilder();
         Iterator<String> keys = json.keySet().stream().sorted().iterator();
         while (keys.hasNext()) {
-            @SuppressWarnings("null")
             String key = keys.next();
             sb.append(key);
             sb.append("=");

@@ -188,7 +188,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * Initial creation of the Midea AC Handler
      * 
      * @param thing thing name
-     * @param ipv4Address IP address of the device
      * @param unitProvider OH core unit provider
      * @param httpClient http Client
      * @param clouds cloud
@@ -1053,12 +1052,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 TokenKey tk = cloud.getToken(config.deviceId);
                 Configuration configuration = editConfiguration();
 
-                configuration.put(CONFIG_TOKEN, tk.getToken());
-                configuration.put(CONFIG_KEY, tk.getKey());
+                configuration.put(CONFIG_TOKEN, tk.token());
+                configuration.put(CONFIG_KEY, tk.key());
                 updateConfiguration(configuration);
 
-                logger.trace("Token: {}", tk.getToken());
-                logger.trace("Key: {}", tk.getKey());
+                logger.trace("Token: {}", tk.token());
+                logger.trace("Key: {}", tk.key());
                 logger.info("Token and Key obtained from cloud, saving, initializing");
                 initialize();
             } else {
@@ -1339,6 +1338,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             // Make sure writer, inputStream and socket are closed before each command is started
             logger.debug("Disconnecting from {} at {}", thing.getUID(), ipAddress);
 
+            InputStream inputStream = this.inputStream;
+            DataOutputStream writer = this.writer;
+            Socket socket = this.socket;
             try {
                 if (writer != null) {
                     writer.close();
@@ -1401,19 +1403,17 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          */
         public synchronized byte @Nullable [] read() {
             byte[] bytes = new byte[512];
-
+            InputStream inputStream = this.inputStream;
             if (inputStream == null) {
                 logger.debug("No bytes to read");
                 return null;
             }
             try {
-                if (inputStream != null) {
-                    int len = inputStream.read(bytes);
-                    if (len > 0) {
-                        logger.debug("Response received length: {} Thing:{}", len, thing.getUID());
-                        bytes = Arrays.copyOfRange(bytes, 0, len);
-                        return bytes;
-                    }
+                int len = inputStream.read(bytes);
+                if (len > 0) {
+                    logger.debug("Response received length: {} Thing:{}", len, thing.getUID());
+                    bytes = Arrays.copyOfRange(bytes, 0, len);
+                    return bytes;
                 }
             } catch (IOException e) {
                 String message = e.getMessage();
@@ -1428,8 +1428,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * @param buffer socket writer
          * @throws IOException writer could be null
          */
-        @SuppressWarnings("null")
         public synchronized void write(byte[] buffer) throws IOException {
+            DataOutputStream writer = this.writer;
             if (writer == null) {
                 logger.warn("Writer for {} is null when trying to write to {}!!!", thing.getUID(), ipAddress);
                 return;
@@ -1448,6 +1448,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          */
         @SuppressWarnings("null")
         private void scheduleConnectionMonitorJob() {
+            ScheduledFuture<?> connectionMonitorJob = this.connectionMonitorJob;
             if (connectionMonitorJob == null) {
                 logger.debug("Starting connection monitor job in {} seconds for {} at {} after 30 second delay",
                         config.pollingTime, thing.getUID(), ipAddress);
@@ -1458,8 +1459,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             }
         }
 
-        @SuppressWarnings("null")
         private void cancelConnectionMonitorJob() {
+            ScheduledFuture<?> connectionMonitorJob = this.connectionMonitorJob;
             if (connectionMonitorJob != null) {
                 logger.debug("Cancelling connection monitor job for {} at {}", thing.getUID(), ipAddress);
                 connectionMonitorJob.cancel(true);
