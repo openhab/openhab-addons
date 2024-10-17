@@ -183,7 +183,8 @@ public class SpeakerHandler extends BaseDeviceHandler {
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            logger.trace("DIRIGERA LIGHT_DEVICE update delivered {} attributes", attributes.length());
+            // logger.trace("DIRIGERA LIGHT_DEVICE update delivered {} attributes", attributes.length());
+            logger.trace("DIRIGERA LIGHT_DEVICE update delivered {}", attributes);
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
@@ -260,19 +261,21 @@ public class SpeakerHandler extends BaseDeviceHandler {
                 }
             }
             // outside of channel mapping - image
-            State imageState = UnDefType.UNDEF;
             if (attributes.has("playbackAudio")) {
                 JSONObject playbackAudio = attributes.getJSONObject("playbackAudio");
                 if (playbackAudio.has("playItem")) {
+                    // only change picture if update changes playItem
+                    // in this case change picture to imageUrl or Undef if playItem doesn't contain a picture
+                    State imageState = UnDefType.UNDEF;
                     JSONObject playItem = playbackAudio.getJSONObject("playItem");
                     if (playItem.has("imageURL")) {
                         String imageURL = playItem.getString("imageURL");
                         imageState = gateway().api().getImage(imageURL);
+                        logger.trace("DIRIGERA SPEAKER_DEVICE image received");
                     }
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE), imageState);
                 }
             }
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE), imageState);
-
         }
     }
 }
