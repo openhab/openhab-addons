@@ -76,7 +76,6 @@ public class ConvertedInputStream extends AudioStream {
             if (container.equals(AudioFormat.CONTAINER_WAVE)) {
                 AudioWaveUtils.removeFMT(innerInputStream);
             }
-
         } else {
             pcmInnerInputStream = getPCMStream(new BufferedInputStream(innerInputStream));
             var javaAudioFormat = ((AudioInputStream) pcmInnerInputStream).getFormat();

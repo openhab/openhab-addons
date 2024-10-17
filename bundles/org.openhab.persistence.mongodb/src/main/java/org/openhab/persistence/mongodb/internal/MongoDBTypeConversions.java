@@ -115,7 +115,7 @@ public class MongoDBTypeConversions {
         return STATE_CONVERTERS.getOrDefault(state.getClass(), State::toString).apply(state);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MongoDBTypeConversions.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MongoDBTypeConversions.class);
 
     /**
      * A map of converters that convert openHAB states to MongoDB compatible types.
@@ -199,7 +199,7 @@ public class MongoDBTypeConversions {
         if (value instanceof String) {
             return new HSBType(value.toString());
         } else {
-            logger.warn("HSBType ({}) value is not a valid string: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
+            LOGGER.warn("HSBType ({}) value is not a valid string: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
                     value);
             return new HSBType("0,0,0");
         }
@@ -249,7 +249,7 @@ public class MongoDBTypeConversions {
             Binary data = fieldValue.get(MongoDBFields.FIELD_VALUE_DATA, Binary.class);
             return new RawType(data.getData(), type);
         } else {
-            logger.warn("ImageItem ({}) value is not a Document: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
+            LOGGER.warn("ImageItem ({}) value is not a Document: {}", doc.getString(MongoDBFields.FIELD_REALNAME),
                     value);
             return new RawType(new byte[0], "application/octet-stream");
         }
