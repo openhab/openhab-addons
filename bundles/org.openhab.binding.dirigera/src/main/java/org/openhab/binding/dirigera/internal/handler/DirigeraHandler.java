@@ -58,6 +58,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -365,6 +366,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private void update() {
         model().update();
+        websocket.ifPresent(socket -> {
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
+                    StringType.valueOf(socket.getStatistics().toString()));
+        });
     }
 
     /**
@@ -451,9 +456,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * register a running device
      */
     @Override
-    public void registerDevice(BaseDeviceHandler deviceHandler) {
+    public void registerDevice(BaseDeviceHandler deviceHandler, String deviceId) {
         logger.info("DIRIGERA HANDLER device {} registered", deviceHandler.getThing().getThingTypeUID());
-        String deviceId = deviceHandler.getId();
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
             if (!knownDevices.contains(deviceId)) {
@@ -470,8 +474,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * unregister device, not running but still available
      */
     @Override
-    public void unregisterDevice(BaseDeviceHandler deviceHandler) {
-        String deviceId = deviceHandler.getId();
+    public void unregisterDevice(BaseDeviceHandler deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // unregister happens but don't remove it from known devices
     }
@@ -480,8 +483,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * remove device due to removal of Handler
      */
     @Override
-    public void deleteDevice(BaseDeviceHandler deviceHandler) {
-        String deviceId = deviceHandler.getId();
+    public void deleteDevice(BaseDeviceHandler deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // removal of handler - store new known devices
         if (knownDevices.contains(deviceId)) {
@@ -498,6 +500,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
         if (!knownDevices.contains(id)) {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
+            if (IGNORE_THING_TYPES_UIDS.contains(discoveredThingTypeUID)) {
+                return;
+            }
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
             } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {

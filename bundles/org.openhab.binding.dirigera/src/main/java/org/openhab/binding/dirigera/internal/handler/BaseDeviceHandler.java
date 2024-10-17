@@ -69,6 +69,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        config = getConfigAs(BaseDeviceConfiguration.class);
         // first get bridge as Gateway
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -77,10 +78,6 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
                     gateway = gw;
-                    BaseDeviceHandler proxy = child;
-                    if (proxy != null) {
-                        gateway().registerDevice(proxy);
-                    }
                     logger.trace("DIRIGERA BASE_DEVICE Gateway found");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -96,9 +93,11 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        config = getConfigAs(BaseDeviceConfiguration.class);
         if (!config.id.isBlank()) {
-            gateway().registerDevice(this);
+            BaseDeviceHandler proxy = child;
+            if (proxy != null) {
+                gateway().registerDevice(proxy, config.id);
+            }
         }
 
         // shall be handled by initial update
@@ -151,7 +150,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     public void dispose() {
         BaseDeviceHandler proxy = child;
         if (proxy != null) {
-            gateway().unregisterDevice(proxy);
+            gateway().unregisterDevice(proxy, config.id);
         }
     }
 
@@ -159,7 +158,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     public void handleRemoval() {
         BaseDeviceHandler proxy = child;
         if (proxy != null) {
-            gateway().deleteDevice(proxy);
+            gateway().deleteDevice(proxy, config.id);
         }
     }
 
@@ -172,9 +171,9 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public String getId() {
-        return config.id;
-    }
+    // public String getId() {
+    // return config.id;
+    // }
 
     private Map<String, String> reverse(Map<String, String> mapping) {
         final Map<String, String> reverseMap = new HashMap<>();
