@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="xcenter-workhours-values">
+		<label>Workhours</label>
+		<description>Basic Information of workhours</description>
+		<channels>
+			<channel id="workhours-fan" typeId="workhours-fan-channel"/>
+			<channel id="workhours-storage-loading-pump" typeId="workhours-storage-loading-pump-channel"/>
+			<channel id="workhours-compressor" typeId="workhours-compressor-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
