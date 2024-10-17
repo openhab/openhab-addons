@@ -12,17 +12,29 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Markus Pfleger - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class StayOutZones {
+    private Boolean dirty;
+    private List<StayOutZone> zones = new ArrayList<>();
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public Boolean isDirty() {
+        return dirty;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setDirty(Boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    public List<StayOutZone> getZones() {
+        return zones;
+    }
+
+    public void setZones(List<StayOutZone> zones) {
+        this.zones = zones;
     }
 }

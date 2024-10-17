@@ -15,14 +15,23 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 /**
  * @author Markus Pfleger - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class MowerCalendar {
+    private String type;
+    private Calendar attributes;
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public String getType() {
+        return type;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Calendar getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Calendar attributes) {
+        this.attributes = attributes;
     }
 }

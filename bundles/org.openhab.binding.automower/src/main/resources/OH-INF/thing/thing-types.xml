@@ -47,14 +47,143 @@
 			<channel id="name" typeId="nameType"/>
 			<channel id="mode" typeId="modeType"/>
 			<channel id="activity" typeId="activityType"/>
+			<channel id="inactive-reason" typeId="inactiveReasonType"/>
 			<channel id="state" typeId="stateType"/>
+			<channel id="work-area-id" typeId="workAreaIdType"/>
+			<channel id="work-area" typeId="workAreaType"/>
 			<channel id="last-update" typeId="lastUpdateType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-timestamp" typeId="errorTimestampType"/>
+			<channel id="error-confirmable" typeId="errorConfirmableType"/>
 			<channel id="planner-next-start" typeId="plannerNextStartTimestampType"/>
 			<channel id="planner-override-action" typeId="plannerOverrideActionType"/>
-			<channel id="calendar-tasks" typeId="calendarTasksType"/>
+			<channel id="planner-restricted-reason" typeId="plannerRestrictedReasonType"/>
+			<channel id="planner-external-reason" typeId="plannerExternalReasonType"/>
+			<channel id="setting-cutting-height" typeId="settingCuttingHeightType"/>
+			<channel id="setting-headlight-mode" typeId="settingHeadlightModeType"/>
+			<channel id="stat-cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
+			<channel id="stat-number-of-charging-cycles" typeId="statNumberOfChargingCyclesType"/>
+			<channel id="stat-number-of-collisions" typeId="statNumberOfCollisionsType"/>
+			<channel id="stat-total-charging-time" typeId="statTotalChargingTimeType"/>
+			<channel id="stat-total-cutting-time" typeId="statTotalCuttingTimeType"/>
+			<channel id="stat-total-cutting-percent" typeId="statTotalCuttingPercentType"/>
+			<channel id="stat-total-drive-distance" typeId="statTotalDriveDistanceType"/>
+			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
+			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
+			<channel id="stat-total-searching-percent" typeId="statTotalSearchingPercentType"/>
+
+			<!-- Calendar Tasks -->
+			<channel id="calendartasks01-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks01-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks01-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks01-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks01-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks01-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks01-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks01-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks01-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks01-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks02-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks02-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks02-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks02-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks02-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks02-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks02-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks02-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks02-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks02-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks03-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks03-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks03-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks03-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks03-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks03-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks03-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks03-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks03-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks03-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks04-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks04-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks04-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks04-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks04-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks04-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks04-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks04-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks04-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks04-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks05-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks05-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks05-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks05-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks05-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks05-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks05-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks05-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks05-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks05-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks06-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks06-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks06-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks06-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks06-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks06-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks06-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks06-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks06-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks06-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks07-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks07-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks07-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks07-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks07-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks07-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks07-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks07-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks07-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks07-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks08-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks08-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks08-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks08-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks08-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks08-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks08-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks08-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks08-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks08-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks09-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks09-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks09-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks09-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks09-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks09-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks09-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks09-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks09-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks09-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
+			<channel id="calendartasks10-start" typeId="calendarTasksStartType"/>
+			<channel id="calendartasks10-duration" typeId="calendarTasksDurationType"/>
+			<channel id="calendartasks10-monday" typeId="calendarTasksMondayType"/>
+			<channel id="calendartasks10-tuesday" typeId="calendarTasksTuesdayType"/>
+			<channel id="calendartasks10-wednesday" typeId="calendarTasksWednesdayType"/>
+			<channel id="calendartasks10-thursday" typeId="calendarTasksThursdayType"/>
+			<channel id="calendartasks10-friday" typeId="calendarTasksFridayType"/>
+			<channel id="calendartasks10-saturday" typeId="calendarTasksSaturdayType"/>
+			<channel id="calendartasks10-sunday" typeId="calendarTasksSundayType"/>
+			<channel id="calendartasks10-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>
 			<channel id="resume_schedule" typeId="resumeSchedule"/>
@@ -62,6 +191,7 @@
 			<channel id="park" typeId="park"/>
 			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
 			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
+			<channel id="confirm_error" typeId="confirmError"/>
 
 			<!-- Positions -->
 			<channel id="last-position" typeId="positionType">
@@ -117,6 +247,101 @@
 			<channel id="position48" typeId="positionType"/>
 			<channel id="position49" typeId="positionType"/>
 			<channel id="position50" typeId="positionType"/>
+
+			<!-- Stayout Zones -->
+			<channel id="dirty" typeId="zoneDirtyType"/>
+			<channel id="zone01-id" typeId="zoneIdType"/>
+			<channel id="zone01-name" typeId="zoneNameType"/>
+			<channel id="zone01-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone02-id" typeId="zoneIdType"/>
+			<channel id="zone02-name" typeId="zoneNameType"/>
+			<channel id="zone02-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone03-id" typeId="zoneIdType"/>
+			<channel id="zone03-name" typeId="zoneNameType"/>
+			<channel id="zone03-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone04-id" typeId="zoneIdType"/>
+			<channel id="zone04-name" typeId="zoneNameType"/>
+			<channel id="zone04-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone05-id" typeId="zoneIdType"/>
+			<channel id="zone05-name" typeId="zoneNameType"/>
+			<channel id="zone05-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone06-id" typeId="zoneIdType"/>
+			<channel id="zone06-name" typeId="zoneNameType"/>
+			<channel id="zone06-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone07-id" typeId="zoneIdType"/>
+			<channel id="zone07-name" typeId="zoneNameType"/>
+			<channel id="zone07-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone08-id" typeId="zoneIdType"/>
+			<channel id="zone08-name" typeId="zoneNameType"/>
+			<channel id="zone08-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone09-id" typeId="zoneIdType"/>
+			<channel id="zone09-name" typeId="zoneNameType"/>
+			<channel id="zone09-enabled" typeId="zoneEnabledType"/>
+			<channel id="zone19-id" typeId="zoneIdType"/>
+			<channel id="zone10-name" typeId="zoneNameType"/>
+			<channel id="zone10-enabled" typeId="zoneEnabledType"/>
+
+			<!-- Work Areas -->
+			<channel id="workareas01-id" typeId="workareasIdType"/>
+			<channel id="workareas01-name" typeId="workareasNameType"/>
+			<channel id="workareas01-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas01-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas01-progress" typeId="workareasProgressType"/>
+			<channel id="workareas01-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas02-id" typeId="workareasIdType"/>
+			<channel id="workareas02-name" typeId="workareasNameType"/>
+			<channel id="workareas02-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas02-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas02-progress" typeId="workareasProgressType"/>
+			<channel id="workareas02-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas03-id" typeId="workareasIdType"/>
+			<channel id="workareas03-name" typeId="workareasNameType"/>
+			<channel id="workareas03-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas03-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas03-progress" typeId="workareasProgressType"/>
+			<channel id="workareas03-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas04-id" typeId="workareasIdType"/>
+			<channel id="workareas04-name" typeId="workareasNameType"/>
+			<channel id="workareas04-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas04-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas04-progress" typeId="workareasProgressType"/>
+			<channel id="workareas04-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas05-id" typeId="workareasIdType"/>
+			<channel id="workareas05-name" typeId="workareasNameType"/>
+			<channel id="workareas05-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas05-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas05-progress" typeId="workareasProgressType"/>
+			<channel id="workareas05-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas06-id" typeId="workareasIdType"/>
+			<channel id="workareas06-name" typeId="workareasNameType"/>
+			<channel id="workareas06-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas06-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas06-progress" typeId="workareasProgressType"/>
+			<channel id="workareas06-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas07-id" typeId="workareasIdType"/>
+			<channel id="workareas07-name" typeId="workareasNameType"/>
+			<channel id="workareas07-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas07-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas07-progress" typeId="workareasProgressType"/>
+			<channel id="workareas07-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas08-id" typeId="workareasIdType"/>
+			<channel id="workareas08-name" typeId="workareasNameType"/>
+			<channel id="workareas08-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas08-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas08-progress" typeId="workareasProgressType"/>
+			<channel id="workareas08-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas09-id" typeId="workareasIdType"/>
+			<channel id="workareas09-name" typeId="workareasNameType"/>
+			<channel id="workareas09-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas09-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas09-progress" typeId="workareasProgressType"/>
+			<channel id="workareas09-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workareas10-id" typeId="workareasIdType"/>
+			<channel id="workareas10-name" typeId="workareasNameType"/>
+			<channel id="workareas10-cutting-height" typeId="workareasCuttingHeightType"/>
+			<channel id="workareas10-enabled" typeId="workareasEnabledType"/>
+			<channel id="workareas10-progress" typeId="workareasProgressType"/>
+			<channel id="workareas10-last-time-completed" typeId="workareasLastTimeCompletedType"/>
 		</channels>
 
 		<properties>
@@ -124,6 +349,11 @@
 			<property name="mowerName">N/A</property>
 			<property name="mowerModel">N/A</property>
 			<property name="mowerSerialNumber">N/A</property>
+			<property name="mowerCanConfirmError">N/A</property>
+			<property name="mowerHasHeadlights">N/A</property>
+			<property name="mowerHasPosition">N/A</property>
+			<property name="mowerHasStayOutZones">N/A</property>
+			<property name="mowerHasWorkAreas">N/A</property>
 		</properties>
 
 		<config-description>
@@ -136,10 +366,12 @@
 				<default>600</default>
 				<description>How often the current automower state should be polled in seconds</description>
 			</parameter>
+			<parameter name="mowerZoneId" type="text" required="false">
+				<label>TimeZone</label>
+				<description>Time zone of the mower (e.g. Europe/Berlin)</description>
+			</parameter>
 		</config-description>
-
 	</thing-type>
-
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
@@ -170,13 +402,26 @@
 		<state readOnly="true">
 			<options>
 				<option value="UNKNOWN">Unknown</option>
-				<option value="NOT_APPLICABLE">N/A</option>
+				<option value="NOT_APPLICABLE">Not Applicable</option>
 				<option value="MOWING">Mowing</option>
 				<option value="GOING_HOME">Returning to charging station</option>
 				<option value="CHARGING">Charging</option>
 				<option value="LEAVING">Leaving charging station</option>
 				<option value="PARKED_IN_CS">Parked in charging station</option>
 				<option value="STOPPED_IN_GARDEN">Stopped in garden</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="inactiveReasonType">
+		<item-type>String</item-type>
+		<label>Inactive Reason</label>
+		<description>The current reason for being inactive</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No inactive reason</option>
+				<option value="PLANNING">The mower is planning a path or a work area</option>
+				<option value="SEARCHING_FOR_SATELLITES">Waiting for fix when using EPOS</option>
 			</options>
 		</state>
 	</channel-type>
@@ -193,18 +438,36 @@
 				<option value="IN_OPERATION">Working</option>
 				<option value="WAIT_UPDATING">Downloading new firmware</option>
 				<option value="WAIT_POWER_UP">Booting mower</option>
-				<option value="RESTRICTED_NONE">Waiting</option>
+				<option value="RESTRICTED_NONE">No restricted reason</option>
 				<option value="RESTRICTED_WEEK_SCHEDULE">Restricted by week schedule</option>
 				<option value="RESTRICTED_PARK_OVERRIDE">Forced to park</option>
 				<option value="RESTRICTED_SENSOR">Restricted by sensor</option>
 				<option value="RESTRICTED_DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="RESTRICTED_FOTA">Restricted by FOTA transfer</option>
+				<option value="RESTRICTED_FROST">Restricted by frost sensor</option>
+				<option value="RESTRICTED_ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="RESTRICTED_EXTERNAL">Restricted by external reason</option>
 				<option value="OFF">Off</option>
-				<option value="STOPPED">Stopped- Manual intervention required</option>
+				<option value="STOPPED">Stopped: Manual intervention required</option>
 				<option value="ERROR">Error</option>
 				<option value="FATAL_ERROR">Fatal error</option>
 				<option value="ERROR_AT_POWER_UP">Boot error</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="workAreaIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the active work area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workAreaType">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the active work area</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastUpdateType">
@@ -235,6 +498,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="errorConfirmableType">
+		<item-type>Switch</item-type>
+		<label>Error Confirmable</label>
+		<description>If the mower has an Error Code this attribute states if the error is confirmable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="plannerNextStartTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Next Auto Start</label>
@@ -250,17 +520,246 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="calendarTasksType">
+	<channel-type id="plannerRestrictedReasonType">
 		<item-type>String</item-type>
-		<label>Planner Info JSON</label>
-		<description>The channel providing a JSON with the information about the planner tasks.</description>
+		<label>Restricted Reason</label>
+		<description>The channel providing an reason that restrics current planner operation.</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No restricted reason</option>
+				<option value="WEEK_SCHEDULE">Restricted by week schedule</option>
+				<option value="PARK_OVERRIDE">Forced to park</option>
+				<option value="SENSOR">Restricted by sensor</option>
+				<option value="DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="FOTA">Restricted by FOTA transfer</option>
+				<option value="FROST">Restricted by frost sensor</option>
+				<option value="ALL_WORK_AREAS_COMPLETED">Restricted: All work areas completed</option>
+				<option value="EXTERNAL">Restricted by external reason</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plannerExternalReasonType">
+		<item-type>Number</item-type>
+		<label>External Reason</label>
+		<description>The channel providing an external reason that restrics current planner operation.</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="settingCuttingHeightType">
+		<item-type>Number</item-type>
+		<label>Cutting Height</label>
+		<description>Prescaled cutting height, Range: 1-9</description>
+	</channel-type>
+
+	<channel-type id="settingHeadlightModeType">
+		<item-type>String</item-type>
+		<label>Headlight Mode</label>
+		<description>Information about headlights</description>
+	</channel-type>
+
+	<channel-type id="statCuttingBladeUsageTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Cutting Blade Usage Time</label>
+		<description>The time since the last reset of the cutting blade usage counter</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfChargingCyclesType">
+		<item-type>Number</item-type>
+		<label>Number of Charging Cycles</label>
+		<description>Number of charging cycles</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfCollisionsType">
+		<item-type>Number</item-type>
+		<label>Number of Collisions</label>
+		<description>The total number of collisions</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalChargingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Charging Time</label>
+		<description>Total charging time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Cutting Time</label>
+		<description>Total cutting time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Cutting Time</label>
+		<description>Total cutting time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="statTotalDriveDistanceType">
+		<item-type>Number:Length</item-type>
+		<label>Total Drive Distance</label>
+		<description>Total driven distance</description>
+		<state readOnly="true" pattern="%.1f km"/>
+	</channel-type>
+
+	<channel-type id="statTotalRunningTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Running Time</label>
+		<description>The total running time (the wheel motors have been running)</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Searching Time</label>
+		<description>The total searching time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Searching Time</label>
+		<description>The total searching time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="positionType">
 		<item-type>Location</item-type>
 		<label>GPS Position</label>
 		<description>The channel providing a waypoint of the mower's activity.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Calendar Tasks -->
+	<channel-type id="calendarTasksStartType">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Start Time</label>
+		<description>Start time relative to midnight</description>
+		<state pattern="%d min"/>
+	</channel-type>
+	<channel-type id="calendarTasksDurationType">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration time</description>
+		<state pattern="%d min"/>
+	</channel-type>
+	<channel-type id="calendarTasksMondayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Mondays</label>
+		<description>Enabled on Mondays</description>
+	</channel-type>
+	<channel-type id="calendarTasksTuesdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Tuesdays</label>
+		<description>Enabled on Tuesdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksWednesdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Wednesdays</label>
+		<description>Enabled on Wednesdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksThursdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Thursdays</label>
+		<description>Enabled on Thursdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksFridayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Fridays</label>
+		<description>Enabled on Fridays</description>
+	</channel-type>
+	<channel-type id="calendarTasksSaturdayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Saturdays</label>
+		<description>Enabled on Saturdays</description>
+	</channel-type>
+	<channel-type id="calendarTasksSundayType">
+		<item-type>Switch</item-type>
+		<label>Enabled on Sundays</label>
+		<description>Enabled on Sundays</description>
+	</channel-type>
+	<channel-type id="calendarTasksWorkAreaIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id of Calendar</label>
+		<description>Work Area Id mapped to this calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Stayout Zones -->
+	<channel-type id="zoneDirtyType">
+		<item-type>Switch</item-type>
+		<label>Stayout zones Dirty Flag</label>
+		<description>If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable
+			or disable a stay-out zone.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneIdType">
+		<item-type>String</item-type>
+		<label>Stayout Zone Id</label>
+		<description>Id of the Stayout zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneNameType">
+		<item-type>String</item-type>
+		<label>Stayout Zone Name</label>
+		<description>The name of the Stayout zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneEnabledType">
+		<item-type>Switch</item-type>
+		<label>Stayout Zone Enabled</label>
+		<description>If the Stayout zone is enabled, the Automower® will not access the zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Work Areas -->
+	<channel-type id="workareasIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasNameType">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the work area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasCuttingHeightType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cutting height in percent</label>
+		<description>Cutting height in percent. 0-100</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="workareasEnabledType">
+		<item-type>Switch</item-type>
+		<label>Work Area Enabled</label>
+		<description>If the work area is enabled or disabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareasProgressType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Work Area Progress</label>
+		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only.</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="workareasLastTimeCompletedType">
+		<item-type>DateTime</item-type>
+		<label>Last Time Completed</label>
+		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -302,4 +801,9 @@
 		<description>Park and pause the mower schedule until manual resume</description>
 	</channel-type>
 
+	<channel-type id="confirmError">
+		<item-type>Switch</item-type>
+		<label>Confirm Error</label>
+		<description>Confirm current non fatal error</description>
+	</channel-type>
 </thing:thing-descriptions>
