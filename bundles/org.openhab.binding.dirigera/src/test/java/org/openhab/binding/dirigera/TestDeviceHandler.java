@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.handler.AirQualityHandler;
 import org.openhab.binding.dirigera.internal.handler.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
@@ -55,6 +56,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -507,5 +509,60 @@ class TestDeviceHandler {
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
         assertEquals(85, ((QuantityType) batteryState).intValue(), "Battery level");
+    }
+
+    @Test
+    void testAirQuality() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_AIR_QUALITY, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        AirQualityHandler handler = new AirQualityHandler(thing, AIR_QUALITY_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "f80cac12-65a4-47b4-9f68-a0456a349a43_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+
+        // test ota & battery
+        State otaStatus = callback.getState("dirigera:air-quality:test-device:ota-status");
+        assertNotNull(otaStatus);
+        assertTrue(otaStatus instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
+        State otaState = callback.getState("dirigera:air-quality:test-device:ota-state");
+        assertNotNull(otaState);
+        assertTrue(otaState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
+        State otaProgess = callback.getState("dirigera:air-quality:test-device:ota-progress");
+        assertNotNull(otaProgess);
+        assertTrue(otaProgess instanceof QuantityType);
+        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+
+        State temperatureState = callback.getState("dirigera:air-quality:test-device:temperature");
+        assertNotNull(temperatureState);
+        assertTrue(temperatureState instanceof QuantityType);
+        assertTrue(((QuantityType) temperatureState).getUnit().equals(SIUnits.CELSIUS));
+        assertEquals(20, ((QuantityType) temperatureState).intValue(), "Temperature");
+        State humidityState = callback.getState("dirigera:air-quality:test-device:humidity");
+        assertNotNull(humidityState);
+        assertTrue(humidityState instanceof QuantityType);
+        assertTrue(((QuantityType) humidityState).getUnit().equals(Units.PERCENT));
+        assertEquals(76, ((QuantityType) humidityState).intValue(), "Hunidity");
+        State ppmState = callback.getState("dirigera:air-quality:test-device:particulate-matter");
+        assertNotNull(ppmState);
+        assertTrue(ppmState instanceof QuantityType);
+        assertTrue(((QuantityType) ppmState).getUnit().equals(Units.MICROGRAM_PER_CUBICMETRE));
+        assertEquals(11, ((QuantityType) ppmState).intValue(), "ppm");
+        State vocState = callback.getState("dirigera:air-quality:test-device:voc-index");
+        assertNotNull(vocState);
+        assertTrue(vocState instanceof QuantityType);
+        assertTrue(((QuantityType) vocState).getUnit().toString().equals("mg/m³"));
+        assertEquals(100, ((QuantityType) vocState).intValue(), "VOC Index");
     }
 }

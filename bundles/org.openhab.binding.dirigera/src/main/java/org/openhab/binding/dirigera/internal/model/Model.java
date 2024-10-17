@@ -157,7 +157,6 @@ public class Model {
      * @return ThingTypeUID
      */
     public synchronized ThingTypeUID identifyDevice(String id) {
-        logger.info("DIRIGERA MODEL identify thingtype for {}", id);
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
             Iterator<Object> entries = devices.iterator();
@@ -175,12 +174,8 @@ public class Model {
                                     String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
                                     switch (colorMode) {
                                         case "color":
-                                            logger.info("DIRIGERA MODEL identified {} for {}",
-                                                    THING_TYPE_COLOR_LIGHT.toString(), id);
                                             return THING_TYPE_COLOR_LIGHT;
                                         case "temperature":
-                                            logger.info("DIRIGERA MODEL identified {} for {}",
-                                                    THING_TYPE_TEMPERATURE_LIGHT.toString(), id);
                                             return THING_TYPE_TEMPERATURE_LIGHT;
                                     }
                                 }
@@ -194,12 +189,8 @@ public class Model {
                                     return THING_TYPE_MOTION_SENSOR;
                                 }
                             case DEVICE_TYPE_LIGHT_SENSOR:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_LIGHT_SENSOR.toString(),
-                                        id);
                                 return THING_TYPE_LIGHT_SENSOR;
                             case DEVICE_TYPE_CONTACT_SENSOR:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_CONTACT_SENSOR.toString(),
-                                        id);
                                 return THING_TYPE_CONTACT_SENSOR;
                             case DEVICE_TYPE_OUTLET:
                                 // if product code is E2206 (INSPELNING) plug contains an additional light sensor!
@@ -210,15 +201,13 @@ public class Model {
                                     return THING_TYPE_PLUG;
                                 }
                             case DEVICE_TYPE_SPEAKER:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_SPEAKER.toString(), id);
                                 return THING_TYPE_SPEAKER;
                             case DEVICE_TYPE_REPEATER:
-                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_REPEATER.toString(), id);
                                 return THING_TYPE_REPEATER;
                             case DEVICE_TYPE_LIGHT_CONTROLLER:
-                                logger.info("DIRIGERA MODEL identified {} for {}",
-                                        THING_TYPE_LIGHT_CONTROLLER.toString(), id);
                                 return THING_TYPE_LIGHT_CONTROLLER;
+                            case DEVICE_TYPE_ENVIRONMENT_SENSOR:
+                                return THING_TYPE_AIR_QUALITY;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);
