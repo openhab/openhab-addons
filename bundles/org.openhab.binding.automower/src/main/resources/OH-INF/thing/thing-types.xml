@@ -191,6 +191,7 @@
 			<channel id="park" typeId="park"/>
 			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
 			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
+			<channel id="confirm_error" typeId="confirmError"/>
 
 			<!-- Positions -->
 			<channel id="last-position" typeId="positionType">
@@ -798,5 +799,11 @@
 		<item-type>Switch</item-type>
 		<label>Park and Pause the Schedule</label>
 		<description>Park and pause the mower schedule until manual resume</description>
+	</channel-type>
+
+	<channel-type id="confirmError">
+		<item-type>Switch</item-type>
+		<label>Confirm Error</label>
+		<description>Confirm current non fatal error</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -115,6 +115,17 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
+    public void sendConfirmError(String appKey, String token, String id) throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/errors/confirm";
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
     private ContentResponse executeRequest(String appKey, String token, final Request request)
             throws AutomowerCommunicationException {
         request.timeout(10, TimeUnit.SECONDS);

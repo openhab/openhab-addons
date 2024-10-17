@@ -168,4 +168,14 @@ public class AutomowerBridge {
 
         automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, request);
     }
+
+    /**
+     * Confirm current non fatal error on the mower
+     *
+     * @param id The id of the mower
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerConfirmError(String id) throws AutomowerCommunicationException {
+        automowerApi.sendConfirmError(appKey, authenticate().getAccessToken(), id);
+    }
 }

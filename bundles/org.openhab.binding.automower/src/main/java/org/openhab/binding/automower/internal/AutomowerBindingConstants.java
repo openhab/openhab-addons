@@ -221,6 +221,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_COMMAND_PARK = GROUP_COMMANDS + "park";
     public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMANDS + "park_until_next_schedule";
     public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMANDS + "park_until_further_notice";
+    public static final String CHANNEL_COMMAND_CONFIRM_ERROR = GROUP_COMMANDS + "confirm_error";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
