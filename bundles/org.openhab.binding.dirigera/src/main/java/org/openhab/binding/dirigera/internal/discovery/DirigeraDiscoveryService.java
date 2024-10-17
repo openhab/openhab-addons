@@ -51,7 +51,7 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     public synchronized void gatewayDiscovered(String ip, Map<String, Object> properties) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_GATEWAY, ip.replace(".", "_"))).withLabel("DIRIGERA Gateway " + ip)
+                .create(new ThingUID(THING_TYPE_GATEWAY, ip.replace(".", "-"))).withLabel("DIRIGERA Gateway " + ip)
                 .withRepresentationProperty(PROPERTY_IP_ADDRESS).withProperties(properties).build();
         logger.info("DIRIGERA DISCOVERY gateway type {} uid {} discovered - known {}",
                 discoveryResult.getThingTypeUID(), discoveryResult.getThingUID(), discoveryResult.getFlag());
@@ -60,6 +60,10 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     public void deviceDiscovered(DiscoveryResult result) {
         thingDiscovered(result);
+    }
+
+    public void deviceRemoved(DiscoveryResult result) {
+        thingRemoved(result.getThingUID());
     }
 
     @Override
