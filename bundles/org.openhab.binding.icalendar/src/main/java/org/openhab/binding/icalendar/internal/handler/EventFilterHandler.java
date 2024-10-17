@@ -30,6 +30,7 @@ import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateList
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
 import org.openhab.binding.icalendar.internal.logic.Event;
 import org.openhab.binding.icalendar.internal.logic.EventTextFilter;
+import org.openhab.binding.icalendar.internal.logic.EventTimeFilter;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Wodniok - Initial Contribution
  * @author Michael Wodniok - Fixed subsecond search if rounding to unit
+ * @author Christian Heinemann - Introduction of configuration 'datetimeMode'
  */
 @NonNullByDefault
 public class EventFilterHandler extends BaseThingHandler implements CalendarUpdateListener {
@@ -278,10 +280,11 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
             Instant reference = Instant.now();
             TimeMultiplicator multiplicator = null;
-            EventTextFilter filter = null;
+            EventTextFilter eventTextFilter = null;
             int maxEvents;
             Instant begin = Instant.EPOCH;
             Instant end = Instant.ofEpochMilli(Long.MAX_VALUE);
+            final EventTimeFilter eventTimeFilter;
 
             try {
                 String textFilterValue = config.textEventValue;
@@ -295,7 +298,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                         EventTextFilter.Field textFilterField = EventTextFilter.Field.valueOf(textEventField);
                         EventTextFilter.Type textFilterType = EventTextFilter.Type.valueOf(textValueType);
 
-                        filter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
+                        eventTextFilter = new EventTextFilter(textFilterField, textFilterValue, textFilterType);
                     } catch (IllegalArgumentException e2) {
                         throw new ConfigBrokenException("textEventField or textValueType are not set properly.");
                     }
@@ -352,13 +355,16 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                     }
                     end = reference.plusSeconds(datetimeEnd.longValue() * multiplicator.getMultiplier());
                 }
+
+                eventTimeFilter = selectEventTimeFilterByConfigValue(config.datetimeMode);
             } catch (ConfigBrokenException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
 
             synchronized (resultChannels) {
-                List<Event> results = cal.getFilteredEventsBetween(begin, end, filter, maxEvents);
+                List<Event> results = cal.getFilteredEventsBetween(begin, end, eventTimeFilter, eventTextFilter,
+                        maxEvents);
                 for (int position = 0; position < resultChannels.size(); position++) {
                     ResultChannelSet channels = resultChannels.get(position);
                     if (position < results.size()) {
@@ -392,5 +398,19 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
             currentUpdateFuture.cancel(true);
         }
         updateFuture = scheduler.scheduleWithFixedDelay(this::updateStates, refreshTime, refreshTime, TimeUnit.MINUTES);
+    }
+
+    private EventTimeFilter selectEventTimeFilterByConfigValue(@Nullable String datetimeMode)
+            throws ConfigBrokenException {
+        if (datetimeMode == null) {
+            return EventTimeFilter.searchByStart();
+        }
+
+        return switch (datetimeMode) {
+            case "START" -> EventTimeFilter.searchByStart();
+            case "END" -> EventTimeFilter.searchByEnd();
+            case "ACTIVE" -> EventTimeFilter.searchByActive();
+            default -> throw new ConfigBrokenException("datetimeMode is not set properly.");
+        };
     }
 }
