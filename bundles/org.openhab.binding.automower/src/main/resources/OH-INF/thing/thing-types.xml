@@ -49,6 +49,8 @@
 			<channel id="activity" typeId="activityType"/>
 			<channel id="inactive-reason" typeId="inactiveReasonType"/>
 			<channel id="state" typeId="stateType"/>
+			<channel id="work-area-id" typeId="workAreaIdType"/>
+			<channel id="work-area" typeId="workAreaType"/>
 			<channel id="last-update" typeId="lastUpdateType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="error-code" typeId="errorCodeType"/>
@@ -451,6 +453,20 @@
 				<option value="ERROR_AT_POWER_UP">Boot error</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="workAreaIdType">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the active work area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workAreaType">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the active work area</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastUpdateType">

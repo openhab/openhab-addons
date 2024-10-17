@@ -129,7 +129,7 @@ public class AutomowerBridge {
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerCalendarTask(String id, Long workAreaId, CalendarTask calendarTask)
+    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId, CalendarTask calendarTask)
             throws AutomowerCommunicationException {
         List<CalendarTask> tasks = new ArrayList<>();
         tasks.add(calendarTask);
@@ -145,7 +145,7 @@ public class AutomowerBridge {
 
         logger.debug("request '{}'", gson.toJson(request));
 
-        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, workAreaId, request);
+        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId, request);
     }
 
     /**

@@ -342,9 +342,15 @@ public class AutomowerHandler extends BaseThingHandler {
                 && (mower.getAttributes().getCalendar() != null)
                 && (mower.getAttributes().getCalendar().getTasks() != null)
                 && (mower.getAttributes().getCapabilities() != null) && (mower.getAttributes().getMower() != null)
+<<<<<<< HEAD
                 && (mower.getAttributes().getPlanner() != null)
                 && (mower.getAttributes().getPlanner().getOverride() != null)
                 && (mower.getAttributes().getSettings() != null) && (mower.getAttributes().getStatistics() != null));
+=======
+                && (mower.getAttributes().getPlanner() != null) && (mower.getAttributes().getPositions() != null)
+                && (mower.getAttributes().getSettings() != null) && (mower.getAttributes().getStatistics() != null)
+                && (mower.getAttributes().getSystem() != null));
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
     }
 
     private boolean isConnected(@Nullable Mower mower) {
@@ -479,6 +485,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
             }
         }
+<<<<<<< HEAD
     }
 
     /**
@@ -581,6 +588,8 @@ public class AutomowerHandler extends BaseThingHandler {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
             }
         }
+=======
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
         updateAutomowerState();
     }
 
@@ -803,58 +812,66 @@ public class AutomowerHandler extends BaseThingHandler {
         String param = channelIDSplit[1];
         logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
                 command.toString());
-
-        if (mowerState != null) {
+        if (isValidResult(mowerState)) {
             CalendarTask calendarTask = mowerState.getAttributes().getCalendar().getTasks().get(index);
+            if (calendarTask != null) {
+                if (command instanceof DecimalType cmd) {
+                    if ("start".equals(param)) {
+                        calendarTask.setStart((short) cmd.intValue());
+                    } else if ("duration".equals(param)) {
+                        calendarTask.setDuration((short) cmd.intValue());
+                    }
+                } else if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("min");
+                    if (cmd != null) {
+                        if ("start".equals(param)) {
+                            calendarTask.setStart(cmd.shortValue());
+                        } else if ("duration".equals(param)) {
+                            calendarTask.setDuration(cmd.shortValue());
+                        }
+                    }
+                } else if (command instanceof OnOffType cmd) {
+                    boolean day = ((cmd == OnOffType.ON) ? true : false);
 
-            if (command instanceof DecimalType cmd) {
-                if ("start".equals(param)) {
-                    calendarTask.setStart((short) cmd.intValue());
-                } else if ("duration".equals(param)) {
-                    calendarTask.setDuration((short) cmd.intValue());
+                    if ("monday".equals(param)) {
+                        calendarTask.setMonday(day);
+                    } else if ("tuesday".equals(param)) {
+                        calendarTask.setTuesday(day);
+                    } else if ("wednesday".equals(param)) {
+                        calendarTask.setWednesday(day);
+                    } else if ("thursday".equals(param)) {
+                        calendarTask.setThursday(day);
+                    } else if ("friday".equals(param)) {
+                        calendarTask.setFriday(day);
+                    } else if ("saturday".equals(param)) {
+                        calendarTask.setSaturday(day);
+                    } else if ("sunday".equals(param)) {
+                        calendarTask.setSunday(day);
+                    }
                 }
-            } else if (command instanceof QuantityType cmd) {
-                if ("start".equals(param)) {
-                    calendarTask.setStart(cmd.toUnit("min").shortValue());
-                } else if ("duration".equals(param)) {
-                    calendarTask.setDuration(cmd.toUnit("min").shortValue());
-                }
-            } else if (command instanceof OnOffType cmd) {
-                boolean day = ((cmd == OnOffType.ON) ? true : false);
 
-                if ("monday".equals(param)) {
-                    calendarTask.setMonday(day);
-                } else if ("tuesday".equals(param)) {
-                    calendarTask.setTuesday(day);
-                } else if ("wednesday".equals(param)) {
-                    calendarTask.setWednesday(day);
-                } else if ("thursday".equals(param)) {
-                    calendarTask.setThursday(day);
-                } else if ("friday".equals(param)) {
-                    calendarTask.setFriday(day);
-                } else if ("saturday".equals(param)) {
-                    calendarTask.setSaturday(day);
-                } else if ("sunday".equals(param)) {
-                    calendarTask.setSunday(day);
+                String id = automowerId.get();
+
+                try {
+                    AutomowerBridge automowerBridge = getAutomowerBridge();
+                    if (automowerBridge != null) {
+                        automowerBridge.sendAutomowerCalendarTask(id,
+                                mowerState.getAttributes().getCapabilities().hasWorkAreas(),
+                                calendarTask.getWorkAreaId(), calendarTask);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/conf-error-no-bridge");
+                    }
+                } catch (AutomowerCommunicationException e) {
+                    logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
                 }
             }
-
-            String id = automowerId.get();
-            try {
-                AutomowerBridge automowerBridge = getAutomowerBridge();
-                if (automowerBridge != null) {
-                    automowerBridge.sendAutomowerCalendarTask(id, calendarTask.getWorkAreaId(), calendarTask);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/conf-error-no-bridge");
-                }
-            } catch (AutomowerCommunicationException e) {
-                logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
-            }
-
-            updateAutomowerState();
         }
+<<<<<<< HEAD
 >>>>>>> implementation of CalendarTask POST
+=======
+        updateAutomowerState();
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
     }
 
     /**
@@ -870,7 +887,7 @@ public class AutomowerHandler extends BaseThingHandler {
         logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
                 command.toString());
 
-        if (mowerState != null) {
+        if (isValidResult(mowerState)) {
             Settings settings = mowerState.getAttributes().getSettings();
 
             if (command instanceof DecimalType cmd) {
@@ -879,9 +896,13 @@ public class AutomowerHandler extends BaseThingHandler {
                 }
             } else if (command instanceof StringType cmd) {
                 if (CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME.equals(channelID)) {
-                    Headlight headlight = new Headlight();
-                    headlight.setHeadlightMode(HeadlightMode.valueOf(cmd.toString()));
-                    settings.setHeadlight(headlight);
+                    try {
+                        Headlight headlight = new Headlight();
+                        headlight.setHeadlightMode(HeadlightMode.valueOf(cmd.toString()));
+                        settings.setHeadlight(headlight);
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Invalid HeadlightMode: {}, Error: {}", cmd.toString(), e.getMessage());
+                    }
                 }
             }
 
@@ -906,6 +927,7 @@ public class AutomowerHandler extends BaseThingHandler {
         return "RESTRICTED_" + reason.name();
     }
 
+<<<<<<< HEAD
     private @Nullable String getErrorMessage(int errorCode) {
         return ERROR.get(errorCode);
     }
@@ -917,12 +939,23 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (workArea.getWorkAreaId() == workAreaId) {
                     return workArea;
                 }
+=======
+    private @Nullable String workAreaName(Mower mower, long workAreaId) {
+        List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
+        for (int i = 0; i < workAreas.size(); i++) {
+            if (workAreas.get(i).getWorkAreaId() == workAreaId) {
+                return workAreas.get(i).getName();
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
             }
         }
         return null;
     }
 
+<<<<<<< HEAD
     private void updateChannelState(@Nullable Mower mower, @Nullable MowerMessages mowerMessages) {
+=======
+    private void updateChannelState(@Nullable Mower mower) {
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
         if (isValidResult(mower)) {
             Capabilities capabilities = mower.getAttributes().getCapabilities();
 
@@ -1076,6 +1109,7 @@ public class AutomowerHandler extends BaseThingHandler {
              * Now update the state of the channels
              */
             updateState(CHANNEL_STATUS_NAME, new StringType(mower.getAttributes().getSystem().getName()));
+
             updateState(CHANNEL_STATUS_MODE, new StringType(mower.getAttributes().getMower().getMode().name()));
             updateState(CHANNEL_STATUS_ACTIVITY, new StringType(mower.getAttributes().getMower().getActivity().name()));
             updateState(CHANNEL_STATUS_INACTIVE_REASON,
@@ -1088,6 +1122,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         new StringType(restrictedState(mower.getAttributes().getPlanner().getRestrictedReason())));
             }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             if (capabilities.hasWorkAreas()) {
@@ -1107,6 +1142,14 @@ public class AutomowerHandler extends BaseThingHandler {
                 } else {
                     updateState(CHANNEL_STATUS_WORK_AREA_ID, UnDefType.NULL);
                 }
+=======
+            updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(mower.getAttributes().getMower().getWorkAreaId()));
+            if (workAreaName(mower, mower.getAttributes().getMower().getWorkAreaId()) == null) {
+                updateState(CHANNEL_STATUS_WORK_AREA, UnDefType.NULL);
+            } else {
+                updateState(CHANNEL_STATUS_WORK_AREA,
+                        new StringType(workAreaName(mower, mower.getAttributes().getMower().getWorkAreaId())));
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
             }
 
             updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
@@ -1166,10 +1209,15 @@ public class AutomowerHandler extends BaseThingHandler {
                         new DateTimeType(toZonedDateTime(errorCodeTimestamp, mowerZoneId)));
             }
 
+<<<<<<< HEAD
             if (capabilities.canConfirmError()) {
                 updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE,
                         OnOffType.from(mower.getAttributes().getMower().getIsErrorConfirmable()));
             }
+=======
+            updateState(CHANNEL_STATUS_ERROR_CONFIRMABLE,
+                    OnOffType.from(mower.getAttributes().getMower().getIsErrorConfirmable()));
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
 
             long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
             // If next start timestamp is 0 it means the mower should start now, so using current timestamp
@@ -1450,8 +1498,7 @@ public class AutomowerHandler extends BaseThingHandler {
                         new DecimalType(positions.get(i).getLongitude())));
             }
 
-            updateState(CHANNEL_STAYOUTZONES_DIRTY,
-                    OnOffType.from(mower.getAttributes().getStayOutZones().isDirty() == true));
+            updateState(CHANNEL_STAYOUTZONES_DIRTY, OnOffType.from(mower.getAttributes().getStayOutZones().isDirty()));
 
             /*
              * updateState(CHANNEL_CALENDAR_TASKS,
@@ -1474,14 +1521,13 @@ public class AutomowerHandler extends BaseThingHandler {
                         new QuantityType<>(calendarTasks.get(i).getStart(), Units.MINUTE));
                 updateState(CHANNEL_CALENDARTASKS.get(j++),
                         new QuantityType<>(calendarTasks.get(i).getDuration(), Units.MINUTE));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getMonday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getTuesday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++),
-                        OnOffType.from(calendarTasks.get(i).getWednesday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getThursday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getFriday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSaturday() == true));
-                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSunday() == true));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getMonday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getTuesday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getWednesday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getThursday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getFriday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSaturday()));
+                updateState(CHANNEL_CALENDARTASKS.get(j++), OnOffType.from(calendarTasks.get(i).getSunday()));
                 if (calendarTasks.get(i).getWorkAreaId() == null) {
                     updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
                 } else {
@@ -1498,7 +1544,7 @@ public class AutomowerHandler extends BaseThingHandler {
             for (int i = 0; i < stayOutZones.size() && j < CHANNEL_STAYOUTZONES.size(); i++) {
                 updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getId()));
                 updateState(CHANNEL_STAYOUTZONES.get(j++), new StringType(stayOutZones.get(i).getName()));
-                updateState(CHANNEL_STAYOUTZONES.get(j++), OnOffType.from(stayOutZones.get(i).isEnabled() == true));
+                updateState(CHANNEL_STAYOUTZONES.get(j++), OnOffType.from(stayOutZones.get(i).isEnabled()));
             }
             // clear remaining channels
             for (; j < CHANNEL_STAYOUTZONES.size(); j++) {
@@ -1515,7 +1561,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 updateState(CHANNEL_WORKAREAS.get(j++), new StringType(workAreas.get(i).getName()));
                 updateState(CHANNEL_WORKAREAS.get(j++),
                         new QuantityType<>(workAreas.get(i).getCuttingHeight(), Units.PERCENT));
-                updateState(CHANNEL_WORKAREAS.get(j++), OnOffType.from(workAreas.get(i).isEnabled() == true));
+                updateState(CHANNEL_WORKAREAS.get(j++), OnOffType.from(workAreas.get(i).isEnabled()));
                 if (workAreas.get(i).getProgress() != null) {
                     updateState(CHANNEL_WORKAREAS.get(j++),
                             new QuantityType<>(workAreas.get(i).getProgress(), Units.PERCENT));
@@ -1566,6 +1612,7 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
         Map<String, String> properties = editProperties();
 
+<<<<<<< HEAD
         properties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
 
         if (mower.getAttributes() != null) {
@@ -1592,6 +1639,30 @@ public class AutomowerHandler extends BaseThingHandler {
                         mower.getAttributes().getCapabilities().hasWorkAreas().toString());
             }
 >>>>>>> WorkAreas and StayOutZones
+=======
+        if (isValidResult(mower)) {
+            properties.put(AutomowerBindingConstants.AUTOMOWER_ID, mower.getId());
+
+            properties.put(AutomowerBindingConstants.AUTOMOWER_SERIAL_NUMBER,
+                    mower.getAttributes().getSystem().getSerialNumber());
+            properties.put(AutomowerBindingConstants.AUTOMOWER_MODEL, mower.getAttributes().getSystem().getModel());
+            properties.put(AutomowerBindingConstants.AUTOMOWER_NAME, mower.getAttributes().getSystem().getName());
+
+            logger.warn("mower.getAttributes().getCapabilities(): {}, canConfirmError(): {}",
+                    mower.getAttributes().getCapabilities(),
+                    (mower.getAttributes().getCapabilities().canConfirmError() ? "yes" : "no"));
+
+            properties.put(AutomowerBindingConstants.AUTOMOWER_CAN_CONFIRM_ERROR,
+                    (mower.getAttributes().getCapabilities().canConfirmError() ? "yes" : "no"));
+            properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_HEADLIGHTS,
+                    (mower.getAttributes().getCapabilities().hasHeadlights() ? "yes" : "no"));
+            properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_POSITION,
+                    (mower.getAttributes().getCapabilities().hasPosition() ? "yes" : "no"));
+            properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_STAY_OUT_ZONES,
+                    (mower.getAttributes().getCapabilities().hasStayOutZones() ? "yes" : "no"));
+            properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_WORK_AREAS,
+                    (mower.getAttributes().getCapabilities().hasWorkAreas() ? "yes" : "no"));
+>>>>>>> added CHANNEL_STATUS_WORK_AREA_ID channels
         }
     }
 

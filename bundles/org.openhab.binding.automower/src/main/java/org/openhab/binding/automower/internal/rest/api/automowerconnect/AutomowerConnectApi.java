@@ -83,13 +83,13 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
-    public void sendCalendar(String appKey, String token, String id, Long workAreaId, MowerCalendardRequest calendar)
-            throws AutomowerCommunicationException {
+    public void sendCalendar(String appKey, String token, String id, boolean hasWorkAreas, Long workAreaId,
+            MowerCalendardRequest calendar) throws AutomowerCommunicationException {
         String url;
-        if (workAreaId == null) {
-            url = getBaseUrl() + "/mowers/" + id + "/calendar";
-        } else {
+        if (hasWorkAreas) {
             url = getBaseUrl() + "/mowers/" + id + "/workAreas/" + workAreaId + "/calendar";
+        } else {
+            url = getBaseUrl() + "/mowers/" + id + "/calendar";
         }
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.POST);

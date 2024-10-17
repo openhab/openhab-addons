@@ -16,29 +16,29 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author Markus Pfleger - Initial contribution
  */
 public class Capabilities {
-    private Boolean canConfirmError;
-    private Boolean headlights;
-    private Boolean position;
-    private Boolean stayOutZones;
-    private Boolean workAreas;
+    private boolean canConfirmError;
+    private boolean headlights;
+    private boolean position;
+    private boolean stayOutZones;
+    private boolean workAreas;
 
-    public Boolean canConfirmError() {
+    public boolean canConfirmError() {
         return canConfirmError;
     }
 
-    public Boolean hasHeadlights() {
+    public boolean hasHeadlights() {
         return headlights;
     }
 
-    public Boolean hasPosition() {
+    public boolean hasPosition() {
         return position;
     }
 
-    public Boolean hasStayOutZones() {
+    public boolean hasStayOutZones() {
         return stayOutZones;
     }
 
-    public Boolean hasWorkAreas() {
+    public boolean hasWorkAreas() {
         return workAreas;
     }
 }

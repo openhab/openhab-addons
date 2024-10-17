@@ -43,6 +43,8 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_INACTIVE_REASON = GROUP_STATUS + "inactive-reason";
     public static final String CHANNEL_STATUS_STATE = GROUP_STATUS + "state";
     public static final String CHANNEL_STATUS_LAST_UPDATE = GROUP_STATUS + "last-update";
+    public static final String CHANNEL_STATUS_WORK_AREA_ID = GROUP_STATUS + "work-area-id";
+    public static final String CHANNEL_STATUS_WORK_AREA = GROUP_STATUS + "work-area";
     public static final String CHANNEL_STATUS_BATTERY = GROUP_STATUS + "battery";
     public static final String CHANNEL_STATUS_ERROR_CODE = GROUP_STATUS + "error-code";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = GROUP_STATUS + "error-timestamp";
