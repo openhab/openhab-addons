@@ -173,4 +173,11 @@
 		<state readOnly="true"/>
 		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
 	</channel-type>
+	<channel-type id="schema-date-time-ro">
+		<item-type>DateTime</item-type>
+		<label>Time Value</label>
+		<description>A time read from C.M.I. - Only the time is supplied, the date part is set to the current day.</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:tacmi:schemaApiDefaults"/>
+	</channel-type>
 </thing:thing-descriptions>
