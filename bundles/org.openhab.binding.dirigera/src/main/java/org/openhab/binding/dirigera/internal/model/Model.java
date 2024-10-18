@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
 public class Model {
     private final Logger logger = LoggerFactory.getLogger(Model.class);
 
-    public final static String REACHABLE = "isReachable";
-    public final static String ATTRIBUTES = "attributes";
-    public final static String SCENES = "scenes";
-    public final static String CUSTOM_NAME = "customName";
-    public final static String DEVICE_MODEL = "model";
-    public final static String DEVICE_TYPE = "deviceType";
+    public static final String REACHABLE = "isReachable";
+    public static final String ATTRIBUTES = "attributes";
+    public static final String SCENES = "scenes";
+    public static final String CUSTOM_NAME = "customName";
+    public static final String DEVICE_MODEL = "model";
+    public static final String DEVICE_TYPE = "deviceType";
 
     private JSONObject model = new JSONObject();
     private Gateway gateway;

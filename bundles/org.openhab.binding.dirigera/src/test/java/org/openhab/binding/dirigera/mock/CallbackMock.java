@@ -73,12 +73,10 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -118,68 +116,56 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void thingUpdated(Thing thing) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void validateConfigurationParameters(Thing thing, Map<String, Object> configurationParameters) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void validateConfigurationParameters(Channel channel, Map<String, Object> configurationParameters) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public @Nullable ConfigDescription getConfigDescription(ChannelTypeUID channelTypeUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public @Nullable ConfigDescription getConfigDescription(ThingTypeUID thingTypeUID) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void configurationUpdated(Thing thing) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void migrateThingType(Thing thing, ThingTypeUID thingTypeUID, Configuration configuration) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public void channelTriggered(Thing thing, ChannelUID channelUID, String event) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     public ChannelBuilder createChannelBuilder(ChannelUID channelUID, ChannelTypeUID channelTypeUID) {
-        // TODO Auto-generated method stub
         return ChannelBuilder.create(new ChannelUID("handler:test"));
     }
 
     @Override
     public ChannelBuilder editChannel(Thing thing, ChannelUID channelUID) {
-        // TODO Auto-generated method stub
         return ChannelBuilder.create(new ChannelUID("handler:test"));
     }
 
     @Override
     public List<ChannelBuilder> createChannelBuilders(ChannelGroupUID channelGroupUID,
             ChannelGroupTypeUID channelGroupTypeUID) {
-        // TODO Auto-generated method stub
         return List.of();
     }
 
     @Override
     public boolean isChannelLinked(ChannelUID channelUID) {
-        // TODO Auto-generated method stub
         return false;
     }
 
