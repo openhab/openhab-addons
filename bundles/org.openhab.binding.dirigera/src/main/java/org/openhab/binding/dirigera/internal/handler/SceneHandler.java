@@ -89,8 +89,7 @@ public class SceneHandler extends BaseDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
-            handleUpdate(values);
+            super.handleCommand(channelUID, command);
         } else if (CHANNEL_TRIGGER.equals(channelUID.getIdWithoutGroup())) {
             if (command instanceof DecimalType decimal) {
                 int commandNumber = decimal.intValue();

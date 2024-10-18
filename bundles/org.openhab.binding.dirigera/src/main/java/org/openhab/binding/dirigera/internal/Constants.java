@@ -126,8 +126,7 @@ public class Constants {
     public static final String CHANNEL_CURRENT = "ampere";
     public static final String CHANNEL_POTENTIAL = "voltage";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
-    public static final String CHANNEL_STATUS_LIGHT = "status-light";
-    public static final String CHANNEL_STATUS_BRIGHTNESS = "status-brightness";
+    public static final String CHANNEL_DISABLE_STATUS_LIGHT = "disable-light";
 
     // Speaker channels
     public static final String CHANNEL_PLAYER = "player";
@@ -185,10 +184,10 @@ public class Constants {
 
     public static final Map<String, String> SMART_PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "currentActivePower",
             CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL, "currentAmps", CHANNEL_CURRENT, "statusLight",
-            CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+            CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
             PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "statusLight",
-            CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+            CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
             PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);

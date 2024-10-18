@@ -25,7 +25,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SmartPlugHandler extends PlugHandler {
+public class SmartPlugHandler extends PowerPlugHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartPlugHandler.class);
 
     public SmartPlugHandler(Thing thing, Map<String, String> mapping) {
@@ -56,14 +55,7 @@ public class SmartPlugHandler extends PlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // handling done in PlugHandler - this handler only provides additional read-only channels
         super.handleCommand(channelUID, command);
-
-        // only handle RefreshType
-        if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-        }
     }
 
     @Override

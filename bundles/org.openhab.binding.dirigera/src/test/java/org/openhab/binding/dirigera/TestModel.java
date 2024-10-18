@@ -108,14 +108,9 @@ class TestModel {
         devices.forEach(device -> {
             String id = device.get(PROPERTY_DEVICE_ID).toString();
             if (deviceId.equals(id)) {
-                System.out.println("match");
                 Map origin = device;
-                System.out.println("Before: " + (new JSONObject(device)).toString());
-                System.out.println("Patch:  " + modelPatchData.toString());
                 origin.putAll(modelPatchData.toMap());
-                System.out.println("Merged: " + (new JSONObject(origin)).toString());
             } else {
-                System.out.println("miss");
             }
         });
     }
