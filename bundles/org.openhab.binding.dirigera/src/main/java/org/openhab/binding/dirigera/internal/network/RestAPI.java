@@ -149,8 +149,6 @@ public class RestAPI {
         try {
             ContentResponse response = httpClient.GET(imageURL);
             if (response.getStatus() == 200) {
-                logger.warn("DIRIGERA API Image call {} delivers {} {}", imageURL, response.getMediaType(),
-                        response.getContent().length);
                 String mimeType = response.getMediaType();
                 if (mimeType == null) {
                     mimeType = RawType.DEFAULT_MIME_TYPE;
