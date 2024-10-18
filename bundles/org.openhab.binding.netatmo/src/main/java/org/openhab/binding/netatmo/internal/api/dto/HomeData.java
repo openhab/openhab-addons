@@ -60,7 +60,7 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         private int thermSetpointDefaultDuration;
         private List<ThermProgram> schedules = List.of();
 
-        public Duration setpointDefaultDuration() {
+        public Duration getSetpointDefaultDuration() {
             return Duration.ofMinutes(thermSetpointDefaultDuration);
         }
 
