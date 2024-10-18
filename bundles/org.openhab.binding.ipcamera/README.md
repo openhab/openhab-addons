@@ -237,7 +237,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `enablePush`                  | Switch | RW | Allows the push notification features to be turned ON or OFF. |
 | `enableRecordings`          | Switch | RW |Turn the cameras internal recordings ON or OFF. |
 | `externalAlarmInput`        | Switch | R | Reflects the status of the alarm input terminals on some cameras. |
-| `externalAlarmInput2`       | Switch | R |  | Reflects the status of the alarm input 2 terminals on some cameras. |
+| `externalAlarmInput2`       | Switch | R |  Reflects the status of the alarm input 2 terminals on some cameras. |
 | `externalLight`              | Switch | RW |Some cameras have a dedicated relay output for turning lights on and off with. |
 | `externalMotion`             | Switch | RW |Can be used to inform the camera if it has motion in its view area. Handy if you own a PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
 | `faceDetected`               | Switch | R | When a camera detects a face (API cameras only) this switch will move to ON. |
@@ -250,7 +250,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `hlsUrl`                      | String | RW |The URL for the ipcamera.m3u8 file. |
 | `humanAlarm`                 | Switch | RW |When a camera detects a human this switch will turn ON. |
 | `imageUrl`                   | String | RW |The URL for the ipcamera.jpg file. |
-| `itemLeft`                   | Switch | R | | Will turn ON if an API camera detects an item has been left behind. |
+| `itemLeft`                   | Switch | R | Will turn ON if an API camera detects an item has been left behind. |
 | `itemTaken`                  | Switch | R | Will turn ON if an API camera detects an item has been stolen. |
 | `lastMotionType`            | String | RW |Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
 | `lastEventData`             | String | RW | Detailed information about the last smart alarm that can contain information like which Line number was crossed and in which direction. The channel `lastMotionType` will hold the name of the alarm that this data belongs to. |
@@ -280,6 +280,14 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `pollImage`                 | Switch | RW | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel. |
 | `whiteLED`                  | Dimmer | RW | Turn the visible white LED ON or OFF and if supported dim from 0-100%. |
 | `zoom`                       | Dimmer | RW | Works with ONVIF cameras that can be moved. |
+| `acceptedCardNumber` | String | R | This channel shows the last accepted access card number that opened the door. The channel doesn't show rejected/unauthorized cards. |
+| `unacceptedCardNumber` | String | R | This channel shows the last unaccepted access card number that was read. |
+| `doorUnlock` | Switch | RW | This channel could reflect door lock state and at the same time send commands to door lock. Note that under some conditions doorphone doesn't send "lock off" message, so it's better to add expiration timer to corresponding item. |
+| `doorContact` | Switch | R | Reflects door open/closed contact state. |
+| `exitButton` | Switch | R | Reflects exit button state. This could be used to check for exit button's long clicks/double clicks, so the button could control other gates connected to openHAB, or outdoor lights. |
+| `exitButtonEnable` | Switch | RW | This channel could be used to disable the exit button to provide additional security at night or when noone is home. |
+| `motionDetectionLevel` | Number | RW | Controls camera's built-in motion detection sensitivity. |
+| `magneticLockWarning` | Switch | R | This alarm will trigger if the door was opened while the lock is closed, signalling possible intrusion alarm. |
 
 ## Moving PTZ Cameras
 
@@ -378,6 +386,7 @@ There are a number of ways to use snapshots with this binding.
 
 - Use the cameras URL so it passes from the camera directly to your end device. ie a tablet.
 This is always the best option if it works.
+
 - Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
 The IP is for your openHAB server not the camera.
 If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
@@ -589,7 +598,6 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
         </div>
     </body>
 </html>
-
 ```
 
 ## How to Cast a Camera
