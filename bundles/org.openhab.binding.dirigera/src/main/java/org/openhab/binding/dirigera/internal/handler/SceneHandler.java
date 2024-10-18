@@ -60,19 +60,21 @@ public class SceneHandler extends BaseDeviceHandler {
     public void initialize() {
         // handle general initialize like setting bridge
         super.initialize();
-        JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
-        handleUpdate(values);
+        if (super.checkHandler()) {
+            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
+            handleUpdate(values);
 
-        if (values.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-            sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5, TimeUnit.MINUTES));
-        }
+            if (values.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5, TimeUnit.MINUTES));
+            }
 
-        // check if different undo duration is configured
-        if (values.has("undoAllowedDuration")) {
-            undoDuration = values.getInt("undoAllowedDuration");
+            // check if different undo duration is configured
+            if (values.has("undoAllowedDuration")) {
+                undoDuration = values.getInt("undoAllowedDuration");
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -50,6 +52,7 @@ import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.binding.dirigera.internal.network.RestAPI;
 import org.openhab.binding.dirigera.internal.network.Websocket;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -91,6 +94,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
     private final TimeZoneProvider timeZoneProvider;
+    private final ScheduledExecutorService sequentialScheduler = ThreadPoolManager
+            .getPoolBasedSequentialScheduledExecutorService("thingHandler", BINDING_ID);
 
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<RestAPI> api = Optional.empty();
@@ -103,6 +108,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Storage<String> storage;
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
+    private ArrayList<String> queue = new ArrayList<>();
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
@@ -130,7 +136,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void initialize() {
         // do this asynchronous in case of token and other parameters needs to be obtained via Rest API calls
-        scheduler.execute(this::doInitialize);
+        sequentialScheduler.execute(this::doInitialize);
     }
 
     private void doInitialize() {
@@ -224,8 +230,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
             // when done do:
-            modelUpdater = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 5, 5, TimeUnit.MINUTES));
-            heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
+            modelUpdater = Optional
+                    .of(sequentialScheduler.scheduleWithFixedDelay(this::update, 5, 5, TimeUnit.MINUTES));
+            heartbeat = Optional
+                    .of(sequentialScheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
 
             // update latest model data
             System.out.println("ID " + config.id);
@@ -566,43 +574,69 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public void websocketUpdate(JSONObject update) {
-        String type = update.getString("type");
-        switch (type) {
-            case EVENT_TYPE_STATE_CHANGE:
-                JSONObject data = update.getJSONObject("data");
-                String targetId = data.getString("id");
-                if (targetId != null) {
-                    if (targetId.equals(config.id)) {
-                        this.handleUpdate(data);
-                    } else {
-                        BaseDeviceHandler targetHandler = deviceTree.get(targetId);
-                        if (targetHandler != null && targetId != null) {
-                            targetHandler.handleUpdate(data);
+    public void websocketUpdate(String update) {
+        synchronized (queue) {
+            queue.add(update);
+        }
+        sequentialScheduler.schedule(this::doUpdate, 0, TimeUnit.SECONDS);
+    }
+
+    private void doUpdate() {
+        Instant startTime = Instant.now();
+        String json = "";
+        synchronized (queue) {
+            if (!queue.isEmpty()) {
+                json = queue.remove(0);
+            }
+        }
+        if (!json.isBlank()) {
+            JSONObject update = new JSONObject(json);
+            // First update device
+            String type = update.getString("type");
+            switch (type) {
+                case EVENT_TYPE_DEVICE_CHANGE:
+                    JSONObject data = update.getJSONObject("data");
+                    String targetId = data.getString("id");
+                    if (targetId != null) {
+                        if (targetId.equals(config.id)) {
+                            this.handleUpdate(data);
+                        } else {
+                            BaseDeviceHandler targetHandler = deviceTree.get(targetId);
+                            if (targetHandler != null && targetId != null) {
+                                targetHandler.handleUpdate(data);
+                            } else {
+                                logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
+                            }
+                            // special case: if custom name is changed in attributes force model update
+                            // in order to present the updated name in discovery
+                            model().checkForUpdate(data);
+                        }
+                    }
+                    logger.info("DIRIGERA HANDLER update performance - device update {}",
+                            Duration.between(startTime, Instant.now()).toMillis());
+                    model().patchDevice(update);
+                    break;
+                case EVENT_TYPE_SCENE_UPDATE:
+                    JSONObject sceneData = update.getJSONObject("data");
+                    String sceneId = sceneData.getString("id");
+                    if (sceneId != null) {
+                        BaseDeviceHandler targetHandler = deviceTree.get(sceneId);
+                        if (targetHandler != null && sceneId != null) {
+                            targetHandler.handleUpdate(sceneData);
                         } else {
                             logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
                         }
-                        // special case: if custom name is changed in attributes force model update
-                        // in order to present the updated name in discovery
-                        model().checkForUpdate(data);
                     }
-                }
-                break;
-            case EVENT_TYPE_SCENE_UPDATE:
-                JSONObject sceneData = update.getJSONObject("data");
-                String sceneId = sceneData.getString("id");
-                if (sceneId != null) {
-                    BaseDeviceHandler targetHandler = deviceTree.get(sceneId);
-                    if (targetHandler != null && sceneId != null) {
-                        targetHandler.handleUpdate(sceneData);
-                    } else {
-                        logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
-                    }
-                }
-                break;
-            default:
-                logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
+                    logger.info("DIRIGERA HANDLER update performance - device update {}",
+                            Duration.between(startTime, Instant.now()).toMillis());
+                    model().patchScene(update);
+                    break;
+                default:
+                    logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
+            }
         }
+        logger.info("DIRIGERA HANDLER update performance - total {}",
+                Duration.between(startTime, Instant.now()).toMillis());
     }
 
     private void handleUpdate(JSONObject data) {
