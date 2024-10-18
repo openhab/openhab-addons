@@ -157,6 +157,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     private long setpointEndTimeFromNow() {
-        return ZonedDateTime.now().plusMinutes(setPointDefaultDuration).toEpochSecond();
+        return handler.getHomeCapability(HomeCapability.class).map(cap -> ZonedDateTime.now()
+                .withZoneSameInstant(cap.zoneId).plusMinutes(setPointDefaultDuration).toEpochSecond()).orElse(-1l);
     }
 }

@@ -109,8 +109,8 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     }
 
     @Override
-    public Optional<String> getTimezone() {
-        return Optional.ofNullable(timezone);
+    public @Nullable String getTimezone() {
+        return timezone;
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {
