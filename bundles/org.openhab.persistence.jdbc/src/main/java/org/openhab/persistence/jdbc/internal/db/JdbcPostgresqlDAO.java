@@ -206,7 +206,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
             throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
-                new String[] { "#tableName", "#columnName#", "#columnType#" },
+                new String[] { "#tableName#", "#columnName#", "#columnType#" },
                 new String[] { tableName, columnName, columnType });
         logger.info("JDBC::doAlterTableColumn sql={}", sql);
         try {

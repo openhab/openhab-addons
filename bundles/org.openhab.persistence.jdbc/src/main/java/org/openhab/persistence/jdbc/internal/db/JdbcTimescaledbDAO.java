@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
+import org.openhab.persistence.jdbc.internal.dto.Column;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
@@ -26,7 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extended Database Configuration class. Class represents the extended database-specific configuration. Overrides and
+ * Extended Database Configuration class. Class represents the extended
+ * database-specific configuration. Overrides and
  * supplements the default settings from JdbcBaseDAO and JdbcPostgresqlDAO.
  *
  * @author Riccardo Nimser-Joseph - Initial contribution
@@ -37,21 +39,23 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 
     private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('#tableName#', 'time')";
-    private final String sqlGetItemTables = """
-            SELECT hypertable_name
-            FROM timescaledb_information.hypertables
-            WHERE hypertable_name != '#itemsManageTable#'
-            """;
+    private final String sqlGetItemTables = "SELECT hypertable_name as table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '#itemsManageTable#'";
+    private final String sqlGetTableColumnTypes = "SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM timescaledb_information.columns WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#'";
 
     @Override
     public Properties getConnectionProperties() {
         Properties properties = (Properties) this.databaseProps.clone();
-        // Adjust the jdbc url since the service name 'timescaledb' is only used to differentiate the DAOs
+        // Adjust the jdbc url since the service name 'timescaledb' is only used to
+        // differentiate the DAOs
         if (properties.containsKey("jdbcUrl")) {
             properties.put("jdbcUrl", properties.getProperty("jdbcUrl").replace("jdbc:timescaledb", "jdbc:postgresql"));
         }
         return properties;
     }
+
+    /*************
+     * ITEM DAOs *
+     *************/
 
     @Override
     public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
@@ -68,12 +72,24 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
 
     @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables,
-                new String[] { "#itemsManageTable#", "#itemsManageTable#" },
-                new String[] { vo.getItemsManageTable(), vo.getItemsManageTable() });
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables, new String[] { "#itemsManageTable#" },
+                new String[] { vo.getItemsManageTable() });
         this.logger.debug("JDBC::doGetItemTables sql={}", sql);
         try {
             return Yank.queryBeanList(sql, ItemsVO.class, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetTableColumnTypes,
+                new String[] { "#jdbcUriDatabaseName#", "#tableName#" },
+                new String[] { vo.getJdbcUriDatabaseName(), vo.getQuotedTableName() });
+        logger.debug("JDBC::doGetTableColumns sql={}", sql);
+        try {
+            return Yank.queryBeanList(sql, Column.class, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
