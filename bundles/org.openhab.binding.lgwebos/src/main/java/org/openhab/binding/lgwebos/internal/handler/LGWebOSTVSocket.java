@@ -418,6 +418,10 @@ public class LGWebOSTVSocket {
     @OnWebSocketMessage
     public void onMessage(String message) {
         Response response = GSON.fromJson(message, Response.class);
+        if (response == null) {
+            logger.warn("Received an unexpected null response. Ignoring the response");
+            return;
+        }
         JsonElement payload = response.getPayload();
         JsonObject jsonPayload = payload == null ? null : payload.getAsJsonObject();
         String messageToLog = (jsonPayload != null && jsonPayload.has("client-key")) ? "***" : message;
