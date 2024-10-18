@@ -24,9 +24,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.automower.internal.rest.api.HusqvarnaApi;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCalendardRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
 
@@ -62,7 +65,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-
         return parseResponse(response, MowerResult.class);
     }
 
@@ -72,6 +74,63 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.POST);
 
         request.content(new StringContentProvider(gson.toJson(command)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendCalendar(String appKey, String token, String id, boolean hasWorkAreas, Long workAreaId,
+            MowerCalendardRequest calendar) throws AutomowerCommunicationException {
+        String url;
+        if (hasWorkAreas) {
+            url = getBaseUrl() + "/mowers/" + id + "/workAreas/" + workAreaId + "/calendar";
+        } else {
+            url = getBaseUrl() + "/mowers/" + id + "/calendar";
+        }
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        request.content(new StringContentProvider(gson.toJson(calendar)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendSettings(String appKey, String token, String id, MowerSettingsRequest settings)
+            throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/settings";
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        request.content(new StringContentProvider(gson.toJson(settings)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendConfirmError(String appKey, String token, String id) throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/errors/confirm";
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendStayOutZones(String appKey, String token, String id, String zoneId,
+            MowerStayOutZoneRequest zoneRequest) throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/stayOutZones/" + zoneId;
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.PATCH);
+
+        request.content(new StringContentProvider(gson.toJson(zoneRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 
@@ -103,7 +162,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         int statusCode = response.getStatus();
 
         checkForError(response, statusCode);
-
         try {
             return gson.fromJson(response.getContentAsString(), type);
         } catch (JsonSyntaxException e) {

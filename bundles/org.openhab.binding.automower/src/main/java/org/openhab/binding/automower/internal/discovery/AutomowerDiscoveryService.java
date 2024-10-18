@@ -63,6 +63,17 @@ public class AutomowerDiscoveryService extends AbstractDiscoveryService {
                 properties.put(AutomowerBindingConstants.AUTOMOWER_MODEL, mower.getAttributes().getSystem().getModel());
                 properties.put(AutomowerBindingConstants.AUTOMOWER_NAME, mower.getAttributes().getSystem().getName());
 
+                properties.put(AutomowerBindingConstants.AUTOMOWER_CAN_CONFIRM_ERROR,
+                        (mower.getAttributes().getCapabilities().canConfirmError() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_HEADLIGHTS,
+                        (mower.getAttributes().getCapabilities().hasHeadlights() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_POSITION,
+                        (mower.getAttributes().getCapabilities().hasPosition() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_STAY_OUT_ZONES,
+                        (mower.getAttributes().getCapabilities().hasStayOutZones() ? "yes" : "no"));
+                properties.put(AutomowerBindingConstants.AUTOMOWER_HAS_WORK_AREAS,
+                        (mower.getAttributes().getCapabilities().hasWorkAreas() ? "yes" : "no"));
+
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(mowerThingUid)
                         .withThingType(thingTypeUID).withProperties(properties).withBridge(bridgeUID)
                         .withRepresentationProperty(AutomowerBindingConstants.AUTOMOWER_ID)

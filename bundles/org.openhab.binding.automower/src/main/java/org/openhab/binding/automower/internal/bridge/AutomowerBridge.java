@@ -14,16 +14,26 @@ package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.AutomowerConnectApi;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Calendar;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.CalendarTask;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCalendar;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCalendardRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommand;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -102,5 +112,73 @@ public class AutomowerBridge {
         MowerCommandRequest request = new MowerCommandRequest();
         request.setData(mowerCommand);
         automowerApi.sendCommand(appKey, authenticate().getAccessToken(), id, request);
+    }
+
+    /**
+     * Sends a calendarTask to the automower
+     *
+     * @param id The id of the mower
+     * @param workAreaId The Id of the work area this calendar belongs to (or null, if there is no work area support)
+     * @param calendarTask The calendar that should be sent. It is using the same json structure (start, duration, ...)
+     *            as provided when reading the channel
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId, CalendarTask calendarTask)
+            throws AutomowerCommunicationException {
+        List<CalendarTask> tasks = new ArrayList<>();
+        tasks.add(calendarTask);
+        Calendar calendar = new Calendar();
+        calendar.setTasks(tasks);
+
+        MowerCalendar mowerCalendar = new MowerCalendar();
+        mowerCalendar.setType("calendar");
+        mowerCalendar.setAttributes(calendar);
+
+        MowerCalendardRequest request = new MowerCalendardRequest();
+        request.setData(mowerCalendar);
+
+        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId, request);
+    }
+
+    /**
+     * Sends Settings to the automower
+     *
+     * @param id The id of the mower
+     * @param settings The Settings that should be sent. It is using the same json structure
+     *            as provided when reading the channel
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerSettings(String id, Settings settings) throws AutomowerCommunicationException {
+        MowerSettings mowerSettings = new MowerSettings();
+        mowerSettings.setType("settings");
+        mowerSettings.setAttributes(settings);
+
+        MowerSettingsRequest request = new MowerSettingsRequest();
+        request.setData(mowerSettings);
+
+        automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, request);
+    }
+
+    /**
+     * Confirm current non fatal error on the mower
+     *
+     * @param id The id of the mower
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerConfirmError(String id) throws AutomowerCommunicationException {
+        automowerApi.sendConfirmError(appKey, authenticate().getAccessToken(), id);
+    }
+
+    /**
+     * Enable or disable stay out zone
+     *
+     * @param id The id of the mower
+     * @param zoneId The id of the stay out zone
+     * @param zoneRequest The new zone status
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerStayOutZones(String id, String zoneId, MowerStayOutZoneRequest zoneRequest)
+            throws AutomowerCommunicationException {
+        automowerApi.sendStayOutZones(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
     }
 }
