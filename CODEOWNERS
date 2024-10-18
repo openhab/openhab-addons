@@ -15,6 +15,7 @@
 /bundles/org.openhab.binding.adorne/ @theiding
 /bundles/org.openhab.binding.ahawastecollection/ @soenkekueper
 /bundles/org.openhab.binding.airgradient/ @austvik
+/bundles/org.openhab.binding.airparif/ @clinique
 /bundles/org.openhab.binding.airq/ @aurelio1 @fwolter
 /bundles/org.openhab.binding.airquality/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.airvisualnode/ @3cky

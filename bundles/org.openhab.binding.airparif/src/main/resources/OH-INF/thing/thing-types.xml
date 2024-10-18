@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="location">
+	    <supported-bridge-type-refs>
+            <bridge-type-ref id="api"/>
+        </supported-bridge-type-refs>
+		
+		<label>Air Quality Report</label>
+		<description>AirParif air quality report for the given location</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+        <config-description>
+            <parameter name="location" type="text" required="false"
+                pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
+                <context>location</context>
+                <label>Location</label>
+            </parameter>
+        </config-description>
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,0 +1,29 @@
+
+Miguel Narvaez Miguel.Narvaez@airparif.fr via improvmx-mails.com 
+30 sept. 2024 10:06 (il y a 11 jours)
+À gael@lhopital.org, api
+
+Bonjour,
+
+Veuillez trouver ci-dessous la clé API vous permettant d’accéder à nos API Indices de la qualité de l'air, Épisodes, Cartographie, Pollens :
+
+5a923300-e93d-2a0f-4321-96f115f19100
+
+Cette clé sera active à partir de demain.
+
+Nous ouvrons ces API dans une démarche d’amélioration continue, n’hésitez pas à revenir vers nous pour des retours d’expérience et des propositions d’améliorations.
+
+La documentation des APIs se trouve à l’adresse suivante :
+https://api.airparif.fr/docs
+
+Celle concernant les services Web de cartographie se trouve ici :
+https://www.airparif.fr/doc_api_carto/
+
+Les informations qui vous concernent sont destinées uniquement à Airparif. Votre adresse e-mail sera utilisée uniquement pour vous informer à propos des API. Vous disposez d'un droit d'accès, de modification, de rectification et de suppression de ces données (art. 34 de la loi "Informatique et Libertés").
+
+Pour toute question concernant vos données personnelles ou nos API, nous vous invitons à nous contacter via notre formulaire en ligne :
+https://www.airparif.asso.fr/contact
+
+Bonne journée !
+
+Airparif
