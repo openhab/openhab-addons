@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.SceneHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -33,6 +34,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestSCene {
 
     @Test

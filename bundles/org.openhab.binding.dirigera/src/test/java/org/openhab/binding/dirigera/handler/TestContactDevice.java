@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -35,6 +36,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestContactDevice {
     @Test
     void testContactDevice() {
@@ -65,8 +67,8 @@ class TestContactDevice {
         State batteryState = callback.getState("dirigera:contact-sensor:test-device:battery-level");
         assertNotNull(batteryState);
         assertTrue(batteryState instanceof QuantityType);
-        assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
-        assertEquals(84, ((QuantityType) batteryState).intValue(), "Battery level");
+        assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
+        assertEquals(84, ((QuantityType<?>) batteryState).intValue(), "Battery level");
         State openCloseState = callback.getState("dirigera:contact-sensor:test-device:state");
         assertNotNull(openCloseState);
         assertTrue(openCloseState instanceof OpenClosedType);

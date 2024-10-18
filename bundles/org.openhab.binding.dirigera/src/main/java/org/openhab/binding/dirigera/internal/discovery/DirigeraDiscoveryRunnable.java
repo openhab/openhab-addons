@@ -62,8 +62,6 @@ public class DirigeraDiscoveryRunnable implements Runnable {
                 logger.info("DIRIGERA DISCOVERY possible candidate {}", homeUrl);
                 discovery.gatewayDiscovered(ipAddress, properties);
                 return;
-            } else {
-                // logger.info("DIRIGERA DISCOVERY discard candidate {}", ipAddress);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             // logger.info("DIRIGERA DISCOVERY discard candidate {} {}", ipAddress, e.getMessage());

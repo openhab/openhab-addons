@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -36,6 +37,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestSmartPlug {
 
     @Test
@@ -82,8 +84,8 @@ class TestSmartPlug {
         State otaProgess = callback.getState("dirigera:smart-plug:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
-        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
-        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+        assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
         State disableLightState = callback.getState("dirigera:smart-plug:test-device:disable-light");
         assertNotNull(disableLightState);
@@ -102,17 +104,17 @@ class TestSmartPlug {
         State ampereState = callback.getState("dirigera:smart-plug:test-device:ampere");
         assertNotNull(ampereState);
         assertTrue(ampereState instanceof QuantityType);
-        assertTrue(((QuantityType) ampereState).getUnit().equals(Units.AMPERE));
-        assertEquals(0, ((QuantityType) ampereState).intValue(), "Ampere");
+        assertTrue(((QuantityType<?>) ampereState).getUnit().equals(Units.AMPERE));
+        assertEquals(0, ((QuantityType<?>) ampereState).intValue(), "Ampere");
         State voltState = callback.getState("dirigera:smart-plug:test-device:voltage");
         assertNotNull(voltState);
         assertTrue(voltState instanceof QuantityType);
-        assertTrue(((QuantityType) voltState).getUnit().equals(Units.VOLT));
-        assertEquals(236, ((QuantityType) voltState).intValue(), "Volt");
+        assertTrue(((QuantityType<?>) voltState).getUnit().equals(Units.VOLT));
+        assertEquals(236, ((QuantityType<?>) voltState).intValue(), "Volt");
         State powerState = callback.getState("dirigera:smart-plug:test-device:power");
         assertNotNull(powerState);
         assertTrue(powerState instanceof QuantityType);
-        assertTrue(((QuantityType) powerState).getUnit().equals(Units.WATT));
-        assertEquals(0, ((QuantityType) powerState).intValue(), "Watt");
+        assertTrue(((QuantityType<?>) powerState).getUnit().equals(Units.WATT));
+        assertEquals(0, ((QuantityType<?>) powerState).intValue(), "Watt");
     }
 }
