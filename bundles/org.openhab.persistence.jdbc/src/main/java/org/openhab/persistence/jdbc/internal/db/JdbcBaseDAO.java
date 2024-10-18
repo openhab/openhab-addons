@@ -93,7 +93,7 @@ public class JdbcBaseDAO {
     protected String sqlGetItemIDTableNames = "SELECT ItemId, ItemName FROM #itemsManageTable#";
     protected String sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='#jdbcUriDatabaseName#' AND NOT table_name='#itemsManageTable#'";
     protected String sqlGetTableColumnTypes = "SELECT column_name, column_type, is_nullable FROM information_schema.columns WHERE table_schema='#jdbcUriDatabaseName#' AND table_name='#tableName#'";
-    protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS #tableName# (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
+    protected String sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS \"#tableName#\" (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
     protected String sqlAlterTableColumn = "ALTER TABLE #tableName# MODIFY COLUMN #columnName# #columnType#";
     protected String sqlInsertItemValue = "INSERT INTO #tableName# (time, value) VALUES( #tablePrimaryValue#, ? ) ON DUPLICATE KEY UPDATE VALUE= ?";
     protected String sqlGetRowCount = "SELECT COUNT(*) FROM #tableName#";
