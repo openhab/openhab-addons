@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -29,15 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ContactSensorHandler} basic DeviceHandler for all devices
+ * The {@link WaterSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ContactSensorHandler extends BaseDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(ContactSensorHandler.class);
+public class WaterSensorHandler extends BaseDeviceHandler {
+    private final Logger logger = LoggerFactory.getLogger(WaterSensorHandler.class);
 
-    public ContactSensorHandler(Thing thing, Map<String, String> mapping) {
+    public WaterSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -48,6 +48,7 @@ public class ContactSensorHandler extends BaseDeviceHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            logger.trace("DIRIGERA MOTION_DEVICE values for initial update {}", values);
             handleUpdate(values);
         }
     }
@@ -65,7 +66,6 @@ public class ContactSensorHandler extends BaseDeviceHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
         // now device specific
         if (update.has(Model.ATTRIBUTES)) {
@@ -75,12 +75,9 @@ public class ContactSensorHandler extends BaseDeviceHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_STATE.equals(targetChannel)) {
-                        OpenClosedType state = OpenClosedType.CLOSED;
-                        if (attributes.getBoolean(key)) {
-                            state = OpenClosedType.OPEN;
-                        }
-                        updateState(new ChannelUID(thing.getUID(), targetChannel), state);
+                    if (CHANNEL_DETECTION.equals(targetChannel)) {
+                        updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                OnOffType.from(attributes.getBoolean(key)));
                     } else {
                         logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }

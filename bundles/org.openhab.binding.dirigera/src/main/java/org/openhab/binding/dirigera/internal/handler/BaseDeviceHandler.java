@@ -32,6 +32,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -70,6 +71,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(BaseDeviceConfiguration.class);
+
         // first get bridge as Gateway
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -93,15 +95,17 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             return;
         }
 
+        if (!checkHandler()) {
+            // if handler doesn't match model status will be set to offline and it will stay until correction
+            return;
+        }
+
         if (!config.id.isBlank()) {
             BaseDeviceHandler proxy = child;
             if (proxy != null) {
                 gateway().registerDevice(proxy, config.id);
             }
         }
-
-        // shall be handled by initial update
-        // updateStatus(ThingStatus.ONLINE);
     }
 
     public void handleUpdate(JSONObject update) {
@@ -184,5 +188,19 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
      */
     public @Nullable ThingHandlerCallback getCallbackListener() {
         return super.getCallback();
+    }
+
+    public boolean checkHandler() {
+        // cross check if configured thing type is matching with the model
+        // if handler is taken from discovery this will do no harm
+        // but if it's created manually mismatch can happen
+        ThingTypeUID modelTTUID = gateway().model().identifyDevice(config.id);
+        if (!thing.getThingTypeUID().equals(modelTTUID)) {
+            String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            return false;
+        } else {
+            return true;
+        }
     }
 }
