@@ -35,6 +35,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -53,7 +54,7 @@ public class CallbackMock implements ThingHandlerCallback {
     private final Logger logger = LoggerFactory.getLogger(CallbackMock.class);
 
     private @Nullable Bridge bridge;
-    private ThingStatus status = ThingStatus.OFFLINE;
+    private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
     private Map<String, State> stateMap = new HashMap<>();
 
     public @Nullable State getState(String channel) {
@@ -79,17 +80,22 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         synchronized (this) {
-            status = thingStatus.getStatus();
+            status = thingStatus;
             this.notifyAll();
         }
-        logger.warn("Update status {}", thingStatus.getStatus());
+        logger.warn("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
+                thingStatus.getDescription());
+    }
+
+    public ThingStatusInfo getStatus() {
+        return status;
     }
 
     public void waitForOnline() {
         synchronized (this) {
             Instant start = Instant.now();
             Instant check = Instant.now();
-            while (!ThingStatus.ONLINE.equals(status) && Duration.between(start, check).getSeconds() < 10) {
+            while (!ThingStatus.ONLINE.equals(status.getStatus()) && Duration.between(start, check).getSeconds() < 10) {
                 try {
                     this.wait(1000);
                 } catch (InterruptedException e) {
@@ -99,7 +105,7 @@ public class CallbackMock implements ThingHandlerCallback {
             }
         }
         // if method is exited without reaching ONLINE e.g. through timeout fail
-        if (!ThingStatus.ONLINE.equals(status)) {
+        if (!ThingStatus.ONLINE.equals(status.getStatus())) {
             fail("waitForOnline just reached status " + status);
         } else {
             logger.warn("Callback reached {}", status);

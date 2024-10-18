@@ -55,24 +55,25 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
     public void initialize() {
         // handle general initialize like setting bridge
         super.initialize();
-        // finally get attributes from model in order to get initial values
-        JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-        handleUpdate(values);
+        if (super.checkHandler()) {
+            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            handleUpdate(values);
 
-        // check for settings of color temperature in attributes
-        JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
-        Iterator<String> attributesIterator = attributes.keys();
-        while (attributesIterator.hasNext()) {
-            String key = attributesIterator.next();
-            if ("colorTemperatureMin".equals(key)) {
-                colorTemperatureMin = attributes.getInt(key);
-            } else if ("colorTemperatureMax".equals(key)) {
-                colorTemperatureMax = attributes.getInt(key);
+            // check for settings of color temperature in attributes
+            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+            Iterator<String> attributesIterator = attributes.keys();
+            while (attributesIterator.hasNext()) {
+                String key = attributesIterator.next();
+                if ("colorTemperatureMin".equals(key)) {
+                    colorTemperatureMin = attributes.getInt(key);
+                } else if ("colorTemperatureMax".equals(key)) {
+                    colorTemperatureMax = attributes.getInt(key);
+                }
             }
+            range = colorTemperatureMin - colorTemperatureMax;
+            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE new temperatures from {} to {}", colorTemperatureMin,
+                    colorTemperatureMax);
         }
-        range = colorTemperatureMin - colorTemperatureMax;
-        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE new temperatures from {} to {}", colorTemperatureMin,
-                colorTemperatureMax);
     }
 
     @Override
