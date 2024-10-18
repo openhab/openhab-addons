@@ -173,6 +173,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Is trigger?: Special handling
         if (config.trigger) {
+            try {
+                cachedValue.parseMessage(new StringType(strValue));
+            } catch (IllegalArgumentException e) {
+                // invalid value for this trigger; ignore
+                receivedOrTimeout();
+                return;
+            }
             channelStateUpdateListener.triggerChannel(channelUID, strValue);
             receivedOrTimeout();
             return;

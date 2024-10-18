@@ -238,6 +238,15 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     /**
+     * Assert a channel does not triggers=
+     */
+    protected void assertNotTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(thingHandler, never()).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()),
+                eq(trigger));
+    }
+
+    /**
      * Assert that given payload was published exact-once on given topic.
      *
      * @param mqttTopic Mqtt topic
