@@ -186,7 +186,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlGetTableColumnTypes,
                 new String[] { "#jdbcUriDatabaseName#", "#tableName#", "#itemsManageTable#" },
-                new String[] { vo.getJdbcUriDatabaseName(), vo.getTableName(), vo.getItemsManageTable() });
+                new String[] { vo.getJdbcUriDatabaseName(), vo.getQuotedTableName(), vo.getItemsManageTable() });
         logger.debug("JDBC::doGetTableColumns sql={}", sql);
         try {
             return Yank.queryBeanList(sql, Column.class, null);
@@ -206,7 +206,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
             throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
-                new String[] { "#tableName#", "#columnName#", "#columnType#" },
+                new String[] { "#tableName", "#columnName#", "#columnType#" },
                 new String[] { tableName, columnName, columnType });
         logger.info("JDBC::doAlterTableColumn sql={}", sql);
         try {
@@ -227,8 +227,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
-                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" }, new String[] {
+                        storedVO.getQuotedTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -243,7 +243,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+                new String[] { storedVO.getQuotedTableName(), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
