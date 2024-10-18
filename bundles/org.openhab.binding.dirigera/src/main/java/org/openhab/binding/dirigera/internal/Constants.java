@@ -151,8 +151,14 @@ public class Constants {
     public static final String CHANNEL_VOC_INDEX = "voc-index";
 
     // Websocket update types
-    public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
+    public static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";
+    public static final String EVENT_TYPE_DEVICE_ADDED = "deviceAdded";
+    public static final String EVENT_TYPE_DEVICE_CHANGE = "deviceStateChanged";
+    public static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved ";
+
+    public static final String EVENT_TYPE_SCENE_CREATED = "sceneCreated";
     public static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";
+    public static final String EVENT_TYPE_SCENE_DELETED = "sceneDeleted";
 
     /**
      * Maps connecting device attributes to channel ids

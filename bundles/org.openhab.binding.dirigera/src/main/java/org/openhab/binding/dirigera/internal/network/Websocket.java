@@ -151,7 +151,7 @@ public class Websocket {
     public void onTextMessage(String message) {
         increase(MESSAGES);
         // logger.info("DIRIGERA onMessage {}", message);
-        gateway.websocketUpdate(new JSONObject(message));
+        gateway.websocketUpdate(message);
     }
 
     @OnWebSocketFrame
