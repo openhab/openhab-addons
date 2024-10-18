@@ -48,7 +48,7 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     private final Logger logger = LoggerFactory.getLogger(EnergyCapability.class);
     private final NetatmoDescriptionProvider descriptionProvider;
 
-    private int setPointDefaultDuration = -1;
+    private int setPointDefaultDuration = 120;
     private String energyId = "";
 
     EnergyCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
@@ -157,7 +157,11 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
     }
 
     private long setpointEndTimeFromNow() {
-        return handler.getHomeCapability(HomeCapability.class).map(cap -> ZonedDateTime.now()
-                .withZoneSameInstant(cap.zoneId).plusMinutes(setPointDefaultDuration).toEpochSecond()).orElse(-1l);
+        return handler.getHomeCapability(HomeCapability.class).map(cap -> {
+            ZonedDateTime now = ZonedDateTime.now();
+            now = now.plusMinutes(setPointDefaultDuration);
+            now = now.withZoneSameInstant(cap.zoneId);
+            return now.toEpochSecond();
+        }).orElse(-1l);
     }
 }
