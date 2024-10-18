@@ -26,9 +26,12 @@ public enum RouterosInterfaceType {
     ETHERNET("ether"),
     BRIDGE("bridge"),
     WLAN("wlan"),
+    WIFI("wifi"),
     CAP("cap"),
     PPP_CLIENT("ppp-out"),
     PPPOE_CLIENT("pppoe-out"),
+    VLAN("vlan"),
+    VETH("veth"), // docker containers create virtual ether ports
     L2TP_SERVER("l2tp-in"),
     L2TP_CLIENT("l2tp-out"),
     LTE("lte");
