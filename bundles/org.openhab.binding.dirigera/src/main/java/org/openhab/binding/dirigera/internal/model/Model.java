@@ -217,7 +217,17 @@ public class Model {
                     }
                 }
             }
-
+        }
+        if (!model.isNull(PROPERTY_SCENES)) {
+            JSONArray scenes = model.getJSONArray(PROPERTY_SCENES);
+            Iterator<Object> entries = scenes.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                if (id.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                    // entry found in scenes
+                    return THING_TYPE_SCENE;
+                }
+            }
         }
         return THING_TYPE_UNKNNOWN;
     }
@@ -302,5 +312,11 @@ public class Model {
             }
         });
         return twins;
+    }
+
+    public void patchDevice(JSONObject update) {
+    }
+
+    public void patchScene(JSONObject update) {
     }
 }

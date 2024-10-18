@@ -50,21 +50,21 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     public void initialize() {
         // handle general initialize like setting bridge
         super.initialize();
-        // finally get attributes from model in order to get initial values
-        JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-        logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", values);
-        handleUpdate(values);
+        if (super.checkHandler()) {
+            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            handleUpdate(values);
 
-        // search for twin device in model to connect
-        twinDevices = gateway().model().getTwins(config.id);
-        logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", twinDevices.size());
-        // register for updates of twin devices
-        twinDevices.forEach(deviceId -> {
-            gateway().registerDevice(this, deviceId);
-            JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
-            logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", twinValues);
-            handleUpdate(twinValues);
-        });
+            // search for twin device in model to connect
+            twinDevices = gateway().model().getTwins(config.id);
+            logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", twinDevices.size());
+            // register for updates of twin devices
+            twinDevices.forEach(deviceId -> {
+                gateway().registerDevice(this, deviceId);
+                JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
+                logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", twinValues);
+                handleUpdate(twinValues);
+            });
+        }
     }
 
     @Override
@@ -90,7 +90,6 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            logger.trace("DIRIGERA MOTION_LIGHT_DEVICE update delivered {} attributes", attributes.length());
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);

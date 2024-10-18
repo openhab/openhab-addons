@@ -61,6 +61,9 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.internal.ThingImpl;
@@ -152,6 +155,30 @@ class TestDeviceHandler {
     }
 
     @Test
+    void testWrongHandlerForId() {
+        Bridge hubBridge = prepareBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_CONTACT_SENSOR, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        ContactSensorHandler handler = new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "5ac5e131-44a4-4d75-be78-759a095d31fb_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        ThingStatusInfo status = callback.getStatus();
+        assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail(), "Config Error");
+        String description = status.getDescription();
+        assertNotNull(description);
+        assertTrue(description.contains("doesn't match with model"), "Description");
+    }
+
+    @Test
     void testContactDevice() {
         Bridge hubBridge = prepareBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_CONTACT_SENSOR, "test-device");
@@ -192,7 +219,7 @@ class TestDeviceHandler {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "5ac5e131-44a4-4d75-be78-759a095d31fb_1");
+        config.put("id", "ee61c57f-8efa-44f4-ba8a-d108ae054138_1");
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
@@ -202,7 +229,7 @@ class TestDeviceHandler {
         assertNotNull(batteryState);
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
-        assertEquals(85, ((QuantityType) batteryState).intValue(), "Battery level");
+        assertEquals(20, ((QuantityType) batteryState).intValue(), "Battery level");
         State onOffState = callback.getState("dirigera:motion-sensor:test-device:detection");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);

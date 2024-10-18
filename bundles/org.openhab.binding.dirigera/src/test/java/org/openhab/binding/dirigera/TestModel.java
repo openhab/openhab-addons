@@ -17,8 +17,10 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
@@ -89,5 +91,32 @@ class TestModel {
         String inspelningId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
         ThingTypeUID motionUID = model.identifyDevice(inspelningId);
         assertEquals(THING_TYPE_SMART_PLUG, motionUID, "INSPELNING TTUID");
+    }
+
+    @Test
+    void testModelPatch() {
+        String modelString = FileReader.readFileInString("src/test/resources/NewestHome.json");
+        JSONObject model = new JSONObject(modelString);
+        Map<String, Object> modelMap = model.toMap();
+
+        String patchString = FileReader.readFileInString("src/test/resources/ws-sonos-update.json");
+        JSONObject modelPatch = new JSONObject(patchString);
+        JSONObject modelPatchData = modelPatch.getJSONObject("data");
+        String deviceId = modelPatchData.getString(PROPERTY_DEVICE_ID);
+
+        List<Map> devices = (List<Map>) modelMap.get("devices");
+        devices.forEach(device -> {
+            String id = device.get(PROPERTY_DEVICE_ID).toString();
+            if (deviceId.equals(id)) {
+                System.out.println("match");
+                Map origin = device;
+                System.out.println("Before: " + (new JSONObject(device)).toString());
+                System.out.println("Patch:  " + modelPatchData.toString());
+                origin.putAll(modelPatchData.toMap());
+                System.out.println("Merged: " + (new JSONObject(origin)).toString());
+            } else {
+                System.out.println("miss");
+            }
+        });
     }
 }
