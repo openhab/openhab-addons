@@ -27,7 +27,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,17 +68,7 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // only handle RefreshType
-        String channel = channelUID.getIdWithoutGroup();
-        logger.trace("DIRIGERA MOTION_LIGHT_DEVICE handle command {} for {}", command, channel);
-        if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-            twinDevices.forEach(deviceId -> {
-                JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
-                handleUpdate(twinValues);
-            });
-        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override

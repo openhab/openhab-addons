@@ -35,7 +35,10 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,13 +58,16 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
+    protected Map<String, State> channelStateMap;
 
     public BaseDeviceHandler(Thing thing, Map<String, String> mapping) {
         super(thing);
         config = new BaseDeviceConfiguration();
-        // mapping contains
+
+        // mapping contains, reverse mapping for commands plus state cache
         property2ChannelMap = mapping;
         channel2PropertyMap = reverse(mapping);
+        channelStateMap = initializeCache(mapping);
     }
 
     protected void setChildHandler(BaseDeviceHandler child) {
@@ -104,6 +110,17 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             BaseDeviceHandler proxy = child;
             if (proxy != null) {
                 gateway().registerDevice(proxy, config.id);
+            }
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            String channel = channelUID.getIdWithoutGroup();
+            State cachedState = channelStateMap.get(channel);
+            if (cachedState != null) {
+                super.updateState(channelUID, cachedState);
             }
         }
     }
@@ -151,6 +168,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     }
 
     @Override
+    protected void updateState(ChannelUID channelUID, State state) {
+        channelStateMap.put(channelUID.getIdWithoutGroup(), state);
+        super.updateState(channelUID, state);
+    }
+
+    @Override
     public void dispose() {
         BaseDeviceHandler proxy = child;
         if (proxy != null) {
@@ -183,11 +206,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         return reverseMap;
     }
 
-    /**
-     * for unit testing
-     */
-    public @Nullable ThingHandlerCallback getCallbackListener() {
-        return super.getCallback();
+    private Map<String, State> initializeCache(Map<String, String> mapping) {
+        final Map<String, State> stateMap = new HashMap<>();
+        mapping.forEach((key, value) -> {
+            stateMap.put(key, UnDefType.UNDEF);
+        });
+        return stateMap;
     }
 
     public boolean checkHandler() {

@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +50,7 @@ public class RepeaterHandler extends BaseDeviceHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // only handle RefreshType
-        String channel = channelUID.getIdWithoutGroup();
-        logger.trace("DIRIGERA MOTION_DEVICE handle command {} for {}", command, channel);
-        if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override
