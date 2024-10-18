@@ -57,6 +57,10 @@ public class CallbackMock implements ThingHandlerCallback {
     private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
     private Map<String, State> stateMap = new HashMap<>();
 
+    public void clear() {
+        stateMap.clear();
+    }
+
     public @Nullable State getState(String channel) {
         return stateMap.get(channel);
     }
@@ -64,7 +68,7 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         stateMap.put(channelUID.getAsString(), state);
-        logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
+        logger.info("Update {} state {}", channelUID.getAsString(), state.toFullString());
     }
 
     @Override
@@ -83,7 +87,7 @@ public class CallbackMock implements ThingHandlerCallback {
             status = thingStatus;
             this.notifyAll();
         }
-        logger.warn("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
+        logger.info("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
                 thingStatus.getDescription());
     }
 
@@ -108,7 +112,7 @@ public class CallbackMock implements ThingHandlerCallback {
         if (!ThingStatus.ONLINE.equals(status.getStatus())) {
             fail("waitForOnline just reached status " + status);
         } else {
-            logger.warn("Callback reached {}", status);
+            logger.info("Callback reached {}", status);
         }
     }
 

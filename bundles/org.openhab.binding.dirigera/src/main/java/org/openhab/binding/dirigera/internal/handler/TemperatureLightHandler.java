@@ -79,10 +79,8 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channel = channelUID.getIdWithoutGroup();
-        logger.trace("DIRIGERA LIGHT_DEVICE handle command {} for {}", command, channel);
         if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
+            super.handleCommand(channelUID, command);
         } else {
             String targetProperty = channel2PropertyMap.get(channel);
             if (targetProperty != null) {

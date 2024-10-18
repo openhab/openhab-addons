@@ -236,7 +236,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     .of(sequentialScheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
 
             // update latest model data
-            System.out.println("ID " + config.id);
             JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
             handleUpdate(values);
 
