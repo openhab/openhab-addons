@@ -47,7 +47,7 @@ public class WakeOnLanUtility {
 
     private static final String COMMAND;
     static {
-        String os = Objects.requireNonNullElse(System.getProperty("os.name"), "");
+        String os = Objects.requireNonNullElse(System.getProperty("os.name"), "").toLowerCase();
         LOGGER.debug("os: {}", os);
         if (os.contains("win")) {
             COMMAND = "arp -a %s";
