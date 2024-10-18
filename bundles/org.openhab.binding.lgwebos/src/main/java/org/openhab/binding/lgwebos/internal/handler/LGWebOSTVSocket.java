@@ -496,8 +496,6 @@ public class LGWebOSTVSocket {
                 map.put(PROPERTY_DEVICE_OS_RELEASE_VERSION, jsonPayload.get("deviceOSReleaseVersion").getAsString());
                 map.put(PROPERTY_DEVICE_ID, jsonPayload.get("deviceUUID").getAsString());
                 map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
-                map.put(PROPERTY_LAST_CONNECTED, Instant.now().toString());
-
                 config.storeProperties(map);
                 sendRegister();
                 break;
