@@ -27,7 +27,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,54 +60,50 @@ public class ColorLightHandler extends BaseDeviceHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         logger.trace("DIRIGERA LIGHT_DEVICE handle command {} for {}", command, channel);
-        if (command instanceof RefreshType) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            handleUpdate(values);
-        } else {
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                if (command instanceof HSBType hsb) {
-                    boolean colorSendToAPI = false;
-                    if (Math.round(hsb.getHue().intValue()) == Math.round(hsbCurrent.getHue().intValue())
-                            && Math.round(hsb.getSaturation().intValue()) == Math
-                                    .round(hsbCurrent.getSaturation().intValue())) {
-                        logger.trace("DIRIGERA LIGHT_DEVICE hno need to update color, it's the same");
-                    } else {
-                        JSONObject colorAttributes = new JSONObject();
-                        colorAttributes.put("colorHue", hsb.getHue().intValue());
-                        colorAttributes.put("colorSaturation", Math.round(hsb.getSaturation().doubleValue() / 100));
-                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
-                        gateway().api().sendPatch(config.id, colorAttributes);
-                        colorSendToAPI = true;
-                    }
-                    if (hsb.getBrightness().intValue() == hsbCurrent.getBrightness().intValue()) {
-                        logger.trace("DIRIGERA LIGHT_DEVICE hno need to update brightness, it's the same");
-                    } else {
-                        if (colorSendToAPI) {
-                            // seems that IKEA lamps cannot handle consecutive calls it really short time frame
-                            // so give it 100ms pause until next call
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
-                            }
-                        }
-                        JSONObject brightnessattributes = new JSONObject();
-                        brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                        logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnessattributes);
-                        gateway().api().sendPatch(config.id, brightnessattributes);
-                    }
-                } else if (command instanceof OnOffType onOff) {
-                    JSONObject attributes = new JSONObject();
-                    attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
-                    gateway().api().sendPatch(config.id, attributes);
+
+        String targetProperty = channel2PropertyMap.get(channel);
+        if (targetProperty != null) {
+            if (command instanceof HSBType hsb) {
+                boolean colorSendToAPI = false;
+                if (Math.round(hsb.getHue().intValue()) == Math.round(hsbCurrent.getHue().intValue()) && Math
+                        .round(hsb.getSaturation().intValue()) == Math.round(hsbCurrent.getSaturation().intValue())) {
+                    logger.trace("DIRIGERA LIGHT_DEVICE hno need to update color, it's the same");
+                } else {
+                    JSONObject colorAttributes = new JSONObject();
+                    colorAttributes.put("colorHue", hsb.getHue().intValue());
+                    colorAttributes.put("colorSaturation", Math.round(hsb.getSaturation().doubleValue() / 100));
+                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
+                    gateway().api().sendPatch(config.id, colorAttributes);
+                    colorSendToAPI = true;
                 }
-            } else {
-                logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
+                if (hsb.getBrightness().intValue() == hsbCurrent.getBrightness().intValue()) {
+                    logger.trace("DIRIGERA LIGHT_DEVICE hno need to update brightness, it's the same");
+                } else {
+                    if (colorSendToAPI) {
+                        // seems that IKEA lamps cannot handle consecutive calls it really short time frame
+                        // so give it 100ms pause until next call
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                    JSONObject brightnessattributes = new JSONObject();
+                    brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
+                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnessattributes);
+                    gateway().api().sendPatch(config.id, brightnessattributes);
+                }
+            } else if (command instanceof OnOffType onOff) {
+                JSONObject attributes = new JSONObject();
+                attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
+                gateway().api().sendPatch(config.id, attributes);
             }
+        } else {
+            logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
         }
     }
 
