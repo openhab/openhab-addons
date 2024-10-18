@@ -20,7 +20,7 @@ public class MowerApp {
     private Activity activity;
     private InactiveReason inactiveReason;
     private State state;
-    private long workAreaId;
+    private Long workAreaId;
     private int errorCode;
     private long errorCodeTimestamp;
     private Boolean isErrorConfirmable;
@@ -57,11 +57,11 @@ public class MowerApp {
         this.state = state;
     }
 
-    public long getWorkAreaId() {
+    public Long getWorkAreaId() {
         return workAreaId;
     }
 
-    public void setWorkAreaId(long workAreaId) {
+    public void setWorkAreaId(Long workAreaId) {
         this.workAreaId = workAreaId;
     }
 

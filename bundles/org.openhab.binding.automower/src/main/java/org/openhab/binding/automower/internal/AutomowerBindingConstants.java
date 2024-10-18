@@ -49,30 +49,41 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_ERROR_CODE = GROUP_STATUS + "error-code";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = GROUP_STATUS + "error-timestamp";
     public static final String CHANNEL_STATUS_ERROR_CONFIRMABLE = GROUP_STATUS + "error-confirmable";
-    public static final String CHANNEL_PLANNER_NEXT_START = GROUP_STATUS + "planner-next-start";
-    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = GROUP_STATUS + "planner-override-action";
-    public static final String CHANNEL_PLANNER_RESTRICTED_REASON = GROUP_STATUS + "planner-restricted-reason";
-    public static final String CHANNEL_PLANNER_EXTERNAL_REASON = GROUP_STATUS + "planner-external-reason";
-    public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_STATUS + "setting-cutting-height";
-    public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_STATUS + "setting-headlight-mode";
-    public static final String CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME = GROUP_STATUS
+
+    // List of all planner Channel ids
+    public static final String GROUP_PLANNER = ""; // no channel group in use at the moment, we'll possibly introduce
+                                                   // this in a future release
+    public static final String CHANNEL_PLANNER_NEXT_START = GROUP_PLANNER + "planner-next-start";
+    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = GROUP_PLANNER + "planner-override-action";
+    public static final String CHANNEL_PLANNER_RESTRICTED_REASON = GROUP_PLANNER + "planner-restricted-reason";
+    public static final String CHANNEL_PLANNER_EXTERNAL_REASON = GROUP_PLANNER + "planner-external-reason";
+
+    // List of all setting Channel ids
+    public static final String GROUP_SETTING = ""; // no channel group in use at the moment, we'll possibly introduce
+                                                   // this in a future release
+    public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_SETTING + "setting-cutting-height";
+    public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_SETTING + "setting-headlight-mode";
+
+    // List of all setting Channel ids
+    public static final String GROUP_STATISTIC = ""; // no channel group in use at the moment, we'll possibly introduce
+                                                     // this in a future release
+    public static final String CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME = GROUP_STATISTIC
             + "stat-cutting-blade-usage-time";
-    public static final String CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES = GROUP_STATUS
+    public static final String CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES = GROUP_STATISTIC
             + "stat-number-of-charging-cycles";
-    public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATUS + "stat-number-of-collisions";
-    public static final String CHANNEL_STATISTIC_TOTAL_CHARGING_TIME = GROUP_STATUS + "stat-total-charging-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_TIME = GROUP_STATUS + "stat-total-cutting-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT = GROUP_STATUS + "stat-total-cutting-percent";
-    public static final String CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE = GROUP_STATUS + "stat-total-drive-distance";
-    public static final String CHANNEL_STATISTIC_TOTAL_RUNNING_TIME = GROUP_STATUS + "stat-total-running-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATUS + "stat-total-searching-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATUS
+    public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATISTIC + "stat-number-of-collisions";
+    public static final String CHANNEL_STATISTIC_TOTAL_CHARGING_TIME = GROUP_STATISTIC + "stat-total-charging-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_TIME = GROUP_STATISTIC + "stat-total-cutting-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT = GROUP_STATISTIC + "stat-total-cutting-percent";
+    public static final String CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE = GROUP_STATISTIC + "stat-total-drive-distance";
+    public static final String CHANNEL_STATISTIC_TOTAL_RUNNING_TIME = GROUP_STATISTIC + "stat-total-running-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATISTIC + "stat-total-searching-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATISTIC
             + "stat-total-searching-percent";
 
     // Calendar Task Channels ids
     public static final String GROUP_CALENDARTASKS = ""; // no channel group in use at the moment, we'll possibly
-    // introduce
-    // this in a future release
+                                                         // introduce this in a future release
     public static final ArrayList<String> CHANNEL_CALENDARTASKS = new ArrayList<>(List.of(
             GROUP_CALENDARTASKS + "calendartasks01-start", GROUP_CALENDARTASKS + "calendartasks01-duration",
             GROUP_CALENDARTASKS + "calendartasks01-monday", GROUP_CALENDARTASKS + "calendartasks01-tuesday",
@@ -127,8 +138,7 @@ public class AutomowerBindingConstants {
 
     // Position Channels ids
     public static final String GROUP_POSITIONS = ""; // no channel group in use at the moment, we'll possibly
-                                                     // introduce
-    // this in a future release
+                                                     // introduce this in a future release
     public static final String LAST_POSITION = GROUP_POSITIONS + "last-position";
     public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<>(
             List.of(GROUP_POSITIONS + "position01", GROUP_POSITIONS + "position02", GROUP_POSITIONS + "position03",
@@ -151,8 +161,7 @@ public class AutomowerBindingConstants {
 
     // Stayout Zones Channels ids
     public static final String GROUP_STAYOUTZONES = ""; // no channel group in use at the moment, we'll possibly
-                                                        // introduce
-    // this in a future release
+                                                        // introduce this in a future release
     public static final String CHANNEL_STAYOUTZONES_DIRTY = GROUP_STAYOUTZONES + "dirty";
     public static final ArrayList<String> CHANNEL_STAYOUTZONES = new ArrayList<>(List.of(
             GROUP_STAYOUTZONES + "zone01-id", GROUP_STAYOUTZONES + "zone01-name", GROUP_STAYOUTZONES + "zone01-enabled",
@@ -169,8 +178,7 @@ public class AutomowerBindingConstants {
 
     // Work Areas Channels ids
     public static final String GROUP_WORKAREAS = ""; // no channel group in use at the moment, we'll possibly
-                                                     // introduce
-    // this in a future release
+                                                     // introduce this in a future release
     public static final ArrayList<String> CHANNEL_WORKAREAS = new ArrayList<>(
             List.of(GROUP_WORKAREAS + "workareas01-id", GROUP_WORKAREAS + "workareas01-name",
                     GROUP_WORKAREAS + "workareas01-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",

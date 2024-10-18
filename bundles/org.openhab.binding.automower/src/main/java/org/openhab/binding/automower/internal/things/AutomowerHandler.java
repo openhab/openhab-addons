@@ -48,9 +48,15 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Head
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
 >>>>>>> implemented sendAutomowerSettings
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+<<<<<<< HEAD
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerMessages;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaAttributes;
+=======
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+>>>>>>> added sendAutomowerStayOutZones
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Position;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
@@ -160,6 +166,7 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
         } else if (CHANNEL_CALENDARTASKS.contains(channelUID.getId())) {
             sendAutomowerCalendarTask(command, channelUID.getId());
+<<<<<<< HEAD
         } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)
                 || channelUID.getId().equals(CHANNEL_SETTING_HEADLIGHT_MODE)) {
             sendAutomowerSettings(command, channelUID.getId());
@@ -169,6 +176,31 @@ public class AutomowerHandler extends BaseThingHandler {
         } else if (channelUID.getId().equals(CHANNEL_COMMAND_CONFIRM_ERROR)) {
             sendAutomowerConfirmError(command);
 >>>>>>> implemented sendAutomowerConfirmError()
+=======
+        } else if (CHANNEL_STAYOUTZONES.contains(channelUID.getId())) {
+            if (channelUID.getId().contains("-enabled")) {
+                if (command instanceof OnOffType cmd) {
+                    String[] channelIDSplit = channelUID.getId().split("-");
+                    int index = Integer.parseInt(channelIDSplit[0].substring("zone".length())) - 1;
+                    sendAutomowerStayOutZones(((cmd == OnOffType.ON) ? true : false), index);
+                }
+            }
+        } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
+            if (command instanceof DecimalType cmd) {
+                sendAutomowerSettingCuttingHeight(cmd.byteValue());
+            }
+        } else if (channelUID.getId().equals(CHANNEL_SETTING_HEADLIGHT_MODE)) {
+            if (command instanceof StringType cmd) {
+                sendAutomowerSettingHeadlightMode(cmd.toString());
+            }
+        } else if (channelUID.getId().equals(CHANNEL_COMMAND_CONFIRM_ERROR)) {
+            if (command instanceof OnOffType cmd) {
+                if (cmd == OnOffType.ON) {
+                    sendAutomowerConfirmError();
+                    updateState(CHANNEL_COMMAND_CONFIRM_ERROR, OnOffType.OFF);
+                }
+            }
+>>>>>>> added sendAutomowerStayOutZones
         } else {
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
@@ -817,14 +849,15 @@ public class AutomowerHandler extends BaseThingHandler {
         String param = channelIDSplit[1];
         logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
                 command.toString());
+
         if (isValidResult(mowerState)) {
             CalendarTask calendarTask = mowerState.getAttributes().getCalendar().getTasks().get(index);
             if (calendarTask != null) {
                 if (command instanceof DecimalType cmd) {
                     if ("start".equals(param)) {
-                        calendarTask.setStart((short) cmd.intValue());
+                        calendarTask.setStart(cmd.shortValue());
                     } else if ("duration".equals(param)) {
-                        calendarTask.setDuration((short) cmd.intValue());
+                        calendarTask.setDuration(cmd.shortValue());
                     }
                 } else if (command instanceof QuantityType cmd) {
                     cmd = cmd.toUnit("min");
@@ -880,36 +913,47 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends Settings to the automower
+     * Sends CuttingHeight Setting to the automower
      *
-     * @param command The command that should be sent. E.g. a number for the cuttingHeight channel
-     * @param channelID The triggering channel
+     * @param cuttingHeight The cuttingHeight to be sent
      */
-    public void sendAutomowerSettings(Command command, String channelID) {
-        String[] channelIDSplit = channelID.split("-");
-        int index = Integer.parseInt(channelIDSplit[0].substring("calendartasks".length())) - 1;
-        String param = channelIDSplit[1];
-        logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
-                command.toString());
+    public void sendAutomowerStayOutZones(boolean enable, int index) {
+        if (isValidResult(mowerState)) {
+            MowerStayOutZoneAttributes attributes = new MowerStayOutZoneAttributes();
+            attributes.setEnable(enable);
+            MowerStayOutZone data = new MowerStayOutZone();
+            data.setType("stayOutZone");
+            data.setId(mowerState.getAttributes().getStayOutZones().getZones().get(index).getId());
+            data.setAttributes(attributes);
+            MowerStayOutZoneRequest request = new MowerStayOutZoneRequest();
+            request.setData(data);
 
+            String id = automowerId.get();
+            try {
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    automowerBridge.sendAutomowerStayOutZones(id, request.getData().getId(), request);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/conf-error-no-bridge");
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
+            }
+
+            updateAutomowerState();
+        }
+    }
+
+    /**
+     * Sends CuttingHeight Setting to the automower
+     *
+     * @param cuttingHeight The cuttingHeight to be sent
+     */
+    public void sendAutomowerSettingCuttingHeight(byte cuttingHeight) {
         if (isValidResult(mowerState)) {
             Settings settings = mowerState.getAttributes().getSettings();
-
-            if (command instanceof DecimalType cmd) {
-                if (CHANNEL_SETTING_HEADLIGHT_MODE.equals(channelID)) {
-                    settings.setCuttingHeight((byte) cmd.intValue());
-                }
-            } else if (command instanceof StringType cmd) {
-                if (CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME.equals(channelID)) {
-                    try {
-                        Headlight headlight = new Headlight();
-                        headlight.setHeadlightMode(HeadlightMode.valueOf(cmd.toString()));
-                        settings.setHeadlight(headlight);
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Invalid HeadlightMode: {}, Error: {}", cmd.toString(), e.getMessage());
-                    }
-                }
-            }
+            settings.setCuttingHeight(cuttingHeight);
 
             String id = automowerId.get();
             try {
@@ -929,32 +973,58 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     /**
-     * Confirm current non fatal error on the mower
+     * Sends HeadlightMode Setting to the automower
      *
-     * @param command The command that was used to trigger the channel
+     * @param headlightMode Headlight mode as string to be sent
      */
-    public void sendAutomowerConfirmError(Command command) {
-        logger.debug("Sending ConfirmError '{}'", command.toString());
-        if (command instanceof OnOffType cmd) {
-            if (cmd == OnOffType.ON) {
-                updateState(CHANNEL_COMMAND_CONFIRM_ERROR, OnOffType.OFF);
-                if (isValidResult(mowerState) && (mowerState.getAttributes().getCapabilities().canConfirmError())
-                        && (mowerState.getAttributes().getMower().getIsErrorConfirmable())) {
-                    String id = automowerId.get();
-                    try {
-                        AutomowerBridge automowerBridge = getAutomowerBridge();
-                        if (automowerBridge != null) {
-                            automowerBridge.sendAutomowerConfirmError(id);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/conf-error-no-bridge");
-                        }
-                    } catch (AutomowerCommunicationException e) {
-                        logger.warn("Unable to send ConfirmError to automower: {}, Error: {}", id, e.getMessage());
+    public void sendAutomowerSettingHeadlightMode(String headlightMode) {
+        if (isValidResult(mowerState)) {
+            try {
+                Settings settings = mowerState.getAttributes().getSettings();
+                Headlight headlight = new Headlight();
+                headlight.setHeadlightMode(HeadlightMode.valueOf(headlightMode));
+                settings.setHeadlight(headlight);
+
+                String id = automowerId.get();
+                try {
+                    AutomowerBridge automowerBridge = getAutomowerBridge();
+                    if (automowerBridge != null) {
+                        automowerBridge.sendAutomowerSettings(id, settings);
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/conf-error-no-bridge");
                     }
-                    updateAutomowerState();
+                } catch (AutomowerCommunicationException e) {
+                    logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
                 }
+
+                updateAutomowerState();
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid HeadlightMode: {}, Error: {}", headlightMode, e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Confirm current non fatal error on the mower
+     */
+    public void sendAutomowerConfirmError() {
+        logger.debug("Sending ConfirmError");
+        if (isValidResult(mowerState) && (mowerState.getAttributes().getCapabilities().canConfirmError())
+                && (mowerState.getAttributes().getMower().getIsErrorConfirmable())) {
+            String id = automowerId.get();
+            try {
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    automowerBridge.sendAutomowerConfirmError(id);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/conf-error-no-bridge");
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.warn("Unable to send ConfirmError to automower: {}, Error: {}", id, e.getMessage());
+            }
+            updateAutomowerState();
         }
     }
 

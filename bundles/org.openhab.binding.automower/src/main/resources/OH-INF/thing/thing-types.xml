@@ -194,9 +194,8 @@
 			<channel id="confirm_error" typeId="confirmError"/>
 
 			<!-- Positions -->
-			<channel id="last-position" typeId="positionType">
-				<description>Last Position</description>
-			</channel>
+			<channel id="last-position" typeId="lastPositionType"/>
+
 			<channel id="position01" typeId="positionType"/>
 			<channel id="position02" typeId="positionType"/>
 			<channel id="position03" typeId="positionType"/>
@@ -628,10 +627,17 @@
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
-	<channel-type id="positionType">
+	<channel-type id="lastPositionType" advanced="false">
+		<item-type>Location</item-type>
+		<label>Last GPS Position</label>
+		<description>Last GPS position of the mower</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="positionType" advanced="true">
 		<item-type>Location</item-type>
 		<label>GPS Position</label>
-		<description>The channel providing a waypoint of the mower's activity.</description>
+		<description>A waypoint of the mower's activity</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -29,10 +29,9 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -43,8 +42,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
-    private final Logger logger = LoggerFactory.getLogger(AutomowerConnectApi.class);
-
     public AutomowerConnectApi(HttpClient httpClient) {
         super(httpClient);
     }
@@ -126,6 +123,20 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
+    public void sendStayOutZones(String appKey, String token, String id, String zoneId,
+            MowerStayOutZoneRequest zoneRequest) throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/stayOutZones/" + zoneId;
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.PATCH);
+
+        request.content(new StringContentProvider(gson.toJson(zoneRequest)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
     private ContentResponse executeRequest(String appKey, String token, final Request request)
             throws AutomowerCommunicationException {
         request.timeout(10, TimeUnit.SECONDS);
@@ -151,7 +162,6 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         int statusCode = response.getStatus();
 
         checkForError(response, statusCode);
-        logger.warn("response: {}", response.getContentAsString());
         try {
             return gson.fromJson(response.getContentAsString(), type);
         } catch (JsonSyntaxException e) {

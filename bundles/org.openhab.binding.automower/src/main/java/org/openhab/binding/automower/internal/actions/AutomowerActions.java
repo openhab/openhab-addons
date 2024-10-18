@@ -131,4 +131,48 @@ public class AutomowerActions implements ThingActions {
     public static void resumeSchedule(ThingActions actions) {
         ((AutomowerActions) actions).resumeSchedule();
     }
+
+    @RuleAction(label = "@text/action-confirm-error-label", description = "@text/action-confirm-error-desc")
+    public void confirmError() {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerConfirmError();
+        }
+    }
+
+    public static void confirmError(ThingActions actions) {
+        ((AutomowerActions) actions).confirmError();
+    }
+
+    @RuleAction(label = "@text/action-set-cutting-height-label", description = "@text/action-set-cutting-height-desc")
+    public void setCuttingHeight(
+            @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerSettingCuttingHeight(cuttingHeight);
+        }
+    }
+
+    public static void setCuttingHeight(ThingActions actions, byte cuttingHeight) {
+        ((AutomowerActions) actions).setCuttingHeight(cuttingHeight);
+    }
+
+    @RuleAction(label = "@text/action-set-headlight-mode-label", description = "@text/action-set-headlight-mode-desc")
+    public void setHeadlightMode(
+            @ActionInput(name = "headlight-mode", label = "@text/action-input-headlight-mode-label", description = "@text/action-input-headlight-mode-desc") String headlightMode) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerSettingHeadlightMode(headlightMode);
+        }
+    }
+
+    public static void setHeadlightMode(ThingActions actions, String headlightMode) {
+        ((AutomowerActions) actions).setHeadlightMode(headlightMode);
+    }
 }

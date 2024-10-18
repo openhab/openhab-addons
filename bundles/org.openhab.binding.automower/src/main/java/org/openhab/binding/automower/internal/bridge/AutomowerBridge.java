@@ -32,6 +32,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
@@ -39,10 +40,6 @@ import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link AutomowerBridge} allows the communication to the various Husqvarna rest apis like the
@@ -56,9 +53,6 @@ public class AutomowerBridge {
     private final String appKey;
 
     private final AutomowerConnectApi automowerApi;
-
-    private final Logger logger = LoggerFactory.getLogger(AutomowerBridge.class);
-    private Gson gson = new Gson();
 
     public AutomowerBridge(OAuthClientService authService, String appKey, HttpClient httpClient,
             ScheduledExecutorService scheduler) {
@@ -143,8 +137,6 @@ public class AutomowerBridge {
         MowerCalendardRequest request = new MowerCalendardRequest();
         request.setData(mowerCalendar);
 
-        logger.debug("request '{}'", gson.toJson(request));
-
         automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId, request);
     }
 
@@ -164,8 +156,6 @@ public class AutomowerBridge {
         MowerSettingsRequest request = new MowerSettingsRequest();
         request.setData(mowerSettings);
 
-        logger.debug("request '{}'", gson.toJson(request));
-
         automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, request);
     }
 
@@ -177,5 +167,18 @@ public class AutomowerBridge {
      */
     public void sendAutomowerConfirmError(String id) throws AutomowerCommunicationException {
         automowerApi.sendConfirmError(appKey, authenticate().getAccessToken(), id);
+    }
+
+    /**
+     * Enable or disable stay out zone
+     *
+     * @param id The id of the mower
+     * @param zoneId The id of the stay out zone
+     * @param zoneRequest The new zone status
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerStayOutZones(String id, String zoneId, MowerStayOutZoneRequest zoneRequest)
+            throws AutomowerCommunicationException {
+        automowerApi.sendStayOutZones(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
     }
 }
