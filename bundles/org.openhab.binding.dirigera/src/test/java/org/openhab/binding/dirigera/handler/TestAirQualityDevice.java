@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.AirQualityHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -36,6 +37,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestAirQualityDevice {
     @Test
     void testAirQuality() {
@@ -79,28 +81,28 @@ class TestAirQualityDevice {
         State otaProgess = callback.getState("dirigera:air-quality:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
-        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
-        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+        assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
         State temperatureState = callback.getState("dirigera:air-quality:test-device:temperature");
         assertNotNull(temperatureState);
         assertTrue(temperatureState instanceof QuantityType);
-        assertTrue(((QuantityType) temperatureState).getUnit().equals(SIUnits.CELSIUS));
-        assertEquals(20, ((QuantityType) temperatureState).intValue(), "Temperature");
+        assertTrue(((QuantityType<?>) temperatureState).getUnit().equals(SIUnits.CELSIUS));
+        assertEquals(20, ((QuantityType<?>) temperatureState).intValue(), "Temperature");
         State humidityState = callback.getState("dirigera:air-quality:test-device:humidity");
         assertNotNull(humidityState);
         assertTrue(humidityState instanceof QuantityType);
-        assertTrue(((QuantityType) humidityState).getUnit().equals(Units.PERCENT));
-        assertEquals(76, ((QuantityType) humidityState).intValue(), "Hunidity");
+        assertTrue(((QuantityType<?>) humidityState).getUnit().equals(Units.PERCENT));
+        assertEquals(76, ((QuantityType<?>) humidityState).intValue(), "Hunidity");
         State ppmState = callback.getState("dirigera:air-quality:test-device:particulate-matter");
         assertNotNull(ppmState);
         assertTrue(ppmState instanceof QuantityType);
-        assertTrue(((QuantityType) ppmState).getUnit().equals(Units.MICROGRAM_PER_CUBICMETRE));
-        assertEquals(11, ((QuantityType) ppmState).intValue(), "ppm");
+        assertTrue(((QuantityType<?>) ppmState).getUnit().equals(Units.MICROGRAM_PER_CUBICMETRE));
+        assertEquals(11, ((QuantityType<?>) ppmState).intValue(), "ppm");
         State vocState = callback.getState("dirigera:air-quality:test-device:voc-index");
         assertNotNull(vocState);
         assertTrue(vocState instanceof QuantityType);
-        assertTrue(((QuantityType) vocState).getUnit().toString().equals("mg/m³"));
-        assertEquals(100, ((QuantityType) vocState).intValue(), "VOC Index");
+        assertTrue(((QuantityType<?>) vocState).getUnit().toString().equals("mg/m³"));
+        assertEquals(100, ((QuantityType<?>) vocState).intValue(), "VOC Index");
     }
 }

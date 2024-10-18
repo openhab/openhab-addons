@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.MotionSensorHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -35,6 +36,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestMotionSensor {
 
     @Test
@@ -66,8 +68,8 @@ class TestMotionSensor {
         State batteryState = callback.getState("dirigera:motion-sensor:test-device:battery-level");
         assertNotNull(batteryState);
         assertTrue(batteryState instanceof QuantityType);
-        assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
-        assertEquals(20, ((QuantityType) batteryState).intValue(), "Battery level");
+        assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
+        assertEquals(20, ((QuantityType<?>) batteryState).intValue(), "Battery level");
         State onOffState = callback.getState("dirigera:motion-sensor:test-device:detection");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
