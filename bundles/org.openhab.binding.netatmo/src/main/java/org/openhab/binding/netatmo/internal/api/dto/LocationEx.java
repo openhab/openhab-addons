@@ -38,7 +38,6 @@ public interface LocationEx extends Location {
             try {
                 return ZoneId.of(local);
             } catch (DateTimeException ignore) {
-
             }
         }
         return ZoneId.systemDefault();
