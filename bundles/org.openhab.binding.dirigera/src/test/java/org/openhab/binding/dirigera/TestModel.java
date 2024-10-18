@@ -18,13 +18,12 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -32,6 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestModel {
 
     @Test
@@ -46,12 +46,6 @@ class TestModel {
                 model.getCustonNameFor("5ac5e131-44a4-4d75-be78-759a095d31fb_3"), "Motion Sensor name");
         // test device without custom name and no model name
         assertEquals("light", model.getCustonNameFor("c27faa27-4c18-464f-81a0-a31ce57d83d5_1"), "Lamp");
-    }
-
-    @Test
-    void testModelStress() {
-        String mdoelString = FileReader.readFileInString("src/test/resources/NewHome.json");
-        ExecutorService scheduler = ThreadPoolManager.getPool("ModelStressTest");
     }
 
     @Test

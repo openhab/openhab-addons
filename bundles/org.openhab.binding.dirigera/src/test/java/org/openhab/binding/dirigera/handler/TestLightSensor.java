@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -34,6 +35,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestLightSensor {
 
     @Test
@@ -57,15 +59,15 @@ class TestLightSensor {
         State luxState = callback.getState("dirigera:light-sensor:test-device:illuminance");
         assertNotNull(luxState);
         assertTrue(luxState instanceof QuantityType);
-        assertTrue(((QuantityType) luxState).getUnit().equals(Units.LUX));
-        assertEquals(1, ((QuantityType) luxState).intValue(), "Lux level");
+        assertTrue(((QuantityType<?>) luxState).getUnit().equals(Units.LUX));
+        assertEquals(1, ((QuantityType<?>) luxState).intValue(), "Lux level");
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ILLUMINANCE), RefreshType.REFRESH);
         luxState = callback.getState("dirigera:light-sensor:test-device:illuminance");
         assertNotNull(luxState);
         assertTrue(luxState instanceof QuantityType);
-        assertTrue(((QuantityType) luxState).getUnit().equals(Units.LUX));
-        assertEquals(1, ((QuantityType) luxState).intValue(), "Lux level");
+        assertTrue(((QuantityType<?>) luxState).getUnit().equals(Units.LUX));
+        assertEquals(1, ((QuantityType<?>) luxState).intValue(), "Lux level");
     }
 }

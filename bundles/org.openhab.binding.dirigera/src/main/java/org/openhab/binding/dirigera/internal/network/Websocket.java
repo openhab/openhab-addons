@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 @NonNullByDefault
 public class Websocket {
-    private static String STARTS = "starts";
-    private static String STOPS = "stops";
-    private static String DISCONNECTS = "disconnetcs";
-    private static String ERRORS = "errors";
-    private static String PINGS = "pings";
-    private static String LAST_LATENCY = "ping-latency";
-    private static String MESSAGES = "messages";
+    private static final String STARTS = "starts";
+    private static final String STOPS = "stops";
+    private static final String DISCONNECTS = "disconnetcs";
+    private static final String ERRORS = "errors";
+    private static final String PINGS = "pings";
+    private static final String LAST_LATENCY = "ping-latency";
+    private static final String MESSAGES = "messages";
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final Map<String, Instant> pingPongMap = new HashMap<>();

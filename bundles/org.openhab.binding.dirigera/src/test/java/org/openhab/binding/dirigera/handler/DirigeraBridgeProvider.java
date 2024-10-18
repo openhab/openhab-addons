@@ -27,10 +27,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.FileReader;
@@ -48,6 +50,7 @@ import org.openhab.core.thing.internal.BridgeImpl;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class DirigeraBridgeProvider {
     public static final TimeZoneProvider TZP = new TimeZoneProvider() {
 
@@ -69,6 +72,8 @@ class DirigeraBridgeProvider {
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
         Request requestMock = mock(Request.class);
+        when(httpMock.isRunning()).thenReturn(true);
+        when(httpMock.getSslContextFactory()).thenReturn(new SslContextFactory.Client(true));
         when(httpMock.newRequest(String.format(HOME_URL, ipAddress))).thenReturn(requestMock);
         when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
         when(requestMock.header(HttpHeader.AUTHORIZATION, "Bearer 1234")).thenReturn(requestMock);

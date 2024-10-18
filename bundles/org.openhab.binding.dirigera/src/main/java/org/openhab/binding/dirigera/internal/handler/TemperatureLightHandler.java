@@ -48,7 +48,6 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
     public TemperatureLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        PercentType pt = new PercentType(50);
     }
 
     @Override
@@ -120,8 +119,6 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                         }
                         break;
                 }
-            } else {
-                logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
             }
         }
     }
@@ -153,11 +150,7 @@ public class TemperatureLightHandler extends BaseDeviceHandler {
                         kelvin = Math.max(kelvin, colorTemperatureMax);
                         int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
                         updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
-                    } else {
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE no targetChannel for {}", key);
                 }
             }
         }

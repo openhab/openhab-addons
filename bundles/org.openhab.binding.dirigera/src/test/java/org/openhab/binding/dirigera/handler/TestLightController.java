@@ -18,6 +18,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.LightControllerHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
@@ -35,6 +36,7 @@ import org.openhab.core.types.State;
  *
  * @author Bernd Weymann - Initial Contribution
  */
+@NonNullByDefault
 class TestLightController {
     @Test
     void testLightController() {
@@ -75,12 +77,12 @@ class TestLightController {
         State otaProgess = callback.getState("dirigera:light-controller:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
-        assertTrue(((QuantityType) otaProgess).getUnit().equals(Units.PERCENT));
-        assertEquals(0, ((QuantityType) otaProgess).intValue(), "OTA Progress");
+        assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
+        assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
         State batteryState = callback.getState("dirigera:light-controller:test-device:battery-level");
         assertNotNull(batteryState);
         assertTrue(batteryState instanceof QuantityType);
-        assertTrue(((QuantityType) batteryState).getUnit().equals(Units.PERCENT));
-        assertEquals(85, ((QuantityType) batteryState).intValue(), "Battery level");
+        assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
+        assertEquals(85, ((QuantityType<?>) batteryState).intValue(), "Battery level");
     }
 }
