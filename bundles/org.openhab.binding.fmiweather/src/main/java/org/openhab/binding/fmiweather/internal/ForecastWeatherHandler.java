@@ -96,9 +96,7 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
         String location = config.location;
         if (location.isBlank()) {
-            logger.debug("Location not set for thing {} -- aborting initialization.", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("location parameter not set"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "location parameter not set");
             return;
         }
         String[] split = location.split(",");
