@@ -14,6 +14,8 @@ package org.openhab.binding.linky.internal.dto;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -21,23 +23,10 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
-
-    public PrmInfo() {
-        customerId = "";
-        contractInfo = new ContractDetails();
-        identityInfo = new IdentityInfo();
-        addressInfo = new AddressInfo();
-        contactInfo = new ContactInfo();
-        usagePointInfo = new UsagePointDetails();
-    }
-
-    public String prmId;
+public class CustomerIdResponse {
+    @SerializedName("customer_id")
     public String customerId;
-
-    public ContractDetails contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
+    public IdentityDetails identity;
+    @SerializedName("contact_data")
+    public ContactInfo contactData;
 }

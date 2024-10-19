@@ -21,23 +21,18 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class PrmInfo {
+public class IdentityInfo {
+    public String title;
+    public String firstname;
+    public String lastname;
 
-    public PrmInfo() {
-        customerId = "";
-        contractInfo = new ContractDetails();
-        identityInfo = new IdentityInfo();
-        addressInfo = new AddressInfo();
-        contactInfo = new ContactInfo();
-        usagePointInfo = new UsagePointDetails();
+    public static IdentityInfo fromWebUserInfo(WebUserInfo webUserInfo) {
+        IdentityInfo result = new IdentityInfo();
+
+        result.firstname = webUserInfo.userProperties.firstName();
+        result.lastname = webUserInfo.userProperties.name();
+        result.title = "";
+
+        return result;
     }
-
-    public String prmId;
-    public String customerId;
-
-    public ContractDetails contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
 }
