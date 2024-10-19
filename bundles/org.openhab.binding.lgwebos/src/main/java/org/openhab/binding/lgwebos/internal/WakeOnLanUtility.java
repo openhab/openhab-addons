@@ -20,6 +20,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.time.Duration;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -46,11 +47,11 @@ public class WakeOnLanUtility {
 
     private static final String COMMAND;
     static {
-        String os = System.getProperty("os.name").toLowerCase();
+        String os = Objects.requireNonNullElse(System.getProperty("os.name"), "").toLowerCase();
         LOGGER.debug("os: {}", os);
-        if ((os.contains("win"))) {
+        if (os.contains("win")) {
             COMMAND = "arp -a %s";
-        } else if ((os.contains("mac"))) {
+        } else if (os.contains("mac")) {
             COMMAND = "arp %s";
         } else { // linux
             if (checkIfLinuxCommandExists("arp")) {
