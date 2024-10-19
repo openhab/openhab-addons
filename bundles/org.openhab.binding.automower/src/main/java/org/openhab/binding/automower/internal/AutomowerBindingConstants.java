@@ -180,45 +180,45 @@ public class AutomowerBindingConstants {
     public static final String GROUP_WORKAREAS = ""; // no channel group in use at the moment, we'll possibly
                                                      // introduce this in a future release
     public static final ArrayList<String> CHANNEL_WORKAREAS = new ArrayList<>(
-            List.of(GROUP_WORKAREAS + "workareas01-id", GROUP_WORKAREAS + "workareas01-name",
-                    GROUP_WORKAREAS + "workareas01-cutting-height", GROUP_WORKAREAS + "workareas01-enabled",
-                    GROUP_WORKAREAS + "workareas01-progress", GROUP_WORKAREAS + "workareas01-last-time-completed",
+            List.of(GROUP_WORKAREAS + "workarea01-id", GROUP_WORKAREAS + "workarea01-name",
+                    GROUP_WORKAREAS + "workarea01-cutting-height", GROUP_WORKAREAS + "workarea01-enabled",
+                    GROUP_WORKAREAS + "workarea01-progress", GROUP_WORKAREAS + "workarea01-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas02-id", GROUP_WORKAREAS + "workareas02-name",
-                    GROUP_WORKAREAS + "workareas02-cutting-height", GROUP_WORKAREAS + "workareas02-enabled",
-                    GROUP_WORKAREAS + "workareas02-progress", GROUP_WORKAREAS + "workareas02-last-time-completed",
+                    GROUP_WORKAREAS + "workarea02-id", GROUP_WORKAREAS + "workarea02-name",
+                    GROUP_WORKAREAS + "workarea02-cutting-height", GROUP_WORKAREAS + "workarea02-enabled",
+                    GROUP_WORKAREAS + "workarea02-progress", GROUP_WORKAREAS + "workarea02-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas03-id", GROUP_WORKAREAS + "workareas03-name",
-                    GROUP_WORKAREAS + "workareas03-cutting-height", GROUP_WORKAREAS + "workareas03-enabled",
-                    GROUP_WORKAREAS + "workareas03-progress", GROUP_WORKAREAS + "workareas03-last-time-completed",
+                    GROUP_WORKAREAS + "workarea03-id", GROUP_WORKAREAS + "workarea03-name",
+                    GROUP_WORKAREAS + "workarea03-cutting-height", GROUP_WORKAREAS + "workarea03-enabled",
+                    GROUP_WORKAREAS + "workarea03-progress", GROUP_WORKAREAS + "workarea03-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas04-id", GROUP_WORKAREAS + "workareas04-name",
-                    GROUP_WORKAREAS + "workareas04-cutting-height", GROUP_WORKAREAS + "workareas04-enabled",
-                    GROUP_WORKAREAS + "workareas04-progress", GROUP_WORKAREAS + "workareas04-last-time-completed",
+                    GROUP_WORKAREAS + "workarea04-id", GROUP_WORKAREAS + "workarea04-name",
+                    GROUP_WORKAREAS + "workarea04-cutting-height", GROUP_WORKAREAS + "workarea04-enabled",
+                    GROUP_WORKAREAS + "workarea04-progress", GROUP_WORKAREAS + "workarea04-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas05-id", GROUP_WORKAREAS + "workareas05-name",
-                    GROUP_WORKAREAS + "workareas05-cutting-height", GROUP_WORKAREAS + "workareas05-enabled",
-                    GROUP_WORKAREAS + "workareas05-progress", GROUP_WORKAREAS + "workareas05-last-time-completed",
+                    GROUP_WORKAREAS + "workarea05-id", GROUP_WORKAREAS + "workarea05-name",
+                    GROUP_WORKAREAS + "workarea05-cutting-height", GROUP_WORKAREAS + "workarea05-enabled",
+                    GROUP_WORKAREAS + "workarea05-progress", GROUP_WORKAREAS + "workarea05-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas06-id", GROUP_WORKAREAS + "workareas06-name",
-                    GROUP_WORKAREAS + "workareas06-cutting-height", GROUP_WORKAREAS + "workareas06-enabled",
-                    GROUP_WORKAREAS + "workareas06-progress", GROUP_WORKAREAS + "workareas06-last-time-completed",
+                    GROUP_WORKAREAS + "workarea06-id", GROUP_WORKAREAS + "workarea06-name",
+                    GROUP_WORKAREAS + "workarea06-cutting-height", GROUP_WORKAREAS + "workarea06-enabled",
+                    GROUP_WORKAREAS + "workarea06-progress", GROUP_WORKAREAS + "workarea06-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas07-id", GROUP_WORKAREAS + "workareas07-name",
-                    GROUP_WORKAREAS + "workareas07-cutting-height", GROUP_WORKAREAS + "workareas07-enabled",
-                    GROUP_WORKAREAS + "workareas07-progress", GROUP_WORKAREAS + "workareas07-last-time-completed",
+                    GROUP_WORKAREAS + "workarea07-id", GROUP_WORKAREAS + "workarea07-name",
+                    GROUP_WORKAREAS + "workarea07-cutting-height", GROUP_WORKAREAS + "workarea07-enabled",
+                    GROUP_WORKAREAS + "workarea07-progress", GROUP_WORKAREAS + "workarea07-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas08-id", GROUP_WORKAREAS + "workareas08-name",
-                    GROUP_WORKAREAS + "workareas08-cutting-height", GROUP_WORKAREAS + "workareas08-enabled",
-                    GROUP_WORKAREAS + "workareas08-progress", GROUP_WORKAREAS + "workareas08-last-time-completed",
+                    GROUP_WORKAREAS + "workarea08-id", GROUP_WORKAREAS + "workarea08-name",
+                    GROUP_WORKAREAS + "workarea08-cutting-height", GROUP_WORKAREAS + "workarea08-enabled",
+                    GROUP_WORKAREAS + "workarea08-progress", GROUP_WORKAREAS + "workarea08-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas09-id", GROUP_WORKAREAS + "workareas09-name",
-                    GROUP_WORKAREAS + "workareas09-cutting-height", GROUP_WORKAREAS + "workareas09-enabled",
-                    GROUP_WORKAREAS + "workareas09-progress", GROUP_WORKAREAS + "workareas09-last-time-completed",
+                    GROUP_WORKAREAS + "workarea09-id", GROUP_WORKAREAS + "workarea09-name",
+                    GROUP_WORKAREAS + "workarea09-cutting-height", GROUP_WORKAREAS + "workarea09-enabled",
+                    GROUP_WORKAREAS + "workarea09-progress", GROUP_WORKAREAS + "workarea09-last-time-completed",
 
-                    GROUP_WORKAREAS + "workareas10-id", GROUP_WORKAREAS + "workareas10-name",
-                    GROUP_WORKAREAS + "workareas10-cutting-height", GROUP_WORKAREAS + "workareas10-enabled",
-                    GROUP_WORKAREAS + "workareas10-progress", GROUP_WORKAREAS + "workareas10-last-time-completed"));
+                    GROUP_WORKAREAS + "workarea10-id", GROUP_WORKAREAS + "workarea10-name",
+                    GROUP_WORKAREAS + "workarea10-cutting-height", GROUP_WORKAREAS + "workarea10-enabled",
+                    GROUP_WORKAREAS + "workarea10-progress", GROUP_WORKAREAS + "workarea10-last-time-completed"));
 
     // Command Channel ids
     public static final String GROUP_COMMANDS = ""; // no channel group in use at the moment, we'll possibly introduce

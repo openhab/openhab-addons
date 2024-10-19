@@ -56,7 +56,13 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZone;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+<<<<<<< HEAD
 >>>>>>> added sendAutomowerStayOutZones
+=======
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkArea;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaAttributes;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaRequest;
+>>>>>>> added sendAutomowerWorkArea()
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Position;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
@@ -178,11 +184,28 @@ public class AutomowerHandler extends BaseThingHandler {
 >>>>>>> implemented sendAutomowerConfirmError()
 =======
         } else if (CHANNEL_STAYOUTZONES.contains(channelUID.getId())) {
-            if (channelUID.getId().contains("-enabled")) {
+            String[] channelIDSplit = channelUID.getId().split("-");
+            int index = Integer.parseInt(channelIDSplit[0].substring("zone".length())) - 1;
+            if ("enabled".equals(channelIDSplit[0])) {
                 if (command instanceof OnOffType cmd) {
-                    String[] channelIDSplit = channelUID.getId().split("-");
-                    int index = Integer.parseInt(channelIDSplit[0].substring("zone".length())) - 1;
-                    sendAutomowerStayOutZones(((cmd == OnOffType.ON) ? true : false), index);
+                    sendAutomowerStayOutZone(((cmd == OnOffType.ON) ? true : false), index);
+                }
+            }
+        } else if (CHANNEL_WORKAREAS.contains(channelUID.getId())) {
+            String[] channelIDSplit = channelUID.getId().split("-");
+            int index = Integer.parseInt(channelIDSplit[0].substring("workarea".length())) - 1;
+            if ("enabled".equals(channelIDSplit[0])) {
+                if (command instanceof OnOffType cmd) {
+                    sendAutomowerWorkAreaEnable(((cmd == OnOffType.ON) ? true : false), index);
+                }
+            } else if ("cutting-height".equals(channelIDSplit[0])) {
+                if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("%");
+                    if (cmd != null) {
+                        sendAutomowerWorkAreaCuttingHeight(cmd.byteValue(), index);
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    sendAutomowerWorkAreaCuttingHeight(cmd.byteValue(), index);
                 }
             }
         } else if (channelUID.getId().equals(CHANNEL_SETTING_CUTTING_HEIGHT)) {
@@ -913,11 +936,12 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends CuttingHeight Setting to the automower
+     * Sends StayOutZone Setting to the automower
      *
-     * @param cuttingHeight The cuttingHeight to be sent
+     * @param enable Zone enabled or disabled
+     * @param index Index of zone
      */
-    public void sendAutomowerStayOutZones(boolean enable, int index) {
+    public void sendAutomowerStayOutZone(boolean enable, int index) {
         if (isValidResult(mowerState)) {
             MowerStayOutZoneAttributes attributes = new MowerStayOutZoneAttributes();
             attributes.setEnable(enable);
@@ -932,7 +956,77 @@ public class AutomowerHandler extends BaseThingHandler {
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
-                    automowerBridge.sendAutomowerStayOutZones(id, request.getData().getId(), request);
+                    automowerBridge.sendAutomowerStayOutZone(id, request.getData().getId(), request);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/conf-error-no-bridge");
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
+            }
+
+            updateAutomowerState();
+        }
+    }
+
+    /**
+     * Sends WorkArea enable Setting to the automower
+     *
+     * @param enable WorkArea enabled or disabled
+     * @param index Index of WorkArea
+     */
+    public void sendAutomowerWorkAreaEnable(boolean enable, int index) {
+        if (isValidResult(mowerState)) {
+            MowerWorkAreaAttributes attributes = new MowerWorkAreaAttributes();
+            attributes.setEnable(enable);
+            attributes.setCuttingHeight(mowerState.getAttributes().getWorkAreas().get(index).getCuttingHeight());
+            MowerWorkArea data = new MowerWorkArea();
+            data.setType("workArea");
+            data.setId(mowerState.getAttributes().getWorkAreas().get(index).getWorkAreaId());
+            data.setAttributes(attributes);
+            MowerWorkAreaRequest request = new MowerWorkAreaRequest();
+            request.setData(data);
+
+            String id = automowerId.get();
+            try {
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    automowerBridge.sendAutomowerWorkArea(id, request.getData().getId(), request);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/conf-error-no-bridge");
+                }
+            } catch (AutomowerCommunicationException e) {
+                logger.warn("Unable to send calendar to automower: {}, Error: {}", id, e.getMessage());
+            }
+
+            updateAutomowerState();
+        }
+    }
+
+    /**
+     * Sends WorkArea CuttingHeight Setting to the automower
+     *
+     * @param enable CuttingHeight of the WorkArea
+     * @param index Index of WorkArea
+     */
+    public void sendAutomowerWorkAreaCuttingHeight(byte cuttingHeight, int index) {
+        if (isValidResult(mowerState)) {
+            MowerWorkAreaAttributes attributes = new MowerWorkAreaAttributes();
+            attributes.setEnable(mowerState.getAttributes().getWorkAreas().get(index).isEnabled());
+            attributes.setCuttingHeight(cuttingHeight);
+            MowerWorkArea data = new MowerWorkArea();
+            data.setType("workArea");
+            data.setId(mowerState.getAttributes().getWorkAreas().get(index).getWorkAreaId());
+            data.setAttributes(attributes);
+            MowerWorkAreaRequest request = new MowerWorkAreaRequest();
+            request.setData(data);
+
+            String id = automowerId.get();
+            try {
+                AutomowerBridge automowerBridge = getAutomowerBridge();
+                if (automowerBridge != null) {
+                    automowerBridge.sendAutomowerWorkArea(id, request.getData().getId(), request);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");

@@ -30,6 +30,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaRequest;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
 
@@ -123,7 +124,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
-    public void sendStayOutZones(String appKey, String token, String id, String zoneId,
+    public void sendStayOutZone(String appKey, String token, String id, String zoneId,
             MowerStayOutZoneRequest zoneRequest) throws AutomowerCommunicationException {
         String url;
         url = getBaseUrl() + "/mowers/" + id + "/stayOutZones/" + zoneId;
@@ -131,6 +132,20 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.PATCH);
 
         request.content(new StringContentProvider(gson.toJson(zoneRequest)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    public void sendWorkArea(String appKey, String token, String id, long workAreaId,
+            MowerWorkAreaRequest workAreaRequest) throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/workAreas/" + workAreaId;
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.PATCH);
+
+        request.content(new StringContentProvider(gson.toJson(workAreaRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);
 

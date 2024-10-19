@@ -281,66 +281,66 @@
 			<channel id="zone10-enabled" typeId="zoneEnabledType"/>
 
 			<!-- Work Areas -->
-			<channel id="workareas01-id" typeId="workareasIdType"/>
-			<channel id="workareas01-name" typeId="workareasNameType"/>
-			<channel id="workareas01-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas01-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas01-progress" typeId="workareasProgressType"/>
-			<channel id="workareas01-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas02-id" typeId="workareasIdType"/>
-			<channel id="workareas02-name" typeId="workareasNameType"/>
-			<channel id="workareas02-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas02-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas02-progress" typeId="workareasProgressType"/>
-			<channel id="workareas02-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas03-id" typeId="workareasIdType"/>
-			<channel id="workareas03-name" typeId="workareasNameType"/>
-			<channel id="workareas03-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas03-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas03-progress" typeId="workareasProgressType"/>
-			<channel id="workareas03-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas04-id" typeId="workareasIdType"/>
-			<channel id="workareas04-name" typeId="workareasNameType"/>
-			<channel id="workareas04-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas04-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas04-progress" typeId="workareasProgressType"/>
-			<channel id="workareas04-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas05-id" typeId="workareasIdType"/>
-			<channel id="workareas05-name" typeId="workareasNameType"/>
-			<channel id="workareas05-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas05-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas05-progress" typeId="workareasProgressType"/>
-			<channel id="workareas05-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas06-id" typeId="workareasIdType"/>
-			<channel id="workareas06-name" typeId="workareasNameType"/>
-			<channel id="workareas06-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas06-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas06-progress" typeId="workareasProgressType"/>
-			<channel id="workareas06-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas07-id" typeId="workareasIdType"/>
-			<channel id="workareas07-name" typeId="workareasNameType"/>
-			<channel id="workareas07-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas07-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas07-progress" typeId="workareasProgressType"/>
-			<channel id="workareas07-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas08-id" typeId="workareasIdType"/>
-			<channel id="workareas08-name" typeId="workareasNameType"/>
-			<channel id="workareas08-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas08-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas08-progress" typeId="workareasProgressType"/>
-			<channel id="workareas08-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas09-id" typeId="workareasIdType"/>
-			<channel id="workareas09-name" typeId="workareasNameType"/>
-			<channel id="workareas09-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas09-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas09-progress" typeId="workareasProgressType"/>
-			<channel id="workareas09-last-time-completed" typeId="workareasLastTimeCompletedType"/>
-			<channel id="workareas10-id" typeId="workareasIdType"/>
-			<channel id="workareas10-name" typeId="workareasNameType"/>
-			<channel id="workareas10-cutting-height" typeId="workareasCuttingHeightType"/>
-			<channel id="workareas10-enabled" typeId="workareasEnabledType"/>
-			<channel id="workareas10-progress" typeId="workareasProgressType"/>
-			<channel id="workareas10-last-time-completed" typeId="workareasLastTimeCompletedType"/>
+			<channel id="workarea01-id" typeId="workareaIdType"/>
+			<channel id="workarea01-name" typeId="workareaNameType"/>
+			<channel id="workarea01-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea01-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea01-progress" typeId="workareaProgressType"/>
+			<channel id="workarea01-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea02-id" typeId="workareaIdType"/>
+			<channel id="workarea02-name" typeId="workareaNameType"/>
+			<channel id="workarea02-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea02-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea02-progress" typeId="workareaProgressType"/>
+			<channel id="workarea02-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea03-id" typeId="workareaIdType"/>
+			<channel id="workarea03-name" typeId="workareaNameType"/>
+			<channel id="workarea03-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea03-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea03-progress" typeId="workareaProgressType"/>
+			<channel id="workarea03-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea04-id" typeId="workareaIdType"/>
+			<channel id="workarea04-name" typeId="workareaNameType"/>
+			<channel id="workarea04-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea04-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea04-progress" typeId="workareaProgressType"/>
+			<channel id="workarea04-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea05-id" typeId="workareaIdType"/>
+			<channel id="workarea05-name" typeId="workareaNameType"/>
+			<channel id="workarea05-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea05-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea05-progress" typeId="workareaProgressType"/>
+			<channel id="workarea05-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea06-id" typeId="workareaIdType"/>
+			<channel id="workarea06-name" typeId="workareaNameType"/>
+			<channel id="workarea06-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea06-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea06-progress" typeId="workareaProgressType"/>
+			<channel id="workarea06-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea07-id" typeId="workareaIdType"/>
+			<channel id="workarea07-name" typeId="workareaNameType"/>
+			<channel id="workarea07-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea07-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea07-progress" typeId="workareaProgressType"/>
+			<channel id="workarea07-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea08-id" typeId="workareaIdType"/>
+			<channel id="workarea08-name" typeId="workareaNameType"/>
+			<channel id="workarea08-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea08-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea08-progress" typeId="workareaProgressType"/>
+			<channel id="workarea08-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea09-id" typeId="workareaIdType"/>
+			<channel id="workarea09-name" typeId="workareaNameType"/>
+			<channel id="workarea09-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea09-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea09-progress" typeId="workareaProgressType"/>
+			<channel id="workarea09-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			<channel id="workarea10-id" typeId="workareaIdType"/>
+			<channel id="workarea10-name" typeId="workareaNameType"/>
+			<channel id="workarea10-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="workarea10-enabled" typeId="workareaEnabledType"/>
+			<channel id="workarea10-progress" typeId="workareaProgressType"/>
+			<channel id="workarea10-last-time-completed" typeId="workareaLastTimeCompletedType"/>
 		</channels>
 
 		<properties>
@@ -727,42 +727,42 @@
 	</channel-type>
 
 	<!-- Work Areas -->
-	<channel-type id="workareasIdType">
+	<channel-type id="workareaIdType">
 		<item-type>Number</item-type>
 		<label>Work Area Id</label>
 		<description>Id of the Work Area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareasNameType">
+	<channel-type id="workareaNameType">
 		<item-type>String</item-type>
 		<label>Work Area Name</label>
 		<description>Name of the work area</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareasCuttingHeightType">
+	<channel-type id="workareaCuttingHeightType">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting height in percent</label>
 		<description>Cutting height in percent. 0-100</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareasEnabledType">
+	<channel-type id="workareaEnabledType">
 		<item-type>Switch</item-type>
 		<label>Work Area Enabled</label>
 		<description>If the work area is enabled or disabled</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareasProgressType">
+	<channel-type id="workareaProgressType">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Work Area Progress</label>
 		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only.</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareasLastTimeCompletedType">
+	<channel-type id="workareaLastTimeCompletedType">
 		<item-type>DateTime</item-type>
 		<label>Last Time Completed</label>
 		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only.</description>

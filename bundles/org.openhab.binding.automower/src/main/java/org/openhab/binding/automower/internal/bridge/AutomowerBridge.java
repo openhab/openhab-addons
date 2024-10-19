@@ -33,6 +33,7 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
@@ -177,8 +178,21 @@ public class AutomowerBridge {
      * @param zoneRequest The new zone status
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerStayOutZones(String id, String zoneId, MowerStayOutZoneRequest zoneRequest)
+    public void sendAutomowerStayOutZone(String id, String zoneId, MowerStayOutZoneRequest zoneRequest)
             throws AutomowerCommunicationException {
-        automowerApi.sendStayOutZones(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
+        automowerApi.sendStayOutZone(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
+    }
+
+    /**
+     * Update a work area setting
+     *
+     * @param id The id of the mower
+     * @param workAreaId The id of the work area
+     * @param workAreaRequest The new work area status
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerWorkArea(String id, long workAreaId, MowerWorkAreaRequest workAreaRequest)
+            throws AutomowerCommunicationException {
+        automowerApi.sendWorkArea(appKey, authenticate().getAccessToken(), id, workAreaId, workAreaRequest);
     }
 }
