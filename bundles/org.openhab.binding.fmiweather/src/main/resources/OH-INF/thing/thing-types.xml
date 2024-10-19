@@ -247,6 +247,15 @@
 				<label>Location</label>
 				<description>Location of weather in geographical coordinates (latitude,longitude).</description>
 			</parameter>
+			<parameter name="query" type="text" required="false">
+				<label>Stored Query</label>
+				<description>Stored query for official FMI forecast</description>
+				<default>harmonie</default>
+				<options>
+					<option value="harmonie">Harmonie Surface Point Weather Forecast</option>
+					<option value="edited">Forecast for Scandinavia (edited by a forecaster)</option>
+				</options>
+			</parameter>
 		</config-description>
 
 	</thing-type>
