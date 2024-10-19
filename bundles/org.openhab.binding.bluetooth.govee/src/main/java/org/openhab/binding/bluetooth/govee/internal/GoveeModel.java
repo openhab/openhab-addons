@@ -44,7 +44,7 @@ public enum GoveeModel {
     private final String label;
     private final boolean supportsWarningBroadcast;
 
-    private static final Logger logger = LoggerFactory.getLogger(GoveeModel.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GoveeModel.class);
 
     private GoveeModel(ThingTypeUID thingTypeUID, String label, boolean supportsWarningBroadcast) {
         this.thingTypeUID = thingTypeUID;
@@ -71,13 +71,13 @@ public enum GoveeModel {
                 String uname = name.toUpperCase();
                 for (GoveeModel model : GoveeModel.values()) {
                     if (uname.contains(model.name())) {
-                        logger.debug("detected model {}", model);
+                        LOGGER.debug("detected model {}", model);
                         return model;
                     }
                 }
             }
         }
-        logger.debug("Device {} is no Govee", name);
+        LOGGER.debug("Device {} is no Govee", name);
         return null;
     }
 }

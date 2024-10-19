@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JpaHistoricItem implements HistoricItem {
-    private static final Logger logger = LoggerFactory.getLogger(JpaHistoricItem.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JpaHistoricItem.class);
 
     private final String name;
     private final State state;
@@ -123,7 +123,7 @@ public class JpaHistoricItem implements HistoricItem {
                 // Ensure we return in the item's unit
                 state = value.toUnit(unit);
                 if (state == null) {
-                    logger.warn("Persisted state {} for item {} is incompatible with item's unit {}; ignoring", value,
+                    LOGGER.warn("Persisted state {} for item {} is incompatible with item's unit {}; ignoring", value,
                             item.getName(), unit);
                     return null;
                 }

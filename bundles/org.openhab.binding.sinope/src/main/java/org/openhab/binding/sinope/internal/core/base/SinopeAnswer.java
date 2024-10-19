@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class SinopeAnswer extends SinopeRequest {
 
-    /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
+    private final Logger logger = LoggerFactory.getLogger(SinopeAnswer.class);
 
     /**
      * Instantiates a new sinope answer.

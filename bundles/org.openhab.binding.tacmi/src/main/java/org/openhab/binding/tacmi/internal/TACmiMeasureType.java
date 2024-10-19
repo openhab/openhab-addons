@@ -55,7 +55,7 @@ public enum TACmiMeasureType {
     private final int typeval;
     private final int offset;
 
-    private static final Logger logger = LoggerFactory.getLogger(TACmiMeasureType.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TACmiMeasureType.class);
 
     private TACmiMeasureType(int typeval, int offset) {
         this.typeval = typeval;
@@ -79,7 +79,7 @@ public enum TACmiMeasureType {
                 return mtype;
             }
         }
-        logger.debug("Received unexpected measure type {}", type);
+        LOGGER.debug("Received unexpected measure type {}", type);
         return TACmiMeasureType.UNSUPPORTED;
     }
 }

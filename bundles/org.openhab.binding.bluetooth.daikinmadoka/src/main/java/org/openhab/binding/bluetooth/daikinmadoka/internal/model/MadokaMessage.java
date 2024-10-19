@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MadokaMessage {
 
-    private static final Logger logger = LoggerFactory.getLogger(MadokaMessage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MadokaMessage.class);
 
     private int messageId;
     private final Map<Integer, MadokaValue> values;
@@ -93,7 +93,7 @@ public class MadokaMessage {
 
             return chunks;
         } catch (IOException e) {
-            logger.info("Error while building request", e);
+            LOGGER.info("Error while building request", e);
             throw new RuntimeException(e);
         }
     }

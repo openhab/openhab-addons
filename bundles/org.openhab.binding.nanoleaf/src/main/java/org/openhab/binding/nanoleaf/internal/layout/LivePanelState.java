@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LivePanelState implements PanelState {
 
-    private static final Logger logger = LoggerFactory.getLogger(LivePanelState.class);
+    private final Logger logger = LoggerFactory.getLogger(LivePanelState.class);
     private final NanoleafPanelColors panelColors;
 
     public LivePanelState(NanoleafPanelColors panelColors) {

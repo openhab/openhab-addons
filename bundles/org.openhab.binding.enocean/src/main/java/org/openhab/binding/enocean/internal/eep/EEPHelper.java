@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class EEPHelper {
-    private static final Logger logger = LoggerFactory.getLogger(EEPHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EEPHelper.class);
 
     public static State validateTotalUsage(State value, @Nullable State currentState, Configuration config) {
         EnOceanChannelTotalusageConfig c = config.as(EnOceanChannelTotalusageConfig.class);
@@ -71,10 +71,10 @@ public abstract class EEPHelper {
 
     public static boolean validateUnscaledValue(int unscaledValue, double unscaledMin, double unscaledMax) {
         if (unscaledValue < unscaledMin) {
-            logger.debug("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
+            LOGGER.debug("Unscaled value ({}) lower than the minimum allowed ({})", unscaledValue, unscaledMin);
             return false;
         } else if (unscaledValue > unscaledMax) {
-            logger.debug("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
+            LOGGER.debug("Unscaled value ({}) bigger than the maximum allowed ({})", unscaledValue, unscaledMax);
             return false;
         }
 
