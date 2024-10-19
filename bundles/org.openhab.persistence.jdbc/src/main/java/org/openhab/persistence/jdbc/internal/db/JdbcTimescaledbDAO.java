@@ -26,8 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Extended Database Configuration class. Class represents the extended
- * database-specific configuration. Overrides and
+ * Extended Database Configuration class. Class represents the extended database-specific configuration. Overrides and
  * supplements the default settings from JdbcBaseDAO and JdbcPostgresqlDAO.
  *
  * @author Riccardo Nimser-Joseph - Initial contribution

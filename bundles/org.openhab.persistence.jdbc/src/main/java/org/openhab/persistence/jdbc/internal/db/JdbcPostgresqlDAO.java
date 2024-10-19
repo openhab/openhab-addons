@@ -92,7 +92,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         DbMetaData dbMeta = new DbMetaData();
         this.dbMeta = dbMeta;
         // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same TIME (Primary Key) is provided
-        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE see: https://www.postgresql.org/docs/9.5/sql-insert.html
+        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE 
+        // see: https://www.postgresql.org/docs/9.5/sql-insert.html
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
             sqlInsertItemValue = """
@@ -220,19 +221,6 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      */
 
     @Override
-    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateItemTable,
-                new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
-                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
-        logger.debug("JDBC::doCreateItemTable sql={}", sql);
-        try {
-            Yank.execute(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
     public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
             throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
@@ -248,6 +236,19 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
                 logger.info("JDBC::doAlterTableColumn sql={}", sql2);
                 Yank.execute(sql2, null);
             }
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateItemTable,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
+                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
+        logger.debug("JDBC::doCreateItemTable sql={}", sql);
+        try {
+            Yank.execute(sql, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
