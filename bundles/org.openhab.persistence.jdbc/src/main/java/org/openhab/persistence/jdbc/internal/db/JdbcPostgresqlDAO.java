@@ -66,11 +66,11 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlGetDB = "SELECT CURRENT_DATABASE()";
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='\"#searchTable#\"'";
         sqlDropTable = "DROP TABLE \"#tableName#\"";
-        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
-        sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS \"#itemsManageTable#\" (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
+        sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM \"#itemsManageTable#\"  UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = """
                 SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
-                FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'\
+                FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='\"#itemsManageTable#\"') AND NOT table_name='\"#itemsManageTable#\"'\
                 """;
         // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g.
         // "timestamp with time zone") and
@@ -81,7 +81,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlGetTableColumnTypes = """
                 SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns \
                 WHERE table_name='\"#tableName#\"' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
-                AND table_name='#itemsManageTable#')\
+                AND table_name='\"#itemsManageTable#\"')\
                 """;
         // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified
         // to do an "upsert" (overwrite

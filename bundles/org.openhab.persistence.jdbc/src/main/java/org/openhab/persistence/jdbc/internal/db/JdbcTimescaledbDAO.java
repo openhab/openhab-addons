@@ -38,7 +38,7 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 
     private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('\"#tableName#\"', 'time')";
-    private final String sqlGetItemTables = "SELECT hypertable_name as table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '#itemsManageTable#'";
+    private final String sqlGetItemTables = "SELECT hypertable_name as table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '\"#itemsManageTable#\"'";
 
     @Override
     public Properties getConnectionProperties() {
