@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Extended Database Configuration class. Class represents
  * the extended database-specific configuration. Overrides and supplements the
- * default settings from JdbcBaseDAO. Enter only the differences to JdbcBaseDAO
- * here.
+ * default settings from JdbcBaseDAO. Enter only the differences to JdbcBaseDAO here.
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
@@ -61,8 +60,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
-        // System Information Functions:
-        // https://www.postgresql.org/docs/9.2/static/functions-info.html
+        // System Information Functions: https://www.postgresql.org/docs/9.2/static/functions-info.html
         sqlGetDB = "SELECT CURRENT_DATABASE()";
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='\"#searchTable#\"'";
         sqlDropTable = "DROP TABLE \"#tableName#\"";
@@ -72,21 +70,16 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
                 SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
                 FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='\"#itemsManageTable#\"') AND NOT table_name='\"#itemsManageTable#\"'\
                 """;
-        // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g.
-        // "timestamp with time zone") and
-        // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias
-        // data_type as "column_type" and
-        // udt_name as "column_type_alias" to be compatible with the 'Column' class used
-        // in Yank.queryBeanList
+        // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g. "timestamp with time zone") and
+        // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias data_type as "column_type" and
+        // udt_name as "column_type_alias" to be compatible with the 'Column' class used in Yank.queryBeanList
         sqlGetTableColumnTypes = """
                 SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns \
                 WHERE table_name='\"#tableName#\"' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
                 AND table_name='\"#itemsManageTable#\"')\
                 """;
-        // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified
-        // to do an "upsert" (overwrite
-        // existing value). The version check and query change is performed at
-        // initAfterFirstDbConnection()
+        // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified to do an "upsert" (overwrite
+        // existing value). The version check and query change is performed at initAfterFirstDbConnection()
         sqlInsertItemValue = "INSERT INTO \"#tableName#\" (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
         sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS \"#tableName#\" (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
         sqlAlterTableColumn = "ALTER TABLE \"#tableName#\" ALTER COLUMN #columnName# TYPE #columnType#";
@@ -98,11 +91,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
         DbMetaData dbMeta = new DbMetaData();
         this.dbMeta = dbMeta;
-        // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same
-        // TIME (Primary Key) is provided
-        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE
-        // KEY UPDATE VALUE
-        // see: https://www.postgresql.org/docs/9.5/sql-insert.html
+        // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same TIME (Primary Key) is provided
+        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE see: https://www.postgresql.org/docs/9.5/sql-insert.html
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
             sqlInsertItemValue = """
@@ -113,8 +103,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     /**
-     * INFO:
-     * http://www.java2s.com/Code/Java/Database-SQL-JDBC/StandardSQLDataTypeswithTheirJavaEquivalents.htm
+     * INFO: http://www.java2s.com/Code/Java/Database-SQL-JDBC/StandardSQLDataTypeswithTheirJavaEquivalents.htm
      */
     private void initSqlTypes() {
         // Initialize the type array
@@ -207,8 +196,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     /*
-     * Override because for PostgreSQL a different query is required with a 3rd
-     * argument (itemsManageTable)
+     * Override because for PostgreSQL a different query is required with a 3rd argument (itemsManageTable)
      */
     @Override
     public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
@@ -228,8 +216,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      *************/
 
     /*
-     * Override since PostgreSQL does not support setting NOT NULL in the same
-     * clause as ALTER COLUMN .. TYPE
+     * Override since PostgreSQL does not support setting NOT NULL in the same clause as ALTER COLUMN .. TYPE
      */
 
     @Override

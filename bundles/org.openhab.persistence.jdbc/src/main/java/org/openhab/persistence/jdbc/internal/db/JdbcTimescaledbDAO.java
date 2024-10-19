@@ -43,8 +43,7 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     @Override
     public Properties getConnectionProperties() {
         Properties properties = (Properties) this.databaseProps.clone();
-        // Adjust the jdbc url since the service name 'timescaledb' is only used to
-        // differentiate the DAOs
+        // Adjust the jdbc url since the service name 'timescaledb' is only used to differentiate the DAOs
         if (properties.containsKey("jdbcUrl")) {
             properties.put("jdbcUrl", properties.getProperty("jdbcUrl").replace("jdbc:timescaledb", "jdbc:postgresql"));
         }
