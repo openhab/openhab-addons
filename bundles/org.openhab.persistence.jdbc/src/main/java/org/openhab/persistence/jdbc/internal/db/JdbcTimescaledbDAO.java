@@ -68,7 +68,7 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
 
     @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables, new String[] { "#itemsManageTable#" },
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables, new String[] { "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable() });
         this.logger.debug("JDBC::doGetItemTables sql={}", sql);
         try {

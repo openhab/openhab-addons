@@ -15,10 +15,8 @@ package org.openhab.persistence.jdbc.internal.db;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
@@ -92,7 +90,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         DbMetaData dbMeta = new DbMetaData();
         this.dbMeta = dbMeta;
         // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same TIME (Primary Key) is provided
-        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE 
+        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE
         // see: https://www.postgresql.org/docs/9.5/sql-insert.html
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
@@ -156,18 +154,6 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
             throw new JdbcSQLException(e);
         }
         return vo;
-    }
-
-    @Override
-    public void doDropTable(String tableName) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlDropTable, new String[] { "#tableName#" },
-                new String[] { tableName });
-        logger.debug("JDBC::doDropTable sql={}", sql);
-        try {
-            Yank.execute(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
     }
 
     @Override
@@ -242,22 +228,9 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     @Override
-    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateItemTable,
-                new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
-                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
-        logger.debug("JDBC::doCreateItemTable sql={}", sql);
-        try {
-            Yank.execute(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlInsertItemValue,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
@@ -272,7 +245,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlInsertItemValue,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
@@ -280,19 +253,6 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
             Yank.execute(sql, params);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
-    public long doGetRowCount(String tableName) throws JdbcSQLException {
-        final String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetRowCount, new String[] { "#tableName#" },
-                new String[] { tableName });
-        logger.debug("JDBC::doGetRowCount sql={}", sql);
-        try {
-            final @Nullable Long result = Yank.queryScalar(sql, Long.class, null);
-            return Objects.requireNonNullElse(result, 0L);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
