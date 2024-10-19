@@ -55,14 +55,12 @@ public class OnvifCodec extends ChannelDuplexHandler {
                         break;
                     case 401:
                         if (!response.headers().isEmpty()) {
-                            String authenticate = "";
                             for (CharSequence name : response.headers().names()) {
                                 for (CharSequence value : response.headers().getAll(name)) {
                                     if ("WWW-Authenticate".equalsIgnoreCase(name.toString())) {
-                                        authenticate = value.toString();
                                         logger.debug(
-                                                "ONVIF replied with WWW-Authenticate header:{}, camera may require ONVIF Profile-T support.",
-                                                authenticate);
+                                                "ONVIF {} replied with WWW-Authenticate header:{}, camera may require ONVIF Profile-T support.",
+                                                requestType, value.toString());
                                     }
                                 }
                             }
@@ -93,11 +91,11 @@ public class OnvifCodec extends ChannelDuplexHandler {
         }
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            logger.debug("IdleStateEvent received: {}", e.state());
+            logger.debug("IdleStateEvent received for {} : {}", requestType, e.state());
             onvifConnection.setIsConnected(false);
             ctx.close();
         } else {
-            logger.debug("ONVIF netty channel event occurred: {}", evt);
+            logger.debug("ONVIF {} netty channel event occurred: {}", requestType, evt);
         }
     }
 
@@ -106,7 +104,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
         if (ctx == null || cause == null) {
             return;
         }
-        logger.debug("Exception on ONVIF connection: {}", cause.getMessage());
+        logger.debug("Exception on ONVIF {} connection: {}", requestType, cause.getMessage());
         ctx.close();
     }
 

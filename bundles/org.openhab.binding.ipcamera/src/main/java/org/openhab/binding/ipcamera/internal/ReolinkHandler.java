@@ -173,7 +173,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         }
                         if (getAbilityResponse[0].value.ability.supportAudioAlarmEnable == null
                                 || getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AudioAlarm support.");
+                            ipCameraHandler.logger.debug("Camera has no support for controlling AudioAlarms.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_THRESHOLD_AUDIO_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
