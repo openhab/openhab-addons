@@ -205,7 +205,6 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     /*
      * Override since PostgreSQL does not support setting NOT NULL in the same clause as ALTER COLUMN .. TYPE
      */
-
     @Override
     public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
             throws JdbcSQLException {
