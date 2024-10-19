@@ -1594,7 +1594,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 } else {
                     onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
                     if (onvifCamera.pullMessageRequests.intValue() == 0) {
-                        logger.info("The alarm stream was not running for Reolink camera {}, re-starting it now",
+                        logger.debug("The alarm stream was not running for Reolink camera {}, re-starting it now",
                                 cameraConfig.getIp());
                         onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
                     }
