@@ -60,25 +60,28 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
         // System Information Functions: https://www.postgresql.org/docs/9.2/static/functions-info.html
         sqlGetDB = "SELECT CURRENT_DATABASE()";
-        sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
-        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
-        sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
+        sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='\"#searchTable#\"'";
+        sqlDropTable = "DROP TABLE \"#tableName#\"";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS \"#itemsManageTable#\" (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
+        sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM \"#itemsManageTable#\"  UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = """
                 SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
-                FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'\
+                FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='\"#itemsManageTable#\"') AND NOT table_name='\"#itemsManageTable#\"'\
                 """;
         // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g. "timestamp with time zone") and
         // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias data_type as "column_type" and
         // udt_name as "column_type_alias" to be compatible with the 'Column' class used in Yank.queryBeanList
         sqlGetTableColumnTypes = """
                 SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns \
-                WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
-                AND table_name='#itemsManageTable#')\
+                WHERE table_name='\"#tableName#\"' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
+                AND table_name='\"#itemsManageTable#\"')\
                 """;
         // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified to do an "upsert" (overwrite
         // existing value). The version check and query change is performed at initAfterFirstDbConnection()
-        sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
-        sqlAlterTableColumn = "ALTER TABLE #tableName# ALTER COLUMN #columnName# TYPE #columnType#";
+        sqlInsertItemValue = "INSERT INTO \"#tableName#\" (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS \"#tableName#\" (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
+        sqlAlterTableColumn = "ALTER TABLE \"#tableName#\" ALTER COLUMN #columnName# TYPE #columnType#";
+        sqlGetRowCount = "SELECT COUNT(*) FROM \"#tableName#\"";
     }
 
     @Override
@@ -92,7 +95,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
             sqlInsertItemValue = """
-                    INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )\
+                    INSERT INTO \"#tableName#\" (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )\
                      ON CONFLICT (TIME) DO UPDATE SET VALUE=EXCLUDED.VALUE\
                     """;
         }
@@ -213,7 +216,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
             Yank.execute(sql, null);
             if (!nullable) {
                 String sql2 = StringUtilsExt.replaceArrayMerge(
-                        "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET NOT NULL",
+                        "ALTER TABLE \"#tableName#\" ALTER COLUMN #columnName# SET NOT NULL",
                         new String[] { "#tableName#", "#columnName#" }, new String[] { tableName, columnName });
                 logger.info("JDBC::doAlterTableColumn sql={}", sql2);
                 Yank.execute(sql2, null);
