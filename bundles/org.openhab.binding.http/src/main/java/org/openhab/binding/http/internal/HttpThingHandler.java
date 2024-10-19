@@ -114,20 +114,19 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             return;
         }
 
+        String key = channelUrls.get(channelUID);
+        RefreshingUrlCache refreshingUrlCache = (key != null) ? urlHandlers.get(key) : null;
+
         if (command instanceof RefreshType) {
-            String key = channelUrls.get(channelUID);
-            if (key != null) {
-                RefreshingUrlCache refreshingUrlCache = urlHandlers.get(key);
-                if (refreshingUrlCache != null) {
-                    try {
-                        refreshingUrlCache.get().ifPresentOrElse(itemValueConverter::process, () -> {
-                            if (config.strictErrorHandling) {
-                                itemValueConverter.process(null);
-                            }
-                        });
-                    } catch (IllegalArgumentException | IllegalStateException e) {
-                        logger.warn("Failed processing REFRESH command for channel {}: {}", channelUID, e.getMessage());
-                    }
+            if (refreshingUrlCache != null) {
+                try {
+                    refreshingUrlCache.getCached().ifPresentOrElse(itemValueConverter::process, () -> {
+                        if (config.strictErrorHandling) {
+                            itemValueConverter.process(null);
+                        }
+                    });
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    logger.warn("Failed processing REFRESH command for channel {}: {}", channelUID, e.getMessage());
                 }
             }
         } else {
@@ -138,6 +137,9 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             } catch (IllegalStateException e) {
                 logger.debug("Writing to read-only channel {} not permitted", channelUID);
             }
+
+            if (refreshingUrlCache != null)
+                refreshingUrlCache.run(scheduler);
         }
     }
 
