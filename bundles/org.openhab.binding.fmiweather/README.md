@@ -2,8 +2,12 @@
 
 This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data).
 
-Binding provides access to weather observations from FMI weather stations and [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
+The binding provides access to weather observations from FMI weather stations and FMI weather forecasts.
 Forecast covers "northern Europe" (Finland, Baltics, Scandinavia, some parts of surrounding countries), see [coverage map in the documentation](https://en.ilmatieteenlaitos.fi/weather-forecast-models).
+The binding supports two different forecast queries:
+
+- [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models), which is one of the weather models that meteorologists use in their work.
+- An edited query providing the official FMI forecast, which is often more accurate since it's edited by meteorologists who combine several different weather models and their experience to produce the official forecast.
 
 ![example of things](doc/images/fmi-example-things.png)
 
