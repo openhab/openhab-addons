@@ -239,16 +239,18 @@ The default mode value is `auto`.
 
 The `accessPoint` information that is retrieved is available as these channels:
 
-| Channel ID | Item Type            | Description                                                          | Permissions |
-|------------|----------------------|----------------------------------------------------------------------|-------------|
-| online     | Switch               | Online status of the device                                          | Read        |
-| enable     | Switch               | Enable or disable the access point                                   | Read, Write |
-| name       | String               | Name of device (from the controller web UI)                          | Read        |
-| site       | String               | Site name (from the controller web UI) the device is associated with | Read        |
-| ipAddress  | String               | IP address of the device                                             | Read        |
-| uptime     | Number:Time          | Uptime of the device (in seconds)                                    | Read        |
-| lastSeen   | DateTime             | Date and Time the device was last seen                               | Read        |
-| experience | Number:Dimensionless | The average health indication of the connected clients               | Read        |
+| Channel ID  | Item Type            | Description                                                          | Permissions |
+|-------------|----------------------|----------------------------------------------------------------------|-------------|
+| online      | Switch               | Online status of the device                                          | Read        |
+| enable      | Switch               | Enable or disable the access point                                   | Read, Write |
+| name        | String               | Name of device (from the controller web UI)                          | Read        |
+| site        | String               | Site name (from the controller web UI) the device is associated with | Read        |
+| ipAddress   | String               | IP address of the device                                             | Read        |
+| uptime      | Number:Time          | Uptime of the device (in seconds)                                    | Read        |
+| lastSeen    | DateTime             | Date and Time the device was last seen                               | Read        |
+| experience  | Number:Dimensionless | The average health indication of the connected clients               | Read        |
+| ledOverride | Switch               | Override the LED. If disabled, the site-wide setting is used         | Read, Write |
+| ledColor    | Color                | Controls the color and brightness of the LED (when overridden)       | Read, Write |
 
 ## Rule Actions
 
