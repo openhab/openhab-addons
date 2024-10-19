@@ -138,9 +138,6 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
         if (retry < RETRIES) {
             try {
                 response = client.query(getRequest(), TIMEOUT_MILLIS);
-            } catch (FMIUnexpectedResponseException e) {
-                handleError(e, retry);
-                return;
             } catch (FMIResponseException e) {
                 handleError(e, retry);
                 return;
