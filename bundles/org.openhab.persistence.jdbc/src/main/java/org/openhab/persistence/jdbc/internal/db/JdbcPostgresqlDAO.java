@@ -15,8 +15,10 @@ package org.openhab.persistence.jdbc.internal.db;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
@@ -35,7 +37,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Extended Database Configuration class. Class represents
  * the extended database-specific configuration. Overrides and supplements the
- * default settings from JdbcBaseDAO. Enter only the differences to JdbcBaseDAO here.
+ * default settings from JdbcBaseDAO. Enter only the differences to JdbcBaseDAO
+ * here.
  *
  * @author Helmut Lehmeyer - Initial contribution
  */
@@ -58,27 +61,36 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
-        // System Information Functions: https://www.postgresql.org/docs/9.2/static/functions-info.html
+        // System Information Functions:
+        // https://www.postgresql.org/docs/9.2/static/functions-info.html
         sqlGetDB = "SELECT CURRENT_DATABASE()";
-        sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
+        sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='\"#searchTable#\"'";
+        sqlDropTable = "DROP TABLE \"#tableName#\"";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = """
                 SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
                 FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'\
                 """;
-        // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g. "timestamp with time zone") and
-        // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias data_type as "column_type" and
-        // udt_name as "column_type_alias" to be compatible with the 'Column' class used in Yank.queryBeanList
+        // The PostgreSQL equivalent to MySQL columns.column_type is data_type (e.g.
+        // "timestamp with time zone") and
+        // udt_name which contains a shorter alias (e.g. "timestamptz"). We alias
+        // data_type as "column_type" and
+        // udt_name as "column_type_alias" to be compatible with the 'Column' class used
+        // in Yank.queryBeanList
         sqlGetTableColumnTypes = """
                 SELECT column_name, data_type as column_type, udt_name as column_type_alias, is_nullable FROM information_schema.columns \
-                WHERE table_name='#tableName#' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
+                WHERE table_name='\"#tableName#\"' AND table_catalog='#jdbcUriDatabaseName#' AND table_schema=(SELECT table_schema FROM information_schema.tables WHERE table_type='BASE TABLE' \
                 AND table_name='#itemsManageTable#')\
                 """;
-        // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified to do an "upsert" (overwrite
-        // existing value). The version check and query change is performed at initAfterFirstDbConnection()
-        sqlInsertItemValue = "INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
-        sqlAlterTableColumn = "ALTER TABLE #tableName# ALTER COLUMN #columnName# TYPE #columnType#";
+        // NOTICE: on PostgreSql >= 9.5, sqlInsertItemValue query template is modified
+        // to do an "upsert" (overwrite
+        // existing value). The version check and query change is performed at
+        // initAfterFirstDbConnection()
+        sqlInsertItemValue = "INSERT INTO \"#tableName#\" (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
+        sqlCreateItemTable = "CREATE TABLE IF NOT EXISTS \"#tableName#\" (time #tablePrimaryKey# NOT NULL, value #dbType#, PRIMARY KEY(time))";
+        sqlAlterTableColumn = "ALTER TABLE \"#tableName#\" ALTER COLUMN #columnName# TYPE #columnType#";
+        sqlGetRowCount = "SELECT COUNT(*) FROM \"#tableName#\"";
     }
 
     @Override
@@ -86,20 +98,23 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         logger.debug("JDBC::initAfterFirstDbConnection: Initializing step, after db is connected.");
         DbMetaData dbMeta = new DbMetaData();
         this.dbMeta = dbMeta;
-        // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same TIME (Primary Key) is provided
-        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE KEY UPDATE VALUE
+        // Perform "upsert" (on PostgreSql >= 9.5): Overwrite previous VALUE if same
+        // TIME (Primary Key) is provided
+        // This is the default at JdbcBaseDAO and is equivalent to MySQL: ON DUPLICATE
+        // KEY UPDATE VALUE
         // see: https://www.postgresql.org/docs/9.5/sql-insert.html
         if (dbMeta.isDbVersionGreater(9, 4)) {
             logger.debug("JDBC::initAfterFirstDbConnection: Values with the same time will be upserted (Pg >= 9.5)");
             sqlInsertItemValue = """
-                    INSERT INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )\
+                    INSERT INTO \"#tableName#\" (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )\
                      ON CONFLICT (TIME) DO UPDATE SET VALUE=EXCLUDED.VALUE\
                     """;
         }
     }
 
     /**
-     * INFO: http://www.java2s.com/Code/Java/Database-SQL-JDBC/StandardSQLDataTypeswithTheirJavaEquivalents.htm
+     * INFO:
+     * http://www.java2s.com/Code/Java/Database-SQL-JDBC/StandardSQLDataTypeswithTheirJavaEquivalents.htm
      */
     private void initSqlTypes() {
         // Initialize the type array
@@ -154,6 +169,18 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     @Override
+    public void doDropTable(String tableName) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlDropTable, new String[] { "#tableName#" },
+                new String[] { tableName });
+        logger.debug("JDBC::doDropTable sql={}", sql);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
     public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
                 new String[] { "#itemsManageTable#", "#itemname#" },
@@ -180,13 +207,14 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     /*
-     * Override because for PostgreSQL a different query is required with a 3rd argument (itemsManageTable)
+     * Override because for PostgreSQL a different query is required with a 3rd
+     * argument (itemsManageTable)
      */
     @Override
     public List<Column> doGetTableColumns(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlGetTableColumnTypes,
                 new String[] { "#jdbcUriDatabaseName#", "#tableName#", "#itemsManageTable#" },
-                new String[] { vo.getJdbcUriDatabaseName(), vo.getQuotedTableName(), vo.getItemsManageTable() });
+                new String[] { vo.getJdbcUriDatabaseName(), vo.getTableName(), vo.getItemsManageTable() });
         logger.debug("JDBC::doGetTableColumns sql={}", sql);
         try {
             return Yank.queryBeanList(sql, Column.class, null);
@@ -200,8 +228,23 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      *************/
 
     /*
-     * Override since PostgreSQL does not support setting NOT NULL in the same clause as ALTER COLUMN .. TYPE
+     * Override since PostgreSQL does not support setting NOT NULL in the same
+     * clause as ALTER COLUMN .. TYPE
      */
+
+    @Override
+    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateItemTable,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
+                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
+        logger.debug("JDBC::doCreateItemTable sql={}", sql);
+        try {
+            Yank.execute(sql, null);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
     @Override
     public void doAlterTableColumn(String tableName, String columnName, String columnType, boolean nullable)
             throws JdbcSQLException {
@@ -213,7 +256,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
             Yank.execute(sql, null);
             if (!nullable) {
                 String sql2 = StringUtilsExt.replaceArrayMerge(
-                        "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET NOT NULL",
+                        "ALTER TABLE \"#tableName#\" ALTER COLUMN #columnName# SET NOT NULL",
                         new String[] { "#tableName#", "#columnName#" }, new String[] { tableName, columnName });
                 logger.info("JDBC::doAlterTableColumn sql={}", sql2);
                 Yank.execute(sql2, null);
@@ -226,9 +269,9 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
-                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" }, new String[] {
-                        storedVO.getQuotedTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlInsertItemValue,
+                new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -241,14 +284,27 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
-        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getQuotedTableName(), storedVO.getDbType(), "?" });
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         try {
             Yank.execute(sql, params);
+        } catch (YankSQLException e) {
+            throw new JdbcSQLException(e);
+        }
+    }
+
+    @Override
+    public long doGetRowCount(String tableName) throws JdbcSQLException {
+        final String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetRowCount, new String[] { "#tableName#" },
+                new String[] { tableName });
+        logger.debug("JDBC::doGetRowCount sql={}", sql);
+        try {
+            final @Nullable Long result = Yank.queryScalar(sql, Long.class, null);
+            return Objects.requireNonNullElse(result, 0L);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }

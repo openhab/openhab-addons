@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 
-    private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('#tableName#', 'time')";
+    private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('\"#tableName#\"', 'time')";
     private final String sqlGetItemTables = "SELECT hypertable_name as table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '#itemsManageTable#'";
 
     @Override
@@ -59,7 +59,7 @@ public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
         super.doCreateItemTable(vo);
         String sql = StringUtilsExt.replaceArrayMerge(this.sqlCreateHypertable, new String[] { "#tableName#" },
-                new String[] { vo.getQuotedTableName() });
+                new String[] { vo.getTableName() });
         this.logger.debug("JDBC::doCreateItemTable sql={}", sql);
         try {
             Yank.queryScalar(sql, Boolean.class, null);

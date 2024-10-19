@@ -78,10 +78,6 @@ public class ItemsVO implements Serializable {
         return tableName;
     }
 
-    public String getQuotedTableName() {
-        return "\"" + tableName + "\"";
-    }
-
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
