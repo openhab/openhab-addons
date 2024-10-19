@@ -226,7 +226,6 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private void startPollingKeepAlive() {
         final ScheduledFuture<?> localRefreshJob = this.pollingJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-
             Number keepAliveConfig = state.getChannel(EmotivaSubscriptionTags.keepAlive)
                     .filter(channel -> channel instanceof Number).map(keepAlive -> (Number) keepAlive)
                     .orElse(new DecimalType(config.keepAlive));
