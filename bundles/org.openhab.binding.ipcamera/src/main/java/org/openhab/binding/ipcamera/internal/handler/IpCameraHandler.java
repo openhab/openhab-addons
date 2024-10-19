@@ -1593,6 +1593,11 @@ public class IpCameraHandler extends BaseThingHandler {
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
                 } else {
                     onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
+                    if (onvifCamera.pullMessageRequests.intValue() == 0) {
+                        logger.debug("The alarm stream was not running for Reolink camera {}, re-starting it now",
+                                cameraConfig.getIp());
+                        onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
+                    }
                 }
                 break;
             case DAHUA_THING:
