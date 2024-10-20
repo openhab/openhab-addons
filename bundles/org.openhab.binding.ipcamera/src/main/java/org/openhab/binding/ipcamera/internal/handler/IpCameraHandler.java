@@ -811,7 +811,7 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.warn("The camera tried to use a FFmpeg feature when the location for FFmpeg is not known.");
             return;
         }
-        if (mjpegUri.toLowerCase().startsWith("rtsp") || rtspUri.toLowerCase().startsWith("rtsp")) {
+        if (mjpegUri.toLowerCase().startsWith("rtsp://") || rtspUri.toLowerCase().startsWith("rtsp://")) {
             if (inputOptions.isEmpty()) {
                 inputOptions = "-rtsp_transport tcp";
             }
