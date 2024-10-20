@@ -39,9 +39,20 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestAirQualityDevice {
+
     @Test
-    void testAirQuality() {
+    void testAirQualityDeviceWithMockBridge() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareMockBridge();
+        testAirQuality(hubBridge);
+    }
+
+    @Test
+    void testAirQualityDeviceWithSimuBridge() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        testAirQuality(hubBridge);
+    }
+
+    void testAirQuality(Bridge hubBridge) {
         ThingImpl thing = new ThingImpl(THING_TYPE_AIR_QUALITY, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         AirQualityHandler handler = new AirQualityHandler(thing, AIR_QUALITY_MAP);
