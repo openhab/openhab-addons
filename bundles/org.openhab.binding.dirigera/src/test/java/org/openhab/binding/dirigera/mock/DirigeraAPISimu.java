@@ -35,16 +35,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link APIMock} basic DeviceHandler for all devices
+ * The {@link DirigeraAPISimu} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class APIMock implements DirigeraAPI {
-    private final Logger logger = LoggerFactory.getLogger(APIMock.class);
+public class DirigeraAPISimu implements DirigeraAPI {
+    private final Logger logger = LoggerFactory.getLogger(DirigeraAPISimu.class);
     JSONObject model = new JSONObject();
 
-    public APIMock(HttpClient client, Gateway gateway) {
+    public DirigeraAPISimu(HttpClient client, Gateway gateway) {
         String modelString = FileReader.readFileInString("src/test/resources/home/home.json");
         this.model = new JSONObject(modelString);
     }
