@@ -1,9 +1,21 @@
-# Stiebel Eltron ISG
+# Lambda Heat Pump
 
-This extension adds support for the Stiebel Eltron modbus protocol.
+This extension adds support for the Lambda Heat Pump modbus protocol as provided by
+https://lambda-wp.at/wp-content/uploads/2022/01/Modbus-Protokoll-und-Beschreibung.pdf 
 
-An Internet Service Gateway (ISG) with an installed modbus extension is required in order to run this binding.
-In case the modbus extension is not yet installed on the ISG, the ISG Updater Tool for the update can be found here: <https://www.stiebel-eltron.de/de/home/produkte-loesungen/erneuerbare_energien/regelung_energiemanagement/internet_servicegateway/isg_web/downloads.html>
+A Lambda Heat Pump has to be reachable within your network. 
+If you plan to use the E-Manager part to hand over your PV excess to the heat pump ask Lambda support to 
+configure it to  
+E-Meter Kommunikationsart:          ModBus Client
+E-Meter Messpunkt:                  E-Eintrag
+
+Other configurations of the E-Manager are not supported (yet).
+
+Up to now only the following configuration is supported:
+- only one heatpump(heatpump1)
+- only one buffer for the heating(buffer1)
+- only one buffer for the water heating boiler1)
+
 
 ## Supported Things
 
@@ -12,7 +24,7 @@ Note, that the things will show up under the Modbus binding.
 
 | Thing              | ThingTypeID | Description                                         |
 | ------------------ | ----------- | --------------------------------------------------- |
-| Stiebel Eltron ISG | lambdahp    | A stiebel eltron heat pump connected through an ISG |
+| Lambda Heat Pump   | lambdahp    | A lambda heat pump visible in the local network     |
 
 ## Discovery
 
@@ -26,174 +38,137 @@ Bridge modbus:tcp:bridge [ host="10.0.0.2", port=502, id=1 ]
 
 ## Thing Configuration
 
-You need first to set up a TCP Modbus bridge according to the Modbus documentation.
+You first need to set up a TCP Modbus bridge according to the Modbus documentation.
+You then add the lambda heat pump as part of the modbus binding.
 Things in this extension will use the selected bridge to connect to the device.
 
 The following parameters are valid for all thing types:
 
 | Parameter | Type    | Required | Default if omitted | Description                                                                |
 | --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
-| refresh   | integer | no       | 5                  | Poll interval in seconds. Increase this if you encounter connection errors |
+| refresh   | integer | no       | 30                 | Poll interval in seconds. Increase this if you encounter connection errors |
 | maxTries  | integer | no       | 3                  | Number of retries when before giving up reading from this thing.           |
 
 ## Channels
 
 Channels are grouped into channel groups.
 
-### System State Group
+### General Ambient Group
 
 This group contains general operational information about the heat pump.
 
-| Channel ID       | Item Type | Read only | Description                                                   |
-| ---------------- | --------- | --------- | ------------------------------------------------------------- |
-| is-heating       | Contact   | true      | OPEN in case the heat pump is currently in heating mode       |
-| is-heating-water | Contact   | true      | OPEN in case the heat pump is currently in heating water mode |
-| is-cooling       | Contact   | true      | OPEN in case the heat pump is currently in cooling mode       |
-| is-pumping       | Contact   | true      | OPEN in case the heat pump is currently in pumping mode       |
-| is-summer        | Contact   | true      | OPEN in case the heat pump is currently in summer mode        |
 
-### System Parameters Group
+| Channel ID                       | Item Type          | Read only | Unit     | Description                                               				  |
+| -------------------------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------ |
+| ambient-error-number             | Number             | true      | [Nr]     | Ambient Error Number (0 = No error)                         		      |
+| ambient-operating-state          | Number             | true      | [Nr]     | Ambient Operating State (0 = OFF, 1 = AUTOMATIC, 2 = MANUAL, 3 = ERROR)  |
+| actual-ambient-temperature       | Number:Temperature | false     | [0.1 °C] | Actual Ambient Temperature (min = -50.0°C); max = 80.0°   				  |
+| average-ambient-temperature      | Number:Temperature | true      | [0.1 °C] | Arithmetic average temperature of the last 60 minutes   				  |
+| calculated-ambient-temperature   | Number:Temperature | true      | [0.1 °C] | Temperature for calculations in heat distribution modules 				  |
 
-This group contains system paramters of the heat pump.
+### General E-Manager Group
 
-| Channel ID                  | Item Type          | Read only | Description                                                                                                                                    |
-| --------------------------- | ------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| operation-mode              | Number             | false     | The current operation mode of the heat pump (1=ready mode, 2=program mode, 3=comfort mode, 4=eco mode, 5=heating water mode, 0=emergency mode) |
-| comfort-temperature-heating | Number:Temperature | false     | The current heating comfort temperature                                                                                                        |
-| eco-temperature-heating     | Number:Temperature | false     | The current heating eco temperature                                                                                                            |
-| comfort-temperature-water   | Number:Temperature | false     | The current water comfort temperature                                                                                                          |
-| eco-temperature-water       | Number:Temperature | false     | The current water eco temperature                                                                                                              |
+This group contains parameters signaling the PV excess to the heat pump.
 
-### System Information Group
+| Channel ID                       | Item Type          | Read only | Unit     | Description                                               							     |
+| -------------------------------- | ------------------ | --------- | -------- | --------------------------------------------------------------------------------------- |
+| emanager-error-number            | Number             | true      | [Nr]     | E-Manager Error Number (0 = No error)                                                   |
+| emanager-operating-state         | Number             | true      | [Nr]     | E-Manager Operating State (0 = OFF, 1 = AUTOMATIC, 2 = MANUAL, 3 = ERROR 4 = OFFLINE    |
+| actual-power   				   | Number:Power       | false     | [W]      | Actual excess power -32768	W .. 32767 W                   							     |
+| actual-power-consumption         | Number:Power       | true      | [W]      | Power consumption of heatpump 1 (only valid when Betriebsart: Automatik, 0 W otherwise) |
+| power-consumption-setpoint       | Number:Power       | false     | [W]      | Power consumption setpoint for heat pump 1									             |
 
-This group contains general operational information about the device.
 
-| Channel ID                 | Item Type            | Read only | Description                                           |
-| -------------------------- | -------------------- | --------- | ----------------------------------------------------- |
-| fek-temperature            | Number:Temperature   | true      | The current temperature measured by the FEK           |
-| fek-temperature-setpoint   | Number:Temperature   | true      | The current set point of the FEK temperature          |
-| fek-humidity               | Number:Dimensionless | true      | The current humidity measured by the FEK              |
-| fek-dewpoint               | Number:Temperature   | true      | The current dew point temperature measured by the FEK |
-| outdoor-temperature        | Number:Temperature   | true      | The current outdoor temperature                       |
-| hk1-temperature            | Number:Temperature   | true      | The current temperature of the HK1                    |
-| hk1-temperature-setpoint   | Number:Temperature   | true      | The current temperature set point of the HK1          |
-| supply-temperature         | Number:Temperature   | true      | The current supply temperature                        |
-| return-temperature         | Number:Temperature   | true      | The current return measured                           |
-| source-temperature         | Number:Temperature   | true      | The current sourcetemperature                         |
-| water-temperature          | Number:Temperature   | true      | The current water temperature                         |
-| water-temperature-setpoint | Number:Temperature   | true      | The current water temperature set point               |
+### Heat Pump 1 Group
 
-### Energy Information Group
+This group contains general operational information about the heat pump itself.
 
-This group contains about the energy consumption and delivery of the heat pump.
+| Channel ID                     | Item Type                 | Read only | Unit         | Description                                               			  |
+| -------------------------------| ------------------------- | --------- | ------------ | ----------------------------------------------------------------------- |
+| heatpump1-error-state      	 | Number          			 | true      | [Nr]         | Error state  (0 = NONE, 1 = MESSAGE, 2 = WARNING, 3 = ALARM, 4 = FAULT )|
+| heatpump1-error-number         | Number           		 | true      | [Nr]         | Error number: scrolling through all active error number (1..99)         |
+| heatpump1-state      	    	 | Number	       			 | true      | [Nr]         | State: See Modbus description manual of the manufacterer         		  |
+| heatpump1-operating-state      | Number	        		 | true      | [Nr]         | Operating State: See Modbus description manual, link above              |
+| heatpump1-t-flow           	 | Number:Temperature 		 | true      | [0.01°C]     | Flow line termperature 	 				   			   				  |
+| heatpump1-t-return			 | Number:Temperature 		 | true      | [0.01°C]     | Return line temperature	   						       				  |
+| heatpump1-vol-sink  		   	 | Number:VolumetricFlowRate | true      | [0.01 l/min] | Volume flow heat sink                                     			  |
+| heatpump1-t-eqin  			 | Number:Temperature        | true      | [0.01°C]     | Energy source inlet temperature						   			      |
+| heatpump1-t-eqout 			 | Number:Temperature  	     | true      | [0.01°C]     | Energy source outlet temperature		                   				  |
+| heatpump1-vol-source        	 | Number:VolumetricFlowRate | true      | [0.01 l/min] | Volume flow energy source	 	 						   				  |
+| heatpump1-compressor-rating    | Number             		 | true      | [0.01%]      | Compressor unit rating                                   			  	  |
+| heatpump1-qp-heating           | Number:Power              | true      | [0.1kW]      | Actual heating capacity								   				  |
+| heatpump1-fi-power-consumption | Number:Power      		 | true      | [W]          | Frequency inverter actual power consumption               			  |
+| heatpump1-cop		 			 | Number					 | true      | [0.01%]	    | Coefficient of performance								   			  | 
+| heatpump1-set-error-quit   	 | Number           		 | false     | [Nr]         | Set Error Quit (1 = Quit all active heat pump errors                    |
 
-| Channel ID              | Item Type     | Read only | Description                                      |
-| ----------------------- | ------------- | --------- | ------------------------------------------------ |
-| production-heat-today   | Number:Energy | true      | The heat quantity delivered today                |
-| production-heat-total   | Number:Energy | true      | The heat quantity delivered in total             |
-| production-water-today  | Number:Energy | true      | The water heat quantity delivered today          |
-| production-water-total  | Number:Energy | true      | The water heat quantity delivered in total       |
-| consumption-heat-today  | Number:Energy | true      | The power consumption for heating today          |
-| consumption-heat-total  | Number:Energy | true      | The power consumption for heating in total       |
-| consumption-water-today | Number:Energy | true      | The power consumption for water heating today    |
-| consumption-water-total | Number:Energy | true      | The power consumption for water heating in total |
+
+### Boiler 1 Group
+
+This group contains information about the boiler for the water for domestic use / tap water / washwater.
+
+| Channel ID                         | Item Type          | Read only | Unit     | Description                                                         |
+| ---------------------------------- | ------------------ | --------- | -------- | --------------------------------------------------------------------|
+| boiler1-error-number               | Number             | true      | [Nr]     | Boiler 1 Error Number(0 = No error)                                 |
+| boiler1-operating-state            | Number             | true      | [Nr]     | Boiler 1 Operating State: See Modbus description manual, link above |
+| boiler1-actual-high-temperature    | Number:Temperature | true      | [0.1 °C] | Actual temperature boiler high sensor   			                   |
+| boiler1-actual-low-temperature     | Number:Temperature | true      | [0.1 °C] | Actual temperature boiler low sensor        						   |
+| boiler1-maximum-boiler-temperature | Number:Temperature | false     | [0.1 °C] | Setting for maximum boiler temperature (min = 25.0°C; max = 65.0°C) |
+
+### Buffer 1 Group
+
+This group contains information about the buffer for the heating circuit.
+
+| Channel ID                      | Item Type          | Read only | Unit     | Description                                                            |
+| ------------------------------- | ------------------ | --------- | -------- | -----------------------------------------------------------------------|
+| buffer1-error-number            | Number             | true      | [Nr]     | Buffer 1 Error Number (0 = No error)                                   |
+| buffer1-operating-state         | Number             | true      | [Nr]     | Buffer 1 Operating State: See Modbus description manual, link above    |
+| buffer1-actual-high-temperature | Number:Temperature | true      | [0.1 °C] | Actual temperature buffer high sensor				                   |
+| buffer1-actual-low-temperature  | Number:Temperature | true      | [0.1 °C] | Actual temperature buffer low sensor        						   |
+| Buffer 1 Maximum Temperature	  | Number:Temperature | false	   | [0.1 °C] | Setting for maximum buffer temperature (min = 25.0°C; max = 65.0°C)    |
+
+
+### Heating Circuit 1 Group
+
+This group contains general operational information about the heating circuit 1.
+
+| Channel ID                       				 | Item Type          | Read only | Unit         | Description                                               					   |
+| ---------------------------------------------- | -------------------| --------- | ------------ | --------------------------------------------------------------------------------|
+| heatingcircuit1-error-number      			 | Number             | true      | [Nr]         | Error Number (0 = No error)													   |
+| heatingcircuit1-operating-state            	 | Number             | true      | [Nr]         | Operating State: See Modbus description manual, link above|					   |
+| heatingcircuit1-flow-line-temperature   		 | Number:Temperature | true      | [Nr]         | Actual temperature flow line sensor         									   |
+| heatingcircuit1-return-line-temperature      	 | Number:Temperature | true      | [Nr]         | Actual temperature return line sensor         								   |
+| heatingcircuit1-room-device-temperature        | Number:Temperature | true      | [0.01°C]     | Actual temperature room device sensor (min = -29.9°C; max = 99.9°C) 	 		   |
+| heatingcircuit1-setpoint-flow-line-temperature | Number:Temperature | true      | [0.01°C]     | Setpoint temperature flow line (min = 15.0°C; max = 65.0°C)	   				   | 
+| heatingcircuit1-operating-mode  		   		 | Number 			  | true      | [Nr] 		 | Operating Mode: See Modbus description manual, link above    				   |
+| heatingcircuit1-offset-flow-line-temperature   | Number:Temperature | true      | [0.01°C]     | Setting for flow line temperature setpoint offset(min = -10.0K; max = 10.0K)	   |
+| heatingcircuit1-room-heating-temperature 		 | Number:Temperature | rue       | [0.01°C]     | Setting for heating mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
+| eatingcircuit1-room-cooling-temperature        | Number:Temperature | true      | [0.01 l/min] | Setting for cooling mode room setpoint temperature(min = 15.0°C; max = 40.0 °C) |
+
+
 
 ## Full Example
 
 ### Thing Configuration
+UID: modbus:tcp:Lambda_Bridge
+label: Lambda Modbus Bridge
+thingTypeUID: modbus:tcp
+configuration:
+  rtuEncoded: false
+  connectMaxTries: 1
+  reconnectAfterMillis: 0
+  timeBetweenTransactionsMillis: 100
+  port: 502
+  timeBetweenReconnectMillis: 0
+  connectTimeoutMillis: 10000
+  host: 192.168.223.83
+  afterConnectionDelayMillis: 0
+  id: 1
+  enableDiscovery: false
 
-```java
-Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=1 ] {
- Thing lambdahp lambda "Lambda" (modbus:tcp:modbusbridge) @"Room"  [ ]
-}
-```
-
-### Item Configuration
-
-```java
-Number:Temperature stiebel_eltron_temperature_fek            "Temperature FEK [%.1f °C]" <temperature>    { channel="modbus:lambdahp:lambda:systemInformation#fek-temperature" }
-Number:Temperature stiebel_eltron_setpoint_fek            "Set point FEK [%.1f °C]" <temperature>    { channel="modbus:lambdahp:lambda:systemInformation#fek-temperature-setpoint" }
-Number:Dimensionless stiebel_eltron_humidity_fek            "Humidity FEK [%.1f %%]" <humidity>   { channel="modbus:lambdahp:lambda:systemInformation#fek-humidity" }
-Number:Temperature stiebel_eltron_dewpoint_fek            "Dew point FEK [%.1f °C]" <temperature>    { channel="modbus:lambdahp:lambda:systemInformation#fek-dewpoint" }
-
-Number:Temperature stiebel_eltron_outdoor_temp            "Outdoor temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#outdoor-temperature" }
-Number:Temperature stiebel_eltron_temp_hk1                "Temperature HK1 [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#hk1-temperature" }
-Number:Temperature stiebel_eltron_setpoint_hk1            "Set point HK1 [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#hk1-temperature-setpoint" }
-Number:Temperature stiebel_eltron_temp_water                "Water temperature  [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#water-temperature" }
-Number:Temperature stiebel_eltron_setpoint_water            "Water setpoint [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#water-temperature-setpoint" }
-Number:Temperature stiebel_eltron_source_temp            "Source temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#source-temperature" }
-Number:Temperature stiebel_eltron_vorlauf_temp            "Supply tempertature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#supply-temperature" }
-Number:Temperature stiebel_eltron_ruecklauf_temp            "Return temperature  [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemInformation#return-temperature" }
-
-Number stiebel_eltron_heating_comfort_temp              "Heating Comfort Temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemParameter#comfort-temperature-heating" }
-Number stiebel_eltron_heating_eco_temp              "Heating Eco Temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemParameter#eco-temperature-heating" }
-Number stiebel_eltron_water_comfort_temp              "Water Comfort Temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemParameter#comfort-temperature-water" }
-Number stiebel_eltron_water_eco_temp              "Water Eco Temperature [%.1f °C]"    { channel="modbus:lambdahp:lambda:systemParameter#eco-temperature-water" }
-Number stiebel_eltron_operation_mode           "Operation Mode"   { channel="modbus:lambdahp:lambda:systemParameter#operation-mode" }
-
-Contact stiebel_eltron_mode_pump               "Pump [%d]"   { channel="modbus:lambdahp:lambda:systemState#is-pumping" }
-Contact stiebel_eltron_mode_heating             "Heating [%d]"   { channel="modbus:lambdahp:lambda:systemState#is-heating" }
-Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel="modbus:lambdahp:lambda:systemState#is-heating-water" }
-Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:lambdahp:lambda:systemState#is-cooling" }
-Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:lambdahp:lambda:systemState#is-summer" }
+### Example to write PV excess to the Lambda Heat Pump
+// PV_Battery.state and PV_Grid have to be provided by your PV inverter
+// Mode of E-Manager has to be switched to AUTOMATIK in the Lambda Heat Pump App
+var int P_Available =  ((Lambda_EMgr_Power_Consumption_Value_as_Number.state as Number) - (PW_Battery.state as Number) - (PW_Grid.state as Number)).intValue 
+    lambdahp_actual_power.sendCommand(P_Available)
 
 
-Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:lambdahp:lambda:energyInformation#production_heat_today" }
-Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:lambdahp:lambda:energyInformation#production_heat_total"}
-Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:lambdahp:lambda:energyInformation#production_water_today" }
-Number:Energy stiebel_eltron_production_water_total            "Water heat quantity total  [%.3f MWh]"   {channel="modbus:lambdahp:lambda:energyInformation#production_water_total"}
-Number:Energy stiebel_eltron_consumption_heat_total             "Heating power consumption total [%.3f MWh]"  {channel="modbus:lambdahp:lambda:energyInformation#consumption_heat_total"}
-Number:Energy stiebel_eltron_consumption_heat_today            "Heating power consumption today [%.0f kWh]"    { channel="modbus:lambdahp:lambda:energyInformation#consumption_heat_today" }
-Number:Energy stiebel_eltron_consumption_water_today            "Water heating power consumption today  [%.0f kWh]"    { channel="modbus:lambdahp:lambda:energyInformation#consumption_water_today" }
-Number:Energy stiebel_eltron_consumption_water_total            "Water heating power consumption total [%.3f MWh]"   {channel="modbus:lambdahp:lambda:energyInformation#consumption_water_total"}
-
-```
-
-### Sitemap Configuration
-
-```perl
-Text label="Heat pumpt" icon="temperature" {
- Frame label="Optation Mode" {
-  Default item=stiebel_eltron_mode_pump 
-  Default item=stiebel_eltron_mode_heating
-  Default item=stiebel_eltron_mode_water 
-  Default item=stiebel_eltron_mode_cooling 
-  Default item=stiebel_eltron_mode_summer
- }
- Frame label= "State" {
-  Default item=stiebel_eltron_operation_mode icon="settings"
-  Default item=stiebel_eltron_outdoor_temp  icon="temperature"
-  Default item=stiebel_eltron_temp_hk1  icon="temperature"
-  Default item=stiebel_eltron_setpoint_hk1  icon="temperature"
-  Default item=stiebel_eltron_vorlauf_temp  icon="temperature"
-  Default item=stiebel_eltron_ruecklauf_temp  icon="temperature"
-  Default item=stiebel_eltron_temp_water  icon="temperature"
-  Default item=stiebel_eltron_setpoint_water icon="temperature"
-  Default item=stiebel_eltron_temperature_fek  icon="temperature"
-  Default item=stiebel_eltron_setpoint_fek icon="temperature"
-  Default item=stiebel_eltron_humidity_fek icon="humidity"
-  Default item=stiebel_eltron_dewpoint_fek icon="temperature"
-  Default item=stiebel_eltron_source_temp icon="temperature"
- }
- Frame label="Paramters" {
-  Setpoint item=stiebel_eltron_heating_comfort_temp icon="temperature" step=1 minValue=5 maxValue=30
-  Setpoint item=stiebel_eltron_heating_eco_temp icon="temperature" step=1 minValue=5 maxValue=30
-  Setpoint item=stiebel_eltron_water_comfort_temp icon="temperature" step=1 minValue=10 maxValue=60
-  Setpoint item=stiebel_eltron_water_eco_temp icon="temperature" step=1 minValue=10 maxValue=60
- }
- Frame label="Energy consumption" {
-  Default item=stiebel_eltron_consumption_heat_today icon="energy"
-  Default item=stiebel_eltron_consumption_heat_total icon="energy"
-  Default item=stiebel_eltron_consumption_water_today icon="energy"
-  Default item=stiebel_eltron_consumption_water_total icon="energy"
- }
- Frame label="Heat quantity" {
-  Default item=stiebel_eltron_production_heat_today icon="radiator"
-  Default item=stiebel_eltron_production_heat_total icon="radiator"
-  Default item=stiebel_eltron_production_water_today icon="water"
-  Default item=stiebel_eltron_production_water_total icon="water"
- }
-
-}
-
-```

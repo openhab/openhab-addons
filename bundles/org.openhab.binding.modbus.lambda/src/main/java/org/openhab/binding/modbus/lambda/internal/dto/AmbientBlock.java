@@ -21,7 +21,7 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  */
 public class AmbientBlock {
     public int ambientErrorNumber;
-    public int ambientOperatorState;
+    public int ambientOperatingState;
     public int actualAmbientTemperature;
     public int averageAmbientTemperature;
     public int calculatedAmbientTemperature;

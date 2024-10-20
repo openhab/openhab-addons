@@ -21,7 +21,8 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  */
 public class EManagerBlock {
     public int emanagerErrorNumber;
-    public int emanagerOperatorState;
+    public int emanagerOperatingState;
     public int actualPower;
     public int actualPowerConsumption;
+    public int powerConsumptionSetpoint;
 }
