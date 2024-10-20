@@ -94,7 +94,7 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
 
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
-    protected final Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
+    protected Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
     protected final ConcurrentMap<String, Set<MqttMessageSubscriber>> subscriptions = new ConcurrentHashMap<>();
 
     private @Mock @NonNullByDefault({}) TransformationService transformationService1Mock;
