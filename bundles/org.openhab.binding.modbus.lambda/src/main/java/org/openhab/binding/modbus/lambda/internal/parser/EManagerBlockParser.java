@@ -29,9 +29,10 @@ public class EManagerBlockParser extends AbstractBaseParser {
     public EManagerBlock parse(ModbusRegisterArray raw) {
         EManagerBlock block = new EManagerBlock();
         block.emanagerErrorNumber = extractUInt16(raw, 0, (short) 0);
-        block.emanagerOperatorState = extractUInt16(raw, 1, (short) 0);
+        block.emanagerOperatingState = extractUInt16(raw, 1, (short) 0);
         block.actualPower = extractUInt16(raw, 2, (short) 0);
         block.actualPowerConsumption = extractUInt16(raw, 3, (short) 0);
+        block.powerConsumptionSetpoint = extractUInt16(raw, 4, (short) 0);
 
         return block;
     }

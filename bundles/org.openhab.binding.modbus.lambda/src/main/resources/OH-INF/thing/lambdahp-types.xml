@@ -16,14 +16,12 @@
 			<channel-group id="generalEManager" typeId="general-emanager"/>
 			<channel-group id="Heatpump1" typeId="heatpump1"/>
 			<channel-group id="Boiler1" typeId="boiler1"/>
-			<channel-group id="Boiler1Mt" typeId="boiler1mt"/>
 			<channel-group id="Buffer1" typeId="buffer1"/>
-			<channel-group id="Buffer1Mt" typeId="buffer1mt"/>
+			<channel-group id="HeatingCircuit1" typeId="heatingcircuit1"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:lambda:modbusconfig"/>
 
 	</thing-type>
-
 
 </thing:thing-descriptions>
