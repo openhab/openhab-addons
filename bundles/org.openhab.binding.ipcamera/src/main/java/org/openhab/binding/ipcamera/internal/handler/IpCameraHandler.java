@@ -712,7 +712,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void openCamerasStream() {
-        if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
+        if (usingRtspForMjpeg()) {
             setupFfmpegFormat(FFmpegFormat.MJPEG);
             return;
         }
@@ -811,7 +811,7 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.warn("The camera tried to use a FFmpeg feature when the location for FFmpeg is not known.");
             return;
         }
-        if (rtspUri.toLowerCase().contains("rtsp")) {
+        if (mjpegUri.toLowerCase().startsWith("rtsp") || rtspUri.toLowerCase().startsWith("rtsp")) {
             if (inputOptions.isEmpty()) {
                 inputOptions = "-rtsp_transport tcp";
             }
@@ -938,10 +938,17 @@ public class IpCameraHandler extends BaseThingHandler {
                     } else {
                         inputOptions += " -hide_banner";
                     }
-                    ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
-                            cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
-                                    + getThing().getUID().getId() + "/ipcamera.jpg",
-                            cameraConfig.getUser(), cameraConfig.getPassword());
+                    if (mjpegUri.toLowerCase().startsWith("rtsp://")) {
+                        ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, mjpegUri,
+                                cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
+                                        + getThing().getUID().getId() + "/ipcamera.jpg",
+                                cameraConfig.getUser(), cameraConfig.getPassword());
+                    } else {
+                        ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
+                                cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + SERVLET_PORT + "/ipcamera/"
+                                        + getThing().getUID().getId() + "/ipcamera.jpg",
+                                cameraConfig.getUser(), cameraConfig.getPassword());
+                    }
                 }
                 Ffmpeg localMjpeg = ffmpegMjpeg;
                 if (localMjpeg != null) {
@@ -1644,7 +1651,10 @@ public class IpCameraHandler extends BaseThingHandler {
         threadPool = Executors.newScheduledThreadPool(2);
         mainEventLoopGroup = new NioEventLoopGroup(3);
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
-        mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
+        mjpegUri = cameraConfig.getMjpegUrl();
+        if (!mjpegUri.toLowerCase().startsWith("rtsp://")) {
+            mjpegUri = getCorrectUrlFormat(mjpegUri);
+        }
         rtspUri = cameraConfig.getFfmpegInput();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
             cameraConfig
@@ -1734,6 +1744,10 @@ public class IpCameraHandler extends BaseThingHandler {
                     rtspUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
                             + (cameraConfig.getNvrChannel() + 1) + "_main";
                 }
+                if (mjpegUri.isEmpty()) {
+                    mjpegUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
+                            + (cameraConfig.getNvrChannel() + 1) + "_sub";
+                }
                 break;
         }
         // for poll times 9 seconds and above don't display a warning about the Image channel.
@@ -1773,7 +1787,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private void keepMjpegRunning() {
         CameraServlet localServlet = servlet;
         if (localServlet != null && !localServlet.openStreams.isEmpty()) {
-            if (!mjpegUri.isEmpty() && !"ffmpeg".equals(mjpegUri)) {
+            if (!mjpegUri.isEmpty() && !"ffmpeg".equals(mjpegUri) && !mjpegUri.toLowerCase().startsWith("rtsp://")) {
                 localServlet.openStreams.queueFrame(("--" + localServlet.openStreams.boundary + "\r\n\r\n").getBytes());
             }
             localServlet.openStreams.queueFrame(getSnapshot());
@@ -1869,6 +1883,10 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public String getWhiteList() {
         return cameraConfig.getIpWhitelist();
+    }
+
+    public boolean usingRtspForMjpeg() {
+        return (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri) || mjpegUri.toLowerCase().startsWith("rtsp://"));
     }
 
     @Override

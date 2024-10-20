@@ -2419,7 +2419,7 @@
 				<label>MJPEG Options</label>
 				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
-				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
+				<default>-q:v 4 -r 4 -update 1</default>
 				<advanced>true</advanced>
 			</parameter>
 
