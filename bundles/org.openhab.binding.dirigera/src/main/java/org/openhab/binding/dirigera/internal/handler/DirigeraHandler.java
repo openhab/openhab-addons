@@ -52,7 +52,7 @@ import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.binding.dirigera.internal.network.RestAPI;
+import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
@@ -94,7 +94,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     public static final Gson GSON = new Gson();
 
     // Used for unit tests
-    protected Class<?> apiProvider = RestAPI.class;
+    protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
     private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
@@ -219,6 +219,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (apiProviderInstance != null) {
                 api = Optional.of(apiProviderInstance);
             } else {
+                // TODO this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
                 return;
             }
             Model houseModel = new Model(this);
