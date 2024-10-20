@@ -28,8 +28,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.tesla.internal.protocol.sso.RefreshTokenRequest;
-import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
+import org.openhab.binding.tesla.internal.protocol.dto.sso.RefreshTokenRequest;
+import org.openhab.binding.tesla.internal.protocol.dto.sso.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,10 +72,10 @@ public class TeslaSSOHandler {
             String refreshTokenResponse = refreshResponse.getContentAsString();
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
-            if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
-                tokenResponse.created_at = Instant.now().getEpochSecond();
-                logger.debug("Access token expires in {} seconds at {}", tokenResponse.expires_in, DATE_FORMATTER
-                        .format(Instant.ofEpochMilli((tokenResponse.created_at + tokenResponse.expires_in) * 1000)));
+            if (tokenResponse != null && tokenResponse.accessToken != null && !tokenResponse.accessToken.isEmpty()) {
+                tokenResponse.createdAt = Instant.now().getEpochSecond();
+                logger.debug("Access token expires in {} seconds at {}", tokenResponse.expiresIn, DATE_FORMATTER
+                        .format(Instant.ofEpochMilli((tokenResponse.createdAt + tokenResponse.expiresIn) * 1000)));
                 return tokenResponse;
             } else {
                 logger.debug("An error occurred while exchanging SSO auth token for API access token.");

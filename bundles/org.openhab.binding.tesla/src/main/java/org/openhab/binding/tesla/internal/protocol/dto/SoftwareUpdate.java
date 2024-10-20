@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tesla.internal.protocol;
+package org.openhab.binding.tesla.internal.protocol.dto;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link SoftwareUpdate} is a datastructure to capture
@@ -20,9 +22,12 @@ package org.openhab.binding.tesla.internal.protocol;
  */
 public class SoftwareUpdate {
 
-    public int download_perc;
-    public int expected_duration_sec;
-    public int install_perc;
+    @SerializedName("download_perc")
+    public int downloadPerc;
+    @SerializedName("expected_duration_sec")
+    public int expectedDurationSec;
+    @SerializedName("install_perc")
+    public int installPerc;
     public String status;
     public String version;
 

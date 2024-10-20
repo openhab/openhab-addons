@@ -22,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottler {
 
     private final Logger logger = LoggerFactory.getLogger(QueueChannelThrottler.class);
@@ -71,13 +74,13 @@ public final class QueueChannelThrottler extends AbstractMultiRateChannelThrottl
     }
 
     @Override
-    public Future<?> submit(Runnable task) {
+    public @Nullable Future<?> submit(Runnable task) {
         return submit(null, task);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Future<?> submit(Object channelKey, Runnable task) {
+    public @Nullable Future<?> submit(@Nullable Object channelKey, Runnable task) {
         FutureTask runTask = new FutureTask(task, null);
         try {
             if (tasks.offer(runTask, overallRate.timeInMillis(), TimeUnit.MILLISECONDS)) {
