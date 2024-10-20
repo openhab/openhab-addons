@@ -104,7 +104,7 @@ public interface LocalData {
         return Short.MIN_VALUE;
     }
 
-    default short getFeedInPower() {
+    default int getFeedInPower() {
         return Short.MIN_VALUE;
     }
 
@@ -116,11 +116,11 @@ public interface LocalData {
         return Short.MIN_VALUE;
     }
 
-    default short getTotalBatteryDischargeEnergy() {
+    default double getTotalBatteryDischargeEnergy() {
         return Short.MIN_VALUE;
     }
 
-    default short getTotalBatteryChargeEnergy() {
+    default double getTotalBatteryChargeEnergy() {
         return Short.MIN_VALUE;
     }
 
@@ -128,7 +128,7 @@ public interface LocalData {
         return Short.MIN_VALUE;
     }
 
-    default short getTotalFeedInEnergy() {
+    default double getTotalFeedInEnergy() {
         return Short.MIN_VALUE;
     }
 
