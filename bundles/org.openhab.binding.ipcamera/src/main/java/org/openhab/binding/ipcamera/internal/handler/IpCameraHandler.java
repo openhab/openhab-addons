@@ -357,8 +357,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 logger.debug("Camera sent {} bytes when the content-length header was {}.", bytesAlreadyRecieved,
                         bytesToRecieve);
             } else {
-                logger.warn("!!!! Camera possibly closed the channel on the binding, cause reported is: {}",
-                        cause.getMessage());
+                logger.warn("Camera possibly closed the channel on the binding for URL: {}, cause reported is: {}",
+                        requestUrl, cause.getMessage());
             }
             ctx.close();
         }
@@ -386,7 +386,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return; // don't auto close this as it is for the alarms.
                         }
                     }
-                    logger.debug("Closing an idle channel for camera: {}", cameraConfig.getIp());
+                    logger.debug("Closing an idle channel for {}{}", cameraConfig.getIp(), requestUrl);
                     ctx.close();
                 }
             }

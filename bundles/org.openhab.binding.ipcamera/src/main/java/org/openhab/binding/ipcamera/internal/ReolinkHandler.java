@@ -89,7 +89,8 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         ipCameraHandler.sendHttpPOST("/api.cgi?cmd=GetAbility" + ipCameraHandler.reolinkAuth,
                                 "[{ \"cmd\":\"GetAbility\", \"param\":{ \"User\":{ \"userName\":\"admin\" }}}]");
                     } else {
-                        ipCameraHandler.logger.info("Your Reolink camera gave a bad login response:{}", content);
+                        ipCameraHandler.cameraConfigError(
+                                "Check your user and password are correct as the Reolink camera gave a bad login response");
                     }
                     break;
                 case "/api.cgi?cmd=GetAbility": // Used to check what channels the camera supports
@@ -172,7 +173,7 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                         }
                         if (getAbilityResponse[0].value.ability.supportAudioAlarmEnable == null
                                 || getAbilityResponse[0].value.ability.supportAudioAlarmEnable.permit == 0) {
-                            ipCameraHandler.logger.debug("Camera has no AudioAlarm support.");
+                            ipCameraHandler.logger.debug("Camera has no support for controlling AudioAlarms.");
                             channel = ipCameraHandler.getThing().getChannel(CHANNEL_THRESHOLD_AUDIO_ALARM);
                             if (channel != null) {
                                 removeChannels.add(channel);
