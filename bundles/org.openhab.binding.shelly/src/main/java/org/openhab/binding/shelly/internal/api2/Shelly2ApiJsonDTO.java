@@ -704,6 +704,9 @@ public class Shelly2ApiJsonDTO {
 
             public static class Shelly2DeviceStatusEmData {
                 public Integer id;
+
+                @SerializedName("total_act")
+                public Double totalKWH;
                 public String[] errors;
             }
 
