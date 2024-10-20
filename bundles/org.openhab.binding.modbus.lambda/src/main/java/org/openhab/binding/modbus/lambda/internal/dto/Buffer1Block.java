@@ -20,7 +20,8 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  *
  */
 public class Buffer1Block {
-
+    public int buffer1ErrorNumber;
+    public int buffer1OperatingState;
     public int buffer1ActualHighTemperature;
     public int buffer1ActualLowTemperature;
 }

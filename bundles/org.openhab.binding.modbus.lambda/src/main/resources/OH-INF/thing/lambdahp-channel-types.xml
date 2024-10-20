@@ -15,9 +15,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ambient-operator-state-type">
+	<channel-type id="ambient-operating-state-type">
 		<item-type>Number</item-type>
-		<label>Ambient Operator State</label>
+		<label>Ambient Operating State</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">OFF</option>
@@ -56,9 +56,9 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="emanager-operator-state-type">
+	<channel-type id="emanager-operating-state-type">
 		<item-type>Number</item-type>
-		<label>E-Manager Operator State</label>
+		<label>E-Manager Operating State</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">OFF</option>
@@ -73,20 +73,193 @@
 	<channel-type id="actual-power-type">
 		<item-type unitHint="%">Number:Power</item-type>
 		<label>Actual Power (input or excess)</label>
-		<state readOnly="false" pattern="%.1f %unit%"/>
+		<state readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="actual-power-consumption-type">
 		<item-type unitHint="%">Number:Power</item-type>
 		<label>Actual Power Consumption</label>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="power-consumption-setpoint-type">
+		<item-type unitHint="%">Number:Power</item-type>
+		<label>Power consumption setpoint</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-error-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump1 Error State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">NONE</option>
+				<option value="1">MESSAGE</option>
+				<option value="2">WARNING</option>
+				<option value="3">ALARM</option>
+				<option value="4">FAULT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump1-error-number-type">
+		<item-type>Number</item-type>
+		<label>Heatpump1 Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump1-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump1 State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">INIT</option>
+				<option value="1">REFERENCE</option>
+				<option value="2">RESTART-BLOCK</option>
+				<option value="3">READY</option>
+				<option value="4">START PUMPS</option>
+				<option value="5">START COMPRESSOR</option>
+				<option value="6">PRE-REGULATION</option>
+				<option value="7">REGULATION</option>
+				<option value="8">Not used</option>
+				<option value="9">COOLING</option>
+				<option value="10">DEFROSTING</option>
+				<option value="20">STOPPING</option>
+				<option value="30">FAULT-LOCK</option>
+				<option value="31">ALARM-BLOCK</option>
+				<option value="40">ERROR-RESET</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatpump1-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Heatpump1 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">CH</option>
+				<option value="2">DHW</option>
+				<option value="3">CC</option>
+				<option value="4">CIRCULATE</option>
+				<option value="5">DEFROST</option>
+				<option value="6">OFF</option>
+				<option value="7">FROST</option>
+				<option value="8">STBY-FROST</option>
+				<option value="9">Not used</option>
+				<option value="10">SUMMER</option>
+				<option value="11">HOLIDAY</option>
+				<option value="12">ERROR</option>
+				<option value="13">WARNING</option>
+				<option value="14">INFO-MESSAGE</option>
+				<option value="15">TIME-BLOCK</option>
+				<option value="16">RELEASE-BLOCK</option>
+				<option value="17">MINTEMP-BLOCK</option>
+				<option value="18">FIRMWARE-DOWNLOAD</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="heatpump1-t-flow-type">
 		<item-type unitHint="%">Number:Temperature</item-type>
 		<label>Heatpump 1 T-Flow</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-t-return-type">
+		<item-type unitHint="%">Number:Temperature</item-type>
+		<label>Heatpump 1 T-Return</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-vol-sink-type">
+		<item-type unitHint="%">Number:VolumetricFlowRate</item-type>
+		<label>Heat Pump 1 Volume flow heat sink</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-t-eqin-type">
+		<item-type unitHint="%">Number:Temperature</item-type>
+		<label>Heat Pump 1 Energy source inlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-t-eqout-type">
+		<item-type unitHint="%">Number:Temperature</item-type>
+		<label>Heat Pump 1 Energy source outlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-vol-source-type">
+		<item-type unitHint="%">Number:VolumetricFlowRate</item-type>
+		<label>Heat Pump 1 Volume flow energy source</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-compressor-rating-type">
+		<item-type>Number</item-type>
+		<label>Heat Pump 1 Compressor unit rating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-qp-heating-type">
+		<item-type unitHint="%">Number:Power</item-type>
+		<label>Heat Pump 1 Actual heating capacity</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-fi-power-consumption-type">
+		<item-type unitHint="%">Number:Power</item-type>
+		<label>Heat Pump 1 Frequency inverter actual power consumption</label>
+		<state readOnly="true" pattern="%.1f kW"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-cop-type">
+		<item-type>Number</item-type>
+		<label>Heat Pump 1 COP</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump1-set-error-quit-type">
+		<item-type>Number</item-type>
+		<label>Heat Pump 1 Set Error Quit</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boiler1-error-number-type">
+		<item-type>Number</item-type>
+		<label>Boiler1 Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="boiler1-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Boiler1 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">DHW</option>
+				<option value="2">LEGIO</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">PROMPT-DHW</option>
+				<option value="10">TRAILING-STOP</option>
+				<option value="11">TEMP-LOCK</option>
+				<option value="12">STBY-FROST</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="boiler1-actual-high-temperature-type">
@@ -98,13 +271,42 @@
 	<channel-type id="boiler1-actual-low-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler 1 Actual Low Temperature</label>
-		<state readOnly="f" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="boiler1-maximum-boiler-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler 1 Maximum Boiler Temperature</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="buffer1-error-number-type">
+		<item-type>Number</item-type>
+		<label>Buffer1 Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="buffer1-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Buffer1 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">HEATING</option>
+				<option value="2">COOLING</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">STBY-FROST</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="buffer1-actual-high-temperature-type">
@@ -122,6 +324,106 @@
 	<channel-type id="buffer1-maximum-buffer-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Buffer 1 Maximum Buffer Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-error-number-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="heatingcircuit1-operating-state-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit 1 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">HEATING</option>
+				<option value="1">ECO</option>
+				<option value="2">COOLING</option>
+				<option value="3">FLOORDRY</option>
+				<option value="4">FROST</option>
+				<option value="5">MAX-TEMP</option>
+				<option value="6">ERROR</option>
+				<option value="7">SERVICE</option>
+				<option value="8">HOLIDAY</option>
+				<option value="9">CH-SUMMER</option>
+				<option value="10">CC-WINTER</option>
+				<option value="11">PRIO-STOP</option>
+				<option value="12">OFF</option>
+				<option value="13">RELEASE-OFF</option>
+				<option value="14">TIME-OFF</option>
+				<option value="15">STBY</option>
+				<option value="16">STBY-HEATING</option>
+				<option value="17">STBY-ECHO</option>
+				<option value="18">STBY-COOLING</option>
+				<option value="19">STBY-FROST</option>
+				<option value="20">STB-FLOORDRY</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Flow Line Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-return-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Return Line Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-room-device-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Room Device Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-setpoint-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Setpoint Flow Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-operating-mode-type">
+		<item-type>Number</item-type>
+		<label>Heating Circuit 1 Operating Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">OFF(RW)</option>
+				<option value="1">MANUAL(R)</option>
+				<option value="2">AUTOMATIK(RW)</option>
+				<option value="3">AUTO-HEATING(RW)</option>
+				<option value="4">AUTO-COOLING(RW)</option>
+				<option value="5">FROST(RW)</option>
+				<option value="6">SUMMER(RW)</option>
+				<option value="7">FLOOR-DRY(R)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-offset-flow-line-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Set Offset Flow Line Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-room-heating-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Set Room Heating Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heatingcircuit1-room-cooling-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating circuit 1 Set Room Cooling Temperature</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 

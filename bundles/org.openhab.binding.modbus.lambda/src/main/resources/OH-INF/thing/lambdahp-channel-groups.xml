@@ -8,8 +8,9 @@
 		<label>General Ambient</label>
 		<channels>
 			<channel id="ambient-error-number" typeId="ambient-error-number-type"/>
-			<channel id="ambient-operator-state" typeId="ambient-operator-state-type"/>
+			<channel id="ambient-operating-state" typeId="ambient-operating-state-type"/>
 			<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-type"/>
+			<channel id="average-ambient-temperature" typeId="average-ambient-temperature-type"/>
 			<channel id="calculated-ambient-temperature" typeId="calculated-ambient-temperature-type"/>
 		</channels>
 	</channel-group-type>
@@ -18,52 +19,73 @@
 		<label>General E-Manager</label>
 		<channels>
 			<channel id="emanager-error-number" typeId="emanager-error-number-type"/>
-			<channel id="emanager-operator-state" typeId="emanager-operator-state-type"/>
+			<channel id="emanager-operating-state" typeId="emanager-operating-state-type"/>
 			<channel id="actual-power" typeId="actual-power-type"/>
 			<channel id="actual-power-consumption" typeId="actual-power-consumption-type"/>
-
+			<channel id="power-consumption-setpoint" typeId="power-consumption-setpoint-type"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="heatpump1">
 		<label>Heat Pump 1</label>
 		<channels>
+			<channel id="heatpump1-error-state" typeId="heatpump1-error-state-type"/>
+			<channel id="heatpump1-error-number" typeId="heatpump1-error-number-type"/>
+			<channel id="heatpump1-state" typeId="heatpump1-state-type"/>
+			<channel id="heatpump1-operating-state" typeId="heatpump1-operating-state-type"/>
 			<channel id="heatpump1-t-flow" typeId="heatpump1-t-flow-type"/>
+			<channel id="heatpump1-t-return" typeId="heatpump1-t-return-type"/>
+			<channel id="heatpump1-vol-sink" typeId="heatpump1-vol-sink-type"/>
+			<channel id="heatpump1-t-eqin" typeId="heatpump1-t-eqin-type"/>
+			<channel id="heatpump1-t-eqout" typeId="heatpump1-t-eqout-type"/>
+			<channel id="heatpump1-vol-source" typeId="heatpump1-vol-source-type"/>
+			<channel id="heatpump1-compressor-rating" typeId="heatpump1-compressor-rating-type"/>
+			<channel id="heatpump1-qp-heating" typeId="heatpump1-qp-heating-type"/>
+			<channel id="heatpump1-fi-power-consumption" typeId="heatpump1-fi-power-consumption-type"/>
+			<channel id="heatpump1-cop" typeId="heatpump1-cop-type"/>
+			<channel id="heatpump1-set-error-quit" typeId="heatpump1-set-error-quit-type"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="boiler1">
 		<label>Boiler 1</label>
 		<channels>
+			<channel id="boiler1-error-number" typeId="boiler1-error-number-type"/>
+			<channel id="boiler1-operating-state" typeId="boiler1-operating-state-type"/>
 			<channel id="boiler1-actual-high-temperature" typeId="boiler1-actual-high-temperature-type"/>
 			<channel id="boiler1-actual-low-temperature" typeId="boiler1-actual-low-temperature-type"/>
-		</channels>
-
-	</channel-group-type>
-
-	<channel-group-type id="boiler1mt">
-		<label>Boiler 1 Register 50</label>
-		<channels>
 			<channel id="boiler1-maximum-boiler-temperature" typeId="boiler1-maximum-boiler-temperature-type"/>
-
 		</channels>
-
 	</channel-group-type>
 
 	<channel-group-type id="buffer1">
 		<label>Buffer 1</label>
 		<channels>
+			<channel id="buffer1-error-number" typeId="buffer1-error-number-type"/>
+			<channel id="buffer1-operating-state" typeId="buffer1-operating-state-type"/>
 			<channel id="buffer1-actual-high-temperature" typeId="buffer1-actual-high-temperature-type"/>
 			<channel id="buffer1-actual-low-temperature" typeId="buffer1-actual-low-temperature-type"/>
-		</channels>
-
-	</channel-group-type>
-
-	<channel-group-type id="buffer1mt">
-		<label>Buffer 1 Register 50</label>
-		<channels>
 			<channel id="buffer1-maximum-buffer-temperature" typeId="buffer1-maximum-buffer-temperature-type"/>
-
 		</channels>
 	</channel-group-type>
+
+	<channel-group-type id="heatingcircuit1">
+		<label>Heating Circuit 1</label>
+		<channels>
+			<channel id="heatingcircuit1-error-number" typeId="heatingcircuit1-error-number-type"/>
+			<channel id="heatingcircuit1-operating-state" typeId="heatingcircuit1-operating-state-type"/>
+			<channel id="heatingcircuit1-flow-line-temperature" typeId="heatingcircuit1-flow-line-temperature-type"/>
+			<channel id="heatingcircuit1-return-line-temperature" typeId="heatingcircuit1-return-line-temperature-type"/>
+			<channel id="heatingcircuit1-room-device-temperature" typeId="heatingcircuit1-room-device-temperature-type"/>
+			<channel id="heatingcircuit1-setpoint-flow-line-temperature"
+				typeId="heatingcircuit1-setpoint-flow-line-temperature-type"/>
+			<channel id="heatingcircuit1-operating-mode" typeId="heatingcircuit1-operating-mode-type"/>
+			<channel id="heatingcircuit1-offset-flow-line-temperature"
+				typeId="heatingcircuit1-offset-flow-line-temperature-type"/>
+			<channel id="heatingcircuit1-room-heating-temperature" typeId="heatingcircuit1-room-heating-temperature-type"/>
+			<channel id="heatingcircuit1-room-cooling-temperature" typeId="heatingcircuit1-room-cooling-temperature-type"/>
+		</channels>
+	</channel-group-type>
+
+
 </thing:thing-descriptions>

@@ -1,3 +1,4 @@
+package org.openhab.binding.modbus.lambda.internal.dto;
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -10,18 +11,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
- * Dto class for the Boiler1 Block
+ * Dto class for the HeatingCircuit1 Block
  *
  * @author Paul Frank - Initial contribution
  * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
  *
  */
-public class Boiler1Block {
-    public int boiler1ErrorNumber;
-    public int boiler1OperatingState;
-    public int boiler1ActualHighTemperature;
-    public int boiler1ActualLowTemperature;
+public class HeatingCircuit1Block {
+
+    public int heatingcircuit1ErrorNumber;
+    public int heatingcircuit1OperatingState;
+    public int heatingcircuit1FlowLineTemperature;
+    public int heatingcircuit1ReturnLineTemperature;
+    public int heatingcircuit1RoomDeviceTemperature;
+    public int heatingcircuit1SetpointFlowLineTemperature;
+    public int heatingcircuit1OperatingMode;
 }
