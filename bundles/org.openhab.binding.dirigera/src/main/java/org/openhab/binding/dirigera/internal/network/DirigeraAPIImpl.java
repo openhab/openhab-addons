@@ -38,19 +38,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link RestAPI} provides easy access towards REST API
+ * {@link DirigeraAPIImpl} provides easy access towards REST API
  *
  * @author Bernd Weymann - Initial contribution
  */
 @WebSocket
 @NonNullByDefault
-public class RestAPI implements DirigeraAPI {
+public class DirigeraAPIImpl implements DirigeraAPI {
 
-    private final Logger logger = LoggerFactory.getLogger(RestAPI.class);
+    private final Logger logger = LoggerFactory.getLogger(DirigeraAPIImpl.class);
     private HttpClient httpClient;
     private Gateway gateway;
 
-    public RestAPI(HttpClient httpClient, Gateway gateway) {
+    public DirigeraAPIImpl(HttpClient httpClient, Gateway gateway) {
         this.httpClient = httpClient;
         this.gateway = gateway;
     }

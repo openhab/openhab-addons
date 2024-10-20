@@ -61,11 +61,59 @@ class DirigeraBridgeProvider {
     };
 
     /**
-     * Prepare operational bridge where device handlers can be connected to
+     * Prepare obridge which can be used with DirigraAPISimu Provider
      *
      * @return Bridge
      */
     public static Bridge prepareBridge() {
+        /**
+         * Prepare https replies
+         */
+        String ipAddress = "1.2.3.4";
+        HttpClient httpMock = mock(HttpClient.class);
+        /**
+         * Prepare persistence
+         */
+        // prepare persistence data
+        JSONObject storageObject = new JSONObject();
+        JSONArray knownDevices = new JSONArray();
+        knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
+        storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
+        storageObject.put(PROPERTY_TOKEN, "1234");
+        // now mock it
+        Storage<String> mockStorage = mock(Storage.class);
+        when(mockStorage.get("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1")).thenReturn(storageObject.toString());
+
+        // prepare instances
+        BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
+        hubBridge.setBridgeUID(new ThingUID(BINDING_ID + ":" + "gateway:9876"));
+
+        /**
+         * new version with api simulation in background
+         */
+        DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
+                mock(DirigeraDiscoveryManager.class), TZP);
+        hubBridge.setHandler(hubHandler);
+        CallbackMock bridgeCallback = new CallbackMock();
+        hubHandler.setCallback(bridgeCallback);
+
+        // set handler to full configured with token, ipAddress and if
+        Map<String, Object> config = new HashMap<>();
+        config.put("ipAddress", ipAddress);
+        config.put("id", "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
+        hubHandler.handleConfigurationUpdate(config);
+
+        hubHandler.initialize();
+        bridgeCallback.waitForOnline();
+        return hubBridge;
+    }
+
+    /**
+     * Prepare obridge which can be used with DirigraAPISImpl Provider stubbed with several http mocks
+     *
+     * @return Bridge
+     */
+    public static Bridge prepareMockBridge() {
         /**
          * Prepare https replies
          */
@@ -135,23 +183,5 @@ class DirigeraBridgeProvider {
         hubHandler.initialize();
         bridgeCallback.waitForOnline();
         return hubBridge;
-        /**
-         * Old working version
-         */
-        // DirigeraHandler hubHandler = new DirigeraHandler(hubBridge, httpMock, mockStorage,
-        // mock(DirigeraDiscoveryManager.class), TZP);
-        // hubBridge.setHandler(hubHandler);
-        // CallbackMock bridgeCallback = new CallbackMock();
-        // hubHandler.setCallback(bridgeCallback);
-        //
-        // // set handler to full configured with token, ipAddress and if
-        // Map<String, Object> config = new HashMap<>();
-        // config.put("ipAddress", ipAddress);
-        // config.put("id", "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
-        // hubHandler.handleConfigurationUpdate(config);
-        //
-        // hubHandler.initialize();
-        // bridgeCallback.waitForOnline();
-        // return hubBridge;
     }
 }

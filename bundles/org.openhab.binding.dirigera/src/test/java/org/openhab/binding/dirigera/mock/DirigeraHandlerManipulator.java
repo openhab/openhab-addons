@@ -32,6 +32,6 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
         super(bridge, insecureClient, bindingStorage, discoveryManager, timeZoneProvider);
         // Changes the class of the provider. During initialize this class will be used for instantiation
-        super.apiProvider = APIMock.class;
+        super.apiProvider = DirigeraAPISimu.class;
     }
 }
