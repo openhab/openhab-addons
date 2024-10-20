@@ -264,6 +264,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     protected String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
             String simpleName, ZoneId timeZone) {
+        table = "\"" + table + "\"";
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
                 filter.toString(), numberDecimalcount, table, simpleName);
