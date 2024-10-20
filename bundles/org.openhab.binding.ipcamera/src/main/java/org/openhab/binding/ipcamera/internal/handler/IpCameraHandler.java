@@ -1787,7 +1787,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private void keepMjpegRunning() {
         CameraServlet localServlet = servlet;
         if (localServlet != null && !localServlet.openStreams.isEmpty()) {
-            if (!mjpegUri.isEmpty() && !"ffmpeg".equals(mjpegUri) && !mjpegUri.toLowerCase().startsWith("rtsp://")) {
+            if (!usingRtspForMjpeg()) {
                 localServlet.openStreams.queueFrame(("--" + localServlet.openStreams.boundary + "\r\n\r\n").getBytes());
             }
             localServlet.openStreams.queueFrame(getSnapshot());
