@@ -14,15 +14,11 @@ package org.openhab.binding.fmiweather;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -54,34 +50,16 @@ public class AbstractFMIResponseParsingTest {
         client = new Client();
     }
 
-    protected Path getTestResource(String filename) {
-        try {
-            return Paths.get(getClass().getResource(filename).toURI());
-        } catch (URISyntaxException e) {
-            fail(e.getMessage());
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
-        }
-    }
-
-    protected String readTestResourceUtf8(String filename) {
-        return readTestResourceUtf8(getTestResource(filename));
-    }
-
-    protected String readTestResourceUtf8(Path path) {
-        try {
-            BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-            StringBuilder content = new StringBuilder();
-            char[] buffer = new char[1024];
-            int read = -1;
-            while ((read = reader.read(buffer)) != -1) {
-                content.append(buffer, 0, read);
+    protected String readTestResourceUtf8(String filename) throws IOException {
+        try (InputStream inputStream = AbstractFMIResponseParsingTest.class.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                throw new IOException("Input stream is null");
             }
-            return content.toString();
-        } catch (IOException e) {
-            fail(e.getMessage());
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
+            byte[] bytes = inputStream.readAllBytes();
+            if (bytes == null) {
+                throw new IOException("Resulting byte-array empty");
+            }
+            return new String(bytes, StandardCharsets.UTF_8);
         }
     }
 

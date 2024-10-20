@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.nio.file.Path;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
@@ -30,12 +28,12 @@ import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseExcep
 @NonNullByDefault
 public class FMIResponseParsingExceptionReportTest extends AbstractFMIResponseParsingTest {
 
-    private Path error1 = getTestResource("error1.xml");
+    private static final String ERROR1 = "error1.xml";
 
     @Test
     public void testErrorResponse() {
         try {
-            parseMultiPointCoverageXml(readTestResourceUtf8(error1));
+            parseMultiPointCoverageXml(readTestResourceUtf8(ERROR1));
         } catch (FMIResponseException e) {
             // OK
             assertThat(e.getMessage(), is(

@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
@@ -36,8 +35,8 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 @NonNullByDefault
 public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponseParsingTest {
 
-    private Path observationsMultiplePlaces = getTestResource("observations_multiple_places.xml");
-    private Path forecastsMultiplePlaces = getTestResource("forecast_multiple_places.xml");
+    private static final String OBSERVATIONS_MULTIPLE_PLACES = "observations_multiple_places.xml";
+    private static final String FORECAST_MULTIPLE_PLACES = "forecast_multiple_places.xml";
 
     @NonNullByDefault({})
     private FMIResponse observationsMultiplePlacesResponse;
@@ -64,10 +63,11 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
     public void setUp() {
         try {
             observationsMultiplePlacesResponse = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(observationsMultiplePlaces));
+                    readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES));
             observationsMultiplePlacesNaNResponse = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(observationsMultiplePlaces).replace("276.0", "NaN"));
-            forecastsMultiplePlacesResponse = parseMultiPointCoverageXml(readTestResourceUtf8(forecastsMultiplePlaces));
+                    readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES).replace("276.0", "NaN"));
+            forecastsMultiplePlacesResponse = parseMultiPointCoverageXml(
+                    readTestResourceUtf8(FORECAST_MULTIPLE_PLACES));
         } catch (Throwable e) {
             throw new RuntimeException("Test data malformed", e);
         }
@@ -111,8 +111,8 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
 
     @Test
     public void testParseObservationsMultipleData() {
-        Data wd_10min = observationsMultiplePlacesResponse.getData(emasalo, "wd_10min").get();
-        assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
+        Data wd10min = observationsMultiplePlacesResponse.getData(emasalo, "wd_10min").get();
+        assertThat(wd10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", "276.0")));
         Data rh = observationsMultiplePlacesResponse.getData(kilpilahti, "rh").get();
         assertThat(rh, is(deeplyEqualTo(1552215600L, 60, "73.0", "65.0", "60.0", "59.0", "57.0", "64.0", "66.0", "65.0",
@@ -140,8 +140,8 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
     @Test
     public void testParseObservations1NaN() {
         // last value is null, due to NaN measurement value
-        Data wd_10min = observationsMultiplePlacesNaNResponse.getData(emasalo, "wd_10min").get();
-        assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
+        Data wd10min = observationsMultiplePlacesNaNResponse.getData(emasalo, "wd_10min").get();
+        assertThat(wd10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", null)));
     }
 }

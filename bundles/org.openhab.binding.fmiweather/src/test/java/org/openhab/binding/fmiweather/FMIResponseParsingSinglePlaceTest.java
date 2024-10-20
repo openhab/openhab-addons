@@ -17,7 +17,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 @NonNullByDefault
 public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsingTest {
 
-    private Path observations1 = getTestResource("observations_single_place.xml");
+    private static final String OBSERVATIONS1 = "observations_single_place.xml";
 
     @NonNullByDefault({})
     private FMIResponse observationsResponse1;
@@ -50,9 +49,9 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
     @BeforeEach
     public void setUp() {
         try {
-            observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(observations1));
+            observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1));
             observationsResponse1NaN = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(observations1).replace("276.0", "NaN"));
+                    readTestResourceUtf8(OBSERVATIONS1).replace("276.0", "NaN"));
         } catch (Throwable e) {
             throw new RuntimeException("Test data malformed", e);
         }
@@ -86,16 +85,16 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
 
     @Test
     public void testParseObservations1Data() {
-        Data wd_10min = observationsResponse1.getData(emasalo, "wd_10min").get();
-        assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
+        Data wd10min = observationsResponse1.getData(emasalo, "wd_10min").get();
+        assertThat(wd10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", "276.0")));
     }
 
     @Test
     public void testParseObservations1NaN() {
         // last value is null, due to NaN measurement value
-        Data wd_10min = observationsResponse1NaN.getData(emasalo, "wd_10min").get();
-        assertThat(wd_10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
+        Data wd10min = observationsResponse1NaN.getData(emasalo, "wd_10min").get();
+        assertThat(wd10min, is(deeplyEqualTo(1552215600L, 60, "312.0", "286.0", "295.0", "282.0", "271.0", "262.0",
                 "243.0", "252.0", "262.0", null)));
     }
 }

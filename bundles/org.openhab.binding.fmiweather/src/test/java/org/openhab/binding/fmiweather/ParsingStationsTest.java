@@ -16,8 +16,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,12 +32,11 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 @NonNullByDefault
 public class ParsingStationsTest extends AbstractFMIResponseParsingTest {
 
-    private Path stations_xml = getTestResource("stations.xml");
+    private static final String STATIONS_XML = "stations.xml";
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testParseStations() {
-        Set<Location> stations = parseStations(readTestResourceUtf8(stations_xml));
+    public void testParseStations() throws IOException {
+        Set<Location> stations = parseStations(readTestResourceUtf8(STATIONS_XML));
         assertNotNull(stations);
         assertThat(stations.size(), is(3));
         assertThat(stations,

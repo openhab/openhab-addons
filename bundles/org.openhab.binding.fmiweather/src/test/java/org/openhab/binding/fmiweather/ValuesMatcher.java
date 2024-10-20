@@ -40,7 +40,6 @@ public class ValuesMatcher extends TypeSafeMatcher<@Nullable BigDecimal[]> {
         return s == null ? null : new BigDecimal(s);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void describeTo(@Nullable Description description) {
         if (description == null) {

@@ -16,8 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.nio.file.Path;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.Client;
@@ -28,17 +27,19 @@ import org.openhab.binding.fmiweather.internal.client.FMIResponse;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingEmptyTest extends AbstractFMIResponseParsingTest {
 
-    private Path observations = getTestResource("observations_empty.xml");
+    private static final String OBSERVATIONS = "observations_empty.xml";
 
+    @NonNullByDefault({})
     private FMIResponse observationsResponse;
 
     @BeforeEach
     public void setUp() {
         client = new Client();
         try {
-            observationsResponse = parseMultiPointCoverageXml(readTestResourceUtf8(observations));
+            observationsResponse = parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS));
         } catch (Throwable e) {
             throw new RuntimeException("Test data malformed", e);
         }
