@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.ZoneId;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,10 +40,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DeviceHandler extends BaseBridgeHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
-    private CapabilityMap capabilities = new CapabilityMap();
+    private final CapabilityMap capabilities = new CapabilityMap();
+    private final ZoneId systemTimeZone;
 
-    public DeviceHandler(Bridge bridge) {
+    public DeviceHandler(Bridge bridge, ZoneId systemTimeZone) {
         super(bridge);
+        this.systemTimeZone = systemTimeZone;
     }
 
     @Override
@@ -117,5 +120,10 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    @Override
+    public ZoneId getSystemTimeZone() {
+        return systemTimeZone;
     }
 }

@@ -32,7 +32,7 @@ public interface LocationEx extends Location {
     @Nullable
     String getTimezone();
 
-    public default ZoneId getZoneId() {
+    public default ZoneId getZoneId(ZoneId fallback) {
         String local = getTimezone();
         if (local != null) {
             try {
@@ -40,6 +40,6 @@ public interface LocationEx extends Location {
             } catch (DateTimeException ignore) {
             }
         }
-        return ZoneId.systemDefault();
+        return fallback;
     }
 }

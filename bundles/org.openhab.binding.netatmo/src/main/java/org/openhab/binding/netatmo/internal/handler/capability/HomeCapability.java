@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomeCapability extends CacheCapability<HomeApi> {
-
     private final Logger logger = LoggerFactory.getLogger(HomeCapability.class);
     private final Set<FeatureArea> featureAreas = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
     private final Set<String> homeIds = new HashSet<>(3);
+
     protected ZoneId zoneId = ZoneId.systemDefault();
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
@@ -90,7 +90,7 @@ public class HomeCapability extends CacheCapability<HomeApi> {
                 handler.removeChannels(thing.getChannelsOfGroup(GROUP_ENERGY));
             }
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-            zoneId = home.getZoneId();
+            zoneId = home.getZoneId(handler.getSystemTimeZone());
             properties.put(PROPERTY_TIMEZONE, zoneId.toString());
             properties.put(GROUP_LOCATION, ((Location) home).getLocation().toString());
             properties.put(PROPERTY_FEATURE,

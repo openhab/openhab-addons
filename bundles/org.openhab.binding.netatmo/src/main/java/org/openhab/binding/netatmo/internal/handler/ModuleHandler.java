@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,10 +44,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ModuleHandler extends BaseThingHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
-    private CapabilityMap capabilities = new CapabilityMap();
+    private final CapabilityMap capabilities = new CapabilityMap();
+    private final ZoneId systemTimeZone;
 
-    public ModuleHandler(Thing thing) {
+    public ModuleHandler(Thing thing, ZoneId systemTimeZone) {
         super(thing);
+        this.systemTimeZone = systemTimeZone;
     }
 
     @Override
@@ -128,5 +131,10 @@ public class ModuleHandler extends BaseThingHandler implements CommonInterface {
     @Override
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    @Override
+    public ZoneId getSystemTimeZone() {
+        return systemTimeZone;
     }
 }
