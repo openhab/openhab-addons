@@ -202,7 +202,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             return "";
         }
 
-        logger.debug("Received response: {}", response);
+        logger.trace("Received response: {}", response);
 
         ObjectMapper objectMapper = new ObjectMapper();
         ChatResponse chatResponse;
