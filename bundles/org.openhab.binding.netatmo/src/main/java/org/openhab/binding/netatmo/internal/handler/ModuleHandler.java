@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,11 +46,11 @@ import org.slf4j.LoggerFactory;
 public class ModuleHandler extends BaseThingHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
     private final CapabilityMap capabilities = new CapabilityMap();
-    private final ZoneId systemTimeZone;
+    private final TimeZoneProvider timeZoneProvider;
 
-    public ModuleHandler(Thing thing, ZoneId systemTimeZone) {
+    public ModuleHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        this.systemTimeZone = systemTimeZone;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -135,6 +136,6 @@ public class ModuleHandler extends BaseThingHandler implements CommonInterface {
 
     @Override
     public ZoneId getSystemTimeZone() {
-        return systemTimeZone;
+        return timeZoneProvider.getTimeZone();
     }
 }

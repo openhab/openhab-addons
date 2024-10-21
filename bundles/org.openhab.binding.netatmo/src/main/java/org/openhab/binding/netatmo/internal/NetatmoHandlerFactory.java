@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +81,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
-    private final ZoneId systemTimeZone;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
@@ -94,7 +93,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-        this.systemTimeZone = timeZoneProvider.getTimeZone();
+        this.timeZoneProvider = timeZoneProvider;
         configChanged(config);
     }
 
@@ -123,8 +122,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
                     oAuthFactory);
         }
-        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing, systemTimeZone)
-                : new ModuleHandler(thing, systemTimeZone);
+        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing, timeZoneProvider)
+                : new ModuleHandler(thing, timeZoneProvider);
 
         List<ChannelHelper> helpers = new ArrayList<>();
 
