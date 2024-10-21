@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
 public class StayOutZones {
     private Boolean dirty;

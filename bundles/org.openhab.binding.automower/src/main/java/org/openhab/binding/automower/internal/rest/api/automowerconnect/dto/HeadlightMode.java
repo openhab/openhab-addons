@@ -13,7 +13,7 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
 public enum HeadlightMode {
     ALWAYS_ON,
