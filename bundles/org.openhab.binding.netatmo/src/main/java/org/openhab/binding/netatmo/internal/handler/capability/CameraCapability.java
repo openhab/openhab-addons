@@ -80,8 +80,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     @Override
     public void initialize() {
-        hasSubEventGroup = !thing.getChannelsOfGroup(GROUP_SUB_EVENT).isEmpty();
-        hasLastEventGroup = !thing.getChannelsOfGroup(GROUP_LAST_EVENT).isEmpty();
+        hasSubEventGroup = !getThing().getChannelsOfGroup(GROUP_SUB_EVENT).isEmpty();
+        hasLastEventGroup = !getThing().getChannelsOfGroup(GROUP_LAST_EVENT).isEmpty();
     }
 
     @Override
