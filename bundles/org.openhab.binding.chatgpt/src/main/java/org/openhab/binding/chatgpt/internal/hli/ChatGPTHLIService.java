@@ -352,7 +352,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     private ChatMessage generateSystemMessage() {
-
         ChatMessage systemMessage = new ChatMessage();
         systemMessage.setRole(ChatMessage.Role.SYSTEM.value());
         StringBuilder content = new StringBuilder();
