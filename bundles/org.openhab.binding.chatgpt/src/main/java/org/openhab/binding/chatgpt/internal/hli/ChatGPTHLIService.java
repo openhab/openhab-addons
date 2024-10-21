@@ -450,7 +450,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
 
                 return "Done";
-
             } else {
                 return "Invalid command";
             }
