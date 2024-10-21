@@ -287,7 +287,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
                         Object result = function.getExecutor().apply(argumentsObject);
                         String resultString = String.valueOf(result);
-
                         ChatMessage message = new ChatMessage();
                         message.setRole(ChatMessage.Role.TOOL.value());
                         message.setName(functionName);
