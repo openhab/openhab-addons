@@ -325,7 +325,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         userMessage.setRole(ChatMessage.Role.USER.value());
         userMessage.setContent(message);
         this.messages.add(userMessage);
-
         ChatRequestBody chatRequestBody = new ChatRequestBody();
 
         if (this.config.chatGPTModel == null || this.config.chatGPTModel.isEmpty()) {
