@@ -72,7 +72,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * 
  * The {@link ChatGPTHLIService} is responsible for handling the human language interpretation using ChatGPT.
  * 
  * @author Artur Fedjukevits - Initial contribution
