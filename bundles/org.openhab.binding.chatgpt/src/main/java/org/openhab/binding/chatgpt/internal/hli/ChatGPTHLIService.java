@@ -111,7 +111,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 logger.debug("Error processing tools.json", e);
                 this.tools = new ArrayList<>();
             }
-
         } catch (IOException e) {
             logger.debug("Error reading tools.json", e);
             this.tools = new ArrayList<>();
