@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class MotionSensorHandler extends BaseDeviceHandler {
+public class MotionSensorHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(MotionSensorHandler.class);
 
     public MotionSensorHandler(Thing thing, Map<String, String> mapping) {

@@ -40,7 +40,7 @@ class TestLightSensor {
 
     @Test
     void testLightSensorDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_LIGHT_SENSOR, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         LightSensorHandler handler = new LightSensorHandler(thing, LIGHT_SENSOR_MAP);

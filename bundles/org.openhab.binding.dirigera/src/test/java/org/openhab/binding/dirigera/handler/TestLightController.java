@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
 class TestLightController {
     @Test
     void testLightController() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_LIGHT_CONTROLLER, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         LightControllerHandler handler = new LightControllerHandler(thing, LIGHT_CONTROLLER_MAP);

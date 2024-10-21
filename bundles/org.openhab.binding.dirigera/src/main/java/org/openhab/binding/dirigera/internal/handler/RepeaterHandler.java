@@ -26,7 +26,7 @@ import org.openhab.core.types.Command;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class RepeaterHandler extends BaseDeviceHandler {
+public class RepeaterHandler extends BaseHandler {
 
     public RepeaterHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);

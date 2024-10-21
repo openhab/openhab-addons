@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SpeakerHandler extends BaseDeviceHandler {
+public class SpeakerHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(SpeakerHandler.class);
 
     public SpeakerHandler(Thing thing, Map<String, String> mapping) {

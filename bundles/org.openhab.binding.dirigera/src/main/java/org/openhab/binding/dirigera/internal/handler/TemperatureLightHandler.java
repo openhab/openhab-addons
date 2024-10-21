@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class TemperatureLightHandler extends BaseDeviceHandler {
+public class TemperatureLightHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
 
     // default values of "standard Ikea lamps" from json

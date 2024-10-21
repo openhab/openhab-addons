@@ -13,8 +13,10 @@
 package org.openhab.binding.dirigera.internal.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.dirigera.internal.handler.BaseDeviceHandler;
+import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.core.thing.Thing;
 
 /**
  * The {@link Gateway} Gateway interface
@@ -23,23 +25,27 @@ import org.openhab.binding.dirigera.internal.model.Model;
  */
 @NonNullByDefault
 public interface Gateway {
-    public void registerDevice(BaseDeviceHandler deviceHandler, String deviceId);
+    public Thing getThing();
 
-    public void unregisterDevice(BaseDeviceHandler deviceHandler, String deviceId);
+    public String getIpAddress();
 
-    public void deleteDevice(BaseDeviceHandler deviceHandler, String deviceId);
+    public String getToken();
+
+    public boolean discoverEnabled();
+
+    public void registerDevice(BaseHandler deviceHandler, String deviceId);
+
+    public void unregisterDevice(BaseHandler deviceHandler, String deviceId);
+
+    public void deleteDevice(BaseHandler deviceHandler, String deviceId);
+
+    public boolean isKnownDevice(String deviceId);
+
+    public void websocketUpdate(String update);
 
     public DirigeraAPI api();
 
     public Model model();
 
-    public String getToken();
-
-    public String getIpAddress();
-
-    public void newDevice(String id);
-
-    public void websocketUpdate(String update);
-
-    public void newScene(String id, String name);
+    public DirigeraDiscoveryManager discovery();
 }

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class WaterSensorHandler extends BaseDeviceHandler {
+public class WaterSensorHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(WaterSensorHandler.class);
 
     public WaterSensorHandler(Thing thing, Map<String, String> mapping) {

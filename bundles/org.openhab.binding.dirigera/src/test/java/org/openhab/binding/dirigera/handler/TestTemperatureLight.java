@@ -42,7 +42,7 @@ import org.openhab.core.types.State;
 class TestTemperatureLight {
     @Test
     void testTemperatureLightDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_TEMPERATURE_LIGHT, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         TemperatureLightHandler handler = new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);

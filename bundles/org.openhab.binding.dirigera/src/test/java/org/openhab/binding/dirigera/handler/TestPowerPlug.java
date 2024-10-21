@@ -42,7 +42,7 @@ class TestPowerPlug {
 
     @Test
     void testPowerPlugDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_PLUG, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         PowerPlugHandler handler = new PowerPlugHandler(thing, PLUG_MAP);
