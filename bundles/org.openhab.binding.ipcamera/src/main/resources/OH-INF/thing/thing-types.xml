@@ -3071,7 +3071,7 @@
 	</channel-type>
 
 	<channel-type id="doorContact" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Door Contact</label>
 		<description>Door contact representing if the door is opened/closed.</description>
 		<category>Door</category>

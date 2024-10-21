@@ -50,8 +50,8 @@
 			<add-channel id="exitButton">
 				<type>ipcamera:exitButton</type>
 			</add-channel>
-			<add-channel id="exitButtonEnable">
-				<type>ipcamera:exitButtonEnable</type>
+			<add-channel id="exitButtonEnabled">
+				<type>ipcamera:exitButtonEnabled</type>
 			</add-channel>
 			<add-channel id="motionDetectionLevel">
 				<type>ipcamera:motionDetectionLevel</type>

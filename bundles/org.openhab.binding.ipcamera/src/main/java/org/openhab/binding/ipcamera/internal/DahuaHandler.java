@@ -245,11 +245,13 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 break;
             case "ProfileAlarmTransmit":
                 if ("Start".equals(action)) {
-                    if (content.contains("DoorMagnetism"))
+                    if (content.contains("DoorMagnetism")) {
                         ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.ON);
+                    }
                 } else if ("Stop".equals(action)) {
-                    if (content.contains("DoorMagnetism"))
+                    if (content.contains("DoorMagnetism")) {
                         ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.OFF);
+                    }
                 } else {
                     ipCameraHandler.logger.debug("Unrecognised Alarm Dahua event, content={}", content);
                 }
@@ -328,7 +330,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
         // Handle MotionDetectLevel alarm
         if (content.contains("table.MotionDetect[0].Level=")) {
             String value = ipCameraHandler.returnValueFromString(content, "table.MotionDetect[0].Level=");
-            ipCameraHandler.setChannelState(CHANNEL_MOTION_DETECTION_LEVEL, PercentType.valueOf(value));
+            ipCameraHandler.setChannelState(CHANNEL_MOTION_DETECTION_LEVEL, DecimalType.valueOf(value));
         }
 
         // determine if the audio alarm is turned on or off.
