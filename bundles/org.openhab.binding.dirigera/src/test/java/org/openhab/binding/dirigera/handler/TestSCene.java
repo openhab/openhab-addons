@@ -39,7 +39,7 @@ class TestSCene {
 
     @Test
     void testSceneHandler() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_SCENE, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         SceneHandler handler = new SceneHandler(thing, SPEAKER_MAP, DirigeraBridgeProvider.TZP);
@@ -65,6 +65,6 @@ class TestSCene {
         State dateTimeState = callback.getState("dirigera:scene:test-device:last-trigger");
         assertNotNull(dateTimeState);
         assertTrue(dateTimeState instanceof DateTimeType);
-        assertEquals("2024-10-15T14:49:03.028+0200", ((DateTimeType) dateTimeState).toFullString(), "Last trigger");
+        assertEquals("2024-10-16T02:21:15.977+0200", ((DateTimeType) dateTimeState).toFullString(), "Last trigger");
     }
 }

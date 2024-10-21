@@ -32,7 +32,7 @@ import org.openhab.core.types.RefreshType;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PowerPlugHandler extends BaseDeviceHandler {
+public class PowerPlugHandler extends BaseHandler {
     public PowerPlugHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);

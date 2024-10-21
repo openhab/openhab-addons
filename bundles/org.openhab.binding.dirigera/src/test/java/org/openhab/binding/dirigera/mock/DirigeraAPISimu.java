@@ -46,6 +46,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
         String modelString = FileReader.readFileInString("src/test/resources/home/home.json");
+        // String modelString = FileReader.readFileInString("src/test/resources/home/home.json");
         this.model = new JSONObject(modelString);
     }
 
