@@ -86,7 +86,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     private LocalTime lastMessageTime = LocalTime.now();
     private List<ChatTools> tools = new ArrayList<>();
     private final Logger logger = LoggerFactory.getLogger(ChatGPTHLIService.class);
-    private final Map<String, ChatFunction> FUNCTIONS = new HashMap<>();
+    private final Map<String, ChatFunction> functions = new HashMap<>();
     private @Nullable ItemRegistry itemRegistry;
     private @Nullable EventPublisher eventPublisher;
     private @Nullable ChatGPTConfiguration config;
@@ -111,22 +111,22 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 logger.debug("Error processing tools.json", e);
             }
         } catch (IOException e) {
-            logger.debug("Error reading tools.json", e);
+            logger.error("Error reading tools.json", e);
         }
 
         for (ChatTools tool : tools) {
             logger.debug("Loaded tool: {}", tool.getFunction().getName());
         }
 
-        FUNCTIONS.clear();
-        FUNCTIONS.putAll(tools.stream().collect(HashMap::new, (map, tool) -> {
+        functions.clear();
+        functions.putAll(tools.stream().collect(HashMap::new, (map, tool) -> {
             ChatFunction function = tool.getFunction();
             String functionName = function.getName();
 
             map.put(functionName, function);
         }, HashMap::putAll));
 
-        ChatFunction itemControlFunction = FUNCTIONS.get("items_control");
+        ChatFunction itemControlFunction = functions.get("items_control");
         if (itemControlFunction != null) {
             itemControlFunction.setParametersClass(ItemsControl.class);
 
@@ -267,7 +267,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 ChatFunctionCall functionCall = tool.getFunction();
                 if (functionCall != null) {
                     String functionName = functionCall.getName();
-                    ChatFunction function = FUNCTIONS.get(functionName);
+                    ChatFunction function = functions.get(functionName);
                     if (function != null) {
                         ObjectMapper objectMapper = new ObjectMapper();
                         String arguments = functionCall.getArguments();

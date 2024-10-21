@@ -175,7 +175,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
-        logger.debug("Query '{}'", queryJson);
+        logger.trace("Query '{}'", queryJson);
         try {
             ContentResponse response = request.send();
             updateStatus(ThingStatus.ONLINE);
@@ -244,8 +244,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                                     "@text/offline.communication-error");
                         }
                     } catch (JsonProcessingException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                        logger.error("Failed to parse models: {}", e.getMessage(), e);
+                        logger.warn("Failed to parse models: {}", e.getMessage(), e);
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
