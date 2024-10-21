@@ -175,7 +175,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     @Override
     @Nullable
     public String getGrammar(Locale locale, String format) {
-
         return "null";
     }
 
