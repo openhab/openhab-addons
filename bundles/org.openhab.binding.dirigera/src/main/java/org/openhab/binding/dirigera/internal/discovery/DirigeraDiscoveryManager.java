@@ -106,12 +106,12 @@ public class DirigeraDiscoveryManager implements DiscoveryListener {
     }
 
     @Override
-    public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
+    public void thingDiscovered(@Nullable DiscoveryService source, DiscoveryResult result) {
         // TODO Auto-generated method stub
     }
 
     @Override
-    public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+    public void thingRemoved(@Nullable DiscoveryService source, ThingUID thingUID) {
         // TODO Auto-generated method stub
     }
 
