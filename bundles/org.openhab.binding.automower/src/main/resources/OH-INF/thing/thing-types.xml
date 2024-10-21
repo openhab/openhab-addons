@@ -84,6 +84,7 @@
 			<channel id="calendartasks01-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks01-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks01-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks01-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks02-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks02-duration" typeId="calendarTasksDurationType"/>
@@ -95,6 +96,7 @@
 			<channel id="calendartasks02-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks02-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks02-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks02-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks03-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks03-duration" typeId="calendarTasksDurationType"/>
@@ -106,6 +108,7 @@
 			<channel id="calendartasks03-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks03-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks03-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks03-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks04-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks04-duration" typeId="calendarTasksDurationType"/>
@@ -117,6 +120,7 @@
 			<channel id="calendartasks04-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks04-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks04-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks04-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks05-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks05-duration" typeId="calendarTasksDurationType"/>
@@ -128,6 +132,7 @@
 			<channel id="calendartasks05-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks05-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks05-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks05-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks06-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks06-duration" typeId="calendarTasksDurationType"/>
@@ -139,6 +144,7 @@
 			<channel id="calendartasks06-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks06-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks06-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks06-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks07-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks07-duration" typeId="calendarTasksDurationType"/>
@@ -150,6 +156,7 @@
 			<channel id="calendartasks07-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks07-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks07-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks07-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks08-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks08-duration" typeId="calendarTasksDurationType"/>
@@ -161,6 +168,7 @@
 			<channel id="calendartasks08-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks08-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks08-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks08-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks09-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks09-duration" typeId="calendarTasksDurationType"/>
@@ -172,6 +180,7 @@
 			<channel id="calendartasks09-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks09-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks09-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks09-workArea" typeId="workareaNameType"/>
 
 			<channel id="calendartasks10-start" typeId="calendarTasksStartType"/>
 			<channel id="calendartasks10-duration" typeId="calendarTasksDurationType"/>
@@ -183,6 +192,7 @@
 			<channel id="calendartasks10-saturday" typeId="calendarTasksSaturdayType"/>
 			<channel id="calendartasks10-sunday" typeId="calendarTasksSundayType"/>
 			<channel id="calendartasks10-workAreaId" typeId="calendarTasksWorkAreaIdType"/>
+			<channel id="calendartasks10-workArea" typeId="workareaNameType"/>
 
 			<!-- Commands -->
 			<channel id="start" typeId="start"/>

@@ -14,7 +14,6 @@ package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -32,7 +31,11 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettings;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerSettingsRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerStayOutZoneRequest;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkArea;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaAttributes;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Settings;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
@@ -124,21 +127,20 @@ public class AutomowerBridge {
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId, CalendarTask calendarTask)
-            throws AutomowerCommunicationException {
-        List<CalendarTask> tasks = new ArrayList<>();
-        tasks.add(calendarTask);
+    public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId,
+            List<CalendarTask> calendarTaskArray) throws AutomowerCommunicationException {
         Calendar calendar = new Calendar();
-        calendar.setTasks(tasks);
+        calendar.setTasks(calendarTaskArray);
 
         MowerCalendar mowerCalendar = new MowerCalendar();
         mowerCalendar.setType("calendar");
         mowerCalendar.setAttributes(calendar);
 
-        MowerCalendardRequest request = new MowerCalendardRequest();
-        request.setData(mowerCalendar);
+        MowerCalendardRequest calendarRequest = new MowerCalendardRequest();
+        calendarRequest.setData(mowerCalendar);
 
-        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId, request);
+        automowerApi.sendCalendar(appKey, authenticate().getAccessToken(), id, hasWorkAreas, workAreaId,
+                calendarRequest);
     }
 
     /**
@@ -154,10 +156,10 @@ public class AutomowerBridge {
         mowerSettings.setType("settings");
         mowerSettings.setAttributes(settings);
 
-        MowerSettingsRequest request = new MowerSettingsRequest();
-        request.setData(mowerSettings);
+        MowerSettingsRequest settingsRequest = new MowerSettingsRequest();
+        settingsRequest.setData(mowerSettings);
 
-        automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, request);
+        automowerApi.sendSettings(appKey, authenticate().getAccessToken(), id, settingsRequest);
     }
 
     /**
@@ -178,8 +180,15 @@ public class AutomowerBridge {
      * @param zoneRequest The new zone status
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerStayOutZone(String id, String zoneId, MowerStayOutZoneRequest zoneRequest)
+    public void sendAutomowerStayOutZone(String id, String zoneId, MowerStayOutZoneAttributes zoneAttributes)
             throws AutomowerCommunicationException {
+        MowerStayOutZone zoneData = new MowerStayOutZone();
+        zoneData.setType("stayOutZone");
+        zoneData.setId(zoneId);
+        zoneData.setAttributes(zoneAttributes);
+        MowerStayOutZoneRequest zoneRequest = new MowerStayOutZoneRequest();
+        zoneRequest.setData(zoneData);
+
         automowerApi.sendStayOutZone(appKey, authenticate().getAccessToken(), id, zoneId, zoneRequest);
     }
 
@@ -191,8 +200,15 @@ public class AutomowerBridge {
      * @param workAreaRequest The new work area status
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
-    public void sendAutomowerWorkArea(String id, long workAreaId, MowerWorkAreaRequest workAreaRequest)
+    public void sendAutomowerWorkArea(String id, long workAreaId, MowerWorkAreaAttributes workAreaAttributes)
             throws AutomowerCommunicationException {
+        MowerWorkArea workAreaData = new MowerWorkArea();
+        workAreaData.setType("workArea");
+        workAreaData.setId(workAreaId);
+        workAreaData.setAttributes(workAreaAttributes);
+        MowerWorkAreaRequest workAreaRequest = new MowerWorkAreaRequest();
+        workAreaRequest.setData(workAreaData);
+
         automowerApi.sendWorkArea(appKey, authenticate().getAccessToken(), id, workAreaId, workAreaRequest);
     }
 }
