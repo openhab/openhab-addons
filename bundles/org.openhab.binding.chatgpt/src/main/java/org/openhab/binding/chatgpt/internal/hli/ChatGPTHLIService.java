@@ -158,7 +158,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
             String response = chatGPTHandler.sendPrompt(requestBody);
             return processChatResponse(response);
-
         }
 
         return "Failed to interpret text";
