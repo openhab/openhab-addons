@@ -336,7 +336,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         chatRequestBody.setTemperature(this.config.temperature);
         chatRequestBody.setMaxTokens(this.config.maxTokens);
         chatRequestBody.setTopP(this.config.topP);
-
         chatRequestBody.setToolChoice(ToolChoice.AUTO.value());
         chatRequestBody.setTools(this.tools);
 
