@@ -175,8 +175,7 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
             throw new JdbcSQLException(e);
         }
         // We need to return the itemId, but Yank.insert does not retrieve the value from Oracle. So do an explicit
-        // query
-        // for it.
+        // query for it.
         sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTableID, new String[] { "#itemsManageTable#", "#colname#" },
                 new String[] { vo.getItemsManageTable(), vo.getColname() });
         logger.debug("JDBC::doGetEntryIdInItemsTable sql={}", sql);
