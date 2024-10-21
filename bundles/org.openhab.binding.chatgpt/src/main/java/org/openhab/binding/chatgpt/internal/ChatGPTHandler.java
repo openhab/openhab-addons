@@ -172,7 +172,6 @@ public class ChatGPTHandler extends BaseThingHandler {
     }
 
     public @Nullable String sendPrompt(String queryJson) {
-
         Request request = httpClient.newRequest(apiUrl).method(HttpMethod.POST)
                 .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey).content(new StringContentProvider(queryJson));
