@@ -48,6 +48,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
     public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -115,6 +116,10 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
         protected int speedRangeMax = 100;
         @SerializedName("speed_range_min")
         protected int speedRangeMin = 1;
+        @SerializedName("json_attributes_template")
+        protected @Nullable String jsonAttributesTemplate;
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
     }
 
     private final OnOffValue onOffValue;
@@ -195,6 +200,14 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
                     .inferOptimistic(channelConfiguration.optimistic).build();
         }
+
+        if (channelConfiguration.jsonAttributesTemplate != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .build();
+        }
+
         finalizeChannels();
     }
 

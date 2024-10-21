@@ -17,19 +17,17 @@ You can also manually create a Thing, and provide the individual component topic
 - [Binary Sensor](https://www.home-assistant.io/integrations/binary_sensor.mqtt/)
 - [Button](https://www.home-assistant.io/integrations/button.mqtt/)
 - [Camera](https://www.home-assistant.io/integrations/camera.mqtt/)<br>
-  JSON attributes and Base64 encoding are not supported.
+  Base64 encoding is not supported.
 - [Climate](https://www.home-assistant.io/integrations/climate.mqtt/)
 - [Cover](https://www.home-assistant.io/integrations/cover.mqtt/)
 - [Device Trigger](https://www.home-assistant.io/integrations/device_trigger.mqtt/)
-- [Fan](https://www.home-assistant.io/integrations/fan.mqtt/)<br>
-  JSON attributes are not supported.
+- [Fan](https://www.home-assistant.io/integrations/fan.mqtt/)
 - [Light](https://www.home-assistant.io/integrations/light.mqtt/)
 - [Lock](https://www.home-assistant.io/integrations/lock.mqtt/)
 - [Number](https://www.home-assistant.io/integrations/number.mqtt/)
 - [Scene](https://www.home-assistant.io/integrations/scene.mqtt/)
 - [Select](https://www.home-assistant.io/integrations/select.mqtt/)
-- [Sensor](https://www.home-assistant.io/integrations/sensor.mqtt/)<br>
-  JSON attributes are not supported.
+- [Sensor](https://www.home-assistant.io/integrations/sensor.mqtt/)
 - [Switch](https://www.home-assistant.io/integrations/switch.mqtt/)
 - [Update](https://www.home-assistant.io/integrations/update.mqtt/)<br>
   This is a special component, that will show up as additional properties on the Thing, and add a button on the Thing to initiate an OTA update.
