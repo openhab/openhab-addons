@@ -230,7 +230,6 @@ public class ChatGPTHandler extends BaseThingHandler {
 
                         if (data != null) {
                             logger.debug("Models: {}", data.toString());
-
                             List<String> modelList = new ArrayList<>();
 
                             data.forEach(model -> {
