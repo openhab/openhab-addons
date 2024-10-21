@@ -47,7 +47,7 @@ public class DeviceCapability extends Capability {
             newData.getPlace().ifPresent(place -> {
                 place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
                 place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-                place.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
+                properties.put(PROPERTY_TIMEZONE, place.getZoneId(handler.getSystemTimeZone()).toString());
             });
         }
         if (!newData.hasFreshData(DATA_AGE_LIMIT_S)) {

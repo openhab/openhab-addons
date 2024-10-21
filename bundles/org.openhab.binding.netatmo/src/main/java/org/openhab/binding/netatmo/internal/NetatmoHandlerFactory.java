@@ -47,6 +47,7 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigParser;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -80,17 +81,19 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
             final @Reference HttpClientFactory factory, final @Reference NADeserializer deserializer,
             final @Reference HttpService httpService, final @Reference OAuthFactory oAuthFactory,
-            Map<String, @Nullable Object> config) {
+            final @Reference TimeZoneProvider timeZoneProvider, Map<String, @Nullable Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+        this.timeZoneProvider = timeZoneProvider;
         configChanged(config);
     }
 
@@ -119,7 +122,8 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
                     oAuthFactory);
         }
-        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
+        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing, timeZoneProvider)
+                : new ModuleHandler(thing, timeZoneProvider);
 
         List<ChannelHelper> helpers = new ArrayList<>();
 
@@ -127,6 +131,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;
+
             if (capability == DeviceCapability.class) {
                 newCap = new DeviceCapability(handler);
             } else if (capability == AirCareCapability.class) {
@@ -161,7 +166,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             if (newCap != null) {
                 handler.getCapabilities().put(newCap);
             } else {
-                logger.warn("No factory entry defined to create Capability : {}", capability);
+                logger.warn("No factory entry defined to create Capability: {}", capability);
             }
         });
 

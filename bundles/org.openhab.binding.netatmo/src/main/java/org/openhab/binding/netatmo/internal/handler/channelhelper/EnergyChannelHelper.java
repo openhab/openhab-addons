@@ -55,7 +55,7 @@ public class EnergyChannelHelper extends ChannelHelper {
             ThermProgram currentProgram = energyData.getActiveProgram();
             switch (channelId) {
                 case CHANNEL_SETPOINT_DURATION:
-                    return toQuantityType(energyData.getThermSetpointDefaultDuration(), Units.MINUTE);
+                    return toQuantityType(energyData.getSetpointDefaultDuration().getSeconds(), Units.SECOND);
                 case CHANNEL_PLANNING:
                     return (currentProgram != null ? toStringType(currentProgram.getName()) : null);
                 case CHANNEL_SETPOINT_END_TIME:

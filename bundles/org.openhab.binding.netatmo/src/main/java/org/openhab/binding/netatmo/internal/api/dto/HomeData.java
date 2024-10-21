@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -59,8 +60,8 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         private int thermSetpointDefaultDuration;
         private List<ThermProgram> schedules = List.of();
 
-        public int getThermSetpointDefaultDuration() {
-            return thermSetpointDefaultDuration;
+        public Duration getSetpointDefaultDuration() {
+            return Duration.ofMinutes(thermSetpointDefaultDuration);
         }
 
         public SetpointMode getThermMode() {
@@ -109,8 +110,8 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     }
 
     @Override
-    public Optional<String> getTimezone() {
-        return Optional.ofNullable(timezone);
+    public @Nullable String getTimezone() {
+        return timezone;
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {
