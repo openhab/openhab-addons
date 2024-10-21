@@ -57,14 +57,7 @@ public class Model {
         this.gateway = gateway;
     }
 
-    /**
-     * only used for unit testing
-     */
-    // public synchronized void update(String modelString) {
-    // this.model = new JSONObject(modelString);
-    // }
-
-    public synchronized void init() {
+    public synchronized void update() {
         try {
             JSONObject home = gateway.api().readHome();
             if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
@@ -73,20 +66,32 @@ public class Model {
             } else {
                 model = home;
                 // first get devices
-                List<String> foundDevices = getAllDeviceIds();
+                List<String> modelDevices = getAllDeviceIds();
                 List<String> foundScenes = getAllSceneIds();
-                foundDevices.addAll(foundScenes);
-                /**
-                 * at init phase check for each device
-                 * - is it new in the tree
-                 * - is it knwon by handler from persistence
-                 */
-                foundDevices.forEach(deviceId -> {
-                    addedDeviceScene(deviceId);
+                modelDevices.addAll(foundScenes);
+
+                Map<String, DirigeraDiscoveryResult> leftOverMap = new HashMap<>(resultMap);
+                modelDevices.forEach(deviceId -> {
+                    if (resultMap.containsKey(deviceId)) {
+                        // already found - check for name change and continue
+                        updateDeviceScene(deviceId);
+                    } else {
+                        // new entry found
+                        addedDeviceScene(deviceId);
+                    }
+                    leftOverMap.remove(deviceId);
+                });
+                // now all devices from new model are handled - check if some previous delivered discoveries are removed
+                leftOverMap.forEach((key, value) -> {
+                    DirigeraDiscoveryResult deleted = resultMap.remove(key);
+                    if (deleted != null) {
+                        gateway.discovery().thingRemoved(deleted.result.get());
+                    }
                 });
             }
         } catch (Throwable t) {
             logger.error("Excpetion during model update {}", t.getMessage());
+            t.printStackTrace();
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
     }
@@ -190,74 +195,6 @@ public class Model {
         return returnArray;
     }
 
-    /**
-     * Crucial function to identify DeviceHandler - all options needs to be listed here to deliver the right
-     * ThingTypeUID
-     *
-     * @param DIRIGERA Id
-     * @return ThingTypeUID
-     */
-    public synchronized ThingTypeUID identifyDevice(String id) {
-        JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
-        if (!entry.isNull(PROPERTY_DEVICE_TYPE)) {
-            String deviceType = entry.getString(PROPERTY_DEVICE_TYPE);
-            JSONObject attributes = entry.getJSONObject(PROPERTY_ATTRIBUTES);
-            switch (deviceType) {
-                case DEVICE_TYPE_GATEWAY:
-                    return THING_TYPE_GATEWAY;
-                case DEVICE_TYPE_LIGHT:
-                    if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
-                        String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
-                        switch (colorMode) {
-                            case "color":
-                                return THING_TYPE_COLOR_LIGHT;
-                            case "temperature":
-                                return THING_TYPE_TEMPERATURE_LIGHT;
-                        }
-                    }
-                    break;
-                case DEVICE_TYPE_MOTION_SENSOR:
-                    // if product code is E2134 (VALLHORN) sensor contains an additional light sensor!
-                    String motionSensorProductCode = getStringAttribute(id, "productCode");
-                    if ("E2134".equals(motionSensorProductCode)) {
-                        return THING_TYPE_MOTION_LIGHT_SENSOR;
-                    } else {
-                        return THING_TYPE_MOTION_SENSOR;
-                    }
-                case DEVICE_TYPE_LIGHT_SENSOR:
-                    return THING_TYPE_LIGHT_SENSOR;
-                case DEVICE_TYPE_CONTACT_SENSOR:
-                    return THING_TYPE_CONTACT_SENSOR;
-                case DEVICE_TYPE_OUTLET:
-                    // if product code is E2206 (INSPELNING) plug contains an additional light sensor!
-                    String pluGroductCode = getStringAttribute(id, "productCode");
-                    if ("E2206".equals(pluGroductCode)) {
-                        return THING_TYPE_SMART_PLUG;
-                    } else {
-                        return THING_TYPE_PLUG;
-                    }
-                case DEVICE_TYPE_SPEAKER:
-                    return THING_TYPE_SPEAKER;
-                case DEVICE_TYPE_REPEATER:
-                    return THING_TYPE_REPEATER;
-                case DEVICE_TYPE_LIGHT_CONTROLLER:
-                    return THING_TYPE_LIGHT_CONTROLLER;
-                case DEVICE_TYPE_ENVIRONMENT_SENSOR:
-                    return THING_TYPE_AIR_QUALITY;
-                case DEVICE_TYPE_WATER_SENSOR:
-                    return THING_TYPE_WATER_SENSOR;
-                default:
-                    logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType, attributes);
-            }
-        }
-        // no device discovred yet - check scenes
-        entry = getAllFor(id, PROPERTY_SCENES);
-        if (!entry.isEmpty()) {
-            return THING_TYPE_SCENE;
-        }
-        return THING_TYPE_UNKNNOWN;
-    }
-
     private String getStringAttribute(String id, String attribute) {
         String attributeValue = "";
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
@@ -321,7 +258,13 @@ public class Model {
         return id;
     }
 
-    public synchronized Map<String, Object> getPropertiesFor(String id) {
+    /**
+     * Properties Map for Discovery
+     *
+     * @param id
+     * @return Map with attributes for Thing properties
+     */
+    private synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
@@ -336,6 +279,16 @@ public class Model {
         return properties;
     }
 
+    /**
+     * Searches for occurrences of the same serial number in the model
+     * Rationale: VALLHORN Motion Sensor registers 2 devices
+     * - Motion Sensor
+     * - Light Sensor
+     * They shall not be splitted in 2 different things so one Thing shall receive updates for both id's
+     *
+     * @param id
+     * @return List of id's with same serial number
+     */
     public synchronized List<String> getTwins(String id) {
         final List<String> twins = new ArrayList<>();
         String serialNumber = getStringAttribute(id, "serialNumber");
@@ -353,7 +306,7 @@ public class Model {
     }
 
     private DirigeraDiscoveryResult identifiy(String id) {
-        ThingTypeUID ttuid = identifyDevice(id);
+        ThingTypeUID ttuid = identifyDeviceFromModel(id);
         String customName = getCustonNameFor(id);
         Map<String, Object> propertiesMap = getPropertiesFor(id);
         DiscoveryResult discoveryResult = DiscoveryResultBuilder
@@ -368,5 +321,98 @@ public class Model {
         dirigeraResult.isDelivered = isDelivered;
         dirigeraResult.isKnown = isKnown;
         return dirigeraResult;
+    }
+
+    /**
+     * Identify device which is present in model
+     *
+     * @param id
+     * @return
+     */
+    public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
+        JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
+        ThingTypeUID returnTTUID = identifyDeviceFromJSON(id, entry);
+        if (THING_TYPE_UNKNNOWN.equals(returnTTUID)) {
+            // no device discovered yet - check scenes
+            entry = getAllFor(id, PROPERTY_SCENES);
+            return identifyDeviceFromJSON(id, entry);
+        } else {
+            return returnTTUID;
+        }
+    }
+
+    /**
+     * Crucial function to identify DeviceHandler - all options needs to be listed here to deliver the right
+     * ThingTypeUID
+     *
+     * @param DIRIGERA Id
+     * @return ThingTypeUID
+     */
+    public synchronized ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
+        if (!data.isNull(PROPERTY_DEVICE_TYPE)) {
+            String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+            JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
+            switch (deviceType) {
+                case DEVICE_TYPE_GATEWAY:
+                    return THING_TYPE_GATEWAY;
+                case DEVICE_TYPE_LIGHT:
+                    if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
+                        String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
+                        switch (colorMode) {
+                            case "color":
+                                return THING_TYPE_COLOR_LIGHT;
+                            case "temperature":
+                                return THING_TYPE_TEMPERATURE_LIGHT;
+                        }
+                    }
+                    break;
+                case DEVICE_TYPE_MOTION_SENSOR:
+                    // if product code is E2134 (VALLHORN) sensor contains an additional light sensor!
+                    String motionSensorProductCode = getStringAttribute(id, "productCode");
+                    if ("E2134".equals(motionSensorProductCode)) {
+                        return THING_TYPE_MOTION_LIGHT_SENSOR;
+                    } else {
+                        return THING_TYPE_MOTION_SENSOR;
+                    }
+                case DEVICE_TYPE_LIGHT_SENSOR:
+                    return THING_TYPE_LIGHT_SENSOR;
+                case DEVICE_TYPE_CONTACT_SENSOR:
+                    return THING_TYPE_CONTACT_SENSOR;
+                case DEVICE_TYPE_OUTLET:
+                    // if product code is E2206 (INSPELNING) plug contains an additional light sensor!
+                    String pluGroductCode = getStringAttribute(id, "productCode");
+                    if ("E2206".equals(pluGroductCode)) {
+                        return THING_TYPE_SMART_PLUG;
+                    } else {
+                        return THING_TYPE_PLUG;
+                    }
+                case DEVICE_TYPE_SPEAKER:
+                    return THING_TYPE_SPEAKER;
+                case DEVICE_TYPE_REPEATER:
+                    return THING_TYPE_REPEATER;
+                case DEVICE_TYPE_LIGHT_CONTROLLER:
+                    return THING_TYPE_LIGHT_CONTROLLER;
+                case DEVICE_TYPE_ENVIRONMENT_SENSOR:
+                    return THING_TYPE_AIR_QUALITY;
+                case DEVICE_TYPE_WATER_SENSOR:
+                    return THING_TYPE_WATER_SENSOR;
+                default:
+                    logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType, attributes);
+            }
+        } else {
+            // device type is empty, check for scene
+            if (!data.isNull(PROPERTY_TYPE)) {
+                String type = data.getString(PROPERTY_TYPE);
+                switch (type) {
+                    case TYPE_USER_SCENE:
+                        return THING_TYPE_SCENE;
+                }
+            }
+        }
+        return THING_TYPE_UNKNNOWN;
+    }
+
+    public boolean has(String id) {
+        return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
     }
 }
