@@ -59,14 +59,16 @@ public class ComponentFactory {
                 return new Button(componentConfiguration, newStyleChannels);
             case "camera":
                 return new Camera(componentConfiguration, newStyleChannels);
-            case "cover":
-                return new Cover(componentConfiguration, newStyleChannels);
-            case "fan":
-                return new Fan(componentConfiguration, newStyleChannels);
             case "climate":
                 return new Climate(componentConfiguration, newStyleChannels);
+            case "cover":
+                return new Cover(componentConfiguration, newStyleChannels);
             case "device_automation":
                 return new DeviceTrigger(componentConfiguration, newStyleChannels);
+            case "event":
+                return new Event(componentConfiguration, newStyleChannels);
+            case "fan":
+                return new Fan(componentConfiguration, newStyleChannels);
             case "light":
                 return Light.create(componentConfiguration, newStyleChannels);
             case "lock":

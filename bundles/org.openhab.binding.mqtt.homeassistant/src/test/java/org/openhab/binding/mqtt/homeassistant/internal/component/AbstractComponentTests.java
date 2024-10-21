@@ -233,18 +233,13 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         }
     }
 
-    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
-            String channelId) {
-        // It's already thingHandler, but not the spy version
-        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
-    }
-
     /**
      * Assert a channel triggers
      */
     protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String trigger) {
-        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
+        verify(callbackMock).channelTriggered(eq(haThing), eq(component.getChannel(channelId).getChannel().getUID()),
+                eq(trigger));
     }
 
     /**
@@ -252,8 +247,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      */
     protected void assertNotTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String trigger) {
-        verify(thingHandler, never()).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()),
-                eq(trigger));
+        verify(callbackMock, never()).channelTriggered(eq(haThing),
+                eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
     }
 
     /**

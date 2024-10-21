@@ -304,12 +304,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
 
                 // Add component to the component map
-                addComponent(discovered);
-                // Start component / Subscribe to channel topics
-                discovered.start(connection, scheduler, 0).exceptionally(e -> {
-                    logger.warn("Failed to start component {}", discovered.getHaID(), e);
-                    return null;
-                });
+                if (addComponent(discovered)) {
+                    // Start component / Subscribe to channel topics
+                    discovered.start(connection, scheduler, 0).exceptionally(e -> {
+                        logger.warn("Failed to start component {}", discovered.getHaID(), e);
+                        return null;
+                    });
+                }
 
                 if (discovered instanceof Update) {
                     updateComponent = (Update) discovered;
@@ -427,7 +428,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     // should only be called when it's safe to access haComponents
-    private void addComponent(AbstractComponent component) {
+    private boolean addComponent(AbstractComponent component) {
         AbstractComponent existing = haComponents.get(component.getComponentId());
         if (existing != null) {
             // DeviceTriggers that are for the same subtype, topic, and value template
@@ -454,8 +455,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                         });
                     }
                     haComponentsByUniqueId.put(component.getUniqueId(), component);
-                    System.out.println("don't forget to add to the channel config");
-                    return;
+                    return false;
                 }
             }
 
@@ -467,6 +467,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         }
         haComponents.put(component.getComponentId(), component);
         haComponentsByUniqueId.put(component.getUniqueId(), component);
+        return true;
     }
 
     /**
