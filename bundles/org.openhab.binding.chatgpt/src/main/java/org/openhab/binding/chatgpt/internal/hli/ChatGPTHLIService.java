@@ -266,7 +266,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             if (tool.getType().equals("function")) {
                 ChatFunctionCall functionCall = tool.getFunction();
                 if (functionCall != null) {
-
                     String functionName = functionCall.getName();
                     ChatFunction function = FUNCTIONS.get(functionName);
                     if (function != null) {
