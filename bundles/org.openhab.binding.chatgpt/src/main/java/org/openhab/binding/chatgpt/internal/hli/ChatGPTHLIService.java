@@ -321,7 +321,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
 
         this.lastMessageTime = currentTime;
-
         ChatMessage userMessage = new ChatMessage();
         userMessage.setRole(ChatMessage.Role.USER.value());
         userMessage.setContent(message);
