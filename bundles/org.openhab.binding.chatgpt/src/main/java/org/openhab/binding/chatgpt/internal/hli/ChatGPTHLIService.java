@@ -417,7 +417,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             if (command != null) {
                 logger.debug("Received command '{}' for item '{}'", commandString, itemName);
                 eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
-
                 return "Done";
             } else {
                 return "Invalid command";
