@@ -310,8 +310,8 @@
 
 	<channel-type id="openWindowRemainingTime">
 		<item-type>Number:Time</item-type>
-		<label>Open Window Override Remaining Time</label>
-		<description>The remaining open window heating/cooling override time in the Zone</description>
+		<label>Override Remaining Time</label>
+		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
 		<category>Window</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
