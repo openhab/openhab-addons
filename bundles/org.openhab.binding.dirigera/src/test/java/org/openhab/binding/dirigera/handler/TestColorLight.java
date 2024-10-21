@@ -43,7 +43,7 @@ class TestColorLight {
 
     @Test
     void testColorLightDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_COLOR_LIGHT, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         ColorLightHandler handler = new ColorLightHandler(thing, COLOR_LIGHT_MAP);
@@ -73,7 +73,7 @@ class TestColorLight {
         State onOffState = callback.getState("dirigera:color-light:test-device:state");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
-        assertTrue(OnOffType.ON.equals((onOffState)), "On");
+        assertTrue(OnOffType.ON.equals((onOffState)), "Power State");
         State hsbState = callback.getState("dirigera:color-light:test-device:hsb");
         assertNotNull(hsbState);
         assertTrue(hsbState instanceof HSBType);

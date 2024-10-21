@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SceneHandler extends BaseDeviceHandler {
+public class SceneHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
     private final TimeZoneProvider timeZoneProvider;
 

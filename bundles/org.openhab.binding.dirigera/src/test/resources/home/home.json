@@ -442,7 +442,7 @@
 			"isReachable": true,
 			"lastSeen": "2024-10-14T05:17:01.000Z",
 			"attributes": {
-				"customName": "Stehlampe",
+				"customName": "Loft Floor Lamp",
 				"model": "TRADFRI bulb E27 CWS opal 600lm",
 				"manufacturer": "IKEA of Sweden",
 				"firmwareVersion": "2.3.086",
@@ -840,8 +840,8 @@
 			"isReachable": true,
 			"lastSeen": "2024-10-13T17:18:25.000Z",
 			"attributes": {
-				"customName": "LED Band Sideboard",
-				"model": "ORMANAS LED Strip",
+				"customName": "",
+				"model": "",
 				"manufacturer": "IKEA of Sweden",
 				"firmwareVersion": "1.1.10",
 				"hardwareVersion": "1",
@@ -1421,80 +1421,151 @@
 		}
 	],
 	"users": [],
-	"scenes": [
-		{
-			"id": "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58",
-			"info": {
-				"name": "Christmas Lightmode",
-				"icon": "scenes_tree"
-			},
-			"type": "userScene",
-			"triggers": [
-				{
-					"id": "747e9565-61e9-4050-afb0-a0e9684da76e",
-					"type": "app",
-					"triggeredAt": "2024-10-15T12:49:46.401Z",
-					"disabled": false
-				}
-			],
-			"actions": [
-				{
-					"id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
-					"type": "device",
-					"deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
-					"enabled": true,
-					"attributes": {
-						"isOn": true,
-						"lightLevel": 100,
-						"colorHue": 0,
-						"colorSaturation": 1
-					}
-				},
-				{
-					"id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
-					"type": "device",
-					"deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
-					"enabled": true,
-					"attributes": {
-						"isOn": true,
-						"lightLevel": 100,
-						"colorHue": 90,
-						"colorSaturation": 1
-					}
-				},
-				{
-					"id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
-					"type": "device",
-					"deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
-					"enabled": true,
-					"attributes": {
-						"isOn": true,
-						"lightLevel": 100,
-						"colorHue": 90,
-						"colorSaturation": 1
-					}
-				},
-				{
-					"id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
-					"type": "device",
-					"deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
-					"enabled": true,
-					"attributes": {
-						"isOn": true,
-						"lightLevel": 100,
-						"colorHue": 90,
-						"colorSaturation": 1
-					}
-				}
-			],
-			"commands": [],
-			"createdAt": "2024-10-15T11:13:42.273Z",
-			"lastCompleted": "2024-10-15T12:49:03.028Z",
-			"lastTriggered": "2024-10-15T12:49:03.028Z",
-			"undoAllowedDuration": 30,
-			"lastUndo": "2024-10-15T12:49:46.416Z"
-		}
-	],
+    "scenes": [
+        {
+            "id": "086f4a37-ebe8-4fd4-9a25-a0220a1e5f58",
+            "info": {
+                "name": "Lightmode Christmas",
+                "icon": "scenes_tree"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "987ec615-24d8-411c-9aa9-d03c447b246b",
+                    "type": "app",
+                    "triggeredAt": "2024-10-16T00:21:15.942Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "type": "device",
+                    "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 0,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "type": "device",
+                    "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": true,
+                        "lightLevel": 100,
+                        "colorHue": 90,
+                        "colorSaturation": 1
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-10-15T11:13:42.273Z",
+            "lastCompleted": "2024-10-16T00:21:15.977Z",
+            "lastTriggered": "2024-10-16T00:21:15.977Z",
+            "undoAllowedDuration": 30,
+            "lastUndo": "2024-10-15T19:36:59.273Z"
+        },
+        {
+            "id": "3090ba82-3f5e-442f-8e49-f3eac9b7b0eb",
+            "info": {
+                "name": "Lightmode off",
+                "icon": "scenes_disco_ball"
+            },
+            "type": "userScene",
+            "triggers": [
+                {
+                    "id": "6fff3797-c798-4d0c-abe0-ce46cc389104",
+                    "type": "app",
+                    "triggeredAt": "2024-10-16T00:38:16.257Z",
+                    "disabled": false
+                }
+            ],
+            "actions": [
+                {
+                    "id": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "type": "device",
+                    "deviceId": "d791dc18-9180-45c7-92fc-604481a34f15_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                },
+                {
+                    "id": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "type": "device",
+                    "deviceId": "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                },
+                {
+                    "id": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "type": "device",
+                    "deviceId": "c27faa27-4c18-464f-81a0-a31ce57d83d5_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 359.83392,
+                        "colorSaturation": 1
+                    }
+                },
+                {
+                    "id": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "type": "device",
+                    "deviceId": "891790db-8c17-483a-a1a6-c85bffd3a373_1",
+                    "enabled": true,
+                    "attributes": {
+                        "isOn": false,
+                        "lightLevel": 100,
+                        "colorHue": 89.681786,
+                        "colorSaturation": 0.99900264
+                    }
+                }
+            ],
+            "commands": [],
+            "createdAt": "2024-10-15T23:14:12.399Z",
+            "lastCompleted": "2024-10-16T00:38:16.267Z",
+            "lastTriggered": "2024-10-16T00:38:16.267Z",
+            "undoAllowedDuration": 30
+        }
+    ],
 	"rooms": [
 		{
 			"id": "921edb07-e344-4c70-a09e-11935c727f58",

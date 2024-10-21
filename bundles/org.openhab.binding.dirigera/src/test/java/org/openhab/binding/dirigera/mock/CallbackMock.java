@@ -81,12 +81,12 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
+        logger.info("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
+                thingStatus.getDescription());
         synchronized (this) {
             status = thingStatus;
             this.notifyAll();
         }
-        logger.info("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
-                thingStatus.getDescription());
     }
 
     public ThingStatusInfo getStatus() {

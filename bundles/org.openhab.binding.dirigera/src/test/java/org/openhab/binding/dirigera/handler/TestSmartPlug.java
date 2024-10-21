@@ -42,7 +42,7 @@ class TestSmartPlug {
 
     @Test
     void testSmartPlugDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_SMART_PLUG, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         SmartPlugHandler handler = new SmartPlugHandler(thing, SMART_PLUG_MAP);

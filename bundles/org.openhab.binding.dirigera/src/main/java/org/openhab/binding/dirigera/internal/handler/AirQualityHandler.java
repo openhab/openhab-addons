@@ -33,7 +33,7 @@ import org.openhab.core.types.Command;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class AirQualityHandler extends BaseDeviceHandler {
+public class AirQualityHandler extends BaseHandler {
 
     public AirQualityHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -45,6 +45,9 @@ public class AirQualityHandler extends BaseDeviceHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
+            if (values.isEmpty()) {
+
+            }
             handleUpdate(values);
         }
     }

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LightSensorHandler extends BaseDeviceHandler {
+public class LightSensorHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(LightSensorHandler.class);
 
     public LightSensorHandler(Thing thing, Map<String, String> mapping) {
