@@ -48,15 +48,20 @@ import com.google.gson.annotations.SerializedName;
 public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String ACTION_CH_ID = "action";
     public static final String AUX_CH_ID = "aux";
-    public static final String AWAY_MODE_CH_ID = "awayMode";
-    public static final String CURRENT_TEMPERATURE_CH_ID = "currentTemperature";
-    public static final String FAN_MODE_CH_ID = "fanMode";
+    public static final String AWAY_MODE_CH_ID = "away-mode";
+    public static final String AWAY_MODE_CH_ID_DEPRECATED = "awayMode";
+    public static final String CURRENT_TEMPERATURE_CH_ID = "current-temperature";
+    public static final String CURRENT_TEMPERATURE_CH_ID_DEPRECATED = "currentTemperature";
+    public static final String FAN_MODE_CH_ID = "fan-mode";
+    public static final String FAN_MODE_CH_ID_DEPRECATED = "fanMode";
     public static final String HOLD_CH_ID = "hold";
     public static final String MODE_CH_ID = "mode";
     public static final String SWING_CH_ID = "swing";
     public static final String TEMPERATURE_CH_ID = "temperature";
-    public static final String TEMPERATURE_HIGH_CH_ID = "temperatureHigh";
-    public static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
+    public static final String TEMPERATURE_HIGH_CH_ID = "temperature-high";
+    public static final String TEMPERATURE_HIGH_CH_ID_DEPRECATED = "temperatureHigh";
+    public static final String TEMPERATURE_LOW_CH_ID = "temperature-low";
+    public static final String TEMPERATURE_LOW_CH_ID_DEPRECATED = "temperatureLow";
     public static final String POWER_CH_ID = "power";
 
     public enum TemperatureUnit {
@@ -231,16 +236,18 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.auxCommandTopic, channelConfiguration.auxStateTemplate,
                 channelConfiguration.auxStateTopic, commandFilter);
 
-        buildOptionalChannel(AWAY_MODE_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
+        buildOptionalChannel(newStyleChannels ? AWAY_MODE_CH_ID : AWAY_MODE_CH_ID_DEPRECATED,
+                ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
                 channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
-        buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(newStyleChannels ? CURRENT_TEMPERATURE_CH_ID : CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
+                ComponentChannelType.NUMBER,
                 new NumberValue(null, null, precision, channelConfiguration.temperatureUnit.getUnit()), updateListener,
                 null, null, channelConfiguration.currentTemperatureTemplate,
                 channelConfiguration.currentTemperatureTopic, commandFilter);
 
-        buildOptionalChannel(FAN_MODE_CH_ID, ComponentChannelType.STRING,
+        buildOptionalChannel(newStyleChannels ? FAN_MODE_CH_ID : FAN_MODE_CH_ID_DEPRECATED, ComponentChannelType.STRING,
                 new TextValue(channelConfiguration.fanModes.toArray(new String[0])), updateListener,
                 channelConfiguration.fanModeCommandTemplate, channelConfiguration.fanModeCommandTopic,
                 channelConfiguration.fanModeStateTemplate, channelConfiguration.fanModeStateTopic, commandFilter);
@@ -270,14 +277,16 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
                 channelConfiguration.temperatureStateTopic, commandFilter);
 
-        buildOptionalChannel(TEMPERATURE_HIGH_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(newStyleChannels ? TEMPERATURE_HIGH_CH_ID : TEMPERATURE_HIGH_CH_ID_DEPRECATED,
+                ComponentChannelType.NUMBER,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
                         channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureHighCommandTemplate,
                 channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
                 channelConfiguration.temperatureHighStateTopic, commandFilter);
 
-        buildOptionalChannel(TEMPERATURE_LOW_CH_ID, ComponentChannelType.NUMBER,
+        buildOptionalChannel(newStyleChannels ? TEMPERATURE_LOW_CH_ID : TEMPERATURE_LOW_CH_ID_DEPRECATED,
+                ComponentChannelType.NUMBER,
                 new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
                         channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
                 updateListener, channelConfiguration.temperatureLowCommandTemplate,
