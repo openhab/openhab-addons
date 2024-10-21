@@ -143,12 +143,6 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="type" type="text">
-				<label>Type</label>
-				<description>Use 'chat' to keep the context and let it control your openHAB</description>
-				<default>notification</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</channel-type>
 </thing:thing-descriptions>
