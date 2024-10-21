@@ -381,7 +381,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 }
 
                 if ("String".equals(itemType)) {
-
                     String metadata = getItemMetaData(item);
                     if (metadata != null) {
                         content.append("\", accepted modes: \"").append(metadata);
