@@ -215,10 +215,16 @@ public abstract class BaseHandler extends BaseThingHandler {
         // cross check if configured thing type is matching with the model
         // if handler is taken from discovery this will do no harm
         // but if it's created manually mismatch can happen
-        ThingTypeUID modelTTUID = gateway().model().identifyDevice(config.id);
+        ThingTypeUID modelTTUID = gateway().model().identifyDeviceFromModel(config.id);
         if (!thing.getThingTypeUID().equals(modelTTUID)) {
-            String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            // check if id is present in mdoel
+            if (gateway().model().has(config.id)) {
+                String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            } else {
+                String message = "Handler ID " + config.id + " removed from Gateway";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, message);
+            }
             return false;
         } else {
             return true;

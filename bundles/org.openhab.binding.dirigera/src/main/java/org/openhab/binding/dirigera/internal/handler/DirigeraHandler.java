@@ -221,7 +221,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
             Model houseModel = new Model(this);
             model = Optional.of(houseModel);
-            houseModel.init();
+            houseModel.update();
             // Step 3.1 - check if id is already obtained
             if (config.id.isBlank()) {
                 JSONArray gatewayArray = houseModel.getIdsForType(DEVICE_TYPE_GATEWAY);
@@ -607,6 +607,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void websocketUpdate(String update) {
+        System.out.println("websocketUpdate " + update);
         synchronized (queue) {
             queue.add(update);
         }
@@ -614,6 +615,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void doUpdate() {
+        System.out.println("doUpdate ");
         Instant startTime = Instant.now();
         String json = "";
         synchronized (queue) {
@@ -621,18 +623,21 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 json = queue.remove(0);
             }
         }
+        System.out.println("doUpdate " + json);
         if (!json.isBlank()) {
             JSONObject update = new JSONObject(json);
             JSONObject data = update.getJSONObject("data");
             String targetId = data.getString("id");
             // First update device
-            String type = update.getString("type");
+            String type = update.getString(PROPERTY_TYPE);
+            System.out.println("handle " + type);
             switch (type) {
+                case EVENT_TYPE_SCENE_CREATED:
+                case EVENT_TYPE_SCENE_DELETED:
                 case EVENT_TYPE_DEVICE_ADDED:
-                    model().addedDeviceScene(targetId);
-                    break;
                 case EVENT_TYPE_DEVICE_REMOVED:
-                    model().removedDeviceScene(targetId);
+                    // update model - it will take control on newly added, changed and removed devices
+                    model().update();
                     break;
                 case EVENT_TYPE_DEVICE_CHANGE:
                     if (targetId != null) {
@@ -640,7 +645,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                             this.handleUpdate(data);
                         } else {
                             BaseHandler targetHandler = deviceTree.get(targetId);
-                            if (targetHandler != null && targetId != null) {
+                            if (targetHandler != null) {
                                 targetHandler.handleUpdate(data);
                             } else {
                                 // special case: if custom name is changed in attributes force model update
@@ -653,16 +658,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     logger.info("DIRIGERA HANDLER update performance - device update {}",
                             Duration.between(startTime, Instant.now()).toMillis());
                     break;
-                case EVENT_TYPE_SCENE_CREATED:
-                    model().addedDeviceScene(targetId);
-                    break;
-                case EVENT_TYPE_SCENE_DELETED:
-                    model().removedDeviceScene(targetId);
-                    break;
                 case EVENT_TYPE_SCENE_UPDATE:
                     if (targetId != null) {
                         BaseHandler targetHandler = deviceTree.get(targetId);
-                        if (targetHandler != null && targetId != null) {
+                        if (targetHandler != null) {
                             targetHandler.handleUpdate(data);
                         } else {
                             // special case: if custom name is changed in attributes force model update
