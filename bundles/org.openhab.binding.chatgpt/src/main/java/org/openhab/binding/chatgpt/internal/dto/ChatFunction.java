@@ -25,7 +25,6 @@ public class ChatFunction {
 
     private String name;
     private String description;
-
     private Parameters parameters;
 
     @JsonIgnore
