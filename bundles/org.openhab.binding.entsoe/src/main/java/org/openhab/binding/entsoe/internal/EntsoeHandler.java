@@ -141,7 +141,7 @@ public class EntsoeHandler extends BaseThingHandler {
         } catch (EntsoeResponseMapException e) {
             logger.warn("Using millis to next whole hour");
         }
-        return millis;
+        return millis + 1;
     }
 
     private SpotPrice getCurrentSpotPrice() throws EntsoeResponseMapException {
