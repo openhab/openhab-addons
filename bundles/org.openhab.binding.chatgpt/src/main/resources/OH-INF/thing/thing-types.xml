@@ -67,7 +67,7 @@
 			<parameter name="systemMessage" type="text">
 				<label>System Message</label>
 				<description>Override the default system message of the assistant.</description>
-				<default>You are the manager of the OpenHAB smart home. You know how to manage devices in a smart home or provide
+				<default>You are the manager of the openHAB smart home. You know how to manage devices in a smart home or provide
 					their current status. You can also answer a question not related to devices in the house. Or, for example, you can
 					compose a story upon request.
 					I will provide information about the smart home; if necessary, you can perform the
