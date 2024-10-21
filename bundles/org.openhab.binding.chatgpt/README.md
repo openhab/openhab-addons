@@ -19,7 +19,8 @@ The binding supports a single thing type `account`, which corresponds to the Ope
 ## Thing Configuration
 
 The `account` thing requires the API key that allows accessing the account.
-API keys can be created and managed under <https://platform.openai.com/account/api-keys>. If you want to use the HLI service, you need to configure additional parameters here.
+API keys can be created and managed under <https://platform.openai.com/account/api-keys>.
+
 | Name             | Type    | Description                                                                                                                                                                                                                                                                                                                            | Default                                    | Required | Advanced |
 |------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|----------|----------|
 | apiKey           | text    | The API key to be used for the requests                                                                                                                                                                                                                                                                                                | N/A                                        | yes      | no       |
