@@ -1,4 +1,3 @@
-package org.openhab.binding.modbus.lambda.internal.dto;
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -11,6 +10,7 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.modbus.lambda.internal.dto;
 
 /**
  * Dto class for the HeatingCircuit1 Block
