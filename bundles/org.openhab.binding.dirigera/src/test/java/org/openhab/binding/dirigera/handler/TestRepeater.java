@@ -41,7 +41,7 @@ class TestRepeater {
 
     @Test
     void testRepeater() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_REPEATER, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         RepeaterHandler handler = new RepeaterHandler(thing, REPEATER_MAP);

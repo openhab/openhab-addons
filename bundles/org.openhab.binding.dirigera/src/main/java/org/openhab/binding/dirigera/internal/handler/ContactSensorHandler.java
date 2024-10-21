@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ContactSensorHandler extends BaseDeviceHandler {
+public class ContactSensorHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ContactSensorHandler.class);
 
     public ContactSensorHandler(Thing thing, Map<String, String> mapping) {

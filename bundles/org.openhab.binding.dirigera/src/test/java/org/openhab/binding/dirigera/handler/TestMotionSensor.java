@@ -41,7 +41,7 @@ class TestMotionSensor {
 
     @Test
     void testMotionSensorDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_MOTION_SENSOR, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         MotionSensorHandler handler = new MotionSensorHandler(thing, MOTION_SENSOR_MAP);
@@ -73,6 +73,6 @@ class TestMotionSensor {
         State onOffState = callback.getState("dirigera:motion-sensor:test-device:detection");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
-        assertTrue(OnOffType.OFF.equals((onOffState)), "Off");
+        assertTrue(OnOffType.OFF.equals((onOffState)), "Motion detected");
     }
 }

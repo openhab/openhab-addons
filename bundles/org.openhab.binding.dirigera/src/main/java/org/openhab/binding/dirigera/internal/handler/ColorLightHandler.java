@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ColorLightHandler extends BaseDeviceHandler {
+public class ColorLightHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ColorLightHandler.class);
 
     private HSBType hsbCurrent;

@@ -42,7 +42,7 @@ import org.openhab.core.types.State;
 class TestSpeaker {
     @Test
     void testSpeakerDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_SPEAKER, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         SpeakerHandler handler = new SpeakerHandler(thing, SPEAKER_MAP);

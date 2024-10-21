@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
 class TestContactDevice {
     @Test
     void testContactDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_CONTACT_SENSOR, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         ContactSensorHandler handler = new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);

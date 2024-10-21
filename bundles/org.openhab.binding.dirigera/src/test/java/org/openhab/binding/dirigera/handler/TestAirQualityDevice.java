@@ -48,7 +48,7 @@ class TestAirQualityDevice {
 
     @Test
     void testAirQualityDeviceWithSimuBridge() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         testAirQuality(hubBridge);
     }
 
