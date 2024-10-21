@@ -239,7 +239,6 @@ public class ChatGPTHandler extends BaseThingHandler {
                             });
 
                             this.models = List.copyOf(modelList);
-
                         } else {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.communication-error");
