@@ -66,7 +66,6 @@ public class DeviceTriggerTests extends AbstractComponentTests {
         assertChannel(component, "on", "zigbee2mqtt/Charge Now Button/action", "", "MQTT Device Trigger",
                 TextValue.class);
 
-        spyOnChannelUpdates(component, "on");
         publishMessage("zigbee2mqtt/Charge Now Button/action", "on");
         assertTriggered(component, "on", "on");
 
@@ -132,7 +131,6 @@ public class DeviceTriggerTests extends AbstractComponentTests {
         List<?> configList = (List<?>) config;
         assertThat(configList.size(), is(2));
 
-        spyOnChannelUpdates(component1, "turn_on");
         publishMessage("zigbee2mqtt/Charge Now Button/action", "press");
         assertTriggered(component1, "turn_on", "press");
 
