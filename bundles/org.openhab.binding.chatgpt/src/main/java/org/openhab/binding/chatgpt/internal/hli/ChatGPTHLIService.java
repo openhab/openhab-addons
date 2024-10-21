@@ -274,7 +274,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                         Object argumentsObject;
 
                         logger.debug("Function '{}' with arguments: {}", functionName, arguments);
-
                         JsonNode argumentsNode;
                         try {
                             argumentsNode = objectMapper.readTree(arguments);
