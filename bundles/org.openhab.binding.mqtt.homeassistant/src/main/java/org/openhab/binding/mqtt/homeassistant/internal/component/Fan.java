@@ -45,7 +45,7 @@ import com.google.gson.annotations.SerializedName;
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String SWITCH_CHANNEL_ID = "fan";
     public static final String SPEED_CHANNEL_ID = "speed";
-    public static final String PRESET_MODE_CHANNEL_ID = "preset_mode";
+    public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
 

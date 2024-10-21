@@ -71,14 +71,18 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
     public static final String STATE_ERROR = "error";
 
     public static final String COMMAND_CH_ID = "command";
-    public static final String FAN_SPEED_CH_ID = "fanSpeed";
-    public static final String CUSTOM_COMMAND_CH_ID = "customCommand";
-    public static final String BATTERY_LEVEL_CH_ID = "batteryLevel";
+    public static final String FAN_SPEED_CH_ID = "fan-speed";
+    public static final String FAN_SPEED_CH_ID_DEPRECATED = "fanSpeed";
+    public static final String CUSTOM_COMMAND_CH_ID = "custom-command";
+    public static final String CUSTOM_COMMAND_CH_ID_DEPRECATED = "customCommand";
+    public static final String BATTERY_LEVEL_CH_ID = "battery-level";
+    public static final String BATTERY_LEVEL_CH_ID_DEPRECATED = "batteryLevel";
     public static final String CHARGING_CH_ID = "charging";
     public static final String CLEANING_CH_ID = "cleaning";
     public static final String DOCKED_CH_ID = "docked";
     public static final String ERROR_CH_ID = "error";
-    public static final String JSON_ATTRIBUTES_CH_ID = "jsonAttributes";
+    public static final String JSON_ATTRIBUTES_CH_ID = "json-attributes";
+    public static final String JSON_ATTRIBUTES_CH_ID_DEPRECATED = "jsonAttributes";
     public static final String STATE_CH_ID = "state";
 
     public static final List<String> LEGACY_DEFAULT_FEATURES = List.of(FEATURE_TURN_ON, FEATURE_TURN_OFF, FEATURE_STOP,
@@ -237,28 +241,33 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
             var fanSpeedValue = new TextValue(fanSpeedList.toArray(new String[0]));
             if (channelConfiguration.schema == Schema.LEGACY) {
-                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(newStyleChannels ? FAN_SPEED_CH_ID : FAN_SPEED_CH_ID_DEPRECATED,
+                        ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, channelConfiguration.fanSpeedTemplate,
                         channelConfiguration.fanSpeedTopic);
             } else if (deviceSupportedFeatures.contains(FEATURE_STATUS)) {
-                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(newStyleChannels ? FAN_SPEED_CH_ID : FAN_SPEED_CH_ID_DEPRECATED,
+                        ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, "{{ value_json.fan_speed }}",
                         channelConfiguration.stateTopic);
             } else {
                 LOGGER.info("Status feature is disabled, unable to get fan speed.");
-                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(newStyleChannels ? FAN_SPEED_CH_ID : FAN_SPEED_CH_ID_DEPRECATED,
+                        ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, null, null);
             }
         }
 
         if (deviceSupportedFeatures.contains(FEATURE_SEND_COMMAND)) {
-            buildOptionalChannel(CUSTOM_COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener,
-                    null, channelConfiguration.sendCommandTopic, null, null);
+            buildOptionalChannel(newStyleChannels ? CUSTOM_COMMAND_CH_ID : CUSTOM_COMMAND_CH_ID_DEPRECATED,
+                    ComponentChannelType.STRING, new TextValue(), updateListener, null,
+                    channelConfiguration.sendCommandTopic, null, null);
         }
 
         if (channelConfiguration.schema == Schema.LEGACY) {
             // I assume, that if these topics defined in config, then we don't need to check features
-            buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
+            buildOptionalChannel(newStyleChannels ? BATTERY_LEVEL_CH_ID : BATTERY_LEVEL_CH_ID_DEPRECATED,
+                    ComponentChannelType.DIMMER,
                     new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
                     updateListener, null, null, channelConfiguration.batteryLevelTemplate,
                     channelConfiguration.batteryLevelTopic);
@@ -280,7 +289,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
                                 STATE_RETURNING, STATE_ERROR }),
                         updateListener, null, null, "{{ value_json.state }}", channelConfiguration.stateTopic);
                 if (deviceSupportedFeatures.contains(FEATURE_BATTERY)) {
-                    buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
+                    buildOptionalChannel(newStyleChannels ? BATTERY_LEVEL_CH_ID : BATTERY_LEVEL_CH_ID_DEPRECATED,
+                            ComponentChannelType.DIMMER,
                             new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
                             updateListener, null, null, "{{ value_json.battery_level }}",
                             channelConfiguration.stateTopic);
@@ -288,8 +298,9 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
         }
 
-        buildOptionalChannel(JSON_ATTRIBUTES_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener, null,
-                null, channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
+        buildOptionalChannel(newStyleChannels ? JSON_ATTRIBUTES_CH_ID : JSON_ATTRIBUTES_CH_ID_DEPRECATED,
+                ComponentChannelType.STRING, new TextValue(), updateListener, null, null,
+                channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
         finalizeChannels();
     }
 

@@ -91,15 +91,17 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
 
             if (supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
-                colorTempChannel = buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue,
-                        "Color Temperature", this).commandTopic(DUMMY_TOPIC, true, 1)
-                        .commandFilter(command -> handleColorTempCommand(command))
+                colorTempChannel = buildChannel(
+                        newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED,
+                        ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
+                        .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleColorTempCommand(command))
                         .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
                 if (hasColorChannel) {
                     colorModeValue = new TextValue(
                             supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
-                    buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
+                    buildChannel(newStyleChannels ? COLOR_MODE_CHANNEL_ID : COLOR_MODE_CHANNEL_ID_DEPRECATED,
+                            ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
                             .withAutoUpdatePolicy(autoUpdatePolicy).isAdvanced(true).build();
 
                 }
@@ -115,9 +117,9 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                     "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
         } else {
-            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand)
-                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
+            onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                    ComponentChannelType.SWITCH, onOffValue, "On/Off State", this).commandTopic(DUMMY_TOPIC, true, 1)
+                    .commandFilter(this::handleCommand).withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
         if (effectValue != null) {
@@ -312,7 +314,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                         } else {
                             colorTempValue
                                     .update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
-                            listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                            listener.updateChannelState(buildChannelUID(
+                                    newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
                                     colorTempValue.getChannelState());
 
                             // Populate the color channel (if there is one) to match the color temperature.
@@ -339,7 +342,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                             if (colorTempChannel != null) {
                                 double kelvin = ColorUtil.xyToKelvin(xy);
                                 colorTempValue.update(new QuantityType(kelvin, Units.KELVIN));
-                                listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                                listener.updateChannelState(buildChannelUID(
+                                        newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
                                         colorTempValue.getChannelState());
                             }
                         }
@@ -374,7 +378,9 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                     final double[] xy = ColorUtil.hsbToXY(colorState);
                     double kelvin = ColorUtil.xyToKelvin(new double[] { xy[0], xy[1] });
                     colorTempValue.update(new QuantityType(kelvin, Units.KELVIN));
-                    listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                    listener.updateChannelState(
+                            buildChannelUID(
+                                    newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
                             colorTempValue.getChannelState());
                 }
 
@@ -383,7 +389,9 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                 // https://github.com/home-assistant/core/blob/4f965f0eca09f0d12ae1c98c6786054063a36b44/homeassistant/components/mqtt/light/schema_json.py#L258
                 if (jsonState.colorTemp != null) {
                     colorTempValue.update(new QuantityType(Objects.requireNonNull(jsonState.colorTemp), Units.MIRED));
-                    listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID),
+                    listener.updateChannelState(
+                            buildChannelUID(
+                                    newStyleChannels ? COLOR_TEMP_CHANNEL_ID : COLOR_TEMP_CHANNEL_ID_DEPRECATED),
                             colorTempValue.getChannelState());
 
                     colorModeValue.update(new StringType(LightColorMode.COLOR_MODE_COLOR_TEMP.serializedName()));
@@ -411,7 +419,9 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             logger.warn("Invalid color value for {}", getHaID());
         }
 
-        listener.updateChannelState(buildChannelUID(COLOR_MODE_CHANNEL_ID), colorModeValue.getChannelState());
+        listener.updateChannelState(
+                buildChannelUID(newStyleChannels ? COLOR_MODE_CHANNEL_ID : COLOR_MODE_CHANNEL_ID_DEPRECATED),
+                colorModeValue.getChannelState());
 
         if (localColorChannel != null) {
             listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
