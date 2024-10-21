@@ -78,12 +78,8 @@
 					question briefly, maximum 3
 					sentences in everyday language.
 
-					The name, current status and location of devices is
-					displayed in 'Available
-					devices'.
-					Use the items_control
-					function
-					only for the requested action, not for providing
+					The name, current status and location of devices is displayed in 'Available devices'.
+					Use the items_control function only for the requested action, not for providing
 					current states.
 
 					Available devices:
