@@ -338,7 +338,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         chatRequestBody.setTopP(this.config.topP);
         chatRequestBody.setToolChoice(ToolChoice.AUTO.value());
         chatRequestBody.setTools(this.tools);
-
         chatRequestBody.setMessages(this.messages);
 
         ObjectMapper objectMapper = new ObjectMapper();
