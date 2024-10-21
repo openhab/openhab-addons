@@ -196,7 +196,7 @@ public class LambdaHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        logger.trace("187 writeInt16: Es wird geschrieben, Adresse: {} Wert: {}", address, shortValue);
+        // loggertrace("187 writeInt16: Es wird geschrieben, Adresse: {} Wert: {}", address, shortValue);
         LambdaConfiguration myconfig = LambdaHandler.this.config;
         ModbusCommunicationInterface mycomms = LambdaHandler.this.comms;
 
@@ -208,7 +208,7 @@ public class LambdaHandler extends BaseThingHandler {
         byte lo = (byte) shortValue;
         ModbusRegisterArray data = new ModbusRegisterArray(hi, lo);
 
-        logger.trace("199 hi: {}, lo: {}", hi, lo);
+        // loggertrace("199 hi: {}, lo: {}", hi, lo);
         ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId, address, data,
                 true, myconfig.getMaxTries());
 
@@ -216,11 +216,11 @@ public class LambdaHandler extends BaseThingHandler {
             if (hasConfigurationError()) {
                 return;
             }
-            logger.trace("Successful write, matching request {}", request);
+            // loggertrace("Successful write, matching request {}", request);
             LambdaHandler.this.updateStatus(ThingStatus.ONLINE);
         }, failure -> {
             LambdaHandler.this.handleWriteError(failure);
-            logger.trace("Unsuccessful write, matching request {}", request);
+            // loggertrace("Unsuccessful write, matching request {}", request);
         });
     }
 
@@ -299,7 +299,7 @@ public class LambdaHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("283 handleCommand, channelUID: {} command {} ", channelUID, command);
+        // loggertrace("283 handleCommand, channelUID: {} command {} ", channelUID, command);
         if (RefreshType.REFRESH == command) {
             String groupId = channelUID.getGroupId();
             if (groupId != null) {
@@ -340,50 +340,50 @@ public class LambdaHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
-                    // logger.trace("336 Es wird gepollt }");
+                    // loggertrace("336 Es wird gepollt }");
                     poller.poll();
                 }
             }
         } else {
-            logger.trace("341 handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(),
-                    command);
+            // loggertrace("341 handleCommand: Es wird geschrieben, GroupID: {}, command {}", channelUID.getGroupId(),
+            // command);
             try {
 
-                logger.trace("345 vor EMANAGER");
+                // loggertrace("345 vor EMANAGER");
                 if (GROUP_GENERAL_EMANAGER.equals(channelUID.getGroupId())) {
 
-                    logger.trace("330 im EMANAGER channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("330 im EMANAGER channelUID {} ", channelUID.getIdWithoutGroup());
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_ACTUAL_POWER:
 
-                            logger.trace("336 command: {}", command);
+                            // loggertrace("336 command: {}", command);
                             writeInt16(102, getInt16Value(command));
                             break;
 
                     }
                 }
                 if (GROUP_BOILER1MT.equals(channelUID.getGroupId())) {
-                    logger.trace("345 im BOILER1MT channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("345 im BOILER1MT channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_BOILER1_MAXIMUM_BOILER_TEMPERATURE:
 
-                            logger.trace("347 command: {}", command);
+                            // loggertrace("347 command: {}", command);
                             writeInt16(2050, getScaledInt16Value(command));
                             break;
 
                     }
                 }
                 if (GROUP_BUFFER1MT.equals(channelUID.getGroupId())) {
-                    logger.trace("359 im BUFFER1MT channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("359 im BUFFER1MT channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_BUFFER1_MAXIMUM_BOILER_TEMPERATURE:
 
-                            logger.trace("365 command: {}", command);
+                            // loggertrace("365 command: {}", command);
                             writeInt16(3050, getScaledInt16Value(command));
                             break;
 
@@ -391,20 +391,20 @@ public class LambdaHandler extends BaseThingHandler {
                 }
 
                 if (GROUP_HEATINGCIRCUIT1.equals(channelUID.getGroupId())) {
-                    logger.trace("387 im HEATINGCIRCUI1 channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("387 im HEATINGCIRCUI1 channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_HEATINGCIRCUIT1_ROOM_DEVICE_TEMPERATURE:
-                            logger.trace("393 command: {}", command);
+                            // loggertrace("393 command: {}", command);
                             writeInt16(5004, getScaledInt16Value(command));
                             break;
                         case CHANNEL_HEATINGCIRCUIT1_SETPOINT_FLOW_LINE_TEMPERATURE:
-                            logger.trace("393 command: {}", command);
+                            // loggertrace("393 command: {}", command);
                             writeInt16(5005, getScaledInt16Value(command));
                             break;
                         case CHANNEL_HEATINGCIRCUIT1_OPERATING_MODE:
-                            logger.trace("403 command: {}", command);
+                            // loggertrace("403 command: {}", command);
                             writeInt16(5006, getInt16Value(command));
                             break;
 
@@ -412,23 +412,23 @@ public class LambdaHandler extends BaseThingHandler {
                 }
 
                 if (GROUP_HEATINGCIRCUIT1SETTING.equals(channelUID.getGroupId())) {
-                    logger.trace("411 im HEATINGCIRCUI1 channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("411 im HEATINGCIRCUI1 channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_HEATINGCIRCUIT1_OFFSET_FLOW_LINE_TEMPERATURE:
 
-                            logger.trace("418 command: {}", command);
+                            // loggertrace("418 command: {}", command);
                             writeInt16(5050, getScaledInt16Value(command));
                             break;
                         case CHANNEL_HEATINGCIRCUIT1_ROOM_HEATING_TEMPERATURE:
 
-                            logger.trace("233 command: {}", command);
+                            // loggertrace("233 command: {}", command);
                             writeInt16(5051, getScaledInt16Value(command));
                             break;
                         case CHANNEL_HEATINGCIRCUIT1_ROOM_COOLING_TEMPERATURE:
 
-                            logger.trace("427 command: {}", command);
+                            // loggertrace("427 command: {}", command);
                             writeInt16(5052, getScaledInt16Value(command));
                             break;
 
@@ -436,13 +436,13 @@ public class LambdaHandler extends BaseThingHandler {
 
                 }
                 if (GROUP_HEATPUMP1SET.equals(channelUID.getGroupId())) {
-                    logger.trace("439 im HEATPUMP1SET channelUID {} ", channelUID.getIdWithoutGroup());
+                    // loggertrace("439 im HEATPUMP1SET channelUID {} ", channelUID.getIdWithoutGroup());
 
                     switch (channelUID.getIdWithoutGroup()) {
 
                         case CHANNEL_HEATPUMP1_SET_ERROR_QUIT:
 
-                            logger.trace("445 Heatpumpseterrorquit command: {}", command);
+                            // loggertrace("445 Heatpumpseterrorquit command: {}", command);
                             writeInt16(1050, getScaledInt16Value(command));
                             break;
 
@@ -539,7 +539,7 @@ public class LambdaHandler extends BaseThingHandler {
             };
 
             poller.registerPollTask(1000, 14, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            logger.trace("Poller Heatpump1 erzeugt");
+            // loggertrace("Poller Heatpump1 erzeugt");
             heatpump1Poller = poller;
         }
 
@@ -552,7 +552,7 @@ public class LambdaHandler extends BaseThingHandler {
             };
 
             poller.registerPollTask(1050, 1, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            logger.trace("Poller Heatpump1Set erzeugt");
+            // loggertrace("Poller Heatpump1Set erzeugt");
             heatpump1SetPoller = poller;
         }
 
@@ -610,7 +610,7 @@ public class LambdaHandler extends BaseThingHandler {
             };
 
             poller.registerPollTask(5000, 7, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            logger.trace("Poller HeatingCircuit1 erzeugt");
+            // loggertrace("Poller HeatingCircuit1 erzeugt");
             heatingcircuit1Poller = poller;
         }
         if (heatingcircuit1settingPoller == null) {
@@ -622,7 +622,7 @@ public class LambdaHandler extends BaseThingHandler {
             };
 
             poller.registerPollTask(5050, 3, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
-            logger.trace("Poller HeatingCircuit1Setting erzeugt");
+            // loggertrace("Poller HeatingCircuit1Setting erzeugt");
             heatingcircuit1settingPoller = poller;
         }
 
@@ -741,6 +741,8 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     /**
+     * Obsolete because of new getScaled below
+     * 
      * Returns value divided by the 10
      *
      * @param value the value to alter
@@ -748,17 +750,17 @@ public class LambdaHandler extends BaseThingHandler {
      * 
      * 
      *         protected State getScaled10(Number value, Unit<?> unit) {
-     *         // logger.trace("505 value: {}", value.intValue());
+     *         // loggertrace("505 value: {}", value.intValue());
      *         return QuantityType.valueOf(value.doubleValue() / 10, unit);
      *         }
      * 
      *         protected State getScaled100(Number value, Unit<?> unit) {
-     *         // logger.trace("505 value: {}", value.intValue());
+     *         // loggertrace("505 value: {}", value.intValue());
      *         return QuantityType.valueOf(value.doubleValue() / 100, unit);
      *         }
      */
     protected State getScaled(Number value, Unit<?> unit, Double pow) {
-        // logger.trace("505 value: {}", value.intValue());
+        // loggertrace("505 value: {}", value.intValue());
         double factor = Math.pow(10, pow);
         return QuantityType.valueOf(value.doubleValue() * factor, unit);
     }
@@ -787,7 +789,7 @@ public class LambdaHandler extends BaseThingHandler {
      * @param registers byte array read from the modbus slave
      */
     protected void handlePolledAmbientData(ModbusRegisterArray registers) {
-        // logger.trace("Ambient block received, size: {}", registers.size());
+        // loggertrace("Ambient block received, size: {}", registers.size());
 
         // Ambient group
         AmbientBlock block = ambientBlockParser.parse(registers);
@@ -806,7 +808,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledEManagerData(ModbusRegisterArray registers) {
-        // logger.trace("EManager block received, size: {}", registers.size());
+        // loggertrace("EManager block received, size: {}", registers.size());
 
         // EManager group
         EManagerBlock block = emanagerBlockParser.parse(registers);
@@ -824,7 +826,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledHeatpump1Data(ModbusRegisterArray registers) {
-        logger.trace("Heatpump1 block received, size: {}", registers.size());
+        // loggertrace("Heatpump1 block received, size: {}", registers.size());
 
         Heatpump1Block block = heatpump1BlockParser.parse(registers);
 
@@ -860,7 +862,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledHeatpump1SetData(ModbusRegisterArray registers) {
-        logger.trace("Heatpump1Set block received, size: {}", registers.size());
+        // loggertrace("Heatpump1Set block received, size: {}", registers.size());
 
         Heatpump1SetBlock block = heatpump1SetBlockParser.parse(registers);
 
@@ -871,7 +873,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledBoiler1Data(ModbusRegisterArray registers) {
-        logger.trace("Boiler1 block received, size: {}", registers.size());
+        // loggertrace("Boiler1 block received, size: {}", registers.size());
 
         Boiler1Block block = boiler1BlockParser.parse(registers);
 
@@ -887,7 +889,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledBoiler1MtData(ModbusRegisterArray registers) {
-        logger.trace("Boiler1Mt block received, size: {}", registers.size());
+        // loggertrace("Boiler1Mt block received, size: {}", registers.size());
 
         Boiler1MtBlock block = boiler1mtBlockParser.parse(registers);
 
@@ -898,7 +900,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledBuffer1Data(ModbusRegisterArray registers) {
-        logger.trace("Buffer1 block received, size: {}", registers.size());
+        // loggertrace("Buffer1 block received, size: {}", registers.size());
 
         Buffer1Block block = buffer1BlockParser.parse(registers);
 
@@ -914,7 +916,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledBuffer1MtData(ModbusRegisterArray registers) {
-        logger.trace("Buffer1Mt block received, size: {}", registers.size());
+        // loggertrace("Buffer1Mt block received, size: {}", registers.size());
 
         Buffer1MtBlock block = buffer1mtBlockParser.parse(registers);
 
@@ -925,7 +927,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledHeatingCircuit1Data(ModbusRegisterArray registers) {
-        logger.trace("HeatingCircuit1 block received, size: {}", registers.size());
+        // loggertrace("HeatingCircuit1 block received, size: {}", registers.size());
 
         HeatingCircuit1Block block = heatingcircuit1BlockParser.parse(registers);
 
@@ -950,7 +952,7 @@ public class LambdaHandler extends BaseThingHandler {
     }
 
     protected void handlePolledHeatingCircuit1SettingData(ModbusRegisterArray registers) {
-        logger.trace("HeatingCircuit1Setting block received, size: {}", registers.size());
+        // loggertrace("HeatingCircuit1Setting block received, size: {}", registers.size());
 
         HeatingCircuit1SettingBlock block = heatingcircuit1settingBlockParser.parse(registers);
 

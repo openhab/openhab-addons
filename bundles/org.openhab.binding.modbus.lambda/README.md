@@ -148,7 +148,7 @@ This group contains general operational information about the heating circuit 1.
 
 ## Full Example
 
-### Thing Configuration
+### Thing Configuration of Modbus Bridge
 UID: modbus:tcp:Lambda_Bridge
 label: Lambda Modbus Bridge
 thingTypeUID: modbus:tcp
@@ -165,7 +165,7 @@ configuration:
   id: 1
   enableDiscovery: false
 
-### Example to write PV excess to the Lambda Heat Pump
+### Example: Write PV excess to the Lambda Heat Pump
 // PV_Battery.state and PV_Grid have to be provided by your PV inverter
 // Mode of E-Manager has to be switched to AUTOMATIK in the Lambda Heat Pump App
 var int P_Available =  ((Lambda_EMgr_Power_Consumption_Value_as_Number.state as Number) - (PW_Battery.state as Number) - (PW_Grid.state as Number)).intValue 
