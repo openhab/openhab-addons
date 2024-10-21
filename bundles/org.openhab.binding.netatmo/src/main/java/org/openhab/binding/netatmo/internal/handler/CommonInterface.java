@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +82,8 @@ public interface CommonInterface {
 
     @Nullable
     Bridge getBridge();
+
+    ZoneId getSystemTimeZone();
 
     default @Nullable CommonInterface getBridgeHandler() {
         Bridge bridge = getBridge();
