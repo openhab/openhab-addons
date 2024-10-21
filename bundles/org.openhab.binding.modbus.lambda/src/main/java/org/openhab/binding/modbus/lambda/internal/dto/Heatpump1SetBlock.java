@@ -11,6 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.modbus.lambda.internal.dto;
+
 /**
  * Dto class for the Heatpump1 Block
  *
