@@ -269,7 +269,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                     String functionName = functionCall.getName();
                     ChatFunction function = FUNCTIONS.get(functionName);
                     if (function != null) {
-
                         ObjectMapper objectMapper = new ObjectMapper();
                         String arguments = functionCall.getArguments();
                         Object argumentsObject;
