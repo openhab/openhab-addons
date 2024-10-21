@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.security;
+package org.openhab.binding.mideaac.internal.dto;
 
 import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
@@ -28,6 +28,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.security.Security;
+import org.openhab.binding.mideaac.internal.security.TokenKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +48,6 @@ import com.google.gson.JsonObject;
  */
 public class CloudDTO {
     private final Logger logger = LoggerFactory.getLogger(CloudDTO.class);
-
-    @SuppressWarnings("unused")
-    private static final Gson GSON = new Gson();
 
     private static final int CLIENT_TYPE = 1; // Android
     private static final int FORMAT = 2; // JSON
@@ -69,7 +68,7 @@ public class CloudDTO {
         return tokenRequestedAt;
     }
 
-    private @Nullable HttpClient httpClient;
+    private HttpClient httpClient;
 
     /**
      * Client for Http requests
@@ -104,11 +103,11 @@ public class CloudDTO {
 
     private String loginAccount;
     private String password;
-    private CloudProvider cloudProvider;
+    private CloudProviderDTO cloudProvider;
     private Security security;
 
     private @Nullable String loginId;
-    private @Nullable String sessionId;
+    private String sessionId;
 
     /**
      * Parameters for Cloud Provider
@@ -117,7 +116,7 @@ public class CloudDTO {
      * @param password password
      * @param cloudProvider Cloud Provider
      */
-    public CloudDTO(String email, String password, CloudProvider cloudProvider) {
+    public CloudDTO(String email, String password, CloudProviderDTO cloudProvider) {
         this.loginAccount = email;
         this.password = password;
         this.cloudProvider = cloudProvider;
@@ -128,7 +127,6 @@ public class CloudDTO {
     /**
      * Set up the initial data payload with the global variable set
      */
-    @SuppressWarnings("null")
     private JsonObject apiRequest(String endpoint, JsonObject args, JsonObject data) {
         if (data == null) {
             data = new JsonObject();
@@ -213,7 +211,7 @@ public class CloudDTO {
 
         if (cr != null) {
             logger.debug("Response json: {}", cr.getContentAsString());
-            JsonObject result = new Gson().fromJson(cr.getContentAsString(), JsonObject.class);
+            JsonObject result = Objects.requireNonNull(new Gson().fromJson(cr.getContentAsString(), JsonObject.class));
 
             int code = -1;
 
@@ -253,7 +251,6 @@ public class CloudDTO {
      * 
      * @return true or false
      */
-    @SuppressWarnings("null")
     public boolean login() {
         if (loginId == null) {
             if (!getLoginId()) {
@@ -309,7 +306,6 @@ public class CloudDTO {
 
             accessToken = response.get("accessToken").getAsString();
             sessionId = response.get("sessionId").getAsString();
-
         }
 
         return true;

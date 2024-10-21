@@ -17,8 +17,8 @@ import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.SUPPO
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.mideaac.internal.dto.CloudsDTO;
 import org.openhab.binding.mideaac.internal.handler.MideaACHandler;
-import org.openhab.binding.mideaac.internal.security.Clouds;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -42,7 +42,7 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
 
     private UnitProvider unitProvider;
     private final HttpClient httpClient;
-    private final Clouds clouds;
+    private final CloudsDTO clouds;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -59,7 +59,7 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
     public MideaACHandlerFactory(@Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
         this.unitProvider = unitProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        clouds = new Clouds();
+        clouds = new CloudsDTO();
     }
 
     @Override

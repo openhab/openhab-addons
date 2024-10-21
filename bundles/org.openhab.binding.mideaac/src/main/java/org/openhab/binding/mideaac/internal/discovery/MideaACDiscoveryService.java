@@ -30,8 +30,8 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 import org.openhab.binding.mideaac.internal.handler.CommandBase;
-import org.openhab.binding.mideaac.internal.security.CloudProvider;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -64,19 +64,32 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     @Nullable
     private DatagramSocket discoverSocket;
 
-    @SuppressWarnings("unused")
-    private boolean fullDiscovery = false;
     @Nullable
     DiscoveryHandler discoveryHandler;
 
     private Security security;
+
+    private Map<String, Object> initializeProperties() {
+        final Map<String, Object> properties = new TreeMap<>();
+        properties.put(CONFIG_IP_ADDRESS, "");
+        properties.put(CONFIG_IP_PORT, "0");
+        properties.put(CONFIG_DEVICEID, "");
+        properties.put(CONFIG_POLLING_TIME, 60);
+        properties.put(CONFIG_CONNECTING_TIMEOUT, 4);
+        properties.put(CONFIG_PROMPT_TONE, false);
+        properties.put(PROPERTY_VERSION, "");
+        properties.put(PROPERTY_SN, "");
+        properties.put(PROPERTY_SSID, "");
+        properties.put(PROPERTY_TYPE, "");
+        return properties;
+    }
 
     /**
      * Discovery Service
      */
     public MideaACDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, discoveryTimeoutSeconds, false);
-        this.security = new Security(CloudProvider.getCloudProvider(""));
+        this.security = new Security(CloudProviderDTO.getCloudProvider(""));
     }
 
     @Override
@@ -169,7 +182,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * @throws IOException
      */
     private void startDiscoverSocket() throws SocketException, IOException {
-        fullDiscovery = true;
         startDiscoverSocket("255.255.255.255", null);
     }
 
@@ -181,12 +193,12 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      * @throws SocketException Socket Exception
      * @throws IOException IO Exception
      */
-    @SuppressWarnings("null")
     public void startDiscoverSocket(String ipAddress, @Nullable DiscoveryHandler discoveryHandler)
             throws SocketException, IOException {
         logger.trace("Discovering: {}", ipAddress);
         this.discoveryHandler = discoveryHandler;
         discoverSocket = new DatagramSocket(new InetSocketAddress(Connection.MIDEAAC_RECEIVE_PORT));
+        DatagramSocket discoverSocket = this.discoverSocket;
         discoverSocket.setBroadcast(true);
         discoverSocket.setSoTimeout(udpPacketTimeout);
         final InetAddress broadcast = InetAddress.getByName(ipAddress);
@@ -344,13 +356,10 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      */
     private Map<String, Object> collectProperties(String ipAddress, String version, String id, String port, String sn,
             String ssid, String type) {
-        final Map<String, Object> properties = new TreeMap<>();
+        Map<String, Object> properties = initializeProperties();
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
-        properties.put(CONFIG_POLLING_TIME, 60);
-        properties.put(CONFIG_CONNECTING_TIMEOUT, 4);
-        properties.put(CONFIG_PROMPT_TONE, false);
         properties.put(PROPERTY_VERSION, version);
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);

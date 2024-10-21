@@ -23,9 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -38,10 +36,10 @@ import javax.crypto.spec.SecretKeySpec;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -58,14 +56,14 @@ public class Security {
     private Logger logger = LoggerFactory.getLogger(Security.class);
     private IvParameterSpec iv = new IvParameterSpec(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
-    CloudProvider cloudProvider;
+    CloudProviderDTO cloudProvider;
 
     /**
      * Set Cloud Provider
      * 
      * @param cloudProvider Name of Cloud provider
      */
-    public Security(CloudProvider cloudProvider) {
+    public Security(CloudProviderDTO cloudProvider) {
         this.cloudProvider = cloudProvider;
     }
 
@@ -500,10 +498,6 @@ public class Security {
         String path;
         try {
             path = new URI(url).getPath();
-
-            @SuppressWarnings("unused")
-            Stream<Map.Entry<String, JsonElement>> sorted = payload.entrySet().stream()
-                    .sorted((Map.Entry.comparingByKey()));
 
             String query = Utils.getQueryString(payload);
 

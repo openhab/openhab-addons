@@ -14,6 +14,7 @@ package org.openhab.binding.mideaac.internal.handler;
 
 import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -37,13 +39,13 @@ import org.openhab.binding.mideaac.internal.MideaACConfiguration;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.discovery.DiscoveryHandler;
 import org.openhab.binding.mideaac.internal.discovery.MideaACDiscoveryService;
+import org.openhab.binding.mideaac.internal.dto.CloudDTO;
+import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
+import org.openhab.binding.mideaac.internal.dto.CloudsDTO;
 import org.openhab.binding.mideaac.internal.handler.CommandBase.FanSpeed;
 import org.openhab.binding.mideaac.internal.handler.CommandBase.OperationalMode;
 import org.openhab.binding.mideaac.internal.handler.CommandBase.SwingMode;
 import org.openhab.binding.mideaac.internal.handler.Timer.TimeParser;
-import org.openhab.binding.mideaac.internal.security.CloudDTO;
-import org.openhab.binding.mideaac.internal.security.CloudProvider;
-import org.openhab.binding.mideaac.internal.security.Clouds;
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.Security.MsgType;
@@ -83,8 +85,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
 
-    private @Nullable MideaACConfiguration config;
-    private @Nullable Map<String, String> properties;
+    private MideaACConfiguration config = new MideaACConfiguration();
+    private Map<String, String> properties = new HashMap<>();
 
     // Initialize variables to allow the @NonNullByDefault check
     private String ipAddress = "";
@@ -95,7 +97,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     /**
      * Create new nonnull cloud provider to start
      */
-    public CloudProvider cloudProvider = new CloudProvider("", "", "", "", "", "", "", "");
+    public CloudProviderDTO cloudProvider = new CloudProviderDTO("", "", "", "", "", "", "", "");
     private Security security = new Security(cloudProvider);
 
     /**
@@ -103,7 +105,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @return cloud Provider
      */
-    public CloudProvider getCloudProvider() {
+    public CloudProviderDTO getCloudProvider() {
         return cloudProvider;
     }
 
@@ -112,7 +114,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @return security
      */
-    public @Nullable Security getSecurity() {
+    public Security getSecurity() {
         return security;
     }
 
@@ -153,7 +155,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private static final StringType SWING_MODE_VERTICAL = new StringType("VERTICAL");
     private static final StringType SWING_MODE_HORIZONTAL = new StringType("HORIZONTAL");
     private static final StringType SWING_MODE_BOTH = new StringType("BOTH");
-    private Clouds clouds;
+    private CloudsDTO clouds;
 
     private ConnectionManager connectionManager;
 
@@ -192,7 +194,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * @param httpClient http Client
      * @param clouds cloud
      */
-    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, Clouds clouds) {
+    public MideaACHandler(Thing thing, UnitProvider unitProvider, HttpClient httpClient, CloudsDTO clouds) {
         super(thing);
         this.thing = thing;
         this.systemOfUnits = unitProvider.getMeasurementSystem();
@@ -206,7 +208,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @return clouds
      */
-    public Clouds getClouds() {
+    public CloudsDTO getClouds() {
         return clouds;
     }
 
@@ -338,7 +340,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @param command Target Temperature
      */
-    @SuppressWarnings("null")
     public void handleTargetTemperature(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
 
@@ -356,8 +357,13 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 if (unit.equals(SIUnits.CELSIUS)) {
                     commandSet.setTargetTemperature(convertTargetCelsiusTemperatureToInRange(quantity.floatValue()));
                 } else {
-                    commandSet.setTargetTemperature(
-                            convertTargetCelsiusTemperatureToInRange(quantity.toUnit(SIUnits.CELSIUS).floatValue()));
+                    QuantityType<?> celsiusQuantity = quantity.toUnit(SIUnits.CELSIUS);
+                    if (celsiusQuantity != null) {
+                        commandSet.setTargetTemperature(
+                                convertTargetCelsiusTemperatureToInRange(celsiusQuantity.floatValue()));
+                    } else {
+                        logger.warn("Failed to convert quantity to Celsius unit.");
+                    }
                 }
 
                 getConnectionManager().sendCommandAndMonitor(commandSet);
@@ -666,7 +672,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * commands, disconnects the socket and stops the connection monitor (if these were
      * running)
      */
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         connectionManager.disconnect();
@@ -675,9 +680,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         connectionManager.updateChannel(DROPPED_COMMANDS, new DecimalType(connectionManager.getDroppedCommands()));
 
         config = getConfigAs(MideaACConfiguration.class);
-        properties = editProperties();
 
-        setCloudProvider(CloudProvider.getCloudProvider(config.cloud));
+        setCloudProvider(CloudProviderDTO.getCloudProvider(config.cloud));
         setSecurity(new Security(cloudProvider));
 
         logger.debug("MideaACHandler config for {} is {}", thing.getUID(), config);
@@ -721,7 +725,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         connectionManager.connect();
     }
 
-    @SuppressWarnings("null")
     @Override
     public void discovered(DiscoveryResult discoveryResult) {
         logger.debug("Discovered {}", thing.getUID());
@@ -856,7 +859,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * 
      * @param cloudProvider Cloud Provider
      */
-    public void setCloudProvider(CloudProvider cloudProvider) {
+    public void setCloudProvider(CloudProviderDTO cloudProvider) {
         this.cloudProvider = cloudProvider;
     }
 
@@ -885,9 +888,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         private boolean deviceIsConnected;
         private int droppedCommands = 0;
 
-        private @Nullable Socket socket;
-        private @Nullable InputStream inputStream;
-        private @Nullable DataOutputStream writer;
+        private Socket socket = new Socket();
+        private InputStream inputStream = new ByteArrayInputStream(new byte[0]);
+        private DataOutputStream writer = new DataOutputStream(System.out);
 
         private @Nullable ScheduledFuture<?> connectionMonitorJob;
 
@@ -960,7 +963,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * The device is considered connected. V2 devices will proceed to send the poll or the
          * set command. V3 devices will proceed to authenticate
          */
-        @SuppressWarnings("null")
         protected synchronized void connect() {
             logger.trace("Connecting to {} at {}:{}", thing.getUID(), ipAddress, ipPort);
 
@@ -968,10 +970,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             try {
                 socket = new Socket();
                 socket.setSoTimeout(config.timeout * 1000);
-                if (ipPort != null) {
-                    int port = Integer.parseInt(ipPort);
-                    socket.connect(new InetSocketAddress(ipAddress, port), config.timeout * 1000);
-                }
+                int port = Integer.parseInt(ipPort);
+                socket.connect(new InetSocketAddress(ipAddress, port), config.timeout * 1000);
             } catch (IOException e) {
                 logger.debug("IOException connecting to  {} at {}: {}", thing.getUID(), ipAddress, e.getMessage());
                 String message = e.getMessage();
@@ -1019,7 +1019,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * key and token (and goes offline if any are missing). It will retrieve the
          * missing key and/or token if the account email and password are provided.
          */
-        @SuppressWarnings("null")
         public void authenticate() {
             logger.trace("Version: {}", getVersion());
             logger.trace("Key: {}", config.key);
@@ -1033,7 +1032,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "Retrieving Token and/or Key from cloud.");
                     logger.info("Retrieving Token and/or Key from cloud");
-                    CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
+                    CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(config.cloud);
                     getTokenKeyCloud(cloudProvider);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -1044,26 +1043,28 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             }
         }
 
-        @SuppressWarnings("null")
-        private void getTokenKeyCloud(CloudProvider cloudProvider) {
+        private void getTokenKeyCloud(CloudProviderDTO cloudProvider) {
             CloudDTO cloud = mideaACHandler.getClouds().get(config.email, config.password, cloudProvider);
-            cloud.setHttpClient(httpClient);
-            if (cloud.login()) {
-                TokenKey tk = cloud.getToken(config.deviceId);
-                Configuration configuration = editConfiguration();
+            if (cloud != null) {
+                cloud.setHttpClient(httpClient);
+                if (cloud.login()) {
+                    TokenKey tk = cloud.getToken(config.deviceId);
+                    Configuration configuration = editConfiguration();
 
-                configuration.put(CONFIG_TOKEN, tk.token());
-                configuration.put(CONFIG_KEY, tk.key());
-                updateConfiguration(configuration);
+                    configuration.put(CONFIG_TOKEN, tk.token());
+                    configuration.put(CONFIG_KEY, tk.key());
+                    updateConfiguration(configuration);
 
-                logger.trace("Token: {}", tk.token());
-                logger.trace("Key: {}", tk.key());
-                logger.info("Token and Key obtained from cloud, saving, initializing");
-                initialize();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        String.format("Can't retrieve Token and Key from Cloud (%s).", cloud.getErrMsg()));
-                logger.warn("Can't retrieve Token and Key from Cloud ({})", cloud.getErrMsg());
+                    logger.trace("Token: {}", tk.token());
+                    logger.trace("Key: {}", tk.key());
+                    logger.info("Token and Key obtained from cloud, saving, initializing");
+                    initialize();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                            "Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error"));
+                    logger.warn(
+                            "Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error");
+                }
             }
         }
 
@@ -1073,7 +1074,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * Suspect that the socket write and read streams need a moment to clear
          * as they will be reused in the SendCommand method
          */
-        @SuppressWarnings("null")
         private void doAuthentication() {
             byte[] request = mideaACHandler.getSecurity().encode8370(Utils.hexStringToByteArray(config.token),
                     MsgType.MSGTYPE_HANDSHAKE_REQUEST);
@@ -1165,7 +1165,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * 
          * @param command either the set or polling command
          */
-        @SuppressWarnings("null")
         public void sendCommand(CommandBase command) {
             if (command instanceof CommandSet) {
                 ((CommandSet) command).setPromptTone(config.promptTone);
@@ -1342,15 +1341,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             DataOutputStream writer = this.writer;
             Socket socket = this.socket;
             try {
-                if (writer != null) {
-                    writer.close();
-                }
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (socket != null) {
-                    socket.close();
-                }
+                writer.close();
+                inputStream.close();
+                socket.close();
+
             } catch (IOException e) {
                 logger.warn("IOException closing connection to {} at {}: {}", thing.getUID(), ipAddress, e.getMessage(),
                         e);
@@ -1370,8 +1364,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             }
         }
 
-        @SuppressWarnings("null")
-        private void processMessage(@Nullable Response response) {
+        private void processMessage(Response response) {
             updateChannel(CHANNEL_POWER, response.getPowerState() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_APPLIANCE_ERROR, response.getApplianceError() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_TARGET_TEMPERATURE,
@@ -1404,10 +1397,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         public synchronized byte @Nullable [] read() {
             byte[] bytes = new byte[512];
             InputStream inputStream = this.inputStream;
-            if (inputStream == null) {
-                logger.debug("No bytes to read");
-                return null;
-            }
+
             try {
                 int len = inputStream.read(bytes);
                 if (len > 0) {
@@ -1430,10 +1420,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          */
         public synchronized void write(byte[] buffer) throws IOException {
             DataOutputStream writer = this.writer;
-            if (writer == null) {
-                logger.warn("Writer for {} is null when trying to write to {}!!!", thing.getUID(), ipAddress);
-                return;
-            }
 
             try {
                 writer.write(buffer, 0, buffer.length);
@@ -1446,9 +1432,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         /**
          * Periodical polling. Thirty seconds minimum
          */
-        @SuppressWarnings("null")
         private void scheduleConnectionMonitorJob() {
-            ScheduledFuture<?> connectionMonitorJob = this.connectionMonitorJob;
             if (connectionMonitorJob == null) {
                 logger.debug("Starting connection monitor job in {} seconds for {} at {} after 30 second delay",
                         config.pollingTime, thing.getUID(), ipAddress);
@@ -1460,10 +1444,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
 
         private void cancelConnectionMonitorJob() {
-            ScheduledFuture<?> connectionMonitorJob = this.connectionMonitorJob;
             if (connectionMonitorJob != null) {
-                logger.debug("Cancelling connection monitor job for {} at {}", thing.getUID(), ipAddress);
                 connectionMonitorJob.cancel(true);
+                logger.debug("Cancelling connection monitor job for {} at {}", thing.getUID(), ipAddress);
                 connectionMonitorJob = null;
             }
         }

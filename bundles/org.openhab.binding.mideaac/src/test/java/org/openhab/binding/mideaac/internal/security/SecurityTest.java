@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -24,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 
 /**
  * The {@link SecurityTest} decodes the AES encrypted byte array portion
@@ -34,17 +36,15 @@ import org.openhab.binding.mideaac.internal.Utils;
 @NonNullByDefault
 public class SecurityTest {
 
-    @SuppressWarnings("null")
-    private CloudProvider cloudProvider = mock(CloudProvider.class);;
+    private CloudProviderDTO cloudProvider = Objects.requireNonNull(mock(CloudProviderDTO.class));
     private Security security = new Security(cloudProvider);
 
     /**
      * Set up Security Test
      */
-    @SuppressWarnings("null")
     @BeforeEach
     public void setUp() {
-        cloudProvider = mock(CloudProvider.class);
+        cloudProvider = Objects.requireNonNull(mock(CloudProviderDTO.class));
         security = new Security(cloudProvider);
     }
 

@@ -13,7 +13,7 @@
 package org.openhab.binding.mideaac.internal.handler;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mideaac.internal.Utils;
@@ -37,7 +37,6 @@ public class Packet {
      * @param deviceId the device ID
      * @param mideaACHandler the MideaACHandler class
      */
-    @SuppressWarnings("deprecation")
     public Packet(CommandBase command, String deviceId, MideaACHandler mideaACHandler) {
         this.command = command;
         this.mideaACHandler = mideaACHandler;
@@ -60,10 +59,10 @@ public class Packet {
                 // 14 bytes
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-        Date d = new Date();
-        byte[] datetimeBytes = { (byte) (d.getYear() / 100), (byte) (d.getYear() % 100), (byte) d.getMonth(),
-                (byte) d.getDate(), (byte) d.getHours(), (byte) d.getMinutes(), (byte) d.getSeconds(),
-                (byte) d.getTime() };
+        LocalDateTime now = LocalDateTime.now();
+        byte[] datetimeBytes = { (byte) (now.getYear() / 100), (byte) (now.getYear() % 100), (byte) now.getMonthValue(),
+                (byte) now.getDayOfMonth(), (byte) now.getHour(), (byte) now.getMinute(), (byte) now.getSecond(),
+                (byte) System.currentTimeMillis() };
 
         System.arraycopy(datetimeBytes, 0, packet, 12, 8);
 
@@ -75,7 +74,6 @@ public class Packet {
     /**
      * Final composure of the byte array with the encrypted command
      */
-    @SuppressWarnings("null")
     public void compose() {
         command.compose();
 

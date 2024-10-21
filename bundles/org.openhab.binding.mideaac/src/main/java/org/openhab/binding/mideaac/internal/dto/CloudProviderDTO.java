@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.security;
+package org.openhab.binding.mideaac.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
-public class CloudProvider {
+public class CloudProviderDTO {
 
     private String name;
     private String appkey;
@@ -118,7 +118,7 @@ public class CloudProvider {
      * @param hmackey hmac key - MSmarthome only
      * @param proxied proxy - MSmarthome only
      */
-    public CloudProvider(String name, String appkey, String appid, String apiurl, String signkey, String iotkey,
+    public CloudProviderDTO(String name, String appkey, String appid, String apiurl, String signkey, String iotkey,
             String hmackey, String proxied) {
         super();
         this.name = name;
@@ -139,19 +139,19 @@ public class CloudProvider {
      * @param name Cloud provider
      * @return Cloud provider information
      */
-    public static CloudProvider getCloudProvider(String name) {
+    public static CloudProviderDTO getCloudProvider(String name) {
         switch (name) {
             case "NetHome Plus":
-                return new CloudProvider("NetHome Plus", "3742e9e5842d4ad59c2db887e12449f9", "1017",
+                return new CloudProviderDTO("NetHome Plus", "3742e9e5842d4ad59c2db887e12449f9", "1017",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             case "Midea Air":
-                return new CloudProvider("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
+                return new CloudProviderDTO("Midea Air", "ff0cf6f5f0c3471de36341cab3f7a9af", "1117",
                         "https://mapp.appsmb.com", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
             case "MSmartHome":
-                return new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
+                return new CloudProviderDTO("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "1010",
                         "https://mp-prod.appsmb.com/mas/v5/app/proxy?alias=", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S",
                         "meicloud", "PROD_VnoClJI9aikS8dyy", "v5");
         }
-        return new CloudProvider("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
+        return new CloudProviderDTO("", "", "", "", "xhdiwjnchekd4d512chdjx5d8e4c394D2D7S", "", "", "");
     }
 }

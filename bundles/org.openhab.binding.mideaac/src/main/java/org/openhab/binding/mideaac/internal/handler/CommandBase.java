@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.mideaac.internal.handler;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mideaac.internal.Utils;
@@ -245,7 +245,6 @@ public class CommandBase {
     /**
      * Byte Array structure for Base commands
      */
-    @SuppressWarnings("deprecation")
     public CommandBase() {
         data = new byte[] { (byte) 0xaa,
                 // request is 0x20; setting is 0x23
@@ -273,8 +272,8 @@ public class CommandBase {
                 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 // Message ID
                 0x00 };
-        Date d = new Date();
-        data[data.length - 1] = (byte) d.getSeconds();
+        LocalDateTime now = LocalDateTime.now();
+        data[data.length - 1] = (byte) now.getSecond();
         data[0x02] = (byte) 0xAC;
     }
 

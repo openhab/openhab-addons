@@ -4,11 +4,11 @@ This binding integrates Air Conditioners that use the Midea protocol. Midea is a
 
 An AC device is likely supported if it uses one of the following Android apps or it's iOS equivalent.
 
-| Application                                  | Comment                               |
-|-:--------------------------------------------|-:-------------------------------------|
-| Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates |
-| NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates |
-| SmartHome/MSmartHome (com.midea.ai.overseas) | Full Support of key and token updates |
+| Application                                  | Comment                               | Options      |
+|--:-------------------------------------------|--:------------------------------------|--------------|
+| Midea Air (com.midea.aircondition.obm)       | Full Support of key and token updates | Midea Air    |
+| NetHome Plus (com.midea.aircondition)        | Full Support of key and token updates | NetHome Plus |
+| SmartHome/MSmartHome (com.midea.ai.overseas) | Full Support of key and token updates | MSmartHome   |
 
 Note: The Air Conditioner must already be set-up on the WiFi network and have a fixed IP Address with one of the three apps listed above for full discovery and key and token updates.
 
@@ -28,20 +28,21 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter   | Required ?       | Comment                                                           | Default |
-|--:----------|--:---------------|--:----------------------------------------------------------------|---------|
-| ipAddress   | Required         | IP Address of the device.                                         |         |
-| ipPort      | Required         | IP port of the device                                             | 6444    |
-| deviceId    | Required         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
-| cloud       | Required for V.3 | Cloud Provider name for email and password                        |         |
-| email       | Optional         | Email for cloud account chosen in Cloud Provider.                 |         |
-| password    | Optional         | Password for cloud account chosen in Cloud Provider.              |         |
-| token       | Required for V.3 | Secret Token (length 128 HEX)                                     |         |
-| key         | Required for V.3 | Secret Key (length 64 HEX)                                        |         |
-| pollingTime | Required         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
-| timeout     | Required         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
-| promptTone  | Optional         | "Ding" tone when command is received and executed.                | False   |
-| version     | Required         | Version 3 has tokey, key and cloud requirements.                  | 3       |
+| Parameter   | Required ?  | Comment                                                           | Default |
+|--:----------|--:----------|--:----------------------------------------------------------------|---------|
+| ipAddress   | Yes         | IP Address of the device.                                         |         |
+| ipPort      | Yes         | IP port of the device                                             | 6444    |
+| deviceId    | Yes         | ID of the device. Leave 0 to do ID discovery (length 6 bytes).    | 0       |
+| cloud       | Yes for V.3 | Cloud Provider name for email and password                        |         |
+| email       | No          | Email for cloud account chosen in Cloud Provider.                 |         |
+| password    | No          | Password for cloud account chosen in Cloud Provider.              |         |
+| token       | Yes for V.3 | Secret Token (length 128 HEX)                                     |         |
+| key         | Yes for V.3 | Secret Key (length 64 HEX)                                        |         |
+| pollingTime | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
+| timeout     | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
+| promptTone  | No          | "Ding" tone when command is received and executed.                | False   |
+| version     | Yes         | Version 3 has tokey, key and cloud requirements.                  | 3       |
+
 
 ## Channels
 
@@ -71,10 +72,16 @@ Following channels are available:
 
 ## Examples
 
-### Demo Thing
+### Demo Things
 
 ```java
-Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="NetHome Plus",email="yourclouduser@email.com", password="cloudpassword", token="token", key ="key", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
+```
+
+Option to use the built-in binding discovery of ipPort, deviceId, token and key.
+
+```java
+Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
 ```
 
 ### Demo Items

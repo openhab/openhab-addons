@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mideaac.internal.security;
+package org.openhab.binding.mideaac.internal.dto;
 
 import java.util.HashMap;
 
@@ -24,18 +24,18 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
-public class Clouds {
+public class CloudsDTO {
 
     private final HashMap<Integer, CloudDTO> clouds;
 
     /**
      * Cloud Provider data
      */
-    public Clouds() {
+    public CloudsDTO() {
         clouds = new HashMap<Integer, CloudDTO>();
     }
 
-    private CloudDTO add(String email, String password, CloudProvider cloudProvider) {
+    private CloudDTO add(String email, String password, CloudProviderDTO cloudProvider) {
         int hash = (email + password + cloudProvider.getName()).hashCode();
         CloudDTO cloud = new CloudDTO(email, password, cloudProvider);
         clouds.put(hash, cloud);
@@ -50,7 +50,7 @@ public class Clouds {
      * @param cloudProvider your Cloud Provider
      * @return parameters for cloud provider
      */
-    public @Nullable CloudDTO get(String email, String password, CloudProvider cloudProvider) {
+    public @Nullable CloudDTO get(String email, String password, CloudProviderDTO cloudProvider) {
         int hash = (email + password + cloudProvider.getName()).hashCode();
         if (clouds.containsKey(hash)) {
             return clouds.get(hash);
