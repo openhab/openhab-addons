@@ -62,6 +62,8 @@ public class AwattarApi {
 
     private Gson gson;
 
+    private String country;
+
     /**
      * Generic exception for the aWATTar API.
      */
@@ -82,6 +84,7 @@ public class AwattarApi {
     public AwattarApi(HttpClient httpClient, ZoneId zone, AwattarBridgeConfiguration config) {
         this.zone = zone;
         this.httpClient = httpClient;
+        this.country = config.country;
 
         this.gson = new Gson();
 
@@ -141,6 +144,18 @@ public class AwattarApi {
                     double netMarket = d.marketprice / 10.0;
                     double grossMarket = netMarket * vatFactor;
                     double netTotal = netMarket + basePrice;
+
+                    // in Austria the fee is added as absolute value
+                    if ("AT".equals(country)) {
+                        // add 3% absolute fee for the aWATTar service (Ausgleichskomponente)
+                        netTotal += Math.abs(netTotal) * 0.03;
+                    } else if ("DE".equals(country)) {
+                        // add 3% fee for the aWATTar service (Ausgleichskomponente)
+                        netTotal = netTotal * 1.03;
+                    }
+
+                    netTotal = netTotal + 1.5; // add 1.5 €/MWh for aWATTar service (Beschaffungskomponente)
+
                     double grossTotal = netTotal * vatFactor;
 
                     result.add(new AwattarPrice(netMarket, grossMarket, netTotal, grossTotal,
