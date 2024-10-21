@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panamaxfurman"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<thing-type id="powerconditioner">
+		<label>Panamax/Furman Power Conditioner</label>
+		<description>Binding for Panamax/Furman power conditioners which have the BlueBOLT-CV1 or BlueBOLT-CV2 interface card
+			installed.</description>
+
+		<channel-groups>
+			<channel-group typeId="outletControls" id="outlet-1">
+				<label>Outlet 1</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-2">
+				<label>Outlet 2</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-3">
+				<label>Outlet 3</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-4">
+				<label>Outlet 4</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-5">
+				<label>Outlet 5</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-6">
+				<label>Outlet 6</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-7">
+				<label>Outlet 7</label>
+			</channel-group>
+			<channel-group typeId="outletControls" id="outlet-8">
+				<label>Outlet 8</label>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="model-name">unknown</property>
+			<property name="brand-name">unknown</property>
+			<property name="firmware-version">unknown</property>
+		</properties>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>The IP address of the Panamax/Furman Power Conditioner to control.</description>
+			</parameter>
+			<parameter name="telnetPort" type="integer" required="true">
+				<context>port</context>
+				<label>Telnet Port</label>
+				<description>Telnet port used for Panamax/Furman Power Conditioner communication. Normally shouldn't be changed.</description>
+				<default>23</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="outletControls">
+		<label>Outlet Controls</label>
+		<channels>
+			<channel id="power" typeId="power-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="power-channel">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Power ON/OFF the Outlet</description>
+	</channel-type>
+
+</thing:thing-descriptions>
