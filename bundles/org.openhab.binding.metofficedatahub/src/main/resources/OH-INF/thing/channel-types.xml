@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="metofficedatahub"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Groups for MetOfficeDataHub Binding - Site API -->
+	<channel-group-type id="site-hr-forecast-grp">
+		<label>Hourly Forecast</label>
+		<description>Site Specific Location weather forecast - Hourly basis</description>
+		<channels>
+			<channel id="forecast-ts" typeId="time-type"/>
+			<channel id="air-temp-current" typeId="air-temp-current-type"/>
+			<channel id="air-temp-min" typeId="air-temp-min-type"/>
+			<channel id="air-temp-max" typeId="air-temp-max-type"/>
+			<channel id="feels-like" typeId="feels-like-type"/>
+			<channel id="humidity" typeId="humidity-type"/>
+			<channel id="visibility" typeId="visibility-type"/>
+			<channel id="precip-prob" typeId="precip-prob-type"/>
+			<channel id="precip-rate" typeId="precip-rate-type"/>
+			<channel id="precip-total" typeId="precip-total-type"/>
+			<channel id="snow-total" typeId="snow-total-type"/>
+			<channel id="uv-index" typeId="uv-index-type"/>
+			<channel id="pressure" typeId="pressure-type"/>
+			<channel id="wind-speed" typeId="wind-speed-type"/>
+			<channel id="wind-speed-gust" typeId="wind-speed-gust-type"/>
+			<channel id="wind-gust-max" typeId="wind-gust-max-type"/>
+			<channel id="wind-direction" typeId="wind-direction-type"/>
+			<channel id="dewpoint" typeId="dewpoint-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="site-daily-forecast-grp">
+		<label>Daily Forecast</label>
+		<description>Site Specific Location weather forecast - Daily basis</description>
+		<channels>
+			<channel id="forecast-ts" typeId="time-type"/>
+			<channel id="wind-speed-day" typeId="wind-speed-day-type"/>
+			<channel id="wind-speed-night" typeId="wind-speed-night-type"/>
+			<channel id="wind-direction-day" typeId="wind-direction-day-type"/>
+			<channel id="wind-direction-night" typeId="wind-direction-night-type"/>
+			<channel id="wind-gust-day" typeId="wind-gust-day-type"/>
+			<channel id="wind-gust-night" typeId="wind-gust-night-type"/>
+			<channel id="visibility-day" typeId="visibility-day-type"/>
+			<channel id="visibility-night" typeId="visibility-night-type"/>
+			<channel id="humidity-day" typeId="humidity-day-type"/>
+			<channel id="humidity-night" typeId="humidity-night-type"/>
+			<channel id="pressure-day" typeId="pressure-day-type"/>
+			<channel id="pressure-night" typeId="pressure-night-type"/>
+			<channel id="uv-max" typeId="uv-max-type"/>
+			<channel id="temp-max-ub-day" typeId="temp-max-ub-day-type"/>
+			<channel id="temp-min-ub-night" typeId="temp-min-ub-night-type"/>
+			<channel id="temp-max-lb-day" typeId="temp-max-lb-day-type"/>
+			<channel id="temp-min-lb-night" typeId="temp-min-lb-night-type"/>
+			<channel id="feels-like-max-day" typeId="feels-like-max-day-type"/>
+			<channel id="feels-like-min-night" typeId="feels-like-min-night-type"/>
+			<channel id="temp-max-day" typeId="temp-max-day-type"/>
+			<channel id="temp-min-night" typeId="temp-min-night-type"/>
+			<channel id="feels-like-max-ub-day" typeId="feels-like-max-ub-day-type"/>
+			<channel id="feels-like-min-ub-night" typeId="feels-like-min-ub-night-type"/>
+			<channel id="feels-like-max-lb-day" typeId="feels-like-max-lb-day-type"/>
+			<channel id="feels-like-min-lb-night" typeId="feels-like-min-lb-night-type"/>
+			<channel id="precip-prob-day" typeId="precip-prob-day-type"/>
+			<channel id="precip-prob-night" typeId="precip-prob-night-type"/>
+			<channel id="snow-prob-day" typeId="snow-prob-day-type"/>
+			<channel id="snow-prob-night" typeId="snow-prob-night-type"/>
+			<channel id="heavy-snow-prob-day" typeId="heavy-snow-prob-day-type"/>
+			<channel id="heavy-snow-prob-night" typeId="heavy-snow-prob-night-type"/>
+			<channel id="rain-prob-day" typeId="rain-prob-day-type"/>
+			<channel id="rain-prob-night" typeId="rain-prob-night-type"/>
+			<channel id="day-prob-heavy-rain" typeId="day-prob-heavy-rain-type"/>
+			<channel id="night-prob-heavy-rain" typeId="night-prob-heavy-rain-type"/>
+			<channel id="hail-prob-day" typeId="hail-prob-day-type"/>
+			<channel id="hail-prob-night" typeId="hail-prob-night-type"/>
+			<channel id="sferics-prob-day" typeId="sferics-prob-day-type"/>
+			<channel id="sferics-prob-night" typeId="sferics-prob-night-type"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channels for MetOfficeDataHub Binding - Hourly Forecast -->
+	<channel-type id="loc-name-type">
+		<item-type>String</item-type>
+		<label>Location Name</label>
+		<description>Name of location represented</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time-type">
+		<item-type>DateTime</item-type>
+		<label>Forecast Time Start</label>
+		<description>Time of forecast time window start</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="air-temp-current-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Air Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="air-temp-min-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Min. Temperature</label>
+		<description>Minimum Screen Air Temperature Over Previous Hour</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="air-temp-max-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Max. Temperature</label>
+		<description>Maximum Screen Air Temperature Over Previous Hour</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Feels Like Temperature</label>
+		<description>Feels Like Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Humidity</label>
+		<description>Screen Relative Humidity</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="visibility-type">
+		<item-type>Number:Length</item-type>
+		<label>Visibility</label>
+		<description>Visibility</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="precip-prob-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Precip. Probability</label>
+		<description>Probability of Precipitation</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="precip-rate-type">
+		<item-type>Number:Speed</item-type>
+		<label>Precipitation Rate</label>
+		<description>Precipitation Rate</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.4f %unit%"/>
+	</channel-type>
+
+	<channel-type id="precip-total-type">
+		<item-type>Number:Length</item-type>
+		<label>Previous Hour Precip.</label>
+		<description>Total Precipitation Amount Over Previous Hour</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.4f %unit%"/>
+	</channel-type>
+
+	<channel-type id="snow-total-type">
+		<item-type>Number:Length</item-type>
+		<label>Previous Hour Snowfall</label>
+		<description>Total Snowfall Amount Over Previous Hour</description>
+		<category>Snow</category>
+		<state readOnly="true" pattern="%.4f %unit%"/>
+	</channel-type>
+
+	<channel-type id="uv-index-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>UV Index</label>
+		<description>UV Index</description>
+		<category>Sun</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="pressure-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<description>Mean Sea Level Pressure</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-speed-type">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Speed</label>
+		<description>10m Wind Speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-speed-gust-type">
+		<item-type>Number:Speed</item-type>
+		<label>Wind Gust</label>
+		<description>10m Wind Gust Speed</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-max-type">
+		<item-type>Number:Speed</item-type>
+		<label>Max Wind Gust Prev.Hr</label>
+		<description>Maximum 10m Wind Gust Speed of Previous Hour</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dewpoint-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point</label>
+		<description>Dew Point Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-direction-type">
+		<item-type>Number:Angle</item-type>
+		<label>Wind From</label>
+		<description>10m Wind From Direction</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<!-- Channels for MetOfficeDataHub Binding - Daily Forecast -->
+	<channel-type id="wind-speed-day-type">
+		<item-type>Number:Speed</item-type>
+		<label>Midday Wind Speed</label>
+		<description>10m Wind Speed at Local Midday - Mean wind speed is equivalent to the mean speed observed over the 10
+			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-speed-night-type">
+		<item-type>Number:Speed</item-type>
+		<label>Midnight Wind Speed</label>
+		<description>10m Wind Speed at Local Midnight - Mean wind speed is equivalent to the mean speed observed over the 10
+			minutes preceding the validity time. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-direction-day-type">
+		<item-type>Number:Angle</item-type>
+		<label>Midday Wind Direction</label>
+		<description>10m Wind Direction at Local Midday - Mean wind direction is equivalent to the mean direction observed
+			over the 10 minutes preceding the validity time. In meteorological reports the direction of the wind vector is given
+			as the direction from which it is blowing. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-direction-night-type">
+		<item-type>Number:Angle</item-type>
+		<label>Midnight Wind Direction</label>
+		<description>10m Wind Direction at Local Midnight - Mean wind direction is equivalent to the mean direction observed
+			over the 10 minutes preceding the validity time. In meteorological reports the direction of the wind vector is given
+			as the direction from which it is blowing. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-day-type">
+		<item-type>Number:Speed</item-type>
+		<label>Midday Wind Gust</label>
+		<description>10m Wind Gust Speed at Local Midday - The gust speed is equivalent to the maximum 3 second mean wind
+			speed observed over the 10 minutes preceding the validity time. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="wind-gust-night-type">
+		<item-type>Number:Speed</item-type>
+		<label>Midnight Wind Gust</label>
+		<description>10m Wind Gust Speed at Local Midnight - The gust speed is equivalent to the maximum 3 second mean wind
+			speed observed over the 10 minutes preceding the validity time. 10m wind is the considered surface wind.</description>
+		<category>Wind</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="visibility-day-type">
+		<item-type>Number:Length</item-type>
+		<label>Midday Visibility</label>
+		<description>Visibility at Local Midday - Minimal horizontal distance at which a known object can be seen.</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="visibility-night-type">
+		<item-type>Number:Length</item-type>
+		<label>Midnight Visibility</label>
+		<description>Visibility at Local Midnight - Minimal horizontal distance at which a known object can be seen.</description>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Midday Humidity</label>
+		<description>Relative Humidity at Local Midday - Stevenson screen height is approximately 1.5m above ground level.</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="humidity-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Midnight Humidity</label>
+		<description>Relative Humidity at Local Midnight - Stevenson screen height is approximately 1.5m above ground level.</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="pressure-day-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Midday Pressure</label>
+		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
+			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="pressure-night-type">
+		<item-type>Number:Pressure</item-type>
+		<label>Midnight Pressure</label>
+		<description>Mean Sea Level Pressure at Local Midnight - Air pressure at mean sea level which is close to the geoid in
+			sea areas. Air pressure at sea level is the quantity often abbreviated as pressure or PMSL.</description>
+		<category>Pressure</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="uv-max-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Max. UV</label>
+		<description>Day Maximum UV Index - Usually a value from 0 to 13 but higher values are possible in extreme situations.
+			Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
+		<category>Sun</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="temp-max-ub-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day(UB) Max. Temperature</label>
+		<description>Upper Bound on Day Maximum Screen Air Temperature - This is the upper bound for the maximum value over
+			the day based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be below this upper bound figure. Stevenson screen height is approximately
+			1.5m above ground level. Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temp-min-ub-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night(UB) Min. Temperature</label>
+		<description>Upper Bound on Night Minimum Screen Air Temperature - This is the upper bound for the minimum value over
+			the night based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be below this upper bound figure. Stevenson screen height is approximately
+			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temp-max-lb-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day(LB) Max. Temperature</label>
+		<description>Lower Bound on Day Maximum Screen Air Temperature - This is the lower bound for the maximum value over
+			the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
+			1.5m above ground level. Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="nightLowerBoundMaxTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Day(LB) Max. Temperature</label>
+		<description>Lower Bound on Day Maximum Screen Air Temperature - This is the lower bound for the minimum value over
+			the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
+			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temp-min-lb-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night(LB) Min. Temperature</label>
+		<description>Lower Bound on Night Minimum Screen Air Temperature - This is the lower bound for the minimum value over
+			the night based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be above this lower bound figure. Stevenson screen height is approximately
+			1.5m above ground level. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-max-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day Feels Like Max.</label>
+		<description>Day Maximum Feels Like Air Temperature - This is the most likely maximum value over the day based on the
+			ensemble spread. This is the temperature it feels like taking into account humidity and wind chill but not radiation.
+			Daytime is defined as those forecast times that fall between local dawn and dusk.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-min-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night Feels Light Min.</label>
+		<description>Night Minimum Feels Like Air Temperature - This is the most likely minimum value over the night based on
+			the ensemble spread. This is the temperature it feels like taking into account humidity and wind chill but not
+			radiation. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-max-ub-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day(UB) Feels Like Max.</label>
+		<description>Upper Bound on Day Maximum Feels Like Air Temperature - This is the upper bound for the maximum value
+			over the day based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be below this upper bound figure. This is the temperature it feels like
+			taking into account humidity and wind chill but not radiation. Daytime is defined as those forecast times that fall
+			between local dawn and dusk.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-min-ub-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night(UB) Feels Like Min.</label>
+		<description>Upper Bound on Night Minimum Feels Like Air Temperature - This is the upper bound for the minimum value
+			over the night based on the ensemble spread. It is actually given by the 97.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be below this upper bound figure. This is the temperature it feels like
+			taking into account humidity and wind chill but not radiation. Night-time is defined as those forecast times that
+			fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-max-lb-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day Max. Feels Like</label>
+		<description>Lower Bound on Day Maximum Feels Like Air Temperature - This is the lower bound for the maximum value
+			over the day based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be above this lower bound figure. This is the temperature it feels like
+			taking into account humidity and wind chill but not radiation. Daytime is defined as those forecast times that fall
+			between local dawn and dusk.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="feels-like-min-lb-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night(LB) Min. Feels Like</label>
+		<description>Lower Bound on Night Minimum Feels Like Air Temperature - This is the lower bound for the minimum value
+			over the night based on the ensemble spread. It is actually given by the 2.5 percentile. This means there is a 97.5%
+			probability that the actual figure will be above this lower bound figure. This is the temperature it feels like
+			taking into account humidity and wind chill but not radiation. Night-time is defined as those forecast times that
+			fall between local dusk and dawn.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="precip-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Precip. Probab.</label>
+		<description>Probability of Precipitation During The Day - Daytime is defined as those forecast times that fall
+			between local dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="precip-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Precip. Probab.</label>
+		<description>Probability of Precipitation During The Night - Night-time is defined as those forecast times that fall
+			between local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="snow-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Snow Probab.</label>
+		<description>Probability of Snow During The Day - Daytime is defined as those forecast times that fall between local
+			dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="snow-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Snow Probab.</label>
+		<description>Probability of Snow During The Night - Night-time is defined as those forecast times that fall between
+			local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="heavy-snow-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day H.Snow Probab.</label>
+		<description>Probability of Heavy Snow During The Day - Heavy snow is defined as &gt;1mm/hr liquid water equivalent
+			and is approximately equivilent to &gt;1cm snow per hour. Daytime is defined as those forecast times that fall
+			between local dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="heavy-snow-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night H.Snow Probab.</label>
+		<description>Probability of Heavy Snow During The Night - Heavy snow is defined as &gt;1mm/hr liquid water equivalent
+			and is approximately equivilent to &gt;1cm snow per hour. Night-time is defined as those forecast times that fall
+			between local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="rain-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Rain Probab.</label>
+		<description>Probability of Rain During The Day - Daytime is defined as those forecast times that fall between local
+			dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="rain-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Rain Probab.</label>
+		<description>Probability of Rain During The Night - Night-time is defined as those forecast times that fall between
+			local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="day-prob-heavy-rain-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day H.Rain Probab.</label>
+		<description>Probability of Heavy Rain During The Day - Heavy rain is defined as &gt;1mm/hr. Daytime is defined as
+			those forecast times that fall between local dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="night-prob-heavy-rain-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night H.Rain Probab.</label>
+		<description>Probability of Heavy Rain During The Night - Heavy rain is defined as &gt;1mm/hr. Night-time is defined
+			as those forecast times that fall between local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="hail-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Hail Probab.</label>
+		<description>Probability of Hail During The Day - Daytime is defined as those forecast times that fall between local
+			dawn and dusk.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="hail-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Hail Probab.</label>
+		<description>Probability of Hail During The Night - Night-time is defined as those forecast times that fall between
+			local dusk and dawn.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="sferics-prob-day-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day Sferics Probab.</label>
+		<description>Probability of Sferics During The Day - This is the probability of a strike within a radius of 50km.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="sferics-prob-night-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Sferics Probab.</label>
+		<description>Probability of Sferics During The Night - This is the probability of a strike within a radius of 50km.</description>
+		<category>Rain</category>
+		<state readOnly="true" pattern="%.0f %%"/>
+	</channel-type>
+
+	<channel-type id="temp-max-day-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Day Max. Temperature</label>
+		<description>Day Maximum Screen Air Temperature - Daytime is defined as those forecast times that fall between local
+			dawn and dusk</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temp-min-night-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Night Min. Temperature</label>
+		<description>Night Minimum Screen Air Temperature - Night-time is defined as those forecast times that fall between
+			local dusk and dawn</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
