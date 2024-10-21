@@ -164,7 +164,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public Set<Locale> getSupportedLocales() {
-
         return Set.of();
     }
 
