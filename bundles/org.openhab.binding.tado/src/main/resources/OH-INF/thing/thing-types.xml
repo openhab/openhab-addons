@@ -55,6 +55,7 @@
 			<channel typeId="overlayExpiry" id="overlayExpiry"/>
 			<channel typeId="timerDuration" id="timerDuration"/>
 			<channel typeId="openWindowDetected" id="openWindowDetected"/>
+			<channel typeId="openWindowRemainingTime" id="openWindowRemainingTime"/>
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
@@ -63,7 +64,7 @@
 
 		<properties>
 			<property name="vendor">tado°</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<representation-property>id</representation-property>
 
@@ -305,6 +306,14 @@
 		<description>Indicates if an open window has been detected</description>
 		<category>Window</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="openWindowRemainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Override Remaining Time</label>
+		<description>The remaining Open Window heating/cooling Override time in the Zone</description>
+		<category>Window</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
