@@ -72,6 +72,7 @@ public class Constants {
     public static final String PROPERTY_SCENES = "scenes";
     public static final String PROPERTY_DEVICE_ID = "id";
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";
+    public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_ATTRIBUTES = "attributes";
     public static final String PROPERTY_HTTP_ERROR_STATUS = "http-error-status";
@@ -96,6 +97,7 @@ public class Constants {
     public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
     public static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
     public static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
+    public static final String TYPE_USER_SCENE = "userScene";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -153,7 +155,7 @@ public class Constants {
     public static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";
     public static final String EVENT_TYPE_DEVICE_ADDED = "deviceAdded";
     public static final String EVENT_TYPE_DEVICE_CHANGE = "deviceStateChanged";
-    public static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved ";
+    public static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved";
 
     public static final String EVENT_TYPE_SCENE_CREATED = "sceneCreated";
     public static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";

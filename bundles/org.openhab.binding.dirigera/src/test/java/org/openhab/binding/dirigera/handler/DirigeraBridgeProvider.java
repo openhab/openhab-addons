@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,9 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.FileReader;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.mock.CallbackMock;
+import org.openhab.binding.dirigera.mock.DirigeraAPISimu;
 import org.openhab.binding.dirigera.mock.DirigeraHandlerManipulator;
+import org.openhab.binding.dirigera.mock.DiscoveryMangerMock;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -60,23 +63,25 @@ public class DirigeraBridgeProvider {
         }
     };
 
+    public static Bridge prepareSimuBridge() {
+        return prepareSimuBridge("src/test/resources/home/home.json", false, List.of());
+    }
+
     /**
-     * Prepare obridge which can be used with DirigraAPISimu Provider
+     * Prepare bridge which can be used with DirigraAPISimu Provider
      *
      * @return Bridge
      */
-    public static Bridge prepareSimuBridge() {
-        /**
-         * Prepare https replies
-         */
+    public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
+        DirigeraAPISimu.fileName = homeFile;
         /**
          * Prepare persistence
          */
         // prepare persistence data
         JSONObject storageObject = new JSONObject();
-        JSONArray knownDevices = new JSONArray();
+        JSONArray knownDevices = new JSONArray(knownDevicesd);
         knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
         storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "1234");
@@ -92,7 +97,7 @@ public class DirigeraBridgeProvider {
          * new version with api simulation in background
          */
         DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
-                mock(DirigeraDiscoveryManager.class), TZP);
+                new DiscoveryMangerMock(), TZP);
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
         hubHandler.setCallback(bridgeCallback);
@@ -101,6 +106,7 @@ public class DirigeraBridgeProvider {
         Map<String, Object> config = new HashMap<>();
         config.put("ipAddress", ipAddress);
         config.put("id", "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
+        config.put("discovery", discovery);
         hubHandler.handleConfigurationUpdate(config);
 
         hubHandler.initialize();

@@ -40,7 +40,7 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            fail();
+            fail("File " + filename + " not found");
         }
         return "ERR";
     }

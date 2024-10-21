@@ -42,17 +42,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPISimu.class);
-    JSONObject model = new JSONObject();
+    public static String fileName = "src/test/resources/home/home.json";
+    private static JSONObject model = new JSONObject();
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
-        String modelString = FileReader.readFileInString("src/test/resources/home/home.json");
-        // String modelString = FileReader.readFileInString("src/test/resources/home/home.json");
-        this.model = new JSONObject(modelString);
     }
 
     @Override
     public JSONObject readHome() {
         logger.info("read home");
+        String modelString = FileReader.readFileInString(fileName);
+        model = new JSONObject(modelString);
         return model;
     }
 
