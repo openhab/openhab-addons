@@ -33,6 +33,7 @@ public enum HomekitAccessoryType {
     CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
     CONTACT_SENSOR("ContactSensor"),
     DOOR("Door"),
+    DOORBELL("Doorbell"),
     FAN("Fan"),
     FAUCET("Faucet"),
     FILTER_MAINTENANCE("Filter"),
