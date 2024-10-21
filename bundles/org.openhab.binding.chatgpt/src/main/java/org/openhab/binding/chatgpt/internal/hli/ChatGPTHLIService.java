@@ -284,7 +284,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                             logger.debug("Failed to parse arguments: {}", e.getMessage(), e);
                             return;
                         }
-
                         Object result = function.getExecutor().apply(argumentsObject);
                         String resultString = String.valueOf(result);
                         ChatMessage message = new ChatMessage();
