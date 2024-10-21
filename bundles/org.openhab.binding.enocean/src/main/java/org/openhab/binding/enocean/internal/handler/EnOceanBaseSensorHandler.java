@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -155,7 +156,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         ERP1Message msg = (ERP1Message) packet;
 
         EEPType localReceivingType = receivingEEPTypes.get(msg.getRORG());
-        if (localReceivingType == null) {
+        if (Objects.isNull(localReceivingType)) {
             return;
         }
 
@@ -203,7 +204,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                 triggerChannel(prepareAnswer, "requestAnswer");
                 // Send response after 100ms
                 ScheduledFuture<?> responseFuture = this.responseFuture;
-                if (responseFuture == null || responseFuture.isDone()) {
+                if (Objects.isNull(responseFuture) || responseFuture.isDone()) {
                     this.responseFuture = scheduler.schedule(this::sendRequestResponse, 100, TimeUnit.MILLISECONDS);
                 }
             }
