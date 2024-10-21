@@ -128,7 +128,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
         ChatFunction itemControlFunction = FUNCTIONS.get("items_control");
         if (itemControlFunction != null) {
-
             itemControlFunction.setParametersClass(ItemsControl.class);
 
             itemControlFunction.setExecutor(p -> {
