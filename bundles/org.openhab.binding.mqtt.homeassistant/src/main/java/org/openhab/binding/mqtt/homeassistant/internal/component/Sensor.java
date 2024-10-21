@@ -36,6 +36,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
     public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
+
     private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
 
     /**
@@ -96,6 +98,13 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         buildChannel(SENSOR_CHANNEL_ID, type, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
+
+        if (channelConfiguration.jsonAttributesTemplate != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .build();
+        }
         finalizeChannels();
     }
 
