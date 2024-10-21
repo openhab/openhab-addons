@@ -16,14 +16,13 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author Marcin Czeczko - Initial contribution
  */
 public class PlannerOverride {
-    private String action;
+    private Action action;
 
-    public String getAction() {
+    public Action getAction() {
         return action;
     }
 
-    public PlannerOverride setAction(String action) {
+    public void setAction(Action action) {
         this.action = action;
-        return this;
     }
 }
