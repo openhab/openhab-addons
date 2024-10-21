@@ -13,9 +13,13 @@
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT camera, following the https://www.home-assistant.io/components/camera.mqtt/ specification.
@@ -26,7 +30,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
  */
 @NonNullByDefault
 public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
-    public static final String CAMERA_CHANNEL_ID = "camera"; // Randomly chosen channel "ID"
+    public static final String CAMERA_CHANNEL_ID = "camera";
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -37,6 +42,11 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
         }
 
         protected String topic = "";
+
+        @SerializedName("json_attributes_template")
+        protected @Nullable String jsonAttributesTemplate;
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
     }
 
     public Camera(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -46,6 +56,14 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
 
         buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
                 componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
+
+        if (channelConfiguration.jsonAttributesTemplate != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .build();
+        }
+
         finalizeChannels();
     }
 }
