@@ -360,7 +360,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         Collection<Item> openaiItems = itemRegistry.getItemsByTag("OpenAI");
 
         if (!openaiItems.isEmpty()) {
-
             openaiItems.forEach(item -> {
                 String location = "";
                 String itemType = item.getType();
