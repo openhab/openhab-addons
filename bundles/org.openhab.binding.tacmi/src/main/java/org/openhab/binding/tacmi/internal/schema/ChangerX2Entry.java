@@ -29,6 +29,7 @@ public class ChangerX2Entry {
     public static final String NUMBER_MIN = "min";
     public static final String NUMBER_MAX = "max";
     public static final String NUMBER_STEP = "step";
+    public static final String TIME_PERIOD_PARTS = "timeParts";
 
     enum OptionType {
         NUMBER,
