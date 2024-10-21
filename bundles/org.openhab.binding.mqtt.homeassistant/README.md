@@ -21,6 +21,7 @@ You can also manually create a Thing, and provide the individual component topic
 - [Climate](https://www.home-assistant.io/integrations/climate.mqtt/)
 - [Cover](https://www.home-assistant.io/integrations/cover.mqtt/)
 - [Device Trigger](https://www.home-assistant.io/integrations/device_trigger.mqtt/)
+- [Event](https://www.home-assistant.io/integrations/event.mqtt/)
 - [Fan](https://www.home-assistant.io/integrations/fan.mqtt/)
 - [Light](https://www.home-assistant.io/integrations/light.mqtt/)
 - [Lock](https://www.home-assistant.io/integrations/lock.mqtt/)
