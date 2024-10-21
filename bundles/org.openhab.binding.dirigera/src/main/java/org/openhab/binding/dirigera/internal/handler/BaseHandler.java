@@ -43,24 +43,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BaseDeviceHandler} basic DeviceHandler for all devices
+ * The {@link BaseHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public abstract class BaseDeviceHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(BaseDeviceHandler.class);
-
-    protected BaseDeviceConfiguration config;
-
+public abstract class BaseHandler extends BaseThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
+    private @Nullable BaseHandler child;
     private @Nullable Gateway gateway;
-    private @Nullable BaseDeviceHandler child;
 
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
     protected Map<String, State> channelStateMap;
+    protected BaseDeviceConfiguration config;
 
-    public BaseDeviceHandler(Thing thing, Map<String, String> mapping) {
+    public BaseHandler(Thing thing, Map<String, String> mapping) {
         super(thing);
         config = new BaseDeviceConfiguration();
 
@@ -70,7 +68,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         channelStateMap = initializeCache(mapping);
     }
 
-    protected void setChildHandler(BaseDeviceHandler child) {
+    protected void setChildHandler(BaseHandler child) {
         this.child = child;
     }
 
@@ -107,7 +105,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
 
         if (!config.id.isBlank()) {
-            BaseDeviceHandler proxy = child;
+            BaseHandler proxy = child;
             if (proxy != null) {
                 gateway().registerDevice(proxy, config.id);
             }
@@ -190,7 +188,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        BaseDeviceHandler proxy = child;
+        BaseHandler proxy = child;
         if (proxy != null) {
             gateway().unregisterDevice(proxy, config.id);
         }
@@ -198,7 +196,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        BaseDeviceHandler proxy = child;
+        BaseHandler proxy = child;
         if (proxy != null) {
             gateway().deleteDevice(proxy, config.id);
         }
@@ -210,6 +208,20 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             return gw;
         } else {
             throw new NoGatewayException(thing.getUID() + " has no Gateway defined");
+        }
+    }
+
+    protected boolean checkHandler() {
+        // cross check if configured thing type is matching with the model
+        // if handler is taken from discovery this will do no harm
+        // but if it's created manually mismatch can happen
+        ThingTypeUID modelTTUID = gateway().model().identifyDevice(config.id);
+        if (!thing.getThingTypeUID().equals(modelTTUID)) {
+            String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -227,19 +239,5 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             stateMap.put(key, UnDefType.UNDEF);
         });
         return stateMap;
-    }
-
-    public boolean checkHandler() {
-        // cross check if configured thing type is matching with the model
-        // if handler is taken from discovery this will do no harm
-        // but if it's created manually mismatch can happen
-        ThingTypeUID modelTTUID = gateway().model().identifyDevice(config.id);
-        if (!thing.getThingTypeUID().equals(modelTTUID)) {
-            String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-            return false;
-        } else {
-            return true;
-        }
     }
 }

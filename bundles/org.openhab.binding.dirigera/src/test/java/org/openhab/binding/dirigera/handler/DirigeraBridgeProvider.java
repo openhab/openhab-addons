@@ -51,7 +51,7 @@ import org.openhab.core.thing.internal.BridgeImpl;
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class DirigeraBridgeProvider {
+public class DirigeraBridgeProvider {
     public static final TimeZoneProvider TZP = new TimeZoneProvider() {
 
         @Override
@@ -65,7 +65,7 @@ class DirigeraBridgeProvider {
      *
      * @return Bridge
      */
-    public static Bridge prepareBridge() {
+    public static Bridge prepareSimuBridge() {
         /**
          * Prepare https replies
          */

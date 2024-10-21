@@ -56,8 +56,6 @@ import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -70,8 +68,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -96,7 +92,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     // Used for unit tests
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
-    private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
+    private final Map<String, BaseHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
     private final TimeZoneProvider timeZoneProvider;
     private final ScheduledExecutorService sequentialScheduler = ThreadPoolManager
@@ -220,15 +216,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 api = Optional.of(apiProviderInstance);
             } else {
                 // TODO this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
+                logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
                 return;
             }
             Model houseModel = new Model(this);
             model = Optional.of(houseModel);
-            houseModel.update();
+            houseModel.init();
             // Step 3.1 - check if id is already obtained
             if (config.id.isBlank()) {
                 JSONArray gatewayArray = houseModel.getIdsForType(DEVICE_TYPE_GATEWAY);
-                logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
+                logger.warn("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
                 if (gatewayArray.isEmpty()) {
                     logger.info("DIRIGERA HANDLER no Gateway found in model");
                 } else if (gatewayArray.length() > 1) {
@@ -245,6 +242,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 }
             }
             // now start websocket an listen to changes
+            logger.warn("DIRIGERA HANDLER start websocket");
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
             // when done do:
@@ -390,7 +388,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void update() {
-        model().update();
+        // TODO don't think regular updates are necessary
+        // model().update();
         websocket.ifPresent(socket -> {
             updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
                     StringType.valueOf(socket.getStatistics().toString()));
@@ -481,7 +480,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * register a running device
      */
     @Override
-    public void registerDevice(BaseDeviceHandler deviceHandler, String deviceId) {
+    public void registerDevice(BaseHandler deviceHandler, String deviceId) {
         logger.info("DIRIGERA HANDLER device {} registered", deviceHandler.getThing().getThingTypeUID());
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
@@ -499,7 +498,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * unregister device, not running but still available
      */
     @Override
-    public void unregisterDevice(BaseDeviceHandler deviceHandler, String deviceId) {
+    public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // unregister happens but don't remove it from known devices
     }
@@ -508,7 +507,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      * remove device due to removal of Handler
      */
     @Override
-    public void deleteDevice(BaseDeviceHandler deviceHandler, String deviceId) {
+    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // removal of handler - store new known devices
         if (knownDevices.contains(deviceId)) {
@@ -517,53 +516,53 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
     }
 
-    @Override
-    public void newDevice(String id) {
-        if (!config.discovery) {
-            // don't discover anything if not configured
-            return;
-        }
-        if (!knownDevices.contains(id)) {
-            ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
-            if (IGNORE_THING_TYPES_UIDS.contains(discoveredThingTypeUID)) {
-                return;
-            }
-            if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
-                logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
-            } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
-                // ignore gateway findings
-                return;
-            } else {
-                String customName = model().getCustonNameFor(id);
-                Map<String, Object> properties = model().getPropertiesFor(id);
-                logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
-                        discoveredThingTypeUID.getAsString(), customName,
-                        SUPPORTED_THING_TYPES_UIDS.contains(discoveredThingTypeUID));
-                DiscoveryResult result = DiscoveryResultBuilder
-                        .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
-                        .withBridge(this.getThing().getUID()).withProperties(properties)
-                        .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
-                discoveryManager.forward(result);
-            }
-        } else {
-            logger.info("DIRIGERA HANDLER received new device id from model but already known");
-        }
-    }
-
-    @Override
-    public void newScene(String id, String name) {
-        if (!knownDevices.contains(id)) {
-            logger.info("DIRIGERA HANDLER deliver scene result {} with name {} and is supported {}",
-                    THING_TYPE_SCENE.getAsString(), name, SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_SCENE));
-            DiscoveryResult result = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_SCENE, this.getThing().getUID(), id))
-                    .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
-                    .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(name).build();
-            discoveryManager.forward(result);
-        } else {
-            logger.info("DIRIGERA HANDLER received new scene id from model but already known");
-        }
-    }
+    // @Override
+    // public void newDevice(String id) {
+    // if (!config.discovery) {
+    // // don't discover anything if not configured
+    // return;
+    // }
+    // if (!knownDevices.contains(id)) {
+    // ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
+    // if (IGNORE_THING_TYPES_UIDS.contains(discoveredThingTypeUID)) {
+    // return;
+    // }
+    // if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
+    // logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
+    // } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
+    // // ignore gateway findings
+    // return;
+    // } else {
+    // String customName = model().getCustonNameFor(id);
+    // Map<String, Object> properties = model().getPropertiesFor(id);
+    // logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
+    // discoveredThingTypeUID.getAsString(), customName,
+    // SUPPORTED_THING_TYPES_UIDS.contains(discoveredThingTypeUID));
+    // DiscoveryResult result = DiscoveryResultBuilder
+    // .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
+    // .withBridge(this.getThing().getUID()).withProperties(properties)
+    // .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
+    // discoveryManager.thingDiscovered(result);
+    // }
+    // } else {
+    // logger.info("DIRIGERA HANDLER received new device id from model but already known");
+    // }
+    // }
+    //
+    // @Override
+    // public void newScene(String id, String name) {
+    // if (!knownDevices.contains(id)) {
+    // logger.info("DIRIGERA HANDLER deliver scene result {} with name {} and is supported {}",
+    // THING_TYPE_SCENE.getAsString(), name, SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_SCENE));
+    // DiscoveryResult result = DiscoveryResultBuilder
+    // .create(new ThingUID(THING_TYPE_SCENE, this.getThing().getUID(), id))
+    // .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
+    // .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(name).build();
+    // discoveryManager.thingDiscovered(result);
+    // } else {
+    // logger.info("DIRIGERA HANDLER received new scene id from model but already known");
+    // }
+    // }
 
     @Override
     public DirigeraAPI api() {
@@ -582,6 +581,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
+    public DirigeraDiscoveryManager discovery() {
+        return discoveryManager;
+    }
+
+    @Override
+    public boolean isKnownDevice(String id) {
+        return knownDevices.contains(id);
+    }
+
+    @Override
     public String getToken() {
         return token;
     }
@@ -589,6 +598,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public String getIpAddress() {
         return config.ipAddress;
+    }
+
+    @Override
+    public boolean discoverEnabled() {
+        return config.discovery;
     }
 
     @Override
@@ -609,45 +623,56 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
         if (!json.isBlank()) {
             JSONObject update = new JSONObject(json);
+            JSONObject data = update.getJSONObject("data");
+            String targetId = data.getString("id");
             // First update device
             String type = update.getString("type");
             switch (type) {
+                case EVENT_TYPE_DEVICE_ADDED:
+                    model().addedDeviceScene(targetId);
+                    break;
+                case EVENT_TYPE_DEVICE_REMOVED:
+                    model().removedDeviceScene(targetId);
+                    break;
                 case EVENT_TYPE_DEVICE_CHANGE:
-                    JSONObject data = update.getJSONObject("data");
-                    String targetId = data.getString("id");
                     if (targetId != null) {
                         if (targetId.equals(config.id)) {
                             this.handleUpdate(data);
                         } else {
-                            BaseDeviceHandler targetHandler = deviceTree.get(targetId);
+                            BaseHandler targetHandler = deviceTree.get(targetId);
                             if (targetHandler != null && targetId != null) {
                                 targetHandler.handleUpdate(data);
                             } else {
+                                // special case: if custom name is changed in attributes force model update
+                                // in order to present the updated name in discovery
+                                model().updateDeviceScene(targetId);
                                 logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
                             }
-                            // special case: if custom name is changed in attributes force model update
-                            // in order to present the updated name in discovery
-                            model().checkForUpdate(data);
                         }
                     }
                     logger.info("DIRIGERA HANDLER update performance - device update {}",
                             Duration.between(startTime, Instant.now()).toMillis());
-                    model().patchDevice(update);
+                    break;
+                case EVENT_TYPE_SCENE_CREATED:
+                    model().addedDeviceScene(targetId);
+                    break;
+                case EVENT_TYPE_SCENE_DELETED:
+                    model().removedDeviceScene(targetId);
                     break;
                 case EVENT_TYPE_SCENE_UPDATE:
-                    JSONObject sceneData = update.getJSONObject("data");
-                    String sceneId = sceneData.getString("id");
-                    if (sceneId != null) {
-                        BaseDeviceHandler targetHandler = deviceTree.get(sceneId);
-                        if (targetHandler != null && sceneId != null) {
-                            targetHandler.handleUpdate(sceneData);
+                    if (targetId != null) {
+                        BaseHandler targetHandler = deviceTree.get(targetId);
+                        if (targetHandler != null && targetId != null) {
+                            targetHandler.handleUpdate(data);
                         } else {
+                            // special case: if custom name is changed in attributes force model update
+                            // in order to present the updated name in discovery
+                            model().updateDeviceScene(targetId);
                             logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
                         }
                     }
                     logger.info("DIRIGERA HANDLER update performance - device update {}",
                             Duration.between(startTime, Instant.now()).toMillis());
-                    model().patchScene(update);
                     break;
                 default:
                     logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);

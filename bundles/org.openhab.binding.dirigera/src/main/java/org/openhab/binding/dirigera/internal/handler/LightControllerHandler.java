@@ -26,7 +26,7 @@ import org.openhab.core.types.Command;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LightControllerHandler extends BaseDeviceHandler {
+public class LightControllerHandler extends BaseHandler {
 
     public LightControllerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);

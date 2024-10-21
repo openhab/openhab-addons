@@ -41,7 +41,7 @@ import org.openhab.core.types.State;
 class TestWaterSensor {
     @Test
     void testWaterSensor() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareBridge();
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_WATER_SENSOR, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         WaterSensorHandler handler = new WaterSensorHandler(thing, WATER_SENSOR_MAP);
