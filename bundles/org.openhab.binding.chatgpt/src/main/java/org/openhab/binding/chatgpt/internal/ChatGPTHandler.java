@@ -243,7 +243,6 @@ public class ChatGPTHandler extends BaseThingHandler {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                     "@text/offline.communication-error");
                         }
-
                     } catch (JsonProcessingException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         logger.error("Failed to parse models: {}", e.getMessage(), e);
