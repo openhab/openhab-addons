@@ -60,7 +60,10 @@ Each channel of type `chat` takes the following configuration parameters:
 
 ## Items Configuration
 
-If you want to use HLI service, you will need to tag [ "OpenAI" ] items which you want to control via AI. If you don't have a semantic model set up, no problem, it's not necessary for AI, just make sure the item names look like 'Location_***', for example, "Kitchen_Light". In the label, describe the item in more detail. If the item accepts different text commands, add these commands to the "am" metadata key (see Item Configuration example below).
+Items to be used by the HLI service must be tagged with the [ "OpenAI" ] tag.
+If no semantic model is set up, you can set the parameter `useSemanticModel` to false.
+In this case, the item names must follow the naming convention '<Location>_***', for example "Kitchen_Light". The label of the items are expected to briefly describe the item in more detail.
+If the item accepts different text commands, add these commands to the "am" metadata key (see Item Configuration example below).
 
 ## Full Example
 
