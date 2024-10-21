@@ -74,14 +74,6 @@ The `blaster` Thing reuires an `ethernet` (Bridge) before it can be used.
 |-----------------|-----------|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------|
 | io              | String    | Allows to read infrared commands received by the blaster, as well as to write infrared commands to be sent by the blaster | [Channel configuration](#io-channel) |
 
-#### `io` Channel
-
-| Parameter | Description                                                                                                                                                                      | Config   | Default |
-|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------|
-| led       | Specifies the led on which infrared commands will be emitted                                                                                                                     | Required | -       |
-| remote    | The remote or manufacturer name which's commands will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be ' \*' for 'any' remote) | Required | -       |
-| command   | The name of the command will be allowed, as defined in the IRtrans server database that is flashed into the transceiver (can be '*' for 'any' command)                           | Required | -       |
-
 *note*
 The IRtrans transceivers store infrared commands in a "remote,command" table, e.g. "telenet,power". Sending the literal text string "telenet,power" to the transceiver will make the transceiver "translate" that into the actual infrared command that will be emitted by the transceiver.  A "remote,command" string sent to a Channel that does not match the defined filter will be ignored.
 
