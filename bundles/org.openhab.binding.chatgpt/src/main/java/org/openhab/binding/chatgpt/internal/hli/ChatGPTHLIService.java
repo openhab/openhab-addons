@@ -300,7 +300,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     private @Nullable String prepareRequestBody(String message) {
-
         if (this.config == null) {
             if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
                 this.config = chatGPTHandler.getConfigAs();
