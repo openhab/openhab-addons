@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class ChatFunctionCall {
 
     private @Nullable String name;
-
     private @Nullable String arguments;
 
     public String getName() {
