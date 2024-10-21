@@ -150,7 +150,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public String interpret(Locale locale, String text) {
-
         String requestBody = prepareRequestBody(text);
         if (requestBody == null) {
             return "Failed to prepare request body";
