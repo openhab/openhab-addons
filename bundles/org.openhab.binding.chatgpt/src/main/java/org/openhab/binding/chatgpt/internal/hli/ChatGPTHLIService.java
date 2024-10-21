@@ -312,7 +312,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
 
         LocalTime currentTime = LocalTime.now();
-
         if (currentTime.isAfter(this.lastMessageTime.plusMinutes(config.keepContext))) {
             this.messages.clear();
         }
