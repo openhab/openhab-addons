@@ -379,6 +379,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         if (em.aActPower != null) {
             sm.power = emeter.power = em.aActPower;
         }
+        if (emData.aTotal != null) {
+            emeter.total = emData.aTotal;
+        }
         if (em.aAprtPower != null) {
             emeter.totalReturned = em.aAprtPower;
         }
@@ -400,6 +403,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sm.isValid = emeter.isValid = true;
             if (em.bActPower != null) {
                 sm.power = emeter.power = em.bActPower;
+            }
+            if (emData.bTotal != null) {
+                emeter.total = emData.bTotal;
             }
             if (em.bAprtPower != null) {
                 emeter.totalReturned = em.bAprtPower;
@@ -423,6 +429,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sm.isValid = emeter.isValid = true;
             if (em.cActPower != null) {
                 sm.power = emeter.power = em.cActPower;
+            }
+            if (emData.cTotal != null) {
+                emeter.total = emData.cTotal;
             }
             if (em.cAprtPower != null) {
                 emeter.totalReturned = em.cAprtPower;
