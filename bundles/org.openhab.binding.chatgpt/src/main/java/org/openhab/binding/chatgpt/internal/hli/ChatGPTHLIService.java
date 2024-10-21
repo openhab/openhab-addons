@@ -234,7 +234,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 messages.subList(1, lastUserMessageIndex).clear();
                 messages.set(0, generateSystemMessage());
             }
-
         }
 
         String finishReason = chatResponse.getChoices().get(0).getFinishReason();
