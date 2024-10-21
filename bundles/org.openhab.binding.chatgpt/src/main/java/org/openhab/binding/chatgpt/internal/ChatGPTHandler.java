@@ -107,7 +107,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                 String finishReason = chatResponse.getChoices().get(0).getFinishReason();
 
                 if ("length".equals(finishReason)) {
-                    logger.error("token length exceeded. Increase maximum token to avoid the issue.");
+                    logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
                     return;
                 }
 
