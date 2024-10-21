@@ -226,7 +226,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ni ? ni.getUnit() : null;
         return m.stream().map(o -> {
             logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
-            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0]));
+            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsInstant(o[0]));
         }).collect(Collectors.<HistoricItem> toList());
     }
 
