@@ -350,6 +350,9 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
 
             updateState(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED, state.getOpenWindowDetected());
 
+            updateState(TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_REMAINING_TIME,
+                    state.getOpenWindowRemainingTime());
+
             updateDynamicStateDescriptions(zoneState);
 
             onSuccessfulOperation();
@@ -513,6 +516,8 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_BATTERY_LOW_ALARM,
                 capabilitiesSupport.batteryLowAlarm());
         removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_DETECTED,
+                capabilitiesSupport.openWindow());
+        removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_OPEN_WINDOW_REMAINING_TIME,
                 capabilitiesSupport.openWindow());
         removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_LIGHT, capabilitiesSupport.light());
         removeListProcessChannel(removeList, TadoBindingConstants.CHANNEL_ZONE_HORIZONTAL_SWING,

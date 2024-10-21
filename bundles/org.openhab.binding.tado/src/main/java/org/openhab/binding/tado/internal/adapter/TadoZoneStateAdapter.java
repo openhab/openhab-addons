@@ -31,6 +31,7 @@ import org.openhab.binding.tado.swagger.codegen.api.model.CoolingZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.HeatingZoneSetting;
 import org.openhab.binding.tado.swagger.codegen.api.model.HotWaterZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.OpenWindow;
 import org.openhab.binding.tado.swagger.codegen.api.model.Overlay;
 import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationConditionType;
 import org.openhab.binding.tado.swagger.codegen.api.model.PercentageDataPoint;
@@ -260,6 +261,18 @@ public class TadoZoneStateAdapter {
             return OnOffType.from(openWindowDetected);
         }
         return OnOffType.OFF;
+    }
+
+    public State getOpenWindowRemainingTime() {
+        int seconds = 0;
+        OpenWindow openWindow = zoneState.getOpenWindow();
+        if (openWindow != null) {
+            Integer remainingSeconds = openWindow.getRemainingTimeInSeconds();
+            if (remainingSeconds != 0) {
+                seconds = remainingSeconds.intValue();
+            }
+        }
+        return new QuantityType<>(seconds, Units.SECOND);
     }
 
     public State getLight() {
