@@ -291,7 +291,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                         message.setToolCallId(tool.getId());
                         message.setContent(resultString);
                         messages.add(message);
-
                     } else {
                         logger.debug("Function '{}' not found", functionName);
                     }
