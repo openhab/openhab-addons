@@ -198,7 +198,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     private String processChatResponse(@Nullable String response) {
-
         if (response == null || response.isEmpty()) {
             return "";
         }
