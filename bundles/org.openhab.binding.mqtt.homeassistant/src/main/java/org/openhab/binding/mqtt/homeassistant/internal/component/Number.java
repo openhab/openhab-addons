@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -31,6 +33,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Number extends AbstractComponent<Number.ChannelConfiguration> {
     public static final String NUMBER_CHANNEL_ID = "number"; // Randomly chosen channel "ID"
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -81,6 +84,14 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                 .inferOptimistic(channelConfiguration.optimistic).build();
+
+        if (channelConfiguration.jsonAttributesTopic != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        }
+
         finalizeChannels();
     }
 }
