@@ -239,7 +239,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         String finishReason = chatResponse.getChoices().get(0).getFinishReason();
 
         if ("length".equals(finishReason)) {
-            logger.warn("token length exceeded. Increase maximum token to avoid the issue.");
+            logger.warn("Token length exceeded. Increase the maximum token limit to avoid the issue.");
             return "";
         }
 
