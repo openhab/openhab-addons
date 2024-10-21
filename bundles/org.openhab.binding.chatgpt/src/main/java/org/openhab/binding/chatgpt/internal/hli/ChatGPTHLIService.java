@@ -135,7 +135,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                 return sendCommand(parameters.getName(), parameters.getState());
             });
         }
-
         logger.debug("ChatGPTHLIService activated");
     }
 
