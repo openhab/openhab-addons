@@ -40,7 +40,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
-import org.openhab.binding.emotiva.internal.protocol.EmotivaControlRequest;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaDataType;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion;
 import org.openhab.core.library.types.PercentType;
@@ -88,9 +87,9 @@ class EmotivaCommandHelperTest {
     void testChannelToControlRequest(String channel, String name, EmotivaDataType emotivaDataType,
             EmotivaControlCommands defaultCommand, EmotivaControlCommands onCommand, EmotivaControlCommands offCommand,
             EmotivaControlCommands setCommand, EmotivaProtocolVersion version, double min, double max) {
-        EmotivaProcessorState state = new EmotivaProcessorState();
+        var state = new EmotivaProcessorState();
+        var surround = EmotivaCommandHelper.channelToControlRequest(channel, state, version);
 
-        EmotivaControlRequest surround = EmotivaCommandHelper.channelToControlRequest(channel, state, version);
         assertThat(surround.getName(), is(name));
         assertThat(surround.getChannel(), is(channel));
         assertThat(surround.getDataType(), is(emotivaDataType));

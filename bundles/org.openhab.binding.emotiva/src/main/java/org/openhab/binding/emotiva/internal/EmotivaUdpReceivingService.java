@@ -146,11 +146,11 @@ public class EmotivaUdpReceivingService {
     private void listenUnhandledInterruption() throws InterruptedException {
         logger.debug("Emotiva listener started for: '{}:{}'", ipAddress, receivingPort);
 
-        final Consumer<EmotivaUdpResponse> localListener = listener;
-        final DatagramSocket localReceivingSocket = receivingSocket;
+        final var localListener = listener;
+        final var localReceivingSocket = receivingSocket;
         while (localListener != null && localReceivingSocket != null && receivingSocket != null) {
             try {
-                final DatagramPacket answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+                final var answer = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
 
                 listenerNotifyActive = true;
                 localReceivingSocket.receive(answer); // receive packet (blocking call)
@@ -193,8 +193,8 @@ public class EmotivaUdpReceivingService {
         executorService.execute(() -> {
             if (answer.getAddress() != null && answer.getLength() > 0) {
                 logger.trace("Received data on port '{}'", answer.getPort());
-                EmotivaUdpResponse emotivaUdpResponse = new EmotivaUdpResponse(
-                        new String(answer.getData(), 0, answer.getLength()), answer.getAddress().getHostAddress());
+                var emotivaUdpResponse = new EmotivaUdpResponse(new String(answer.getData(), 0, answer.getLength()),
+                        answer.getAddress().getHostAddress());
                 localListener.accept(emotivaUdpResponse);
             }
         });
@@ -206,7 +206,7 @@ public class EmotivaUdpReceivingService {
     public void disconnect() {
         logger.debug("Emotiva listener stopped for: '{}:{}'", ipAddress, receivingPort);
         listener = null;
-        final DatagramSocket localReceivingSocket = receivingSocket;
+        final var localReceivingSocket = receivingSocket;
         if (localReceivingSocket != null) {
             receivingSocket = null;
             if (!localReceivingSocket.isClosed()) {

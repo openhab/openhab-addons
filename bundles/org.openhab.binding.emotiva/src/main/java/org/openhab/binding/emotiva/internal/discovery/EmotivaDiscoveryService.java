@@ -49,7 +49,7 @@ public class EmotivaDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start scan for Emotiva devices");
-        EmotivaUdpBroadcastService localBroadcastService = broadcastService;
+        var localBroadcastService = broadcastService;
         if (localBroadcastService != null) {
             try {
                 localBroadcastService.discoverThings().ifPresent(this::thingDiscovered);

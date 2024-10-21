@@ -47,28 +47,30 @@ class EmotivaXmlUtilsTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshallInstanceObject() throws JAXBException {
-        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
+        var object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
         assertThat(object, instanceOf(EmotivaNotifyWrapper.class));
     }
 
     @Test
     void testUnmarshallXml() throws JAXBException {
-        Object object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
+        var object = xmlUtils.unmarshallToEmotivaDTO(emotivaNotifyV2KeepAlive);
 
         assertThat(object, instanceOf(EmotivaNotifyWrapper.class));
     }
 
     @Test
     void testMarshallObjectWithoutXmlElements() {
-        String commands = xmlUtils.marshallEmotivaDTO("");
+        var commands = xmlUtils.marshallEmotivaDTO("");
+
         assertThat(commands, is(""));
     }
 
     @Test
     void testMarshallNoValueDTO() {
-        EmotivaNotifyWrapper dto = new EmotivaNotifyWrapper();
-        String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
+        var dto = new EmotivaNotifyWrapper();
+        var xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlAsString, not(containsString("<emotivaNotify>")));
         assertThat(xmlAsString, containsString("<emotivaNotify/>"));
     }

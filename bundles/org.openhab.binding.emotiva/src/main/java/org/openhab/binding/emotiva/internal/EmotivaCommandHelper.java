@@ -15,7 +15,6 @@ package org.openhab.binding.emotiva.internal;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaControlRequest;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
@@ -31,26 +30,26 @@ import org.openhab.core.library.types.PercentType;
 public class EmotivaCommandHelper {
 
     public static PercentType volumeDecibelToPercentage(String volumeInDecibel) {
-        String volumeTrimmed = volumeInDecibel.replace("dB", "").trim();
-        int clampedValue = clamp(volumeTrimmed, DEFAULT_VOLUME_MIN_DECIBEL, DEFAULT_VOLUME_MAX_DECIBEL);
+        var volumeTrimmed = volumeInDecibel.replace("dB", "").trim();
+        var clampedValue = clamp(volumeTrimmed, DEFAULT_VOLUME_MIN_DECIBEL, DEFAULT_VOLUME_MAX_DECIBEL);
         return new PercentType(Math.round((100 - ((float) Math.abs(clampedValue - DEFAULT_VOLUME_MAX_DECIBEL)
                 / Math.abs(DEFAULT_VOLUME_MIN_DECIBEL - DEFAULT_VOLUME_MAX_DECIBEL)) * 100)));
     }
 
     public static double integerToPercentage(int integer) {
-        int clampedValue = clamp(integer, 0, 100);
+        var clampedValue = clamp(integer, 0, 100);
         return Math.round((100 - ((float) Math.abs(clampedValue - 100) / Math.abs(-100)) * 100));
     }
 
     public static int volumePercentageToDecibel(int volumeInPercentage) {
-        int clampedValue = clamp(volumeInPercentage, 0, 100);
+        var clampedValue = clamp(volumeInPercentage, 0, 100);
         return (clampedValue * (DEFAULT_VOLUME_MAX_DECIBEL - DEFAULT_VOLUME_MIN_DECIBEL) / 100)
                 + DEFAULT_VOLUME_MIN_DECIBEL;
     }
 
     public static int volumePercentageToDecibel(String volumeInPercentage) {
-        String volumeInPercentageTrimmed = volumeInPercentage.replace("%", "").trim();
-        int clampedValue = clamp(volumeInPercentageTrimmed, 0, 100);
+        var volumeInPercentageTrimmed = volumeInPercentage.replace("%", "").trim();
+        var clampedValue = clamp(volumeInPercentageTrimmed, 0, 100);
         return (clampedValue * (DEFAULT_VOLUME_MAX_DECIBEL - DEFAULT_VOLUME_MIN_DECIBEL) / 100)
                 + DEFAULT_VOLUME_MIN_DECIBEL;
     }
@@ -69,8 +68,8 @@ public class EmotivaCommandHelper {
 
     public static EmotivaControlRequest channelToControlRequest(String id, EmotivaProcessorState state,
             EmotivaProtocolVersion protocolVersion) {
-        EmotivaSubscriptionTags channelSubscription = EmotivaSubscriptionTags.fromChannelUID(id);
-        EmotivaControlCommands channelFromCommand = OHChannelToEmotivaCommand.fromChannelUID(id);
+        var channelSubscription = EmotivaSubscriptionTags.fromChannelUID(id);
+        var channelFromCommand = OHChannelToEmotivaCommand.fromChannelUID(id);
         return new EmotivaControlRequest(id, channelSubscription, channelFromCommand, state, protocolVersion);
     }
 
@@ -94,7 +93,7 @@ public class EmotivaCommandHelper {
 
     public static String updateProgress(double progressPercentage) {
         final int width = 30;
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         sb.append("[");
         int i = 0;

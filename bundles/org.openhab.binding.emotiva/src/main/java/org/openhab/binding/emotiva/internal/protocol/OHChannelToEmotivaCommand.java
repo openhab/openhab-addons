@@ -105,7 +105,7 @@ public enum OHChannelToEmotivaCommand {
     }
 
     public static EmotivaControlCommands fromChannelUID(String id) {
-        for (OHChannelToEmotivaCommand value : values()) {
+        for (var value : values()) {
             if (id.equals(value.ohChannel)) {
                 return value.command;
             }

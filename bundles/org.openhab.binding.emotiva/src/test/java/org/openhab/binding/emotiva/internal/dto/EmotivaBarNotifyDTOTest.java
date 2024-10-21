@@ -15,8 +15,6 @@ package org.openhab.binding.emotiva.internal.dto;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,12 +34,13 @@ class EmotivaBarNotifyDTOTest extends AbstractDTOTestBase {
 
     @Test
     void testUnmarshall() throws JAXBException {
-        EmotivaBarNotifyWrapper dto = (EmotivaBarNotifyWrapper) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaBarNotifyBigText);
+        var dto = (EmotivaBarNotifyWrapper) xmlUtils.unmarshallToEmotivaDTO(emotivaBarNotifyBigText);
+
         assertThat(dto.getSequence(), is("98"));
         assertThat(dto.getTags().size(), is(1));
 
-        List<EmotivaBarNotifyDTO> commands = xmlUtils.unmarshallToBarNotify(dto.getTags());
+        var commands = xmlUtils.unmarshallToBarNotify(dto.getTags());
+
         assertThat(commands.get(0).getType(), is("bigText"));
         assertThat(commands.get(0).getText(), is("XBox One"));
         assertThat(commands.get(0).getUnits(), is(nullValue()));

@@ -52,8 +52,8 @@ public class EmotivaTranslationProvider {
     }
 
     public String getText(String key, @Nullable Object... arguments) {
-        Locale locale = localeProvider.getLocale();
-        String message = i18nProvider.getText(bundle, key, this.getDefaultText(key), locale, arguments);
+        var locale = localeProvider.getLocale();
+        var message = i18nProvider.getText(bundle, key, this.getDefaultText(key), locale, arguments);
         if (message != null) {
             return message;
         }

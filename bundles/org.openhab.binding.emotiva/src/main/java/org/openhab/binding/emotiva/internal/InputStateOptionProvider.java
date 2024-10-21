@@ -19,7 +19,6 @@ import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANN
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.EMOTIVA_SOURCE_COMMAND_PREFIX;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +31,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -64,13 +62,13 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
-        ChannelTypeUID typeUID = channel.getChannelTypeUID();
+        var typeUID = channel.getChannelTypeUID();
         if (typeUID == null || !BINDING_ID.equals(typeUID.getBindingId())) {
             return null;
         }
 
         List<StateOption> options = new ArrayList<>();
-        EmotivaProcessorHandler localHandler = handler;
+        var localHandler = handler;
         if (localHandler != null) {
             if (channel.getUID().getId().equals(CHANNEL_SOURCE)) {
                 setStateOptionsForSource(channel, options, localHandler.getSourcesMainZone());
@@ -78,11 +76,11 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 setStateOptionsForSource(channel, options, localHandler.getSourcesZone2());
             } else if (channel.getUID().getId().equals(CHANNEL_MODE)) {
                 EnumMap<EmotivaSubscriptionTags, String> modes = localHandler.getModes();
-                Collection<EmotivaSubscriptionTags> modeKeys = modes.keySet();
-                for (EmotivaSubscriptionTags modeKey : modeKeys) {
+                var modeKeys = modes.keySet();
+                for (var modeKey : modeKeys) {
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
                 }
-                logger.debug("Updated '{}' with '{}'", CHANNEL_MODE, options);
+                logger.trace("Updating OH channel '{}' with state options '{}'", CHANNEL_MODE, options);
                 setStateOptions(channel.getUID(), options);
             }
         }
@@ -92,15 +90,15 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
 
     private void setStateOptionsForSource(Channel channel, List<StateOption> options,
             EnumMap<EmotivaControlCommands, String> sources) {
-        Collection<EmotivaControlCommands> sourceKeys = sources.keySet();
-        for (EmotivaControlCommands sourceKey : sourceKeys) {
+        var sourceKeys = sources.keySet();
+        for (var sourceKey : sourceKeys) {
             if (sourceKey.name().startsWith(EMOTIVA_SOURCE_COMMAND_PREFIX)) {
                 options.add(new StateOption(sourceKey.name(), sources.get(sourceKey)));
             } else {
                 options.add(new StateOption(sourceKey.name(), sourceKey.getLabel()));
             }
         }
-        logger.debug("Updated '{}' with '{}'", channel.getUID().getId(), options);
+        logger.trace("Updating OH channel '{}' with state options '{}'", channel.getUID().getId(), options);
         setStateOptions(channel.getUID(), options);
     }
 }
