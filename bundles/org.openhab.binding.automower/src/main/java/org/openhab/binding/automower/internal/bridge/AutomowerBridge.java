@@ -122,15 +122,16 @@ public class AutomowerBridge {
      * Sends a calendarTask to the automower
      *
      * @param id The id of the mower
+     * @param hasWorkAreas Work area capability of the mower
      * @param workAreaId The Id of the work area this calendar belongs to (or null, if there is no work area support)
-     * @param calendarTask The calendar that should be sent. It is using the same json structure (start, duration, ...)
+     * @param calendarTasks The calendar that should be sent. It is using the same json structure (start, duration, ...)
      *            as provided when reading the channel
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerCalendarTask(String id, boolean hasWorkAreas, Long workAreaId,
-            List<CalendarTask> calendarTaskArray) throws AutomowerCommunicationException {
+            List<CalendarTask> calendarTasks) throws AutomowerCommunicationException {
         Calendar calendar = new Calendar();
-        calendar.setTasks(calendarTaskArray);
+        calendar.setTasks(calendarTasks);
 
         MowerCalendar mowerCalendar = new MowerCalendar();
         mowerCalendar.setType("calendar");
@@ -177,7 +178,7 @@ public class AutomowerBridge {
      *
      * @param id The id of the mower
      * @param zoneId The id of the stay out zone
-     * @param zoneRequest The new zone status
+     * @param zoneAttributes The new zone status
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerStayOutZone(String id, String zoneId, MowerStayOutZoneAttributes zoneAttributes)
@@ -197,7 +198,7 @@ public class AutomowerBridge {
      *
      * @param id The id of the mower
      * @param workAreaId The id of the work area
-     * @param workAreaRequest The new work area status
+     * @param workAreaAttributes The new work area status
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerWorkArea(String id, long workAreaId, MowerWorkAreaAttributes workAreaAttributes)

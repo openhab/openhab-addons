@@ -1443,11 +1443,14 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
             Long workAreaId = mower.getAttributes().getMower().getWorkAreaId();
             if (workAreaId != null) {
-                updateState(CHANNEL_STATUS_WORK_AREA_ID,
-                        new DecimalType(mower.getAttributes().getMower().getWorkAreaId()));
+                updateState(CHANNEL_STATUS_WORK_AREA_ID, new DecimalType(workAreaId));
                 WorkArea workArea = getWorkAreaById(mower, workAreaId);
                 if ((workArea != null) && (workArea.getName() != null)) {
-                    updateState(CHANNEL_STATUS_WORK_AREA, new StringType(workArea.getName()));
+                    if ((workAreaId.equals(0L)) && workArea.getName().isBlank()) {
+                        updateState(CHANNEL_STATUS_WORK_AREA, new StringType("main area"));
+                    } else {
+                        updateState(CHANNEL_STATUS_WORK_AREA, new StringType(workArea.getName()));
+                    }
                 } else {
                     updateState(CHANNEL_STATUS_WORK_AREA, UnDefType.NULL);
                 }
@@ -1825,7 +1828,11 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateState(CHANNEL_CALENDARTASKS.get(j++), new DecimalType(calendarTasks.get(i).getWorkAreaId()));
                     WorkArea workArea = getWorkAreaById(mower, calendarTasks.get(i).getWorkAreaId());
                     if (workArea != null) {
-                        updateState(CHANNEL_CALENDARTASKS.get(j++), new StringType(workArea.getName()));
+                        if ((calendarTasks.get(i).getWorkAreaId().equals(0L)) && workArea.getName().isBlank()) {
+                            updateState(CHANNEL_CALENDARTASKS.get(j++), new StringType("main area"));
+                        } else {
+                            updateState(CHANNEL_CALENDARTASKS.get(j++), new StringType(workArea.getName()));
+                        }
                     } else {
                         updateState(CHANNEL_CALENDARTASKS.get(j++), UnDefType.NULL);
                     }
@@ -1853,7 +1860,11 @@ public class AutomowerHandler extends BaseThingHandler {
             for (int i = 0; i < workAreas.size() && j < CHANNEL_WORKAREAS.size(); i++) {
                 WorkArea workArea = workAreas.get(i);
                 updateState(CHANNEL_WORKAREAS.get(j++), new DecimalType(workArea.getWorkAreaId()));
-                updateState(CHANNEL_WORKAREAS.get(j++), new StringType(workArea.getName()));
+                if ((workArea.getWorkAreaId() == 0L) && workArea.getName().isBlank()) {
+                    updateState(CHANNEL_WORKAREAS.get(j++), new StringType("main area"));
+                } else {
+                    updateState(CHANNEL_WORKAREAS.get(j++), new StringType(workArea.getName()));
+                }
                 updateState(CHANNEL_WORKAREAS.get(j++), new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
                 updateState(CHANNEL_WORKAREAS.get(j++), OnOffType.from(workArea.isEnabled()));
                 if (workArea.getProgress() != null) {

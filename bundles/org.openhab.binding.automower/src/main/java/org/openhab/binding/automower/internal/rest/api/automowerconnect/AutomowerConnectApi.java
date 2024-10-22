@@ -84,7 +84,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
     public void sendCalendar(String appKey, String token, String id, boolean hasWorkAreas, Long workAreaId,
             MowerCalendardRequest calendar) throws AutomowerCommunicationException {
         String url;
-        if (hasWorkAreas) {
+        if (hasWorkAreas && (workAreaId != null)) {
             url = getBaseUrl() + "/mowers/" + id + "/workAreas/" + workAreaId + "/calendar";
         } else {
             url = getBaseUrl() + "/mowers/" + id + "/calendar";

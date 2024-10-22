@@ -201,8 +201,17 @@ public class AutomowerActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action-set-calendartask-label", description = "@text/action-set-calendartask-desc")
-    public void setCalendarTask(Long workAreaId, short[] start, short[] duration, boolean[] monday, boolean[] tuesday,
-            boolean[] wednesday, boolean[] thursday, boolean[] friday, boolean[] saturday, boolean[] sunday) {
+    public void setCalendarTask(
+            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") Long workAreaId,
+            @ActionInput(name = "start", label = "@text/action-input-start-label", description = "@text/action-input-start-desc") short[] start,
+            @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") short[] duration,
+            @ActionInput(name = "monday", label = "@text/action-input-monday-label", description = "@text/action-input-monday-desc") boolean[] monday,
+            @ActionInput(name = "tuesday", label = "@text/action-input-tuesday-label", description = "@text/action-input-tuesday-desc") boolean[] tuesday,
+            @ActionInput(name = "wednesday", label = "@text/action-input-wednesday-label", description = "@text/action-input-wednesday-desc") boolean[] wednesday,
+            @ActionInput(name = "thursday", label = "@text/action-input-thursday-label", description = "@text/action-input-thursday-desc") boolean[] thursday,
+            @ActionInput(name = "friday", label = "@text/action-input-friday-label", description = "@text/action-input-friday-desc") boolean[] friday,
+            @ActionInput(name = "saturday", label = "@text/action-input-saturday-label", description = "@text/action-input-saturday-desc") boolean[] saturday,
+            @ActionInput(name = "sunday", label = "@text/action-input-sunday-label", description = "@text/action-input-sunday-desc") boolean[] sunday) {
         AutomowerHandler automowerHandler = handler;
         if (automowerHandler == null) {
             logger.warn("Automower Action service ThingHandler is null!");
