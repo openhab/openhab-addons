@@ -16,7 +16,6 @@ import static org.openhab.binding.enocean.internal.messages.ESP3Packet.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,9 +51,6 @@ public class EEPFactory {
     public static EEP createEEP(EEPType eepType) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (Objects.isNull(cl)) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -65,9 +61,6 @@ public class EEPFactory {
     public static EEP buildEEP(EEPType eepType, ERP1Message packet) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (Objects.isNull(cl)) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getConstructor(ERP1Message.class).newInstance(packet);
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -174,7 +167,7 @@ public class EEPFactory {
                         HexUtils.bytesToHex(new byte[] { (byte) manufId }));
 
                 EEPType eepType = EEPType.getType(RORG._4BS, func, type, manufId);
-                if (Objects.isNull(eepType)) {
+                if (eepType == null) {
                     eepType = getGenericEEPTypeFor(RORG._4BS.getValue());
                 }
 
@@ -198,7 +191,7 @@ public class EEPFactory {
                 int manufId = ((manufIdMSB & 0b111) << 8) + (manufIdLSB & 0xff);
 
                 EEPType eepType = EEPType.getType(RORG.getRORG(rorg), func, type, manufId);
-                if (Objects.isNull(eepType)) {
+                if (eepType == null) {
                     eepType = getGenericEEPTypeFor(rorg);
                 }
 
@@ -235,11 +228,11 @@ public class EEPFactory {
                 HexUtils.bytesToHex(new byte[] { (byte) type }), HexUtils.bytesToHex(new byte[] { (byte) manufId }));
 
         EEPType eepType = EEPType.getType(RORG.getRORG(rorg), func, type, manufId);
-        if (Objects.isNull(eepType)) {
+        if (eepType == null) {
             eepType = getGenericEEPTypeFor(rorg);
         }
 
-        return Objects.isNull(eepType) ? null : createEEP(eepType).setSenderId(senderId);
+        return eepType == null ? null : createEEP(eepType).setSenderId(senderId);
     }
 
     public static @Nullable EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
