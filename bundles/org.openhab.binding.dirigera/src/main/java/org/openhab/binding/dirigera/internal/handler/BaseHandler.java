@@ -14,11 +14,14 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
@@ -26,6 +29,7 @@ import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -56,6 +60,8 @@ public abstract class BaseHandler extends BaseThingHandler {
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
     protected Map<String, State> channelStateMap;
+    protected JSONObject deviceData = new JSONObject();
+    protected List<JSONObject> updates = new ArrayList<>();
     protected BaseDeviceConfiguration config;
 
     public BaseHandler(Thing thing, Map<String, String> mapping) {
@@ -178,6 +184,19 @@ public abstract class BaseHandler extends BaseThingHandler {
                         QuantityType.valueOf(attributes.getInt(PROPERTY_BATTERY_PERCENTAGE), Units.PERCENT));
             }
         }
+
+        // store data for development and analysis purposes
+        if (deviceData.isEmpty()) {
+            deviceData = new JSONObject(update.toString());
+        } else {
+            updates.add(new JSONObject(update.toString()));
+            // keep last 10 updates for debugging
+            if (updates.size() > 10) {
+                updates.remove(0);
+            }
+        }
+        deviceData.put("updates", new JSONArray(updates));
+        updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
     }
 
     @Override
