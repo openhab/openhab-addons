@@ -70,7 +70,7 @@ public class ClimateTests extends AbstractComponentTests {
                          "unique_id": "0x847127fffe11dd6a_climate_zigbee2mqtt"}\
                         """);
 
-        assertThat(component.channels.size(), is(6));
+        assertThat(component.channels.size(), is(7));
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
@@ -84,6 +84,8 @@ public class ClimateTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID, "zigbee2mqtt/th1",
                 "zigbee2mqtt/th1/set/current_heating_setpoint", "th1", NumberValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
@@ -140,7 +142,7 @@ public class ClimateTests extends AbstractComponentTests {
                          "unique_id": "0x847127fffe11dd6a_climate_zigbee2mqtt", "send_if_off": "false"}\
                         """);
 
-        assertThat(component.channels.size(), is(7));
+        assertThat(component.channels.size(), is(8));
         assertThat(component.getName(), is("th1"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "th1", TextValue.class);
@@ -154,6 +156,8 @@ public class ClimateTests extends AbstractComponentTests {
                 TextValue.class);
         assertChannel(component, Climate.TEMPERATURE_CH_ID, "zigbee2mqtt/th1",
                 "zigbee2mqtt/th1/set/current_heating_setpoint", "th1", NumberValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
         publishMessage("zigbee2mqtt/th1", """
                 {"running_state": "idle", "away_mode": "ON", \
@@ -244,7 +248,7 @@ public class ClimateTests extends AbstractComponentTests {
                  "temp_step": "1", "precision": "0.5", "send_if_off": "false" }\
                 """);
 
-        assertThat(component.channels.size(), is(12));
+        assertThat(component.channels.size(), is(13));
         assertThat(component.getName(), is("MQTT HVAC"));
 
         assertChannel(component, Climate.ACTION_CH_ID, "zigbee2mqtt/th1", "", "MQTT HVAC", TextValue.class);
@@ -269,6 +273,8 @@ public class ClimateTests extends AbstractComponentTests {
         assertChannel(component, Climate.TEMPERATURE_LOW_CH_ID_DEPRECATED, "zigbee2mqtt/th1",
                 "zigbee2mqtt/th1/temperature_low", "MQTT HVAC", NumberValue.class);
         assertChannel(component, Climate.POWER_CH_ID, "", "zigbee2mqtt/th1/power", "MQTT HVAC", OnOffValue.class);
+        assertChannel(component, Climate.JSON_ATTRIBUTES_CHANNEL_ID, "zigbee2mqtt/th1", "", "JSON Attributes",
+                TextValue.class);
 
         publishMessage("zigbee2mqtt/th1", """
                 { "action": "fan",  "aux": "ON",  "away_mode": "OFF", \

@@ -119,8 +119,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Climate.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(6));
-        verify(stateDescriptionProvider, times(6)).setDescription(any(), any(StateDescription.class));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(7));
+        verify(stateDescriptionProvider, times(7)).setDescription(any(), any(StateDescription.class));
         verify(channelTypeProvider, times(1)).putChannelGroupType(any());
 
         configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
@@ -130,8 +130,8 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(thingHandler, times(1)).componentDiscovered(eq(new HaID(configTopic)), any(Switch.class));
 
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(7));
-        verify(stateDescriptionProvider, atLeast(7)).setDescription(any(), any(StateDescription.class));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(8));
+        verify(stateDescriptionProvider, atLeast(8)).setDescription(any(), any(StateDescription.class));
         verify(channelTypeProvider, times(3)).putChannelGroupType(any());
     }
 
@@ -253,7 +253,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(7));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(8));
         verify(stateDescriptionProvider, atLeast(7)).setDescription(any(), any(StateDescription.class));
 
         // When dispose
@@ -281,13 +281,13 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
         thingHandler.delayedProcessing.forceProcessNow();
-        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(7));
+        assertThat(nonSpyThingHandler.getThing().getChannels().size(), is(8));
 
         // When dispose
         nonSpyThingHandler.handleRemoval();
 
-        // Expect channel descriptions removed, 6 for climate and 1 for switch
-        verify(stateDescriptionProvider, times(7)).remove(any());
+        // Expect channel descriptions removed, 7 for climate and 1 for switch
+        verify(stateDescriptionProvider, times(8)).remove(any());
         // Expect channel group types removed, 1 for each component
         verify(channelTypeProvider, times(2)).removeChannelGroupType(any());
     }

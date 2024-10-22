@@ -33,6 +33,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -63,6 +64,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperature-low";
     public static final String TEMPERATURE_LOW_CH_ID_DEPRECATED = "temperatureLow";
     public static final String POWER_CH_ID = "power";
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     public enum TemperatureUnit {
         @SerializedName("C")
@@ -149,7 +151,7 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                                                     // hold modes.
 
         @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate; // Attributes are not supported yet
+        protected @Nullable String jsonAttributesTemplate;
         @SerializedName("json_attributes_topic")
         protected @Nullable String jsonAttributesTopic;
 
@@ -295,6 +297,13 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
 
         buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
                 channelConfiguration.powerCommandTopic, null, null, null);
+
+        if (channelConfiguration.jsonAttributesTopic != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+        }
         finalizeChannels();
     }
 
