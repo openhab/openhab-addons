@@ -634,6 +634,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 case EVENT_TYPE_DEVICE_REMOVED:
                     // update model - it will take control on newly added, changed and removed devices
                     model().update();
+                    websocket.get().increase(Websocket.MODEL_UPDATES);
                     break;
                 case EVENT_TYPE_DEVICE_CHANGE:
                     if (targetId != null) {
