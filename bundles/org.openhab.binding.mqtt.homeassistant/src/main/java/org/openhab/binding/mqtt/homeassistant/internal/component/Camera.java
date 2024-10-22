@@ -18,6 +18,7 @@ import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -57,11 +58,11 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
         buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
                 componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
 
-        if (channelConfiguration.jsonAttributesTemplate != null) {
+        if (channelConfiguration.jsonAttributesTopic != null) {
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .build();
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         }
 
         finalizeChannels();

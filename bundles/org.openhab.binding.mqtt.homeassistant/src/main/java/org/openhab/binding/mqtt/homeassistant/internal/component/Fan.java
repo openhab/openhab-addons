@@ -28,6 +28,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -201,11 +202,11 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .inferOptimistic(channelConfiguration.optimistic).build();
         }
 
-        if (channelConfiguration.jsonAttributesTemplate != null) {
+        if (channelConfiguration.jsonAttributesTopic != null) {
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .build();
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         }
 
         finalizeChannels();
