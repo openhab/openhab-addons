@@ -149,4 +149,8 @@
 		<label>Percent Number</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="json" advanced="true">
+		<item-type>String</item-type>
+		<label>JSON Content</label>
+	</channel-type>
 </thing:thing-descriptions>

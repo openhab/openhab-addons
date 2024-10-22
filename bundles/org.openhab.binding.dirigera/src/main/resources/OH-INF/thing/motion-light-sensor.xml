@@ -25,6 +25,10 @@
 				<label>Battery Level</label>
 				<description>State of the battery powering the sensor</description>
 			</channel>
+			<channel id="json" typeId="json">
+				<label>Device JSON</label>
+				<description>JSON structure and updates of this device</description>
+			</channel>
 		</channels>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
