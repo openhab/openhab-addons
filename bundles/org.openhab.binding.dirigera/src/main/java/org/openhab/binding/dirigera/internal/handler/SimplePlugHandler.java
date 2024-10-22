@@ -27,13 +27,13 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 /**
- * The {@link PowerPlugHandler} basic DeviceHandler for all devices
+ * The {@link SimplePlugHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PowerPlugHandler extends SimplePlugHandler {
-    public PowerPlugHandler(Thing thing, Map<String, String> mapping) {
+public class SimplePlugHandler extends BaseHandler {
+    public SimplePlugHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -56,7 +56,7 @@ public class PowerPlugHandler extends SimplePlugHandler {
             String channel = channelUID.getIdWithoutGroup();
             String targetProperty = channel2PropertyMap.get(channel);
             if (targetProperty != null) {
-                if (CHANNEL_CHILD_LOCK.equals(channel) || CHANNEL_DISABLE_STATUS_LIGHT.equals(channel)) {
+                if (CHANNEL_STATE.equals(channel)) {
                     if (command instanceof OnOffType onOff) {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, onOff.equals(OnOffType.ON));
