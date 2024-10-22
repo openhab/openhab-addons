@@ -607,7 +607,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void websocketUpdate(String update) {
-        System.out.println("websocketUpdate " + update);
         synchronized (queue) {
             queue.add(update);
         }
@@ -615,7 +614,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void doUpdate() {
-        System.out.println("doUpdate ");
         Instant startTime = Instant.now();
         String json = "";
         synchronized (queue) {
@@ -623,14 +621,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 json = queue.remove(0);
             }
         }
-        System.out.println("doUpdate " + json);
         if (!json.isBlank()) {
             JSONObject update = new JSONObject(json);
             JSONObject data = update.getJSONObject("data");
             String targetId = data.getString("id");
             // First update device
             String type = update.getString(PROPERTY_TYPE);
-            System.out.println("handle " + type);
             switch (type) {
                 case EVENT_TYPE_SCENE_CREATED:
                 case EVENT_TYPE_SCENE_DELETED:

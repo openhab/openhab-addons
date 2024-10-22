@@ -45,10 +45,8 @@ public class AirQualityHandler extends BaseHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
-            if (values.isEmpty()) {
-
-            }
             handleUpdate(values);
+
         }
     }
 

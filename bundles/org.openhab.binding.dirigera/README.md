@@ -1,59 +1,141 @@
 # Dirigera Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+Binding supporting the DIRIGERA Gateway from Ikea. 
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+It provides devices and scenes towards openHAB. 
+With this it's possible to connect them with other devices outside of the Ikea world.
 
-_Put each sentence in a separate line to improve readability of diffs._
+The goal is not to provide similar functionality of the IKEA Home Smart App like create / remove scenes, rename devices or handling rooms.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The DIRIGERA `bridge` is providing the connection to all devices and scenes.  
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
+
+- Lights
+- Remote Controls
+- Speakers
+- Air Purifiers
+- Blinds
+- Sensors
+- Power Plugs
+- Shortcut buttons
+- Repeater
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+The discovery will try to identify your DIRIGERA Gateway. 
+This may take some time because your whole network is scanned in order to find it.
 
-## Binding Configuration
+**Before adding the bridge** read [Pairing section](#gateway-pairing).   
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+Devices connected to this bridge will be detected automatically unless you don't switch it off in [Bridge Configuration](#bridge-configuration)
 
-```
-# Configuration for the Dirigera Binding
-#
-# Default secret key for the pairing of the Dirigera Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+## Bridge Configuration
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+| Name            | Type    | Description                                                | Default | Required | Advanced |
+|-----------------|---------|------------------------------------------------------------|---------|----------|----------|
+| ipAddress       | text    | DIRIGERA IP Address                                        | N/A     | yes      | no       |
+| id              | text    | Unique id of this gateway                                  | N/A     | no       | no       |
+| discovery       | boolean | Configure if paired devices shall be detected by discovery | true    | no       | no       |
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+- ipAddress - use discovery to obtain this value automatically or enter it manually if known
+- id - will be detected automatically after successful pairing
+- discovery - will run continuously in the background and detect new, deleted or changed devices. Switch it off to deactivate discovery
 
-## Thing Configuration
+### Gateway Pairing
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+First setup requires pairing the DIRIGERA gateway with openHAB.
+You need physical access to the gateway to finish pairing so ensure you can reach it quickly.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Let's start pairing
 
-### `sample` Thing Configuration
+1. Add the bridge found in discovery 
+2. Pairing started automatically after creation!
+3. Press the button on the DIRIGERA rear site
+4. Your brdige shall switch to ONLINE 
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+### Gateway Channels
+
+| Channel | Type   | Read/Write | Description                 |
+|---------|--------|------------|-----------------------------|
+| sunrise | DateTime | R         | This is the control channel |
+| sunset  | DateTime | R         | This is the control channel |
+| pairing | Switch | RW         | This is the control channel |
+| statistics | Switch | R         | This is the control channel |
+
+## Things
+
+The binding is in development phase stage alpha.
+Goal is to extend testing in the community to cover as many as possible old and new devices.
+Your help is needed to extend and fix the current implementation.
+
+### Unknown Devices
+
+Filter your traces regarding 'DIRIGERA MODEL Unsuppoerted Device'. 
+The trace cotains a json object at the end which is needed to implememnt a corresponding hanlder.
+
+### Problem with Device
+
+Each device has 'json' channel which is reflecting the structural data of a device. 
+This channel is only for development purposes
+
+| Channel | Type   | Read/Write | Description                 |
+|---------|--------|------------|-----------------------------|
+| json    | String | R          | Device json                 |
+
+If you see wrong, missing or too much channels this data is needed to adapt implementation.
+
+### Thing Configuration
+
+| Name            | Type    | Description                                                | Default | Required |
+|-----------------|---------|------------------------------------------------------------|---------|----------|
+| id              | text    | Unique id of this gateway                                  | N/A     | yes      |
+
+Each thing is identified by a unique id which is mandatory to configure.
+Discovery will automatically identify the id.
+
+### Lights
+
+Lamps, LED Panels, LED Stripes
+
+#### Temperature Light
+
+| Channel | Type   | Read/Write | Description                 |
+|---------|--------|------------|-----------------------------|
+| json    | String | R          | Device json                 |
+
+
+#### Color Light
+
+### Remote Controls
+
+### Air Purifiers
+
+### Blinds
+
+### Sensors
+
+#### Motion Sensor
+
+#### Motion Light Sensor
+
+#### Water Sensor
+
+#### Air Quality Sensor
+
+### Power Plugs
+
+#### Power Plug
+
+#### Smart Power Plug
+
+### Shortcut Buttons
+
+### Speaker
+
+### Repeater
 
 ## Channels
 

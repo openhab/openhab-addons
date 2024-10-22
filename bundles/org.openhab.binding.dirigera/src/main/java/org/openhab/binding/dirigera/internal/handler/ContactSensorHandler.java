@@ -24,8 +24,6 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ContactSensorHandler} basic DeviceHandler for all devices
@@ -34,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ContactSensorHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(ContactSensorHandler.class);
 
     public ContactSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);

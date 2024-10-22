@@ -34,17 +34,14 @@ public class DiscoveryMangerMock extends DirigeraDiscoveryManager {
     @Override
     public void thingDiscovered(final DiscoveryResult discoveryResult) {
         String id = discoveryResult.getThingUID().getId();
-        System.out.println("Added " + discoveryResult.getThingTypeUID());
         discoveries.put(id, discoveryResult);
     }
 
     @Override
     public void thingRemoved(final DiscoveryResult discoveryResult) {
-        System.out.println("Remove " + discoveryResult.getThingTypeUID());
         String id = discoveryResult.getThingUID().getId();
         DiscoveryResult remover = discoveries.remove(id);
         assertNotNull(remover);
         deletes.put(id, remover);
     }
-
 }
