@@ -368,7 +368,7 @@ public class OnvifConnection {
                 if (xml != null) {
                     rtspUri = xml;
                     logger.debug("GetStreamUri: {}", rtspUri);
-                    if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                    if (ipCameraHandler.rtspUri.isEmpty()) {// only use if not hard coded in initialize()
                         ipCameraHandler.rtspUri = rtspUri;
                     }
                 }

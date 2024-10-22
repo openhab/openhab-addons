@@ -128,8 +128,10 @@ Thing ipcamera:hikvision:West "West Camera"
 
 ### Reolink
 
-- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF or newer firmwares may be able to do this via their app or web UI.
+- NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF, or newer firmwares may be able to do this via their app or web UI.
 - This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
+- Cameras have ONVIF, RTSP and HTTP disabled by default, to enable these required features, do the following: DEVICE SETTINGS>NETWORK>ADVANCED>PORT SETTINGS> then turn these on leaving the default port number alone.
+- Consider setting the substream of the camera to be 4 FPS and to 640*360 as this will lower CPU load if using the ipcamera.mjpeg stream.
 
 ## Discovery
 
@@ -194,7 +196,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `alarmInputUrl` | A URL you can use for the FFmpeg created Audio and Motion Alarms as they don't require high res feeds as they are not seen. |
 | `customMotionAlarmUrl`| Foscam only, for custom enable motion alarm use. More info found in Foscam's setup steps. |
 | `customAudioAlarmUrl`| Foscam only, for custom enable audio alarm use. More info found in Foscam's setup steps. |
-| `mjpegUrl`| A HTTP URL for MJPEG format streams. If you enter 'ffmpeg' the stream can be generated from the RTSP URL. |
+| `mjpegUrl`| A HTTP or RTSP URL to use for MJPEG streams. If you enter 'ffmpeg' the stream can be generated using the RTSP URL. |
 | `ffmpegInput`| Best if this stream is in H.264 format and can be RTSP or HTTP URLs. Leave this blank to use the auto detected RTSP address for ONVIF cameras. |
 | `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have an ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
 | `ffmpegLocation`| The full path including the filename for where you have installed FFmpeg. The default should work for most Linux installs but if using windows use this format: `c:\ffmpeg\bin\ffmpeg.exe` |
@@ -434,14 +436,15 @@ You can cast it which can be handy to show a moving picture that keeps repeating
 ## MJPEG Streams
 
 Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
-Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion.
+Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this may use a lot of CPU power to handle the conversion.
+The lower the resolution of the stream, the lower the CPU load, so consider using a substream of the camera in the `mjpegUrl` configuration field.
 The alternative is to use HLS format which does not need the conversion and does not use any CPU to speak of.
 For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power.
 This can be done in a dedicated video server which will be the only way with lots of cameras, unless you purchase cameras that have the ability built in.
 
-An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
+An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` or `autofps.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
 
-The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hikvision, Foscam HD and Instar HD.
+The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, ESP32 Camera, Hikvision, Foscam HD and Instar HD.
 To set this up, see [Special Notes for Different Brands](#special-notes-for-different-brands).
 The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
 
@@ -597,7 +600,7 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 There are two ways to cast a camera.
 
 1. openHAB Cloud Connector and using metadata/tags.
-1. Chromecast Bindings `playuri` channel.
+2. Chromecast Bindings `playuri` channel.
 
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
