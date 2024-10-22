@@ -33,8 +33,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SceneHandler} basic DeviceHandler for all devices
@@ -43,7 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SceneHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
     private final TimeZoneProvider timeZoneProvider;
 
     private Optional<ScheduledFuture<?>> sceneObserver = Optional.empty();

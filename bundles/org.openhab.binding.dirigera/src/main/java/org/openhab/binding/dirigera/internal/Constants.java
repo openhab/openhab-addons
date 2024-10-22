@@ -108,6 +108,7 @@ public class Constants {
     public static final String CHANNEL_OTA_STATUS = "ota-status";
     public static final String CHANNEL_OTA_STATE = "ota-state";
     public static final String CHANNEL_OTA_PROGRESS = "ota-progress";
+    public static final String CHANNEL_JSON = "json";
 
     // Gateway channels
     public static final String CHANNEL_SUNRISE = "sunrise";
