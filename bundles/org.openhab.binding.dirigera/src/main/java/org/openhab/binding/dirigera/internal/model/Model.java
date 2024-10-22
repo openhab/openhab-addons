@@ -330,14 +330,10 @@ public class Model {
      */
     public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
         JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
-        ThingTypeUID returnTTUID = identifyDeviceFromJSON(id, entry);
-        if (THING_TYPE_UNKNNOWN.equals(returnTTUID)) {
-            // no device discovered yet - check scenes
+        if (entry.isEmpty()) {
             entry = getAllFor(id, PROPERTY_SCENES);
-            return identifyDeviceFromJSON(id, entry);
-        } else {
-            return returnTTUID;
         }
+        return identifyDeviceFromJSON(id, entry);
     }
 
     /**
@@ -409,7 +405,7 @@ public class Model {
                 }
             }
         }
-        logger.warn("DIRIGERA MODEL Unsuppoerted Device {} with data {}", typeDeviceType, data);
+        logger.warn("DIRIGERA MODEL Unsuppoerted Device {} with data {} {}", typeDeviceType, data, id);
         return THING_TYPE_UNKNNOWN;
     }
 
