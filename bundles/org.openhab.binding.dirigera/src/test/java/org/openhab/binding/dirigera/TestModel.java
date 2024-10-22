@@ -98,6 +98,7 @@ class TestModel {
         // VALLHORN
         String lightSceneId = "3090ba82-3f5e-442f-8e49-f3eac9b7b0eb";
         ThingTypeUID sceneTTUID = gateway.model().identifyDeviceFromModel(lightSceneId);
+        System.out.println(sceneTTUID);
         assertEquals(THING_TYPE_SCENE, sceneTTUID, "Scene TTUID");
     }
 
