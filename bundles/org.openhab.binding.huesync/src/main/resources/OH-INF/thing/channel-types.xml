@@ -100,27 +100,27 @@
 			<p>
 				<ul>
 				  <li>
-				  	<b>"video":</b>
+				  	<b>"Video":</b>
 					<p>
 					  Analyzes the on-screen visuals, translating colors and brightness into corresponding light
 					  effects for an immersive movie-watching experience.
 					</p>
 				 </li>
 				 <li>
-				  	<b>"music":</b>
+				  	<b>"Music":</b>
 					<p>
 					  Analyzes the rhythm and beat of your music, creating
 					  dynamic light along to your tunes.
 					</p>
 				</li>
 				<li>
-				  <b>"game":</b>
+				  <b>"Game":</b>
 				  <p>
 				    Reacts to the action on your screen, intensifying the in-game atmosphere
 				    with bursts of light that correspond to explosions, gunfire, and other gameplay events.</p>
 				</li>
-				<li><b>"passthrough"</b></li>
-				<li><b>"powersave"</b></li>
+				<li><b>"Passthrough"</b></li>
+				<li><b>"Powersave"</b></li>
 			  </ul>
 			</p>
 			]]>
@@ -128,11 +128,11 @@
 		<category>text</category>
 		<command>
 			<options>
-				<option value="powersave"></option>
-				<option value="passthrough"></option>
-				<option value="video"></option>
-				<option value="game"></option>
-				<option value="music"></option>
+				<option value="powersave">Powersave</option>
+				<option value="passthrough">Passthrough</option>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
 			</options>
 		</command>
 	</channel-type>
