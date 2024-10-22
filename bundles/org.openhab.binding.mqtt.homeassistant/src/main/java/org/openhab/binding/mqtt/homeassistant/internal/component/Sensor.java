@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,6 +23,7 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -66,8 +66,6 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected @Nullable String jsonAttributesTopic;
         @SerializedName("json_attributes_template")
         protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes")
-        protected @Nullable List<String> jsonAttributes;
     }
 
     public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -99,11 +97,11 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
 
-        if (channelConfiguration.jsonAttributesTemplate != null) {
+        if (channelConfiguration.jsonAttributesTopic != null) {
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .build();
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         }
         finalizeChannels();
     }
