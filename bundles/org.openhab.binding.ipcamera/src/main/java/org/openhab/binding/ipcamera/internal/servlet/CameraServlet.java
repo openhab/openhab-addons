@@ -184,12 +184,12 @@ public class CameraServlet extends IpCameraServlet {
                 if (openStreams.isEmpty()) {
                     logger.debug("First stream requested, opening up stream from camera");
                     handler.openCamerasStream();
-                    if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                    if (handler.usingRtspForMjpeg()) {
                         output = new StreamOutput(resp);
                     } else {
                         output = new StreamOutput(resp, handler.mjpegContentType);
                     }
-                } else if (handler.mjpegUri.isEmpty() || "ffmpeg".equals(handler.mjpegUri)) {
+                } else if (handler.usingRtspForMjpeg()) {
                     output = new StreamOutput(resp);
                 } else {
                     ChannelTracking tracker = handler.channelTrackingMap.get(handler.getTinyUrl(handler.mjpegUri));
