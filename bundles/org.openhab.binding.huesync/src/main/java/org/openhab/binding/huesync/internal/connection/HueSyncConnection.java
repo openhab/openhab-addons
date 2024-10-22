@@ -34,6 +34,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.framework.BundleContext;
@@ -90,12 +91,6 @@ public class HueSyncConnection {
     }
 
     public void updateAuthentication(String id, String token) {
-        // TODO: Simplify this check ...
-        if (id.equals(this.registrationId) && this.authentication.isPresent()
-                && this.authentication.get().getToken().equals(token)) {
-            return;
-        }
-
         this.removeAuthentication();
 
         if (!id.isBlank() && !token.isBlank()) {
@@ -159,39 +154,41 @@ public class HueSyncConnection {
     // #region private
     private @Nullable <T> T processedResponse(Response response, @Nullable Class<T> type) {
         int status = response.getStatus();
+        try {
+            /*
+             * 400 Invalid State: Registration in progress
+             * 
+             * 401 Authentication failed: If credentials are missing or invalid, errors out. If
+             * credentials are missing, continues on to GET only the Configuration state when
+             * unauthenticated, to allow for device identification.
+             * 
+             * 404 Invalid URI Path: Accessing URI path which is not supported
+             * 
+             * 500 Internal: Internal errors like out of memory
+             */
+            switch (status) {
+                case HttpStatus.OK_200:
+                    return (type != null && (response instanceof ContentResponse))
+                            ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
+                            : null;
+                case HttpStatus.BAD_REQUEST_400:
+                    this.logger.trace("registration in progress: no token received yet");
+                    break;
+                case HttpStatus.UNAUTHORIZED_401:
+                    this.authentication = Optional.empty();
+                    throw new HueSyncConnectionException("@text/connection.invalid-login", this.logger);
 
-        /*
-         * 400 Invalid State: Registration in progress
-         * 
-         * 401 Authentication failed: If credentials are missing or invalid, errors out. If
-         * credentials are missing, continues on to GET only the Configuration state when
-         * unauthenticated, to allow for device identification.
-         * 
-         * 404 Invalid URI Path: Accessing URI path which is not supported
-         * 
-         * 500 Internal: Internal errors like out of memory
-         */
-        switch (status) {
-            case HttpStatus.OK_200:
-                return (type != null && (response instanceof ContentResponse))
-                        ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
-                        : null;
-            case HttpStatus.BAD_REQUEST_400:
-                logger.trace("registration in progress: no token received yet");
-                break;
-            case HttpStatus.UNAUTHORIZED_401:
-                logger.error("credentials missing or invalid");
+                case HttpStatus.NOT_FOUND_404:
+                    this.logger.error("invalid device URI or API endpoint");
+                    break;
+                case HttpStatus.INTERNAL_SERVER_ERROR_500:
+                    this.logger.error("hue sync box server problem");
+                    break;
+                default:
+                    this.logger.warn("unexpected HTTP status: {}", status);
+            }
+        } catch (HueSyncConnectionException e) {
 
-                this.removeAuthentication();
-                break;
-            case HttpStatus.NOT_FOUND_404:
-                logger.error("invalid device URI or API endpoint");
-                break;
-            case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                logger.error("hue sync box server problem");
-                break;
-            default:
-                logger.warn("unexpected HTTP status: {}", status);
         }
         return null;
     }

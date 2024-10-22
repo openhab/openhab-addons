@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="huesyncbox">
+	<thing-type id="box">
 		<label>Hue HDMI Sync Box</label>
 
 		<description>Sync your smart lights to your on-screen TV content with the Philips Hue Play HDMI Sync Box. Four HDMI
@@ -33,7 +33,7 @@
 
 		<representation-property>host</representation-property>
 
-		<config-description-ref uri="thing-type:huesyncbox:thing"/>
+		<config-description-ref uri="thing-type:box:thing"/>
 	</thing-type>
 
 	<channel-group-type id="device-firmware">

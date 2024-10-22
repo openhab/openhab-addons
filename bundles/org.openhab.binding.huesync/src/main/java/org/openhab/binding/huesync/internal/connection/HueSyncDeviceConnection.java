@@ -32,6 +32,7 @@ import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -152,7 +153,7 @@ public class HueSyncDeviceConnection {
                 : null;
     }
 
-    public @Nullable HueSyncRegistration registerDevice(String id) {
+    public @Nullable HueSyncRegistration registerDevice(String id) throws HueSyncConnectionException {
         if (!id.isBlank()) {
             try {
                 HueSyncRegistrationRequest dto = new HueSyncRegistrationRequest();

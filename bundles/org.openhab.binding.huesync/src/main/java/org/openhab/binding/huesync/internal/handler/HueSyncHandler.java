@@ -169,6 +169,9 @@ public class HueSyncHandler extends BaseThingHandler {
 
         this.tasks.values().forEach(task -> this.stopTask(task));
         this.tasks.clear();
+
+        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                "@text/thing.config.huesync.box.registration");
     }
 
     @SuppressWarnings("null")
@@ -182,18 +185,16 @@ public class HueSyncHandler extends BaseThingHandler {
                 this.logMissingUpdateInformation("device");
             }
 
-            try {
-                this.updateHdmiInformation(Optional.ofNullable(update.hdmiStatus).get());
-            } catch (NoSuchElementException e) {
-                this.logMissingUpdateInformation("hdmi");
-            }
-
-            try {
-                this.updateExecutionInformation(Optional.ofNullable(update.execution).get());
-            } catch (NoSuchElementException e) {
-                this.logMissingUpdateInformation("execution");
-            }
+            this.updateHdmiInformation(Optional.ofNullable(update.hdmiStatus).get());
+            this.updateExecutionInformation(Optional.ofNullable(update.execution).get());
         } catch (NoSuchElementException e) {
+            Configuration configuration = this.editConfiguration();
+
+            configuration.put(HueSyncConstants.REGISTRATION_ID, "");
+            configuration.put(HueSyncConstants.API_TOKEN, "");
+
+            this.updateConfiguration(configuration);
+
             this.startTasks();
         }
     }

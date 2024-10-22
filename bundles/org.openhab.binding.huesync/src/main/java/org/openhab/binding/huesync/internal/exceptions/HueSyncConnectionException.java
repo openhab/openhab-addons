@@ -21,13 +21,9 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class HueSyncConnectionException extends HueSyncException {
-    public HueSyncConnectionExceptionType type;
-
     private static final long serialVersionUID = 0L;
 
-    public HueSyncConnectionException(String message, HueSyncConnectionExceptionType type, Logger logger) {
+    public HueSyncConnectionException(String message, Logger logger) {
         super(message, logger);
-
-        this.type = type;
     }
 }
