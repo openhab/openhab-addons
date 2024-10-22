@@ -68,11 +68,6 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
         protected String stateUnlocked = "UNLOCKED";
         @SerializedName("state_unlocking")
         protected String stateUnlocking = "UNLOCKING";
-
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
     }
 
     private boolean optimistic = false;
@@ -127,13 +122,6 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
                     }
                     return true;
                 }).build();
-
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
 
         finalizeChannels();
     }
