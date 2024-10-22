@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,7 +36,6 @@ import com.google.gson.annotations.SerializedName;
 public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.ChannelConfiguration> {
     public static final String STATE_CHANNEL_ID = "state";
     public static final String STATE_CHANNEL_ID_DEPRECATED = "alarm";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
     public static final String SWITCH_DISARM_CHANNEL_ID = "disarm";
     public static final String SWITCH_ARM_HOME_CHANNEL_ID = "armhome";
     public static final String SWITCH_ARM_AWAY_CHANNEL_ID = "armaway";
@@ -93,11 +91,6 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         @SerializedName("supported_features")
         protected List<String> supportedFeatures = List.of(FEATURE_ARM_HOME, FEATURE_ARM_AWAY, FEATURE_ARM_NIGHT,
                 FEATURE_ARM_VACATION, FEATURE_ARM_CUSTOM_BYPASS, FEATURE_TRIGGER);
-
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
     }
 
     public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -158,13 +151,6 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
                     new TextValue(new String[] { channelConfiguration.payloadArmAway }), getName(),
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
-        }
-
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         }
 
         finalizeChannels();
