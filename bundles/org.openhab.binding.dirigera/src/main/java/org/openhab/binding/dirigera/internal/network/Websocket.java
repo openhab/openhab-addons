@@ -54,8 +54,9 @@ public class Websocket {
     private static final String DISCONNECTS = "disconnetcs";
     private static final String ERRORS = "errors";
     private static final String PINGS = "pings";
-    private static final String LAST_LATENCY = "ping-latency";
+    private static final String LAST_LATENCY = "pingLatency";
     private static final String MESSAGES = "messages";
+    public static final String MODEL_UPDATES = "modelUpdates";
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final Map<String, Instant> pingPongMap = new HashMap<>();
@@ -216,7 +217,7 @@ public class Websocket {
         return statistics;
     }
 
-    private void increase(String key) {
+    public void increase(String key) {
         if (statistics.has(key)) {
             int counter = statistics.getInt(key);
             statistics.put(key, ++counter);
