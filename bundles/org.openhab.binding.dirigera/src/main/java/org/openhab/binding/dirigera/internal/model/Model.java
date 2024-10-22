@@ -91,7 +91,6 @@ public class Model {
             }
         } catch (Throwable t) {
             logger.error("Excpetion during model update {}", t.getMessage());
-            t.printStackTrace();
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
     }
@@ -99,7 +98,7 @@ public class Model {
     public synchronized List<String> getAllDeviceIds() {
         List<String> deviceList = new ArrayList<>();
         if (!model.isNull(PROPERTY_DEVICES)) {
-            JSONArray devices = model.getJSONArray("devices");
+            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
@@ -349,8 +348,10 @@ public class Model {
      * @return ThingTypeUID
      */
     public synchronized ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
+        String typeDeviceType = "";
         if (!data.isNull(PROPERTY_DEVICE_TYPE)) {
             String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+            typeDeviceType = deviceType;
             JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
             switch (deviceType) {
                 case DEVICE_TYPE_GATEWAY:
@@ -396,19 +397,19 @@ public class Model {
                     return THING_TYPE_AIR_QUALITY;
                 case DEVICE_TYPE_WATER_SENSOR:
                     return THING_TYPE_WATER_SENSOR;
-                default:
-                    logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType, attributes);
             }
         } else {
             // device type is empty, check for scene
             if (!data.isNull(PROPERTY_TYPE)) {
                 String type = data.getString(PROPERTY_TYPE);
+                typeDeviceType = type + "/" + typeDeviceType;
                 switch (type) {
                     case TYPE_USER_SCENE:
                         return THING_TYPE_SCENE;
                 }
             }
         }
+        logger.warn("DIRIGERA MODEL Unsuppoerted Device {} with data {}", typeDeviceType, data);
         return THING_TYPE_UNKNNOWN;
     }
 
