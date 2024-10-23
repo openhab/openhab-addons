@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public class DirigeraAPISimu implements DirigeraAPI {
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPISimu.class);
     public static String fileName = "src/test/resources/home/home.json";
+    public static Map<String, String> patchMap = new HashMap<>();
     private static JSONObject model = new JSONObject();
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
@@ -75,12 +78,13 @@ public class DirigeraAPISimu implements DirigeraAPI {
 
     @Override
     public void triggerScene(String sceneId, String trigger) {
-        logger.info("trigger scnene");
+        logger.info("trigger scnene {}", trigger);
     }
 
     @Override
     public int sendPatch(String id, JSONObject attributes) {
-        logger.info("send patch");
+        logger.warn("send patch {}", attributes);
+        patchMap.put(id, attributes.toString());
         return 200;
     }
 
