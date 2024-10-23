@@ -10,30 +10,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_DETECTION;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WaterSensorHandler} basic DeviceHandler for all devices
+ * The {@link LightSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class WaterSensorHandler extends BaseHandler {
+public class LightSensorHandler extends BaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(LightSensorHandler.class);
 
-    public WaterSensorHandler(Thing thing, Map<String, String> mapping) {
+    public LightSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -54,6 +59,7 @@ public class WaterSensorHandler extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
+        // handle reachable flag
         super.handleUpdate(update);
         // now device specific
         if (update.has(Model.ATTRIBUTES)) {
@@ -63,10 +69,14 @@ public class WaterSensorHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_DETECTION.equals(targetChannel)) {
+                    if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                OnOffType.from(attributes.getBoolean(key)));
+                                QuantityType.valueOf(attributes.getInt(key), Units.LUX));
+                    } else {
+                        logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
+                } else {
+                    logger.trace("DIRIGERA MOTION_DEVICE no targetChannel for {}", key);
                 }
             }
         }

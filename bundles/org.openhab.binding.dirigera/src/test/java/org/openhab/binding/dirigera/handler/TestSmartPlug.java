@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.SmartPlugHandler;
+import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
