@@ -85,9 +85,9 @@
 		<state readOnly="true"></state>
 		<command>
 			<options>
-				<option value="video"></option>
-				<option value="game"></option>
-				<option value="music"></option>
+				<option value="video">Video</option>
+				<option value="game">Game</option>
+				<option value="music">Music</option>
 			</options>
 		</command>
 	</channel-type>
