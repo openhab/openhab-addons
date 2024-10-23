@@ -261,6 +261,7 @@ public class Constants {
             CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
             PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> AIR_PURIFIER_MAP = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
         {
             put("fanMode", CHANNEL_PURIFIER_FAN_MODE);
             put("motorRuntime", CHANNEL_PURIFIER_MOTOR_RUNTIME);
@@ -275,4 +276,20 @@ public class Constants {
             put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
         }
     };
+
+    public static Map<Integer, String> reverseStateMapping(Map<String, Integer> mapping) {
+        Map<Integer, String> reverseMap = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : mapping.entrySet()) {
+            reverseMap.put(entry.getValue(), entry.getKey());
+        }
+        return reverseMap;
+    }
+
+    public static Map<String, String> reverse(Map<String, String> mapping) {
+        Map<String, String> reverseMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : mapping.entrySet()) {
+            reverseMap.put(entry.getValue(), entry.getKey());
+        }
+        return reverseMap;
+    }
 }
