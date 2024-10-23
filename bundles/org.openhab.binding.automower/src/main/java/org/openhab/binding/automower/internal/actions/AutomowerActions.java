@@ -14,6 +14,7 @@ package org.openhab.binding.automower.internal.actions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.HeadlightMode;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -130,5 +131,100 @@ public class AutomowerActions implements ThingActions {
 
     public static void resumeSchedule(ThingActions actions) {
         ((AutomowerActions) actions).resumeSchedule();
+    }
+
+    @RuleAction(label = "@text/action-confirm-error-label", description = "@text/action-confirm-error-desc")
+    public void confirmError() {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerConfirmError();
+        }
+    }
+
+    public static void confirmError(ThingActions actions) {
+        ((AutomowerActions) actions).confirmError();
+    }
+
+    @RuleAction(label = "@text/action-set-Settings-label", description = "@text/action-set-Settings-desc")
+    public void setSettings(
+            @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight,
+            @ActionInput(name = "headlight-mode", label = "@text/action-input-headlight-mode-label", description = "@text/action-input-headlight-mode-desc") String headlightMode) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            try {
+                automowerHandler.sendAutomowerSettings(cuttingHeight, HeadlightMode.valueOf(headlightMode));
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid HeadlightMode: {}, Error: {}", headlightMode, e.getMessage());
+            }
+        }
+    }
+
+    public static void setSettings(ThingActions actions, byte cuttingHeight, String headlightMode) {
+        ((AutomowerActions) actions).setSettings(cuttingHeight, headlightMode);
+    }
+
+    @RuleAction(label = "@text/action-set-headlight-mode-label", description = "@text/action-set-headlight-mode-desc")
+    public void setWorkArea(
+            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") long workAreaId,
+            @ActionInput(name = "enable", label = "@text/action-input-enable-label", description = "@text/action-input-enable-desc") boolean enable,
+            @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerWorkArea(workAreaId, enable, cuttingHeight);
+        }
+    }
+
+    public static void setWorkArea(ThingActions actions, long workAreaId, boolean enable, byte cuttingHeight) {
+        ((AutomowerActions) actions).setWorkArea(workAreaId, enable, cuttingHeight);
+    }
+
+    @RuleAction(label = "@text/action-set-stayoutzone-label", description = "@text/action-set-stayoutzone-desc")
+    public void setStayOutZone(
+            @ActionInput(name = "zone-id", label = "@text/action-input-zone-id-label", description = "@text/action-input-zone-id-desc") String zoneId,
+            @ActionInput(name = "enable", label = "@text/action-input-enable-label", description = "@text/action-input-enable-desc") boolean enable) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerStayOutZone(zoneId, enable);
+        }
+    }
+
+    public static void setStayOutZone(ThingActions actions, String zoneId, boolean enable) {
+        ((AutomowerActions) actions).setStayOutZone(zoneId, enable);
+    }
+
+    @RuleAction(label = "@text/action-set-calendartask-label", description = "@text/action-set-calendartask-desc")
+    public void setCalendarTask(
+            @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") Long workAreaId,
+            @ActionInput(name = "start", label = "@text/action-input-start-label", description = "@text/action-input-start-desc") short[] start,
+            @ActionInput(name = "duration", label = "@text/action-input-duration-label", description = "@text/action-input-duration-desc") short[] duration,
+            @ActionInput(name = "monday", label = "@text/action-input-monday-label", description = "@text/action-input-monday-desc") boolean[] monday,
+            @ActionInput(name = "tuesday", label = "@text/action-input-tuesday-label", description = "@text/action-input-tuesday-desc") boolean[] tuesday,
+            @ActionInput(name = "wednesday", label = "@text/action-input-wednesday-label", description = "@text/action-input-wednesday-desc") boolean[] wednesday,
+            @ActionInput(name = "thursday", label = "@text/action-input-thursday-label", description = "@text/action-input-thursday-desc") boolean[] thursday,
+            @ActionInput(name = "friday", label = "@text/action-input-friday-label", description = "@text/action-input-friday-desc") boolean[] friday,
+            @ActionInput(name = "saturday", label = "@text/action-input-saturday-label", description = "@text/action-input-saturday-desc") boolean[] saturday,
+            @ActionInput(name = "sunday", label = "@text/action-input-sunday-label", description = "@text/action-input-sunday-desc") boolean[] sunday) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerCalendarTask(workAreaId, start, duration, monday, tuesday, wednesday,
+                    thursday, friday, saturday, sunday);
+        }
+    }
+
+    public static void setCalendarTask(ThingActions actions, Long workAreaId, short[] start, short[] duration,
+            boolean[] monday, boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday,
+            boolean[] saturday, boolean[] sunday) {
+        ((AutomowerActions) actions).setCalendarTask(workAreaId, start, duration, monday, tuesday, wednesday, thursday,
+                friday, saturday, sunday);
     }
 }

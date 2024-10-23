@@ -13,16 +13,16 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class Headlight {
+    private HeadlightMode mode;
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public HeadlightMode getHeadlightMode() {
+        return mode;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setHeadlightMode(HeadlightMode mode) {
+        this.mode = mode;
     }
 }

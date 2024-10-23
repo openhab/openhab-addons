@@ -13,16 +13,16 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
 /**
- * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
-public class Battery {
-    private byte batteryPercent;
+public class MowerStayOutZoneAttributes {
+    private boolean enable;
 
-    public byte getBatteryPercent() {
-        return batteryPercent;
+    public boolean getEnable() {
+        return enable;
     }
 
-    public void setBatteryPercent(byte batteryPercent) {
-        this.batteryPercent = batteryPercent;
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }
