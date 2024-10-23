@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.RepeaterHandler;
+import org.openhab.binding.dirigera.internal.handler.repeater.RepeaterHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
