@@ -26,7 +26,7 @@ public class LambdaConfiguration {
     /**
      * Refresh interval in seconds
      */
-    private long refresh = 30;
+    private int refresh = 30;
 
     private int maxTries = 3;// backwards compatibility and tests
 

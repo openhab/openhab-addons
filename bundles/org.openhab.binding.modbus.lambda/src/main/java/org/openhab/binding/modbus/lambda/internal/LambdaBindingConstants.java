@@ -29,7 +29,7 @@ public class LambdaBindingConstants {
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_LAMBDAHP = new ThingTypeUID(BINDING_ID, "lambdahp");
+    public static final ThingTypeUID THING_TYPE_LAMBDAHP = new ThingTypeUID(BINDING_ID, "lambda-heatpump");
 
     // Channel group ids
     public static final String GROUP_GENERAL_AMBIENT = "generalAmbient";
