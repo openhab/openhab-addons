@@ -89,14 +89,9 @@ public class HomeCapability extends CacheCapability<HomeApi> {
                 handler.removeChannels(getThing().getChannelsOfGroup(GROUP_ENERGY));
             }
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-<<<<<<< Upstream, based on main
             zoneId = home.getZoneId(handler.getSystemTimeZone());
             properties.put(PROPERTY_TIMEZONE, zoneId.toString());
-            properties.put(GROUP_LOCATION, ((Location) home).getLocation().toString());
-=======
-            home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             properties.put(GROUP_LOCATION, home.getLocation().toString());
->>>>>>> 212eed7 Lazy reading of thing in Capability
             properties.put(PROPERTY_FEATURE,
                     featureAreas.stream().map(FeatureArea::name).collect(Collectors.joining(",")));
         }
