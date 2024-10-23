@@ -22,12 +22,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
+import org.openhab.binding.dirigera.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -39,11 +42,23 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestPowerPlug {
+    String deviceId = "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_POWER_PLUG;
 
     @Test
-    void testPowerPlugDevice() {
+    void testHandlerCreation() {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof PowerPlugHandler);
+    }
+
+    @Test
+    void testInitialization() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
-        ThingImpl thing = new ThingImpl(THING_TYPE_POWER_PLUG, "test-device");
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         PowerPlugHandler handler = new PowerPlugHandler(thing, SMART_PLUG_MAP);
         CallbackMock callback = new CallbackMock();
@@ -52,7 +67,7 @@ class TestPowerPlug {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1");
+        config.put("id", deviceId);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
@@ -66,6 +81,7 @@ class TestPowerPlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CHILD_LOCK), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DISABLE_STATUS_LIGHT), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
         checkPowerPlugStates(callback);
     }
 
@@ -96,5 +112,9 @@ class TestPowerPlug {
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power Off");
+        State startupState = callback.getState("dirigera:power-plug:test-device:startup");
+        assertNotNull(startupState);
+        assertTrue(startupState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) startupState).intValue(), "Startup Behavior");
     }
 }

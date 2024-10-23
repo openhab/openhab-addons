@@ -23,12 +23,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
+import org.openhab.binding.dirigera.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -40,12 +43,24 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestSimplePlug {
+    String deviceId = "6379a590-dc0a-47b5-b35b-7b46dfefd282_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_SIMPLE_PLUG;
 
     @Test
-    void testSimplePlugDevice() {
+    void testHandlerCreation() {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof SimplePlugHandler);
+    }
+
+    @Test
+    void testInitialization() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
-        ThingImpl thing = new ThingImpl(THING_TYPE_SIMPLE_PLUG, "test-device");
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         SimplePlugHandler handler = new SimplePlugHandler(thing, SMART_PLUG_MAP);
         CallbackMock callback = new CallbackMock();
@@ -54,7 +69,7 @@ class TestSimplePlug {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "6379a590-dc0a-47b5-b35b-7b46dfefd282_1");
+        config.put("id", deviceId);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
@@ -68,6 +83,7 @@ class TestSimplePlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CHILD_LOCK), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DISABLE_STATUS_LIGHT), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
         checkPowerPlugStates(callback);
     }
 
@@ -94,5 +110,9 @@ class TestSimplePlug {
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.ON.equals((onOffState)), "Power On");
+        State startupState = callback.getState("dirigera:simple-plug:test-device:startup");
+        assertNotNull(startupState);
+        assertTrue(startupState instanceof DecimalType);
+        assertEquals(0, ((DecimalType) startupState).intValue(), "Startup Behavior");
     }
 }
