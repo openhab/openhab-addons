@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,7 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROLLER = new ThingTypeUID(BINDING_ID, "light-controller");
+    public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
@@ -55,7 +57,7 @@ public class Constants {
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_CONTACT_SENSOR,
             THING_TYPE_SIMPLE_PLUG, THING_TYPE_POWER_PLUG, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE,
             THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
-            THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND);
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND);
 
     public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
 
@@ -99,6 +101,7 @@ public class Constants {
     public static final String DEVICE_TYPE_REPEATER = "repeater";
     public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
     public static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
+    public static final String DEVICE_TYPE_AIR_PURIFIER = "airPurifier";
     public static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
     public static final String DEVICE_TYPE_BLINDS = "blinds";
     public static final String TYPE_USER_SCENE = "userScene";
@@ -155,6 +158,15 @@ public class Constants {
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PARTICULATE_MATTER = "particulate-matter";
     public static final String CHANNEL_VOC_INDEX = "voc-index";
+
+    // Air purifier channels
+    public static final String CHANNEL_PURIFIER_FAN_MODE = "fan-mode";
+    public static final String CHANNEL_PURIFIER_FAN_SEQUENCE = "fan-sequence";
+    public static final String CHANNEL_PURIFIER_MOTOR_STATE = "motor-state";
+    public static final String CHANNEL_PURIFIER_MOTOR_RUNTIME = "motor-runtime";
+    public static final String CHANNEL_PURIFIER_FILTER_ELAPSED = "filter-elapsed";
+    public static final String CHANNEL_PURIFIER_FILTER_LIFETIME = "filter-lifetime";
+    public static final String CHANNEL_PURIFIER_FILTER_ALARM = "filter-alarm";
 
     // Blinds channels
     public static final String CHANNEL_BLIND_CURRENT_LEVEL = "current";
@@ -227,4 +239,19 @@ public class Constants {
             CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel", CHANNEL_BLIND_CURRENT_LEVEL, "blindsTargetLevel",
             CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
             PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> AIR_PURIFIER_MAP = new HashMap<String, String>() {
+        {
+            put("fanMode", CHANNEL_PURIFIER_FAN_MODE);
+            put("motorRuntime", CHANNEL_PURIFIER_MOTOR_RUNTIME);
+            put("filterElapsedTime", CHANNEL_PURIFIER_FILTER_ELAPSED);
+            put("filterAlarmStatus", CHANNEL_PURIFIER_FILTER_ALARM);
+            put("filterLifetime", CHANNEL_PURIFIER_FILTER_LIFETIME);
+            put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
+            put("childLock", CHANNEL_CHILD_LOCK);
+            put("currentPM25", CHANNEL_PARTICULATE_MATTER);
+            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
+            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
+            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+        }
+    };
 }
