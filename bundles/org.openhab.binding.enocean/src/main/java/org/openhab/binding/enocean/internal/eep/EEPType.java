@@ -744,12 +744,8 @@ public enum EEPType {
     }
 
     public Configuration getChannelConfig(String channelId) {
-        Configuration c = null;
         if (!channelIdsWithConfig.isEmpty()) {
-            c = channelIdsWithConfig.get(channelId);
-            if (c != null) {
-                return c;
-            }
+            return channelIdsWithConfig.get(channelId);
         }
         return new Configuration();
     }
