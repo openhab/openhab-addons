@@ -38,7 +38,8 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_MOTION_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
             "motion-light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
-    public static final ThingTypeUID THING_TYPE_PLUG = new ThingTypeUID(BINDING_ID, "plug");
+    public static final ThingTypeUID THING_TYPE_SIMPLE_PLUG = new ThingTypeUID(BINDING_ID, "simple-plug");
+    public static final ThingTypeUID THING_TYPE_POWER_PLUG = new ThingTypeUID(BINDING_ID, "power-plug");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
     public static final ThingTypeUID THING_TYPE_SPEAKER = new ThingTypeUID(BINDING_ID, "speaker");
     public static final ThingTypeUID THING_TYPE_SCENE = new ThingTypeUID(BINDING_ID, "scene");
@@ -47,11 +48,12 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
+    public static final ThingTypeUID THING_TYPE_NOT_FOUND = new ThingTypeUID(BINDING_ID, "not-found");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_CONTACT_SENSOR,
-            THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER,
-            THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_PLUG, THING_TYPE_AIR_QUALITY,
+            THING_TYPE_SIMPLE_PLUG, THING_TYPE_POWER_PLUG, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE,
+            THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
             THING_TYPE_WATER_SENSOR);
 
     public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
@@ -189,9 +191,9 @@ public class Constants {
             CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL, "currentAmps", CHANNEL_CURRENT, "statusLight",
             CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
             PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "statusLight",
-            CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
-            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    // public static final Map<String, String> PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "statusLight",
+    // CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+    // PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,

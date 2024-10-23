@@ -333,7 +333,11 @@ public class Model {
         if (entry.isEmpty()) {
             entry = getAllFor(id, PROPERTY_SCENES);
         }
-        return identifyDeviceFromJSON(id, entry);
+        if (entry.isEmpty()) {
+            return THING_TYPE_NOT_FOUND;
+        } else {
+            return identifyDeviceFromJSON(id, entry);
+        }
     }
 
     /**
@@ -376,12 +380,16 @@ public class Model {
                 case DEVICE_TYPE_CONTACT_SENSOR:
                     return THING_TYPE_CONTACT_SENSOR;
                 case DEVICE_TYPE_OUTLET:
-                    // if product code is E2206 (INSPELNING) plug contains an additional light sensor!
                     String pluGroductCode = getStringAttribute(id, "productCode");
                     if ("E2206".equals(pluGroductCode)) {
+                        // if product code is E2206 (INSPELNING) plug contains measurements
                         return THING_TYPE_SMART_PLUG;
+                    } else if ("E2204".equals(pluGroductCode)) {
+                        // if product code is E2206 (TRETAKT) plug contains child lock and status light
+                        return THING_TYPE_POWER_PLUG;
                     } else {
-                        return THING_TYPE_PLUG;
+                        // otherwise consider simple-plug with sinple switch on / off capabilities
+                        return THING_TYPE_SIMPLE_PLUG;
                     }
                 case DEVICE_TYPE_SPEAKER:
                     return THING_TYPE_SPEAKER;
@@ -409,7 +417,7 @@ public class Model {
         return THING_TYPE_UNKNNOWN;
     }
 
-    public boolean has(String id) {
-        return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
-    }
+    // public boolean has(String id) {
+    // return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
+    // }
 }
