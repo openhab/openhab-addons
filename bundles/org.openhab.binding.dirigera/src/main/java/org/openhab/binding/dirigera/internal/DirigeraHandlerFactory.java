@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.handler.AirPurifierHandler;
 import org.openhab.binding.dirigera.internal.handler.AirQualityHandler;
 import org.openhab.binding.dirigera.internal.handler.BlindHandler;
 import org.openhab.binding.dirigera.internal.handler.ColorLightHandler;
@@ -37,7 +38,6 @@ import org.openhab.binding.dirigera.internal.handler.SpeakerHandler;
 import org.openhab.binding.dirigera.internal.handler.TemperatureLightHandler;
 import org.openhab.binding.dirigera.internal.handler.WaterSensorHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -69,9 +69,10 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient insecureClient;
 
     @Activate
-    public DirigeraHandlerFactory(@Reference HttpClientFactory hcf, @Reference StorageService storageService,
+    public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager,
             final @Reference TimeZoneProvider timeZoneProvider) {
+
         this.discoveryManager = manager;
         this.timeZoneProvider = timeZoneProvider;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
@@ -140,6 +141,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new WaterSensorHandler(thing, WATER_SENSOR_MAP);
         } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {
             return new BlindHandler(thing, BLINDS_MAP);
+        } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
+            return new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
