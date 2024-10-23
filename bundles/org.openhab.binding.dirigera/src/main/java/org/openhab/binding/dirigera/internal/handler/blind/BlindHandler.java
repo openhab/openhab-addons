@@ -14,7 +14,6 @@ package org.openhab.binding.dirigera.internal.handler.blind;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -40,14 +39,11 @@ import org.slf4j.LoggerFactory;
 public class BlindHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(BlindHandler.class);
     public static final Map<String, Integer> BLIND_STATES = Map.of("stopped", 0, "up", 1, "down", 2);
-    public static Map<Integer, String> blindNumberToState = new HashMap<>();
+    public static Map<Integer, String> blindNumberToState = reverseStateMapping(BLIND_STATES);
 
     public BlindHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        if (blindNumberToState.isEmpty()) {
-            blindNumberToState = (Map<Integer, String>) super.reverse(BLIND_STATES);
-        }
     }
 
     @Override
