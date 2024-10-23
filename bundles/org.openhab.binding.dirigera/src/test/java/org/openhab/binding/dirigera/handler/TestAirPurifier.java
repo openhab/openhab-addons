@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.AirPurifierHandler;
+import org.openhab.binding.dirigera.internal.handler.airpurifier.AirPurifierHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.binding.dirigera.mock.DirigeraAPISimu;
 import org.openhab.binding.dirigera.mock.HandlerFactoryMock;

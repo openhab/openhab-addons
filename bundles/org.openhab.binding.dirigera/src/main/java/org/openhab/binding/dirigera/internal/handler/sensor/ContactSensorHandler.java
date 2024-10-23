@@ -10,34 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_STATE;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LightSensorHandler} basic DeviceHandler for all devices
+ * The {@link ContactSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LightSensorHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(LightSensorHandler.class);
+public class ContactSensorHandler extends BaseHandler {
 
-    public LightSensorHandler(Thing thing, Map<String, String> mapping) {
+    public ContactSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -68,14 +65,13 @@ public class LightSensorHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getInt(key), Units.LUX));
-                    } else {
-                        logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
+                    if (CHANNEL_STATE.equals(targetChannel)) {
+                        OpenClosedType state = OpenClosedType.CLOSED;
+                        if (attributes.getBoolean(key)) {
+                            state = OpenClosedType.OPEN;
+                        }
+                        updateState(new ChannelUID(thing.getUID(), targetChannel), state);
                     }
-                } else {
-                    logger.trace("DIRIGERA MOTION_DEVICE no targetChannel for {}", key);
                 }
             }
         }
