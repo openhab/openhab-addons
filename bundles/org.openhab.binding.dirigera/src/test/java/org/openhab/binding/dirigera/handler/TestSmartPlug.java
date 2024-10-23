@@ -85,6 +85,8 @@ class TestSmartPlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POTENTIAL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTAL), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET), RefreshType.REFRESH);
         checkSmartPlugStates(callback);
     }
 
@@ -132,6 +134,17 @@ class TestSmartPlug {
         assertTrue(powerState instanceof QuantityType);
         assertTrue(((QuantityType<?>) powerState).getUnit().equals(Units.WATT));
         assertEquals(0, ((QuantityType<?>) powerState).intValue(), "Watt");
+        State energyTotalState = callback.getState("dirigera:smart-plug:test-device:energy-total");
+        assertNotNull(energyTotalState);
+        assertTrue(energyTotalState instanceof QuantityType);
+        assertTrue(((QuantityType<?>) energyTotalState).getUnit().equals(Units.KILOWATT_HOUR));
+        assertEquals(0, ((QuantityType<?>) energyTotalState).intValue(), "Watt");
+        State energyReset = callback.getState("dirigera:smart-plug:test-device:energy-reset");
+        assertNotNull(energyReset);
+        assertTrue(energyReset instanceof QuantityType);
+        assertTrue(((QuantityType<?>) energyReset).getUnit().equals(Units.KILOWATT_HOUR));
+        assertEquals(0, ((QuantityType<?>) energyReset).intValue(), "Watt");
+
         State startupState = callback.getState("dirigera:smart-plug:test-device:startup");
         assertNotNull(startupState);
         assertTrue(startupState instanceof DecimalType);
