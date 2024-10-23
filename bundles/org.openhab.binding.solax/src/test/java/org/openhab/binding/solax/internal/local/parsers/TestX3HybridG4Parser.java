@@ -107,7 +107,7 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
 
         assertEquals(-42, data.getFeedInPower()); // [34][35]
 
-        // assertEquals(313.3, data.getBatteryVoltage()); // [39]
+        assertEquals(2.59, data.getBatteryVoltage()); // [39]
         assertEquals(3.2, data.getBatteryCurrent()); // [40]
         assertEquals(1034, data.getBatteryPower()); // [41]
         assertEquals(45, data.getBatteryLevel()); // [103]
@@ -122,8 +122,8 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
         assertEquals(19.25, data.getTotalFeedInEnergy()); // [86][87]
         assertEquals(36.9, data.getTotalConsumption()); // [88]
         assertEquals(39.6, data.getTodayEnergy()); // [82] / 10
-        // assertEquals(5.06, data.getTodayFeedInEnergy()); // [90][91] / 100
-        // assertEquals(3.04, data.getTodayConsumption()); // [92][93] / 100
+        assertEquals(1261573.06, data.getTodayFeedInEnergy()); // [90][91] / 100
+        assertEquals(202509.28, data.getTodayConsumption()); // [92][93] / 100
         assertEquals(6.2, data.getTodayBatteryDischargeEnergy()); // [78] / 100
         assertEquals(11, data.getTodayBatteryChargeEnergy()); // [79] / 100
     }
