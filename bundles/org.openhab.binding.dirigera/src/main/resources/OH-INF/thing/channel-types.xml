@@ -122,6 +122,35 @@
 		<label>Humidity</label>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="time">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fan-mode">
+		<item-type>Number</item-type>
+		<label>Fan Mode</label>
+		<state>
+			<options>
+				<option value="0">auto</option>
+				<option value="1">low</option>
+				<option value="2">medium</option>
+				<option value="3">high</option>
+				<option value="4">on</option>
+				<option value="5">off</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">auto</option>
+				<option value="1">low</option>
+				<option value="2">medium</option>
+				<option value="3">high</option>
+				<option value="4">on</option>
+				<option value="5">off</option>
+			</options>
+		</command>
+	</channel-type>
 	<channel-type id="blind-state">
 		<item-type>Number</item-type>
 		<label>Blind State Status</label>

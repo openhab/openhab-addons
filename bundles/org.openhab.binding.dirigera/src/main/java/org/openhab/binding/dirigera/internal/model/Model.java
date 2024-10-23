@@ -395,6 +395,8 @@ public class Model {
                     return THING_TYPE_AIR_QUALITY;
                 case DEVICE_TYPE_WATER_SENSOR:
                     return THING_TYPE_WATER_SENSOR;
+                case DEVICE_TYPE_AIR_PURIFIER:
+                    return THING_TYPE_AIR_PURIFIER;
                 case DEVICE_TYPE_BLINDS:
                     return THING_TYPE_BLIND;
             }
