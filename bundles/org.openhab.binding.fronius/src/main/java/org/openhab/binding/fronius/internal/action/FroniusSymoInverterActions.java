@@ -41,59 +41,59 @@ import org.osgi.service.component.annotations.ServiceScope;
 public class FroniusSymoInverterActions implements ThingActions {
     private @Nullable FroniusSymoInverterHandler handler;
 
-    public static void resetBatteryControl(ThingActions actions) {
+    public static boolean resetBatteryControl(ThingActions actions) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
-            froniusSymoInverterActions.resetBatteryControl();
+            return froniusSymoInverterActions.resetBatteryControl();
         } else {
             throw new IllegalArgumentException(
                     "The 'actions' argument is not an instance of FroniusSymoInverterActions");
         }
     }
 
-    public static void holdBatteryCharge(ThingActions actions) {
+    public static boolean holdBatteryCharge(ThingActions actions) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
-            froniusSymoInverterActions.holdBatteryCharge();
+            return froniusSymoInverterActions.holdBatteryCharge();
         } else {
             throw new IllegalArgumentException(
                     "The 'actions' argument is not an instance of FroniusSymoInverterActions");
         }
     }
 
-    public static void addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until) {
+    public static boolean addHoldBatteryChargeSchedule(ThingActions actions, LocalTime from, LocalTime until) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
-            froniusSymoInverterActions.addHoldBatteryChargeSchedule(from, until);
+            return froniusSymoInverterActions.addHoldBatteryChargeSchedule(from, until);
         } else {
             throw new IllegalArgumentException(
                     "The 'actions' argument is not an instance of FroniusSymoInverterActions");
         }
     }
 
-    public static void addHoldBatteryChargeSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until) {
-        addHoldBatteryChargeSchedule(actions, from.toLocalTime(), until.toLocalTime());
+    public static boolean addHoldBatteryChargeSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until) {
+        return addHoldBatteryChargeSchedule(actions, from.toLocalTime(), until.toLocalTime());
     }
 
-    public static void forceBatteryCharging(ThingActions actions, QuantityType<Power> power) {
+    public static boolean forceBatteryCharging(ThingActions actions, QuantityType<Power> power) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
-            froniusSymoInverterActions.forceBatteryCharging(power);
+            return froniusSymoInverterActions.forceBatteryCharging(power);
         } else {
             throw new IllegalArgumentException(
                     "The 'actions' argument is not an instance of FroniusSymoInverterActions");
         }
     }
 
-    public static void addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
+    public static boolean addForcedBatteryChargingSchedule(ThingActions actions, LocalTime from, LocalTime until,
             QuantityType<Power> power) {
         if (actions instanceof FroniusSymoInverterActions froniusSymoInverterActions) {
-            froniusSymoInverterActions.addForcedBatteryChargingSchedule(from, until, power);
+            return froniusSymoInverterActions.addForcedBatteryChargingSchedule(from, until, power);
         } else {
             throw new IllegalArgumentException(
                     "The 'actions' argument is not an instance of FroniusSymoInverterActions");
         }
     }
 
-    public static void addForcedBatteryChargingSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
-            QuantityType<Power> power) {
-        addForcedBatteryChargingSchedule(actions, from.toLocalTime(), until.toLocalTime(), power);
+    public static boolean addForcedBatteryChargingSchedule(ThingActions actions, ZonedDateTime from,
+            ZonedDateTime until, QuantityType<Power> power) {
+        return addForcedBatteryChargingSchedule(actions, from.toLocalTime(), until.toLocalTime(), power);
     }
 
     @Override
@@ -107,56 +107,62 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.reset-battery-control.label", description = "@text/actions.reset-battery-control.description")
-    public void resetBatteryControl() {
+    public boolean resetBatteryControl() {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.resetBatteryControl();
+            return handler.resetBatteryControl();
         }
+        return false;
     }
 
     @RuleAction(label = "@text/actions.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
-    public void holdBatteryCharge() {
+    public boolean holdBatteryCharge() {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.holdBatteryCharge();
+            return handler.holdBatteryCharge();
         }
+        return false;
     }
 
     @RuleAction(label = "@text/actions.add-hold-battery-charge-schedule.label", description = "@text/actions.add-hold-battery-charge-schedule.description")
-    public void addHoldBatteryChargeSchedule(
+    public boolean addHoldBatteryChargeSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description") LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description") LocalTime until) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.addHoldBatteryChargeSchedule(from, until);
+            return handler.addHoldBatteryChargeSchedule(from, until);
         }
+        return false;
     }
 
-    public void addHoldBatteryChargeSchedule(ZonedDateTime from, ZonedDateTime until) {
-        addHoldBatteryChargeSchedule(from.toLocalTime(), until.toLocalTime());
+    public boolean addHoldBatteryChargeSchedule(ZonedDateTime from, ZonedDateTime until) {
+        return addHoldBatteryChargeSchedule(from.toLocalTime(), until.toLocalTime());
     }
 
     @RuleAction(label = "@text/actions.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
-    public void forceBatteryCharging(
+    public boolean forceBatteryCharging(
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.forceBatteryCharging(power);
+            return handler.forceBatteryCharging(power);
         }
+        return false;
     }
 
     @RuleAction(label = "@text/actions.add-forced-battery-charging-schedule.label", description = "@text/actions.add-forced-battery-charging-schedule.description")
-    public void addForcedBatteryChargingSchedule(
+    public boolean addForcedBatteryChargingSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description") LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description") LocalTime until,
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>") QuantityType<Power> power) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
-            handler.addForcedBatteryChargingSchedule(from, until, power);
+            return handler.addForcedBatteryChargingSchedule(from, until, power);
         }
+        return false;
     }
 
-    public void addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power) {
-        addForcedBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime(), power);
+    public boolean addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until,
+            QuantityType<Power> power) {
+        return addForcedBatteryChargingSchedule(from.toLocalTime(), until.toLocalTime(), power);
     }
 }
