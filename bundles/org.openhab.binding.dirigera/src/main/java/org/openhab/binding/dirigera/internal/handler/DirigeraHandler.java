@@ -45,8 +45,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
-import org.openhab.binding.dirigera.internal.dto.CodeResponse;
-import org.openhab.binding.dirigera.internal.dto.TokenResponse;
 import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
@@ -75,8 +73,6 @@ import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link DirigeraHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -86,8 +82,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
-
-    public static final Gson GSON = new Gson();
 
     // Used for unit tests
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
@@ -415,10 +409,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER Call {} with params", url);
 
             ContentResponse response = codeRequest.timeout(10, TimeUnit.SECONDS).send();
-            logger.info("DIRIGERA HANDLER code challenge {} : {}", response.getStatus(), response.getContentAsString());
-            CodeResponse codeResponse = GSON.fromJson(response.getContentAsString(), CodeResponse.class);
-            logger.info("DIRIGERA HANDLER got code {}", codeResponse.code);
-            return codeResponse.code;
+            int responseStatus = response.getStatus();
+            String responseString = response.getContentAsString();
+            logger.info("DIRIGERA HANDLER code challenge {} : {}", responseStatus, responseString);
+            JSONObject codeResponse = new JSONObject(responseString);
+            String code = codeResponse.getString("code");
+            logger.info("DIRIGERA HANDLER got code {}", code);
+            return code;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("DIRIGERA HANDLER exception during code request {}", e.getMessage());
             return "";
@@ -434,10 +431,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             baseParams.put("code_verifier", codeVerifier);
 
             String url = String.format(TOKEN_URL, config.ipAddress);
-
-            // Instant stopTime = Instant.now().plus(1, ChronoUnit.MINUTES);
-            int status = 200;
-
             String urlEncoded = UrlEncoded.encode(baseParams, StandardCharsets.UTF_8, false);
             Request tokenRequest = httpClient.POST(url)
                     .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -447,14 +440,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
             ContentResponse response = tokenRequest.timeout(10, TimeUnit.SECONDS).send();
             logger.info("DIRIGERA HANDLER token response {} : {}", response.getStatus(), response.getContentAsString());
-            status = response.getStatus();
-            if (status != 200) {
+            int responseStatus = response.getStatus();
+            if (responseStatus != 200) {
                 return "";
             }
-            TokenResponse tokenResponse = GSON.fromJson(response.getContentAsString(), TokenResponse.class);
-            logger.info("DIRIGERA HANDLER got token {}", tokenResponse.access_token);
-            return tokenResponse.access_token;
-            // }
+            String responseString = response.getContentAsString();
+            JSONObject tokenResponse = new JSONObject(responseString);
+            String accessToken = tokenResponse.getString("access_token");
+            logger.info("DIRIGERA HANDLER got token {}", accessToken);
+            return accessToken;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("DIRIGERA HANDLER exception fetching token {}", e.getMessage());
             return "";
@@ -689,8 +683,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (attributes.has(PROPERTY_OTA_STATUS)) {
                 String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
                 if (OTA_STATUS_MAP.containsKey(otaStatusString)) {
-                    int otaStatus = OTA_STATUS_MAP.get(otaStatusString);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
+                    Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                    if (otaStatus != null) {
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
+                    } else {
+                        logger.warn("Cannot decode ota status {}", otaStatusString);
+                    }
                 } else {
                     logger.warn("Cannot decode ota status {}", otaStatusString);
                 }
@@ -698,8 +696,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (attributes.has(PROPERTY_OTA_STATE)) {
                 String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
                 if (OTA_STATE_MAP.containsKey(otaStateString)) {
-                    int otaState = OTA_STATE_MAP.get(otaStateString);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                    Integer otaState = OTA_STATE_MAP.get(otaStateString);
+                    if (otaState != null) {
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                    } else {
+                        logger.warn("Cannot decode ota state {}", otaStateString);
+                    }
                 } else {
                     logger.warn("Cannot decode ota state {}", otaStateString);
                 }
