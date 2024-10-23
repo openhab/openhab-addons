@@ -14,7 +14,6 @@ package org.openhab.binding.dirigera.internal.handler.airpurifier;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -43,14 +42,11 @@ public class AirPurifierHandler extends BaseHandler {
 
     public static final Map<String, Integer> FAN_MODES = Map.of("auto", 0, "low", 1, "medium", 2, "high", 3, "on", 4,
             "off", 5);
-    public static Map<Integer, String> fanModeToState = new HashMap<>();
+    public static Map<Integer, String> fanModeToState = reverseStateMapping(FAN_MODES);
 
     public AirPurifierHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        if (fanModeToState.isEmpty()) {
-            fanModeToState = (Map<Integer, String>) super.reverse(FAN_MODES);
-        }
     }
 
     @Override
