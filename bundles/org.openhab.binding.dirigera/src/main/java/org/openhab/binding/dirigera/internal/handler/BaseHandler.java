@@ -132,6 +132,23 @@ public abstract class BaseHandler extends BaseThingHandler {
             if (cachedState != null) {
                 super.updateState(channelUID, cachedState);
             }
+        } else {
+            String targetChannel = channelUID.getIdWithoutGroup();
+            String targetProperty = channel2PropertyMap.get(targetChannel);
+            if (targetProperty != null) {
+                switch (targetChannel) {
+                    case CHANNEL_STARTUP_BEHAVIOR:
+                        if (command instanceof DecimalType decimal) {
+                            String behaviorCommand = STARTUP_BEHAVIOR_REVERSE_MAPPING.get(decimal.intValue());
+                            if (behaviorCommand != null) {
+                                JSONObject stqartupAttributes = new JSONObject();
+                                stqartupAttributes.put(targetProperty, behaviorCommand);
+                                gateway().api().sendPatch(config.id, stqartupAttributes);
+                            }
+                            break;
+                        }
+                }
+            }
         }
     }
 
@@ -182,6 +199,16 @@ public abstract class BaseHandler extends BaseThingHandler {
             if (attributes.has(PROPERTY_BATTERY_PERCENTAGE)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL),
                         QuantityType.valueOf(attributes.getInt(PROPERTY_BATTERY_PERCENTAGE), Units.PERCENT));
+            }
+            if (attributes.has(PROPERTY_STARTUP_BEHAVIOR)) {
+                String startupString = attributes.getString(PROPERTY_STARTUP_BEHAVIOR);
+                Integer startupValue = STARTUP_BEHAVIOR_MAPPING.get(startupString);
+                if (startupValue != null) {
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR),
+                            new DecimalType(startupValue));
+                } else {
+                    logger.warn("Cannot decode startup behavior {}", startupString);
+                }
             }
         }
 

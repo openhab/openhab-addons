@@ -17,6 +17,10 @@
 				<label>Plug Powered</label>
 				<description>Turn plug on or off </description>
 			</channel>
+			<channel id="startup" typeId="startup">
+				<label>Startup Behavior</label>
+				<description>Startup behavior after power cutoff</description>
+			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
