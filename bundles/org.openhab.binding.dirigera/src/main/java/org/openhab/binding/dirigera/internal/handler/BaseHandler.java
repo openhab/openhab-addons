@@ -237,17 +237,16 @@ public abstract class BaseHandler extends BaseThingHandler {
         ThingTypeUID modelTTUID = gateway().model().identifyDeviceFromModel(config.id);
         if (!thing.getThingTypeUID().equals(modelTTUID)) {
             // check if id is present in mdoel
-            if (gateway().model().has(config.id)) {
+            if (THING_TYPE_NOT_FOUND.equals(modelTTUID)) {
+                String message = "Device id " + config.id + " not found";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, message);
+            } else {
                 String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-            } else {
-                String message = "Handler ID " + config.id + " removed from Gateway";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, message);
             }
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     private Map<String, String> reverse(Map<String, String> mapping) {

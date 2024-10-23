@@ -79,7 +79,7 @@ public class PowerPlugHandler extends SimplePlugHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_CHILD_LOCK.equals(targetChannel) || CHANNEL_STATE.equals(targetChannel)
+                    if (CHANNEL_CHILD_LOCK.equals(targetChannel)
                             || CHANNEL_DISABLE_STATUS_LIGHT.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));

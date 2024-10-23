@@ -58,4 +58,28 @@ class TestWrongHandler {
         assertNotNull(description);
         assertTrue(description.contains("doesn't match with model"), "Description");
     }
+
+    @Test
+    void testMissingId() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
+        ThingImpl thing = new ThingImpl(THING_TYPE_CONTACT_SENSOR, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        ContactSensorHandler handler = new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", "5ac5e131-1234-4d75-be78-759a095d31fb_1");
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        ThingStatusInfo status = callback.getStatus();
+        assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
+        assertEquals(ThingStatusDetail.GONE, status.getStatusDetail(), "Device disappeared");
+        String description = status.getDescription();
+        assertNotNull(description);
+        assertTrue(description.endsWith("not found"), "Description");
+    }
 }

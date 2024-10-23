@@ -68,7 +68,7 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         stateMap.put(channelUID.getAsString(), state);
-        logger.info("Update {} state {}", channelUID.getAsString(), state.toFullString());
+        logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
         // if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
         // logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
         // }
@@ -76,6 +76,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void postCommand(ChannelUID channelUID, Command command) {
+        logger.warn("POST command {} {} {}", channelUID, command);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        logger.info("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
+        logger.warn("Update status {} {} {}", thingStatus.getStatus(), thingStatus.getStatusDetail(),
                 thingStatus.getDescription());
         synchronized (this) {
             status = thingStatus;
