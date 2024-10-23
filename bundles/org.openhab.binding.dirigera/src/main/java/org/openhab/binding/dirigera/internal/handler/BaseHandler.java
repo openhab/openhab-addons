@@ -70,7 +70,7 @@ public abstract class BaseHandler extends BaseThingHandler {
 
         // mapping contains, reverse mapping for commands plus state cache
         property2ChannelMap = mapping;
-        channel2PropertyMap = (Map<String, String>) reverse(mapping);
+        channel2PropertyMap = reverse(mapping);
         channelStateMap = initializeCache(mapping);
     }
 
@@ -247,14 +247,6 @@ public abstract class BaseHandler extends BaseThingHandler {
             return false;
         }
         return true;
-    }
-
-    public static Map<?, ?> reverse(Map<?, ?> mapping) {
-        final Map reverseMap = new HashMap();
-        mapping.forEach((key, value) -> {
-            reverseMap.put(value, key);
-        });
-        return reverseMap;
     }
 
     private Map<String, State> initializeCache(Map<String, String> mapping) {
