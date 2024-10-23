@@ -122,6 +122,24 @@
 		<label>Humidity</label>
 		<state pattern="%.1f %%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="blind-state">
+		<item-type>Number</item-type>
+		<label>Blind State Status</label>
+		<state>
+			<options>
+				<option value="0">stopped</option>
+				<option value="1">up</option>
+				<option value="2">down</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">stopped</option>
+				<option value="1">up</option>
+				<option value="2">down</option>
+			</options>
+		</command>
+	</channel-type>
 	<channel-type id="ota-status" advanced="true">
 		<item-type>Number</item-type>
 		<label>OTA Status</label>

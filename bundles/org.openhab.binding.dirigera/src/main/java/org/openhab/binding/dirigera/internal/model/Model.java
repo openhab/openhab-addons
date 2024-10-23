@@ -119,12 +119,6 @@ public class Model {
                 if (entry.has(PROPERTY_DEVICE_ID)) {
                     String id = entry.getString(PROPERTY_DEVICE_ID);
                     sceneList.add(id);
-                    // if (entry.has("info")) {
-                    // JSONObject info = entry.getJSONObject("info");
-                    // if (info.has("name")) {
-                    // gateway.newScene(id, info.getString("name"));
-                    // }
-                    // }
                 }
             }
         }
@@ -401,6 +395,8 @@ public class Model {
                     return THING_TYPE_AIR_QUALITY;
                 case DEVICE_TYPE_WATER_SENSOR:
                     return THING_TYPE_WATER_SENSOR;
+                case DEVICE_TYPE_BLINDS:
+                    return THING_TYPE_BLIND;
             }
         } else {
             // device type is empty, check for scene

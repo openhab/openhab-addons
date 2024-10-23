@@ -21,6 +21,7 @@ import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.AirQualityHandler;
+import org.openhab.binding.dirigera.internal.handler.BlindHandler;
 import org.openhab.binding.dirigera.internal.handler.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
@@ -137,6 +138,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new AirQualityHandler(thing, AIR_QUALITY_MAP);
         } else if (THING_TYPE_WATER_SENSOR.equals(thingTypeUID)) {
             return new WaterSensorHandler(thing, WATER_SENSOR_MAP);
+        } else if (THING_TYPE_BLIND.equals(thingTypeUID)) {
+            return new BlindHandler(thing, BLINDS_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;
