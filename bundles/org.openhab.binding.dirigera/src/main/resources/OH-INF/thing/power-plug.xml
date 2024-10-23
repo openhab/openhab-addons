@@ -25,6 +25,10 @@
 				<label>Child Lock</label>
 				<description>Child lock for button on plug</description>
 			</channel>
+			<channel id="startup" typeId="startup">
+				<label>Startup Behavior</label>
+				<description>Startup behavior after power cutoff</description>
+			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>

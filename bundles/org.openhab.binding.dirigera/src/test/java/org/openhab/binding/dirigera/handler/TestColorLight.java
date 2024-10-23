@@ -66,6 +66,7 @@ class TestColorLight {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
         checkColorLightStates(callback);
     }
 
@@ -95,5 +96,9 @@ class TestColorLight {
         assertTrue(otaProgess instanceof QuantityType);
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
+        State startupState = callback.getState("dirigera:color-light:test-device:startup");
+        assertNotNull(startupState);
+        assertTrue(startupState instanceof DecimalType);
+        assertEquals(1, ((DecimalType) startupState).intValue(), "Startup Behavior");
     }
 }

@@ -27,6 +27,25 @@
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+	<channel-type id="startup">
+		<item-type>Number</item-type>
+		<label>Startup Behavior</label>
+		<state>
+			<options>
+				<option value="0">Previous</option>
+				<option value="1">On</option>
+				<option value="2">Off</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Previous</option>
+				<option value="1">On</option>
+				<option value="2">Off</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>On Off Switch</label>
@@ -132,22 +151,22 @@
 		<label>Fan Mode</label>
 		<state>
 			<options>
-				<option value="0">auto</option>
-				<option value="1">low</option>
-				<option value="2">medium</option>
-				<option value="3">high</option>
-				<option value="4">on</option>
-				<option value="5">off</option>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">On</option>
+				<option value="5">Off</option>
 			</options>
 		</state>
 		<command>
 			<options>
-				<option value="0">auto</option>
-				<option value="1">low</option>
-				<option value="2">medium</option>
-				<option value="3">high</option>
-				<option value="4">on</option>
-				<option value="5">off</option>
+				<option value="0">Auto</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">On</option>
+				<option value="5">Off</option>
 			</options>
 		</command>
 	</channel-type>
@@ -156,16 +175,16 @@
 		<label>Blind State Status</label>
 		<state>
 			<options>
-				<option value="0">stopped</option>
-				<option value="1">up</option>
-				<option value="2">down</option>
+				<option value="0">Stopped</option>
+				<option value="1">Up</option>
+				<option value="2">Down</option>
 			</options>
 		</state>
 		<command>
 			<options>
-				<option value="0">stopped</option>
-				<option value="1">up</option>
-				<option value="2">down</option>
+				<option value="0">Stopped</option>
+				<option value="1">Up</option>
+				<option value="2">Down</option>
 			</options>
 		</command>
 	</channel-type>
@@ -174,8 +193,8 @@
 		<label>OTA Status</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">up to date</option>
-				<option value="1">update available</option>
+				<option value="0">Up to date</option>
+				<option value="1">Update available</option>
 			</options>
 		</state>
 	</channel-type>
@@ -184,10 +203,10 @@
 		<label>OTA State</label>
 		<state readOnly="true">
 			<options>
-				<option value="0">ready to check</option>
-				<option value="1">check in progress</option>
-				<option value="2">ready to download</option>
-				<option value="3">download in progress</option>
+				<option value="0">Ready to check</option>
+				<option value="1">Check in progress</option>
+				<option value="2">Ready to download</option>
+				<option value="3">Download in progress</option>
 			</options>
 		</state>
 	</channel-type>
