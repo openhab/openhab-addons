@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="blind-controller">
+	<thing-type id="sound-controller">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Blinds Controller</label>
-		<description>Controller to open and close blinds</description>
+		<label>Sound Controller</label>
+		<description>Controller to handle Wifi Speakers</description>
 
 		<channels>
 			<channel id="battery-level" typeId="percent">
