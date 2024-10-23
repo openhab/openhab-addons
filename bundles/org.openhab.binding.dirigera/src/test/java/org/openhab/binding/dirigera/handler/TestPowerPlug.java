@@ -43,9 +43,9 @@ class TestPowerPlug {
     @Test
     void testPowerPlugDevice() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
-        ThingImpl thing = new ThingImpl(THING_TYPE_PLUG, "test-device");
+        ThingImpl thing = new ThingImpl(THING_TYPE_POWER_PLUG, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        PowerPlugHandler handler = new PowerPlugHandler(thing, PLUG_MAP);
+        PowerPlugHandler handler = new PowerPlugHandler(thing, SMART_PLUG_MAP);
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);
@@ -70,29 +70,29 @@ class TestPowerPlug {
     }
 
     void checkPowerPlugStates(CallbackMock callback) {
-        State otaStatus = callback.getState("dirigera:plug:test-device:ota-status");
+        State otaStatus = callback.getState("dirigera:power-plug:test-device:ota-status");
         assertNotNull(otaStatus);
         assertTrue(otaStatus instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
-        State otaState = callback.getState("dirigera:plug:test-device:ota-state");
+        State otaState = callback.getState("dirigera:power-plug:test-device:ota-state");
         assertNotNull(otaState);
         assertTrue(otaState instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
-        State otaProgess = callback.getState("dirigera:plug:test-device:ota-progress");
+        State otaProgess = callback.getState("dirigera:power-plug:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
-        State disableLightState = callback.getState("dirigera:plug:test-device:disable-light");
+        State disableLightState = callback.getState("dirigera:power-plug:test-device:disable-light");
         assertNotNull(disableLightState);
         assertTrue(disableLightState instanceof OnOffType);
         assertTrue(OnOffType.ON.equals((disableLightState)), "Disable Light On");
-        State childlockState = callback.getState("dirigera:plug:test-device:child-lock");
+        State childlockState = callback.getState("dirigera:power-plug:test-device:child-lock");
         assertNotNull(childlockState);
         assertTrue(childlockState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock Off");
-        State onOffState = callback.getState("dirigera:plug:test-device:state");
+        State onOffState = callback.getState("dirigera:power-plug:test-device:state");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power Off");

@@ -81,7 +81,7 @@ class TestModel {
         // VALLHORN
         String tretaktId = "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1";
         ThingTypeUID plugTTUID = gateway.model().identifyDeviceFromModel(tretaktId);
-        assertEquals(THING_TYPE_PLUG, plugTTUID, "TRETAKT TTUID");
+        assertEquals(THING_TYPE_POWER_PLUG, plugTTUID, "TRETAKT TTUID");
 
         // TRADFRI
         String inspelningId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
@@ -98,7 +98,6 @@ class TestModel {
         // VALLHORN
         String lightSceneId = "3090ba82-3f5e-442f-8e49-f3eac9b7b0eb";
         ThingTypeUID sceneTTUID = gateway.model().identifyDeviceFromModel(lightSceneId);
-        System.out.println(sceneTTUID);
         assertEquals(THING_TYPE_SCENE, sceneTTUID, "Scene TTUID");
     }
 
