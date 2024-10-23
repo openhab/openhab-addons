@@ -29,6 +29,14 @@
 				<label>Plug Power</label>
 				<description>Electric power delivered by plug</description>
 			</channel>
+            <channel id="energy-total" typeId="energy">
+                <label>Total Energy</label>
+                <description>Total energy consumption</description>
+            </channel>
+            <channel id="energy-reset" typeId="energy">
+                <label>Energy since Reset</label>
+                <description>Energy consumption since last reset</description>
+            </channel>
 			<channel id="ampere" typeId="ampere">
 				<label>Plug Ampere</label>
 				<description>Electric current measured by plug</description>

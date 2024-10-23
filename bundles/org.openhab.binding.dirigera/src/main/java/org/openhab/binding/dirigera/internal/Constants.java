@@ -147,6 +147,8 @@ public class Constants {
 
     // Plug channels
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_ENERGY_TOTAL = "energy-total";
+    public static final String CHANNEL_ENERGY_RESET = "energy-reset";
     public static final String CHANNEL_CURRENT = "ampere";
     public static final String CHANNEL_POTENTIAL = "voltage";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
@@ -226,11 +228,6 @@ public class Constants {
             PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
             CHANNEL_OTA_PROGRESS);
 
-    public static final Map<String, String> SMART_PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "currentActivePower",
-            CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL, "currentAmps", CHANNEL_CURRENT, "statusLight",
-            CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_STARTUP_BEHAVIOR,
-            CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
-            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
     // public static final Map<String, String> PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "statusLight",
     // CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
     // PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
@@ -281,6 +278,23 @@ public class Constants {
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
             put("currentPM25", CHANNEL_PARTICULATE_MATTER);
+            put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
+            put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
+            put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+        }
+    };
+    public static final Map<String, String> SMART_PLUG_MAP = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put("isOn", CHANNEL_STATE);
+            put("currentActivePower", CHANNEL_POWER);
+            put("currentVoltage", CHANNEL_POTENTIAL);
+            put("currentAmps", CHANNEL_CURRENT);
+            put("totalEnergyConsumed", CHANNEL_ENERGY_TOTAL);
+            put("energyConsumedAtLastReset", CHANNEL_ENERGY_RESET);
+            put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
+            put("childLock", CHANNEL_CHILD_LOCK);
+            put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
             put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
             put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
             put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
