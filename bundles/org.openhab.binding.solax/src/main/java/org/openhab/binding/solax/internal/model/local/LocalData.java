@@ -45,11 +45,11 @@ public interface LocalData {
     LocalConnectRawDataBean getData();
 
     default double getPV1Voltage() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getPV1Current() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getPV1Power() {
@@ -57,11 +57,11 @@ public interface LocalData {
     }
 
     default double getPV2Voltage() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getPV2Current() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getPV2Power() {
@@ -77,11 +77,11 @@ public interface LocalData {
     }
 
     default double getBatteryVoltage() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getBatteryCurrent() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getBatteryPower() {
@@ -113,55 +113,55 @@ public interface LocalData {
     }
 
     default double getTotalEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTotalBatteryDischargeEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTotalBatteryChargeEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTotalPVEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTotalFeedInEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTotalConsumption() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayFeedInEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayConsumption() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayBatteryDischargeEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getTodayBatteryChargeEnergy() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getInverterVoltage() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getInverterCurrent() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getInverterOutputPower() {
@@ -169,31 +169,31 @@ public interface LocalData {
     }
 
     default double getInverterFrequency() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getVoltagePhase1() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getVoltagePhase2() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getVoltagePhase3() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getCurrentPhase1() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getCurrentPhase2() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getCurrentPhase3() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getOutputPowerPhase1() {
@@ -213,15 +213,15 @@ public interface LocalData {
     }
 
     default double getFrequencyPhase1() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getFrequencyPhase2() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default double getFrequencyPhase3() {
-        return Short.MIN_VALUE;
+        return Integer.MIN_VALUE;
     }
 
     default short getInverterWorkModeCode() {
