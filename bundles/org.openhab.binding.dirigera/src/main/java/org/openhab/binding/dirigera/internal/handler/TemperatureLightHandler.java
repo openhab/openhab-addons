@@ -130,7 +130,6 @@ public class TemperatureLightHandler extends BaseHandler {
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            logger.trace("DIRIGERA LIGHT_DEVICE update delivered {} attributes", attributes.length());
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
