@@ -10,37 +10,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_DETECTION;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 
 /**
- * The {@link PowerPlugHandler} basic DeviceHandler for all devices
+ * The {@link WaterSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class PowerPlugHandler extends SimplePlugHandler {
-    public PowerPlugHandler(Thing thing, Map<String, String> mapping) {
+public class WaterSensorHandler extends BaseHandler {
+
+    public WaterSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
@@ -50,26 +50,11 @@ public class PowerPlugHandler extends SimplePlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else {
-            String channel = channelUID.getIdWithoutGroup();
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                if (CHANNEL_CHILD_LOCK.equals(channel) || CHANNEL_DISABLE_STATUS_LIGHT.equals(channel)) {
-                    if (command instanceof OnOffType onOff) {
-                        JSONObject attributes = new JSONObject();
-                        attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                        gateway().api().sendPatch(config.id, attributes);
-                    }
-                }
-            }
-        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
         // now device specific
         if (update.has(Model.ATTRIBUTES)) {
@@ -79,8 +64,7 @@ public class PowerPlugHandler extends SimplePlugHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_CHILD_LOCK.equals(targetChannel)
-                            || CHANNEL_DISABLE_STATUS_LIGHT.equals(targetChannel)) {
+                    if (CHANNEL_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
                     }

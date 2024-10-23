@@ -10,30 +10,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SimplePlugHandler} basic DeviceHandler for all devices
+ * The {@link MotionLightSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SimplePlugHandler extends BaseHandler {
-    public SimplePlugHandler(Thing thing, Map<String, String> mapping) {
+public class MotionLightSensorHandler extends MotionSensorHandler {
+    private final Logger logger = LoggerFactory.getLogger(MotionLightSensorHandler.class);
+    private List<String> twinDevices = new ArrayList<>();
+
+    public MotionLightSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -45,26 +52,24 @@ public class SimplePlugHandler extends BaseHandler {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
+
+            // search for twin device in model to connect
+            twinDevices = gateway().model().getTwins(config.id);
+            logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", twinDevices.size());
+            // register for updates of twin devices
+            twinDevices.forEach(deviceId -> {
+                gateway().registerDevice(this, deviceId);
+                JSONObject twinValues = gateway().api().readDevice(deviceId);
+                // JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
+                logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", twinValues);
+                handleUpdate(twinValues);
+            });
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else {
-            String channel = channelUID.getIdWithoutGroup();
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                if (CHANNEL_STATE.equals(channel)) {
-                    if (command instanceof OnOffType onOff) {
-                        JSONObject attributes = new JSONObject();
-                        attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                        gateway().api().sendPatch(config.id, attributes);
-                    }
-                }
-            }
-        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override
@@ -79,11 +84,14 @@ public class SimplePlugHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_CHILD_LOCK.equals(targetChannel) || CHANNEL_STATE.equals(targetChannel)
-                            || CHANNEL_DISABLE_STATUS_LIGHT.equals(targetChannel)) {
+                    if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                OnOffType.from(attributes.getBoolean(key)));
+                                QuantityType.valueOf(attributes.getInt(key), Units.LUX));
+                    } else {
+                        logger.trace("DIRIGERA MOTION_LIGHT_DEVICE no channel for {} available", key);
                     }
+                } else {
+                    logger.trace("DIRIGERA MOTION_LIGHT_DEVICE no targetChannel for {}", key);
                 }
             }
         }

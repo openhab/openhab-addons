@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.SceneHandler;
+import org.openhab.binding.dirigera.internal.handler.scene.SceneHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;

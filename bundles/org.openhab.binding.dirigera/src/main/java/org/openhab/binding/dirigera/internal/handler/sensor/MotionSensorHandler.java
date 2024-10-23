@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handler;
+package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_DETECTION;
 
 import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -29,15 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartPlugHandler} basic DeviceHandler for all devices
+ * The {@link MotionSensorHandler} basic DeviceHandler for all devices
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class SmartPlugHandler extends PowerPlugHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartPlugHandler.class);
+public class MotionSensorHandler extends BaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(MotionSensorHandler.class);
 
-    public SmartPlugHandler(Thing thing, Map<String, String> mapping) {
+    public MotionSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
     }
@@ -64,21 +64,18 @@ public class SmartPlugHandler extends PowerPlugHandler {
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            logger.trace("DIRIGERA SMART_PLUG update delivered {} attributes", attributes.length());
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_POWER.equals(targetChannel)) {
+                    if (CHANNEL_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.WATT));
-                    } else if (CHANNEL_CURRENT.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.AMPERE));
-                    } else if (CHANNEL_POTENTIAL.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.VOLT));
+                                OnOffType.from(attributes.getBoolean(key)));
+                    } else {
+                        logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
+                } else {
+                    logger.trace("DIRIGERA MOTION_DEVICE no targetChannel for {}", key);
                 }
             }
         }

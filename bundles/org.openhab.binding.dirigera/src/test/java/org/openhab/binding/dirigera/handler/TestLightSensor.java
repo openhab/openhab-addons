@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
+import org.openhab.binding.dirigera.internal.handler.sensor.LightSensorHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
