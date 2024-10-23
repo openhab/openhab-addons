@@ -401,6 +401,8 @@ public class Model {
                     return THING_TYPE_BLIND;
                 case DEVICE_TYPE_BLIND_CONTROLLER:
                     return THING_TYPE_BLIND_CONTROLLER;
+                case DEVICE_TYPE_SOUND_CONTROLLER:
+                    return THING_TYPE_SOUND_CONTROLLER;
             }
         } else {
             // device type is empty, check for scene

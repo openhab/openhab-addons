@@ -47,6 +47,7 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROLLER = new ThingTypeUID(BINDING_ID, "light-controller");
     public static final ThingTypeUID THING_TYPE_BLIND_CONTROLLER = new ThingTypeUID(BINDING_ID, "blind-controller");
+    public static final ThingTypeUID THING_TYPE_SOUND_CONTROLLER = new ThingTypeUID(BINDING_ID, "sound-controller");
     public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
@@ -57,7 +58,7 @@ public class Constants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_CONTACT_SENSOR,
             THING_TYPE_SIMPLE_PLUG, THING_TYPE_POWER_PLUG, THING_TYPE_SMART_PLUG, THING_TYPE_SPEAKER, THING_TYPE_SCENE,
-            THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_BLIND_CONTROLLER,
+            THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER, THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER,
             THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY, THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR,
             THING_TYPE_BLIND);
 
@@ -112,6 +113,7 @@ public class Constants {
 
     public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
     public static final String DEVICE_TYPE_BLIND_CONTROLLER = "blindsController";
+    public static final String DEVICE_TYPE_SOUND_CONTROLLER = "soundController";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -236,6 +238,9 @@ public class Constants {
             PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
             CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
             CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> AIR_QUALITY_MAP = Map.of("currentTemperature", CHANNEL_TEMPERATURE,
