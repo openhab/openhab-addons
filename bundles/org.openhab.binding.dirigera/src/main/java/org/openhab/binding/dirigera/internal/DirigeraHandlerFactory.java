@@ -25,6 +25,7 @@ import org.openhab.binding.dirigera.internal.handler.airpurifier.AirPurifierHand
 import org.openhab.binding.dirigera.internal.handler.blind.BlindHandler;
 import org.openhab.binding.dirigera.internal.handler.controller.BlindsControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.controller.LightControllerHandler;
+import org.openhab.binding.dirigera.internal.handler.controller.ShortcutControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.controller.SoundControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
@@ -141,6 +142,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new BlindsControllerHandler(thing, BLIND_CONTROLLER_MAP);
         } else if (THING_TYPE_SOUND_CONTROLLER.equals(thingTypeUID)) {
             return new SoundControllerHandler(thing, SOUND_CONTROLLER_MAP);
+        } else if (THING_TYPE_SHORTCUT_CONTROLLER.equals(thingTypeUID)) {
+            return new ShortcutControllerHandler(thing, SHORTCUT_CONTROLLER_MAP);
         } else if (THING_TYPE_AIR_QUALITY.equals(thingTypeUID)) {
             return new AirQualityHandler(thing, AIR_QUALITY_MAP);
         } else if (THING_TYPE_WATER_SENSOR.equals(thingTypeUID)) {
