@@ -69,15 +69,23 @@ public class SmartPlugHandler extends PowerPlugHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_POWER.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.WATT));
-                    } else if (CHANNEL_CURRENT.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.AMPERE));
-                    } else if (CHANNEL_POTENTIAL.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                QuantityType.valueOf(attributes.getDouble(key), Units.VOLT));
+                    switch (targetChannel) {
+                        case CHANNEL_POWER:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    QuantityType.valueOf(attributes.getDouble(key), Units.WATT));
+                            break;
+                        case CHANNEL_CURRENT:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    QuantityType.valueOf(attributes.getDouble(key), Units.AMPERE));
+                            break;
+                        case CHANNEL_POTENTIAL:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    QuantityType.valueOf(attributes.getDouble(key), Units.VOLT));
+                            break;
+                        case CHANNEL_ENERGY_TOTAL:
+                        case CHANNEL_ENERGY_RESET:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    QuantityType.valueOf(attributes.getDouble(key), Units.KILOWATT_HOUR));
                     }
                 }
             }
