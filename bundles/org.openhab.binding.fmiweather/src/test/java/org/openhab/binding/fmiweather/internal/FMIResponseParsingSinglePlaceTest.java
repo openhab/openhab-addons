@@ -10,15 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,11 +29,13 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.Location;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
+import org.xml.sax.SAXException;
 
 /**
- * Test cases for Client.parseMultiPointCoverageXml with a xml response having single place and multiple
- * parameters
- * and timestamps
+ * Test cases for {@link {@link org.openhab.binding.fmiweather.internal.client.Client#parseMultiPointCoverageXml}
+ * with an xml response having single place and multiple parameters and timestamps
  *
  * @author Sami Salonen - Initial contribution
  */
@@ -47,14 +52,11 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
             new BigDecimal("25.62546"));
 
     @BeforeEach
-    public void setUp() {
-        try {
-            observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1));
-            observationsResponse1NaN = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(OBSERVATIONS1).replace("276.0", "NaN"));
-        } catch (Throwable e) {
-            throw new RuntimeException("Test data malformed", e);
-        }
+    public void setUp() throws FMIUnexpectedResponseException, FMIExceptionReportException, XPathExpressionException,
+            SAXException, IOException {
+        observationsResponse1 = client.parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1));
+        observationsResponse1NaN = client
+                .parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1).replace("276.0", "NaN"));
         assertNotNull(observationsResponse1);
     }
 

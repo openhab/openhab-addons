@@ -10,14 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,10 +28,13 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.Location;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
+import org.xml.sax.SAXException;
 
 /**
- * Test cases for Client.parseMultiPointCoverageXml with a xml response having multiple places, parameters
- * and timestamps
+ * Test cases for {@link org.openhab.binding.fmiweather.internal.client.Client#parseMultiPointCoverageXml}
+ * with a xml response having multiple places, parameters and timestamps
  *
  * @author Sami Salonen - Initial contribution
  */
@@ -60,17 +66,14 @@ public class FMIResponseParsingMultiplePlacesTest extends AbstractFMIResponsePar
             new BigDecimal("19.90000"));
 
     @BeforeEach
-    public void setUp() {
-        try {
-            observationsMultiplePlacesResponse = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES));
-            observationsMultiplePlacesNaNResponse = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES).replace("276.0", "NaN"));
-            forecastsMultiplePlacesResponse = parseMultiPointCoverageXml(
-                    readTestResourceUtf8(FORECAST_MULTIPLE_PLACES));
-        } catch (Throwable e) {
-            throw new RuntimeException("Test data malformed", e);
-        }
+    public void setUp() throws FMIUnexpectedResponseException, FMIExceptionReportException, XPathExpressionException,
+            SAXException, IOException {
+        observationsMultiplePlacesResponse = client
+                .parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES));
+        observationsMultiplePlacesNaNResponse = client
+                .parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS_MULTIPLE_PLACES).replace("276.0", "NaN"));
+        forecastsMultiplePlacesResponse = client
+                .parseMultiPointCoverageXml(readTestResourceUtf8(FORECAST_MULTIPLE_PLACES));
     }
 
     @Test

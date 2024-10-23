@@ -170,7 +170,7 @@ public class Client {
         }
     }
 
-    private Set<Location> parseStations(String response) throws FMIExceptionReportException,
+    protected Set<Location> parseStations(String response) throws FMIExceptionReportException,
             FMIUnexpectedResponseException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 
@@ -215,7 +215,7 @@ public class Client {
      * Parse FMI multipointcoverage formatted xml response
      *
      */
-    private FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
+    protected FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
             FMIExceptionReportException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 

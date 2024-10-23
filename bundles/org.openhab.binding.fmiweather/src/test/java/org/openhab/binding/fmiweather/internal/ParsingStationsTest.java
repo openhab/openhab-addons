@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,12 +20,17 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import javax.xml.xpath.XPathExpressionException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.Location;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
+import org.xml.sax.SAXException;
 
 /**
- * Test cases for Client.parseStations
+ * Test cases for {@link org.openhab.binding.fmiweather.internal.client.Client#parseStations}
  *
  * @author Sami Salonen - Initial contribution
  */
@@ -35,8 +40,9 @@ public class ParsingStationsTest extends AbstractFMIResponseParsingTest {
     private static final String STATIONS_XML = "stations.xml";
 
     @Test
-    public void testParseStations() throws IOException {
-        Set<Location> stations = parseStations(readTestResourceUtf8(STATIONS_XML));
+    public void testParseStations() throws FMIExceptionReportException, FMIUnexpectedResponseException, SAXException,
+            IOException, XPathExpressionException {
+        Set<Location> stations = client.parseStations(readTestResourceUtf8(STATIONS_XML));
         assertNotNull(stations);
         assertThat(stations.size(), is(3));
         assertThat(stations,
