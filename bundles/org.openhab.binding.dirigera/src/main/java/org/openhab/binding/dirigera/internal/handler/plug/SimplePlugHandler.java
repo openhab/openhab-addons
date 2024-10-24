@@ -25,7 +25,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link SimplePlugHandler} basic DeviceHandler for all devices
@@ -51,23 +50,7 @@ public class SimplePlugHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else {
-            String channel = channelUID.getIdWithoutGroup();
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                switch (channel) {
-                    case CHANNEL_STATE:
-                        if (command instanceof OnOffType onOff) {
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            gateway().api().sendPatch(config.id, attributes);
-                        }
-                        break;
-                }
-            }
-        }
+        super.handleCommand(channelUID, command);
     }
 
     @Override
@@ -83,7 +66,6 @@ public class SimplePlugHandler extends BaseHandler {
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
                     switch (targetChannel) {
-                        case CHANNEL_STATE:
                         case CHANNEL_CHILD_LOCK:
                         case CHANNEL_DISABLE_STATUS_LIGHT:
                             updateState(new ChannelUID(thing.getUID(), targetChannel),

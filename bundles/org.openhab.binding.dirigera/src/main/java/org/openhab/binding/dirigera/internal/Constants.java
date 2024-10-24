@@ -92,6 +92,7 @@ public class Constants {
     public static final String PROPERTY_BATTERY_PERCENTAGE = "batteryPercentage";
     public static final String PROPERTY_PERMIT_JOIN = "permittingJoin";
     public static final String PROPERTY_STARTUP_BEHAVIOR = "startupOnOff";
+    public static final String PROPERTY_POWER_STATE = "isOn";
 
     public static final String PROPERTY_EMPTY = "";
 
@@ -123,7 +124,7 @@ public class Constants {
     public static final String CHANNEL_STATISTICS = "statistics";
 
     // Generic channels
-    public static final String CHANNEL_STATE = "state";
+    public static final String CHANNEL_POWER_STATE = "power-state";
     public static final String CHANNEL_STARTUP_BEHAVIOR = "startup";
     public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
     public static final String CHANNEL_OTA_STATUS = "ota-status";
@@ -144,6 +145,7 @@ public class Constants {
     // Sensor channels
     public static final String CHANNEL_DETECTION = "detection";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
+    public static final String CHANNEL_CONTACT = "contact";
 
     // Plug channels
     public static final String CHANNEL_POWER = "power";
@@ -187,6 +189,7 @@ public class Constants {
     // Blinds channels
     public static final String CHANNEL_BLIND_CURRENT_LEVEL = "current";
     public static final String CHANNEL_BLIND_TARGET_LEVEL = "target";
+    public static final String CHANNEL_BLIND_STATE = "blind-state";
 
     // Websocket update types
     public static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";
@@ -214,14 +217,16 @@ public class Constants {
             STARTUP_BEHAVIOR_MAPPING);
 
     // Ikea property to openHAB channel mappings
-    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
-            CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
-            "color-temperature", PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS,
-            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
-            CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE, PROPERTY_STARTUP_BEHAVIOR,
-            CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
-            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE,
+            "lightLevel", CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB,
+            "colorTemperature", "color-temperature", PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
+
+    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE,
+            "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE,
+            PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
     public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
             "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES,
@@ -239,7 +244,7 @@ public class Constants {
             "isDetected", CHANNEL_DETECTION, "illuminance", CHANNEL_ILLUMINANCE);
 
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isOpen", CHANNEL_STATE);
+            "isOpen", CHANNEL_CONTACT);
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
     public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
             PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
@@ -263,7 +268,7 @@ public class Constants {
     public static final Map<String, String> WATER_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "waterLeakDetected", CHANNEL_DETECTION, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
             CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> BLINDS_MAP = Map.of("blindsState", CHANNEL_STATE, "batteryPercentage",
+    public static final Map<String, String> BLINDS_MAP = Map.of("blindsState", CHANNEL_BLIND_STATE, "batteryPercentage",
             CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel", CHANNEL_BLIND_CURRENT_LEVEL, "blindsTargetLevel",
             CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
             PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
@@ -286,7 +291,7 @@ public class Constants {
     public static final Map<String, String> SMART_PLUG_MAP = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
         {
-            put("isOn", CHANNEL_STATE);
+            put("isOn", CHANNEL_POWER_STATE);
             put("currentActivePower", CHANNEL_POWER);
             put("currentVoltage", CHANNEL_POTENTIAL);
             put("currentAmps", CHANNEL_CURRENT);

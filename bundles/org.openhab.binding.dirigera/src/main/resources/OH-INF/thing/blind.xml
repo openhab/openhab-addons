@@ -13,7 +13,7 @@
 		<description>Window or door blind</description>
 
 		<channels>
-			<channel id="state" typeId="blind-state">
+			<channel id="blind-state" typeId="blind-state">
 				<label>Blind State</label>
 				<description>State if blind is moving up, down or stopped</description>
 			</channel>
