@@ -704,6 +704,16 @@ public class Shelly2ApiJsonDTO {
 
             public static class Shelly2DeviceStatusEmData {
                 public Integer id;
+
+                @SerializedName("a_total_act_energy")
+                public Double aTotal;
+                @SerializedName("b_total_act_energy")
+                public Double bTotal;
+                @SerializedName("c_total_act_energy")
+                public Double cTotal;
+
+                @SerializedName("total_act")
+                public Double totalKWH;
                 public String[] errors;
             }
 
