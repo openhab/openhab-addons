@@ -49,7 +49,7 @@ public class X1HybridG4Data extends CommonLocalDeviceData {
     }
 
     @Override
-    public short getFeedInPower() {
+    public int getFeedInPower() {
         return getFromRawData(32);
     }
 
