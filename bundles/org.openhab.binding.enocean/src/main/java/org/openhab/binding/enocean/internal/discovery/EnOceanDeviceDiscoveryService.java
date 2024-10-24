@@ -16,7 +16,6 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
@@ -85,7 +84,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
     }
 
     @Override
-    public Set<@NonNull ThingTypeUID> getSupportedThingTypes() {
+    public Set<ThingTypeUID> getSupportedThingTypes() {
         return SUPPORTED_DEVICE_THING_TYPES_UIDS;
     }
 
