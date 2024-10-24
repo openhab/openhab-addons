@@ -78,7 +78,7 @@ class TestPowerPlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CHILD_LOCK), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DISABLE_STATUS_LIGHT), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
@@ -108,7 +108,7 @@ class TestPowerPlug {
         assertNotNull(childlockState);
         assertTrue(childlockState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock Off");
-        State onOffState = callback.getState("dirigera:power-plug:test-device:state");
+        State onOffState = callback.getState("dirigera:power-plug:test-device:power-state");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power Off");
