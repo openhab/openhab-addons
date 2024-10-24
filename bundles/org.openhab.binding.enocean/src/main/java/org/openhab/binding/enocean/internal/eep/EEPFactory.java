@@ -51,9 +51,6 @@ public class EEPFactory {
     public static EEP createEEP(EEPType eepType) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (cl == null) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -64,9 +61,6 @@ public class EEPFactory {
     public static EEP buildEEP(EEPType eepType, ERP1Message packet) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (cl == null) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getConstructor(ERP1Message.class).newInstance(packet);
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -238,7 +232,7 @@ public class EEPFactory {
             eepType = getGenericEEPTypeFor(rorg);
         }
 
-        return (eepType == null) ? null : createEEP(eepType).setSenderId(senderId);
+        return eepType == null ? null : createEEP(eepType).setSenderId(senderId);
     }
 
     public static @Nullable EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
