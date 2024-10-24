@@ -27,7 +27,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Select extends AbstractComponent<Select.ChannelConfiguration> {
-    public static final String SELECT_CHANNEL_ID = "select"; // Randomly chosen channel "ID"
+    public static final String SELECT_CHANNEL_ID = "select";
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -47,11 +48,6 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
         protected String stateTopic = "";
 
         protected String[] options = new String[0];
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     public Select(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -65,6 +61,7 @@ public class Select extends AbstractComponent<Select.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                 .inferOptimistic(channelConfiguration.optimistic).build();
+
         finalizeChannels();
     }
 }

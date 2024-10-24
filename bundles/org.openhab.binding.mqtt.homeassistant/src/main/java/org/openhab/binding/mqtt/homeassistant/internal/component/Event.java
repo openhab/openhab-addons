@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
@@ -52,12 +51,6 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
 
         @SerializedName("event_types")
         protected List<String> eventTypes = new ArrayList();
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     private final HomeAssistantChannelTransformation transformation;
@@ -71,7 +64,13 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate()).trigger(true)
                 .build();
 
-        if (channelConfiguration.jsonAttributesTopic != null) {
+        finalizeChannels();
+    }
+
+    // Overridden to use create it as a trigger channel
+    @Override
+    protected void addJsonAttributesChannel() {
+        if (channelConfiguration.getJsonAttributesTopic() != null) {
             // It's unclear from the documentation if the JSON attributes value is expected
             // to be the same as the main topic, and thus would always have an event_type
             // attribute (and thus could possibly be shared with multiple components).
@@ -81,11 +80,10 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
             // the filtering below.
             buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(),
                     componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
+                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
+                            channelConfiguration.getJsonAttributesTemplate())
                     .trigger(true).build();
         }
-
-        finalizeChannels();
     }
 
     @Override
