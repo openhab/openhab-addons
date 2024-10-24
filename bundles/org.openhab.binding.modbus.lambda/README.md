@@ -13,8 +13,8 @@ Other configurations of the E-Manager are not supported (yet).
 
 Up to now only the following configuration is supported:
 - only one heatpump(heatpump1)
-- only one buffer for the heating(buffer1)
-- only one buffer for the water heating boiler1)
+- only one buffer for the heating (buffer1)
+- only one buffer for the water heating (boiler1)
 
 
 ## Supported Things
