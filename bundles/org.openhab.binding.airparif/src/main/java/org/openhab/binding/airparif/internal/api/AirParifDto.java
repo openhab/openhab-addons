@@ -87,7 +87,9 @@ public class AirParifDto {
     }
 
     public record Episode( //
-            @SerializedName("actif") boolean active, Message message, @SerializedName("jour") DailyEpisode today, //
+            @SerializedName("actif") boolean active, //
+            Message message, //
+            @SerializedName("jour") DailyEpisode today, //
             @SerializedName("demain") DailyEpisode tomorrow) {
     }
 
