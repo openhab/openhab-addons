@@ -58,7 +58,7 @@ class TestContactDevice {
         checkContactStates(callback);
 
         callback.clear();
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CONTACT), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         checkContactStates(callback);
     }
@@ -69,7 +69,7 @@ class TestContactDevice {
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
         assertEquals(84, ((QuantityType<?>) batteryState).intValue(), "Battery level");
-        State openCloseState = callback.getState("dirigera:contact-sensor:test-device:state");
+        State openCloseState = callback.getState("dirigera:contact-sensor:test-device:contact");
         assertNotNull(openCloseState);
         assertTrue(openCloseState instanceof OpenClosedType);
         assertTrue(OpenClosedType.CLOSED.equals((openCloseState)), "Closed");

@@ -21,12 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,48 +75,34 @@ public class TemperatureLightHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else {
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                switch (channel) {
-                    case CHANNEL_STATE:
-                        if (command instanceof OnOffType onOff) {
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
-                        } else {
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
-                                    command, channel);
-                        }
-                        break;
-                    case CHANNEL_LIGHT_BRIGHTNESS:
-                        if (command instanceof PercentType percent) {
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, percent.intValue());
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
-                        } else {
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
-                                    command, channel);
-                        }
-                        break;
-                    case CHANNEL_LIGHT_TEMPERATURE:
-                        if (command instanceof PercentType percent) {
-                            int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, kelvin);
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
-                        } else {
-                            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}",
-                                    command, channel);
-                        }
-                        break;
-                }
+        String targetProperty = channel2PropertyMap.get(channel);
+        if (targetProperty != null) {
+            switch (channel) {
+                case CHANNEL_LIGHT_BRIGHTNESS:
+                    if (command instanceof PercentType percent) {
+                        JSONObject attributes = new JSONObject();
+                        attributes.put(targetProperty, percent.intValue());
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                        gateway().api().sendPatch(config.id, attributes);
+                    } else {
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}", command,
+                                channel);
+                    }
+                    break;
+                case CHANNEL_LIGHT_TEMPERATURE:
+                    if (command instanceof PercentType percent) {
+                        int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
+                        JSONObject attributes = new JSONObject();
+                        attributes.put(targetProperty, kelvin);
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                        gateway().api().sendPatch(config.id, attributes);
+                    } else {
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}", command,
+                                channel);
+                    }
+                    break;
             }
         }
     }
@@ -135,20 +119,20 @@ public class TemperatureLightHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_STATE.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                OnOffType.from(attributes.getBoolean(key)));
-                    } else if (CHANNEL_LIGHT_BRIGHTNESS.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                new PercentType(attributes.getInt(key)));
-                    } else if (CHANNEL_LIGHT_TEMPERATURE.equals(targetChannel)) {
-                        int kelvin = attributes.getInt(key);
-                        // seems some lamps are delivering temperature values out of range
-                        // keep it in range with min/max
-                        kelvin = Math.min(kelvin, colorTemperatureMin);
-                        kelvin = Math.max(kelvin, colorTemperatureMax);
-                        int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
-                        updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
+                    switch (targetChannel) {
+                        case CHANNEL_LIGHT_BRIGHTNESS:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    new PercentType(attributes.getInt(key)));
+                            break;
+                        case CHANNEL_LIGHT_TEMPERATURE:
+                            int kelvin = attributes.getInt(key);
+                            // seems some lamps are delivering temperature values out of range
+                            // keep it in range with min/max
+                            kelvin = Math.min(kelvin, colorTemperatureMin);
+                            kelvin = Math.max(kelvin, colorTemperatureMax);
+                            int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
+                            updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
+                            break;
                     }
                 }
             }
