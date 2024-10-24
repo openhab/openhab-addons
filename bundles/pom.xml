@@ -477,8 +477,6 @@
     <module>org.openhab.voice.rustpotterks</module>
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
-    <module>org.openhab.voice.watsonstt</module>
-    <module>org.openhab.voice.whisperstt</module>
   </modules>
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>

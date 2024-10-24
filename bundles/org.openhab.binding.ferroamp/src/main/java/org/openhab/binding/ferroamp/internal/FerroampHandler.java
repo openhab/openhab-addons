@@ -83,6 +83,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         // Set channel configuration parameters
@@ -114,17 +115,26 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE);
+                thingReachable = false;
             }
         });
 
         // Start channel-update as configured
         scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                channelUpdate();
-            } catch (RuntimeException scheduleWithFixedDelayException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        scheduleWithFixedDelayException.getClass().getName() + ":"
-                                + scheduleWithFixedDelayException.getMessage());
+            System.out.println("ffff   = " + getFerroampConnection().connectionState());
+            if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
+                System.out.println("aaaaa   = " + getFerroampConnection().connectionState());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                logger.debug("Problem connection to MqttBroker");
+            } else {
+                try {
+                    channelUpdate();
+                    updateStatus(ThingStatus.ONLINE);
+                } catch (RuntimeException scheduleWithFixedDelayException) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            scheduleWithFixedDelayException.getClass().getName() + ":"
+                                    + scheduleWithFixedDelayException.getMessage());
+                }
             }
         }, 60, refreshInterval, TimeUnit.SECONDS);
 

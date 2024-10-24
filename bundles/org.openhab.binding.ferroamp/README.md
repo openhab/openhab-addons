@@ -213,6 +213,16 @@ The following channels are available for `Ferroamp` EnergyHub configuration. Ple
 Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=false ]
 ```
 
+```java
+Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=false, ssoS0=true ]
+```
+
+```java
+Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=true, ssoS0=true, eso=true ]
+```
+
+
+
 ## `demo.items` Example
 
 ```java

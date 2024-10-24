@@ -113,6 +113,12 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         if ("extapi/data/sso".equals(topic)) {
             processIncomingJsonMessageSso(topic, new String(payload, StandardCharsets.UTF_8));
         }
+        if ("extapi/data/eso".equals(topic)) {
+            processIncomingJsonMessageEso(topic, new String(payload, StandardCharsets.UTF_8));
+        }
+        if ("extapi/data/esm".equals(topic)) {
+            processIncomingJsonMessageEsm(topic, new String(payload, StandardCharsets.UTF_8));
+        }
     }
 
     @SuppressWarnings("null")
@@ -634,111 +640,116 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
             ssoS3ChannelsUpdateValues = ssoS3ChannelPostsValue;
         }
+    }
 
-        if ("extapi/data/eso".equals(topic)) {
-            String[] esoChannelPostsValue = new String[10]; // Array for ESO, Energy Storage Optimizer ) Posts
-            JsonObject jsonElementsObject = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
-                    JsonObject.class);
+    @SuppressWarnings("null")
+    // Prepare actual Json-topic Eso-message and update values for channels
+    void processIncomingJsonMessageEso(String topic, String messageJsonEso) {
+        String[] esoChannelPostsValue = new String[10]; // Array for ESO, Energy Storage Optimizer ) Posts
+        JsonObject jsonElementsObject = new Gson().fromJson(new Gson().fromJson(messageJsonEso, JsonObject.class),
+                JsonObject.class);
+        String jsonElementsStringTemp = "";
+        Gson gson = new Gson();
 
-            String jsonElementsStringTemp = "";
+        // faultcode
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(0)).toString();
+        GetGeneralValues faultcode = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[0] = faultcode.getVal();
 
-            // faultcode
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(0)).toString();
-            GetGeneralValues faultcode = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[0] = faultcode.getVal();
+        // id
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(1)).toString();
+        GetGeneralValues id = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[1] = id.getVal();
 
-            // id
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(1)).toString();
-            GetGeneralValues id = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[1] = id.getVal();
+        // ibat
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(2)).toString();
+        GetGeneralValues ibat = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[2] = ibat.getVal();
 
-            // ibat
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(2)).toString();
-            GetGeneralValues ibat = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[2] = ibat.getVal();
+        // ubat
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(3)).toString();
+        GetGeneralValues ubat = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[3] = ubat.getVal();
 
-            // ubat
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(3)).toString();
-            GetGeneralValues ubat = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[3] = ubat.getVal();
+        // relaystatus
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(4)).toString();
+        GetGeneralValues relaystatus = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[4] = relaystatus.getVal();
 
-            // relaystatus
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(4)).toString();
-            GetGeneralValues relaystatus = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[4] = relaystatus.getVal();
+        // soc
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(5)).toString();
+        GetGeneralValues soc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[5] = soc.getVal();
 
-            // soc
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(5)).toString();
-            GetGeneralValues soc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[5] = soc.getVal();
+        // temp
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(6)).toString();
+        GetGeneralValues temp = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[6] = temp.getVal();
 
-            // temp
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(6)).toString();
-            GetGeneralValues temp = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[6] = temp.getVal();
+        // wbatprod
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(7)).toString();
+        GetGeneralValues wbatprod = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[7] = mJTokWh(jsonStripOneLiners(wbatprod.getVal()));
 
-            // wbatprod
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(7)).toString();
-            GetGeneralValues wbatprod = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[7] = mJTokWh(jsonStripOneLiners(wbatprod.getVal()));
+        // udc
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(8)).toString();
+        GetGeneralValues udc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[8] = udc.getVal();
 
-            // udc
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(8)).toString();
-            GetGeneralValues udc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[8] = udc.getVal();
+        // ts
+        jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(9)).toString();
+        GetGeneralValues ts = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esoChannelPostsValue[9] = ts.getVal();
 
-            // ts
-            jsonElementsStringTemp = jsonElementsObject.get(EsoJsonElements.getJsonElementsEso().get(9)).toString();
-            GetGeneralValues ts = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esoChannelPostsValue[9] = ts.getVal();
+        esoChannelsUpdateValues = esoChannelPostsValue;
+    }
 
-            esoChannelsUpdateValues = esoChannelPostsValue;
-        }
+    @SuppressWarnings("null")
+    // Prepare actual Json-topic Esm-message and update values for channels
+    void processIncomingJsonMessageEsm(String topic, String messageJsonEsm) {
+        String[] esmChannelPostsValue = new String[7]; // Array for ESM, Energy Storage Module ) Posts
+        JsonObject jsonElementsObject = new Gson().fromJson(new Gson().fromJson(messageJsonEsm, JsonObject.class),
+                JsonObject.class);
+        String jsonElementsStringTemp = "";
+        Gson gson = new Gson();
 
-        if ("extapi/data/esm".equals(topic)) {
-            String[] esmChannelPostsValue = new String[7]; // Array for ESM, Energy Storage Module ) Posts
-            JsonObject jsonElementsObject = new Gson().fromJson(new Gson().fromJson(messageJsonSso, JsonObject.class),
-                    JsonObject.class);
+        // soc
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(0)).toString();
+        GetGeneralValues soc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[0] = soc.getVal();
 
-            String jsonElementsStringTemp = "";
+        // soh
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(1)).toString();
+        GetGeneralValues soh = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[1] = soh.getVal();
 
-            // soc
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(0)).toString();
-            GetGeneralValues soc = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[0] = soc.getVal();
+        // ratedcapacity
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(2)).toString();
+        GetGeneralValues ratedcapacity = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[2] = ratedcapacity.getVal();
 
-            // soh
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(1)).toString();
-            GetGeneralValues soh = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[1] = soh.getVal();
+        // id
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(3)).toString();
+        GetGeneralValues id = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[3] = id.getVal();
 
-            // ratedcapacity
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(2)).toString();
-            GetGeneralValues ratedcapacity = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[2] = ratedcapacity.getVal();
+        // ratedpower
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(4)).toString();
+        GetGeneralValues ratedpower = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[4] = ratedpower.getVal();
 
-            // id
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(3)).toString();
-            GetGeneralValues id = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[3] = id.getVal();
+        // status
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(5)).toString();
+        GetGeneralValues status = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[5] = status.getVal();
 
-            // ratedpower
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(4)).toString();
-            GetGeneralValues ratedpower = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[4] = ratedpower.getVal();
+        // ts
+        jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(6)).toString();
+        GetGeneralValues ts = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
+        esmChannelPostsValue[6] = ts.getVal();
 
-            // status
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(5)).toString();
-            GetGeneralValues status = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[5] = status.getVal();
+        esmChannelsUpdateValues = esmChannelPostsValue;
 
-            // ts
-            jsonElementsStringTemp = jsonElementsObject.get(EsmJsonElements.getJsonElementsEsm().get(6)).toString();
-            GetGeneralValues ts = gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class);
-            esmChannelPostsValue[6] = ts.getVal();
-
-            esmChannelsUpdateValues = esmChannelPostsValue;
-        }
     }
 
     public @Nullable static String[] getEhubChannelUpdateValues() {
