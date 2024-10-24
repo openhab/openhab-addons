@@ -40,8 +40,9 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithNoProperty() {
-        EmotivaUpdateResponse dto = new EmotivaUpdateResponse(Collections.emptyList());
+        var dto = new EmotivaUpdateResponse(Collections.emptyList());
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlAsString, containsString("<emotivaUpdate/>"));
         assertThat(xmlAsString, not(containsString("<property")));
         assertThat(xmlAsString, not(containsString("</emotivaUpdate>")));
@@ -50,9 +51,12 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
     @Test
     void unmarshallV2() throws JAXBException {
         var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV2);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getProperties(), is(nullValue()));
+
         List<EmotivaNotifyDTO> notifications = xmlUtils.unmarshallToNotification(dto.getTags());
+
         assertThat(notifications.size(), is(3));
 
         assertThat(notifications.get(0).getName(), is(EmotivaSubscriptionTags.power.name()));
@@ -74,6 +78,7 @@ class EmotivaUpdateResponseTest extends AbstractDTOTestBase {
     @Test
     void unmarshallV3() throws JAXBException {
         var dto = (EmotivaUpdateResponse) xmlUtils.unmarshallToEmotivaDTO(emotivaUpdateResponseV3);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getTags(), is(nullValue()));
         assertThat(dto.getProperties().size(), is(3));

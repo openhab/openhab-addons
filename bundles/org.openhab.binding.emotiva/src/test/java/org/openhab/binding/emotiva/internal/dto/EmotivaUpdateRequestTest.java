@@ -38,8 +38,9 @@ class EmotivaUpdateRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithNoProperty() {
-        EmotivaUpdateRequest dto = new EmotivaUpdateRequest(Collections.emptyList());
+        var dto = new EmotivaUpdateRequest(Collections.emptyList());
         String xmlAsString = xmlUtils.marshallJAXBElementObjects(dto);
+
         assertThat(xmlAsString, containsString("<emotivaUpdate/>"));
         assertThat(xmlAsString, not(containsString("<property")));
         assertThat(xmlAsString, not(containsString("</emotivaUpdate>")));
@@ -47,10 +48,10 @@ class EmotivaUpdateRequestTest extends AbstractDTOTestBase {
 
     @Test
     void marshalFromChannelUID() {
-        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags
-                .fromChannelUID(EmotivaBindingConstants.CHANNEL_TUNER_RDS);
-        EmotivaUpdateRequest emotivaUpdateRequest = new EmotivaUpdateRequest(subscriptionChannel);
+        var subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(EmotivaBindingConstants.CHANNEL_TUNER_RDS);
+        var emotivaUpdateRequest = new EmotivaUpdateRequest(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaUpdateRequest);
+
         assertThat(xmlString, containsString("<emotivaUpdate>"));
         assertThat(xmlString, containsString("<tuner_RDS />"));
         assertThat(xmlString, containsString("</emotivaUpdate>"));
