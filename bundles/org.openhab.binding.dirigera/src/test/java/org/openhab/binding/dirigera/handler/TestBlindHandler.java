@@ -65,14 +65,14 @@ class TestBlindHandler {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STATE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_CURRENT_LEVEL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_TARGET_LEVEL), RefreshType.REFRESH);
         checkBlindStates(callback);
     }
 
     void checkBlindStates(CallbackMock callback) {
-        State decimalState = callback.getState("dirigera:blind:test-device:state");
+        State decimalState = callback.getState("dirigera:blind:test-device:blind-state");
         assertNotNull(decimalState);
         assertTrue(decimalState instanceof DecimalType);
         assertEquals(0, ((DecimalType) decimalState).intValue(), "Blind State");

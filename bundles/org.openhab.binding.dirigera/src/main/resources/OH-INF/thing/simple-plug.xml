@@ -13,7 +13,7 @@
 		<description>Switchable power plug</description>
 
 		<channels>
-			<channel id="state" typeId="switch">
+            <channel id="power-state" typeId="switch">
 				<label>Plug Powered</label>
 				<description>Turn plug on or off </description>
 			</channel>

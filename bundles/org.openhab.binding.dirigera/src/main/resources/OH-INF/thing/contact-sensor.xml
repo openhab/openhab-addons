@@ -13,8 +13,8 @@
 		<description>Sensor tracking if windows or doors are open</description>
 
 		<channels>
-			<channel id="state" typeId="contact">
-				<label>Open Close State</label>
+			<channel id="contact" typeId="contact">
+				<label>Contact State</label>
 				<description>State if door or window is open or closed</description>
 			</channel>
 			<channel id="battery-level" typeId="percent">

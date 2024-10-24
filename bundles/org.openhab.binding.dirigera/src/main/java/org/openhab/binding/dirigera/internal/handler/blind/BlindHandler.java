@@ -64,7 +64,7 @@ public class BlindHandler extends BaseHandler {
             String targetProperty = channel2PropertyMap.get(channel);
             if (targetProperty != null) {
                 switch (channel) {
-                    case CHANNEL_STATE:
+                    case CHANNEL_BLIND_STATE:
                         if (command instanceof DecimalType state) {
                             String commandAttribute = blindNumberToState.get(state.intValue());
                             if (commandAttribute != null) {
@@ -108,7 +108,7 @@ public class BlindHandler extends BaseHandler {
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
                     switch (targetChannel) {
-                        case CHANNEL_STATE:
+                        case CHANNEL_BLIND_STATE:
                             String blindState = attributes.getString(key);
                             Integer stateValue = BLIND_STATES.get(blindState);
                             if (stateValue != null) {

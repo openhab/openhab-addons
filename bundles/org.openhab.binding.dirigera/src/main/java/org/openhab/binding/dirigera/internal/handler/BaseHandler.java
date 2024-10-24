@@ -28,6 +28,7 @@ import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -147,6 +148,13 @@ public abstract class BaseHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                    case CHANNEL_POWER_STATE:
+                        if (command instanceof OnOffType onOff) {
+                            JSONObject attributes = new JSONObject();
+                            attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                            logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
+                        }
                 }
             }
         }
@@ -210,10 +218,16 @@ public abstract class BaseHandler extends BaseThingHandler {
                     logger.warn("Cannot decode startup behavior {}", startupString);
                 }
             }
+            if (attributes.has(PROPERTY_POWER_STATE)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE),
+                        OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE)));
+            }
         }
 
         // store data for development and analysis purposes
-        if (deviceData.isEmpty()) {
+        if (deviceData.isEmpty())
+
+        {
             deviceData = new JSONObject(update.toString());
         } else {
             updates.add(new JSONObject(update.toString()));
@@ -223,6 +237,7 @@ public abstract class BaseHandler extends BaseThingHandler {
             }
         }
         deviceData.put("updates", new JSONArray(updates));
+
         updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
     }
 
