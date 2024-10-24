@@ -12,17 +12,25 @@
  */
 package org.openhab.binding.airparif.internal.handler;
 
-import static org.openhab.binding.airparif.internal.AirParifBindingConstants.CHANNEL_1;
+import static org.openhab.binding.airparif.internal.AirParifBindingConstants.GROUP_POLLENS;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
+import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
+import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
+import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,35 +52,49 @@ public class LocationHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
-    }
-
-    @Override
     public void initialize() {
         config = getConfigAs(LocationConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
+        scheduler.execute(this::getConcentrations);
+    }
+
+    public void setPollens(PollensResponse pollens) {
+        LocationConfiguration local = config;
+        if (local != null) {
+            Map<Pollen, PollenAlertLevel> alerts = pollens.getDepartment(local.department);
+            alerts.forEach((pollen, level) -> {
+                updateState(GROUP_POLLENS + "#" + pollen.name().toLowerCase(), new DecimalType(level.ordinal()));
+            });
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void getConcentrations() {
+        AirParifBridgeHandler apiHandler = getApiBridgeHandler();
+        LocationConfiguration local = config;
+        if (apiHandler != null && local != null) {
+            Route route = apiHandler.getConcentrations(local.location);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private @Nullable AirParifBridgeHandler getApiBridgeHandler() {
+        Bridge bridge = this.getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getHandler() instanceof AirParifBridgeHandler airParifBridgeHandler) {
+                return airParifBridgeHandler;
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
             }
-        });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+        return null;
     }
 }

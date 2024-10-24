@@ -26,8 +26,8 @@ public class ColorMap extends HashMap<Appreciation, String> {
     private static final long serialVersionUID = -605462873565278453L;
 
     private static Appreciation fromApiName(String searched) {
-        return Objects.requireNonNull(
-                Appreciation.AS_SET.stream().filter(mt -> searched.equals(mt.apiName)).findFirst().orElse(Appreciation.UNKNOWN));
+        return Objects.requireNonNull(Appreciation.AS_SET.stream().filter(mt -> searched.equals(mt.apiName)).findFirst()
+                .orElse(Appreciation.UNKNOWN));
     }
 
     public String put(String key, String value) {

@@ -13,11 +13,15 @@
 package org.openhab.binding.airparif.internal.api;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +49,7 @@ public class AirParifDto {
             @SerializedName("droits") Set<Scope> scopes) {
     }
 
-    private record Message(//
+    public record Message(//
             String fr, //
             @Nullable String en) {
     }
@@ -92,36 +96,73 @@ public class AirParifDto {
             Map<String, PollenAlertLevel[]> valeurs, //
             String commentaire, //
             String periode) {
+    }
 
+    public class PollensResponse {
         private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy");
         private static Pattern PATTERN = Pattern.compile("\\d{2}.\\d{2}.\\d{2}");
+        private static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
 
-        private static @Nullable LocalDate getValidity(String periode, boolean begin) {
-            Matcher matcher = PATTERN.matcher(periode);
-            if (matcher.find()) {
-                String extractedDate = matcher.group();
-                if (begin) {
-                    return LocalDate.parse(extractedDate, FORMATTER);
+        public List<Pollens> data = List.of();
+
+        public Optional<Pollens> getData() {
+            return Optional.ofNullable(data.isEmpty() ? null : data.get(0));
+        }
+
+        private Set<ZonedDateTime> getValidities() {
+            Set<ZonedDateTime> result = new TreeSet<>();
+            getData().ifPresent(pollens -> {
+                Matcher matcher = PATTERN.matcher(pollens.periode);
+                while (matcher.find()) {
+                    result.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
                 }
-                if (matcher.find()) {
-                    extractedDate = matcher.group();
-                    return LocalDate.parse(extractedDate, FORMATTER);
+            });
+            return result;
+        }
+
+        public Optional<ZonedDateTime> getBeginValidity() {
+            return Optional.ofNullable(getValidities().iterator().next());
+        }
+
+        public Optional<ZonedDateTime> getEndValidity() {
+            return Optional.ofNullable(getValidities().stream().reduce((prev, next) -> next).orElse(null));
+        }
+
+        public Optional<String> getComment() {
+            return getData().map(pollens -> pollens.commentaire);
+        }
+
+        public Map<Pollen, PollenAlertLevel> getDepartment(String id) {
+            Map<Pollen, PollenAlertLevel> result = new HashMap<>();
+            Optional<Pollens> donnees = getData();
+            if (donnees.isPresent()) {
+                Pollens depts = donnees.get();
+                PollenAlertLevel[] valeurs = depts.valeurs.get(id);
+                if (valeurs != null) {
+                    for (int i = 0; i < valeurs.length; i++) {
+                        result.put(depts.taxons[i], valeurs[i]);
+                    }
                 }
             }
-            return null;
+            return result;
         }
+    }
 
-        public @Nullable LocalDate beginValidity() {
-            return getValidity(periode, true);
-        }
+    public record Result(//
+            @SerializedName("polluant") Pollutant pollutant, //
+            ZonedDateTime date, //
+            @SerializedName("valeurs") double[] values, //
+            Message message) {
+    }
 
-        public @Nullable LocalDate endValidity() {
-            return getValidity(periode, false);
-        }
+    public record Route(//
+            @SerializedName("dateRequise") ZonedDateTime requestedDate, //
+            double[][] longlats, //
+            @SerializedName("resultats") Result[] results, //
+            @Nullable Message[] messages) {
 
     }
 
-    public record PollensResponse(ArrayList<Pollens> data) {
+    public record ItineraireResponse(@SerializedName("itineraires") Route[] routes) {
     }
-
 }

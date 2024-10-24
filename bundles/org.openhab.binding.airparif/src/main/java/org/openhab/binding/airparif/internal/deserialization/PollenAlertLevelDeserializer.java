@@ -39,9 +39,8 @@ class PollenAlertLevelDeserializer implements JsonDeserializer<PollenAlertLevel>
         } catch (JsonSyntaxException ignore) {
             return PollenAlertLevel.UNKNOWN;
         }
-        
+
         return PollenAlertLevel.AS_SET.stream().filter(s -> s.riskLevel == level).findFirst()
                 .orElse(PollenAlertLevel.UNKNOWN);
-
     }
 }

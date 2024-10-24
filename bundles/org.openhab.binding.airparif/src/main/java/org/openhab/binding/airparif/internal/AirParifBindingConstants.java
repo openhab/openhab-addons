@@ -33,8 +33,18 @@ public class AirParifBindingConstants {
     // List of Things Type UIDs
     public static final ThingTypeUID LOCATION_THING_TYPE = new ThingTypeUID(BINDING_ID, "location");
 
+    // Channel group ids
+    public static final String GROUP_POLLENS = "pollens";
+    public static final String GROUP_DAILY = "daily";
+    public static final String GROUP_AQ_BULLETIN = "aq-bulletin";
+    public static final String GROUP_AQ_BULLETIN_TOMORROW = GROUP_AQ_BULLETIN + "-tomorrow";
+
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_BEGIN_VALIDITY = "begin-validity";
+    public static final String CHANNEL_END_VALIDITY = "end-validity";
+    public static final String CHANNEL_COMMENT = "comment";
+    public static final String CHANNEL_MESSAGE = "message";
+    public static final String CHANNEL_TOMORROW = "tomorrow";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE,
             LOCATION_THING_TYPE);

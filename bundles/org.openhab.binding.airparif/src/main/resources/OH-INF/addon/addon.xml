@@ -6,7 +6,7 @@
 	<type>binding</type>
 	<name>AirParif Binding</name>
 	<description>Air Quality data and forecasts provided by AirParif.</description>
-    <connection>cloud</connection>
-    <countries>fr</countries>
-    
+	<connection>cloud</connection>
+	<countries>fr</countries>
+
 </addon:addon>

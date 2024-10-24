@@ -14,7 +14,12 @@ package org.openhab.binding.airparif.internal.api;
 
 import java.util.EnumSet;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.unit.Units;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Pollutant} enum lists all pollutants tracked by AirParif
@@ -23,13 +28,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum Pollutant {
-    PM25,
-    PM10,
-    NO2,
-    O3,
-    UNKNOWN;
+    @SerializedName("pm25")
+    PM25(Units.MICROGRAM_PER_CUBICMETRE),
+
+    @SerializedName("pm10")
+    PM10(Units.MICROGRAM_PER_CUBICMETRE),
+
+    @SerializedName("no2")
+    NO2(Units.PARTS_PER_BILLION),
+
+    @SerializedName("o3")
+    O3(Units.PARTS_PER_BILLION),
+
+    @SerializedName("indice")
+    INDICE(Units.PERCENT),
+
+    UNKNOWN(Units.PERCENT);
 
     public static final EnumSet<Pollutant> AS_SET = EnumSet.allOf(Pollutant.class);
+
+    public final Unit<?> unit;
+
+    Pollutant(Unit<?> unit) {
+        this.unit = unit;
+    }
 
     public static Pollutant safeValueOf(String searched) {
         try {

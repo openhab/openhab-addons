@@ -23,7 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LocationConfiguration {
     public static final String LOCATION = "location";
+    public static final String DEPARTMENT = "department";
 
     public int refresh = 10;
     public String location = "";
+    public String department = "";
 }

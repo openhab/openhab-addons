@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="bridge-pollens">
+		<label>Pollen information for the region</label>
+		<channels>
+			<channel id="comment" typeId="comment">
+				<label>Begin Validity</label>
+				<description>Current bulletin validity start</description>
+			</channel>
+			<channel id="begin-validity" typeId="timestamp">
+				<label>Begin Validity</label>
+				<description>Current bulletin validity start</description>
+			</channel>
+			<channel id="end-validity" typeId="timestamp">
+				<label>End Validity</label>
+				<description>Current bulletin validity ending</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+    <channel-group-type id="air-quality-bulletin">
+        <label>Air Quality Bulletin</label>
+        <channels>
+            <channel id="comment" typeId="comment">
+                <label>Message</label>
+                <description>General message for the air quality bulletin</description>
+            </channel>
+            <channel id="no2-min" typeId="ppb-value">
+                <label>NO2 Min</label>
+                <description>Minimum level of NO2 concentation</description>
+            </channel>
+            <channel id="no2-max" typeId="ppb-value">
+                <label>NO2 Max</label>
+                <description>Maximum level of NO2 concentation</description>
+            </channel>
+            <channel id="o3-min" typeId="ppb-value">
+                <label>O3 Min</label>
+                <description>Minimum level of O3 concentation</description>
+            </channel>
+            <channel id="o3-max" typeId="ppb-value">
+                <label>O3 Max</label>
+                <description>Maximum level of O3 concentation</description>
+            </channel>        
+            <channel id="pm10-min" typeId="mpc-value">
+                <label>PM 10 Min</label>
+                <description>Minimum level of PM 10 concentation</description>
+            </channel>
+            <channel id="pm10-max" typeId="mpc-value">
+                <label>PM 10 Max</label>
+                <description>Maximum level of PM 10 concentation</description>
+            </channel>
+            <channel id="pm25-min" typeId="mpc-value">
+                <label>PM 2.5 Min</label>
+                <description>Minimum level of PM 2.5 concentation</description>
+            </channel>
+            <channel id="pm25-max" typeId="mpc-value">
+                <label>PM 2.5 Max</label>
+                <description>Maximum level of PM 2.5 concentation</description>
+            </channel>
+       </channels>
+    </channel-group-type>
+    	
+    <channel-group-type id="daily">
+        <label>Daily information for the region</label>
+        <channels>
+            <channel id="message" typeId="comment">
+                <label>Message</label>
+                <description>Current bulletin validity start</description>
+            </channel>
+            <channel id="tomorrow" typeId="comment">
+                <label>Tomorrow</label>
+                <description>Current bulletin validity start</description>
+            </channel>
+        </channels>
+    </channel-group-type>
+
+	<channel-group-type id="dept-pollens">
+		<label>Pollen information for the department</label>
+		<channels>
+			<channel id="cypress" typeId="cypress-level"/>
+			<channel id="hazel" typeId="hazel-level"/>
+			<channel id="alder" typeId="alder-level"/>
+			<channel id="poplar" typeId="poplar-level"/>
+			<channel id="willow" typeId="willow-level"/>
+			<channel id="ash" typeId="ash-level"/>
+			<channel id="hornbeam" typeId="hornbeam-level"/>
+			<channel id="birch" typeId="birch-level"/>
+			<channel id="plane" typeId="plane-level"/>
+			<channel id="oak" typeId="oak-level"/>
+			<channel id="olive" typeId="olive-level"/>
+			<channel id="linden" typeId="linden-level"/>
+			<channel id="chestnut" typeId="chestnut-level"/>
+			<channel id="rumex" typeId="rumex-level"/>
+			<channel id="grasses" typeId="grasses-level"/>
+			<channel id="plantain" typeId="plantain-level"/>
+			<channel id="urticaceae" typeId="urticaceae-level"/>
+			<channel id="wormwood" typeId="wormwood-level"/>
+			<channel id="ragweed" typeId="ragweed-level"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

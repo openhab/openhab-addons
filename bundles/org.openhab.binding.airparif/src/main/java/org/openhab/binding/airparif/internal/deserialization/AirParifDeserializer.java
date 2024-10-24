@@ -44,7 +44,7 @@ public class AirParifDeserializer {
 
     @Activate
     public AirParifDeserializer(final @Reference TimeZoneProvider timeZoneProvider) {
-        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .registerTypeAdapter(PollenAlertLevel.class, new PollenAlertLevelDeserializer())
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
                 .registerTypeAdapter(ColorMap.class, new ColorMapDeserializer())
@@ -52,11 +52,11 @@ public class AirParifDeserializer {
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate
                                 .parse(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(ZonedDateTime.class,
-                        (JsonDeserializer<ZonedDateTime>) (json, type, context) -> ZonedDateTime
-                                .parse(json.getAsJsonPrimitive().getAsString() + "Z")
-                                .withZoneSameInstant(timeZoneProvider.getTimeZone()))
-                .create();
+                .registerTypeAdapter(ZonedDateTime.class, (JsonDeserializer<ZonedDateTime>) (json, type, context) -> {
+                    String string = json.getAsJsonPrimitive().getAsString();
+                    string += string.contains("+") ? "" : "Z";
+                    return ZonedDateTime.parse(string).withZoneSameInstant(timeZoneProvider.getTimeZone());
+                }).create();
     }
 
     public <T> T deserialize(Class<T> clazz, String json) throws AirParifException {
@@ -68,8 +68,7 @@ public class AirParifDeserializer {
             }
             throw new AirParifException("Deserialization of '%s' resulted in null value", json);
         } catch (JsonSyntaxException e) {
-            throw new AirParifException(e, "Unexpected error deserializing '%s'", json);
+            throw new AirParifException(e, "Unexpected error deserializing '%s'", e.getMessage());
         }
     }
-
 }

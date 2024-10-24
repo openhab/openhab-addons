@@ -13,15 +13,17 @@
 package org.openhab.binding.airparif.internal.discovery;
 
 import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
-import static org.openhab.binding.airparif.internal.config.LocationConfiguration.LOCATION;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.airparif.internal.config.LocationConfiguration;
+import org.openhab.binding.airparif.internal.db.DepartmentDbService;
+import org.openhab.binding.airparif.internal.db.DepartmentDbService.Department;
 import org.openhab.binding.airparif.internal.handler.AirParifBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
@@ -41,40 +43,47 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AirParifDiscoveryService.class);
+    private final DepartmentDbService dbService;
 
     private @NonNullByDefault({}) LocationProvider locationProvider;
 
     public AirParifDiscoveryService() {
         super(AirParifBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
+        dbService = new DepartmentDbService();
     }
 
     @Reference(unbind = "-")
-    public void bindTranslationProvider(TranslationProvider translationProvider) {
-        this.i18nProvider = translationProvider;
-    }
-
-    @Reference(unbind = "-")
-    public void bindLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    @Reference(unbind = "-")
-    public void bindLocationProvider(LocationProvider locationProvider) {
+    public void setLocationProvider(LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
     }
 
     @Override
-    protected void startScan() {
+    public void startScan() {
         logger.debug("Starting AirParif discovery scan");
-        if (locationProvider.getLocation() instanceof PointType location) {
-            ThingUID bridgeUID = thingHandler.getThing().getUID();
-            thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(LOCATION_THING_TYPE, bridgeUID, LOCAL))
-                    .withLabel("@text/discovery.airparif.location.local.label") //
-                    .withProperty(LOCATION, location.toString()) //
-                    .withRepresentationProperty(LOCATION) //
-                    .withBridge(bridgeUID).build());
+
+        LocationProvider localLocation = locationProvider;
+        PointType location = localLocation != null ? localLocation.getLocation() : null;
+        if (location == null) {
+            logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+            return;
+        }
+
+        createDepartmentResults(location);
+    }
+
+    private void createDepartmentResults(PointType serverLocation) {
+        List<Department> candidates = dbService.getBounding(serverLocation);
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        if (!candidates.isEmpty()) {
+            candidates.forEach(dep -> thingDiscovered(
+                    DiscoveryResultBuilder.create(new ThingUID(LOCATION_THING_TYPE, bridgeUID, dep.id()))//
+                            .withLabel("Location Report: %s".formatted(dep.name())) //
+                            .withProperty(LocationConfiguration.DEPARTMENT, dep.id()) //
+                            .withProperty(LocationConfiguration.LOCATION, serverLocation.toFullString())//
+                            .withRepresentationProperty(LocationConfiguration.DEPARTMENT) //
+                            .withBridge(bridgeUID).build()));
         } else {
-            logger.debug("LocationProvider.getLocation() is not set, no discovery results can be provided");
+            logger.info("No department could be discovered matching server location");
         }
     }
 }
