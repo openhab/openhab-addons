@@ -121,9 +121,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
         // Start channel-update as configured
         scheduler.scheduleWithFixedDelay(() -> {
-            System.out.println("ffff   = " + getFerroampConnection().connectionState());
             if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
-                System.out.println("aaaaa   = " + getFerroampConnection().connectionState());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 logger.debug("Problem connection to MqttBroker");
             } else {
