@@ -87,6 +87,8 @@ public class ComponentFactory {
                 return new Update(componentConfiguration, newStyleChannels);
             case "vacuum":
                 return new Vacuum(componentConfiguration, newStyleChannels);
+            case "valve":
+                return new Valve(componentConfiguration, newStyleChannels);
             default:
                 throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }
