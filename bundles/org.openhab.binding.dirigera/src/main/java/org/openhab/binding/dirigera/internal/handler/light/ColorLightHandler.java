@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_HSB;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -23,7 +23,6 @@ import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -96,11 +95,6 @@ public class ColorLightHandler extends BaseHandler {
                     logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnessattributes);
                     gateway().api().sendPatch(config.id, brightnessattributes);
                 }
-            } else if (command instanceof OnOffType onOff) {
-                JSONObject attributes = new JSONObject();
-                attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
-                gateway().api().sendPatch(config.id, attributes);
             }
         } else {
             logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
@@ -120,34 +114,31 @@ public class ColorLightHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_LIGHT_HSB.equals(targetChannel)) {
-                        switch (key) {
-                            case "colorHue":
-                                double hueValue = attributes.getInt(key);
-                                hsbCurrent = new HSBType(new DecimalType(hueValue), hsbCurrent.getSaturation(),
-                                        hsbCurrent.getBrightness());
-                                deliverHSB = true;
-                                break;
-                            case "colorSaturation":
-                                double saturationValue = Math.round(attributes.getDouble(key) * 100);
-                                logger.trace("DIRIGERA LIGHT_DEVICE new Saturation value {} {}", saturationValue,
-                                        (int) saturationValue);
-                                hsbCurrent = new HSBType(hsbCurrent.getHue(), new PercentType((int) saturationValue),
-                                        hsbCurrent.getBrightness());
-                                deliverHSB = true;
-                                break;
-                            case "lightLevel":
-                                int brightnessValue = attributes.getInt(key);
-                                hsbCurrent = new HSBType(hsbCurrent.getHue(), hsbCurrent.getSaturation(),
-                                        new PercentType(brightnessValue));
-                                deliverHSB = true;
-                                break;
-                        }
-                    } else if (CHANNEL_STATE.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                OnOffType.from(attributes.getBoolean(key)));
-                    } else {
-                        logger.trace("DIRIGERA LIGHT_DEVICE no channel for {} available", key);
+                    switch (targetChannel) {
+                        case CHANNEL_LIGHT_HSB:
+                            switch (key) {
+                                case "colorHue":
+                                    double hueValue = attributes.getInt(key);
+                                    hsbCurrent = new HSBType(new DecimalType(hueValue), hsbCurrent.getSaturation(),
+                                            hsbCurrent.getBrightness());
+                                    deliverHSB = true;
+                                    break;
+                                case "colorSaturation":
+                                    double saturationValue = Math.round(attributes.getDouble(key) * 100);
+                                    logger.trace("DIRIGERA LIGHT_DEVICE new Saturation value {} {}", saturationValue,
+                                            (int) saturationValue);
+                                    hsbCurrent = new HSBType(hsbCurrent.getHue(),
+                                            new PercentType((int) saturationValue), hsbCurrent.getBrightness());
+                                    deliverHSB = true;
+                                    break;
+                                case "lightLevel":
+                                    int brightnessValue = attributes.getInt(key);
+                                    hsbCurrent = new HSBType(hsbCurrent.getHue(), hsbCurrent.getSaturation(),
+                                            new PercentType(brightnessValue));
+                                    deliverHSB = true;
+                                    break;
+                            }
+                            break;
                     }
                 } else {
                     logger.trace("DIRIGERA LIGHT_DEVICE no targetChannel for {}", key);

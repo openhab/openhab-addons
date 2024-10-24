@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_STATE;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_CONTACT;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -65,12 +65,14 @@ public class ContactSensorHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_STATE.equals(targetChannel)) {
-                        OpenClosedType state = OpenClosedType.CLOSED;
-                        if (attributes.getBoolean(key)) {
-                            state = OpenClosedType.OPEN;
-                        }
-                        updateState(new ChannelUID(thing.getUID(), targetChannel), state);
+                    switch (targetChannel) {
+                        case CHANNEL_CONTACT:
+                            OpenClosedType state = OpenClosedType.CLOSED;
+                            if (attributes.getBoolean(key)) {
+                                state = OpenClosedType.OPEN;
+                            }
+                            updateState(new ChannelUID(thing.getUID(), targetChannel), state);
+                            break;
                     }
                 }
             }
