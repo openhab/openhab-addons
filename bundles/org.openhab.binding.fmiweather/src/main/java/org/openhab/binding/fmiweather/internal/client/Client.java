@@ -15,7 +15,6 @@ package org.openhab.binding.fmiweather.internal.client;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -67,22 +66,20 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class Client {
 
+    private static final String WEATHER_STATIONS_URL = "https://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::ef::stations&networkid=121&";
+
+    private static final Map<String, String> NAMESPACES = Map.of( //
+            "target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1", //
+            "gml", "http://www.opengis.net/gml/3.2", //
+            "xlink", "http://www.w3.org/1999/xlink", //
+            "ows", "http://www.opengis.net/ows/1.1", //
+            "gmlcov", "http://www.opengis.net/gmlcov/1.0", //
+            "swe", "http://www.opengis.net/swe/2.0", //
+            "wfs", "http://www.opengis.net/wfs/2.0", //
+            "ef", "http://inspire.ec.europa.eu/schemas/ef/4.0");
+
     private final Logger logger = LoggerFactory.getLogger(Client.class);
 
-    public static final String WEATHER_STATIONS_URL = "https://opendata.fmi.fi/wfs/fin?service=WFS&version=2.0.0&request=GetFeature&storedquery_id=fmi::ef::stations&networkid=121&";
-
-    private static final Map<String, String> NAMESPACES = new HashMap<>();
-    static {
-        NAMESPACES.put("target", "http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1");
-        NAMESPACES.put("gml", "http://www.opengis.net/gml/3.2");
-        NAMESPACES.put("xlink", "http://www.w3.org/1999/xlink");
-        NAMESPACES.put("ows", "http://www.opengis.net/ows/1.1");
-        NAMESPACES.put("gmlcov", "http://www.opengis.net/gmlcov/1.0");
-        NAMESPACES.put("swe", "http://www.opengis.net/swe/2.0");
-
-        NAMESPACES.put("wfs", "http://www.opengis.net/wfs/2.0");
-        NAMESPACES.put("ef", "http://inspire.ec.europa.eu/schemas/ef/4.0");
-    }
     private static final NamespaceContext NAMESPACE_CONTEXT = new NamespaceContext() {
         @Override
         public @Nullable String getNamespaceURI(@Nullable String prefix) {
@@ -91,12 +88,12 @@ public class Client {
 
         @SuppressWarnings("rawtypes")
         @Override
-        public @Nullable Iterator getPrefixes(@Nullable String val) {
+        public @Nullable Iterator getPrefixes(@Nullable String namespaceURI) {
             return null;
         }
 
         @Override
-        public @Nullable String getPrefix(@Nullable String uri) {
+        public @Nullable String getPrefix(@Nullable String namespaceURI) {
             return null;
         }
     };
@@ -173,7 +170,7 @@ public class Client {
         }
     }
 
-    private Set<Location> parseStations(String response) throws FMIExceptionReportException,
+    protected Set<Location> parseStations(String response) throws FMIExceptionReportException,
             FMIUnexpectedResponseException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 
@@ -218,7 +215,7 @@ public class Client {
      * Parse FMI multipointcoverage formatted xml response
      *
      */
-    private FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
+    protected FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
             FMIExceptionReportException, SAXException, IOException, XPathExpressionException {
         Document document = documentBuilder.parse(new InputSource(new StringReader(response)));
 

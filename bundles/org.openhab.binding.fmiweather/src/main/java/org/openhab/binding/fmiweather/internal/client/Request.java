@@ -37,8 +37,8 @@ public class Request {
     public final String storedQueryId;
     public final String[] parameters;
 
-    private static ZoneId UTC = ZoneId.of("Z");
-    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final ZoneId UTC = ZoneId.of("Z");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public Request(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch,
             long timestepMinutes) {

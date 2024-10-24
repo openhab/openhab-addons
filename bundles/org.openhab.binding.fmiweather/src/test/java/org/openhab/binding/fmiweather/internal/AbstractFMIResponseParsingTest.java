@@ -10,22 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +30,9 @@ import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.Location;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
+import org.xml.sax.SAXException;
 
 /**
  * Base class for response parsing tests
@@ -47,41 +43,23 @@ import org.openhab.binding.fmiweather.internal.client.Location;
 public class AbstractFMIResponseParsingTest {
 
     @NonNullByDefault({})
-    protected Client client;
+    protected ClientExposed client;
 
     @BeforeEach
     public void setUpClient() {
-        client = new Client();
+        client = new ClientExposed();
     }
 
-    protected Path getTestResource(String filename) {
-        try {
-            return Paths.get(getClass().getResource(filename).toURI());
-        } catch (URISyntaxException e) {
-            fail(e.getMessage());
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
-        }
-    }
-
-    protected String readTestResourceUtf8(String filename) {
-        return readTestResourceUtf8(getTestResource(filename));
-    }
-
-    protected String readTestResourceUtf8(Path path) {
-        try {
-            BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);
-            StringBuilder content = new StringBuilder();
-            char[] buffer = new char[1024];
-            int read = -1;
-            while ((read = reader.read(buffer)) != -1) {
-                content.append(buffer, 0, read);
+    protected String readTestResourceUtf8(String filename) throws IOException {
+        try (InputStream inputStream = AbstractFMIResponseParsingTest.class.getResourceAsStream(filename)) {
+            if (inputStream == null) {
+                throw new IOException("Input stream is null");
             }
-            return content.toString();
-        } catch (IOException e) {
-            fail(e.getMessage());
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
+            byte[] bytes = inputStream.readAllBytes();
+            if (bytes == null) {
+                throw new IOException("Resulting byte-array empty");
+            }
+            return new String(bytes, StandardCharsets.UTF_8);
         }
     }
 
@@ -143,42 +121,15 @@ public class AbstractFMIResponseParsingTest {
         };
     }
 
-    /**
-     *
-     * @param content
-     * @return
-     * @throws Throwable exception raised by parseMultiPointCoverageXml
-     * @throws AssertionError exception raised when parseMultiPointCoverageXml method signature does not match excepted
-     *             (test & implementation is out-of-sync)
-     */
-    protected FMIResponse parseMultiPointCoverageXml(String content) throws Throwable {
-        try {
-            Method parseMethod = Client.class.getDeclaredMethod("parseMultiPointCoverageXml", String.class);
-            parseMethod.setAccessible(true);
-            return Objects.requireNonNull((FMIResponse) parseMethod.invoke(client, content));
-        } catch (InvocationTargetException e) {
-            throw e.getTargetException();
-        } catch (Exception e) {
-            fail(String.format("Unexpected reflection error (code changed?) %s: %s", e.getClass().getName(),
-                    e.getMessage()));
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
+    protected class ClientExposed extends Client {
+        public FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
+                FMIExceptionReportException, SAXException, IOException, XPathExpressionException {
+            return super.parseMultiPointCoverageXml(response);
         }
-    }
 
-    @SuppressWarnings("unchecked")
-    protected Set<Location> parseStations(String content) {
-        try {
-            Method parseMethod = Objects.requireNonNull(Client.class.getDeclaredMethod("parseStations", String.class));
-            parseMethod.setAccessible(true);
-            return Objects.requireNonNull((Set<Location>) parseMethod.invoke(client, content));
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e.getTargetException());
-        } catch (Exception e) {
-            fail(String.format("Unexpected reflection error (code changed?) %s: %s", e.getClass().getName(),
-                    e.getMessage()));
-            // Make the compiler happy by throwing here, fails already above
-            throw new IllegalStateException();
+        public Set<Location> parseStations(String response) throws FMIExceptionReportException,
+                FMIUnexpectedResponseException, SAXException, IOException, XPathExpressionException {
+            return super.parseStations(response);
         }
     }
 }

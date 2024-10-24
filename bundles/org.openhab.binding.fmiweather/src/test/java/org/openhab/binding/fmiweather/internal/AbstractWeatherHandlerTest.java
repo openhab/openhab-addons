@@ -10,12 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.fmiweather.internal.AbstractWeatherHandler;
 import org.openhab.binding.fmiweather.internal.client.Data;
 
 /**
@@ -41,33 +38,15 @@ public class AbstractWeatherHandlerTest {
     }
 
     protected static long floorToEvenMinutes(long epochSeconds, int roundMinutes) {
-        final Method method;
-        try {
-            method = AbstractWeatherHandler.class.getDeclaredMethod("floorToEvenMinutes", long.class, int.class);
-            method.setAccessible(true);
-            Object res = method.invoke("", epochSeconds, roundMinutes);
-            assertNotNull(res);
-            return (long) res;
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            fail(e);
-            throw new IllegalStateException(); // to make compiler happy
-        }
+        Object res = AbstractWeatherHandler.floorToEvenMinutes(epochSeconds, roundMinutes);
+        assertNotNull(res);
+        return (long) res;
     }
 
     protected static long ceilToEvenMinutes(long epochSeconds, int roundMinutes) {
-        final Method method;
-        try {
-            method = AbstractWeatherHandler.class.getDeclaredMethod("ceilToEvenMinutes", long.class, int.class);
-            method.setAccessible(true);
-            Object res = method.invoke("", epochSeconds, roundMinutes);
-            assertNotNull(res);
-            return (long) res;
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            fail(e);
-            throw new IllegalStateException(); // to make compiler happy
-        }
+        Object res = AbstractWeatherHandler.ceilToEvenMinutes(epochSeconds, roundMinutes);
+        assertNotNull(res);
+        return (long) res;
     }
 
     public static List<Object[]> parametersForFloorToEvenMinutes() {
@@ -81,18 +60,9 @@ public class AbstractWeatherHandlerTest {
     }
 
     protected static int lastValidIndex(Data data) {
-        final Method method;
-        try {
-            method = AbstractWeatherHandler.class.getDeclaredMethod("lastValidIndex", Data.class);
-            method.setAccessible(true);
-            Object res = method.invoke("", data);
-            assertNotNull(res);
-            return (int) res;
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            fail(e);
-            throw new IllegalStateException(); // to make compiler happy
-        }
+        Object res = AbstractWeatherHandler.lastValidIndex(data);
+        assertNotNull(res);
+        return (int) res;
     }
 
     @ParameterizedTest

@@ -10,11 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.nio.file.Path;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -22,24 +20,25 @@ import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseExcep
 import org.xml.sax.SAXParseException;
 
 /**
- * Test cases for AbstractWeatherHandler. The tests provide mocks for supporting entities using Mockito.
+ * Test cases for {@link AbstractWeatherHandler}.
+ * The tests provide mocks for supporting entities using Mockito.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
 public class FMIResponseParsingInvalidOrUnexpectedXmlTest extends AbstractFMIResponseParsingTest {
 
-    private Path observations1 = getTestResource("observations_single_place.xml");
+    private static final String OBSERVATIONS1 = "observations_single_place.xml";
 
     @Test
     public void testInvalidXml() {
         assertThrows(SAXParseException.class,
-                () -> parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<<")));
+                () -> client.parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1).replace("276.0", "<<")));
     }
 
     @Test
     public void testUnexpectedXml() {
-        assertThrows(FMIResponseException.class,
-                () -> parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<foo>4</foo>")));
+        assertThrows(FMIResponseException.class, () -> client
+                .parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS1).replace("276.0", "<foo>4</foo>")));
     }
 }

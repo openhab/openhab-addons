@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -81,13 +82,11 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             ScheduledFuture<?> prevFuture = updateChannelsFutureRef.get();
-            ScheduledFuture<?> newFuture = updateChannelsFutureRef
-                    .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut);
-            assert newFuture != null; // invariant
+            ScheduledFuture<?> newFuture = Objects.requireNonNull(updateChannelsFutureRef
+                    .updateAndGet(fut -> fut == null || fut.isDone() ? submitUpdateChannelsThrottled() : fut));
             if (logger.isTraceEnabled()) {
                 long delayRemainingMillis = newFuture.getDelay(TimeUnit.MILLISECONDS);
                 if (delayRemainingMillis <= 0) {
@@ -97,12 +96,17 @@ public abstract class AbstractWeatherHandler extends BaseThingHandler {
                             delayRemainingMillis);
                 }
                 // Compare by reference to check if the future changed
-                if (prevFuture == newFuture) {
+                if (isSameFuture(prevFuture, newFuture)) {
                     logger.trace("REFRESH received. Previous refresh ongoing, will wait for it to complete in {} ms",
                             lastRefreshMillis + REFRESH_THROTTLE_MILLIS - System.currentTimeMillis());
                 }
             }
         }
+    }
+
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private boolean isSameFuture(@Nullable ScheduledFuture<?> future1, @Nullable ScheduledFuture<?> future2) {
+        return future1 == future2;
     }
 
     @Override
