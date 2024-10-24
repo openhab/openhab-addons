@@ -19,8 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '17', '21', 'profile-j21' ]
-        maven: [ '3.9.6' ]
-        os: [ 'ubuntu-22.04' ]
+        maven: [ '3.9.9' ]
+        os: [ 'ubuntu-24.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
@@ -121,3 +121,15 @@ jobs:
           title: CheckStyle Violations
           path: '**/checkstyle-result.xml'
           mode: inline
+
+      - name: Verify Changed Files
+        uses: tj-actions/verify-changed-files@v20
+        id: verify-changed-files
+
+      - name: Fail on Changed Files
+        if: steps.verify-changed-files.outputs.changed_files != ''
+        env:
+          CHANGED_FILES: ${{ steps.verify-changed-files.outputs.changed_files }}
+        run: |
+          echo "::error::Files have changed: $CHANGED_FILES"
+          exit 1
