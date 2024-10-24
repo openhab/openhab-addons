@@ -749,7 +749,6 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         esmChannelPostsValue[6] = ts.getVal();
 
         esmChannelsUpdateValues = esmChannelPostsValue;
-
     }
 
     public @Nullable static String[] getEhubChannelUpdateValues() {
