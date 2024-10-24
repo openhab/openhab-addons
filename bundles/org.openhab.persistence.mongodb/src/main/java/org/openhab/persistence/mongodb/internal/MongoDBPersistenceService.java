@@ -12,7 +12,6 @@
  */
 package org.openhab.persistence.mongodb.internal;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -287,8 +286,7 @@ public class MongoDBPersistenceService implements ModifiablePersistenceService {
 
                 final State state = MongoDBTypeConversions.getStateFromDocument(item, obj);
 
-                items.add(new MongoDBItem(realItemName, state, ZonedDateTime
-                        .ofInstant(obj.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
+                items.add(new MongoDBItem(realItemName, state, obj.getDate(MongoDBFields.FIELD_TIMESTAMP).toInstant()));
             }
         } finally {
             if (cursor != null) {
