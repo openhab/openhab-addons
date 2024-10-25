@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dimmable-light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Dimmable Light</label>
+		<description>Light with brightness support</description>
+
+		<channels>
+			<channel id="power-state" typeId="switch">
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+			</channel>
+			<channel id="brightness" typeId="dimmer">
+				<label>Light Brightness</label>
+				<description>Control brightness of light</description>
+			</channel>
+			<channel id="startup" typeId="startup">
+				<label>Startup Behavior</label>
+				<description>Startup behavior after power cutoff</description>
+			</channel>
+			<channel id="ota-status" typeId="ota-status">
+				<label>OTA Status</label>
+				<description>Over-the-air overall status</description>
+			</channel>
+			<channel id="ota-state" typeId="ota-state">
+				<label>OTA State</label>
+				<description>Over-the-air current state</description>
+			</channel>
+			<channel id="ota-progress" typeId="ota-percent">
+				<label>OTA Progress</label>
+				<description>Over-the-air current progress if state is download in progress</description>
+			</channel>
+			<channel id="json" typeId="json">
+				<label>Device JSON</label>
+				<description>JSON structure and updates of this device</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

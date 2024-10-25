@@ -359,6 +359,8 @@ public class Model {
                             case "temperature":
                                 return THING_TYPE_TEMPERATURE_LIGHT;
                         }
+                    } else {
+                        return THING_TYPE_DIMMABLE_LIGHT;
                     }
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:
@@ -410,7 +412,7 @@ public class Model {
             // device type is empty, check for scene
             if (!data.isNull(PROPERTY_TYPE)) {
                 String type = data.getString(PROPERTY_TYPE);
-                typeDeviceType = type + "/" + typeDeviceType;
+                typeDeviceType = type + "/" + typeDeviceType; // just for logging
                 switch (type) {
                     case TYPE_USER_SCENE:
                         return THING_TYPE_SCENE;
