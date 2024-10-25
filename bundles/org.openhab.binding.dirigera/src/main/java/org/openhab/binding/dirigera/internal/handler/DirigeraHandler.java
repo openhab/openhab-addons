@@ -508,55 +508,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             knownDevices.remove(deviceId);
             storeKnownDevices();
         }
+        model().detection();
     }
-
-    // @Override
-    // public void newDevice(String id) {
-    // if (!config.discovery) {
-    // // don't discover anything if not configured
-    // return;
-    // }
-    // if (!knownDevices.contains(id)) {
-    // ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
-    // if (IGNORE_THING_TYPES_UIDS.contains(discoveredThingTypeUID)) {
-    // return;
-    // }
-    // if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
-    // logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
-    // } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
-    // // ignore gateway findings
-    // return;
-    // } else {
-    // String customName = model().getCustonNameFor(id);
-    // Map<String, Object> properties = model().getPropertiesFor(id);
-    // logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
-    // discoveredThingTypeUID.getAsString(), customName,
-    // SUPPORTED_THING_TYPES_UIDS.contains(discoveredThingTypeUID));
-    // DiscoveryResult result = DiscoveryResultBuilder
-    // .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
-    // .withBridge(this.getThing().getUID()).withProperties(properties)
-    // .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
-    // discoveryManager.thingDiscovered(result);
-    // }
-    // } else {
-    // logger.info("DIRIGERA HANDLER received new device id from model but already known");
-    // }
-    // }
-    //
-    // @Override
-    // public void newScene(String id, String name) {
-    // if (!knownDevices.contains(id)) {
-    // logger.info("DIRIGERA HANDLER deliver scene result {} with name {} and is supported {}",
-    // THING_TYPE_SCENE.getAsString(), name, SUPPORTED_THING_TYPES_UIDS.contains(THING_TYPE_SCENE));
-    // DiscoveryResult result = DiscoveryResultBuilder
-    // .create(new ThingUID(THING_TYPE_SCENE, this.getThing().getUID(), id))
-    // .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
-    // .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(name).build();
-    // discoveryManager.thingDiscovered(result);
-    // } else {
-    // logger.info("DIRIGERA HANDLER received new scene id from model but already known");
-    // }
-    // }
 
     @Override
     public DirigeraAPI api() {
