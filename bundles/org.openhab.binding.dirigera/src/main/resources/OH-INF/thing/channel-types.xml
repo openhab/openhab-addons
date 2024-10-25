@@ -90,11 +90,11 @@
 		<label>Power</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-    <channel-type id="energy">
-        <item-type>Number:Energy</item-type>
-        <label>Energy</label>
-        <state pattern="%.3f %unit%" readOnly="true"/>
-    </channel-type>
+	<channel-type id="energy">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="ampere">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Ampere</label>
