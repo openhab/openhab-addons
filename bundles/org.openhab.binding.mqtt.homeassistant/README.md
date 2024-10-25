@@ -173,6 +173,13 @@ The `json-attributes` channel for this component will always appear as part of c
 | state           | String | RO  | The state of the vacuum. One of `cleaning`, `docked`, `paused`, `idle`, `returning`, or `error`. |
 | json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                              |
 
+### [Valve](https://www.home-assistant.io/integrations/valve.mqtt/)
+
+| Channel ID      | Type          | R/W | Description                                                                                 |
+|-----------------|---------------|-----|---------------------------------------------------------------------------------------------|
+| valve           | Switch/Dimmer | R/W | If the valve is on (open), or not. For a valve with position (a Dimmer), 100% is full open. |
+| json-attributes | String        | RO  | Additional attributes, as a serialized JSON string.                                         |
+
 
 ## Supported Devices
 
