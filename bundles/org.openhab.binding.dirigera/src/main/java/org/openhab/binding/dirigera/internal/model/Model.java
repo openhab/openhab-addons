@@ -65,34 +65,38 @@ public class Model {
                         home.get(PROPERTY_HTTP_ERROR_STATUS));
             } else {
                 model = home;
-                // first get devices
-                List<String> modelDevices = getAllDeviceIds();
-                List<String> foundScenes = getAllSceneIds();
-                modelDevices.addAll(foundScenes);
-
-                Map<String, DirigeraDiscoveryResult> leftOverMap = new HashMap<>(resultMap);
-                modelDevices.forEach(deviceId -> {
-                    if (resultMap.containsKey(deviceId)) {
-                        // already found - check for name change and continue
-                        updateDeviceScene(deviceId);
-                    } else {
-                        // new entry found
-                        addedDeviceScene(deviceId);
-                    }
-                    leftOverMap.remove(deviceId);
-                });
-                // now all devices from new model are handled - check if some previous delivered discoveries are removed
-                leftOverMap.forEach((key, value) -> {
-                    DirigeraDiscoveryResult deleted = resultMap.remove(key);
-                    if (deleted != null) {
-                        gateway.discovery().thingRemoved(deleted.result.get());
-                    }
-                });
+                detection();
             }
         } catch (Throwable t) {
             logger.error("Excpetion during model update {}", t.getMessage());
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
+    }
+
+    public synchronized void detection() {
+        // first get devices
+        List<String> modelDevices = getAllDeviceIds();
+        List<String> foundScenes = getAllSceneIds();
+        modelDevices.addAll(foundScenes);
+
+        Map<String, DirigeraDiscoveryResult> leftOverMap = new HashMap<>(resultMap);
+        modelDevices.forEach(deviceId -> {
+            if (resultMap.containsKey(deviceId)) {
+                // already found - check for name change and continue
+                updateDeviceScene(deviceId);
+            } else {
+                // new entry found
+                addedDeviceScene(deviceId);
+            }
+            leftOverMap.remove(deviceId);
+        });
+        // now all devices from new model are handled - check if some previous delivered discoveries are removed
+        leftOverMap.forEach((key, value) -> {
+            DirigeraDiscoveryResult deleted = resultMap.remove(key);
+            if (deleted != null) {
+                gateway.discovery().thingRemoved(deleted.result.get());
+            }
+        });
     }
 
     public synchronized List<String> getAllDeviceIds() {
