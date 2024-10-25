@@ -728,21 +728,49 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     @Override
     public void discovered(DiscoveryResult discoveryResult) {
         logger.debug("Discovered {}", thing.getUID());
-        String deviceId = discoveryResult.getProperties().get(CONFIG_DEVICEID).toString();
-        String ipPort = discoveryResult.getProperties().get(CONFIG_IP_PORT).toString();
-
+        Map<String, Object> discoveryProps = discoveryResult.getProperties();
         Configuration configuration = editConfiguration();
 
-        configuration.put(CONFIG_DEVICEID, deviceId);
-        configuration.put(CONFIG_IP_PORT, ipPort);
+        @Nullable
+        Object propertyDeviceId = discoveryProps.get(CONFIG_DEVICEID);
+        if (propertyDeviceId != null) {
+            configuration.put(CONFIG_DEVICEID, propertyDeviceId.toString());
+        }
+
+        @Nullable
+        Object propertyIpPort = discoveryProps.get(CONFIG_IP_PORT);
+        if (propertyIpPort != null) {
+            configuration.put(CONFIG_IP_PORT, propertyIpPort.toString());
+        }
 
         updateConfiguration(configuration);
 
         properties = editProperties();
-        properties.put(PROPERTY_VERSION, discoveryResult.getProperties().get(PROPERTY_VERSION).toString());
-        properties.put(PROPERTY_SN, discoveryResult.getProperties().get(PROPERTY_SN).toString());
-        properties.put(PROPERTY_SSID, discoveryResult.getProperties().get(PROPERTY_SSID).toString());
-        properties.put(PROPERTY_TYPE, discoveryResult.getProperties().get(PROPERTY_TYPE).toString());
+
+        @Nullable
+        Object propertyVersion = discoveryProps.get(PROPERTY_VERSION);
+        if (propertyVersion != null) {
+            properties.put(PROPERTY_VERSION, propertyVersion.toString());
+        }
+
+        @Nullable
+        Object propertySN = discoveryProps.get(PROPERTY_SN);
+        if (propertySN != null) {
+            properties.put(PROPERTY_SN, propertySN.toString());
+        }
+
+        @Nullable
+        Object propertySSID = discoveryProps.get(PROPERTY_SSID);
+        if (propertySSID != null) {
+            properties.put(PROPERTY_SSID, propertySSID.toString());
+        }
+
+        @Nullable
+        Object propertyType = discoveryProps.get(PROPERTY_TYPE);
+        if (propertyType != null) {
+            properties.put(PROPERTY_TYPE, propertyType.toString());
+        }
+
         updateProperties(properties);
 
         initialize();
@@ -892,7 +920,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         private InputStream inputStream = new ByteArrayInputStream(new byte[0]);
         private DataOutputStream writer = new DataOutputStream(System.out);
 
-        private @Nullable ScheduledFuture<?> connectionMonitorJob;
+        private @Nullable ScheduledFuture<?> connectionMonitorJob = null;
 
         private byte[] data = HexFormat.of().parseHex("C00042667F7F003C0000046066000000000000000000F9ECDB");
 
@@ -1444,10 +1472,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
 
         private void cancelConnectionMonitorJob() {
+            ScheduledFuture<?> connectionMonitorJob = this.connectionMonitorJob;
             if (connectionMonitorJob != null) {
                 connectionMonitorJob.cancel(true);
                 logger.debug("Cancelling connection monitor job for {} at {}", thing.getUID(), ipAddress);
-                connectionMonitorJob = null;
+                this.connectionMonitorJob = null;
             }
         }
     }

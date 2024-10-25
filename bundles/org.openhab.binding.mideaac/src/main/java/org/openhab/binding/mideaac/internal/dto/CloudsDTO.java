@@ -36,7 +36,7 @@ public class CloudsDTO {
     }
 
     private CloudDTO add(String email, String password, CloudProviderDTO cloudProvider) {
-        int hash = (email + password + cloudProvider.getName()).hashCode();
+        int hash = (email + password + cloudProvider.name()).hashCode();
         CloudDTO cloud = new CloudDTO(email, password, cloudProvider);
         clouds.put(hash, cloud);
         return cloud;
@@ -51,7 +51,7 @@ public class CloudsDTO {
      * @return parameters for cloud provider
      */
     public @Nullable CloudDTO get(String email, String password, CloudProviderDTO cloudProvider) {
-        int hash = (email + password + cloudProvider.getName()).hashCode();
+        int hash = (email + password + cloudProvider.name()).hashCode();
         if (clouds.containsKey(hash)) {
             return clouds.get(hash);
         }

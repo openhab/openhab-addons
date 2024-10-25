@@ -156,7 +156,7 @@ public class Security {
     public @Nullable SecretKeySpec getEncKey() throws NoSuchAlgorithmException {
         if (encKey == null) {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(cloudProvider.getSignKey().getBytes(StandardCharsets.US_ASCII));
+            md.update(cloudProvider.signkey().getBytes(StandardCharsets.US_ASCII));
             byte[] key = md.digest();
             SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
 
@@ -174,8 +174,8 @@ public class Security {
      */
     public byte[] encode32Data(byte[] raw) {
         byte[] combine = ByteBuffer
-                .allocate(raw.length + cloudProvider.getSignKey().getBytes(StandardCharsets.US_ASCII).length).put(raw)
-                .put(cloudProvider.getSignKey().getBytes(StandardCharsets.US_ASCII)).array();
+                .allocate(raw.length + cloudProvider.signkey().getBytes(StandardCharsets.US_ASCII).length).put(raw)
+                .put(cloudProvider.signkey().getBytes(StandardCharsets.US_ASCII)).array();
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");
@@ -501,7 +501,7 @@ public class Security {
 
             String query = Utils.getQueryString(payload);
 
-            String sign = path + query + cloudProvider.getLoginKey();
+            String sign = path + query + cloudProvider.appkey();
             logger.trace("sign: {}", sign);
             return Utils.bytesToHexLowercase(sha256((sign).getBytes(StandardCharsets.US_ASCII)));
         } catch (URISyntaxException e) {
@@ -519,7 +519,7 @@ public class Security {
      * @return sign
      */
     public @Nullable String newSign(String data, String random) {
-        String msg = cloudProvider.getIotKey();
+        String msg = cloudProvider.iotkey();
         if (!data.isEmpty()) {
             msg += data;
         }
@@ -527,7 +527,7 @@ public class Security {
         String sign;
 
         try {
-            sign = hmac(msg, cloudProvider.getHmacKey(), "HmacSHA256");
+            sign = hmac(msg, cloudProvider.hmackey(), "HmacSHA256");
         } catch (InvalidKeyException e) {
             logger.warn("HMAC digest error: InvalidKeyException: {}", e.getMessage());
             return null;
@@ -570,7 +570,7 @@ public class Security {
             m.update(password.getBytes(StandardCharsets.US_ASCII));
 
             // Create the login hash with the loginID + password hash + appKey, then hash it all AGAIN
-            String loginHash = loginId + Utils.bytesToHexLowercase(m.digest()) + cloudProvider.getLoginKey();
+            String loginHash = loginId + Utils.bytesToHexLowercase(m.digest()) + cloudProvider.appkey();
             m = MessageDigest.getInstance("SHA-256");
             m.update(loginHash.getBytes(StandardCharsets.US_ASCII));
             return Utils.bytesToHexLowercase(m.digest());
@@ -598,7 +598,7 @@ public class Security {
             // if self._use_china_server:
             // return mdSecond.hexdigest()
 
-            String loginHash = loginId + Utils.bytesToHexLowercase(mdSecond.digest()) + cloudProvider.getLoginKey();
+            String loginHash = loginId + Utils.bytesToHexLowercase(mdSecond.digest()) + cloudProvider.appkey();
             return Utils.bytesToHexLowercase(sha256(loginHash.getBytes(StandardCharsets.US_ASCII)));
         } catch (NoSuchAlgorithmException e) {
             logger.warn("encryptIamPasswordt error: NoSuchAlgorithmException: {}", e.getMessage());

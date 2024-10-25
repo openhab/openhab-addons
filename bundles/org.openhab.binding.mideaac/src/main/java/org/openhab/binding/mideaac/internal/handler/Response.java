@@ -58,25 +58,30 @@ public class Response {
         this.bodyType = bodyType;
         this.responseType = responseType;
 
-        logger.debug("Power State: {}", getPowerState());
-        logger.trace("Prompt Tone: {}", getPromptTone());
-        logger.trace("Appliance Error: {}", getApplianceError());
-        logger.debug("Target Temperature: {}", getTargetTemperature());
-        logger.debug("Operational Mode: {}", getOperationalMode());
-        logger.debug("Fan Speed: {}", getFanSpeed());
-        logger.debug("On Timer: {}", getOnTimer());
-        logger.debug("Off Timer: {}", getOffTimer());
-        logger.debug("Swing Mode: {}", getSwingMode());
-        logger.trace("Auxiliary Heat: {}", getAuxHeat());
-        logger.trace("Eco Mode: {}", getEcoMode());
-        logger.debug("Sleep Function: {}", getSleepFunction());
-        logger.debug("Turbo Mode: {}", getTurboMode());
-        logger.trace("Fahrenheit: {}", getFahrenheit());
-        logger.debug("Indoor Temperature: {}", getIndoorTemperature());
-        logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
-        logger.debug("LED Display: {}", getDisplayOn());
-        logger.trace("Humidity: {}", getHumidity());
-        logger.trace("Alternate Target Temperature {}", getAlternateTargetTemperature());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Power State: {}", getPowerState());
+            logger.debug("Target Temperature: {}", getTargetTemperature());
+            logger.debug("Operational Mode: {}", getOperationalMode());
+            logger.debug("Fan Speed: {}", getFanSpeed());
+            logger.debug("On Timer: {}", getOnTimer());
+            logger.debug("Off Timer: {}", getOffTimer());
+            logger.debug("Swing Mode: {}", getSwingMode());
+            logger.debug("Sleep Function: {}", getSleepFunction());
+            logger.debug("Turbo Mode: {}", getTurboMode());
+            logger.debug("Indoor Temperature: {}", getIndoorTemperature());
+            logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
+            logger.debug("LED Display: {}", getDisplayOn());
+        }
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Prompt Tone: {}", getPromptTone());
+            logger.trace("Appliance Error: {}", getApplianceError());
+            logger.trace("Auxiliary Heat: {}", getAuxHeat());
+            logger.trace("Eco Mode: {}", getEcoMode());
+            logger.trace("Fahrenheit: {}", getFahrenheit());
+            logger.trace("Humidity: {}", getHumidity());
+            logger.trace("Alternate Target Temperature {}", getAlternateTargetTemperature());
+        }
 
         /**
          * Trace Log Response and Body Type for V3. V2 set at "" and 0x00

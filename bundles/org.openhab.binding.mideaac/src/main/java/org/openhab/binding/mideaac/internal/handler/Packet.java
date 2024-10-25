@@ -91,7 +91,6 @@ public class Packet {
         System.arraycopy(packet, 0, newPacket, 0, packet.length);
         System.arraycopy(cmdEncrypted, 0, newPacket, packet.length, cmdEncrypted.length);
         packet = newPacket;
-        // logger.trace("Packet after cmdEncrpted {}", Utils.bytesToHex(packet));
 
         // Override packet length bytes with actual values
         byte[] lenBytes = { (byte) (packet.length + 16), 0 };
@@ -105,7 +104,6 @@ public class Packet {
         System.arraycopy(packet, 0, newPacketTwo, 0, packet.length);
         System.arraycopy(checksumData, 0, newPacketTwo, packet.length, checksumData.length);
         packet = newPacketTwo;
-        // logger.trace("Packet after checksum {}", Utils.bytesToHex(packet));
     }
 
     /**

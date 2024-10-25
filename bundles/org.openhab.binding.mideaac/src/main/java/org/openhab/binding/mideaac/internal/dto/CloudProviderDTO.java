@@ -15,99 +15,20 @@ package org.openhab.binding.mideaac.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CloudProvider} class contains the information
+ * The {@link CloudProviderDTO} class contains the information
  * to allow encryption and decryption for the supported Cloud Providers
  *
  * @author Jacek Dobrowolski - Initial Contribution
- * @author Bob Eckhoff - JavaDoc
+ * @author Bob Eckhoff - JavaDoc and conversion to record
  */
 @NonNullByDefault
-public class CloudProviderDTO {
-
-    private String name;
-    private String appkey;
-    private String appid;
-    private String apiurl;
-    private String signkey;
-    private String proxied;
-
-    private String iotkey;
-    private String hmackey;
+public record CloudProviderDTO(String name, String appkey, String appid, String apiurl, String signkey, String proxied,
+        String iotkey, String hmackey) {
 
     /**
-     * Cloud provider Name
-     * 
-     * @return name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Cloud provider application key
-     * 
-     * @return appkey
-     */
-    public String getLoginKey() {
-        return appkey;
-    }
-
-    /**
-     * Cloud provider application ID
-     * 
-     * @return appid
-     */
-    public String getAppId() {
-        return appid;
-    }
-
-    /**
-     * Cloud provider url
-     * 
-     * @return apiurl
-     */
-    public String getApiUrl() {
-        return apiurl;
-    }
-
-    /**
-     * Cloud Provider Sign Key
-     * 
-     * @return signkey
-     */
-    public String getSignKey() {
-        return signkey;
-    }
-
-    /**
-     * Cloud provider proxy - MSmarthome only
-     * 
-     * @return proxied
-     */
-    public String getProxied() {
-        return proxied;
-    }
-
-    /**
-     * Cloud provider iot key - MSmarthome only
-     * 
-     * @return iotkey
-     */
-    public String getIotKey() {
-        return iotkey;
-    }
-
-    /**
-     * Cloud provider hmackey - MSmarthome only
-     * 
-     * @return hmackey
-     */
-    public String getHmacKey() {
-        return hmackey;
-    }
-
-    /**
-     * Cloud provider data
+     * Cloud provider information
+     * All providers use the same signkey for AES encryption and Decryption.
+     * V2 Devices do not require a Cloud Provider entry as they only use AES
      * 
      * @param name Cloud provider
      * @param appkey application key
@@ -117,25 +38,6 @@ public class CloudProviderDTO {
      * @param iotkey iot key - MSmarthome only
      * @param hmackey hmac key - MSmarthome only
      * @param proxied proxy - MSmarthome only
-     */
-    public CloudProviderDTO(String name, String appkey, String appid, String apiurl, String signkey, String iotkey,
-            String hmackey, String proxied) {
-        super();
-        this.name = name;
-        this.appkey = appkey;
-        this.appid = appid;
-        this.apiurl = apiurl;
-        this.signkey = signkey;
-        this.iotkey = iotkey;
-        this.hmackey = hmackey;
-        this.proxied = proxied;
-    }
-
-    /**
-     * Cloud provider information
-     * All providers use the same signkey for AES encryption and Decryption.
-     * V2 Devices do not require a Cloud Provider entry as they only use AES
-     * 
      * @param name Cloud provider
      * @return Cloud provider information
      */

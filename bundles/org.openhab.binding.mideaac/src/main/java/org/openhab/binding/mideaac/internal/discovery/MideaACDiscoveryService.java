@@ -69,21 +69,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     private Security security;
 
-    private Map<String, Object> initializeProperties() {
-        final Map<String, Object> properties = new TreeMap<>();
-        properties.put(CONFIG_IP_ADDRESS, "");
-        properties.put(CONFIG_IP_PORT, "0");
-        properties.put(CONFIG_DEVICEID, "");
-        properties.put(CONFIG_POLLING_TIME, 60);
-        properties.put(CONFIG_CONNECTING_TIMEOUT, 4);
-        properties.put(CONFIG_PROMPT_TONE, false);
-        properties.put(PROPERTY_VERSION, "");
-        properties.put(PROPERTY_SN, "");
-        properties.put(PROPERTY_SSID, "");
-        properties.put(PROPERTY_TYPE, "");
-        return properties;
-    }
-
     /**
      * Discovery Service
      */
@@ -188,7 +173,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     /**
      * Start the discovery Socket
      * 
-     * @param ipAddress IP Address
+     * @param ipAddress broadcast IP Address
      * @param discoveryHandler Discovery handler
      * @throws SocketException Socket Exception
      * @throws IOException IO Exception
@@ -199,22 +184,20 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         this.discoveryHandler = discoveryHandler;
         discoverSocket = new DatagramSocket(new InetSocketAddress(Connection.MIDEAAC_RECEIVE_PORT));
         DatagramSocket discoverSocket = this.discoverSocket;
-        discoverSocket.setBroadcast(true);
-        discoverSocket.setSoTimeout(udpPacketTimeout);
-        final InetAddress broadcast = InetAddress.getByName(ipAddress);
-        {
-            final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
-                    CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT1);
-            discoverSocket.send(discoverPacket);
-            if (logger.isTraceEnabled()) {
+        if (discoverSocket != null) {
+            discoverSocket.setBroadcast(true);
+            discoverSocket.setSoTimeout(udpPacketTimeout);
+            final InetAddress broadcast = InetAddress.getByName(ipAddress);
+            {
+                final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
+                        CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT1);
+                discoverSocket.send(discoverPacket);
                 logger.trace("Broadcast discovery package sent to port: {}", Connection.MIDEAAC_SEND_PORT1);
             }
-        }
-        {
-            final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
-                    CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT2);
-            discoverSocket.send(discoverPacket);
-            if (logger.isTraceEnabled()) {
+            {
+                final DatagramPacket discoverPacket = new DatagramPacket(CommandBase.discover(),
+                        CommandBase.discover().length, broadcast, Connection.MIDEAAC_SEND_PORT2);
+                discoverSocket.send(discoverPacket);
                 logger.trace("Broadcast discovery package sent to port: {}", Connection.MIDEAAC_SEND_PORT2);
             }
         }
@@ -228,7 +211,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         DatagramSocket discoverSocket = this.discoverSocket;
         if (discoverSocket != null) {
             discoverSocket.close();
-            discoverSocket = null;
+            this.discoverSocket = null;
         }
     }
 
@@ -239,8 +222,8 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      */
     private void thingDiscovered(DatagramPacket packet) {
         DiscoveryResult dr = discoveryPacketReceived(packet);
-        DiscoveryHandler discoveryHandler = this.discoveryHandler;
         if (dr != null) {
+            DiscoveryHandler discoveryHandler = this.discoveryHandler;
             if (discoveryHandler != null) {
                 discoveryHandler.discovered(dr);
             } else {
@@ -356,10 +339,13 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
      */
     private Map<String, Object> collectProperties(String ipAddress, String version, String id, String port, String sn,
             String ssid, String type) {
-        Map<String, Object> properties = initializeProperties();
+        Map<String, Object> properties = new TreeMap<>();
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
+        properties.put(CONFIG_POLLING_TIME, 60);
+        properties.put(CONFIG_CONNECTING_TIMEOUT, 4);
+        properties.put(CONFIG_PROMPT_TONE, false);
         properties.put(PROPERTY_VERSION, version);
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);

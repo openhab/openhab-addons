@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jose4j.base64url.Base64;
 
 import com.google.gson.JsonObject;
@@ -216,6 +217,7 @@ public class Utils {
         StringBuilder sb = new StringBuilder();
         Iterator<String> keys = json.keySet().stream().sorted().iterator();
         while (keys.hasNext()) {
+            @Nullable
             String key = keys.next();
             sb.append(key);
             sb.append("=");

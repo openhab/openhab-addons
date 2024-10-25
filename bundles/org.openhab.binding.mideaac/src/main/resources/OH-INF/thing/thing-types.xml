@@ -71,27 +71,23 @@
 				<context>email</context>
 				<label>Email</label>
 				<description>Email for cloud account chosen in Cloud Provider.</description>
-				<default></default>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for cloud account chosen in Cloud Provider.</description>
-				<default></default>
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<context>token</context>
 				<label>Token</label>
 				<description>Secret Token (length 128 HEX) used for secure connection authentication used with devices v3 (if not
 					known, enter email and password for Cloud to retrieve it).</description>
-				<default></default>
 			</parameter>
 			<parameter name="key" type="text" required="false">
 				<context>key</context>
 				<label>Key</label>
 				<description>Secret Key (length 64 HEX) used for secure connection authentication used with devices v3 (if not
 					known, enter email and password for Cloud to retrieve it).</description>
-				<default></default>
 			</parameter>
 			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
 				<context>pollingTime</context>
@@ -209,7 +205,7 @@
 		<description>Sleep function ("Moon with a star" icon on IR Remote Controller).</description>
 		<category>Switch</category>
 	</channel-type>
-	<channel-type id="temperature-unit">
+	<channel-type id="temperature-unit" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Temperature unit on LED Display</label>
 		<description>On = Farenheit on Indoor AC unit LED display, Off = Celsius.</description>

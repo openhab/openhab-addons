@@ -121,7 +121,7 @@ public class CloudDTO {
         this.password = password;
         this.cloudProvider = cloudProvider;
         this.security = new Security(cloudProvider);
-        logger.debug("Cloud provider: {}", cloudProvider.getName());
+        logger.debug("Cloud provider: {}", cloudProvider.name());
     }
 
     /**
@@ -130,11 +130,11 @@ public class CloudDTO {
     private JsonObject apiRequest(String endpoint, JsonObject args, JsonObject data) {
         if (data == null) {
             data = new JsonObject();
-            data.addProperty("appId", cloudProvider.getAppId());
+            data.addProperty("appId", cloudProvider.appid());
             data.addProperty("format", FORMAT);
             data.addProperty("clientType", CLIENT_TYPE);
             data.addProperty("language", LANGUAGE);
-            data.addProperty("src", cloudProvider.getAppId());
+            data.addProperty("src", cloudProvider.appid());
             data.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         }
 
@@ -146,12 +146,11 @@ public class CloudDTO {
         }
 
         // Add the login information to the payload
-        if (!data.has("reqId") && !Objects.isNull(cloudProvider.getProxied())
-                && !cloudProvider.getProxied().isBlank()) {
+        if (!data.has("reqId") && !Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             data.addProperty("reqId", Utils.tokenHex(16));
         }
 
-        String url = cloudProvider.getApiUrl() + endpoint;
+        String url = cloudProvider.apiurl() + endpoint;
 
         int time = (int) (new Date().getTime() / 1000);
 
@@ -166,13 +165,13 @@ public class CloudDTO {
         // .version(HttpVersion.HTTP_1_1)
         request.agent("Dalvik/2.1.0 (Linux; U; Android 7.0; SM-G935F Build/NRD90M)");
 
-        if (!Objects.isNull(cloudProvider.getProxied()) && !cloudProvider.getProxied().isBlank()) {
+        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             request.header("Content-Type", "application/json");
         } else {
             request.header("Content-Type", "application/x-www-form-urlencoded");
         }
         request.header("secretVersion", "1");
-        if (!Objects.isNull(cloudProvider.getProxied()) && !cloudProvider.getProxied().isBlank()) {
+        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             String sign = security.newSign(json, random);
             request.header("sign", sign);
         } else {
@@ -189,7 +188,7 @@ public class CloudDTO {
 
         logger.debug("Request headers: {}", request.getHeaders().toString());
 
-        if (!Objects.isNull(cloudProvider.getProxied()) && !cloudProvider.getProxied().isBlank()) {
+        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             request.content(new StringContentProvider(json));
         } else {
             String body = Utils.getQueryString(data);
@@ -233,7 +232,7 @@ public class CloudDTO {
                 return null;
             } else {
                 logger.debug("Api response ok: {} ({})", code, msg);
-                if (!Objects.isNull(cloudProvider.getProxied()) && !cloudProvider.getProxied().isBlank()) {
+                if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
                     return result.get("data").getAsJsonObject();
                 } else {
                     return result.get("result").getAsJsonObject();
@@ -265,7 +264,7 @@ public class CloudDTO {
         logger.trace("Using loginId: {}", loginId);
         logger.trace("Using password: {}", password);
 
-        if (!Objects.isNull(cloudProvider.getProxied()) && !cloudProvider.getProxied().isBlank()) {
+        if (!Objects.isNull(cloudProvider.proxied()) && !cloudProvider.proxied().isBlank()) {
             JsonObject newData = new JsonObject();
 
             JsonObject data = new JsonObject();
@@ -273,14 +272,14 @@ public class CloudDTO {
             newData.add("data", data);
 
             JsonObject iotData = new JsonObject();
-            iotData.addProperty("appId", cloudProvider.getAppId());
+            iotData.addProperty("appId", cloudProvider.appid());
             iotData.addProperty("clientType", CLIENT_TYPE);
             iotData.addProperty("iampwd", security.encryptIamPassword(loginId, password));
             iotData.addProperty("loginAccount", loginAccount);
             iotData.addProperty("password", security.encryptPassword(loginId, password));
             iotData.addProperty("pushToken", Utils.tokenUrlsafe(120));
             iotData.addProperty("reqId", Utils.tokenHex(16));
-            iotData.addProperty("src", cloudProvider.getAppId());
+            iotData.addProperty("src", cloudProvider.appid());
             iotData.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             newData.add("iotData", iotData);
 

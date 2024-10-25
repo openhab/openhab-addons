@@ -40,9 +40,8 @@ No binding configuration is required.
 | key         | Yes for V.3 | Secret Key (length 64 HEX)                                        |         |
 | pollingTime | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
 | timeout     | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
-| promptTone  | No          | "Ding" tone when command is received and executed.                | False   |
-| version     | Yes         | Version 3 has tokey, key and cloud requirements.                  | 3       |
-
+| promptTone  | Yes         | "Ding" tone when command is received and executed.                | False   |
+| version     | Yes         | Version 3 has token, key and cloud requirements.                  | 3       |
 
 ## Channels
 
@@ -58,9 +57,9 @@ Following channels are available:
 | eco-mode                     | Switch             | Eco mode - Cool only (Temperature is set to 24 C (75 F) and fan on AUTO)                               |           |          |
 | turbo-mode                   | Switch             | Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. COOL and HEAT mode only. |           |          |
 | sleep-function               | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
-| temperature-unit             | Switch             | Sets the evaporator display to Fahrenheit (true) or Celsius (false).                                   |           |          |
 | indoor-temperature           | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
 | outdoor-temperature          | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
+| temperature-unit             | Switch             | Sets the evaporator display to Fahrenheit (true) or Celsius (false).                                   |           | Yes      |
 | on-timer                     | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
 | off-timer                    | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
 | screen-display               | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
@@ -72,7 +71,7 @@ Following channels are available:
 
 ## Examples
 
-### Demo Things
+### 'demo.things' Example
 
 ```java
 Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
@@ -84,7 +83,7 @@ Option to use the built-in binding discovery of ipPort, deviceId, token and key.
 Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
 ```
 
-### Demo Items
+### 'demo.items' Example
 
 ```java
 Switch power "Power"                                                        { channel="mideaac:ac:mideaac:power" }
@@ -100,19 +99,19 @@ Switch sleep_function "Sleep function"                                      { ch
 Switch temperature_unit "Fahrenheit or Celsius"                             { channel="mideaac:ac:mideaac:temperature-unit" }
 ```
 
-### Demo Sitemap
+### 'demo.sitemap' Example
 
 ```java
 sitemap midea label="Split AC MBR"{
-Frame label="AC Unit" {
-Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
-Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"
-Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=63.0 maxValue=78 step=1.0
-Switch item=power label="Midea AC Power"
-Switch item=temperature_unit label= "Temp Unit" mappings=[ON="Fahrenheit", OFF="Celsius"]
-Selection item=fan_speed label="Midea AC Fan Speed"
-Selection item=operational_mode label="Midea AC Mode"
-Selection item=swing_mode label="Midea AC Louver Swing Mode"
+    Frame label="AC Unit" {
+    Text item=outdoor_temperature label="Outdoor Temperature [%.1f °F]"
+    Text item=indoor_temperature label="Indoor Temperature [%.1f °F]"
+    Setpoint item=target_temperature label="Target Temperature [%.1f °F]" minValue=63.0 maxValue=78 step=1.0
+    Switch item=power label="Midea AC Power"
+    Switch item=temperature_unit label= "Temp Unit" mappings=[ON="Fahrenheit", OFF="Celsius"]
+    Selection item=fan_speed label="Midea AC Fan Speed"
+    Selection item=operational_mode label="Midea AC Mode"
+    Selection item=swing_mode label="Midea AC Louver Swing Mode"
 }
 }
 ```
