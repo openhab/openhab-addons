@@ -35,10 +35,10 @@ Note also that just because these tables show that a channel may be read/write, 
 
 ### [Button](https://www.home-assistant.io/integrations/button.mqtt/)
 
-| Channel ID | Type   | R/W | Description |
-|------------|--------|-----|----------------
-| button     | String | WO  | Inspect the state description for the proper string to send (usually PRESS). |
-| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                     |
+| Channel ID      | Type   | R/W | Description                                                                  |
+|-----------------|--------|-----|------------------------------------------------------------------------------|
+| button          | String | WO  | Inspect the state description for the proper string to send (usually PRESS). |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                          |
 
 ### [Camera](https://www.home-assistant.io/integrations/camera.mqtt/)<br>
 
