@@ -15,8 +15,8 @@ You can also manually create a Thing, and provide the individual component topic
 
 The following components (and their associated channels) are supported.
 If a component has multiple channels, they are put together in a channel group with the component's ID.
-If a component only has a single channel, that channel is renamed with the component's ID, and placed directly on the Thing, without a group.
-Note that most channels are optional, and may not be present.
+If a component only has a single channel, that channel is renamed with the component's ID, and placed directly on the Thing, without a group.<br>
+Note that most channels are optional, and may not be present.<br>
 Note also that just because these tables show that a channel may be read/write, full functionality is dependent on the device.
 
 ### [Alarm Control Panel](https://www.home-assistant.io/integrations/alarm_control_panel.mqtt/)
