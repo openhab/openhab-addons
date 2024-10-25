@@ -31,7 +31,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Number extends AbstractComponent<Number.ChannelConfiguration> {
     public static final String NUMBER_CHANNEL_ID = "number"; // Randomly chosen channel "ID"
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

@@ -29,7 +29,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
     public static final String SCENE_CHANNEL_ID = "scene";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

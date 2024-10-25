@@ -33,7 +33,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfiguration> {
     public static final String SENSOR_CHANNEL_ID = "sensor";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

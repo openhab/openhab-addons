@@ -36,7 +36,6 @@ import com.google.gson.annotations.SerializedName;
 public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
     public static final String LOCK_CHANNEL_ID = "lock";
     public static final String STATE_CHANNEL_ID = "state";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

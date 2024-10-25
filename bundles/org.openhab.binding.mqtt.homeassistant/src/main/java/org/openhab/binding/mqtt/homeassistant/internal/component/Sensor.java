@@ -34,8 +34,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
-    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
+    public static final String SENSOR_CHANNEL_ID = "sensor";
 
     private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
 

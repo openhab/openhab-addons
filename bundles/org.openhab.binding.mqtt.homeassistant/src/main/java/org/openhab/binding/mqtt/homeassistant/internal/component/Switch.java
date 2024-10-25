@@ -28,7 +28,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
     public static final String SWITCH_CHANNEL_ID = "switch";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

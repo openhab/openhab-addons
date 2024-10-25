@@ -28,7 +28,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Select extends AbstractComponent<Select.ChannelConfiguration> {
     public static final String SELECT_CHANNEL_ID = "select";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

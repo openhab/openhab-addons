@@ -27,7 +27,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 @NonNullByDefault
 public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
     public static final String CAMERA_CHANNEL_ID = "camera";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

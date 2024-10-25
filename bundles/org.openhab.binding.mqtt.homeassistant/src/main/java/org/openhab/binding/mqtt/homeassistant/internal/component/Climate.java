@@ -63,7 +63,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperature-low";
     public static final String TEMPERATURE_LOW_CH_ID_DEPRECATED = "temperatureLow";
     public static final String POWER_CH_ID = "power";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     public enum TemperatureUnit {
         @SerializedName("C")

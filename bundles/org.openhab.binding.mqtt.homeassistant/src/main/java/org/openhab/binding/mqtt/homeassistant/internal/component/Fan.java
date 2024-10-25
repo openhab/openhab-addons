@@ -49,7 +49,6 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
     public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

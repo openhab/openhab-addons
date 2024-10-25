@@ -40,7 +40,6 @@ import com.google.gson.annotations.SerializedName;
 public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String COVER_CHANNEL_ID = "cover";
     public static final String STATE_CHANNEL_ID = "state";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component

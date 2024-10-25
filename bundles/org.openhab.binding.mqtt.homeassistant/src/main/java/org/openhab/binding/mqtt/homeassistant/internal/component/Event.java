@@ -35,7 +35,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Event extends AbstractComponent<Event.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String EVENT_TYPE_CHANNEL_ID = "event-type";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
     private static final String EVENT_TYPE_TRANFORMATION = "{{ value_json.event_type }}";
 
     /**
