@@ -48,10 +48,10 @@ public class Text extends AbstractComponent<Text.ChannelConfiguration> {
         protected @Nullable String stateTopic;
 
         // openHAB has no way to handle these restrictions in its UI
-        protected int min = 0;
+        protected int min = 0; // Minimum and maximum length of the display we're controlling
         protected int max = 255;
-        protected @Nullable String pattern;
-        protected String mode = MODE_TEXT;
+        protected @Nullable String pattern; // Regular expression
+        protected String mode = MODE_TEXT; // Presumably for a password, it should mask any controls in the UI
     }
 
     public Text(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
