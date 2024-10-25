@@ -10,43 +10,48 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.nio.file.Path;
+import java.io.IOException;
 
+import javax.xml.xpath.XPathExpressionException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
+import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
+import org.xml.sax.SAXException;
 
 /**
- * Test cases for {@link Client.parseMultiPointCoverageXml} with an "empty" (no data) XML response
+ * Test cases for {@link org.openhab.binding.fmiweather.internal.client.Client#parseMultiPointCoverageXml}
+ * with an "empty" (no data) XML response
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class FMIResponseParsingEmptyTest extends AbstractFMIResponseParsingTest {
 
-    private Path observations = getTestResource("observations_empty.xml");
+    private static final String OBSERVATIONS = "observations_empty.xml";
 
+    @NonNullByDefault({})
     private FMIResponse observationsResponse;
 
     @BeforeEach
-    public void setUp() {
-        client = new Client();
-        try {
-            observationsResponse = parseMultiPointCoverageXml(readTestResourceUtf8(observations));
-        } catch (Throwable e) {
-            throw new RuntimeException("Test data malformed", e);
-        }
+    public void setUp() throws FMIUnexpectedResponseException, FMIExceptionReportException, XPathExpressionException,
+            SAXException, IOException {
+        client = new ClientExposed();
+        observationsResponse = client.parseMultiPointCoverageXml(readTestResourceUtf8(OBSERVATIONS));
         assertNotNull(observationsResponse);
     }
 
     @Test
-    public void testLocationsSinglePlace() throws Throwable {
+    public void testLocationsSinglePlace() {
         assertThat(observationsResponse.getLocations().size(), is(0));
     }
 }

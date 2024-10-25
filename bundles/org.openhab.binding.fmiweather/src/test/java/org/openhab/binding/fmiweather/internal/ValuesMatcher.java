@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -40,7 +40,6 @@ public class ValuesMatcher extends TypeSafeMatcher<@Nullable BigDecimal[]> {
         return s == null ? null : new BigDecimal(s);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void describeTo(@Nullable Description description) {
         if (description == null) {
