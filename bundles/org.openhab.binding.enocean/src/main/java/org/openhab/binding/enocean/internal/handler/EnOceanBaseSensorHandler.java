@@ -155,9 +155,6 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
         ERP1Message msg = (ERP1Message) packet;
 
         EEPType localReceivingType = receivingEEPTypes.get(msg.getRORG());
-        if (localReceivingType == null) {
-            return;
-        }
 
         EEP eep = EEPFactory.buildEEP(localReceivingType, (ERP1Message) packet);
         logger.debug("ESP Packet payload {} for {} received", HexUtils.bytesToHex(packet.getPayload()),
