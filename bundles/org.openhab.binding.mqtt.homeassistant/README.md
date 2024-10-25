@@ -153,6 +153,13 @@ If a device has multiple device triggers for the same subtype (the particular bu
 | switch          | Switch | R/W | If the device is on or off.                         |
 | json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
 
+### [Text](https://www.home-assistant.io/integrations/text.mqtt/)
+
+| Channel ID      | Type   | R/W | Description                                         |
+|-----------------|--------|-----|-----------------------------------------------------|
+| text            | String | R/W | The text to display on the device.                  |
+| json-attributes | String | RO  | Additional attributes, as a serialized JSON string. |
+
 ### [Update](https://www.home-assistant.io/integrations/update.mqtt/)<br>
 
 This is a special component, that will show up as additional properties on the Thing, and add a button on the Thing to initiate an OTA update.
