@@ -28,6 +28,7 @@ import org.openhab.binding.dirigera.internal.handler.controller.LightControllerH
 import org.openhab.binding.dirigera.internal.handler.controller.ShortcutControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.controller.SoundControllerHandler;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
+import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
@@ -116,6 +117,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
             return new TemperatureLightHandler(thing, TEMPERATURE_LIGHT_MAP);
+        } else if (THING_TYPE_DIMMABLE_LIGHT.equals(thingTypeUID)) {
+            return new DimmableLightHandler(thing, TEMPERATURE_LIGHT_MAP);
         } else if (THING_TYPE_MOTION_SENSOR.equals(thingTypeUID)) {
             return new MotionSensorHandler(thing, MOTION_SENSOR_MAP);
             // } else if (THING_TYPE_LIGHT_SENSOR.equals(thingTypeUID)) {
