@@ -62,10 +62,17 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     private static final long OBSERVATION_LOOK_BACK_SECONDS = TimeUnit.MINUTES.toSeconds(30);
     private static final int STEP_MINUTES = 10;
     private static final int POLL_INTERVAL_SECONDS = 600;
-    private static BigDecimal HUNDRED = BigDecimal.valueOf(100);
-    private static BigDecimal NA_CLOUD_MAX = BigDecimal.valueOf(8); // API value when having full clouds (overcast)
-    private static BigDecimal NA_CLOUD_COVERAGE = BigDecimal.valueOf(9); // API value when cloud coverage could not be
-                                                                         // determined.
+    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+
+    /**
+     * API value when having full clouds (overcast)
+     */
+    private static final BigDecimal NA_CLOUD_MAX = BigDecimal.valueOf(8);
+
+    /**
+     * API value when cloud coverage could not be determined.
+     */
+    private static final BigDecimal NA_CLOUD_COVERAGE = BigDecimal.valueOf(9);
 
     public static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(METRE);
     public static final Unit<Length> CENTIMETRE = MetricPrefix.CENTI(METRE);
@@ -175,7 +182,6 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
@@ -185,7 +191,6 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         return entry.getKey();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());

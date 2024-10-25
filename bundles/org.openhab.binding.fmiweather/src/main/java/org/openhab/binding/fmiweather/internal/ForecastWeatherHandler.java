@@ -232,7 +232,6 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         return (int) (TimeUnit.HOURS.toMinutes(hours) / QUERY_RESOLUTION_MINUTES);
     }
 
-    @SuppressWarnings({ "unused", "null" })
     private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_FORECAST_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
@@ -242,7 +241,6 @@ public class ForecastWeatherHandler extends AbstractWeatherHandler {
         return entry.getKey();
     }
 
-    @SuppressWarnings({ "unused", "null" })
     private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_FORECAST_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());

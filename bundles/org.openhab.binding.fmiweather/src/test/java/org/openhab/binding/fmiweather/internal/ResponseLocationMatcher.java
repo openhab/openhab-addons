@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fmiweather;
+package org.openhab.binding.fmiweather.internal;
 
 import java.math.BigDecimal;
 import java.util.Objects;
