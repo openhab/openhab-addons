@@ -10,16 +10,20 @@ This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray p
 If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
 
 To enable network remote control of the Blu-ray model players, configure the following settings:
+
 - **Player Settings/Network/Network Settings/Remote Device Settings**
 
 Then make sure you have the following values set:
+
 - **Remote Device Operation: On**
 - **Registration Type: Automatic**
 
 For the UHD models, Voice Control must be enabled for the player's http interface to be active:
+
 - **Player Settings/Network/Voice Control: On**
 
 To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:
+
 - **Player Settings/System/Quick Start: On**
 
 **UHD Model Command Authentication:**
