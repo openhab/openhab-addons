@@ -161,7 +161,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.getJsonAttributesTopic(),
                             channelConfiguration.getJsonAttributesTemplate())
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO)
+                    .isAdvanced(true)
+                    .build();
         }
     }
 
