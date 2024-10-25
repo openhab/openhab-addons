@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.rrd4j.internal;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -32,12 +34,12 @@ public class RRD4jItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public RRD4jItem(String name, State state, ZonedDateTime timestamp) {
+    public RRD4jItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -52,13 +54,18 @@ public class RRD4jItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
     public String toString() {
-        return timestamp
+        return getTimestamp()
                 .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(Locale.getDefault())) + ": "
-                + name + " -> " + state.toString();
+                + name + " -> " + state;
     }
 }

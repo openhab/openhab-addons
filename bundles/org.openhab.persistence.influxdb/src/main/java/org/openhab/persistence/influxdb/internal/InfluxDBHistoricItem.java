@@ -13,6 +13,8 @@
 package org.openhab.persistence.influxdb.internal;
 
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,12 +32,12 @@ public class InfluxDBHistoricItem implements HistoricItem {
 
     private String name = "";
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public InfluxDBHistoricItem(String name, State state, ZonedDateTime timestamp) {
+    public InfluxDBHistoricItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -54,11 +56,16 @@ public class InfluxDBHistoricItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return DateFormat.getDateTimeInstance().format(getTimestamp()) + ": " + name + " -> " + state.toString();
     }
 }

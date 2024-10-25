@@ -61,12 +61,12 @@ public class JpaHistoricItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public JpaHistoricItem(String name, State state, ZonedDateTime timestamp) {
+    public JpaHistoricItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -76,7 +76,12 @@ public class JpaHistoricItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
@@ -86,7 +91,7 @@ public class JpaHistoricItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        return DateFormat.getDateTimeInstance().format(getTimestamp()) + ": " + name + " -> " + state;
     }
 
     /**
@@ -156,6 +161,6 @@ public class JpaHistoricItem implements HistoricItem {
             state = new StringType(pItem.getValue());
         }
 
-        return new JpaHistoricItem(item.getName(), state, pItem.getTimestamp());
+        return new JpaHistoricItem(item.getName(), state, pItem.getInstant());
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.persistence.mapdb.internal;
 
 import java.text.DateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -62,6 +63,11 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    @Override
+    public Instant getInstant() {
+        return timestamp.toInstant();
     }
 
     @Override

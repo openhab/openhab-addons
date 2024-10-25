@@ -15,7 +15,6 @@ package org.openhab.persistence.influxdb;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -255,8 +254,7 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
 
     private HistoricItem mapRowToHistoricItem(InfluxDBRepository.InfluxRow row) {
         State state = InfluxDBStateConvertUtils.objectToState(row.value(), row.itemName(), itemRegistry);
-        return new InfluxDBHistoricItem(row.itemName(), state,
-                ZonedDateTime.ofInstant(row.time(), ZoneId.systemDefault()));
+        return new InfluxDBHistoricItem(row.itemName(), state, row.time());
     }
 
     @Override

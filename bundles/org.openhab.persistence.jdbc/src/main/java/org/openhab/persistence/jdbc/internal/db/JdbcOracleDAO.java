@@ -13,6 +13,7 @@
 package org.openhab.persistence.jdbc.internal.db;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -287,16 +288,16 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
     }
 
     @Override
-    protected ZonedDateTime objectAsZonedDateTime(Object v) {
+    protected Instant objectAsInstant(Object v) {
         if (v instanceof TIMESTAMP objectAsOracleTimestamp) {
             try {
-                return objectAsOracleTimestamp.timestampValue().toInstant().atZone(ZoneId.systemDefault());
+                return objectAsOracleTimestamp.timestampValue().toInstant();
             } catch (SQLException e) {
                 throw new UnsupportedOperationException("Date of type '" + v.getClass().getName()
                         + "', no Timestamp representation exists for '" + objectAsOracleTimestamp.toString() + "'");
             }
         } else {
-            return super.objectAsZonedDateTime(v);
+            return super.objectAsInstant(v);
         }
     }
 }
