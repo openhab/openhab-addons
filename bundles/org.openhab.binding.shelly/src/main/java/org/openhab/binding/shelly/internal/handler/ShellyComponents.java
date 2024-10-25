@@ -352,6 +352,9 @@ public class ShellyComponents {
                 thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED,
                         toQuantityType(status.totalReturned != null ? status.totalReturned / 1000 : accumulatedReturned,
                                 DIGITS_KWH, Units.KILOWATT_HOUR));
+                thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALKWH, toQuantityType(
+                        status.totalKWH != null ? status.totalKWH / 1000 : 0, DIGITS_KWH, Units.KILOWATT_HOUR));
+
             }
         }
 

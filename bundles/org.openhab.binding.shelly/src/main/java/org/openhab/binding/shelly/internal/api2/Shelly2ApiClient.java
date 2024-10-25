@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -61,6 +61,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEm;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusHumidity;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusIlluminance;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
@@ -190,7 +191,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         updated |= updateRelayStatus(status, result.switch3, channelUpdate);
         updated |= updateRelayStatus(status, result.switch100, channelUpdate);
         updated |= updateRelayStatus(status, result.pm10, channelUpdate);
-        updated |= updateEmStatus(status, result.em0, channelUpdate);
+        updated |= updateEmStatus(status, result.em0, result.emdata0, channelUpdate);
         updated |= updateEmStatus(status, result.em10, channelUpdate);
         updated |= updateEmStatus(status, result.em11, channelUpdate);
         updated |= updateRollerStatus(status, result.cover0, channelUpdate);
@@ -354,8 +355,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private boolean updateEmStatus(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusEm em,
-            boolean channelUpdate) throws ShellyApiException {
-        if (em == null) {
+            @Nullable Shelly2DeviceStatusEmData emData, boolean channelUpdate) throws ShellyApiException {
+        if (em == null || emData == null) {
             return false;
         }
 
@@ -369,10 +370,17 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.totalReturned = em.totalAprtPower;
         }
 
+        if (emData.totalKWH != null) {
+            status.totalKWH = emData.totalKWH;
+        }
+
         ShellySettingsMeter sm = new ShellySettingsMeter();
         ShellySettingsEMeter emeter = status.emeters.get(0);
         if (em.aActPower != null) {
             sm.power = emeter.power = em.aActPower;
+        }
+        if (emData.aTotal != null) {
+            emeter.total = emData.aTotal;
         }
         if (em.aAprtPower != null) {
             emeter.totalReturned = em.aAprtPower;
@@ -396,6 +404,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             if (em.bActPower != null) {
                 sm.power = emeter.power = em.bActPower;
             }
+            if (emData.bTotal != null) {
+                emeter.total = emData.bTotal;
+            }
             if (em.bAprtPower != null) {
                 emeter.totalReturned = em.bAprtPower;
             }
@@ -418,6 +429,9 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             sm.isValid = emeter.isValid = true;
             if (em.cActPower != null) {
                 sm.power = emeter.power = em.cActPower;
+            }
+            if (emData.cTotal != null) {
+                emeter.total = emData.cTotal;
             }
             if (em.cAprtPower != null) {
                 emeter.totalReturned = em.cAprtPower;

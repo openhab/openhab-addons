@@ -772,6 +772,7 @@ public class Shelly1ApiJsonDTO {
 
         public Double totalCurrent;
         public Double totalPower;
+        public Double totalKWH;
         public Double totalReturned;
 
         @SerializedName("ext_temperature")

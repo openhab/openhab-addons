@@ -271,6 +271,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_ACCUWATTS = "accumulatedWatts";
     public static final String CHANNEL_DEVST_ACCUTOTAL = "accumulatedWTotal";
     public static final String CHANNEL_DEVST_ACCURETURNED = "accumulatedReturned";
+    public static final String CHANNEL_DEVST_TOTALKWH = "totalKWH";
     public static final String CHANNEL_DEVST_RESETTOTAL = CHANNEL_EMETER_RESETTOTAL;
 
     public static final String CHANNEL_DEVST_CHARGER = "charger";
