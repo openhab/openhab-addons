@@ -13,6 +13,7 @@ All movie player components including the original K-Player series, M Class Play
 It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
 
 The supported thing types are:
+
 - `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
 - `cinemaone` Cinema One (2nd Gen)
 - `alto`

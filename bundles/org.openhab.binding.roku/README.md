@@ -57,6 +57,7 @@ Some Notes:
 - The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
 
 **List of available button commands for Roku streaming devices:**
+
 - Home
 - Rev
 - Fwd
@@ -75,6 +76,7 @@ Some Notes:
 - FindRemote
 
 **List of additional button commands for Roku TVs:**
+
 - ChannelUp
 - ChannelDown
 - VolumeUp

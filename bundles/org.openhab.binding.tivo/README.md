@@ -66,6 +66,7 @@ All devices support the following channels:
 - Special characters must also be changed to the appropriate command e.g. the comma symbol(`,`) must not be sent it should be replaced by 'COMMA'.
 
 Available IR Commands to use with `irCommand` channel:
+
 - UP
 - DOWN
 - LEFT
