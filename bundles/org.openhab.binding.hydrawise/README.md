@@ -17,7 +17,7 @@ An account must be manually added and configured.
 Controller Things are automatically discovered once an [Account Bridge](#account-bridge-thing) has be properly configured.
 
 The Controller Thing type is the primary way most users will control and monitor their irrigation system.
-This allows full control over zones, sensors and weather forecasts.
+This allows full control over zones, sensors and weather forecasts.<br>
 Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
 
 Controller Things require a parent [Account Bridge](#account-bridge-thing)
@@ -34,8 +34,7 @@ Controller Things require a parent [Account Bridge](#account-bridge-thing)
 
 ### Local Thing
 
-The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.
-This provides a subset of features compared to the Cloud Thing type limited to basic zone control.
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network. This provides a subset of features compared to the Cloud Thing type limited to basic zone control.<br>
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state.
 
 Local control may not be available on later Hydrawise controller firmware versions.

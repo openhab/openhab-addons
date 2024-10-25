@@ -182,6 +182,7 @@ Time in seconds that the controller will be in install mode when a device discov
 
 - **unpairOnDeletion**
 If set to true, devices are automatically unpaired from the gateway when their corresponding things are deleted.
+
 **Warning:** The option "factoryResetOnDeletion" also unpairs a device, so in order to avoid unpairing on deletion completely, both options need to be set to false! (default = false)
 
 - **factoryResetOnDeletion**
