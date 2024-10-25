@@ -71,37 +71,37 @@ The following channels are available:
 
 ### List of available button commands for Vizio TVs
 
-PowerOn
-PowerOff
-PowerToggle
-VolumeUp
-VolumeDown
-MuteOn **(may only work as a toggle)**
-MuteOff **(may only work as a toggle)**
-MuteToggle
-ChannelUp
-ChannelDown
-PreviousCh
-InputToggle
-SeekFwd
-SeekBack
-Play
-Pause
-Up
-Down
-Left
-Right
-Ok
-Back
-Info
-Menu
-Home
-Exit
-Smartcast
-ccToggle
-PictureMode
-WideMode
-WideToggle
+- PowerOn
+- PowerOff
+- PowerToggle
+- VolumeUp
+- VolumeDown
+- MuteOn **(may only work as a toggle)**
+- MuteOff **(may only work as a toggle)**
+- MuteToggle
+- ChannelUp
+- ChannelDown
+- PreviousCh
+- InputToggle
+- SeekFwd
+- SeekBack
+- Play
+- Pause
+- Up
+- Down
+- Left
+- Right
+- Ok
+- Back
+- Info
+- Menu
+- Home
+- Exit
+- Smartcast
+- ccToggle
+- PictureMode
+- WideMode
+- WideToggle
 
 ### App List Configuration
 
