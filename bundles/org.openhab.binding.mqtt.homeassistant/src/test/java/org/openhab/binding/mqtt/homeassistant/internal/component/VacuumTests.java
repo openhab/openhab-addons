@@ -19,10 +19,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.UnDefType;
@@ -165,109 +163,6 @@ public class VacuumTests extends AbstractComponentTests {
         assertState(component, Vacuum.FAN_SPEED_CH_ID_DEPRECATED, new StringType("medium"));
         assertState(component, Vacuum.BATTERY_LEVEL_CH_ID_DEPRECATED, new PercentType(80));
         assertState(component, Vacuum.JSON_ATTRIBUTES_CH_ID_DEPRECATED, new StringType(jsonValue));
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testLegacySchema() {
-        // @formatter:off
-        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
-                {\
-                "name":"Rockrobo",\
-                "unique_id":"rockrobo_vacuum",\
-                "device":{\
-                   "manufacturer":"Roborock",\
-                   "model":"v1",\
-                   "name":"rockrobo",\
-                   "identifiers":["rockrobo"],\
-                   "sw_version":"0.9.9"\
-                },\
-                "supported_features":["turn_on", "turn_off","pause","stop","return_home","battery","status",\
-                   "locate","clean_spot","fan_speed","send_command"],\
-                "command_topic":"vacuum/command",\
-                "battery_level_topic":"vacuum/state",\
-                "battery_level_template":"{{ value_json.battery_level }}",\
-                "charging_topic":"vacuum/state",\
-                "charging_template":"{{ value_json.charging }}",\
-                "cleaning_topic":"vacuum/state",\
-                "cleaning_template":"{{ value_json.cleaning }}",\
-                "docked_topic":"vacuum/state",\
-                "docked_template":"{{ value_json.docked }}",\
-                "error_topic":"vacuum/state",\
-                "error_template":"{{ value_json.error }}",\
-                "fan_speed_topic":"vacuum/state",\
-                "set_fan_speed_topic":"vacuum/set_fan_speed",\
-                "fan_speed_template":"{{ value_json.fan_speed }}",\
-                "fan_speed_list":["min","medium","high","max"],\
-                "send_command_topic":"vacuum/send_command"\
-                }\
-                """);
-        // @formatter:on
-
-        assertThat(component.channels.size(), is(8)); // command, battery, charging, cleaning, docked, error,
-        // fan speed, send command
-        assertThat(component.getName(), is("Rockrobo"));
-        assertChannel(component, Vacuum.COMMAND_CH_ID, "", "vacuum/command", "Rockrobo", TextValue.class);
-        assertChannel(component, Vacuum.BATTERY_LEVEL_CH_ID_DEPRECATED, "vacuum/state", "", "Rockrobo",
-                PercentageValue.class);
-        assertChannel(component, Vacuum.CHARGING_CH_ID, "vacuum/state", "", "Rockrobo", OnOffValue.class);
-        assertChannel(component, Vacuum.CLEANING_CH_ID, "vacuum/state", "", "Rockrobo", OnOffValue.class);
-        assertChannel(component, Vacuum.DOCKED_CH_ID, "vacuum/state", "", "Rockrobo", OnOffValue.class);
-        assertChannel(component, Vacuum.ERROR_CH_ID, "vacuum/state", "", "Rockrobo", TextValue.class);
-        assertChannel(component, Vacuum.FAN_SPEED_CH_ID_DEPRECATED, "vacuum/state", "vacuum/set_fan_speed", "Rockrobo",
-                TextValue.class);
-        assertChannel(component, Vacuum.CUSTOM_COMMAND_CH_ID_DEPRECATED, "", "vacuum/send_command", "Rockrobo",
-                TextValue.class);
-
-        // @formatter:off
-        publishMessage("vacuum/state", """
-                {\
-                "battery_level": 61,\
-                "docked": true,\
-                "cleaning": false,\
-                "charging": true,\
-                "fan_speed": "off",\
-                "error": "Error message"\
-                }\
-                """);
-        // @formatter:on
-
-        assertState(component, Vacuum.BATTERY_LEVEL_CH_ID_DEPRECATED, new PercentType(61));
-        assertState(component, Vacuum.DOCKED_CH_ID, OnOffType.ON);
-        assertState(component, Vacuum.CLEANING_CH_ID, OnOffType.OFF);
-        assertState(component, Vacuum.CHARGING_CH_ID, OnOffType.ON);
-        assertState(component, Vacuum.FAN_SPEED_CH_ID_DEPRECATED, new StringType("off"));
-        assertState(component, Vacuum.ERROR_CH_ID, new StringType("Error message"));
-
-        component.getChannel(Vacuum.COMMAND_CH_ID).getState().publishValue(new StringType("turn_on"));
-        assertPublished("vacuum/command", "turn_on");
-
-        // @formatter:off
-        publishMessage("vacuum/state", """
-                {\
-                "battery_level": 55,\
-                "docked": false,\
-                "cleaning": true,\
-                "charging": false,\
-                "fan_speed": "medium",\
-                "error": ""\
-                }\
-                """);
-        // @formatter:on
-
-        assertState(component, Vacuum.BATTERY_LEVEL_CH_ID_DEPRECATED, new PercentType(55));
-        assertState(component, Vacuum.DOCKED_CH_ID, OnOffType.OFF);
-        assertState(component, Vacuum.CLEANING_CH_ID, OnOffType.ON);
-        assertState(component, Vacuum.CHARGING_CH_ID, OnOffType.OFF);
-        assertState(component, Vacuum.FAN_SPEED_CH_ID_DEPRECATED, new StringType("medium"));
-        assertState(component, Vacuum.ERROR_CH_ID, new StringType(""));
-
-        component.getChannel(Vacuum.FAN_SPEED_CH_ID_DEPRECATED).getState().publishValue(new StringType("high"));
-        assertPublished("vacuum/set_fan_speed", "high");
-
-        component.getChannel(Vacuum.CUSTOM_COMMAND_CH_ID_DEPRECATED).getState()
-                .publishValue(new StringType("custom_command"));
-        assertPublished("vacuum/send_command", "custom_command");
     }
 
     @Override
