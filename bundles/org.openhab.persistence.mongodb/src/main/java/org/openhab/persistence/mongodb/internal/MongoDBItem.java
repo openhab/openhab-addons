@@ -13,6 +13,8 @@
 package org.openhab.persistence.mongodb.internal;
 
 import java.text.DateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -30,12 +32,12 @@ public class MongoDBItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public MongoDBItem(String name, State state, ZonedDateTime timestamp) {
+    public MongoDBItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -50,12 +52,17 @@ public class MongoDBItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
     public String toString() {
-        Date date = Date.from(timestamp.toInstant());
-        return DateFormat.getDateTimeInstance().format(date) + ": " + name + " -> " + state.toString();
+        Date date = Date.from(instant);
+        return DateFormat.getDateTimeInstance().format(date) + ": " + name + " -> " + state;
     }
 }

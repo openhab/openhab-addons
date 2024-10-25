@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.DateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -798,7 +799,7 @@ public class MongoDBPersistenceServiceTest {
     @Test
     public void testHistoricItemToString() {
         // Preparation
-        ZonedDateTime now = ZonedDateTime.now();
+        Instant now = Instant.now();
         HistoricItem item = new MongoDBItem("TestItem", new DecimalType(10.1), now);
 
         // Execution
@@ -806,7 +807,7 @@ public class MongoDBPersistenceServiceTest {
 
         // Verification
         // Jan 29, 2024, 8:43:26 PM: TestItem -> 10.1
-        String expected = DateFormat.getDateTimeInstance().format(Date.from(now.toInstant())) + ": TestItem -> 10.1";
+        String expected = DateFormat.getDateTimeInstance().format(Date.from(now)) + ": TestItem -> 10.1";
         assertEquals(expected, result);
     }
 
