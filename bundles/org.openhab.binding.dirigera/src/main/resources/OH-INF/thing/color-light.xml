@@ -13,7 +13,7 @@
 		<description>Light with color support</description>
 
 		<channels>
-            <channel id="power-state" typeId="switch">
+			<channel id="power-state" typeId="switch">
 				<label>Light Powered</label>
 				<description>Power state of light</description>
 			</channel>

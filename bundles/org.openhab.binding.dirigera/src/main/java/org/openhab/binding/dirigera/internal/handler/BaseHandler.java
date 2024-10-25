@@ -120,10 +120,10 @@ public abstract class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * Handles RefreshType.REFRESH completely from cache
-     * Child classes are responsible to
-     * - initialize properly with actual values
-     * - use updateState of this class to update items and store last values fro proper refresh
+     * Handling of basic commands which are the same for many devices
+     * - RefreshType for all channels
+     * - Startup behavior for lights and plugs
+     * - Power state for lights and plugs
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -161,11 +161,13 @@ public abstract class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * Handles generic channels for many devices. If they are not present in child configuration they won't be
-     * triggered.
-     * - reachable flag for every device to evaluate ONLINE and OFFLINE states
-     * - all Over the Air update states
-     * - battery charge level
+     * Handling generic channel updates for many devices.
+     * If they are not present in child configuration they won't be triggered.
+     * - Reachable flag for every device to evaluate ONLINE and OFFLINE states
+     * - Over the air (OTA) updates channels
+     * - Battery charge level
+     * - Startup behavior for lights and plugs
+     * - Power state for lights and plugs
      *
      * @param update
      */

@@ -40,12 +40,8 @@ public class PowerPlugHandler extends SimplePlugHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
+        // update of values is handled in super class
     }
 
     @Override
