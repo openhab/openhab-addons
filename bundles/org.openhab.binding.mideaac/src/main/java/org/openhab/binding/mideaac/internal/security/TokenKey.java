@@ -16,6 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link TokenKey} returns the active Token and Key.
+ * 
+ * @param token For coding/decoding messages
+ * @param key For coding/decoding messages
  *
  * @author Jacek Dobrowolski - Initial Contribution
  * @author Bob Eckhoff - JavaDoc and OH addons review

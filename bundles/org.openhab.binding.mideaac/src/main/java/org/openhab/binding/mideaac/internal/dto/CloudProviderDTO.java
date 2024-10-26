@@ -17,6 +17,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link CloudProviderDTO} class contains the information
  * to allow encryption and decryption for the supported Cloud Providers
+ * 
+ * @param name Cloud provider
+ * @param appkey application key
+ * @param appid application id
+ * @param apiurl application url
+ * @param signkey sign key for AES
+ * @param proxied proxy - MSmarthome only
+ * @param iotkey iot key - MSmarthome only
+ * @param hmackey hmac key - MSmarthome only
  *
  * @author Jacek Dobrowolski - Initial Contribution
  * @author Bob Eckhoff - JavaDoc and conversion to record
@@ -26,20 +35,12 @@ public record CloudProviderDTO(String name, String appkey, String appid, String 
         String iotkey, String hmackey) {
 
     /**
-     * Cloud provider information
+     * Cloud provider information for record
      * All providers use the same signkey for AES encryption and Decryption.
      * V2 Devices do not require a Cloud Provider entry as they only use AES
      * 
      * @param name Cloud provider
-     * @param appkey application key
-     * @param appid application id
-     * @param apiurl application url
-     * @param signkey sign key for AES
-     * @param iotkey iot key - MSmarthome only
-     * @param hmackey hmac key - MSmarthome only
-     * @param proxied proxy - MSmarthome only
-     * @param name Cloud provider
-     * @return Cloud provider information
+     * @return Cloud provider information (appkey, appid, apiurl,signkey, proxied, iotkey, hmackey)
      */
     public static CloudProviderDTO getCloudProvider(String name) {
         switch (name) {

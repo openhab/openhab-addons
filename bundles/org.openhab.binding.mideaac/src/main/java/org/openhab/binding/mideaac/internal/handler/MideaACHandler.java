@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HexFormat;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -731,45 +732,27 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         Map<String, Object> discoveryProps = discoveryResult.getProperties();
         Configuration configuration = editConfiguration();
 
-        @Nullable
-        Object propertyDeviceId = discoveryProps.get(CONFIG_DEVICEID);
-        if (propertyDeviceId != null) {
-            configuration.put(CONFIG_DEVICEID, propertyDeviceId.toString());
-        }
+        Object propertyDeviceId = Objects.requireNonNull(discoveryProps.get(CONFIG_DEVICEID));
+        configuration.put(CONFIG_DEVICEID, propertyDeviceId.toString());
 
-        @Nullable
-        Object propertyIpPort = discoveryProps.get(CONFIG_IP_PORT);
-        if (propertyIpPort != null) {
-            configuration.put(CONFIG_IP_PORT, propertyIpPort.toString());
-        }
+        Object propertyIpPort = Objects.requireNonNull(discoveryProps.get(CONFIG_IP_PORT));
+        configuration.put(CONFIG_IP_PORT, propertyIpPort.toString());
 
         updateConfiguration(configuration);
 
         properties = editProperties();
 
-        @Nullable
-        Object propertyVersion = discoveryProps.get(PROPERTY_VERSION);
-        if (propertyVersion != null) {
-            properties.put(PROPERTY_VERSION, propertyVersion.toString());
-        }
+        Object propertyVersion = Objects.requireNonNull(discoveryProps.get(PROPERTY_VERSION));
+        properties.put(PROPERTY_VERSION, propertyVersion.toString());
 
-        @Nullable
-        Object propertySN = discoveryProps.get(PROPERTY_SN);
-        if (propertySN != null) {
-            properties.put(PROPERTY_SN, propertySN.toString());
-        }
+        Object propertySN = Objects.requireNonNull(discoveryProps.get(PROPERTY_SN));
+        properties.put(PROPERTY_SN, propertySN.toString());
 
-        @Nullable
-        Object propertySSID = discoveryProps.get(PROPERTY_SSID);
-        if (propertySSID != null) {
-            properties.put(PROPERTY_SSID, propertySSID.toString());
-        }
+        Object propertySSID = Objects.requireNonNull(discoveryProps.get(PROPERTY_SSID));
+        properties.put(PROPERTY_SSID, propertySSID.toString());
 
-        @Nullable
-        Object propertyType = discoveryProps.get(PROPERTY_TYPE);
-        if (propertyType != null) {
-            properties.put(PROPERTY_TYPE, propertyType.toString());
-        }
+        Object propertyType = Objects.requireNonNull(discoveryProps.get(PROPERTY_TYPE));
+        properties.put(PROPERTY_TYPE, propertyType.toString());
 
         updateProperties(properties);
 

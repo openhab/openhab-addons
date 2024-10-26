@@ -59,7 +59,7 @@ Following channels are available:
 | sleep-function               | Switch             | Sleep function ("Moon with a star" icon on IR Remote Controller).                                      |           |          |
 | indoor-temperature           | Number:Temperature | Indoor temperature measured in the room, where internal unit is installed.                             | Yes       |          |
 | outdoor-temperature          | Number:Temperature | Outdoor temperature by external unit. Some units do not report reading when off.                       | Yes       |          |
-| temperature-unit             | Switch             | Sets the evaporator display to Fahrenheit (true) or Celsius (false).                                   |           | Yes      |
+| temperature-unit             | Switch             | Sets the LED display on the evaporator to Fahrenheit (true) or Celsius (false).                        |           | Yes      |
 | on-timer                     | String             | Sets the future time to turn on the AC.                                                                |           | Yes      |
 | off-timer                    | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
 | screen-display               | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
@@ -71,7 +71,7 @@ Following channels are available:
 
 ## Examples
 
-### 'demo.things' Example
+### `demo.things` Example
 
 ```java
 Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="6444", deviceId="deviceId", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="token", key ="key", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
@@ -83,7 +83,7 @@ Option to use the built-in binding discovery of ipPort, deviceId, token and key.
 Thing mideaac:ac:mideaac "myAC" @ "Room" [ ipAddress="192.168.1.200", ipPort="", deviceId="", cloud="your cloud (e.g NetHome Plus)", email="yourclouduser@email.com", password="yourcloudpassword", token="", key ="", pollingTime = 60, timeout=4, promptTone="false", version="3"] 
 ```
 
-### 'demo.items' Example
+### `demo.items` Example
 
 ```java
 Switch power "Power"                                                        { channel="mideaac:ac:mideaac:power" }
@@ -99,7 +99,7 @@ Switch sleep_function "Sleep function"                                      { ch
 Switch temperature_unit "Fahrenheit or Celsius"                             { channel="mideaac:ac:mideaac:temperature-unit" }
 ```
 
-### 'demo.sitemap' Example
+### `demo.sitemap` Example
 
 ```java
 sitemap midea label="Split AC MBR"{

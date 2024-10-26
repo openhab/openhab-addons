@@ -343,9 +343,6 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
-        properties.put(CONFIG_POLLING_TIME, 60);
-        properties.put(CONFIG_CONNECTING_TIMEOUT, 4);
-        properties.put(CONFIG_PROMPT_TONE, false);
         properties.put(PROPERTY_VERSION, version);
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);
