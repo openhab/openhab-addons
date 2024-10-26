@@ -56,7 +56,9 @@ class TestWrongHandler {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail(), "Config Error");
         String description = status.getDescription();
         assertNotNull(description);
-        assertTrue(description.contains("doesn't match with model"), "Description");
+        assertTrue(description.equals(
+                "@text/dirigera.device.status.ttuid-mismatch [\"dirigera:contact-sensor\",\"dirigera:motion-light-sensor\"]"),
+                "Description");
     }
 
     @Test
@@ -80,6 +82,10 @@ class TestWrongHandler {
         assertEquals(ThingStatusDetail.GONE, status.getStatusDetail(), "Device disappeared");
         String description = status.getDescription();
         assertNotNull(description);
-        assertTrue(description.endsWith("not found"), "Description");
+        System.out.println(description);
+        assertTrue(
+                description.equals(
+                        "@text/dirigera.device.status.id-not-found [\"5ac5e131-1234-4d75-be78-759a095d31fb_1\"]"),
+                "Description");
     }
 }
