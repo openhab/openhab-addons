@@ -185,6 +185,7 @@ public class Constants {
     public static final String CHANNEL_PURIFIER_MOTOR_STATE = "motor-state";
     public static final String CHANNEL_PURIFIER_MOTOR_RUNTIME = "motor-runtime";
     public static final String CHANNEL_PURIFIER_FILTER_ELAPSED = "filter-elapsed";
+    public static final String CHANNEL_PURIFIER_FILTER_REMAIN = "filter-remain";
     public static final String CHANNEL_PURIFIER_FILTER_LIFETIME = "filter-lifetime";
     public static final String CHANNEL_PURIFIER_FILTER_ALARM = "filter-alarm";
 
