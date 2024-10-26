@@ -15,7 +15,7 @@
 		<channels>
 			<channel id="power-state" typeId="switch">
 				<label>Plug Powered</label>
-				<description>Turn plug on or off </description>
+				<description>Power state of plug </description>
 			</channel>
 			<channel id="startup" typeId="startup">
 				<label>Startup Behavior</label>

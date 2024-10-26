@@ -25,6 +25,10 @@
 				<label>Filter Elapsed</label>
 				<description>Filter elapsed time in minutes</description>
 			</channel>
+			<channel id="filter-remain" typeId="time">
+				<label>Filter Remain</label>
+				<description>Remaining filter time in minutes</description>
+			</channel>
 			<channel id="filter-lifetime" typeId="time">
 				<label>Filter Lifetime</label>
 				<description>Filter lifetime in minutes</description>

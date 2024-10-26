@@ -28,6 +28,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,10 +112,20 @@ public class AirPurifierHandler extends BaseHandler {
                             }
                             break;
                         case CHANNEL_PURIFIER_MOTOR_RUNTIME:
-                        case CHANNEL_PURIFIER_FILTER_ELAPSED:
                         case CHANNEL_PURIFIER_FILTER_LIFETIME:
                             updateState(new ChannelUID(thing.getUID(), targetChannel),
                                     QuantityType.valueOf(attributes.getDouble(key), Units.MINUTE));
+                            break;
+                        case CHANNEL_PURIFIER_FILTER_ELAPSED:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    QuantityType.valueOf(attributes.getDouble(key), Units.MINUTE));
+                            State lifeTimeState = channelStateMap.get(CHANNEL_PURIFIER_FILTER_LIFETIME);
+                            if (lifeTimeState != null && lifeTimeState instanceof QuantityType) {
+                                int elapsed = attributes.getInt(key);
+                                int lifetime = ((QuantityType<?>) lifeTimeState).intValue();
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FILTER_REMAIN),
+                                        QuantityType.valueOf(lifetime - elapsed, Units.MINUTE));
+                            }
                             break;
                         case CHANNEL_PARTICULATE_MATTER:
                             updateState(new ChannelUID(thing.getUID(), targetChannel),
@@ -127,11 +138,6 @@ public class AirPurifierHandler extends BaseHandler {
                                     OnOffType.from(attributes.getBoolean(key)));
                     }
                 }
-                /**
-                 * "filterAlarmStatus": false,
-                 * "childLock": false,
-                 * "statusLight": true,
-                 **/
             }
         }
     }
