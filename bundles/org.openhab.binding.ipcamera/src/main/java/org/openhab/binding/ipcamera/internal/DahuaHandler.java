@@ -57,6 +57,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -259,11 +260,11 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "DoorStatus":
                 if ("Pulse".equals(action)) {
                     if (content.contains("\"Relay\" : true")) {
-                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.OFF);
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OpenClosedType.CLOSED);
                     } else if (content.contains("\"Status\" : \"Close\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OnOffType.ON);
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OpenClosedType.CLOSED);
                     } else if (content.contains("\"Status\" : \"Open\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OnOffType.OFF);
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OpenClosedType.OPEN);
                     } else {
                         ipCameraHandler.logger.debug("Unrecognised Door status Dahua event, content={}", content);
                     }
