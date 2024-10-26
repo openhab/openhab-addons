@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.java223</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: Java Scripting</name>
+
+  <dependencies>
+    <dependency>
+      <!-- needed for BundleWiring class and specifically for its Wiring interface -->
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <version>8.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.32</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- jdt annotation classes are included because we want to be able to
+      export them to the dependency jar -->
+    <dependency>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.annotation</artifactId>
+      <version>2.2.600</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.27.6</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/helper/java</directory>
+        <includes>
+          <include>**/*.java</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources/</directory>
+      </resource>
+    </resources>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- Create the helper library and put it in the target class directory to be embedded inside the jar -->
+            <id>create-helper-jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <!-- There is a warning on the 'finalName' parameter when building, but it is really necessary -->
+              <finalName>helper</finalName>
+              <classifier>lib</classifier>
+              <outputDirectory>${basedir}/target/classes</outputDirectory>
+              <includes>
+                <include>helper/**</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>default-jar</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <excludes>
+                <exclude>freemarker/ext/ant/**</exclude>
+                <exclude>freemarker/ext/rhino/**</exclude>
+                <exclude>freemarker/ext/jython/**</exclude>
+                <exclude>freemarker/ext/servlet/**</exclude>
+                <exclude>freemarker/ext/jsp/**</exclude>
+                <exclude>freemarker/ext/dom/**</exclude>
+                <exclude>freemarker/ext/xml/**</exclude>
+                <exclude>helper/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>src/3rdparty/java</source>
+                <source>src/3rdparty/resources</source>
+                <source>src/helper/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+        <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
+        </configuration>
+        </plugin> -->
+    </plugins>
+  </build>
+
+</project>
