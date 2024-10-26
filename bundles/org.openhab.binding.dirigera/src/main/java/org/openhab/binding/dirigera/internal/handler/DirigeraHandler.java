@@ -156,7 +156,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             String challenge = generateCodeChallenge(codeVerifier);
             String code = getCode(challenge);
             if (!code.isBlank()) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY, "Press Button on DIRIGERA Gateway!");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
+                        "@text/dirigera.gateway.status.pairing-button");
                 Instant stopAuth = Instant.now().plusSeconds(180); // 3 mins possible to push button
                 while (Instant.now().isBefore(stopAuth) && token.isBlank()) {
                     try {
@@ -175,7 +176,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 if (token.isBlank()) {
                     logger.info("DIRIGERA HANDLER pairing failed - Stop/Start bridge to initialize new pairing");
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
-                            "Pairing failed. Stop and start bridge to initialize new pairing.");
+                            "@text/dirigera.gateway.status.pairing-retry");
                     return;
                 }
 
@@ -352,7 +353,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONObject gatewayInfo = api().readDevice(config.id);
         if (gatewayInfo.has(PROPERTY_HTTP_ERROR_STATUS)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Gateway HTTP Status " + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS));
+                    "@text/dirigera.device.status.pairing-retry" + " [\"" + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS)
+                            + "\"]");
         } else {
             updateStatus(ThingStatus.ONLINE);
             websocket.ifPresentOrElse((wsClient) -> {
@@ -495,6 +497,23 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
         deviceTree.remove(deviceId);
         // unregister happens but don't remove it from known devices
+    }
+
+    /**
+     * remove device due to removal deviceId from model
+     */
+    @Override
+    public void deleteDevice(String deviceId) {
+        BaseHandler activeHandler = deviceTree.remove(deviceId);
+        if (activeHandler != null) {
+            // if a handler is attached the check will fail and update the status to GONE
+            activeHandler.checkHandler();
+        }
+        // removal of handler - store new known devices
+        if (knownDevices.contains(deviceId)) {
+            knownDevices.remove(deviceId);
+            storeKnownDevices();
+        }
     }
 
     /**

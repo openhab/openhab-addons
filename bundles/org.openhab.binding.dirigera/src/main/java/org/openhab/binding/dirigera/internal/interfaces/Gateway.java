@@ -39,6 +39,8 @@ public interface Gateway {
 
     public void deleteDevice(BaseHandler deviceHandler, String deviceId);
 
+    public void deleteDevice(String deviceId);
+
     public boolean isKnownDevice(String deviceId);
 
     public void websocketUpdate(String update);

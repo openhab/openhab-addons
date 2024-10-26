@@ -62,10 +62,13 @@ public class SceneHandler extends BaseHandler {
             handleUpdate(values);
 
             if (values.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "@text/dirigera.scene.status.scene-not-found");
             } else {
                 updateStatus(ThingStatus.ONLINE);
-                sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5, TimeUnit.MINUTES));
+                // shall be handled by sceneRemoved from Websocket
+                // sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5,
+                // TimeUnit.MINUTES));
             }
 
             // check if different undo duration is configured
@@ -124,12 +127,12 @@ public class SceneHandler extends BaseHandler {
         }
     }
 
-    private void checkScene() {
-        JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
-        if (values.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
+    // private void checkScene() {
+    // JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
+    // if (values.isEmpty()) {
+    // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
+    // } else {
+    // updateStatus(ThingStatus.ONLINE);
+    // }
+    // }
 }
