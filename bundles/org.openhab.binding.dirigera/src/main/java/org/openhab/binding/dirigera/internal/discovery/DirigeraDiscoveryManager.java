@@ -14,7 +14,6 @@ package org.openhab.binding.dirigera.internal.discovery;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,11 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -40,7 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DirigeraDiscoveryManager.class)
-public class DirigeraDiscoveryManager implements DiscoveryListener {
+public class DirigeraDiscoveryManager {
     private final Logger logger = LoggerFactory.getLogger(DirigeraDiscoveryManager.class);
 
     private @Nullable DirigeraDiscoveryService discoveryService;
@@ -103,22 +98,5 @@ public class DirigeraDiscoveryManager implements DiscoveryListener {
         if (proxyDiscovery != null) {
             proxyDiscovery.deviceRemoved(discoveryResult);
         }
-    }
-
-    @Override
-    public void thingDiscovered(@Nullable DiscoveryService source, DiscoveryResult result) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void thingRemoved(@Nullable DiscoveryService source, ThingUID thingUID) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }
