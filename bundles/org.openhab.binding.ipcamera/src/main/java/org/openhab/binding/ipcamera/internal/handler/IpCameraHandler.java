@@ -1393,6 +1393,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 handle.cameraOnline(getThing().getUID().getId());
             }
         }
+        if (thing.getThingTypeUID().getId().equals(REOLINK_THING) && cameraConfig.useToken
+                && authenticationJob == null) {
+            logger.debug("Token thread for REOLINK was stopped, restarting it now.");
+            authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45, TimeUnit.MINUTES);
+        }
     }
 
     void snapshotIsFfmpeg() {
