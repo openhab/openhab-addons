@@ -61,6 +61,10 @@ public class CallbackMock implements ThingHandlerCallback {
         stateMap.clear();
     }
 
+    public void dump() {
+        logger.warn("dump {}", stateMap);
+    }
+
     public @Nullable State getState(String channel) {
         return stateMap.get(channel);
     }
@@ -68,7 +72,7 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         stateMap.put(channelUID.getAsString(), state);
-        logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
+        logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
         // if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
         // logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
         // }

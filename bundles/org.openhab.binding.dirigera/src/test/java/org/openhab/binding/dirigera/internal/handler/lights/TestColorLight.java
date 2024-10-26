@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -30,6 +32,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -41,11 +45,24 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestColorLight {
+    String deviceId = "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_COLOR_LIGHT;
 
     @Test
-    void testColorLightDevice() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
-        ThingImpl thing = new ThingImpl(THING_TYPE_COLOR_LIGHT, "test-device");
+    void testHandlerCreation() {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof ColorLightHandler);
+    }
+
+    @Test
+    void testInitialization() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
+                false, List.of());
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         ColorLightHandler handler = new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         CallbackMock callback = new CallbackMock();
@@ -54,7 +71,7 @@ class TestColorLight {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1");
+        config.put("id", deviceId);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
@@ -75,13 +92,13 @@ class TestColorLight {
         State onOffState = callback.getState("dirigera:color-light:test-device:power-state");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
-        assertTrue(OnOffType.ON.equals((onOffState)), "Power State");
+        assertTrue(OnOffType.OFF.equals((onOffState)), "Power State");
         State hsbState = callback.getState("dirigera:color-light:test-device:hsb");
         assertNotNull(hsbState);
         assertTrue(hsbState instanceof HSBType);
-        assertEquals(119, ((HSBType) hsbState).getHue().intValue(), "Hue");
-        assertEquals(70, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
-        assertEquals(92, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
+        assertEquals(89, ((HSBType) hsbState).getHue().intValue(), "Hue");
+        assertEquals(100, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
+        assertEquals(100, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
 
         // test ota
         State otaStatus = callback.getState("dirigera:color-light:test-device:ota-status");
