@@ -21,7 +21,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.sensor.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;

@@ -13,27 +13,26 @@
 package org.openhab.binding.dirigera.internal.handler.airpurifier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.airpurifier.AirPurifierHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
-import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -44,35 +43,33 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestAirPurifier {
+    private static String deviceId = "a8319695-0729-428c-9465-aadc0b738995";
+    private static ThingTypeUID thingTypeUID = THING_TYPE_AIR_PURIFIER;
+
+    private static AirPurifierHandler handler = mock(AirPurifierHandler.class);
+    private static CallbackMock callback = mock(CallbackMock.class);
+    private static Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {
-        HandlerFactoryMock hfm = new HandlerFactoryMock();
-        assertTrue(hfm.supportsThingType(THING_TYPE_AIR_PURIFIER));
-        ThingImpl thing = new ThingImpl(THING_TYPE_AIR_PURIFIER, "test-device");
-        ThingHandler th = hfm.createHandler(thing);
-        assertNotNull(th);
-        assertTrue(th instanceof AirPurifierHandler);
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
+                false, List.of());
+        ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
+        assertTrue(factoryHandler instanceof AirPurifierHandler);
+        handler = (AirPurifierHandler) factoryHandler;
+        thing = handler.getThing();
+        ThingHandlerCallback proxyCallback = handler.getCallback();
+        assertNotNull(proxyCallback);
+        assertTrue(proxyCallback instanceof CallbackMock);
+        callback = (CallbackMock) proxyCallback;
     }
 
     @Test
     void testInitialization() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
-                false, List.of());
-        ThingImpl thing = new ThingImpl(THING_TYPE_AIR_PURIFIER, "test-device");
-        thing.setBridgeUID(hubBridge.getBridgeUID());
-        AirPurifierHandler handler = new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
-        CallbackMock callback = new CallbackMock();
-        callback.setBridge(hubBridge);
-        handler.setCallback(callback);
-
-        // set the right id
-        Map<String, Object> config = new HashMap<>();
-        config.put("id", "a8319695-0729-428c-9465-aadc0b738995");
-        handler.handleConfigurationUpdate(config);
-
-        handler.initialize();
-        callback.waitForOnline();
+        testHandlerCreation();
+        assertNotNull(handler);
+        assertNotNull(thing);
+        assertNotNull(callback);
         checkAirPurifierStates(callback);
 
         callback.clear();
@@ -91,24 +88,7 @@ class TestAirPurifier {
 
     @Test
     void testCommands() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
-                false, List.of());
-        ThingImpl thing = new ThingImpl(THING_TYPE_AIR_PURIFIER, "test-device");
-        thing.setBridgeUID(hubBridge.getBridgeUID());
-        AirPurifierHandler handler = new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
-        CallbackMock callback = new CallbackMock();
-        callback.setBridge(hubBridge);
-        handler.setCallback(callback);
-
-        // set the right id
-        String deviceId = "a8319695-0729-428c-9465-aadc0b738995";
-        Map<String, Object> config = new HashMap<>();
-        config.put("id", deviceId);
-        handler.handleConfigurationUpdate(config);
-
-        handler.initialize();
-        callback.waitForOnline();
-
+        testHandlerCreation();
         // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
         handler.handleCommand(new ChannelUID(thing.getUID(), "fan-mode"), new DecimalType(4));
         String patch = DirigeraAPISimu.patchMap.get(deviceId);

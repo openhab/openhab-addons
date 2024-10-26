@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
@@ -42,11 +42,15 @@ import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.binding.dirigera.internal.mock.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.mock.DiscoveryMangerMock;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.thing.internal.ThingImpl;
 
 /**
  * {@link DirigeraBridgeProvider} Tests device handler creation, initializing and refresh of channels
@@ -112,6 +116,26 @@ public class DirigeraBridgeProvider {
         hubHandler.initialize();
         bridgeCallback.waitForOnline();
         return hubBridge;
+    }
+
+    public static ThingHandler createHandler(ThingTypeUID thingTypeUID, Bridge hubBridge, String deviceId) {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        ThingHandler handler = hfm.createHandler(thing);
+        assertNotNull(handler);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", deviceId);
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
+        return handler;
     }
 
     /**
