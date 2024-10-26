@@ -43,7 +43,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Update extends AbstractComponent<Update.ChannelConfiguration> implements ChannelStateUpdateListener {
     public static final String UPDATE_CHANNEL_ID = "update";
-    public static final String LATEST_VERSION_CHANNEL_ID = "latestVersion";
+    public static final String LATEST_VERSION_CHANNEL_ID = "latest-version";
 
     /**
      * Configuration class for MQTT component

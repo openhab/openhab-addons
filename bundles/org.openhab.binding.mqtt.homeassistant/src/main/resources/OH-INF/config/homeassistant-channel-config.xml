@@ -15,12 +15,12 @@
 			<description>Optional node name of the component</description>
 			<default></default>
 		</parameter>
-		<parameter name="objectid" type="text" readOnly="true">
+		<parameter name="objectid" type="text" readOnly="true" multiple="true">
 			<label>Object ID</label>
 			<description>Object ID of the component</description>
 			<default></default>
 		</parameter>
-		<parameter name="config" type="text" readOnly="true">
+		<parameter name="config" type="text" readOnly="true" multiple="true">
 			<label>JSON Configuration</label>
 			<description>The JSON configuration string received by the component via MQTT.</description>
 			<default></default>

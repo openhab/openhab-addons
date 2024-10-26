@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class SecurityCapability extends RestCapability<SecurityApi> {
-    private final static ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
+    private static final ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
             ZoneId.systemDefault());
 
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);

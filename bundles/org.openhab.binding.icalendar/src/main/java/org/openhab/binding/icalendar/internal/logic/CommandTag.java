@@ -56,7 +56,7 @@ public class CommandTag {
 
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(CommandTag.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandTag.class);
 
     private String inputLine;
     private CommandTagType tagType;
@@ -150,15 +150,15 @@ public class CommandTag {
 
     public static @Nullable CommandTag createCommandTag(String inputLine) {
         if (inputLine.isEmpty() || !CommandTagType.prefixValid(inputLine)) {
-            logger.trace("Command Tag Trace: \"{}\" => NOT a (valid) Command Tag!", inputLine);
+            LOGGER.trace("Command Tag Trace: \"{}\" => NOT a (valid) Command Tag!", inputLine);
             return null;
         }
         try {
             final CommandTag tag = new CommandTag(inputLine);
-            logger.trace("Command Tag Trace: \"{}\" => Fully valid Command Tag!", inputLine);
+            LOGGER.trace("Command Tag Trace: \"{}\" => Fully valid Command Tag!", inputLine);
             return tag;
         } catch (IllegalArgumentException e) {
-            logger.warn("{}", e.getMessage());
+            LOGGER.warn("{}", e.getMessage());
             return null;
         }
     }

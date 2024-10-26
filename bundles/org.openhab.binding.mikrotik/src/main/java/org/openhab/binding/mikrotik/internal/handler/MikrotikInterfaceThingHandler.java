@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mikrotik.internal.handler;
 
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.GONE;
 
 import java.math.BigDecimal;
@@ -31,6 +30,7 @@ import org.openhab.binding.mikrotik.internal.model.RouterosL2TPSrvInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosLTEInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosPPPCliInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosPPPoECliInterface;
+import org.openhab.binding.mikrotik.internal.model.RouterosWifiInterface;
 import org.openhab.binding.mikrotik.internal.model.RouterosWlanInterface;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
@@ -184,6 +184,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                         newState = getEtherIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosCapInterface) {
                         newState = getCapIterfaceChannelState(channelID);
+                    } else if (iface instanceof RouterosWifiInterface) {
+                        newState = getWifiIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosWlanInterface) {
                         newState = getWlanIterfaceChannelState(channelID);
                     } else if (iface instanceof RouterosPPPCliInterface) {
@@ -246,6 +248,26 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
 
     protected State getWlanIterfaceChannelState(String channelID) {
         RouterosWlanInterface wlIface = (RouterosWlanInterface) this.iface;
+        if (wlIface == null) {
+            return UnDefType.UNDEF;
+        }
+
+        switch (channelID) {
+            case MikrotikBindingConstants.CHANNEL_STATE:
+                return StateUtil.stringOrNull(wlIface.getCurrentState());
+            case MikrotikBindingConstants.CHANNEL_RATE:
+                return StateUtil.stringOrNull(wlIface.getRate());
+            case MikrotikBindingConstants.CHANNEL_REGISTERED_CLIENTS:
+                return StateUtil.intOrNull(wlIface.getRegisteredClients());
+            case MikrotikBindingConstants.CHANNEL_AUTHORIZED_CLIENTS:
+                return StateUtil.intOrNull(wlIface.getAuthorizedClients());
+            default:
+                return UnDefType.UNDEF;
+        }
+    }
+
+    protected State getWifiIterfaceChannelState(String channelID) {
+        RouterosWifiInterface wlIface = (RouterosWifiInterface) this.iface;
         if (wlIface == null) {
             return UnDefType.UNDEF;
         }

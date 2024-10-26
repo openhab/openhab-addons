@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal.dto;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,12 +30,12 @@ public class JdbcHistoricItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final ZonedDateTime timestamp;
+    private final Instant instant;
 
-    public JdbcHistoricItem(String name, State state, ZonedDateTime timestamp) {
+    public JdbcHistoricItem(String name, State state, Instant instant) {
         this.name = name;
         this.state = state;
-        this.timestamp = timestamp;
+        this.instant = instant;
     }
 
     @Override
@@ -48,7 +50,12 @@ public class JdbcHistoricItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp;
+        return instant.atZone(ZoneId.systemDefault());
+    }
+
+    @Override
+    public Instant getInstant() {
+        return instant;
     }
 
     @Override
@@ -59,7 +66,7 @@ public class JdbcHistoricItem implements HistoricItem {
         builder.append(", state=");
         builder.append(state);
         builder.append(", timestamp=");
-        builder.append(timestamp);
+        builder.append(getTimestamp());
         builder.append("]");
         return builder.toString();
     }
