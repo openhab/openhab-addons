@@ -13,15 +13,15 @@ The DIRIGERA `bridge` is providing the connection to all devices and scenes.
 
 Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
 
-- Lights
-- Remote Controls
-- Speakers
-- Air Purifiers
-- Blinds
-- Sensors
-- Power Plugs
-- Shortcut buttons
-- Repeater
+- [Air Purifier](#air-purifier)
+- [Blinds](#blinds)
+- [Lights](#lights)
+- [Power Plugs]()
+- [Remote Controls]()
+- [Repeater]()
+- [Shortcut buttons]()
+- [Sensors]()
+- [Speakers]()
 
 ## Discovery
 
@@ -67,7 +67,7 @@ Let's start pairing
 
 ## Things
 
-The binding is in development phase stage alpha.
+The binding is in development phase alpha.
 Goal is to extend testing in the community to cover as many as possible old and new devices.
 Your help is needed to extend and fix the current implementation.
 
@@ -96,24 +96,228 @@ If you see wrong, missing or too much channels this data is needed to adapt impl
 Each thing is identified by a unique id which is mandatory to configure.
 Discovery will automatically identify the id.
 
-### Lights
+### Air Purifier
 
-Lamps, LED Panels, LED Stripes
+Implementation, Test and known issues
 
-#### Temperature Light
+| Name            | Implemented    | Tested     | Remarks |
+|-----------------|----------------|------------|---------|
+| STARKVIND       | yes            | no         |         |
+| others?         |                | no         |         |
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| json    | String | R          | Device json                 |
+#### Air Purifier Channels
 
+| Channel               | Type              | Read/Write | Description                                                      |
+|-----------------------|-------------------|------------|------------------------------------------------------------------|
+| fan-mode              | Number            | RW         | Fan on, off, speed or automatic behavior                         |
+| motor-time            | Number:Time       | R          | Motor runtime in minutes                                         |
+| filter-elapsed        | Number:Time       | R          | Filter elapsed time in minutes                                   |
+| filter-reamin         | Number:Time       | R          | Time to filter replacement in minutes                            |
+| filter-lifetime       | Number:Time       | R          | Filter lifetime in minutes                                       |
+| filter-alarm          | Switch            | R          | Filter alarm signal                                              |
+| particulate-matter    | Number:Density    | R          | Category 2.5 particulate matter                                  |
+| disable-light         | Switch            | RW         | Disable status light on plug                                     |
+| child-lock            | Switch            | RW         | Child lock for button on plug                                    |
+| ota-status            | Number            | R          | Over-the-air overall status                                      |
+| ota-state             | Number            | R          | Over-the-air current state                                       |
+| ota-progress          | Number            | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String            | R          | JSON structure and updates of this device                        |
 
-#### Color Light
+#### Air Purifier Channel Mappings
 
-### Remote Controls
+'fan-mode'
 
-### Air Purifiers
+- 0 : Auto
+- 1 : Low
+- 2 : Medium
+- 3 : High
+- 4 : On
+- 5 : Off
+
+'ota-status'
+
+- 0 : Up to date
+- 1 : Update available
+
+'ota-state'
+
+- 0 : Ready to check
+- 1 : Check in progress
+- 2 : Ready to download
+- 3 : Download in progress
 
 ### Blinds
+
+| Name            | Implemented    | Tested     | Remarks |
+|-----------------|----------------|------------|---------|
+| PRAKTLYSING     | yes            | no         |         |
+| others?         |                | no         |         |
+
+#### Blind Channels
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| blind-state           | Number                | RW         | State if blind is moving up, down or stopped                     |
+| target-level          | Dimmer                | RW         | Target blind level                                               |
+| current-level         | Dimmer                | R          | Current blind level                                              |
+| battery-level         | Number:Dimensionless  | R          | State of the battery powering blind                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+ 
+#### Blind Channel Mappings
+
+'blind-state'
+
+- 0 : Stopped
+- 1 : Up
+- 2 : Down
+
+See [further mappings here](#air-purifier-channel-mappings) for OTA  
+
+### Lights
+
+Light devices in several variants.
+Can be light bulbs, LED stripes, remote driver, ...
+Below there are 3 different variants to cover **all** light devices.
+Please check!
+
+| Name                              | Implemented   | Tested        | Remarks |
+|-----------------------------------|---------------|---------------|---------|
+| TRADFRI Color bulbs               | yes           | personally    |         |
+| TRADFRI Color Temperature bulbs   | yes           | personally    |         |
+| TRADFRI Dimmable bulbs            | yes           | no            |         |
+| ORMANAS LED Strip                 | yes           | personally    |         |
+| TRADFRI Driver                    | yes           | no            |         |
+| others?                           |               | no            |         |
+
+
+#### Dimmable Lights
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of light                                             |
+| brightness            | Dimmer                | RW         | Control brightness of light                                      |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+##### Startup Channel Mappings
+
+The startup defines how the device shall behave after a power cutoff.
+If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to sitch them on every time the switch is pressed.
+But it's also possible to recover the last state.
+
+'startup'
+
+- 0 : Previous
+- 1 : On
+- 2 : Off
+
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+#### Temperature Lights
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of light                                             |
+| brightness            | Dimmer                | RW         | Control brightness of light                                      |
+| temperature           | Dimmer                | RW         | Control temperature of light from cold to warm                   |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+See [mappings for sartup](#startup-channel-mappings)
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+#### Color Lights
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of light                                             |
+| color                 | Color                 | RW         | Control light with color, saturation and brightness              |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+See [mappings for sartup](#startup-channel-mappings)
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+### Power Plugs
+
+| Name                              | Implemented   | Tested        | Remarks |
+|-----------------------------------|---------------|---------------|---------|
+| TRADFRI                           | yes           | no            |         |
+| TRETAKT                           | yes           | personally    |         |
+| INSPELNING                        | yes           | personally    |         |
+| others?                           |               | no            |         |
+
+#### Simple Plug
+
+Simple plug with controler of power state and startup behavior
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of plug                                              |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+See [mappings for sartup](#startup-channel-mappings)
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+#### Power Plug
+
+Power plug with controler of power state, startup behavior, hardware on/off button and status light
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of plug                                              |
+| child-lock            | Switch                | RW         | Child lock for button on plug                                    |
+| disable-light         | Switch                | RW         | Disable status light on plug                                     |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+See [mappings for sartup](#startup-channel-mappings)
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+#### Smart Power Plug
+
+Smart plug like [Power Plug](#power-plug) plus measuring capability
+
+| Channel               | Type                  | Read/Write | Description                                                      |
+|-----------------------|-----------------------|------------|------------------------------------------------------------------|
+| power-state           | Switch                | RW         | Power state of plug                                              |
+| child-lock            | Switch                | RW         | Child lock for button on plug                                    |
+| disable-light         | Switch                | RW         | Disable status light on plug                                     |
+| power                 | Number                | R          | Electric power delivered by plug                                 |
+| energy-total          | Number                | R          | Total energy consumption                                         |
+| energy-reset          | Number                | R          | Energy consumption since last rese                               |
+| ampere                | Number                | R          | Electric current measured by plug                                | 
+| voltage               | Number                | R          | Electric potential of plug                                       |
+| startup               | Number                | RW         | Startup behavior after power cutoff                              |
+| ota-status            | Number                | R          | Over-the-air overall status                                      |
+| ota-state             | Number                | R          | Over-the-air current state                                       |
+| ota-progress          | Number                | R          | Over-the-air current progress if state is download in progress   |
+| json                  | String                | R          | JSON structure and updates of this device                        |
+
+See [mappings for sartup](#startup-channel-mappings)
+See [mappings for OTA](#air-purifier-channel-mappings)
+
+### Remote Controls
 
 ### Sensors
 
@@ -125,27 +329,12 @@ Lamps, LED Panels, LED Stripes
 
 #### Air Quality Sensor
 
-### Power Plugs
-
-#### Power Plug
-
-#### Smart Power Plug
-
 ### Shortcut Buttons
 
 ### Speaker
 
 ### Repeater
 
-## Channels
-
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
 
 ## Full Example
 
