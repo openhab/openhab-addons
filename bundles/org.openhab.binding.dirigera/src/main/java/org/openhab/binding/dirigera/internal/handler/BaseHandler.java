@@ -95,15 +95,17 @@ public abstract class BaseHandler extends BaseThingHandler {
                     logger.trace("DIRIGERA BASE_DEVICE Gateway found");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Bridgehandler isn't a Gateway");
+                            "@text/dirigera.device.status.wrong-bridge-type");
                     return;
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No BridgeHandler found");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/dirigera.device.missing-bridge-handler");
                 return;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No Bridge found");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/dirigera.device.status.missing-bridge");
             return;
         }
 
@@ -178,7 +180,8 @@ public abstract class BaseHandler extends BaseThingHandler {
             if (update.getBoolean(Model.REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.device.status.not-reachable");
             }
         }
         if (update.has(Model.ATTRIBUTES)) {
@@ -281,13 +284,15 @@ public abstract class BaseHandler extends BaseThingHandler {
         // but if it's created manually mismatch can happen
         ThingTypeUID modelTTUID = gateway().model().identifyDeviceFromModel(config.id);
         if (!thing.getThingTypeUID().equals(modelTTUID)) {
-            // check if id is present in mdoel
+            // check if id is present in model
             if (THING_TYPE_NOT_FOUND.equals(modelTTUID)) {
-                String message = "Device id " + config.id + " not found";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
+                        "@text/dirigera.device.status.id-not-found" + " [\"" + config.id + "\"]");
             } else {
-                String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                // String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/dirigera.device.status.ttuid-mismatch" + " [\"" + thing.getThingTypeUID() + "\",\""
+                                + modelTTUID + "\"]");
             }
             return false;
         }
