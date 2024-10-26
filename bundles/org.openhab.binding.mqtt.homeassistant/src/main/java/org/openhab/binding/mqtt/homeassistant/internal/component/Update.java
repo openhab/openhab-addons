@@ -172,6 +172,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
         state.title = channelConfiguration.title;
         state.releaseSummary = channelConfiguration.releaseSummary;
         state.releaseUrl = channelConfiguration.releaseUrl;
+
+        addJsonAttributesChannel();
     }
 
     /**

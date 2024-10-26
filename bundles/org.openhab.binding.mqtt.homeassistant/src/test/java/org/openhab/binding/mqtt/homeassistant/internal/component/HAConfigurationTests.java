@@ -174,7 +174,7 @@ public class HAConfigurationTests {
         assertThat(config.holdModes, is(List.of("schedule", "manual", "boost", "complex", "comfort", "eco")));
         assertThat(config.holdStateTemplate, is("{{ value_json.preset }}"));
         assertThat(config.holdStateTopic, is("zigbee2mqtt/th1"));
-        assertThat(config.jsonAttributesTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.getJsonAttributesTopic(), is("zigbee2mqtt/th1"));
         assertThat(config.maxTemp, is(new BigDecimal(35)));
         assertThat(config.minTemp, is(new BigDecimal(5)));
         assertThat(config.modeCommandTopic, is("zigbee2mqtt/th1/set/system_mode"));
@@ -218,8 +218,8 @@ public class HAConfigurationTests {
         assertThat(config.holdStateTemplate, is("s"));
         assertThat(config.holdStateTopic, is("t"));
         assertThat(config.holdModes, is(List.of("u1", "u2", "u3")));
-        assertThat(config.jsonAttributesTemplate, is("v"));
-        assertThat(config.jsonAttributesTopic, is("w"));
+        assertThat(config.getJsonAttributesTemplate(), is("v"));
+        assertThat(config.getJsonAttributesTopic(), is("w"));
         assertThat(config.modeCommandTemplate, is("x"));
         assertThat(config.modeCommandTopic, is("y"));
         assertThat(config.modeStateTemplate, is("z"));

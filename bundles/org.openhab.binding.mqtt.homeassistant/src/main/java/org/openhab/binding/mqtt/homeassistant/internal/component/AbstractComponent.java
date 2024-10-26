@@ -27,6 +27,7 @@ import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -42,6 +43,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -62,6 +64,7 @@ import com.hubspot.jinjava.Jinjava;
  */
 @NonNullByDefault
 public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     // Component location fields
     protected final ComponentConfiguration componentConfiguration;
@@ -152,7 +155,18 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         }
     }
 
+    protected void addJsonAttributesChannel() {
+        if (channelConfiguration.getJsonAttributesTopic() != null) {
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
+                    componentConfiguration.getUpdateListener())
+                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
+                            channelConfiguration.getJsonAttributesTemplate())
+                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
+        }
+    }
+
     protected void finalizeChannels() {
+        addJsonAttributesChannel();
         if (!newStyleChannels) {
             return;
         }

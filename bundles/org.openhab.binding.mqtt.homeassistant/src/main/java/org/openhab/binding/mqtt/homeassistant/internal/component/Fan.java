@@ -28,7 +28,6 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -44,12 +43,12 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements ChannelStateUpdateListener {
-    public static final String SWITCH_CHANNEL_ID = "fan";
+    public static final String SWITCH_CHANNEL_ID = "switch";
+    public static final String SWITCH_CHANNEL_ID_DEPRECATED = "fan";
     public static final String SPEED_CHANNEL_ID = "speed";
     public static final String PRESET_MODE_CHANNEL_ID = "preset-mode";
     public static final String OSCILLATION_CHANNEL_ID = "oscillation";
     public static final String DIRECTION_CHANNEL_ID = "direction";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -117,10 +116,6 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
         protected int speedRangeMax = 100;
         @SerializedName("speed_range_min")
         protected int speedRangeMin = 1;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
     }
 
     private final OnOffValue onOffValue;
@@ -139,8 +134,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
         ChannelStateUpdateListener onOffListener = channelConfiguration.percentageCommandTopic == null
                 ? componentConfiguration.getUpdateListener()
                 : this;
-        onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
-                onOffListener)
+        onOffChannel = buildChannel(newStyleChannels ? SWITCH_CHANNEL_ID : SWITCH_CHANNEL_ID_DEPRECATED,
+                ComponentChannelType.SWITCH, onOffValue, "On/Off State", onOffListener)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
@@ -200,13 +195,6 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> implements 
                     .commandTopic(channelConfiguration.directionCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos(), channelConfiguration.directionCommandTemplate)
                     .inferOptimistic(channelConfiguration.optimistic).build();
-        }
-
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
         }
 
         finalizeChannels();

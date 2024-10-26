@@ -40,7 +40,6 @@ import com.google.gson.annotations.SerializedName;
 public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
     public static final String COVER_CHANNEL_ID = "cover";
     public static final String STATE_CHANNEL_ID = "state";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -84,11 +83,6 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
         protected String stateOpening = "opening";
         @SerializedName("state_stopped")
         protected String stateStopped = "stopped";
-
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
     }
 
     @Nullable
@@ -166,12 +160,6 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                     return true;
                 }).withAutoUpdatePolicy(optimistic ? AutoUpdatePolicy.RECOMMEND : null).build();
 
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
         finalizeChannels();
     }
 }

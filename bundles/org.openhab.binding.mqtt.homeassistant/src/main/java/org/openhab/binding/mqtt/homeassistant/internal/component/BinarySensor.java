@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
-import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
@@ -34,7 +33,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfiguration> {
     public static final String SENSOR_CHANNEL_ID = "sensor";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -59,11 +57,6 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
         protected String payloadOn = "ON";
         @SerializedName("payload_off")
         protected String payloadOff = "OFF";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -75,13 +68,6 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
                 getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
 
         finalizeChannels();
     }
