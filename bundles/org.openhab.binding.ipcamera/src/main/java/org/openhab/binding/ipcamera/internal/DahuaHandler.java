@@ -12,7 +12,41 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
-import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ACCEPTED_CARD_NUMBER;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ACTIVATE_ALARM_OUTPUT;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ACTIVATE_ALARM_OUTPUT2;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_AUTO_LED;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_AUTO_WHITE_LED;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_CAR_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_DOOR_CONTACT;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_DOOR_UNLOCK;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ENABLE_AUDIO_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ENABLE_LED;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ENABLE_LINE_CROSSING_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ENABLE_MOTION_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ENABLE_PRIVACY_MODE;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_EXIT_BUTTON;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_EXIT_BUTTON_ENABLED;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_EXTERNAL_ALARM_INPUT;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_EXTERNAL_ALARM_INPUT2;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_FACE_DETECTED;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_FIELD_DETECTION_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_HUMAN_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ITEM_LEFT;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_ITEM_TAKEN;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_LAST_EVENT_DATA;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_LINE_CROSSING_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_MAGNETIC_LOCK_WARNING;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_MOTION_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_MOTION_DETECTION_LEVEL;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_PARKING_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_SCENE_CHANGE_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_TEXT_OVERLAY;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_THRESHOLD_AUDIO_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_TOO_BLURRY_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_TOO_DARK_ALARM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_UNACCEPTED_CARD_NUMBER;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_WHITE_LED;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,6 +57,7 @@ import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -172,18 +207,87 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.setChannelState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
+            case "AccessControl":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Method\" : 1")) {
+                        if (content.contains("\"ErrorCode\" : 0")) {
+                            startIndex = content.indexOf("CardNo", startIndex) + 11;
+                            if (startIndex > 0) {
+                                endIndex = content.indexOf(",", startIndex) - 1;
+                                String cardNo = content.substring(startIndex, endIndex);
+                                ipCameraHandler.setChannelState(CHANNEL_ACCEPTED_CARD_NUMBER, new StringType(cardNo));
+                                ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                            }
+                        }
+                    } else if (content.contains("\"Method\" : 5")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                        ipCameraHandler.logger.debug("Door opened from button");
+                    } else if (content.contains("\"Method\" : 4")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.ON);
+                        ipCameraHandler.logger.debug("Door opened remotely");
+                    }
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Access control Dahua event, content={}", content);
+                }
+                break;
+            case "DoorCard":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Number\"")) {
+                        startIndex = content.indexOf("Number", startIndex) + 11;
+                        if (startIndex > 0) {
+                            endIndex = content.indexOf(",", startIndex) - 1;
+                            String cardNo = content.substring(startIndex, endIndex);
+                            ipCameraHandler.setChannelState(CHANNEL_UNACCEPTED_CARD_NUMBER, new StringType(cardNo));
+                        }
+                    }
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Access control Dahua event, content={}", content);
+                }
+                break;
+            case "ProfileAlarmTransmit":
+                if ("Start".equals(action)) {
+                    if (content.contains("DoorMagnetism")) {
+                        ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.ON);
+                    }
+                } else if ("Stop".equals(action)) {
+                    if (content.contains("DoorMagnetism")) {
+                        ipCameraHandler.setChannelState(CHANNEL_MAGNETIC_LOCK_WARNING, OnOffType.OFF);
+                    }
+                } else {
+                    ipCameraHandler.logger.debug("Unrecognised Alarm Dahua event, content={}", content);
+                }
+                break;
+            case "DoorStatus":
+                if ("Pulse".equals(action)) {
+                    if (content.contains("\"Relay\" : true")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.OFF);
+                    } else if (content.contains("\"Status\" : \"Close\"")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OpenClosedType.CLOSED);
+                    } else if (content.contains("\"Status\" : \"Open\"")) {
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OpenClosedType.OPEN);
+                    } else {
+                        ipCameraHandler.logger.debug("Unrecognised Door status Dahua event, content={}", content);
+                    }
+                }
+                break;
             case "AlarmLocal":
                 if ("Start".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
+                    } else if (content.contains("index=3")) {
+                        ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.ON);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
+                        ipCameraHandler.logger.trace("External alarm Dahua event, content={}", content);
                     }
                 } else if ("Stop".equals(action)) {
                     if (content.contains("index=0")) {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
+                    } else if (content.contains("index=3")) {
+                        ipCameraHandler.setChannelState(CHANNEL_EXIT_BUTTON, OnOffType.OFF);
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.OFF);
+                        ipCameraHandler.logger.trace("External alarm Dahua event, content={}", content);
                     }
                 }
                 break;
@@ -209,6 +313,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "LeFunctionStatusSync":
             case "RecordDelete":
             case "InterVideoAccess":
+            case "SIPRegisterResult":
                 break;
             default:
                 ipCameraHandler.logger.debug("Unrecognised Dahua event, Code={}, action={}", code, action);
@@ -221,6 +326,12 @@ public class DahuaHandler extends ChannelDuplexHandler {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
         } else if (content.contains("table.MotionDetect[" + nvrChannelAdjusted + "].Enable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
+        }
+
+        // Handle MotionDetectLevel alarm
+        if (content.contains("table.MotionDetect[0].Level=")) {
+            String value = ipCameraHandler.returnValueFromString(content, "table.MotionDetect[0].Level=");
+            ipCameraHandler.setChannelState(CHANNEL_MOTION_DETECTION_LEVEL, DecimalType.valueOf(value));
         }
 
         // determine if the audio alarm is turned on or off.
@@ -247,6 +358,13 @@ public class DahuaHandler extends ChannelDuplexHandler {
         if (content.contains("table.LeLensMask[" + nvrChannelAdjusted + "].Enable=true")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
         } else if (content.contains("table.LeLensMask[" + nvrChannelAdjusted + "].Enable=false")) {
+            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
+        }
+
+        // determine if exit button is enabled
+        if (content.contains("table.AccessControlGeneral.ButtonExitEnable=true")) {
+            ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.ON);
+        } else if (content.contains("table.AccessControlGeneral.ButtonExitEnable=false")) {
             ipCameraHandler.setChannelState(CHANNEL_ENABLE_PRIVACY_MODE, OnOffType.OFF);
         }
     }
@@ -302,6 +420,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 case CHANNEL_WHITE_LED:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=Lighting_V2["
                             + nvrChannelAdjusted + "][0][1].Mode");
+                    return;
+                case CHANNEL_MOTION_DETECTION_LEVEL:
+                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect["
+                            + nvrChannelAdjusted + "]");
+                    return;
+                case CHANNEL_EXIT_BUTTON_ENABLED:
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AccessControlGeneral");
                     return;
             }
             return;
@@ -369,14 +495,14 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
-                int threshold = Math.round(Float.valueOf(command.toString()));
-
-                if (threshold == 0) {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
-                            + nvrChannelAdjusted + "].MutationThreold=1");
-                } else {
-                    ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
-                            + nvrChannelAdjusted + "].MutationThreold=" + threshold);
+                if (command instanceof PercentType percentCommand) {
+                    if (PercentType.ZERO.equals(command)) {
+                        ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                                + nvrChannelAdjusted + "].MutationThreold=1");
+                    } else {
+                        ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
+                                + nvrChannelAdjusted + "].MutationThreold=" + percentCommand.intValue());
+                    }
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
@@ -406,6 +532,19 @@ public class DahuaHandler extends ChannelDuplexHandler {
                             + nvrChannelAdjusted + "].Enable=false");
                 }
                 return;
+            case CHANNEL_MOTION_DETECTION_LEVEL:
+                if (command instanceof DecimalType decimalCommand) {
+                    if (DecimalType.ZERO.equals(command)) {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=false&MotionDetect[0].Level="
+                                        + decimalCommand.intValue());
+                    } else {
+                        ipCameraHandler.sendHttpGET(
+                                "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1&MotionDetect[0].Level="
+                                        + decimalCommand.intValue());
+                    }
+                }
+                return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET(
@@ -429,6 +568,21 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&LeLensMask["
                             + nvrChannelAdjusted + "].Enable=true");
+                }
+                return;
+            case CHANNEL_DOOR_UNLOCK:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler
+                            .sendHttpGET("/cgi-bin/accessControl.cgi?action=openDoor&channel=1&UserID=101&Type=Remote");
+                }
+                return;
+            case CHANNEL_EXIT_BUTTON_ENABLED:
+                if (OnOffType.ON.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AccessControlGeneral.ButtonExitEnable=true");
+                } else if (OnOffType.OFF.equals(command)) {
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&AccessControlGeneral.ButtonExitEnable=false");
                 }
                 return;
         }
