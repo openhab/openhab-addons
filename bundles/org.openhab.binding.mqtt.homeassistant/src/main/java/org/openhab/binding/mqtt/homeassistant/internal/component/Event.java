@@ -81,7 +81,7 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
                     componentConfiguration.getUpdateListener())
                     .stateTopic(channelConfiguration.getJsonAttributesTopic(),
                             channelConfiguration.getJsonAttributesTemplate())
-                    .trigger(true).build();
+                    .isAdvanced(true).trigger(true).build();
         }
     }
 
