@@ -260,7 +260,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case "DoorStatus":
                 if ("Pulse".equals(action)) {
                     if (content.contains("\"Relay\" : true")) {
-                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OpenClosedType.CLOSED);
+                        ipCameraHandler.setChannelState(CHANNEL_DOOR_UNLOCK, OnOffType.OFF);
                     } else if (content.contains("\"Status\" : \"Close\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_DOOR_CONTACT, OpenClosedType.CLOSED);
                     } else if (content.contains("\"Status\" : \"Open\"")) {
