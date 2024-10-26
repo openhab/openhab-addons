@@ -150,4 +150,12 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_ENABLE_PUSH = "enablePush";
     public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
     public static final String CHANNEL_AUTO_TRACKING = "autoTracking";
+    public static final String CHANNEL_ACCEPTED_CARD_NUMBER = "acceptedCardNumber";
+    public static final String CHANNEL_UNACCEPTED_CARD_NUMBER = "unacceptedCardNumber";
+    public static final String CHANNEL_DOOR_UNLOCK = "doorUnlock";
+    public static final String CHANNEL_DOOR_CONTACT = "doorContact";
+    public static final String CHANNEL_EXIT_BUTTON = "exitButton";
+    public static final String CHANNEL_MOTION_DETECTION_LEVEL = "motionDetectionLevel";
+    public static final String CHANNEL_EXIT_BUTTON_ENABLED = "exitButtonEnabled";
+    public static final String CHANNEL_MAGNETIC_LOCK_WARNING = "magneticLockWarning";
 }
