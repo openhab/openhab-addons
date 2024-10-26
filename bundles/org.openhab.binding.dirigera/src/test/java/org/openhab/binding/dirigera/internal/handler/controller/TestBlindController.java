@@ -22,7 +22,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.controller.BlindsControllerHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
@@ -30,6 +29,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
@@ -43,12 +43,13 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestBlindController {
     String deviceId = "9f96eced-7674-4b9f-bbf9-b9575d888638_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_BLIND_CONTROLLER;
 
     @Test
     void testHandlerCreation() {
         HandlerFactoryMock hfm = new HandlerFactoryMock();
-        assertTrue(hfm.supportsThingType(THING_TYPE_BLIND_CONTROLLER));
-        ThingImpl thing = new ThingImpl(THING_TYPE_BLIND_CONTROLLER, "test-device");
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         ThingHandler th = hfm.createHandler(thing);
         assertNotNull(th);
         assertTrue(th instanceof BlindsControllerHandler);
@@ -58,7 +59,7 @@ class TestBlindController {
     void testInitialization() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
-        ThingImpl thing = new ThingImpl(THING_TYPE_BLIND_CONTROLLER, "test-device");
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         BlindsControllerHandler handler = new BlindsControllerHandler(thing, BLIND_CONTROLLER_MAP);
         CallbackMock callback = new CallbackMock();

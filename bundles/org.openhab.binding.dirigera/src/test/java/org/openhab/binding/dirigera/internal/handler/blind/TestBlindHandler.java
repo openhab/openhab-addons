@@ -22,14 +22,16 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.blind.BlindHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -41,11 +43,24 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestBlindHandler {
+    String deviceId = "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_BLIND;
+
     @Test
-    void testBlinds() {
+    void testHandlerCreation() {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof BlindHandler);
+    }
+
+    @Test
+    void testInitialization() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
-        ThingImpl thing = new ThingImpl(THING_TYPE_BLIND, "test-device");
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         BlindHandler handler = new BlindHandler(thing, BLINDS_MAP);
         CallbackMock callback = new CallbackMock();
@@ -54,7 +69,7 @@ class TestBlindHandler {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1");
+        config.put("id", deviceId);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();

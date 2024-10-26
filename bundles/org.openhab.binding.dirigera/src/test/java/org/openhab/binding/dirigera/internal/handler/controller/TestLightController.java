@@ -16,18 +16,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.controller.LightControllerHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -39,10 +42,24 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestLightController {
+    String deviceId = "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_LIGHT_CONTROLLER;
+
     @Test
-    void testLightController() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
-        ThingImpl thing = new ThingImpl(THING_TYPE_LIGHT_CONTROLLER, "test-device");
+    void testHandlerCreation() {
+        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof LightControllerHandler);
+    }
+
+    @Test
+    void testInitialization() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
+                false, List.of());
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
         LightControllerHandler handler = new LightControllerHandler(thing, LIGHT_CONTROLLER_MAP);
         CallbackMock callback = new CallbackMock();
@@ -51,7 +68,7 @@ class TestLightController {
 
         // set the right id
         Map<String, Object> config = new HashMap<>();
-        config.put("id", "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1");
+        config.put("id", deviceId);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();

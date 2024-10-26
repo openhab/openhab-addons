@@ -40,6 +40,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -299,5 +300,13 @@ public abstract class BaseHandler extends BaseThingHandler {
             stateMap.put(key, UnDefType.UNDEF);
         });
         return stateMap;
+    }
+
+    /**
+     * for unit testing
+     */
+    @Override
+    public @Nullable ThingHandlerCallback getCallback() {
+        return super.getCallback();
     }
 }
