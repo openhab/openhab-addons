@@ -6,7 +6,7 @@
 
 	<channel-type id="device-info-firmware">
 		<item-type>String</item-type>
-		<label>Firmware Version</label>
+		<label>Firmware</label>
 		<description>Installed firmware version</description>
 		<category>text</category>
 		<state readOnly="true"/>
@@ -14,7 +14,7 @@
 
 	<channel-type id="device-info-firmware-available">
 		<item-type>String</item-type>
-		<label>Latest Firmware Version</label>
+		<label>Latest Firmware</label>
 		<description>Latest available firmware version</description>
 		<category>text</category>
 		<state readOnly="true"/>
@@ -79,7 +79,7 @@
 
 	<channel-type id="connection-last-sync-mode">
 		<item-type>String</item-type>
-		<label>Last sync mode</label>
+		<label>Last Mode</label>
 		<description>Last sync mode used for this channel</description>
 		<category>text</category>
 		<state readOnly="true"></state>
@@ -94,7 +94,7 @@
 
 	<channel-type id="execution-mode">
 		<item-type>String</item-type>
-		<label>Hue Sync operation mode</label>
+		<label>Mode</label>
 		<description>
 			<![CDATA[
 			<p>
@@ -173,7 +173,7 @@
 
 	<channel-type id="execution-hdmi-source">
 		<item-type>String</item-type>
-		<label>HDMI input</label>
+		<label>HDMI Input</label>
 		<description>
 			<![CDATA[
 			  <p>

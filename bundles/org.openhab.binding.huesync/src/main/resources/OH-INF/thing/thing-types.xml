@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="box">
-		<label>Hue HDMI Sync Box</label>
+		<label>HDMI Sync Box</label>
 
 		<description>Sync your smart lights to your on-screen TV content with the Philips Hue Play HDMI Sync Box. Four HDMI
 			inputs allow you to connect your media devices to your Hue setup, resulting in a fast, seamless display of colorful
@@ -68,9 +68,10 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="device-commands">
-		<label>Hue Sync execution API commands</label>
-		<description>Execution API commands are used to control the real-time behavior of the Philips Hue Sync box. These
-			commands allow you to influence how the lights react to your entertainment.</description>
+		<label>Commands</label>
+		<description>Commands are used to control the real-time behavior of the hue sync box. These
+			commands allow you to
+			influence how the lights react to your entertainment.</description>
 		<category>settings</category>
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>

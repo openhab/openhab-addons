@@ -6,12 +6,12 @@
 
 	<config-description uri="thing-type:box:thing">
 		<parameter-group name="connection">
-			<label>Connection Settings</label>
+			<label>Connection</label>
 		</parameter-group>
 
 		<parameter name="host" type="text" groupName="connection">
 			<context>network-address</context>
-			<label>Network Address</label>
+			<label>Address</label>
 			<description>Network address of the HDMI Sync Box.</description>
 			<required>true</required>
 		</parameter>
@@ -25,13 +25,13 @@
 		</parameter>
 		<parameter name="registrationId" type="text" groupName="connection">
 			<context></context>
-			<label>Application Registration Id</label>
+			<label>Registration Id</label>
 			<description>The id of the API registration.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="apiAccessToken" type="text" groupName="connection">
 			<context>password</context>
-			<label>API Access Token</label>
+			<label>Access Token</label>
 			<description>To enable the binding to communicate with the device, a registration is required. Once the registration
 				process is completed, the acquired token will authorize the binding to interact with the device. After initial
 				discovery and thing creation the device will stay offline. Press the registration button on the sync box for 3
@@ -39,7 +39,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="statusUpdateInterval" type="integer" min="1" step="1" unit="s" groupName="connection">
-			<label>Status Update Interval</label>
+			<label>Update Interval</label>
 			<description>Seconds between fetching values from the Hue Sync Box.</description>
 			<advanced>true</advanced>
 			<required>true</required>
