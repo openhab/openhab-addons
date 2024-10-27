@@ -14,6 +14,8 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,6 +60,7 @@ public class Model {
     }
 
     public synchronized void update() {
+        Instant startTime = Instant.now();
         try {
             JSONObject home = gateway.api().readHome();
             if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
@@ -71,9 +74,15 @@ public class Model {
             logger.error("Excpetion during model update {}", t.getMessage());
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
+        logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
+    }
+
+    public synchronized String getModelString() {
+        return model.toString();
     }
 
     public synchronized void detection() {
+        logger.info("DIRIGERA MODEL detection started");
         // first get devices
         List<String> modelDevices = getAllDeviceIds();
         List<String> foundScenes = getAllSceneIds();
@@ -95,6 +104,7 @@ public class Model {
             DirigeraDiscoveryResult deleted = resultMap.remove(key);
             if (deleted != null) {
                 gateway.discovery().thingRemoved(deleted.result.get());
+                gateway.deleteDevice(key);
             }
         });
     }
@@ -150,11 +160,12 @@ public class Model {
 
     public void updateDeviceScene(String id) {
         if (gateway.discoverEnabled()) {
+            String currentName = getCustonNameFor(id);
+            logger.trace("DIRIGERA MODEL Check name change {}", currentName);
             DirigeraDiscoveryResult deliveredResult = resultMap.get(id);
             if (deliveredResult != null) {
                 // check for name update
                 String previousName = deliveredResult.result.get().getLabel();
-                String currentName = getCustonNameFor(id);
                 if (!currentName.equals(previousName)) {
                     logger.trace("DIRIGERA MODEL Name update detected from {} to {}", previousName, currentName);
                     removedDeviceScene(id);
@@ -166,7 +177,7 @@ public class Model {
 
     public void removedDeviceScene(String id) {
         if (gateway.discoverEnabled()) {
-            DirigeraDiscoveryResult deliveredResult = resultMap.get(id);
+            DirigeraDiscoveryResult deliveredResult = resultMap.remove(id);
             if (deliveredResult != null) {
                 gateway.discovery().thingRemoved(deliveredResult.result.get());
             }
@@ -303,20 +314,23 @@ public class Model {
     }
 
     private DirigeraDiscoveryResult identifiy(String id) {
-        ThingTypeUID ttuid = identifyDeviceFromModel(id);
-        String customName = getCustonNameFor(id);
-        Map<String, Object> propertiesMap = getPropertiesFor(id);
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(ttuid, gateway.getThing().getUID(), id)).withBridge(gateway.getThing().getUID())
-                .withProperties(propertiesMap).withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName)
-                .build();
-        boolean isDelivered = resultMap.containsKey(id);
-        boolean isKnown = gateway.isKnownDevice(id);
-
         DirigeraDiscoveryResult dirigeraResult = new DirigeraDiscoveryResult();
-        dirigeraResult.result = Optional.of(discoveryResult);
-        dirigeraResult.isDelivered = isDelivered;
-        dirigeraResult.isKnown = isKnown;
+        ThingTypeUID ttuid = identifyDeviceFromModel(id);
+        // don't report gateway devices
+        if (!THING_TYPE_GATEWAY.equals(ttuid)) {
+            String customName = getCustonNameFor(id);
+            Map<String, Object> propertiesMap = getPropertiesFor(id);
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(ttuid, gateway.getThing().getUID(), id))
+                    .withBridge(gateway.getThing().getUID()).withProperties(propertiesMap)
+                    .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
+            boolean isDelivered = resultMap.containsKey(id);
+            boolean isKnown = gateway.isKnownDevice(id);
+
+            dirigeraResult.result = Optional.of(discoveryResult);
+            dirigeraResult.isDelivered = isDelivered;
+            dirigeraResult.isKnown = isKnown;
+        }
         return dirigeraResult;
     }
 

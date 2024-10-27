@@ -76,7 +76,6 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager,
             final @Reference TimeZoneProvider timeZoneProvider) {
-
         this.discoveryManager = manager;
         this.timeZoneProvider = timeZoneProvider;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));

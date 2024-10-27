@@ -24,7 +24,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link PowerPlugHandler} basic DeviceHandler for all devices
@@ -46,19 +45,19 @@ public class PowerPlugHandler extends SimplePlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else {
-            String channel = channelUID.getIdWithoutGroup();
-            String targetProperty = channel2PropertyMap.get(channel);
-            if (targetProperty != null) {
-                if (CHANNEL_CHILD_LOCK.equals(channel) || CHANNEL_DISABLE_STATUS_LIGHT.equals(channel)) {
+        super.handleCommand(channelUID, command);
+        String channel = channelUID.getIdWithoutGroup();
+        String targetProperty = channel2PropertyMap.get(channel);
+        if (targetProperty != null) {
+            switch (channel) {
+                case CHANNEL_CHILD_LOCK:
+                case CHANNEL_DISABLE_STATUS_LIGHT:
                     if (command instanceof OnOffType onOff) {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, onOff.equals(OnOffType.ON));
                         gateway().api().sendPatch(config.id, attributes);
                     }
-                }
+                    break;
             }
         }
     }
@@ -75,10 +74,12 @@ public class PowerPlugHandler extends SimplePlugHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_CHILD_LOCK.equals(targetChannel)
-                            || CHANNEL_DISABLE_STATUS_LIGHT.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                OnOffType.from(attributes.getBoolean(key)));
+                    switch (targetChannel) {
+                        case CHANNEL_CHILD_LOCK:
+                        case CHANNEL_DISABLE_STATUS_LIGHT:
+                            updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                    OnOffType.from(attributes.getBoolean(key)));
+                            break;
                     }
                 }
             }
