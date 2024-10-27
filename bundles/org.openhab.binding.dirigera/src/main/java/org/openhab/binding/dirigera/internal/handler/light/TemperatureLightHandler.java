@@ -66,7 +66,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 }
             }
             range = colorTemperatureMin - colorTemperatureMax;
-            logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE new temperatures from {} to {}", colorTemperatureMin,
+            logger.trace("DIRIGERA TEMPERATURE_LIGHT new temperatures from {} to {}", colorTemperatureMin,
                     colorTemperatureMax);
             handleUpdate(values);
         }
@@ -74,6 +74,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("DIRIGERA TEMPERATURE_LIGHT handleCommand {} {}", channelUID, command);
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
@@ -84,10 +85,10 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                         int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, kelvin);
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT send to API {}", attributes);
                         gateway().api().sendPatch(config.id, attributes);
                     } else {
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}", command,
+                        logger.trace("DIRIGERA TEMPERATURE_LIGHT command {} doesn't fit to channel {}", command,
                                 channel);
                     }
                     break;

@@ -53,6 +53,7 @@ public class DimmableLightHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("DIRIGERA DIMMABLE_LIGHT handleCommand {} {}", channelUID, command);
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
@@ -62,11 +63,10 @@ public class DimmableLightHandler extends BaseHandler {
                     if (command instanceof PercentType percent) {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, percent.intValue());
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE send to API {}", attributes);
+                        logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
                         gateway().api().sendPatch(config.id, attributes);
                     } else {
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT_DEVICE command {} doesn't fit to channel {}", command,
-                                channel);
+                        logger.trace("DIRIGERA DIMMABLE_LIGHT command {} doesn't fit to channel {}", command, channel);
                     }
                     break;
             }

@@ -32,19 +32,21 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SceneHandler} basic DeviceHandler for all devices
+ * The {@link SceneHandler} for triggering defined scenes
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class SceneHandler extends BaseHandler {
-    private final TimeZoneProvider timeZoneProvider;
+    private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
 
     private Optional<ScheduledFuture<?>> sceneObserver = Optional.empty();
+    private TimeZoneProvider timeZoneProvider;
     private Instant lastTrigger = Instant.MAX;
     private int undoDuration = 30;
 
@@ -88,9 +90,9 @@ public class SceneHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            super.handleCommand(channelUID, command);
-        } else if (CHANNEL_TRIGGER.equals(channelUID.getIdWithoutGroup())) {
+        logger.trace("DIRIGERA SCENE handleCommand {} {}", channelUID, command);
+        super.handleCommand(channelUID, command);
+        if (CHANNEL_TRIGGER.equals(channelUID.getIdWithoutGroup())) {
             if (command instanceof DecimalType decimal) {
                 int commandNumber = decimal.intValue();
                 switch (commandNumber) {
@@ -111,6 +113,7 @@ public class SceneHandler extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
+        super.handleUpdate(update);
         if (update.has("lastTriggered")) {
             Instant sunsetInstant = Instant.parse(update.getString("lastTriggered"));
             updateState(new ChannelUID(thing.getUID(), CHANNEL_LAST_TRIGGER),
