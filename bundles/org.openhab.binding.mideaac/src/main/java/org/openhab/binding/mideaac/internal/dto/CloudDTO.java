@@ -202,6 +202,8 @@ public class CloudDTO {
             cr = request.send();
         } catch (InterruptedException e) {
             logger.warn("an interupted error has occurred{}", e.getMessage());
+            Thread.currentThread().interrupt();
+            return null;
         } catch (TimeoutException e) {
             logger.warn("a timeout error has occurred{}", e.getMessage());
         } catch (ExecutionException e) {
