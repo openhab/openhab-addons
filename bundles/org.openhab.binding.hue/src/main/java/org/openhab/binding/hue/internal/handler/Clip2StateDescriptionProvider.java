@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,21 +58,41 @@ public class Clip2StateDescriptionProvider extends BaseDynamicStateDescriptionPr
     }
 
     @Override
-    public @Nullable StateDescription getStateDescription(Channel channel,
-            @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
+    public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
+            @Nullable Locale locale) {
         StateDescriptionFragment stateDescriptionFragment = stateDescriptionFragments.get(channel.getUID());
-        return stateDescriptionFragment != null ? stateDescriptionFragment.toStateDescription()
-                : super.getStateDescription(channel, originalStateDescription, locale);
+        if (stateDescriptionFragment != null) {
+            StateDescriptionFragmentBuilder builder = original == null ? StateDescriptionFragmentBuilder.create()
+                    : StateDescriptionFragmentBuilder.create(original);
+            String pattern = original != null ? original.getPattern() : null;
+            pattern = pattern != null ? pattern : "%.0f K";
+            builder.withPattern(pattern);
+            BigDecimal minimum = stateDescriptionFragment.getMinimum();
+            if (minimum != null) {
+                builder.withMinimum(minimum);
+            }
+            BigDecimal maximum = stateDescriptionFragment.getMaximum();
+            if (maximum != null) {
+                builder.withMaximum(maximum);
+            }
+            return builder.build().toStateDescription();
+        }
+        return super.getStateDescription(channel, original, locale);
     }
 
-    public void setStateDescriptionFragment(ChannelUID channelUID, StateDescriptionFragment stateDescriptionFragment) {
+    /**
+     * Set the state description minimum and maximum values for the given channel UID
+     */
+    public void setMinMax(ChannelUID channelUID, long min, long max) {
         StateDescriptionFragment oldStateDescriptionFragment = stateDescriptionFragments.get(channelUID);
-        if (!stateDescriptionFragment.equals(oldStateDescriptionFragment)) {
-            stateDescriptionFragments.put(channelUID, stateDescriptionFragment);
+        StateDescriptionFragment newStateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                .withMinimum(BigDecimal.valueOf(min)).withMaximum(BigDecimal.valueOf(max)).build();
+        if (!newStateDescriptionFragment.equals(oldStateDescriptionFragment)) {
+            stateDescriptionFragments.put(channelUID, newStateDescriptionFragment);
             ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
             postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
                     itemChannelLinkRegistry != null ? itemChannelLinkRegistry.getLinkedItemNames(channelUID) : Set.of(),
-                    stateDescriptionFragment, oldStateDescriptionFragment));
+                    newStateDescriptionFragment, oldStateDescriptionFragment));
         }
     }
 }

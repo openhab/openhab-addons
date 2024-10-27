@@ -92,8 +92,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.StateDescriptionFragment;
-import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -948,7 +946,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 if (fullUpdate) {
                     updateEffectChannel(resource);
-                    updateColorTempAbsChannel(resource);
+                    updateColorTemperatureAbsoluteChannel(resource);
                 }
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
@@ -1124,24 +1122,16 @@ public class Clip2ThingHandler extends BaseThingHandler {
      *
      * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
      */
-    private void updateColorTempAbsChannel(Resource resource) {
+    private void updateColorTemperatureAbsoluteChannel(Resource resource) {
         ColorTemperature colorTemperature = resource.getColorTemperature();
-        if (colorTemperature == null) {
-            return;
+        if (colorTemperature != null) {
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema != null) {
+                stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
+                        1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
+                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
+            }
         }
-        MirekSchema mirekSchema = colorTemperature.getMirekSchema();
-        if (mirekSchema == null) {
-            return;
-        }
-        StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                .withMinimum(BigDecimal.valueOf(1000000 / mirekSchema.getMirekMaximum())) //
-                .withMaximum(BigDecimal.valueOf(1000000 / mirekSchema.getMirekMinimum())) //
-                .withPattern("%.0f K") //
-                .withReadOnly(false) //
-                .build();
-        stateDescriptionProvider.setStateDescriptionFragment(
-                new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE), stateDescriptionFragment);
-        logger.debug("{} -> updateColorTempAbsChannel() {} ", resource.getId(), stateDescriptionFragment);
     }
 
     /**
