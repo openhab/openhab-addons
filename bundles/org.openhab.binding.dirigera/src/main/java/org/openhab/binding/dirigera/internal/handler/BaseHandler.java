@@ -130,6 +130,7 @@ public abstract class BaseHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("DIRIGERA BASE_DEVICE handle {} {}", channelUID, command);
         if (command instanceof RefreshType) {
             String channel = channelUID.getIdWithoutGroup();
             State cachedState = channelStateMap.get(channel);
@@ -231,9 +232,7 @@ public abstract class BaseHandler extends BaseThingHandler {
         }
 
         // store data for development and analysis purposes
-        if (deviceData.isEmpty())
-
-        {
+        if (deviceData.isEmpty()) {
             deviceData = new JSONObject(update.toString());
         } else {
             updates.add(new JSONObject(update.toString()));
@@ -259,6 +258,7 @@ public abstract class BaseHandler extends BaseThingHandler {
         if (proxy != null) {
             gateway().unregisterDevice(proxy, config.id);
         }
+        super.dispose();
     }
 
     @Override
@@ -267,6 +267,7 @@ public abstract class BaseHandler extends BaseThingHandler {
         if (proxy != null) {
             gateway().deleteDevice(proxy, config.id);
         }
+        super.handleRemoval();
     }
 
     public Gateway gateway() {

@@ -12,19 +12,12 @@
  */
 package org.openhab.binding.dirigera.internal.handler.plug;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
-
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link SimplePlugHandler} basic DeviceHandler for all devices
@@ -45,35 +38,6 @@ public class SimplePlugHandler extends BaseHandler {
             // handling of first update, also for PowerPlug and SmartPlug child classes!
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
-        }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-    }
-
-    @Override
-    public void handleUpdate(JSONObject update) {
-        // handle reachable flag
-        super.handleUpdate(update);
-        // now device specific
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
-            Iterator<String> attributesIterator = attributes.keys();
-            while (attributesIterator.hasNext()) {
-                String key = attributesIterator.next();
-                String targetChannel = property2ChannelMap.get(key);
-                if (targetChannel != null) {
-                    switch (targetChannel) {
-                        case CHANNEL_CHILD_LOCK:
-                        case CHANNEL_DISABLE_STATUS_LIGHT:
-                            updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                    OnOffType.from(attributes.getBoolean(key)));
-                            break;
-                    }
-                }
-            }
         }
     }
 }
