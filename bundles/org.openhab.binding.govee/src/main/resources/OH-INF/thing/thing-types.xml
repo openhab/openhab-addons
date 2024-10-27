@@ -26,7 +26,7 @@
 			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
-		<state min="2000" max="90000" pattern="%.0f K"/>
+		<state min="2000" max="9000" pattern="%.0f K"/>
 	</channel-type>
 
 </thing:thing-descriptions>
