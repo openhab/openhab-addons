@@ -304,13 +304,6 @@ public class OpenhabGraalJSScriptEngine
     protected Object afterInvocation(Object obj) {
         lock.unlock();
         logger.debug("Lock released after invocation.");
-        // Fixes illegal multi-thread access requested in UI-based scripts, where the script is running and a timer is
-        // waiting to acquire the lock.
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Thread interrupted while sleeping", e);
-        }
         return super.afterInvocation(obj);
     }
 
@@ -385,13 +378,6 @@ public class OpenhabGraalJSScriptEngine
     public void unlock() {
         lock.unlock();
         logger.debug("Lock released.");
-        // Fixes illegal multi-thread access requested in UI-based scripts, where the script is running and a timer is
-        // waiting to acquire the lock.
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Thread interrupted while sleeping", e);
-        }
     }
 
     @Override
