@@ -68,9 +68,9 @@ public class DirigeraAPIImpl implements DirigeraAPI {
 
     @Override
     public JSONObject readHome() {
-        startCalling();
-        JSONObject statusObject = new JSONObject();
         String url = String.format(HOME_URL, gateway.getIpAddress());
+        startCalling(url);
+        JSONObject statusObject = new JSONObject();
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -84,15 +84,15 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        endCalling();
+        endCalling(url);
         return statusObject;
     }
 
     @Override
     public JSONObject readDevice(String deviceId) {
-        startCalling();
-        JSONObject statusObject = new JSONObject();
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
+        startCalling(url);
+        JSONObject statusObject = new JSONObject();
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -106,15 +106,15 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        endCalling();
+        endCalling(url);
         return statusObject;
     }
 
     @Override
     public void triggerScene(String sceneId, String trigger) {
-        startCalling();
-        JSONObject statusObject = new JSONObject();
         String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId) + "/" + trigger;
+        startCalling(url);
+        JSONObject statusObject = new JSONObject();
         try {
             Request homeRequest = httpClient.POST(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -126,13 +126,13 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        endCalling();
+        endCalling(url);
     }
 
     @Override
     public int sendPatch(String id, JSONObject attributes) {
-        startCalling();
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
+        startCalling(url);
         // pack attributes into data json and then into an array
         JSONObject data = new JSONObject();
         data.put(Model.ATTRIBUTES, attributes);
@@ -156,14 +156,14 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
         }
-        endCalling();
+        endCalling(url);
         return responseStatus;
     }
 
     @Override
     public State getImage(String imageURL) {
         State image = UnDefType.UNDEF;
-        startCalling();
+        startCalling(imageURL);
         try {
             ContentResponse response = httpClient.GET(imageURL);
             if (response.getStatus() == 200) {
@@ -178,21 +178,21 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("DIRIGERA API call to {} failed {}", imageURL, e.getMessage());
         }
-        endCalling();
+        endCalling(imageURL);
         return image;
     }
 
     @Override
     public JSONObject readScene(String sceneId) {
-        startCalling();
-        JSONObject statusObject = new JSONObject();
         String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId);
+        JSONObject statusObject = new JSONObject();
+        Request homeRequest = httpClient.newRequest(url);
+        startCalling(url);
         try {
-            Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
             int responseStatus = response.getStatus();
             if (responseStatus == 200) {
-                return new JSONObject(response.getContentAsString());
+                statusObject = new JSONObject(response.getContentAsString());
             } else {
                 statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
             }
@@ -200,25 +200,29 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        endCalling();
+        endCalling(url);
         return statusObject;
     }
 
-    private void startCalling() {
+    private void startCalling(String request) {
+        logger.info("DIRIGERA API: request {}", request);
         synchronized (this) {
             while (calling) {
                 try {
+                    logger.info("DIRIGERA API: wait {}", request);
                     this.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
+            logger.info("DIRIGERA API: perform {}", request);
             calling = true;
         }
     }
 
-    private void endCalling() {
+    private void endCalling(String request) {
         synchronized (this) {
+            logger.info("DIRIGERA API: done {}", request);
             calling = false;
             this.notifyAll();
         }
