@@ -16,7 +16,7 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
-			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
+			<channel id="color_temperature_abs" typeId="color-temperature-abs"/>
 		</channels>
 
 		<properties>
@@ -418,7 +418,7 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="color_temperature" typeId="system.color-temperature"/>
-			<channel id="color_temperature_abs" typeId="system.color-temperature-abs"/>
+			<channel id="color_temperature_abs" typeId="color-temperature-abs"/>
 		</channels>
 
 		<properties>

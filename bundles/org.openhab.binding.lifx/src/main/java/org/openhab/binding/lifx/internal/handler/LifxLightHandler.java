@@ -42,6 +42,7 @@ import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.LifxLightStateChanger;
 import org.openhab.binding.lifx.internal.LifxProduct;
 import org.openhab.binding.lifx.internal.LifxProduct.Features;
+import org.openhab.binding.lifx.internal.LifxProduct.TemperatureRange;
 import org.openhab.binding.lifx.internal.dto.Effect;
 import org.openhab.binding.lifx.internal.dto.GetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
@@ -97,6 +98,8 @@ public class LifxLightHandler extends BaseThingHandler {
     private static final Duration MAX_STATE_CHANGE_DURATION = Duration.ofSeconds(4);
 
     private final LifxChannelFactory channelFactory;
+    private final LifxStateDescriptionProvider stateDescriptionProvider;
+
     private @NonNullByDefault({}) Features features;
 
     private Duration hevCycleDuration = Duration.ZERO;
@@ -180,10 +183,13 @@ public class LifxLightHandler extends BaseThingHandler {
             HSBK updateColor = nullSafeUpdateColor(powerState, color);
             HSBType hsb = updateColor.getHSB();
 
+            TemperatureRange temperatureRange = features.getTemperatureRange();
+            stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_ABS_TEMPERATURE),
+                    temperatureRange.getMinimum(), temperatureRange.getMaximum());
+
             updateStateIfChanged(CHANNEL_COLOR, hsb);
             updateStateIfChanged(CHANNEL_BRIGHTNESS, hsb.getBrightness());
-            updateStateIfChanged(CHANNEL_TEMPERATURE,
-                    kelvinToPercentType(updateColor.getKelvin(), features.getTemperatureRange()));
+            updateStateIfChanged(CHANNEL_TEMPERATURE, kelvinToPercentType(updateColor.getKelvin(), temperatureRange));
             updateStateIfChanged(CHANNEL_ABS_TEMPERATURE, new QuantityType(updateColor.getKelvin(), Units.KELVIN));
 
             updateZoneChannels(powerState, colors);
@@ -249,9 +255,11 @@ public class LifxLightHandler extends BaseThingHandler {
         }
     }
 
-    public LifxLightHandler(Thing thing, LifxChannelFactory channelFactory) {
+    public LifxLightHandler(Thing thing, LifxChannelFactory channelFactory,
+            LifxStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.channelFactory = channelFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override

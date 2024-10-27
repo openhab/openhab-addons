@@ -118,6 +118,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
     private final HttpClientFactory httpClientFactory;
     private final HttpClient httpClient;
+    private final NanoLeafStateDescriptionProvider stateDescriptionProvider;
 
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
@@ -141,10 +142,12 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
     private boolean touchJobRunning = false;
 
-    public NanoleafControllerHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public NanoleafControllerHandler(Bridge bridge, HttpClientFactory httpClientFactory,
+            NanoLeafStateDescriptionProvider nanoLeafStateDescriptionProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.stateDescriptionProvider = nanoLeafStateDescriptionProvider;
     }
 
     private void initializeTouchHttpClient() {
@@ -651,18 +654,18 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
         Ct colorTemperature = state.getColorTemperature();
 
         float colorTempPercent = 0.0F;
-        int hue;
-        int saturation;
         if (colorTemperature != null) {
+            Integer minInt = colorTemperature.getMin();
+            Integer maxInt = colorTemperature.getMax();
+            int min = minInt == null ? 0 : minInt;
+            int max = maxInt == null ? 0 : maxInt;
+            stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS), min, max);
             updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType(colorTemperature.getValue(), Units.KELVIN));
-            Integer min = colorTemperature.getMin();
-            hue = min == null ? 0 : min;
-            Integer max = colorTemperature.getMax();
-            saturation = max == null ? 0 : max;
-            colorTempPercent = (colorTemperature.getValue() - hue) / (saturation - hue)
-                    * PercentType.HUNDRED.intValue();
+            colorTempPercent = (colorTemperature.getValue() - min) / (max - min) * PercentType.HUNDRED.intValue();
         }
 
+        int hue;
+        int saturation;
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         Hue stateHue = state.getHue();
