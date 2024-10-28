@@ -184,7 +184,7 @@ public class LifxLightHandler extends BaseThingHandler {
             HSBType hsb = updateColor.getHSB();
 
             TemperatureRange temperatureRange = features.getTemperatureRange();
-            stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_ABS_TEMPERATURE),
+            stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_ABS_TEMPERATURE),
                     temperatureRange.getMinimum(), temperatureRange.getMaximum());
 
             updateStateIfChanged(CHANNEL_COLOR, hsb);

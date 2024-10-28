@@ -655,24 +655,24 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         float colorTempPercent = 0.0F;
         if (colorTemperature != null) {
-            Integer minInt = colorTemperature.getMin();
-            Integer maxInt = colorTemperature.getMax();
-            int min = minInt == null ? 0 : minInt;
-            int max = maxInt == null ? 0 : maxInt;
-            stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS), min, max);
+            Integer min = colorTemperature.getMin();
+            Integer max = colorTemperature.getMax();
+            int minKelvin = min == null ? 1000 : min;
+            int maxKelvin = max == null ? 10000 : max;
+            stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                    minKelvin, maxKelvin);
             updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType(colorTemperature.getValue(), Units.KELVIN));
-            colorTempPercent = (colorTemperature.getValue() - min) / (max - min) * PercentType.HUNDRED.intValue();
+            colorTempPercent = (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)
+                    * PercentType.HUNDRED.intValue();
         }
 
-        int hue;
-        int saturation;
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         Hue stateHue = state.getHue();
-        hue = stateHue != null ? stateHue.getValue() : 0;
+        int hue = stateHue != null ? stateHue.getValue() : 0;
 
         Sat stateSaturation = state.getSaturation();
-        saturation = stateSaturation != null ? stateSaturation.getValue() : 0;
+        int saturation = stateSaturation != null ? stateSaturation.getValue() : 0;
 
         Brightness stateBrightness = state.getBrightness();
         int brightness = stateBrightness != null ? stateBrightness.getValue() : 0;
