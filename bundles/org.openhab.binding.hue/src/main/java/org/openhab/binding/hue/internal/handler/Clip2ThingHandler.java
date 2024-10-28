@@ -1127,7 +1127,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (colorTemperature != null) {
             MirekSchema mirekSchema = colorTemperature.getMirekSchema();
             if (mirekSchema != null) {
-                stateDescriptionProvider.setMinMax(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
                         1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
                 logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
             }

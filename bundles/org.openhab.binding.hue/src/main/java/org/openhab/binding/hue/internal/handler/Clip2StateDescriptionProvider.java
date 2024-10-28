@@ -61,32 +61,18 @@ public class Clip2StateDescriptionProvider extends BaseDynamicStateDescriptionPr
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         StateDescriptionFragment stateDescriptionFragment = stateDescriptionFragments.get(channel.getUID());
-        if (stateDescriptionFragment != null) {
-            StateDescriptionFragmentBuilder builder = original == null ? StateDescriptionFragmentBuilder.create()
-                    : StateDescriptionFragmentBuilder.create(original);
-            String pattern = original != null ? original.getPattern() : null;
-            pattern = pattern != null ? pattern : "%.0f K";
-            builder.withPattern(pattern);
-            BigDecimal minimum = stateDescriptionFragment.getMinimum();
-            if (minimum != null) {
-                builder.withMinimum(minimum);
-            }
-            BigDecimal maximum = stateDescriptionFragment.getMaximum();
-            if (maximum != null) {
-                builder.withMaximum(maximum);
-            }
-            return builder.build().toStateDescription();
-        }
-        return super.getStateDescription(channel, original, locale);
+        return stateDescriptionFragment != null ? stateDescriptionFragment.toStateDescription()
+                : super.getStateDescription(channel, original, locale);
     }
 
     /**
-     * Set the state description minimum and maximum values for the given channel UID
+     * Set the state description minimum and maximum values and pattern in Kelvin for the given channel UID
      */
-    public void setMinMax(ChannelUID channelUID, long min, long max) {
+    public void setMinMaxKelvin(ChannelUID channelUID, long minKelvin, long maxKelvin) {
         StateDescriptionFragment oldStateDescriptionFragment = stateDescriptionFragments.get(channelUID);
         StateDescriptionFragment newStateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                .withMinimum(BigDecimal.valueOf(min)).withMaximum(BigDecimal.valueOf(max)).build();
+                .withMinimum(BigDecimal.valueOf(minKelvin)).withMaximum(BigDecimal.valueOf(maxKelvin))
+                .withStep(BigDecimal.valueOf(100)).withPattern("%.0f K").build();
         if (!newStateDescriptionFragment.equals(oldStateDescriptionFragment)) {
             stateDescriptionFragments.put(channelUID, newStateDescriptionFragment);
             ItemChannelLinkRegistry itemChannelLinkRegistry = this.itemChannelLinkRegistry;
