@@ -34,7 +34,8 @@ Controller Things require a parent [Account Bridge](#account-bridge-thing)
 
 ### Local Thing
 
-The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network. This provides a subset of features compared to the Cloud Thing type limited to basic zone control.<br>
+The Local Thing type uses an undocumented API that allows direct HTTP access to an irrigation controller on the user's network.
+This provides a subset of features compared to the Cloud Thing type limited to basic zone control.
 Controlling zones through the local API will not be reported back to the cloud service or the Hydrawise mobile/web applications, and reporting functionality will not reflect the locally controlled state.
 
 Local control may not be available on later Hydrawise controller firmware versions.

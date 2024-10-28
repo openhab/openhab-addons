@@ -38,8 +38,7 @@ binding.pulseaudio:sourceOutput=false
 
 ## Thing Configuration
 
-The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it.<br>
-A Pulseaudio device requires at least an identifier. For sinks and sources, you can use the name or the description. For sink inputs and source outputs, you can use the name or the application name.
+The Pulseaudio bridge requires the host (ip address or a hostname) and a port (default: 4712) as a configuration value in order for the binding to know where to access it. A Pulseaudio device requires at least an identifier. For sinks and sources, you can use the name or the description. For sink inputs and source outputs, you can use the name or the application name.
 To know without hesitation the correct value to use, you should use the command line utility `pactl`. For example, to find the name of a sink:
 
 ```bash
