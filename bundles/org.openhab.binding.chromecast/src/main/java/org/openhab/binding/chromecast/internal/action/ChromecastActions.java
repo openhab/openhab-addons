@@ -41,7 +41,7 @@ public class ChromecastActions implements ThingActions {
     private @Nullable ChromecastHandler handler;
 
     @RuleAction(label = "@text/playURLActionLabel", description = "@text/playURLActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean playURL(
+    public @ActionOutput(name = "result", label = "Success", type = "java.lang.Boolean") Boolean playURL(
             @ActionInput(name = "url") @Nullable String url) {
         if (url == null) {
             logger.warn("Cannot Play as URL is missing.");
@@ -58,7 +58,7 @@ public class ChromecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/playURLTypeActionLabel", description = "@text/playURLTypeActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean playURL(
+    public @ActionOutput(name = "result", label = "Success", type = "java.lang.Boolean") Boolean playURL(
             @ActionInput(name = "url") @Nullable String url,
             @ActionInput(name = "mediaType") @Nullable String mediaType) {
         if (url == null) {
