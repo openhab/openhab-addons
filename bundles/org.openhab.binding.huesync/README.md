@@ -1,6 +1,6 @@
 # HueSync Binding
-<!-- markdownlint-disable MD033 -->
 
+<!-- markdownlint-disable MD033 -->
 This binding integrates the [Play HDMI Sync Box](https://www.philips-hue.com/en-us/p/hue-play-hdmi-sync-box-/046677555221) into openHAB.
 The integration happens directly through the Hue [HDMI Sync Box API](https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/).
 
@@ -16,11 +16,6 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
     - [Items - Groups](#items---groups)
     - [Items - Remote Control](#items---remote-control)
     - [Items - Firmware](#items---firmware)
-
-<br />
-
-![Play HDMI Sync Box](doc/bridge1.png)
-![Play HDMI Sync Box](doc/bridge2.png)
 
 ## Discovery
 
@@ -48,10 +43,15 @@ $ avahi-browse --resolve _huesync._tcp
 
 ## Thing Configuration
 
-To enable the binding to communicate with the device, a registration is required.
-Once the registration process is completed, the acquired token will authorize the binding to communicate with the device.
-After initial discovery and thing creation the device will stay offline.
-To complete the authentication you need to pressed the registration button on the sync box for 3 seconds.
+### Registration
+
+To communicate with the sync box, you need to couple the thing with the hardware (registration). The thing will start this process automatically. To complete the registration you just press the "coupling" button on the sync box for 3 seconds.:
+
+![Device Registration](doc/device_registration.png)
+
+For special use cases it is possible to configure the id and token manually in the **advanced configuration** settings section.
+
+### Parameters
 
 | Name                 | Type    | Description                       | Default | Required | Advanced |
 | -------------------- | ------- | --------------------------------- | ------- | -------- | -------- |
