@@ -37,9 +37,10 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
 
     @Test
     void marshalFromChannelUID() {
-        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
-        EmotivaUnsubscribeDTO emotivaSubscriptionRequest = new EmotivaUnsubscribeDTO(subscriptionChannel);
+        var subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
+        var emotivaSubscriptionRequest = new EmotivaUnsubscribeDTO(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
+
         assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
         assertThat(xmlString, containsString("<tuner_RDS />"));
         assertThat(xmlString, containsString("</emotivaUnsubscribe>"));
@@ -47,11 +48,10 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithTwoUnsubscriptions() {
-        EmotivaCommandDTO command1 = new EmotivaCommandDTO(EmotivaControlCommands.volume);
-
-        EmotivaUnsubscribeDTO dto = new EmotivaUnsubscribeDTO(command1);
-
+        var command1 = new EmotivaCommandDTO(EmotivaControlCommands.volume);
+        var dto = new EmotivaUnsubscribeDTO(command1);
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
+
         assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
         assertThat(xmlString, containsString("<volume />"));
         assertThat(xmlString, containsString("</emotivaUnsubscribe>"));

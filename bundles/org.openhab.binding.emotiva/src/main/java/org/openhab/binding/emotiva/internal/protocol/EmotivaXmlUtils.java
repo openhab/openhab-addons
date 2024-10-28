@@ -83,7 +83,7 @@ public class EmotivaXmlUtils {
 
     public String marshallEmotivaDTO(Object objectInstanceType) {
         try {
-            StringWriter out = new StringWriter();
+            var out = new StringWriter();
             marshaller.marshal(objectInstanceType, out);
             return out.toString();
         } catch (JAXBException e) {
@@ -94,14 +94,14 @@ public class EmotivaXmlUtils {
 
     public String marshallJAXBElementObjects(AbstractJAXBElementDTO jaxbElementDTO) {
         try {
-            StringWriter out = new StringWriter();
+            var out = new StringWriter();
 
             List<JAXBElement<String>> commandsAsJAXBElement = new ArrayList<>();
 
             if (jaxbElementDTO.getCommands() != null) {
                 for (EmotivaCommandDTO command : jaxbElementDTO.getCommands()) {
                     if (command.getName() != null) {
-                        StringBuilder sb = new StringBuilder();
+                        var sb = new StringBuilder();
                         if (command.getValue() != null) {
                             sb.append(" value=\"").append(command.getValue()).append("\"");
                         }
@@ -114,7 +114,7 @@ public class EmotivaXmlUtils {
                         if (command.getAck() != null) {
                             sb.append(" ack=\"").append(command.getAck()).append("\"");
                         }
-                        QName name = new QName("%s%s".formatted(command.getName().trim(), sb));
+                        var name = new QName("%s%s".formatted(command.getName().trim(), sb));
                         commandsAsJAXBElement.add(jaxbElementDTO.createJAXBElement(name));
                     }
                 }
@@ -143,8 +143,8 @@ public class EmotivaXmlUtils {
             throw new JAXBException("Could not unmarshall value, xml value is null or empty");
         }
 
-        StringReader xmlAsStringReader = new StringReader(xmlAsString);
-        StreamSource xmlAsStringStream = new StreamSource(xmlAsStringReader);
+        var xmlAsStringReader = new StringReader(xmlAsString);
+        var xmlAsStringStream = new StreamSource(xmlAsStringReader);
         object = unmarshaller.unmarshal(xmlAsStringStream);
         return object;
     }
@@ -153,7 +153,7 @@ public class EmotivaXmlUtils {
         List<EmotivaCommandDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
                     EmotivaCommandDTO commandDTO = getEmotivaCommandDTO(xmlElement);
@@ -172,7 +172,7 @@ public class EmotivaXmlUtils {
         List<EmotivaNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
                     EmotivaNotifyDTO tagDTO = getEmotivaNotifyTags(xmlElement);
@@ -191,7 +191,7 @@ public class EmotivaXmlUtils {
         List<EmotivaBarNotifyDTO> commands = new ArrayList<>();
         for (Object object : objects) {
             try {
-                Element xmlElement = (Element) object;
+                var xmlElement = (Element) object;
 
                 try {
                     EmotivaBarNotifyDTO tagDTO = getEmotivaBarNotify(xmlElement);
@@ -236,7 +236,7 @@ public class EmotivaXmlUtils {
             LOGGER.debug("Could not create EmotivaCommand, unknown command {}", xmlElement.getTagName());
             commandType = EmotivaControlCommands.none;
         }
-        EmotivaCommandDTO commandDTO = new EmotivaCommandDTO(commandType);
+        var commandDTO = new EmotivaCommandDTO(commandType);
         if (xmlElement.hasAttribute("status")) {
             commandDTO.setStatus(xmlElement.getAttribute("status"));
         }
@@ -250,7 +250,7 @@ public class EmotivaXmlUtils {
     }
 
     private static EmotivaBarNotifyDTO getEmotivaBarNotify(Element xmlElement) {
-        EmotivaBarNotifyDTO barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName().trim());
+        var barNotify = new EmotivaBarNotifyDTO(xmlElement.getTagName().trim());
         if (xmlElement.hasAttribute("type")) {
             barNotify.setType(xmlElement.getAttribute("type"));
         }
@@ -280,7 +280,7 @@ public class EmotivaXmlUtils {
             LOGGER.debug("Could not create EmotivaNotify, unknown subscription tag {}", xmlElement.getTagName());
             notifyTagName = UNKNOWN_TAG;
         }
-        EmotivaNotifyDTO commandDTO = new EmotivaNotifyDTO(notifyTagName);
+        var commandDTO = new EmotivaNotifyDTO(notifyTagName);
         if (xmlElement.hasAttribute("status")) {
             commandDTO.setStatus(xmlElement.getAttribute("status"));
         }

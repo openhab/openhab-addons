@@ -230,7 +230,7 @@ public enum EmotivaControlCommands {
         EnumMap<EmotivaControlCommands, String> commands = new EnumMap<>(EmotivaControlCommands.class);
         for (EmotivaControlCommands value : values()) {
             if (value.getCommandType().equals(filter)) {
-                StringBuilder sb = new StringBuilder(value.name());
+                var sb = new StringBuilder(value.name());
                 sb.setCharAt(0, Character.toUpperCase(value.name().charAt(0)));
                 commands.put(value, sb.toString());
             }
