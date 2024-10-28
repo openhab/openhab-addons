@@ -58,6 +58,7 @@ public class ReolinkState {
                     public AbilityKey supportAiPeople = new AbilityKey();
                     public AbilityKey supportAiVehicle = new AbilityKey();
                     public AbilityKey supportAiDogCat = new AbilityKey();
+                    public AbilityKey supportAiTrackClassify = new AbilityKey();
                 }
 
                 public AbilityChn[] abilityChn = new AbilityChn[1];

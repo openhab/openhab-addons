@@ -106,6 +106,10 @@ public class CameraConfig {
         return alarmInputUrl;
     }
 
+    public void setAlarmInputUrl(String url) {
+        alarmInputUrl = url;
+    }
+
     public String getCustomAudioAlarmUrl() {
         return customAudioAlarmUrl;
     }
