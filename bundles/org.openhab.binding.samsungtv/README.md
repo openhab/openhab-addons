@@ -45,8 +45,8 @@ Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress=
 
 Different ports are used on different models. It may be 55000, 8001 or 8002.
 
-If you have a <2016 TV, the interface will be *Legacy*, and the port is likely 55000.
-If you have a >2016 TV, the interface will be either *websocket* on port 8001, or *websocketsecure* on port 8002.
+If you have a <2016 TV, the interface will be *Legacy*, and the port is likely 55000.<br>
+If you have a >2016 TV, the interface will be either *websocket* on port 8001, or *websocketsecure* on port 8002.<br>
 If your TV supports *websocketsecure*, you **MUST** use it, otherwise the `keyCode` and all dependent channels will not work.
 
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.
@@ -58,6 +58,7 @@ You can set the connection to `Allow` on the TV, or delete the openHAB entry, an
 The binding will try to automatically discover the correct protocol for your TV, so **don't change it** unless you know it is wrong.
 
 Under `advanced`, you can enter a Smartthings PAT, and Device Id. This enables more channels via the Smartthings cloud. This is only for TV's that support Smartthings. No hub is required. The binding will attempt to discover the device ID for your TV automatically, you can enter it manually if automatic detection fails.
+
 Also under `advanced`, you have the ability to turn on *"Subscribe to UPnP events"*. This is off by default. This option reduces (but does not eliminate) the polling of UPnP services. You can enable it if you want to test it out. If you disable this setting (after testing), you should power cycle your TV to remove the old subscriptions.
 
 For >2019 TV's, there is an app workaround, see [App Discovery](#app-discovery) for details.
@@ -93,7 +94,7 @@ TVs support the following channels:
 | artColorTemperature | Number   | RW         | ArtMode Color temperature Minnimum value is -5 and maximum 5                                            |
 | artOrientation      | Switch   | RW         | TV orientation, Landscape (OFF) or Portrait (ON)                                                        |
 
-**NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.
+**NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.<br>
 **NOTE:** channels: sourceName, sourceId, programTitle, channelName and stopBrowser may need additional configuration.
 
 Some channels do not work on some TV's. It depends on the age of your TV, and what kind of interface it has. Only link channels that work on your TV, polling channels that your TV doesn't have may cause errors, and other problems. see [Tested TV Models](#tested-tv-models).
@@ -103,7 +104,7 @@ Some channels do not work on some TV's. It depends on the age of your TV, and wh
 `keyCode` is a String channel, that emulates a remote control. it allows you to send keys to the TV, as if they were from the remote control, hence it is send only.
 
 This is one of the more useful channels, and several new features have been added in this binding.
-Now all keyCode channel sends are queued, so they don’t overlap each other. You can also now use in line delays, and keypresses (in mS). for example:
+Now all keyCode channel sends are queued, so they don’t overlap each other. You can also now use in line delays, and keypresses (in mS). For example:<br>
 sending:
 `"KEY_MENU, 1000, KEY_DOWN, KEY_DOWN, KEY_ENTER, 2000, KEY_EXIT"`
 
@@ -310,7 +311,7 @@ Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[T
 
 ### artOrientation
 
-`artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.  
+`artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.<br>
 For 2023- TV's `orientationKey` should be KEY_MULTI_VIEW (default), for 2024+ TV's this should be KEY_HOME.
 
 ```java
