@@ -49,6 +49,9 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 @NonNullByDefault
 public class Websocket {
+    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
+    private final Map<String, Instant> pingPongMap = new HashMap<>();
+
     private static final String STARTS = "starts";
     private static final String STOPS = "stops";
     private static final String DISCONNECTS = "disconnetcs";
@@ -57,9 +60,6 @@ public class Websocket {
     private static final String LAST_LATENCY = "pingLatency";
     private static final String MESSAGES = "messages";
     public static final String MODEL_UPDATES = "modelUpdates";
-
-    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
-    private final Map<String, Instant> pingPongMap = new HashMap<>();
 
     private Optional<WebSocketClient> websocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();
@@ -75,7 +75,7 @@ public class Websocket {
 
     public void start() {
         if (disposed) {
-            logger.trace("DIRIGERA Websocket start rejected, disposed {}", disposed);
+            logger.trace("DIRIGERA WS start rejected, disposed {}", disposed);
             return;
         }
         increase(STARTS);
@@ -96,7 +96,7 @@ public class Websocket {
             client.connect(this, new URI(websocketURL), request);
         } catch (Throwable t) {
             // catch Exceptions of start stop and declare communication error
-            logger.warn("DIRIGERA Websocket handling exception: {}", t.getMessage());
+            logger.warn("DIRIGERA WS handling exception: {}", t.getMessage());
         }
     }
 
@@ -112,11 +112,10 @@ public class Websocket {
     private void internalStop() {
         websocketClient.ifPresent(client -> {
             try {
-                logger.info("DIRIGERA stop socket before start");
                 client.stop();
                 client.destroy();
             } catch (Exception e) {
-                logger.warn("DIRIGERA exception stopping running client");
+                logger.warn("DIRIGERA WS exception stopping running client");
             }
         });
         websocketClient = Optional.empty();
@@ -137,10 +136,10 @@ public class Websocket {
                 session.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes()));
                 increase(PINGS);
             } catch (IOException e) {
-                logger.info("DIRIGERA ping failed with exception {}", e.getMessage());
+                logger.info("DIRIGERA WS ping failed with exception {}", e.getMessage());
             }
         }, () -> {
-            logger.info("DIRIGERA ping found no session - restart websocket");
+            logger.info("DIRIGERA WS ping found no session - restart websocket");
         });
     }
 
@@ -167,45 +166,44 @@ public class Websocket {
             Instant sent = pingPongMap.remove(paylodString);
             if (sent != null) {
                 long durationMS = Duration.between(sent, Instant.now()).toMillis();
-                logger.trace("DIRIGERA ping answered after {} ms", Duration.between(sent, Instant.now()).toMillis());
+                logger.trace("DIRIGERA WS ping answered after {} ms, {} unanswered pings",
+                        Duration.between(sent, Instant.now()).toMillis(), pingPongMap.size());
                 statistics.put(LAST_LATENCY, durationMS);
             } else {
-                logger.trace("DIRIGERA receiced pong without ping {}", paylodString);
+                logger.info("DIRIGERA WS receiced pong without ping {}", paylodString);
             }
-            logger.trace("DIRIGERA unanswered pings {}", pingPongMap.size());
         } else if (Frame.Type.PING.equals(frame.getType())) {
             session.ifPresentOrElse((session) -> {
                 logger.trace("DIRIGERA onPing ");
                 ByteBuffer buffer = frame.getPayload();
                 try {
                     session.getRemote().sendPong(buffer);
-                    logger.trace("DIRIGERA onPing answered");
                 } catch (IOException e) {
-                    logger.trace("DIRIGERA onPing answer exception {}", e.getMessage());
+                    logger.info("DIRIGERA WS onPing answer exception {}", e.getMessage());
                 }
             }, () -> {
-                logger.trace("DIRIGERA onPing answer cannot be initiated");
+                logger.trace("DIRIGERA WS onPing answer cannot be initiated");
             });
         }
     }
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
-        logger.info("DIRIGERA onDisconnect Status {} Reason {}", statusCode, reason);
+        logger.debug("DIRIGERA WS onDisconnect Status {} Reason {}", statusCode, reason);
         this.session = Optional.empty();
         increase(DISCONNECTS);
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        logger.info("DIRIGERA onConnect ");
+        logger.debug("DIRIGERA WS onConnect ");
         session.setIdleTimeout(-1);
         this.session = Optional.of(session);
     }
 
     @OnWebSocketError
     public void onError(Throwable t) {
-        logger.warn("DIRIGERA onError {}", t.getMessage());
+        logger.info("DIRIGERA WS onError {}", t.getMessage());
         increase(ERRORS);
     }
 

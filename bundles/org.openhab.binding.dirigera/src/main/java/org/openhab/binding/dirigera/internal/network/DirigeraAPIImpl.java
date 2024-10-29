@@ -55,7 +55,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
      * 4) button index
      * 5) controller id
      */
-    private String scenePattern = "{\"id\": \"%s\",\"type\": \"customScene\",\"info\": {\"name\": \"%s\"},\"triggers\": [{\"type\": \"controller\",\"trigger\": {\"controllerType\": \"shortcutController\",\"clickPattern\": \"%s\",\"buttonIndex\": %s,\"deviceId\": \"%s\"}}],\"actions\": [],\"commands\": [],\"undoAllowedDuration\": 30}";
+    private String scenePattern = "{\"id\": \"%s\",\"type\": \"customScene\",\"info\": {\"name\": \"%s\",\"icon\": \"scenes_home_filled\"},\"triggers\": [{\"type\": \"controller\",\"trigger\": {\"controllerType\": \"shortcutController\",\"clickPattern\": \"%s\",\"buttonIndex\": %s,\"deviceId\": \"%s\"}}],\"actions\": [],\"commands\": [],\"undoAllowedDuration\": 30}";
     private HttpClient httpClient;
     private Gateway gateway;
 
@@ -128,12 +128,12 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             Request homeRequest = httpClient.POST(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
             int responseStatus = response.getStatus();
-            if (responseStatus != 200) {
-                logger.warn("DIRIGERA Scene trigger failed with  {}", responseStatus);
+            if (responseStatus != 200 && responseStatus != 202) {
+                logger.warn("DIRIGERA Scene trigger failed with {}", responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
-            logger.warn("DIRIGERA Exception calling  {}", url);
+            logger.warn("DIRIGERA Exception calling {}", url);
         }
         endCalling(url);
     }
@@ -226,19 +226,25 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         startCalling(url);
         int responseStatus = 500;
         String responseUUID = "";
-        try {
-            ContentResponse response = addAuthorizationHeader(sceneCreateRequest).timeout(10, TimeUnit.SECONDS).send();
-            responseStatus = response.getStatus();
-            if (responseStatus == 200 || responseStatus == 202) {
-                logger.info("DIRIGERA API send {} to {} delivered", payload, url);
-                String responseString = response.getContentAsString();
-                JSONObject responseJSON = new JSONObject(responseString);
-                responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
-            } else {
-                logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url, response.getStatus());
+        int retryCounter = 3;
+        while (retryCounter > 0 && !uuid.equals(responseUUID)) {
+            try {
+                ContentResponse response = addAuthorizationHeader(sceneCreateRequest).timeout(10, TimeUnit.SECONDS)
+                        .send();
+                responseStatus = response.getStatus();
+                if (responseStatus == 200 || responseStatus == 202) {
+                    logger.info("DIRIGERA API send {} to {} delivered", payload, url);
+                    String responseString = response.getContentAsString();
+                    JSONObject responseJSON = new JSONObject(responseString);
+                    responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
+                } else {
+                    logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url, response.getStatus());
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
+            logger.info("DIRIGERA API createScene failed {} retries remaining", retryCounter);
+            retryCounter--;
         }
         endCalling(url);
         return responseUUID;
@@ -250,16 +256,23 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         Request sceneDeleteRequest = httpClient.newRequest(url).method("DELETE");
         startCalling(url);
         int responseStatus = 500;
-        try {
-            ContentResponse response = addAuthorizationHeader(sceneDeleteRequest).timeout(10, TimeUnit.SECONDS).send();
-            responseStatus = response.getStatus();
-            if (responseStatus == 200 || responseStatus == 202) {
-                logger.debug("DIRIGERA API delete {} delivered", url);
-            } else {
-                logger.debug("DIRIGERA API send {} failed with status {}", url, response.getStatus());
+        int retryCounter = 3;
+        while (retryCounter > 0 && responseStatus != 200 && responseStatus != 202) {
+            try {
+                ContentResponse response = addAuthorizationHeader(sceneDeleteRequest).timeout(10, TimeUnit.SECONDS)
+                        .send();
+                responseStatus = response.getStatus();
+                if (responseStatus == 200 || responseStatus == 202) {
+                    logger.debug("DIRIGERA API delete {} performed", url);
+                } else {
+                    logger.debug("DIRIGERA API send {} failed with status {}", url, response.getStatus());
+                }
+            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
+            logger.info("DIRIGERA API deleteScene failed with status {}, {} retries remaining", responseStatus,
+                    retryCounter);
+            retryCounter--;
         }
         endCalling(url);
     }

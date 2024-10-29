@@ -92,7 +92,6 @@ public abstract class BaseHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
                     gateway = gw;
-                    logger.trace("DIRIGERA BASE_DEVICE Gateway found");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/dirigera.device.status.wrong-bridge-type");

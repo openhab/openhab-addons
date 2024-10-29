@@ -129,6 +129,7 @@ public class BaseShortcutController extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
+        logger.info("Stored trigger times {}", triggerTimes);
         super.handleUpdate(update);
         logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER update {}", update);
         if (update.has(PROPERTY_DEVICE_ID) && update.has("triggers")) {
@@ -142,6 +143,8 @@ public class BaseShortcutController extends BaseHandler {
                     String triggerTimeString = triggerObject.getString("triggeredAt");
                     Instant triggerTime = Instant.parse(triggerTimeString);
                     Instant lastTriggered = triggerTimes.get(sceneId);
+                    logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Trigger time {}, last triggered {}", triggerTime,
+                            lastTriggered);
                     if (lastTriggered != null) {
                         if (triggerTime.isAfter(lastTriggered)) {
                             triggerTimes.put(sceneId, triggerTime);
@@ -159,7 +162,9 @@ public class BaseShortcutController extends BaseHandler {
             }
             // if triggered deliver
             if (triggered) {
+                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver trigger");
                 sceneMapping.forEach((key, value) -> {
+                    logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Check {} {}", key, value);
                     if (sceneId.equals(value)) {
                         String[] channelPattern = key.split(":");
                         String pattern = "";
@@ -174,6 +179,7 @@ public class BaseShortcutController extends BaseHandler {
                                 pattern = "LONG_PRESSED";
                                 break;
                         }
+                        logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver {} to {}", pattern, channelPattern[1]);
                         if (!pattern.isBlank()) {
                             triggerChannel(new ChannelUID(thing.getUID(), channelPattern[1]), pattern);
                         }

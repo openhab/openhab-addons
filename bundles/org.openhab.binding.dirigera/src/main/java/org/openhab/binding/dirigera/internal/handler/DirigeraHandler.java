@@ -78,6 +78,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
+
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
 
     // Used for unit tests
@@ -92,6 +93,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Optional<Model> model = Optional.empty();
     private Optional<ScheduledFuture<?>> modelUpdater = Optional.empty();
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
+    private Optional<ScheduledFuture<?>> detectionSchedule = Optional.empty();
 
     private List<Object> knownDevices = new ArrayList<>();
     private ArrayList<String> queue = new ArrayList<>();
@@ -99,6 +101,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Storage<String> storage;
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
+
+    public static long DETECTION_TIME_SECONDS = 5;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
@@ -308,10 +312,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONObject gatewayStorageJson = getStorageJson();
         if (gatewayStorageJson.has(PROPERTY_DEVICES)) {
             String knownDeviceString = gatewayStorageJson.getString(PROPERTY_DEVICES);
-            logger.info("DIRIGERA HANDLER storage deliverd {} known devices", knownDeviceString);
             JSONArray arr = new JSONArray(knownDeviceString);
             knownDevices = arr.toList();
-            logger.info("DIRIGERA HANDLER storage deliverd {} known devices", knownDevices.size());
         } else {
             logger.info("DIRIGERA HANDLER no known devices stored");
         }
@@ -320,22 +322,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private void storeKnownDevices() {
         JSONObject gatewayStorageJson = getStorageJson();
         JSONArray toStoreArray = new JSONArray(knownDevices);
-        logger.info("DIRIGERA HANDLER store {} known devices", knownDevices.size());
         gatewayStorageJson.put(PROPERTY_DEVICES, toStoreArray.toString());
-        logger.info("DIRIGERA HANDLER want to write {}", gatewayStorageJson);
         storage.put(config.id, gatewayStorageJson.toString());
     }
 
     private JSONObject getStorageJson() {
-        logger.info("DIRIGERA HANDLER get storage for {}", config.id);
         config = getConfigAs(DirigeraConfiguration.class);
         if (!config.id.isBlank()) {
             String gatewayStorageObject = storage.get(config.id);
             logger.info("DIRIGERA HANDLER get storage contains {}", gatewayStorageObject);
             if (gatewayStorageObject != null) {
                 JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
-                logger.info("DIRIGERA HANDLER get storage for {} delivered {}", config.id,
-                        gatewayStorageJson.toString());
                 return gatewayStorageJson;
             }
         }
@@ -480,7 +477,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER device {} regsitered without id", deviceHandler.getThing().getThingTypeUID());
         }
         deviceTree.put(deviceId, deviceHandler);
-        model().detection();
     }
 
     /**
@@ -503,7 +499,18 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         // removal of handler - store known devices
         knownDevices.remove(deviceId);
         storeKnownDevices();
-        model().detection();
+        // before new detection the handler needs to be removed - now were in removing state
+        // for complex devices several removes are done so don't trigger detection every time
+        detectionSchedule.ifPresentOrElse(previousSchedule -> {
+            if (!previousSchedule.isDone()) {
+                previousSchedule.cancel(true);
+            }
+            detectionSchedule = Optional
+                    .of(scheduler.schedule(model.get()::detection, DETECTION_TIME_SECONDS, TimeUnit.SECONDS));
+        }, () -> {
+            detectionSchedule = Optional
+                    .of(scheduler.schedule(model.get()::detection, DETECTION_TIME_SECONDS, TimeUnit.SECONDS));
+        });
     }
 
     /**

@@ -85,34 +85,41 @@ public class Model {
     }
 
     public synchronized void detection() {
-        logger.debug("DIRIGERA MODEL detection started");
-        List<String> previousDevices = new ArrayList<>();
-        previousDevices.addAll(devices);
+        if (gateway.discoverEnabled()) {
+            logger.debug("DIRIGERA MODEL detection started");
+            List<String> previousDevices = new ArrayList<>();
+            previousDevices.addAll(devices);
 
-        // first get devices
-        List<String> foundDevices = new ArrayList<>();
-        foundDevices.addAll(getResolvedDeviceList());
-        foundDevices.addAll(getAllSceneIds());
-        devices.clear();
-        devices.addAll(foundDevices);
-        previousDevices.forEach(deviceId -> {
-            boolean known = gateway.isKnownDevice(deviceId);
-            boolean removed = !foundDevices.contains(deviceId);
-            if (removed) {
-                removedDeviceScene(deviceId);
-            } else {
+            // first get devices
+            List<String> foundDevices = new ArrayList<>();
+            foundDevices.addAll(getResolvedDeviceList());
+            foundDevices.addAll(getAllSceneIds());
+            devices.clear();
+            devices.addAll(foundDevices);
+            previousDevices.forEach(deviceId -> {
+                boolean known = gateway.isKnownDevice(deviceId);
+                boolean removed = !foundDevices.contains(deviceId);
+                // logger.debug("DIRIGERA MODEL Device {} known {} removed {}", deviceId, known, removed);
+                if (removed) {
+                    removedDeviceScene(deviceId);
+                } else {
+                    if (!known) {
+                        logger.debug("DIRIGERA MODEL Add device {}", deviceId);
+                        addedDeviceScene(deviceId);
+                    } // don't update known devices
+                }
+            });
+            foundDevices.removeAll(previousDevices);
+            foundDevices.forEach(deviceId -> {
+                boolean known = gateway.isKnownDevice(deviceId);
                 if (!known) {
                     addedDeviceScene(deviceId);
-                } // don't update known devices
-            }
-        });
-        foundDevices.removeAll(previousDevices);
-        foundDevices.forEach(deviceId -> {
-            boolean known = gateway.isKnownDevice(deviceId);
-            if (!known) {
-                addedDeviceScene(deviceId);
-            }
-        });
+                }
+            });
+        } else {
+            logger.debug("DIRIGERA MODEL discovery disabled");
+
+        }
     }
 
     /**
@@ -181,42 +188,17 @@ public class Model {
     }
 
     private void addedDeviceScene(String id) {
-        if (gateway.discoverEnabled()) {
-            DiscoveryResult result = identifiy(id);
-            if (result != null) {
-                gateway.discovery().thingDiscovered(result);
-                resultMap.put(id, result);
-            } // don't deliver because result is present in map
-        } else {
-            logger.info("DIRIGERA MODEL No DiscoveryResult created for {}", id);
+        DiscoveryResult result = identifiy(id);
+        if (result != null) {
+            gateway.discovery().thingDiscovered(result);
+            resultMap.put(id, result);
         }
     }
 
-    // private void updateDeviceScene(String id) {
-    // if (gateway.discoverEnabled()) {
-    // String currentName = getCustonNameFor(id);
-    // logger.trace("DIRIGERA MODEL Check name change {}", currentName);
-    // DirigeraDiscoveryResult deliveredResult = resultMap.get(id);
-    // if (deliveredResult != null) {
-    // // check for name update
-    // String previousName = deliveredResult.result.get().getLabel();
-    // if (!currentName.equals(previousName)) {
-    // logger.trace("DIRIGERA MODEL Name update detected from {} to {}", previousName, currentName);
-    // removedDeviceScene(id);
-    // addedDeviceScene(id);
-    // }
-    // }
-    // }
-    // }
-
     private void removedDeviceScene(String id) {
-        if (gateway.discoverEnabled()) {
-            DiscoveryResult deliveredResult = resultMap.remove(id);
-            if (deliveredResult != null) {
-                gateway.discovery().thingRemoved(deliveredResult);
-            }
-        } else {
-            logger.trace("DIRIGERA MODEL Discovery disabled");
+        DiscoveryResult deliveredResult = resultMap.remove(id);
+        if (deliveredResult != null) {
+            gateway.discovery().thingRemoved(deliveredResult);
         }
         // inform gateway to remove device and update handler accordingly
         gateway.deleteDevice(id);
@@ -350,7 +332,6 @@ public class Model {
                     String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
                     if (relationDeviceId != null && deviceType != null) {
                         relationsMap.put(relationDeviceId, deviceType);
-                        logger.info("DIRIGERA MODEL relation found {} : {}", relationDeviceId, deviceType);
                     }
                 }
             }

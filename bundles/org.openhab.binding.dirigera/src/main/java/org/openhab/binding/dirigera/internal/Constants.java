@@ -219,8 +219,22 @@ public class Constants {
 
     // Mappings for ota
     public static final Map<String, Integer> OTA_STATUS_MAP = Map.of("upToDate", 0, "updateAvailable", 1);
-    public static final Map<String, Integer> OTA_STATE_MAP = Map.of("readyToCheck", 0, "checkInProgress", 1,
-            "readyToDownload", 2, "downloadInProgress", 3);
+    public static final Map<String, Integer> OTA_STATE_MAP = new HashMap<String, Integer>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put("readyToCheck", 0);
+            put("checkInProgress", 1);
+            put("readyToDownload", 2);
+            put("downloadInProgress", 3);
+            put("updateInProgress", 4);
+            put("updateFailed", 5);
+            put("readyToUpdate", 6);
+            put("checkFailed", 7);
+            put("downloadFailed", 8);
+            put("updateComplete", 9);
+            put("batteryCheckFailed", 10);
+        }
+    };
 
     // Mappings for startup behavior
     public static final Map<String, Integer> STARTUP_BEHAVIOR_MAPPING = Map.of("startPrevious", 0, "startOn", 1,

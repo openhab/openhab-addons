@@ -24,9 +24,6 @@ import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MotionSensorHandler} basic DeviceHandler for all devices
@@ -35,7 +32,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MotionSensorHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(MotionSensorHandler.class);
 
     public MotionSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -49,11 +45,6 @@ public class MotionSensorHandler extends BaseHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
     }
 
     @Override
@@ -71,11 +62,7 @@ public class MotionSensorHandler extends BaseHandler {
                     if (CHANNEL_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
-                    } else {
-                        logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA MOTION_DEVICE no targetChannel for {}", key);
                 }
             }
         }
