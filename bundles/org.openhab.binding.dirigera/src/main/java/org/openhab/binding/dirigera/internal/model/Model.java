@@ -21,12 +21,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryResult;
 import org.openhab.binding.dirigera.internal.exception.ModelUpdateException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -44,19 +44,26 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Model {
     private final Logger logger = LoggerFactory.getLogger(Model.class);
-    private Map<String, DirigeraDiscoveryResult> resultMap = new HashMap<>();
+
+    private Map<String, DiscoveryResult> resultMap = new HashMap<>();
+    private List<String> devices = new ArrayList<>();
     public static final String REACHABLE = "isReachable";
     public static final String ATTRIBUTES = "attributes";
     public static final String SCENES = "scenes";
     public static final String CUSTOM_NAME = "customName";
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_TYPE = "deviceType";
+    public static final String PROPERTY_RELATION_ID = "relationId";
 
     private JSONObject model = new JSONObject();
     private Gateway gateway;
 
     public Model(Gateway gateway) {
         this.gateway = gateway;
+    }
+
+    public synchronized String getModelString() {
+        return model.toString();
     }
 
     public synchronized void update() {
@@ -77,38 +84,69 @@ public class Model {
         logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
     }
 
-    public synchronized String getModelString() {
-        return model.toString();
-    }
-
     public synchronized void detection() {
-        logger.info("DIRIGERA MODEL detection started");
-        // first get devices
-        List<String> modelDevices = getAllDeviceIds();
-        List<String> foundScenes = getAllSceneIds();
-        modelDevices.addAll(foundScenes);
+        logger.debug("DIRIGERA MODEL detection started");
+        List<String> previousDevices = new ArrayList<>();
+        previousDevices.addAll(devices);
 
-        Map<String, DirigeraDiscoveryResult> leftOverMap = new HashMap<>(resultMap);
-        modelDevices.forEach(deviceId -> {
-            if (resultMap.containsKey(deviceId)) {
-                // already found - check for name change and continue
-                updateDeviceScene(deviceId);
+        // first get devices
+        List<String> foundDevices = new ArrayList<>();
+        foundDevices.addAll(getResolvedDeviceList());
+        foundDevices.addAll(getAllSceneIds());
+        devices.clear();
+        devices.addAll(foundDevices);
+        previousDevices.forEach(deviceId -> {
+            boolean known = gateway.isKnownDevice(deviceId);
+            boolean removed = !foundDevices.contains(deviceId);
+            if (removed) {
+                removedDeviceScene(deviceId);
             } else {
-                // new entry found
+                if (!known) {
+                    addedDeviceScene(deviceId);
+                } // don't update known devices
+            }
+        });
+        foundDevices.removeAll(previousDevices);
+        foundDevices.forEach(deviceId -> {
+            boolean known = gateway.isKnownDevice(deviceId);
+            if (!known) {
                 addedDeviceScene(deviceId);
             }
-            leftOverMap.remove(deviceId);
-        });
-        // now all devices from new model are handled - check if some previous delivered discoveries are removed
-        leftOverMap.forEach((key, value) -> {
-            DirigeraDiscoveryResult deleted = resultMap.remove(key);
-            if (deleted != null) {
-                gateway.discovery().thingRemoved(deleted.result.get());
-                gateway.deleteDevice(key);
-            }
         });
     }
 
+    /**
+     * Returns list with resolved relations
+     *
+     * @return
+     */
+    public synchronized List<String> getResolvedDeviceList() {
+        List<String> deviceList = new ArrayList<>();
+        if (!model.isNull(PROPERTY_DEVICES)) {
+            JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
+            Iterator<Object> entries = devices.iterator();
+            while (entries.hasNext()) {
+                JSONObject entry = (JSONObject) entries.next();
+                String deviceId = entry.getString(PROPERTY_DEVICE_ID);
+                String relationId = getRelationId(deviceId);
+                if (!deviceId.equals(relationId)) {
+                    TreeMap<String, String> relationMap = getRelations(relationId);
+                    // store for complex devices store result with first found id
+                    relationId = relationMap.firstKey();
+                }
+                if (!deviceList.contains(relationId)) {
+                    deviceList.add(relationId);
+                }
+            }
+        }
+        return deviceList;
+    }
+
+    /**
+     * Returns list with all device id's
+     *
+     * @return
+     */
     public synchronized List<String> getAllDeviceIds() {
         List<String> deviceList = new ArrayList<>();
         if (!model.isNull(PROPERTY_DEVICES)) {
@@ -129,61 +167,59 @@ public class Model {
             Iterator<Object> sceneIterator = scenes.iterator();
             while (sceneIterator.hasNext()) {
                 JSONObject entry = (JSONObject) sceneIterator.next();
-
-                if (entry.has(PROPERTY_DEVICE_ID)) {
-                    String id = entry.getString(PROPERTY_DEVICE_ID);
-                    sceneList.add(id);
+                if (entry.has(PROPERTY_TYPE)) {
+                    if ("userScene".equals(entry.getString(PROPERTY_TYPE))) {
+                        if (entry.has(PROPERTY_DEVICE_ID)) {
+                            String id = entry.getString(PROPERTY_DEVICE_ID);
+                            sceneList.add(id);
+                        }
+                    }
                 }
             }
         }
         return sceneList;
     }
 
-    public void addedDeviceScene(String id) {
+    private void addedDeviceScene(String id) {
         if (gateway.discoverEnabled()) {
-            DirigeraDiscoveryResult result = identifiy(id);
-            if (result.result.isPresent()) {
-                if (!result.isKnown) {
-                    if (!result.isDelivered) {
-                        gateway.discovery().thingDiscovered(result.result.get());
-                        result.isDelivered = true;
-                        resultMap.put(id, result);
-                    } // don't deliver because result is present in map
-                } // don't deliver because handler is present
-            } else {
-                logger.info("DIRIGERA MODEL No DiscoveryResult created for {}", id);
+            DiscoveryResult result = identifiy(id);
+            if (result != null) {
+                gateway.discovery().thingDiscovered(result);
+                resultMap.put(id, result);
+            } // don't deliver because result is present in map
+        } else {
+            logger.info("DIRIGERA MODEL No DiscoveryResult created for {}", id);
+        }
+    }
+
+    // private void updateDeviceScene(String id) {
+    // if (gateway.discoverEnabled()) {
+    // String currentName = getCustonNameFor(id);
+    // logger.trace("DIRIGERA MODEL Check name change {}", currentName);
+    // DirigeraDiscoveryResult deliveredResult = resultMap.get(id);
+    // if (deliveredResult != null) {
+    // // check for name update
+    // String previousName = deliveredResult.result.get().getLabel();
+    // if (!currentName.equals(previousName)) {
+    // logger.trace("DIRIGERA MODEL Name update detected from {} to {}", previousName, currentName);
+    // removedDeviceScene(id);
+    // addedDeviceScene(id);
+    // }
+    // }
+    // }
+    // }
+
+    private void removedDeviceScene(String id) {
+        if (gateway.discoverEnabled()) {
+            DiscoveryResult deliveredResult = resultMap.remove(id);
+            if (deliveredResult != null) {
+                gateway.discovery().thingRemoved(deliveredResult);
             }
         } else {
             logger.trace("DIRIGERA MODEL Discovery disabled");
         }
-    }
-
-    public void updateDeviceScene(String id) {
-        if (gateway.discoverEnabled()) {
-            String currentName = getCustonNameFor(id);
-            logger.trace("DIRIGERA MODEL Check name change {}", currentName);
-            DirigeraDiscoveryResult deliveredResult = resultMap.get(id);
-            if (deliveredResult != null) {
-                // check for name update
-                String previousName = deliveredResult.result.get().getLabel();
-                if (!currentName.equals(previousName)) {
-                    logger.trace("DIRIGERA MODEL Name update detected from {} to {}", previousName, currentName);
-                    removedDeviceScene(id);
-                    addedDeviceScene(id);
-                }
-            }
-        }
-    }
-
-    public void removedDeviceScene(String id) {
-        if (gateway.discoverEnabled()) {
-            DirigeraDiscoveryResult deliveredResult = resultMap.remove(id);
-            if (deliveredResult != null) {
-                gateway.discovery().thingRemoved(deliveredResult.result.get());
-            }
-        } else {
-            logger.trace("DIRIGERA MODEL Discovery disabled");
-        }
+        // inform gateway to remove device and update handler accordingly
+        gateway.deleteDevice(id);
     }
 
     public synchronized JSONArray getIdsForType(String type) {
@@ -288,50 +324,62 @@ public class Model {
     }
 
     /**
-     * Searches for occurrences of the same serial number in the model
-     * Rationale: VALLHORN Motion Sensor registers 2 devices
+     * Gets all relations marked into relationId property
+     * Rationale:
+     * VALLHORN Motion Sensor registers 2 devices
      * - Motion Sensor
      * - Light Sensor
+     *
+     * Shortcut Controller with 2 buttons registers 2 controllers
      * They shall not be splitted in 2 different things so one Thing shall receive updates for both id's
      *
-     * @param id
+     * Use TreeMap to sort device id's so suffix _1 comes before _2
+     *
+     * @param relationId
      * @return List of id's with same serial number
      */
-    public synchronized List<String> getTwins(String id) {
-        final List<String> twins = new ArrayList<>();
-        String serialNumber = getStringAttribute(id, "serialNumber");
+    public synchronized TreeMap<String, String> getRelations(String relationId) {
+        final TreeMap<String, String> relationsMap = new TreeMap<>();
         List<String> allDevices = getAllDeviceIds();
         allDevices.forEach(deviceId -> {
-            if (!id.equals(deviceId)) {
-                String investigateSerialNumber = getStringAttribute(deviceId, "serialNumber");
-                if (!investigateSerialNumber.isBlank() && serialNumber.equals(investigateSerialNumber)) {
-                    twins.add(deviceId);
-                    logger.info("DIRIGERA MODEL twin {} found for {}", deviceId, id);
+            JSONObject data = getAllFor(deviceId, PROPERTY_DEVICES);
+            if (data.has(Model.PROPERTY_RELATION_ID)) {
+                String relation = data.getString(Model.PROPERTY_RELATION_ID);
+                if (relationId.equals(relation)) {
+                    String relationDeviceId = data.getString(PROPERTY_DEVICE_ID);
+                    String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
+                    if (relationDeviceId != null && deviceType != null) {
+                        relationsMap.put(relationDeviceId, deviceType);
+                        logger.info("DIRIGERA MODEL relation found {} : {}", relationDeviceId, deviceType);
+                    }
                 }
             }
         });
-        return twins;
+        return relationsMap;
     }
 
-    private DirigeraDiscoveryResult identifiy(String id) {
-        DirigeraDiscoveryResult dirigeraResult = new DirigeraDiscoveryResult();
+    private @Nullable DiscoveryResult identifiy(String id) {
         ThingTypeUID ttuid = identifyDeviceFromModel(id);
-        // don't report gateway devices
-        if (!THING_TYPE_GATEWAY.equals(ttuid)) {
-            String customName = getCustonNameFor(id);
-            Map<String, Object> propertiesMap = getPropertiesFor(id);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(ttuid, gateway.getThing().getUID(), id))
+        // don't report gateway, unknown devices and light sensors connected to motion sensors
+        if (!THING_TYPE_GATEWAY.equals(ttuid) && !THING_TYPE_UNKNNOWN.equals(ttuid)
+                && !THING_TYPE_LIGHT_SENSOR.equals(ttuid) && !THING_TYPE_IGNORE.equals(ttuid)) {
+            // check if it's a simple or complex device
+            String relationId = getRelationId(id);
+            String firstDeviceId = id;
+            if (!id.equals(relationId)) {
+                // complex device
+                TreeMap<String, String> relationMap = getRelations(relationId);
+                // take name from first ordered entry
+                firstDeviceId = relationMap.firstKey();
+            }
+            // take name and properties from first found id
+            String customName = getCustonNameFor(firstDeviceId);
+            Map<String, Object> propertiesMap = getPropertiesFor(firstDeviceId);
+            return DiscoveryResultBuilder.create(new ThingUID(ttuid, gateway.getThing().getUID(), firstDeviceId))
                     .withBridge(gateway.getThing().getUID()).withProperties(propertiesMap)
                     .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
-            boolean isDelivered = resultMap.containsKey(id);
-            boolean isKnown = gateway.isKnownDevice(id);
-
-            dirigeraResult.result = Optional.of(discoveryResult);
-            dirigeraResult.isDelivered = isDelivered;
-            dirigeraResult.isKnown = isKnown;
         }
-        return dirigeraResult;
+        return null;
     }
 
     /**
@@ -361,7 +409,9 @@ public class Model {
      */
     public synchronized ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
         String typeDeviceType = "";
-        if (!data.isNull(PROPERTY_DEVICE_TYPE)) {
+        if (data.has(Model.PROPERTY_RELATION_ID)) {
+            return identifiyComplexDevice(data.getString(Model.PROPERTY_RELATION_ID));
+        } else if (data.has(PROPERTY_DEVICE_TYPE)) {
             String deviceType = data.getString(PROPERTY_DEVICE_TYPE);
             typeDeviceType = deviceType;
             JSONObject attributes = data.getJSONObject(PROPERTY_ATTRIBUTES);
@@ -382,13 +432,7 @@ public class Model {
                     }
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:
-                    // if product code is E2134 (VALLHORN) sensor contains an additional light sensor!
-                    String motionSensorProductCode = getStringAttribute(id, "productCode");
-                    if ("E2134".equals(motionSensorProductCode)) {
-                        return THING_TYPE_MOTION_LIGHT_SENSOR;
-                    } else {
-                        return THING_TYPE_MOTION_SENSOR;
-                    }
+                    return THING_TYPE_MOTION_SENSOR;
                 case DEVICE_TYPE_LIGHT_SENSOR:
                     return THING_TYPE_LIGHT_SENSOR;
                 case DEVICE_TYPE_CONTACT_SENSOR:
@@ -424,7 +468,7 @@ public class Model {
                 case DEVICE_TYPE_SOUND_CONTROLLER:
                     return THING_TYPE_SOUND_CONTROLLER;
                 case DEVICE_TYPE_SHORTCUT_CONTROLLER:
-                    return THING_TYPE_SHORTCUT_CONTROLLER;
+                    return THING_TYPE_SINGLE_SHORTCUT_CONTROLLER;
             }
         } else {
             // device type is empty, check for scene
@@ -434,14 +478,55 @@ public class Model {
                 switch (type) {
                     case TYPE_USER_SCENE:
                         return THING_TYPE_SCENE;
+                    case TYPE_CUSTOM_SCENE:
+                        return THING_TYPE_IGNORE;
                 }
             }
         }
-        logger.warn("DIRIGERA MODEL Unsuppoerted Device {} with data {} {}", typeDeviceType, data, id);
+        logger.warn("DIRIGERA MODEL Unsupported device {} with data {} {}", typeDeviceType, data, id);
         return THING_TYPE_UNKNNOWN;
     }
 
-    // public boolean has(String id) {
-    // return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
-    // }
+    private ThingTypeUID identifiyComplexDevice(String relationId) {
+        Map<String, String> relationsMap = getRelations(relationId);
+        if (relationsMap.size() == 2 && relationsMap.containsValue("lightSensor")
+                && relationsMap.containsValue("motionSensor")) {
+            return THING_TYPE_MOTION_LIGHT_SENSOR;
+        } else if (relationsMap.size() == 2 && relationsMap.containsValue("shortcutController")) {
+            for (Iterator<String> iterator = relationsMap.keySet().iterator(); iterator.hasNext();) {
+                if (!"shortcutController".equals(relationsMap.get(iterator.next()))) {
+                    return THING_TYPE_UNKNNOWN;
+                }
+            }
+            return THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER;
+        } else if (relationsMap.size() == 1 && relationsMap.containsValue("gatewy")) {
+            return THING_TYPE_GATEWAY;
+        } else {
+            return THING_TYPE_UNKNNOWN;
+        }
+    }
+
+    /**
+     * Get relationId for a given device id
+     *
+     * @param id to check
+     * @return same id if no relations are found or relationId
+     */
+    public synchronized String getRelationId(String id) {
+        JSONObject dataObject = getAllFor(id, PROPERTY_DEVICES);
+        if (dataObject.has(PROPERTY_RELATION_ID)) {
+            return dataObject.getString(PROPERTY_RELATION_ID);
+        }
+        return id;
+    }
+
+    /**
+     * Check if given id is present in devices or scenes
+     *
+     * @param id to check
+     * @return true if id is found
+     */
+    public synchronized boolean has(String id) {
+        return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
+    }
 }

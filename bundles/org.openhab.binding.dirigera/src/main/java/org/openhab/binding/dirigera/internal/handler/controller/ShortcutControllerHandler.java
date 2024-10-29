@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_BUTTON_1;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link ShortcutControllerHandler} for triggering scenes
@@ -27,10 +27,10 @@ import org.openhab.core.types.Command;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ShortcutControllerHandler extends BaseHandler {
+public class ShortcutControllerHandler extends BaseShortcutController {
 
-    public ShortcutControllerHandler(Thing thing, Map<String, String> mapping) {
-        super(thing, mapping);
+    public ShortcutControllerHandler(Thing thing, Map<String, String> mapping, Storage<String> bindingStorage) {
+        super(thing, mapping, bindingStorage);
         super.setChildHandler(this);
     }
 
@@ -40,17 +40,7 @@ public class ShortcutControllerHandler extends BaseHandler {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
+            super.initializeScenes(config.id, CHANNEL_BUTTON_1);
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-    }
-
-    @Override
-    public void handleUpdate(JSONObject update) {
-        // handle reachable flag, no more special handling
-        super.handleUpdate(update);
     }
 }

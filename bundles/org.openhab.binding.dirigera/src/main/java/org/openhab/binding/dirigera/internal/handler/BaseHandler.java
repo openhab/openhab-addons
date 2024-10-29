@@ -56,9 +56,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class BaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
-    private @Nullable BaseHandler child;
     private @Nullable Gateway gateway;
 
+    protected @Nullable BaseHandler child;
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
     protected Map<String, State> channelStateMap;
