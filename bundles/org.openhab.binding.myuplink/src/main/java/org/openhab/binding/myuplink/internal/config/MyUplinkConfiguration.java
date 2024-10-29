@@ -27,7 +27,7 @@ public class MyUplinkConfiguration {
 
     private static int ASYNC_TIMEOUT = 120;
     private static int SYNC_TIMEOUT = 120;
-    private Integer dataPollingInterval = 120;
+    private int dataPollingInterval = 60;
 
     /**
      * @return the clientId
@@ -61,28 +61,14 @@ public class MyUplinkConfiguration {
      * @return the asyncTimeout
      */
     public Integer getAsyncTimeout() {
-        return asyncTimeout;
-    }
-
-    /**
-     * @param asyncTimeout the asyncTimeout to set
-     */
-    public void setAsyncTimeout(Integer asyncTimeout) {
-        this.asyncTimeout = asyncTimeout;
+        return ASYNC_TIMEOUT;
     }
 
     /**
      * @return the syncTimeout
      */
     public Integer getSyncTimeout() {
-        return syncTimeout;
-    }
-
-    /**
-     * @param syncTimeout the syncTimeout to set
-     */
-    public void setSyncTimeout(Integer syncTimeout) {
-        this.syncTimeout = syncTimeout;
+        return SYNC_TIMEOUT;
     }
 
     /**
@@ -103,8 +89,7 @@ public class MyUplinkConfiguration {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("MyUplinkConfiguration [clientId=").append(clientId).append(", clientSecret=")
-                .append(clientSecret).append(", asyncTimeout=").append(asyncTimeout).append(", syncTimeout=")
-                .append(syncTimeout).append(", dataPollingInterval=").append(dataPollingInterval).append("]");
+                .append(clientSecret).append(", dataPollingInterval=").append(dataPollingInterval).append("]");
         return builder.toString();
     }
 }

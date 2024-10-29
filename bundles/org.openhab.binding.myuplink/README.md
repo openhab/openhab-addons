@@ -13,10 +13,10 @@ You will need to create credentials at <https://dev.myuplink.com/apps> in order 
 
 This binding provides two thing types:
 
-| Thing/Bridge        | Thing Type          | Description                                                                                   |
-|---------------------|---------------------|-----------------------------------------------------------------------------------------------|
-| bridge              | account             | cloud connection to a myUplink user account                                                   |
-| thing               | generic-device       | the physical heatpump which is connected to myUplink                                          |
+| Thing/Bridge        | Thing Type          | Description                                                       |
+|---------------------|---------------------|-------------------------------------------------------------------|
+| bridge              | account             | cloud connection to a myUplink user account                       |
+| thing               | generic-device      | the physical heatpump which is connected to myUplink              |
 
 ## Discovery
 
@@ -26,11 +26,11 @@ When the `account` bridge is setup, the binding will discover all heatpumps with
 
 The following configuration parameters are available for the bridge:
 
-| Configuration Parameter | Required | Description                                                                                                                                                                                 |
-|-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| clientId                | yes      | The clientId to login at myUplink cloud service. This is some kind of UUID. Visit <https://dev.myuplink.com/apps> to generate login credentials.                                            |
-| clientSecret            | yes      | The secret which belongs to the clientId.                                                                                                                                                   |
-| dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 60)                                                                                         |
+| Configuration Parameter | Required | Description                                                                                                                                                             |
+|-------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| clientId                | yes      | The clientId to login at myUplink cloud service. This is some kind of UUID. Visit <https://dev.myuplink.com/apps> to generate login credentials.                        |
+| clientSecret            | yes      | The secret which belongs to the clientId.                                                                                                                               |
+| dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 60)                                                                     |
 
 ## Thing Configuration
 

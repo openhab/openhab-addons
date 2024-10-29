@@ -13,14 +13,6 @@
 			<label>Connection</label>
 			<description>Connection settings.</description>
 		</parameter-group>
-		<parameter-group name="general">
-			<label>General</label>
-			<description>General settings.</description>
-		</parameter-group>
-		<parameter-group name="customChannels">
-			<label>Custom Channels</label>
-			<description>Custom Channel configuration</description>
-		</parameter-group>
 
 		<parameter name="clientId" type="text" required="true" groupName="authentication">
 			<label>Username</label>
