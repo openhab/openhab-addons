@@ -1,0 +1,39 @@
+{
+	"id": "3090ba82-aaaa-442f-8e49-f3eac9b7b0eb",
+	"info": {
+		"name": "OHButtonConnector",
+		"icon": "scenes_disco_ball"
+	},
+	"type": "userScene",
+	"triggers": [
+		{
+			"id": "5ec0d314-bbbb-470e-a92c-93beb7fbe09e",
+			"type": "controller",
+			"disabled": false,
+			"trigger": {
+				"days": [
+					"Mon",
+					"Tue",
+					"Wed",
+					"Thu",
+					"Fri",
+					"Sat",
+					"Sun"
+				],
+				"controllerType": "shortcutController",
+				"clickPattern": "singlePress",
+				"buttonIndex": 0,
+				"deviceId": "854bdf30-86b8-48f5-b070-16ff5ab12be4_1"
+			}
+		},
+		{
+			"id": "e615f61f-cccc-490c-98cf-1ad804f6b52d",
+			"type": "app",
+			"disabled": false
+		}
+	],
+	"actions": [],
+	"commands": [],
+	"undoAllowedDuration": 30
+}
+ 
