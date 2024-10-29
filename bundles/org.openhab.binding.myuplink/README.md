@@ -66,7 +66,7 @@ Bridge myuplink:account:myAccount "myUplink" [
     }
 ```
 
-### Item Configuration
+### `demo.items` Example
 
 ```java
 Number                  NIBE_ADD_STATUS        "Status ZH [%s]"          { channel="myuplink:generic-device:myAccount:vvm320:49993" }
