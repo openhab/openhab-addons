@@ -39,7 +39,7 @@ public class WebexTeamsActions implements ThingActions {
     private @Nullable WebexTeamsHandler handler;
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
             logger.warn("Cannot send Message as text is missing.");
@@ -56,7 +56,7 @@ public class WebexTeamsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageAttActionLabel", description = "@text/sendMessageAttActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "attach") @Nullable String attach) {
         if (text == null) {
             logger.warn("Cannot send Message as text is missing.");
@@ -77,7 +77,7 @@ public class WebexTeamsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendRoomMessageActionLabel", description = "@text/sendRoomMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendRoomMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendRoomMessage(
             @ActionInput(name = "roomId") @Nullable String roomId, @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
             logger.warn("Cannot send Message as text is missing.");
@@ -98,7 +98,7 @@ public class WebexTeamsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendRoomMessageAttActionLabel", description = "@text/sendRoomMessageAttActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendRoomMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendRoomMessage(
             @ActionInput(name = "roomId") @Nullable String roomId, @ActionInput(name = "text") @Nullable String text,
             @ActionInput(name = "attach") @Nullable String attach) {
         if (text == null) {
@@ -123,7 +123,7 @@ public class WebexTeamsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendPersonMessageActionLabel", description = "@text/sendPersonMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPersonMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPersonMessage(
             @ActionInput(name = "personEmail") @Nullable String personEmail,
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
@@ -145,7 +145,7 @@ public class WebexTeamsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendPersonMessageAttActionLabel", description = "@text/sendPersonMessageAttActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPersonMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPersonMessage(
             @ActionInput(name = "personEmail") @Nullable String personEmail,
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "attach") @Nullable String attach) {
         if (text == null) {
