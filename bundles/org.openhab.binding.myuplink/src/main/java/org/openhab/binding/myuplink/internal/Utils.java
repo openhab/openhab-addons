@@ -220,30 +220,11 @@ public final class Utils {
     }
 
     /**
-     * capitalize method derived from WordUtils.
+     * converts units received from myUplink API into UoM compliant strings.
      *
-     * @param str
-     * @return
+     * @param originalUnit
+     * @return UoM compliant unit
      */
-    public static String capitalize(final String str) {
-        if (str.isEmpty()) {
-            return str;
-        }
-
-        final char[] buffer = str.toLowerCase().toCharArray();
-        boolean capitalizeNext = true;
-        for (int i = 0; i < buffer.length; i++) {
-            final char ch = buffer[i];
-            if (Character.isWhitespace(ch)) {
-                capitalizeNext = true;
-            } else if (capitalizeNext) {
-                buffer[i] = Character.toTitleCase(ch);
-                capitalizeNext = false;
-            }
-        }
-        return new String(buffer);
-    }
-
     public static String fixUnit(String originalUnit) {
         return switch (originalUnit) {
             case "l/m" -> "l/min";

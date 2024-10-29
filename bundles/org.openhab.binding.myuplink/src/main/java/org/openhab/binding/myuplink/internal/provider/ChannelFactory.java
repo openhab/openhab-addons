@@ -35,6 +35,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.util.UnitUtils;
+import org.openhab.core.util.StringUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -197,7 +198,7 @@ public class ChannelFactory {
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT, EMPTY);
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
-            list.add(new StateOption(enumOrdinal, Utils.capitalize(enumText)));
+            list.add(new StateOption(enumOrdinal, StringUtils.capitalize(enumText)));
         }
         return list;
     }
