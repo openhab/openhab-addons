@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mideaac"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Type -->
+	<thing-type id="ac">
+		<label>Midea Air Conditioner</label>
+		<description>Midea Air Conditioner with USB WIFI stick. There are 2 versions: v2 - without encryption, v3 - with
+			encryption - Token and Key must be provided, it can be automatically obtained from Cloud.
+		</description>
+
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="operational-mode" typeId="operational-mode"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="swing-mode" typeId="swing-mode"/>
+			<channel id="eco-mode" typeId="eco-mode"/>
+			<channel id="turbo-mode" typeId="turbo-mode"/>
+			<channel id="indoor-temperature" typeId="indoor-temperature"/>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
+			<channel id="sleep-function" typeId="sleep-function"/>
+			<channel id="temperature-unit" typeId="temperature-unit"/>
+
+			<channel id="on-timer" typeId="on-timer"/>
+			<channel id="off-timer" typeId="off-timer"/>
+			<channel id="appliance-error" typeId="appliance-error"/>
+			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="screen-display" typeId="screen-display"/>
+			<channel id="alternate-target-temperature" typeId="alternate-target-temperature"/>
+			<channel id="dropped-commands" typeId="dropped-commands"/>
+		</channels>
+
+		<representation-property>ipAddress</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<context>ipAddress</context>
+				<label>IP Address</label>
+				<description>IP Address of the device.</description>
+			</parameter>
+			<parameter name="ipPort" type="text" required="true">
+				<context>ipPort</context>
+				<label>IP Port</label>
+				<description>IP port of the device (for V2: 6444).</description>
+				<default>6444</default>
+			</parameter>
+			<parameter name="deviceId" type="text" required="true">
+				<context>deviceId</context>
+				<label>Device ID</label>
+				<description>ID of the device. Leave 0 to do ID discovery.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="cloud" type="text" required="false">
+				<context>cloud</context>
+				<label>Cloud Provider</label>
+				<description>Cloud Provider name for email and password.</description>
+				<options>
+					<option value=""></option>
+					<option value="MSmartHome">MSmartHome</option>
+					<option value="Midea Air">Midea Air</option>
+					<option value="NetHome Plus">NetHome Plus</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default></default>
+			</parameter>
+			<parameter name="email" type="text" required="false">
+				<context>email</context>
+				<label>Email</label>
+				<description>Email for cloud account chosen in Cloud Provider.</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for cloud account chosen in Cloud Provider.</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<context>token</context>
+				<label>Token</label>
+				<description>Secret Token (length 128 HEX) used for secure connection authentication used with devices v3 (if not
+					known, enter email and password for Cloud to retrieve it).</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Secret Key (length 64 HEX) used for secure connection authentication used with devices v3 (if not
+					known, enter email and password for Cloud to retrieve it).</description>
+			</parameter>
+			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
+				<context>pollingTime</context>
+				<label>Polling time</label>
+				<description>Polling time in seconds. Minimum time is 30 seconds, default 60 seconds.</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="timeout" type="decimal" required="true" min="2" max="10" unit="s">
+				<context>timeout</context>
+				<label>Timeout</label>
+				<description>Connecting timeout. Minimum time is 2 second, maximum 10 seconds (4 seconds default).</description>
+				<default>4</default>
+			</parameter>
+			<parameter name="promptTone" type="boolean" required="true">
+				<context>promptTone</context>
+				<label>Prompt tone</label>
+				<description>After sending a command device will play "ding" tone when command is received and executed.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="version" type="text" required="true">
+				<context>version</context>
+				<label>AC Version</label>
+				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't. Leave blank to discover</description>
+				<default>3</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turn the AC on and off.</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target temperature</label>
+		<description>Target temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="operational-mode">
+		<item-type>String</item-type>
+		<label>Operational mode</label>
+		<description>Operational mode: AUTO, COOL, DRY, HEAT.</description>
+		<state>
+			<options>
+				<option value="AUTO">AUTO</option>
+				<option value="COOL">COOL</option>
+				<option value="DRY">DRY</option>
+				<option value="HEAT">HEAT</option>
+				<option value="FAN_ONLY">FAN ONLY</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="fan-speed">
+		<item-type>String</item-type>
+		<label>Fan speed</label>
+		<description>Fan speed: SILENT, LOW, MEDIUM, HIGH, FULL, AUTO.</description>
+		<state>
+			<options>
+				<option value="SILENT">SILENT</option>
+				<option value="LOW">LOW</option>
+				<option value="MEDIUM">MEDIUM</option>
+				<option value="HIGH">HIGH</option>
+				<option value="FULL">FULL</option>
+				<option value="AUTO">AUTO</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="swing-mode">
+		<item-type>String</item-type>
+		<label>Swing mode</label>
+		<description>Swing mode: OFF, VERTICAL, HORIZONTAL, BOTH. Some V3 versions do not support</description>
+		<state>
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="VERTICAL">VERTICAL</option>
+				<option value="HORIZONTAL">HORIZONTAL</option>
+				<option value="BOTH">BOTH</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="eco-mode">
+		<item-type>Switch</item-type>
+		<label>Eco mode</label>
+		<description>Eco mode, Cool only, Temp: min. 24C, Fan: AUTO. </description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="turbo-mode">
+		<item-type>Switch</item-type>
+		<label>Turbo mode</label>
+		<description>Turbo mode, "Boost" in Midea Air app, long press "+" on IR Remote Controller. Only works in COOL and HEAT
+			mode.</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="indoor-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor temperature</label>
+		<description>Indoor temperature measured by the internal unit. Not frequent when unit is off</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="outdoor-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor temperature</label>
+		<description>Outdoor temperature from the external unit. Not frequent when unit is off</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="sleep-function">
+		<item-type>Switch</item-type>
+		<label>Sleep function</label>
+		<description>Sleep function ("Moon with a star" icon on IR Remote Controller).</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="temperature-unit" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Temperature unit on LED Display</label>
+		<description>On = Farenheit on Indoor AC unit LED display, Off = Celsius.</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="screen-display" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Screen display</label>
+		<description>Status of LEDs on the device. Not all models work on LAN (only IR). No confirmation
+			possible either.</description>
+		<category>Switch</category>
+	</channel-type>
+	<channel-type id="appliance-error" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Appliance error</label>
+		<description>Appliance error (Read Only).</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="on-timer" advanced="true">
+		<item-type>String</item-type>
+		<label>ON Timer</label>
+		<description>ON Timer (HH:MM) to set.</description>
+	</channel-type>
+	<channel-type id="off-timer" advanced="true">
+		<item-type>String</item-type>
+		<label>OFF Timer</label>
+		<description>OFF Timer (HH:MM) to set.</description>
+	</channel-type>
+	<channel-type id="auxiliary-heat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Auxiliary heat</label>
+		<description>Auxiliary heat (Read Only).</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Humidity measured in the room by the indoor unit.</description>
+		<category>Humidity</category>
+		<state readOnly="true" pattern="%d%%"/>
+	</channel-type>
+	<channel-type id="alternate-target-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Alternate Target Temperature</label>
+		<description>Alternate Target Temperature (Read Only).</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="dropped-commands" advanced="true">
+		<item-type>Number</item-type>
+		<label>Dropped Command Monitor</label>
+		<description>Commands dropped due to TCP read() issues.</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
