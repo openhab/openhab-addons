@@ -4,15 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="sound-controller">
+	<thing-type id="single-shortcut">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Sound Controller</label>
-		<description>Controller to handle Wifi Speakers</description>
+		<label>Single Button Shortcut</label>
+		<description>Shortcut controller with one button</description>
 
 		<channels>
+			<channel id="button1" typeId="button-trigger">
+				<label>Button 1 Trigger</label>
+				<description>Trigger of first button</description>
+			</channel>
 			<channel id="battery-level" typeId="percent">
 				<label>Battery Level</label>
 				<description>State of the battery powering the controller</description>
