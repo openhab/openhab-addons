@@ -92,20 +92,17 @@ public class ColorLightHandler extends BaseHandler {
                     }
                     JSONObject brightnessattributes = new JSONObject();
                     brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", brightnessattributes);
                     gateway().api().sendPatch(config.id, brightnessattributes);
                 }
             }
         } else {
-            logger.trace("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
+            logger.debug("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
         }
     }
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             boolean deliverHSB = false;
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
@@ -140,11 +137,8 @@ public class ColorLightHandler extends BaseHandler {
                             }
                             break;
                     }
-                } else {
-                    logger.trace("DIRIGERA LIGHT_DEVICE no targetChannel for {}", key);
                 }
             }
-            logger.trace("DIRIGERA LIGHT_DEVICE deliver {} ? {}", hsbCurrent, deliverHSB);
             if (deliverHSB) {
                 updateState(new ChannelUID(thing.getUID(), "hsb"), hsbCurrent);
             }

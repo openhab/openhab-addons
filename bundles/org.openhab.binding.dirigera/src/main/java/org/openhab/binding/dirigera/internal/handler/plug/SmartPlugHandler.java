@@ -25,8 +25,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SmartPlugHandler} basic DeviceHandler for all devices
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SmartPlugHandler extends PowerPlugHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartPlugHandler.class);
 
     public SmartPlugHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);

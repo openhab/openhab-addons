@@ -66,7 +66,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 }
             }
             range = colorTemperatureMin - colorTemperatureMax;
-            logger.trace("DIRIGERA TEMPERATURE_LIGHT new temperatures from {} to {}", colorTemperatureMin,
+            logger.debug("DIRIGERA TEMPERATURE_LIGHT Temperature range from {} to {}", colorTemperatureMin,
                     colorTemperatureMax);
             handleUpdate(values);
         }
@@ -87,9 +87,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                         attributes.put(targetProperty, kelvin);
                         logger.trace("DIRIGERA TEMPERATURE_LIGHT send to API {}", attributes);
                         gateway().api().sendPatch(config.id, attributes);
-                    } else {
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT command {} doesn't fit to channel {}", command,
-                                channel);
                     }
                     break;
             }
@@ -98,9 +95,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
