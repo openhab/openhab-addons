@@ -210,7 +210,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (apiProviderInstance != null) {
                 api = Optional.of(apiProviderInstance);
             } else {
-                // TODO this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
+                // this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
                 logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
                 return;
             }
@@ -220,20 +220,30 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             // Step 3.1 - check if id is already obtained
             if (config.id.isBlank()) {
                 JSONArray gatewayArray = houseModel.getIdsForType(DEVICE_TYPE_GATEWAY);
-                logger.warn("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
+                logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
                 if (gatewayArray.isEmpty()) {
-                    logger.info("DIRIGERA HANDLER no Gateway found in model");
+                    logger.warn("DIRIGERA HANDLER no Gateway found in model");
                 } else if (gatewayArray.length() > 1) {
-                    logger.info("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result",
+                    logger.warn("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result",
                             gatewayArray.length());
                 } else {
                     logger.info("DIRIGERA HANDLER try found id {}", gatewayArray.getString(0));
                     Configuration configUpdate = editConfiguration();
-                    configUpdate.put(PROPERTY_DEVICE_ID, gatewayArray.getString(0));
+                    String id = gatewayArray.getString(0);
+                    configUpdate.put(PROPERTY_DEVICE_ID, id);
                     updateConfiguration(configUpdate);
 
                     // now we've ip, token and id so let's store the token
                     storeToken(token, true);
+
+                    // now edit properties with gateway data
+                    Map<String, Object> propertiesMap = houseModel.getPropertiesFor(id);
+                    Map<String, String> currentProperties = editProperties();
+                    propertiesMap.forEach((key, value) -> {
+                        currentProperties.put(key, value.toString());
+                    });
+                    updateProperties(currentProperties);
+
                 }
             }
             // now start websocket an listen to changes
@@ -330,7 +340,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         config = getConfigAs(DirigeraConfiguration.class);
         if (!config.id.isBlank()) {
             String gatewayStorageObject = storage.get(config.id);
-            logger.info("DIRIGERA HANDLER get storage contains {}", gatewayStorageObject);
             if (gatewayStorageObject != null) {
                 JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
                 return gatewayStorageJson;
@@ -589,6 +598,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
         if (!json.isBlank()) {
             JSONObject update = new JSONObject(json);
+            logger.trace("DIRIGERA HANDLER update {}", update.toString());
             JSONObject data = update.getJSONObject("data");
             String targetId = data.getString("id");
             // First update device
