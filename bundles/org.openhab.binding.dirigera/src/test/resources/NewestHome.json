@@ -899,8 +899,8 @@
 				"homestate": "home",
 				"countryCode": "XZ",
 				"coordinates": {
-					"latitude": 50.55855855855856,
-					"longitude": 8.48021169197502,
+					"latitude": 1.234,
+					"longitude": 9.876,
 					"accuracy": -1
 				},
 				"isOn": false

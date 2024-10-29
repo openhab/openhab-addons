@@ -129,7 +129,6 @@ public abstract class BaseHandler extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA BASE_DEVICE handle {} {}", channelUID, command);
         if (command instanceof RefreshType) {
             String channel = channelUID.getIdWithoutGroup();
             State cachedState = channelStateMap.get(channel);

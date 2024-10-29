@@ -65,8 +65,6 @@ public class DimmableLightHandler extends BaseHandler {
                         attributes.put(targetProperty, percent.intValue());
                         logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
                         gateway().api().sendPatch(config.id, attributes);
-                    } else {
-                        logger.trace("DIRIGERA DIMMABLE_LIGHT command {} doesn't fit to channel {}", command, channel);
                     }
                     break;
             }
