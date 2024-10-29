@@ -30,7 +30,7 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
-public class SolarmanV5Protocol implements ISolarmanProtocol {
+public class SolarmanV5Protocol implements SolarmanProtocol {
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanV5Protocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {

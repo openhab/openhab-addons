@@ -33,8 +33,8 @@ import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
 import org.openhab.binding.solarman.internal.defmodel.Validation;
-import org.openhab.binding.solarman.internal.modbus.ISolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
+import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanProtocolFactory;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
 import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
@@ -97,10 +97,10 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Raw Type {}", config.rawLanMode);
+            logger.debug("Raw Type {}", config.solarmanLoggerMode);
         }
 
-        ISolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.CreateSolarmanProtocol(config);
+        SolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.CreateSolarmanProtocol(config);
 
         String additionalRequests = Objects.requireNonNullElse(config.getAdditionalRequests(), "");
 
@@ -122,7 +122,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     }
 
     private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
-            ISolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
+            SolarmanProtocol solarmanProtocol, List<Request> mergedRequests,
             Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
         try {
             SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,

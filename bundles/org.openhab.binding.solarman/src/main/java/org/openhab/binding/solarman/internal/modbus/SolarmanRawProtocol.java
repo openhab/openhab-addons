@@ -30,7 +30,7 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
  * @author Peter Kretz - Added RAW Modbus for LAN Stick
  */
 @NonNullByDefault
-public class SolarmanRawProtocol implements ISolarmanProtocol {
+public class SolarmanRawProtocol implements SolarmanProtocol {
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {

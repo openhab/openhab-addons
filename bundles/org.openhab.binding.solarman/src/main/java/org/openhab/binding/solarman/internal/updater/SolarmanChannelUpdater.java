@@ -35,9 +35,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
-import org.openhab.binding.solarman.internal.modbus.ISolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
+import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
@@ -64,7 +64,7 @@ public class SolarmanChannelUpdater {
     }
 
     public SolarmanProcessResult fetchDataFromLogger(List<Request> requests,
-            SolarmanLoggerConnector solarmanLoggerConnector, ISolarmanProtocol solarmanProtocol,
+            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanProtocol solarmanProtocol,
             Map<ParameterItem, ChannelUID> paramToChannelMapping) {
         try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
             logger.debug("Fetching data from logger");

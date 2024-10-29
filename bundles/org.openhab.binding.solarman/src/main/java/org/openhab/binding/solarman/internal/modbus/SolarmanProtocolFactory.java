@@ -21,11 +21,14 @@ import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 @NonNullByDefault
 public class SolarmanProtocolFactory {
 
-    public static ISolarmanProtocol CreateSolarmanProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
-        if (solarmanLoggerConfiguration.getRawLanMode()) {
-            return new SolarmanRawProtocol(solarmanLoggerConfiguration);
-        } else {
-            return new SolarmanV5Protocol(solarmanLoggerConfiguration);
+    public static SolarmanProtocol CreateSolarmanProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
+        switch (solarmanLoggerConfiguration.getSolarmanLoggerMode()) {
+            case RAWMODBUS: {
+                return new SolarmanRawProtocol(solarmanLoggerConfiguration);
+            }
+            case V5MODBUS:
+            default:
+                return new SolarmanV5Protocol(solarmanLoggerConfiguration);
         }
     }
 }
