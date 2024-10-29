@@ -54,7 +54,7 @@ The configuration below is an example which could easily be adopted to your actu
 Thing configuration (account and generic-device) is the same for all models.
 Item configuration depends on your specific model and thus channels will have different IDs and/or channels might not exist for all models.
 
-### Thing Configuration
+### `demo.things` Example
 
 ```java
 Bridge myuplink:account:myAccount "myUplink" [
