@@ -320,6 +320,53 @@ public class ClimateTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/th1/power", "OFF");
     }
 
+    @SuppressWarnings("null")
+    @Test
+    public void testClimateWithPresetMode() {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                """
+                        {\
+                        "action_template": "{% set values = {None:None,'idle':'idle','heat':'heating','cool':'cooling','fan_only':'fan'} %}{{ values[value_json.running_state] }}",\
+                        "action_topic": "zigbee2mqtt/th2",\
+                        "current_temperature_template": "{{ value_json.local_temperature }}",\
+                        "current_temperature_topic": "zigbee2mqtt/th2",\
+                        "json_attributes_topic": "zigbee2mqtt/th2",\
+                        "max_temp": "35",\
+                        "min_temp": "5",\
+                        "mode_command_topic": "zigbee2mqtt/th2/set/system_mode",\
+                        "mode_state_template": "{{ value_json.system_mode }}",\
+                        "mode_state_topic": "zigbee2mqtt/th2",\
+                        "modes": ["auto","heat","off"],\
+                        "name": "th2",\
+                        "preset_mode_command_topic": "zigbee2mqtt/th2/set/preset",\
+                        "preset_mode_state_topic": "zigbee2mqtt/th2",\
+                        "preset_mode_value_template": "{{ value_json.preset }}",\
+                        "preset_modes": ["auto","manual","off","on"],\
+                        "temp_step": 0.5,\
+                        "temperature_command_topic": "zigbee2mqtt/th2/set/current_heating_setpoint",\
+                        "temperature_state_template": "{{ value_json.current_heating_setpoint }}",\
+                        "temperature_state_topic": "zigbee2mqtt/th2",\
+                        "temperature_unit": "C"\
+                        }\
+                        """);
+
+        assertThat(component.channels.size(), is(6));
+
+        assertChannel(component, Climate.PRESET_MODE_CH_ID, "zigbee2mqtt/th2", "zigbee2mqtt/th2/set/preset", "th2",
+                TextValue.class);
+
+        publishMessage("zigbee2mqtt/th2", """
+                {"running_state": "heat", \
+                "local_temperature": "22.2", "preset": "manual", "system_mode": "heat", \
+                "current_heating_setpoint": "24"}\
+                """);
+        assertState(component, Climate.MODE_CH_ID, new StringType("heat"));
+        assertState(component, Climate.TEMPERATURE_CH_ID, new QuantityType<>(24, SIUnits.CELSIUS));
+        assertState(component, Climate.PRESET_MODE_CH_ID, new StringType("manual"));
+        component.getChannel(Climate.PRESET_MODE_CH_ID).getState().publishValue(new StringType("on"));
+        assertPublished("zigbee2mqtt/th2/set/preset", "on");
+    }
+
     @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
