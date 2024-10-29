@@ -69,7 +69,7 @@ public class FlumeDeviceActions implements ThingActions {
      * Query water usage
      */
     @RuleAction(label = "query water usage", description = "Queries water usage over a period of time.")
-    public @Nullable @ActionOutput(name = "value", type = "QuantityType<Volume>") QuantityType<Volume> queryWaterUsage(
+    public @Nullable @ActionOutput(label = "Water Usage", type = "QuantityType<Volume>") QuantityType<Volume> queryWaterUsage(
             @ActionInput(name = "sinceDateTime", label = "Since Date/Time", required = true, description = "Restrict the query range to data samples since this datetime.") @Nullable LocalDateTime sinceDateTime,
             @ActionInput(name = "untilDateTime", label = "Until Date/Time", required = true, description = "Restrict the query range to data samples until this datetime.") @Nullable LocalDateTime untilDateTime,
             @ActionInput(name = "bucket", label = "Bucket size", required = true, description = "The bucket grouping of the data we are querying (MIN, HR, DAY, MON, YR).") @Nullable String bucket,
