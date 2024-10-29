@@ -25,7 +25,7 @@ public class MideaACConfiguration {
 
     public String ipAddress = "";
 
-    public int ipPort = 6444;
+    public String ipPort = "6444";
 
     public String deviceId = "";
 
@@ -45,7 +45,7 @@ public class MideaACConfiguration {
 
     public boolean promptTone;
 
-    public int version = 1;
+    public String version = "";
 
     /**
      * Check during initialization that the params are valid
@@ -53,7 +53,7 @@ public class MideaACConfiguration {
      * @return true(valid), false (not valid)
      */
     public boolean isValid() {
-        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort < 0 || ipAddress.isBlank());
+        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort.isBlank() || ipAddress.isBlank());
     }
 
     /**
@@ -62,7 +62,7 @@ public class MideaACConfiguration {
      * @return true(discovery needed), false (not needed)
      */
     public boolean isDiscoveryNeeded() {
-        return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort < 0 || ipAddress.isBlank()
+        return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort.isBlank() || ipAddress.isBlank()
                 || !Utils.validateIP(ipAddress));
     }
 }
