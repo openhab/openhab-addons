@@ -128,7 +128,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-        this.requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
+        requestCountChannelUID = new ChannelUID(thing.getUID(), GROUP_MONITORING, CHANNEL_REQUEST_COUNT);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message.formatted(servlet.getPath()));
+                "@text/conf-error-grant-needed [ \"%s\" ]".formatted(servlet.getPath()));
         connectApi.dispose();
     }
 
@@ -348,23 +348,10 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                             "Error deserializing error: %s".formatted(statusCode.getMessage()));
                 }
             }
-<<<<<<< Upstream, based on main
-            throw exception;
-        } catch (NetatmoException e) {
-            if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-<<<<<<< Upstream, based on main
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/maximum-usage-reached");
-                prepareReconnection(null, null);
-            } else if (e.getStatusCode() == ServiceError.INVALID_TOKEN_MISSING) {
-                startAuthorizationFlow();
-=======
-=======
             if (statusCode == Code.TOO_MANY_REQUESTS
                     || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
->>>>>>> be652a1 Improve handling of interrupted request by alllowing retries Rebased Reintroducing TOO_MANY_REQUESTS
                 prepareReconnection(API_LIMIT_INTERVAL_S,
                         "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
->>>>>>> 41c5ca0 Enhance API limit reached handling
             }
             throw exception;
         } catch (InterruptedException e) {
