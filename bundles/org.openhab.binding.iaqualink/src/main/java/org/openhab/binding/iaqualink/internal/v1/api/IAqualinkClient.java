@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.iaqualink.internal.api;
+package org.openhab.binding.iaqualink.internal.v1.api;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -31,12 +31,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.dto.Device;
-import org.openhab.binding.iaqualink.internal.api.dto.Home;
-import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
-import org.openhab.binding.iaqualink.internal.api.dto.SignIn;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.OneTouch;
+import org.openhab.binding.iaqualink.internal.v1.api.dto.SignIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -343,7 +343,7 @@ public class IAqualinkClient {
     /**
      *
      * @param <T>
-     * @param url
+     * @param uri
      * @param typeOfT
      * @return
      * @throws IOException
@@ -355,7 +355,7 @@ public class IAqualinkClient {
 
     /**
      *
-     * @param url
+     * @param uri
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
