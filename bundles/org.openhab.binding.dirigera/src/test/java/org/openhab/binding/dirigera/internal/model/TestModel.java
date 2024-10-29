@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
+import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
@@ -165,10 +166,12 @@ class TestModel {
         handler.initialize();
         callback.waitForOnline();
 
+        DirigeraHandler.DETECTION_TIME_SECONDS = 0;
         discovery.discoveries.clear();
         assertEquals(0, discovery.discoveries.size(), "Cleanup after handler creation");
         handler.dispose();
         handler.handleRemoval();
+        discovery.waitForDetection();
         assertEquals(1, discovery.discoveries.size(), "After removal new discovery result shall be present ");
     }
 

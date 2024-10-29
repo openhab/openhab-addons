@@ -26,8 +26,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightSensorHandler} basic DeviceHandler for all devices
@@ -36,8 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LightSensorHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(LightSensorHandler.class);
-
     public LightSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
@@ -72,11 +68,7 @@ public class LightSensorHandler extends BaseHandler {
                     if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 QuantityType.valueOf(attributes.getInt(key), Units.LUX));
-                    } else {
-                        logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA MOTION_DEVICE no targetChannel for {}", key);
                 }
             }
         }

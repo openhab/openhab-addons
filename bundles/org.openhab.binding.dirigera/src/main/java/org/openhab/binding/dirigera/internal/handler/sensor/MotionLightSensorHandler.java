@@ -25,7 +25,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MotionLightSensorHandler extends MotionSensorHandler {
     private final Logger logger = LoggerFactory.getLogger(MotionLightSensorHandler.class);
+
     private Map<String, String> relations = new HashMap<>();
 
     public MotionLightSensorHandler(Thing thing, Map<String, String> mapping) {
@@ -46,7 +46,6 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
@@ -55,21 +54,30 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
             // get all relations and register
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", relations.size());
+            logger.trace("DIRIGERA MOTION_LIGHT_DEVICE has {} relations", relations.size());
             // register for updates of twin devices
             relations.forEach((key, value) -> {
                 gateway().registerDevice(this, key);
                 JSONObject relationValues = gateway().api().readDevice(key);
-                // JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
-                logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", relationValues);
                 handleUpdate(relationValues);
             });
         }
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
+    public void dispose() {
+        relations.forEach((key, value) -> {
+            gateway().unregisterDevice(this, key);
+        });
+        super.dispose();
+    }
+
+    @Override
+    public void handleRemoval() {
+        relations.forEach((key, value) -> {
+            gateway().deleteDevice(this, key);
+        });
+        super.handleRemoval();
     }
 
     @Override
@@ -87,11 +95,7 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
                     if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 QuantityType.valueOf(attributes.getInt(key), Units.LUX));
-                    } else {
-                        logger.trace("DIRIGERA MOTION_LIGHT_DEVICE no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA MOTION_LIGHT_DEVICE no targetChannel for {}", key);
                 }
             }
         }

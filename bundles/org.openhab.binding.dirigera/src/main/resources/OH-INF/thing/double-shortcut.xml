@@ -17,7 +17,7 @@
 				<label>Button 1 Trigger</label>
 				<description>Trigger of first button</description>
 			</channel>
-			<channel id="nutton2" typeId="button-trigger">
+			<channel id="button2" typeId="button-trigger">
 				<label>Button 2 Trigger</label>
 				<description>Trigger of second button</description>
 			</channel>
