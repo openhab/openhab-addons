@@ -223,7 +223,7 @@ public class SpeakerHandler extends BaseHandler {
                             if (playMode != -1) {
                                 updateState(new ChannelUID(thing.getUID(), CHANNEL_REPEAT), new DecimalType(playMode));
                             } else {
-                                logger.info("DIRIGERA SPEAKER_DEVICE no repeat mode {} in {}", repeatMode,
+                                logger.debug("DIRIGERA SPEAKER_DEVICE no repeat mode {} in {}", repeatMode,
                                         playbackModes);
                             }
                         }

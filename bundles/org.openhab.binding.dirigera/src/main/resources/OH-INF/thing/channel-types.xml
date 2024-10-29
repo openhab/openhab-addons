@@ -46,6 +46,7 @@
 				<option value="0">Previous</option>
 				<option value="1">On</option>
 				<option value="2">Off</option>
+				<option value="3">Switch</option>
 			</options>
 		</state>
 		<command>
@@ -53,6 +54,7 @@
 				<option value="0">Previous</option>
 				<option value="1">On</option>
 				<option value="2">Off</option>
+				<option value="3">Switch</option>
 			</options>
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
@@ -223,6 +225,13 @@
 				<option value="1">Check in progress</option>
 				<option value="2">Ready to download</option>
 				<option value="3">Download in progress</option>
+				<option value="4">Update in progress</option>
+				<option value="5">Update failed</option>
+				<option value="6">Ready to update</option>
+				<option value="7">Check failed</option>
+				<option value="8">Download failed</option>
+				<option value="9">Update complete</option>
+				<option value="10">Battery check failed</option>
 			</options>
 		</state>
 	</channel-type>

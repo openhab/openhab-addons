@@ -238,7 +238,7 @@ public class Constants {
 
     // Mappings for startup behavior
     public static final Map<String, Integer> STARTUP_BEHAVIOR_MAPPING = Map.of("startPrevious", 0, "startOn", 1,
-            "startOff", 2);
+            "startOff", 2, "startToggle", 3);
     public static final Map<Integer, String> STARTUP_BEHAVIOR_REVERSE_MAPPING = reverseStateMapping(
             STARTUP_BEHAVIOR_MAPPING);
 

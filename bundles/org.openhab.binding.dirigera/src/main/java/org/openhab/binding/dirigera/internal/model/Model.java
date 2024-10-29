@@ -104,7 +104,6 @@ public class Model {
                     removedDeviceScene(deviceId);
                 } else {
                     if (!known) {
-                        logger.debug("DIRIGERA MODEL Add device {}", deviceId);
                         addedDeviceScene(deviceId);
                     } // don't update known devices
                 }
@@ -290,7 +289,7 @@ public class Model {
      * @param id
      * @return Map with attributes for Thing properties
      */
-    private synchronized Map<String, Object> getPropertiesFor(String id) {
+    public synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
