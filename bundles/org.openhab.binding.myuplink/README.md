@@ -17,7 +17,6 @@ This binding provides two thing types:
 |---------------------|---------------------|-------------------------------------------------------------------|
 | bridge              | account             | cloud connection to a myUplink user account                       |
 | thing               | generic-device      | the physical heatpump which is connected to myUplink              |
-
 ## Discovery
 
 When the `account` bridge is setup, the binding will discover all heatpumps within that account and also detect the specific channels supported by the model.
