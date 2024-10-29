@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.iaqualink.internal.v2.api.mapping;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Defines possible channels, based on JSON path.
@@ -27,80 +26,76 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Channels {
+
+    private Channels() {
+    }
+
     public static Collection<ChannelDef> all() {
-        return Stream.of(schedules(), swcs()).flatMap(Collection::stream).collect(Collectors.toList());
+        return Stream.of(schedules(), swcs()).flatMap(Collection::stream).toList();
     }
 
     public static Collection<ChannelDef> schedules() {
-        return Stream.of(1, 2, 3, 4, 10).flatMap(id -> scheduleById(id).stream()).collect(Collectors.toList());
+        return Stream.of(1, 2, 3, 4, 10).flatMap(id -> scheduleById(id).stream()).toList();
     }
 
     public static Collection<ChannelDef> swcs() {
-        return Stream.of(0, 1, 2, 3, 4).flatMap(id -> swcById(id).stream()).collect(Collectors.toList());
+        return Stream.of(0, 1, 2, 3, 4).flatMap(id -> swcById(id).stream()).toList();
     }
 
     public static Collection<ChannelDef> sensorsForSwc(int swcId) {
-        return Stream.of(1, 2, 3).flatMap(id -> sensorById(swcId, id).stream()).collect(Collectors.toList());
+        return Stream.of(1, 2, 3).flatMap(id -> sensorById(swcId, id).stream()).toList();
     }
 
     public static Collection<ChannelDef> sensorById(int swcId, int id) {
-        return List.of(new ChannelDef(String.format("SWC%d_TempSensor%d", swcId, id),
-                String.format("Salt Water Chlorinator %d Temperature Sensor %d", swcId, id), "Number:Temperature",
-                "temperature", String.format("$.state.reported.equipment.swc_%d.sns_%d.value", swcId, id),
-                String.format(
-                        "$.state.reported.equipment.swc_%d.sns_%d[?(@.state == 1 && @.sensor_type == \"Water temp\")]",
-                        swcId, id)),
-                new ChannelDef(String.format("SWC%d_PhSensor%d", swcId, id),
-                        String.format("Salt Water Chlorinator %d Ph Sensor %d", swcId, id), "Number", "chemical",
-                        String.format("$.state.reported.equipment.swc_%d.sns_%d.value", swcId, id),
-                        String.format(
-                                "$.state.reported.equipment.swc_%d.sns_%d[?(@.state == 1 && @.sensor_type == \"Ph\")]",
-                                swcId, id)));
+        ChannelDefBuilder builder = new ChannelDefBuilder("SWC%d_".formatted(swcId),
+                "Salt Water Chlorinator %d ".formatted(swcId),
+                "$.state.reported.equipment.swc_%d.sns_%d".formatted(swcId, id));
+
+        return List.of(
+                builder.build("TempSensor" + id, "Temperature Sensor " + id, "Number:Temperature", "temperature",
+                        ".value", "[?(@.state == 1 && @.sensor_type == \"Water temp\")]"),
+                builder.build("PhSensor" + id, "Ph Sensor " + id, "Number", "chemical", ".value",
+                        "[?(@.state == 1 && @.sensor_type == \"Ph\")]"));
     }
 
     public static Collection<ChannelDef> swcById(int id) {
-        Collection<ChannelDef> rv = new ArrayList<>();
+        ChannelDefBuilder builder = new ChannelDefBuilder("SWC%d_".formatted(id),
+                "Salt Water Chlorinator %d ".formatted(id), "$.state.reported.equipment.swc_%d.".formatted(id));
 
-        rv.add(new ChannelDef(String.format("SWC%d_Boost", id), String.format("Salt Water Chlorinator %d Boost", id),
-                "Switch", "equipment-switch", String.format("$.state.reported.equipment.swc_%d.boost", id)));
-        rv.add(new ChannelDef(String.format("SWC%d_Boost_Time", id),
-                String.format("Salt Water Chlorinator %d Boost Time", id), "Number:Time", "duration",
-                String.format("$.state.reported.equipment.swc_%d.boost_time", id)));
-
-        rv.add(new ChannelDef(String.format("SWC%d_Low", id), String.format("Salt Water Chlorinator %d Low", id),
-                "Switch", "equipment-switch", String.format("$.state.reported.equipment.swc_%d.low", id)));
-        rv.add(new ChannelDef(String.format("SWC%d_Production", id),
-                String.format("Salt Water Chlorinator %d Production", id), "Switch", "readonly-switch",
-                String.format("$.state.reported.equipment.swc_%d.production", id)));
-        rv.add(new ChannelDef(String.format("SWC%d_Filter_Pump", id),
-                String.format("Salt Water Chlorinator %d Filter Pump", id), "Switch", "equipment-switch",
-                String.format("$.state.reported.equipment.swc_%d.filter_pump.state", id)));
-        rv.add(new ChannelDef(String.format("SWC%d_SaltLevel", id),
-                String.format("Salt Water Chlorinator %d Salt Level", id), "Number", "chemical",
-                String.format("$.state.reported.equipment.swc_%d.swc", id)));
-
-        rv.addAll(sensorsForSwc(id));
-
-        return rv;
+        return Stream.concat(
+                Stream.of(builder.build("Boost", "Boost", "Switch", "equipment-switch", "boost"),
+                        builder.build("Boost_Time", "Boost Time", "Number:Time", "duration", "boost_time"),
+                        builder.build("Low", "Low", "Switch", "equipment-switch", "low"),
+                        builder.build("Production", "Production", "Switch", "readonly-switch", "production"),
+                        builder.build("Filter_Pump", "Filter Pump", "Switch", "equipment-switch", "filter_pump.state"),
+                        builder.build("SaltLevel", "Salt Level", "Number", "chemical", "swc")),
+                sensorsForSwc(id).stream()).toList();
     }
 
     public static Collection<ChannelDef> scheduleById(int id) {
-        return List.of(
-                new ChannelDef(String.format("Schedule%d_Active", id),
-                        String.format("Salt Water Chlorinator Schedule %s Active", id), "Switch", "readonly-switch",
-                        String.format("$.state.reported.schedules.sch%d.active", id)),
-                new ChannelDef(String.format("Schedule%d_Enabled", id),
-                        String.format("Salt Water Chlorinator Schedule %s Enabled", id), "Switch", "equipment-switch",
-                        String.format("$.state.reported.schedules.sch%d.enabled", id)),
-                new ChannelDef(String.format("Schedule%d_Start", id),
-                        String.format("Salt Water Chlorinator Schedule %s Start", id), "String", "schedule-time",
-                        String.format("$.state.reported.schedules.sch%d.timer.start", id)),
-                new ChannelDef(String.format("Schedule%d_End", id),
-                        String.format("Salt Water Chlorinator Schedule %s End", id), "String", "schedule-time",
-                        String.format("$.state.reported.schedules.sch%d.timer.end", id)));
+        ChannelDefBuilder builder = new ChannelDefBuilder("Schedule%d_".formatted(id),
+                "Salt Water Chlorinator Schedule %d ".formatted(id), "$.state.reported.schedules.sch%d.".formatted(id));
+
+        return List.of(builder.build("Active", "Active", "Switch", "readonly-switch", "active"),
+                builder.build("Enabled", "Enabled", "Switch", "equipment-switch", "enabled"),
+                builder.build("Start", "Start", "String", "schedule-time", "timer.start"),
+                builder.build("End", "End", "String", "schedule-time", "timer.end"));
     }
 
     public static Collection<ChannelDef> appliesToState(Collection<ChannelDef> from, DeviceState newState) {
-        return from.stream().filter(def -> def.appliesToState(newState)).collect(Collectors.toList());
+        return from.stream().filter(def -> def.appliesToState(newState)).toList();
+    }
+
+    private record ChannelDefBuilder(String baseId, String baseLabel, String basePath) {
+
+        ChannelDef build(String idSuffix, String labelSuffix, String itemType, String typeId, String pathSuffix) {
+            return build(idSuffix, labelSuffix, itemType, typeId, pathSuffix, null);
+        }
+
+        ChannelDef build(String idSuffix, String labelSuffix, String itemType, String typeId, String pathSuffix,
+                @Nullable String appliesPathSuffix) {
+            return new ChannelDef(baseId + idSuffix, baseLabel + labelSuffix, itemType, typeId, basePath + pathSuffix,
+                    appliesPathSuffix != null ? basePath + appliesPathSuffix : null);
+        }
     }
 }

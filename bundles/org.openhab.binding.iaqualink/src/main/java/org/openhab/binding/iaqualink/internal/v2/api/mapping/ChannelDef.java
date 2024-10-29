@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,50 +31,21 @@ import net.minidev.json.JSONArray;
  * @author Jonathan Gilbert - Initial contribution
  */
 @NonNullByDefault
-public class ChannelDef {
-    String id;
-    String label;
-    String itemType;
-    String typeId;
-    JsonPath valuePath;
-    @Nullable
-    JsonPath appliesPath;
+public record ChannelDef(String id, String label, String itemType, String typeId, JsonPath valuePath,
+        @Nullable JsonPath appliesPath) {
 
     public ChannelDef(String id, String label, String itemType, String typeId, String valuePath,
             @Nullable String appliesPath) {
-        this.id = id;
-        this.label = label;
-        this.itemType = itemType;
-        this.typeId = typeId;
-        this.valuePath = JsonPath.compile(valuePath);
+        this(id, label, itemType, typeId, JsonPath.compile(valuePath),
+                appliesPath != null ? JsonPath.compile(appliesPath) : null);
 
         if (!this.valuePath.isDefinite()) {
             throw new IllegalArgumentException("valuePath must be definite: " + valuePath);
-        }
-
-        if (appliesPath != null) {
-            this.appliesPath = JsonPath.compile(appliesPath);
         }
     }
 
     public ChannelDef(String id, String label, String itemType, String typeId, String valuePath) {
         this(id, label, itemType, typeId, valuePath, null);
-    }
-
-    public String id() {
-        return id;
-    }
-
-    public String itemType() {
-        return itemType;
-    }
-
-    public String label() {
-        return label;
-    }
-
-    public String typeId() {
-        return typeId;
     }
 
     public @Nullable Object value(DeviceState deviceState) {

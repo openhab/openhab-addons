@@ -407,15 +407,16 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
             if (command instanceof RefreshType) {
                 logger.debug("Channel {} value has been cleared", channelName);
             } else {
-                Optional<ChannelDef> channelDef = channelDefs.stream()
+                Optional<ChannelDef> optChannelDef = channelDefs.stream()
                         .filter(channel -> channel.id().equals(channelName)).findFirst();
 
-                if (channelDef.isEmpty()) {
+                if (optChannelDef.isEmpty()) {
                     logger.warn("Channel {} is not supported", channelName);
                 } else {
+                    ChannelDef channelDef = optChannelDef.get();
                     Object newStateAsJson = commandToJsonObject(command);
                     if (newStateAsJson != null) {
-                        DeviceState newState = channelDef.get().updateJson(newStateAsJson);
+                        DeviceState newState = channelDef.updateJson(newStateAsJson);
                         IAqualinkClient client = this.client;
                         Device device = this.device;
                         if (client != null && device != null) {
@@ -425,7 +426,7 @@ public class IAqualinkV2Handler extends BaseThingHandler implements IAqualinkDev
                         }
                     } else {
                         logger.warn("Command {} from channel {} does not map to a json object", command,
-                                channelDef.get().id());
+                                channelDef.id());
                     }
                 }
             }
