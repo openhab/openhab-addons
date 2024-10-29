@@ -368,7 +368,7 @@ public class OnvifConnection {
                 if (xml != null) {
                     rtspUri = xml;
                     logger.debug("GetStreamUri: {}", rtspUri);
-                    if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
+                    if (ipCameraHandler.rtspUri.isEmpty()) {// only use if not hard coded in initialize()
                         ipCameraHandler.rtspUri = rtspUri;
                     }
                 }
@@ -700,7 +700,7 @@ public class OnvifConnection {
     public void eventRecieved(String eventMessage) {
         String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
         if (topic.isEmpty()) {
-            logger.debug("No ONVIF Events occured in the last 8 seconds");
+            logger.trace("No ONVIF Events occured in the last 8 seconds");
             return;
         }
         String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");

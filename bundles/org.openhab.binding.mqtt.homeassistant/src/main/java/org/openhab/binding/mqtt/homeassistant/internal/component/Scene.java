@@ -55,6 +55,7 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+
         finalizeChannels();
     }
 }

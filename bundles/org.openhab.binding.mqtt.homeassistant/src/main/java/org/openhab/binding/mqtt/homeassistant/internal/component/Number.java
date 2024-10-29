@@ -62,11 +62,6 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         protected String payloadReset = "None";
 
         protected String mode = "auto";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -81,6 +76,7 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos(), channelConfiguration.commandTemplate)
                 .inferOptimistic(channelConfiguration.optimistic).build();
+
         finalizeChannels();
     }
 }

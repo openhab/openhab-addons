@@ -73,7 +73,6 @@ public class SenecHomeApi {
      */
     public SenecHomeResponse getStatistics()
             throws TimeoutException, ExecutionException, IOException, InterruptedException, JsonSyntaxException {
-
         String dataToSend = gson.toJson(new SenecHomeResponse());
         ContentResponse response = postRequest(dataToSend);
         return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));

@@ -80,6 +80,9 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
+        if (useNewStyleChannels()) {
+            haThing.setProperty("newStyleChannels", "true");
+        }
         thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
                 channelTypeRegistry, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
@@ -103,6 +106,13 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @return config topics
      */
     protected abstract Set<String> getConfigTopics();
+
+    /**
+     * If new style channels should be used for this test.
+     */
+    protected boolean useNewStyleChannels() {
+        return false;
+    }
 
     /**
      * Process payload to discover and configure component. Topic should be added to {@link #getConfigTopics()}
@@ -223,18 +233,22 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         }
     }
 
-    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
-            String channelId) {
-        // It's already thingHandler, but not the spy version
-        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
-    }
-
     /**
      * Assert a channel triggers
      */
     protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String trigger) {
-        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
+        verify(callbackMock).channelTriggered(eq(haThing), eq(component.getChannel(channelId).getChannel().getUID()),
+                eq(trigger));
+    }
+
+    /**
+     * Assert a channel does not triggers=
+     */
+    protected void assertNotTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(callbackMock, never()).channelTriggered(eq(haThing),
+                eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
     }
 
     /**
