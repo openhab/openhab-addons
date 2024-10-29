@@ -29,6 +29,7 @@ import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthenticationException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
+import org.openhab.binding.mideaac.internal.dto.CloudDTO;
 import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 import org.openhab.binding.mideaac.internal.dto.CloudsDTO;
 import org.openhab.binding.mideaac.internal.handler.Callback;
@@ -39,6 +40,7 @@ import org.openhab.binding.mideaac.internal.handler.Response;
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.Security.MsgType;
+import org.openhab.binding.mideaac.internal.security.TokenKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,11 @@ public class ConnectionManager {
     private String key;
     private String token;
     private final String cloud;
+    private final String email;
+    private final String password;
     private final String deviceId;
+    private final HttpClient httpClient;
+    private final CloudsDTO clouds;
     private final int version;
     private final CloudProviderDTO cloudProvider;
     private final Security security;
@@ -78,6 +84,7 @@ public class ConnectionManager {
     public ConnectionManager(HttpClient httpClient, String ipAddress, int ipPort, int timeout, String key, String token,
             String cloud, String email, String password, String deviceId, CloudsDTO clouds, int version,
             boolean promptTone) {
+        this.httpClient = httpClient;
         this.deviceIsConnected = false;
         this.ipAddress = ipAddress;
         this.ipPort = ipPort;
@@ -85,7 +92,10 @@ public class ConnectionManager {
         this.key = key;
         this.token = token;
         this.cloud = cloud;
+        this.email = email;
+        this.password = password;
         this.deviceId = deviceId;
+        this.clouds = clouds;
         this.version = version;
         this.promptTone = promptTone;
         this.lastResponse = new Response(HexFormat.of().parseHex("C00042667F7F003C0000046066000000000000000000F9ECDB"),
@@ -152,8 +162,37 @@ public class ConnectionManager {
         if (!token.isBlank() && !key.isBlank() && !"".equals(cloud)) {
             doV3Handshake();
         } else {
-            throw new MideaAuthenticationException(
-                    "Token and/or Key missing, missing cloud provider information to fetch it");
+            if (!email.isBlank() && !password.isBlank() && !"".equals(cloud)) {
+                CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(cloud);
+                getTokenKeyCloud(cloudProvider);
+            } else {
+                throw new MideaAuthenticationException(
+                        "Token and/or Key missing, missing cloud provider information to fetch it");
+            }
+        }
+    }
+
+    private void getTokenKeyCloud(CloudProviderDTO cloudProvider) throws MideaAuthenticationException {
+        logger.debug("Retrieving Token and/or Key from cloud");
+        CloudDTO cloud = clouds.get(email, password, cloudProvider);
+
+        if (cloud != null) {
+            cloud.setHttpClient(httpClient);
+            if (cloud.login()) {
+                TokenKey tk = cloud.getToken(deviceId);
+                this.token = tk.token();
+                this.key = tk.key();
+                /*
+                 * Configuration configuration = editConfiguration();
+                 * configuration.put(CONFIG_TOKEN, tk.token());
+                 * configuration.put(CONFIG_KEY, tk.key());
+                 * updateConfiguration(configuration);
+                 */
+                logger.debug("Token and Key obtained from cloud, saving, initializing");
+            } else {
+                throw new MideaAuthenticationException(
+                        "Can't retrieve Token and/or Key from Cloud; email, password and/or cloud parameter error");
+            }
         }
     }
 

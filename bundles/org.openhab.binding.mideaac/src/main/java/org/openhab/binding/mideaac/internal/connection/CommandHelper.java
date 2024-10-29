@@ -261,6 +261,7 @@ public class CommandHelper {
                     commandSet.setSwingMode(SwingMode.BOTH3);
                 }
             } else {
+
                 throw new UnsupportedOperationException(String.format("Unknown swing mode command: {}", command));
             }
         }
@@ -285,6 +286,7 @@ public class CommandHelper {
         } else if (command.equals(OnOffType.ON)) {
             commandSet.setTurboMode(true);
         } else {
+
             throw new UnsupportedOperationException(String.format("Unknown turbo mode command: {}", command));
         }
 
@@ -305,6 +307,7 @@ public class CommandHelper {
         } else if (command.equals(OnOffType.ON)) {
             commandSet.setScreenDisplay(true);
         } else {
+
             throw new UnsupportedOperationException(String.format("Unknown screen display command: {}", command));
         }
 

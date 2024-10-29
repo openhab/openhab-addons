@@ -30,11 +30,7 @@ import org.openhab.binding.mideaac.internal.connection.exception.MideaAuthentica
 import org.openhab.binding.mideaac.internal.connection.exception.MideaConnectionException;
 import org.openhab.binding.mideaac.internal.connection.exception.MideaException;
 import org.openhab.binding.mideaac.internal.discovery.DiscoveryHandler;
-import org.openhab.binding.mideaac.internal.discovery.MideaACDiscoveryService;
-import org.openhab.binding.mideaac.internal.dto.CloudDTO;
-import org.openhab.binding.mideaac.internal.dto.CloudProviderDTO;
 import org.openhab.binding.mideaac.internal.dto.CloudsDTO;
-import org.openhab.binding.mideaac.internal.security.TokenKey;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.i18n.UnitProvider;
@@ -72,13 +68,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private final CloudsDTO clouds;
     private final boolean imperialUnits;
     private final HttpClient httpClient;
-
-    private String email = "";
-    private String password = "";
-    private String cloud = "";
-    private String deviceId = "";
-    private String token = "";
-    private String key = "";
 
     private MideaACConfiguration config = new MideaACConfiguration();
     private Map<String, String> properties = new HashMap<>();
@@ -179,64 +168,17 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         config = getConfigAs(MideaACConfiguration.class);
 
         if (!config.isValid()) {
-            if (config.isDiscoveryNeeded()) {
-                logger.warn("Discovery needed, discovering....{}", thing.getUID());
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Configuration missing, discovery needed. Discovering...");
-                MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
-
-                try {
-                    discoveryService.discoverThing(config.ipAddress, this);
-                } catch (Exception e) {
-                    logger.error("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
-                }
-                return;
-            } else {
-                logger.debug("MideaACHandler config of {} is invalid. Check configuration", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid MideaAC config. Check configuration.");
-                return;
-            }
-        } else {
-            logger.debug("Configuration valid for {}", thing.getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid MideaAC config. Check configuration.");
+            return;
         }
-
         updateStatus(ThingStatus.UNKNOWN);
-
-        email = config.email;
-        password = config.password;
-        cloud = config.cloud;
-        int version = config.version;
-        token = config.token;
-        key = config.key;
-
-        if (version == 3) {
-            if ("".equals(cloud)) {
-                logger.warn("Cloud provider missing from V3 device, cannot continue with {}", thing.getUID());
-                return;
-            }
-            if (token.isBlank() || key.isBlank()) {
-                logger.debug("Token and key missing from v3 device {}", thing.getUID());
-                if (!email.isBlank() && !password.isBlank()) {
-                    CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(cloud);
-                    try {
-                        getTokenKeyCloud(cloudProvider);
-                    } catch (MideaAuthenticationException e) {
-                        logger.debug("Token and/or Key missing, missing cloud provider information to fetch it {}",
-                                e.getMessage());
-                    }
-                } else {
-                    logger.warn("Password and email needed for key and token retrival {}", thing.getUID());
-                    return;
-                }
-            }
-        }
 
         connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(httpClient,
                 config.ipAddress, config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email,
                 config.password, config.deviceId, clouds, config.version, config.promptTone);
 
-        scheduler.scheduleWithFixedDelay(this::pollJob, 30, config.pollingTime, null);
+        scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, null);
     }
 
     private void pollJob() {
@@ -336,29 +278,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         updateProperties(properties);
 
         initialize();
-    }
-
-    public void getTokenKeyCloud(CloudProviderDTO cloudProvider) throws MideaAuthenticationException {
-        logger.debug("Retrieving Token and/or Key from cloud");
-        CloudDTO cloud = clouds.get(email, password, cloudProvider);
-
-        if (cloud != null) {
-            cloud.setHttpClient(httpClient);
-            if (cloud.login()) {
-                TokenKey tk = cloud.getToken(deviceId);
-                this.token = tk.token();
-                this.key = tk.key();
-                Configuration configuration = editConfiguration();
-                configuration.put(CONFIG_TOKEN, tk.token());
-                configuration.put(CONFIG_KEY, tk.key());
-                updateConfiguration(configuration);
-
-                logger.debug("Token and Key obtained from cloud, saving, initializing");
-            } else {
-                throw new MideaAuthenticationException(
-                        "Can't retrieve Token and/or Key from Cloud; email, password and/or cloud parameter error");
-            }
-        }
     }
 
     @Override
