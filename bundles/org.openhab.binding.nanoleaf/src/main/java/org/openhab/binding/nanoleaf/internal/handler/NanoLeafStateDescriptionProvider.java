@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link NanoLeafStateDescriptionProvider} provides dynamic state description minimum and maximum vales of colour
+ * The {@link NanoLeafStateDescriptionProvider} provides dynamic state description minimum and maximum vales of color
  * temperature channels whose capabilities are dynamically determined at runtime.
  *
  * @author Andrew Fiddian-Green - Initial contribution
