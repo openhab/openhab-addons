@@ -86,7 +86,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
 
         JsonArray systems = json.getAsJsonArray(JSON_KEY_SYSTEMS);
         if (systems == null || systems.isEmpty()) {
-            logger.info("System discovery failed, no systems found.");
+            logger.info("System discovery finished, no systems found.");
         } else {
             systems.forEach(this::handleSystemDiscovery);
         }
@@ -99,7 +99,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
         String systemId = Utils.getAsString(system, JSON_KEY_SYSTEM_ID);
         JsonArray devices = system.getAsJsonArray(JSON_KEY_DEVICES);
         if (devices == null || devices.isEmpty()) {
-            logger.info("System discovery failed, no devices found.");
+            logger.info("System discovery finished, no devices found.");
         } else {
             devices.forEach(device -> handleDeviceDiscovery(device, systemId));
         }
