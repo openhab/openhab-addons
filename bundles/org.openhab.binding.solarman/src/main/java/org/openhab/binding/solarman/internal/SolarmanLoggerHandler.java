@@ -100,7 +100,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             logger.debug("Raw Type {}", config.solarmanLoggerMode);
         }
 
-        SolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.CreateSolarmanProtocol(config);
+        SolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.createSolarmanProtocol(config);
 
         String additionalRequests = Objects.requireNonNullElse(config.getAdditionalRequests(), "");
 

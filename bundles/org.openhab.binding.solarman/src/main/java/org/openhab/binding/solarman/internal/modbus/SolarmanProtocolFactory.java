@@ -21,7 +21,7 @@ import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 @NonNullByDefault
 public class SolarmanProtocolFactory {
 
-    public static SolarmanProtocol CreateSolarmanProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
+    public static SolarmanProtocol createSolarmanProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
         switch (solarmanLoggerConfiguration.getSolarmanLoggerMode()) {
             case RAWMODBUS: {
                 return new SolarmanRawProtocol(solarmanLoggerConfiguration);
