@@ -22,7 +22,6 @@ This binding provides two thing types:
 
 When the `account` bridge is setup, the binding will discover all heatpumps within that account and also detect the specific channels supported by the model.
 
-
 ## Bridge Configuration
 
 The following configuration parameters are available for the bridge:
