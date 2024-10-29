@@ -10,21 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.transform.vat.internal;
+package org.openhab.transform.vat.internal.model;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.transform.TransformationService;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link VATTransformationConstants} class defines constants
- * used across the whole profile.
+ * DTO representing a country with VAT rates in different validity periods.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class VATTransformationConstants {
-
-    public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
-            TransformationService.TRANSFORM_PROFILE_SCOPE, "VAT");
+public record VATCountry(String country, @JsonProperty("vatPeriod") List<VATPeriod> vatPeriod) {
+    @Override
+    public String toString() {
+        return "CountryVAT{country='" + country + "', period=" + vatPeriod + '}';
+    }
 }
