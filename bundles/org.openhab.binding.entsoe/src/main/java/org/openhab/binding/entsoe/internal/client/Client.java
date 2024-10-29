@@ -84,7 +84,7 @@ public class Client {
                 throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
             }
             if (!HttpStatus.isSuccess(status)) {
-                throw new EntsoeResponseException("The request failed with HTTP error ");
+                throw new EntsoeResponseException("The request failed with HTTP error " + status);
             }
 
             String responseContent = response.getContentAsString();
