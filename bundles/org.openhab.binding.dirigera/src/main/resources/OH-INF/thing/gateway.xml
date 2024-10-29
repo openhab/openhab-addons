@@ -15,11 +15,11 @@
 			</channel>
 			<channel id="sunrise" typeId="datetime">
 				<label>Sunrise</label>
-				<description>Date and time of sunrise but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
+				<description>Date and time of next sunrise but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
 			</channel>
 			<channel id="sunset" typeId="datetime">
 				<label>Sunset</label>
-				<description>Date and time of sunset but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
+				<description>Date and time of next sunset but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
 			</channel>
 			<channel id="pairing" typeId="switch">
 				<label>Pairing</label>

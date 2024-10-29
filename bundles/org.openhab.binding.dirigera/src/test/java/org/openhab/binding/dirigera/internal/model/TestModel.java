@@ -16,16 +16,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
+import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.binding.dirigera.internal.mock.DiscoveryMangerMock;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 /**
  * {@link TestModel} some basic tests
@@ -61,16 +66,19 @@ class TestModel {
         String vallhornId = "5ac5e131-44a4-4d75-be78-759a095d31fb_1";
         ThingTypeUID motionLightUID = gateway.model().identifyDeviceFromModel(vallhornId);
         assertEquals(THING_TYPE_MOTION_LIGHT_SENSOR, motionLightUID, "VALLHORN TTUID");
-        List<String> twinList = gateway.model().getTwins(vallhornId);
-        assertEquals(1, twinList.size(), "Twins");
-        assertEquals("5ac5e131-44a4-4d75-be78-759a095d31fb_3", twinList.get(0), "Twin id");
+        Map<String, String> relationsMap = gateway.model().getRelations("5ac5e131-44a4-4d75-be78-759a095d31fb");
+        assertEquals(2, relationsMap.size(), "Relations");
+        assertTrue(relationsMap.containsKey("5ac5e131-44a4-4d75-be78-759a095d31fb_1"), "Motion Sensor");
+        assertEquals("motionSensor", relationsMap.get("5ac5e131-44a4-4d75-be78-759a095d31fb_1"), "Motion Sensor");
+        assertTrue(relationsMap.containsKey("5ac5e131-44a4-4d75-be78-759a095d31fb_3"), "Light Sensor");
+        assertEquals("lightSensor", relationsMap.get("5ac5e131-44a4-4d75-be78-759a095d31fb_3"), "Light Sensor");
 
         // TRADFRI
         String tradfriId = "ee61c57f-8efa-44f4-ba8a-d108ae054138_1";
         ThingTypeUID motionUID = gateway.model().identifyDeviceFromModel(tradfriId);
         assertEquals(THING_TYPE_MOTION_SENSOR, motionUID, "TRADFRI TTUID");
-        twinList = gateway.model().getTwins(tradfriId);
-        assertEquals(0, twinList.size(), "Twins");
+        relationsMap = gateway.model().getRelations(tradfriId);
+        assertEquals(0, relationsMap.size(), "Twins");
     }
 
     @Test
@@ -96,7 +104,6 @@ class TestModel {
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
-        // VALLHORN
         String lightSceneId = "3090ba82-3f5e-442f-8e49-f3eac9b7b0eb";
         ThingTypeUID sceneTTUID = gateway.model().identifyDeviceFromModel(lightSceneId);
         assertEquals(THING_TYPE_SCENE, sceneTTUID, "Scene TTUID");
@@ -110,7 +117,7 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(27, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
     }
 
     @Test
@@ -133,8 +140,50 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(26, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(24, discovery.discoveries.size(), "Initial discoveries");
         assertFalse(discovery.discoveries.containsKey(knownDevice));
+    }
+
+    @Test
+    void testDiscoveryAfterHandlerRemoval() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/home-one-device.json",
+                true, List.of());
+        Gateway gateway = (Gateway) hubBridge.getHandler();
+        assertNotNull(gateway);
+
+        DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
+        assertEquals(1, discovery.discoveries.size(), "Initial discoveries");
+
+        ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(THING_TYPE_WATER_SENSOR, hubBridge,
+                "9af826ad-a8ad-40bf-8aed-125300bccd20_1");
+        assertTrue(factoryHandler instanceof WaterSensorHandler);
+        WaterSensorHandler handler = (WaterSensorHandler) factoryHandler;
+        ThingHandlerCallback proxyCallback = handler.getCallback();
+        assertNotNull(proxyCallback);
+        assertTrue(proxyCallback instanceof CallbackMock);
+        CallbackMock callback = (CallbackMock) proxyCallback;
+        handler.initialize();
+        callback.waitForOnline();
+
+        discovery.discoveries.clear();
+        assertEquals(0, discovery.discoveries.size(), "Cleanup after handler creation");
+        handler.dispose();
+        handler.handleRemoval();
+        assertEquals(1, discovery.discoveries.size(), "After removal new discovery result shall be present ");
+    }
+
+    @Test
+    void testReolvedRelations() {
+        Bridge hubBridge = DirigeraBridgeProvider
+                .prepareSimuBridge("src/test/resources/websocket/device-added/home-before.json", true, List.of());
+        Gateway gateway = (Gateway) hubBridge.getHandler();
+        assertNotNull(gateway);
+        List<String> all = gateway.model().getAllDeviceIds();
+        List<String> resolved = gateway.model().getResolvedDeviceList();
+
+        all.removeAll(resolved);
+        // 2 resolved devices
+        assertEquals(2, all.size(), "2 devices resolved");
     }
 
     @Test
@@ -145,7 +194,7 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(27, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-added/device-added.json");
@@ -158,7 +207,7 @@ class TestModel {
         } catch (InterruptedException e) {
             fail();
         }
-        assertEquals(27 + 1, discovery.discoveries.size(), "One more discovery");
+        assertEquals(25 + 1, discovery.discoveries.size(), "One more discovery");
     }
 
     @Test
@@ -169,7 +218,7 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(28, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(26, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-removed/device-removed.json");
@@ -182,7 +231,7 @@ class TestModel {
         } catch (InterruptedException e) {
             fail();
         }
-        assertEquals(28 - 1, discovery.discoveries.size(), "One less discovery");
+        assertEquals(26 - 1, discovery.discoveries.size(), "One less discovery");
         assertEquals(1, discovery.deletes.size(), "One deletion");
     }
 
@@ -194,7 +243,7 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(26, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(24, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-created/scene-created.json");
@@ -207,7 +256,7 @@ class TestModel {
         } catch (InterruptedException e) {
             fail();
         }
-        assertEquals(26 + 1, discovery.discoveries.size(), "One more discovery");
+        assertEquals(24 + 1, discovery.discoveries.size(), "One more discovery");
     }
 
     @Test
@@ -218,7 +267,7 @@ class TestModel {
         assertNotNull(gateway);
 
         DiscoveryMangerMock discovery = (DiscoveryMangerMock) gateway.discovery();
-        assertEquals(27, discovery.discoveries.size(), "Initial discoveries");
+        assertEquals(25, discovery.discoveries.size(), "Initial discoveries");
 
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-deleted/scene-deleted.json");
@@ -231,7 +280,7 @@ class TestModel {
         } catch (InterruptedException e) {
             fail();
         }
-        assertEquals(27 - 1, discovery.discoveries.size(), "One more discovery");
+        assertEquals(25 - 1, discovery.discoveries.size(), "One more discovery");
         assertEquals(1, discovery.deletes.size(), "One deletion");
     }
 }

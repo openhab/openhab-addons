@@ -34,4 +34,8 @@ public interface DirigeraAPI {
     public int sendPatch(String id, JSONObject attributes);
 
     public State getImage(String imageURL);
+
+    public String createScene(String uuid, String clickPattern, String controllerId);
+
+    public void deleteScene(String uuid);
 }

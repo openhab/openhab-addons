@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.lights;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -51,7 +53,7 @@ class TestTemperatureLight {
 
     @Test
     void testHandlerCreation() {
-        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        HandlerFactoryMock hfm = new HandlerFactoryMock(mock(StorageService.class));
         assertTrue(hfm.supportsThingType(thingTypeUID));
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         ThingHandler th = hfm.createHandler(thing);

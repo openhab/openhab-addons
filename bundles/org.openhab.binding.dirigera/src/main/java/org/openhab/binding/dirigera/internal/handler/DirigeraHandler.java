@@ -86,8 +86,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
     private final TimeZoneProvider timeZoneProvider;
-    // private final ScheduledExecutorService sequentialScheduler = ThreadPoolManager
-    // .getPoolBasedSequentialScheduledExecutorService(this.getClass().getName(), BINDING_ID);
 
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<DirigeraAPI> api = Optional.empty();
@@ -96,11 +94,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
 
     private List<Object> knownDevices = new ArrayList<>();
+    private ArrayList<String> queue = new ArrayList<>();
     private DirigeraConfiguration config;
     private Storage<String> storage;
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
-    private ArrayList<String> queue = new ArrayList<>();
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
@@ -471,7 +469,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      */
     @Override
     public void registerDevice(BaseHandler deviceHandler, String deviceId) {
-        logger.info("DIRIGERA HANDLER device {} registered", deviceHandler.getThing().getThingTypeUID());
+        logger.debug("DIRIGERA HANDLER device registered {}", deviceHandler.getThing().getThingTypeUID());
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
             if (!knownDevices.contains(deviceId)) {
@@ -482,6 +480,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER device {} regsitered without id", deviceHandler.getThing().getThingTypeUID());
         }
         deviceTree.put(deviceId, deviceHandler);
+        model().detection();
     }
 
     /**
@@ -489,12 +488,27 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      */
     @Override
     public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
+        logger.debug("DIRIGERA HANDLER device unregistered {}", deviceHandler.getThing().getThingTypeUID());
         deviceTree.remove(deviceId);
-        // unregister happens but don't remove it from known devices
+        // unregister from dispose but don't remove it from known devices
     }
 
     /**
-     * remove device due to removal deviceId from model
+     * Called by all device on handleRe
+     */
+    @Override
+    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
+        logger.warn("DIRIGERA HANDLER device deleted {}", deviceHandler.getThing().getThingTypeUID());
+        deviceTree.remove(deviceId);
+        // removal of handler - store known devices
+        knownDevices.remove(deviceId);
+        storeKnownDevices();
+        model().detection();
+    }
+
+    /**
+     * Interface to Model called if device isn't found anymore
+     *
      */
     @Override
     public void deleteDevice(String deviceId) {
@@ -508,21 +522,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             knownDevices.remove(deviceId);
             storeKnownDevices();
         }
-    }
-
-    /**
-     * remove device due to removal of Handler
-     */
-    @Override
-    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
-        logger.info("DIRIGERA HANDLER handler removed {}", deviceHandler.getThing().getThingTypeUID());
-        deviceTree.remove(deviceId);
-        // removal of handler - store new known devices
-        if (knownDevices.contains(deviceId)) {
-            knownDevices.remove(deviceId);
-            storeKnownDevices();
-        }
-        model().detection();
     }
 
     @Override
@@ -575,7 +574,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void doUpdate() {
-        Instant startTime = Instant.now();
         String json = "";
         synchronized (queue) {
             if (!queue.isEmpty()) {
@@ -591,13 +589,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             switch (type) {
                 case EVENT_TYPE_SCENE_CREATED:
                 case EVENT_TYPE_SCENE_DELETED:
+                    if (data.has(PROPERTY_TYPE)) {
+                        String dataType = data.getString(PROPERTY_TYPE);
+                        if (dataType.equals(TYPE_CUSTOM_SCENE)) {
+                            logger.trace("DIRIGERA HANDLER don't update model for customScene");
+                            break;
+                        }
+                    }
                 case EVENT_TYPE_DEVICE_ADDED:
                 case EVENT_TYPE_DEVICE_REMOVED:
                     // update model - it will take control on newly added, changed and removed devices
-                    model().update();
-                    websocket.get().increase(Websocket.MODEL_UPDATES);
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON),
-                            StringType.valueOf(model().getModelString()));
+                    modelUpdate();
                     break;
                 case EVENT_TYPE_DEVICE_CHANGE:
                     if (targetId != null) {
@@ -615,10 +617,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                                     if (attributes.has(Model.CUSTOM_NAME)) {
                                         logger.info("DIRIGERA HANDLER possible device name change detected {}",
                                                 attributes.getString(Model.CUSTOM_NAME));
-                                        model().update();
-                                        websocket.get().increase(Websocket.MODEL_UPDATES);
-                                        updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON),
-                                                StringType.valueOf(model().getModelString()));
+                                        modelUpdate();
                                     }
                                 }
                             }
@@ -640,23 +639,22 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                                 if (attributes.has(Model.CUSTOM_NAME)) {
                                     logger.info("DIRIGERA HANDLER possible scene name change detected {}",
                                             attributes.getString(Model.CUSTOM_NAME));
-                                    model().update();
-                                    websocket.get().increase(Websocket.MODEL_UPDATES);
-                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON),
-                                            StringType.valueOf(model().getModelString()));
+                                    modelUpdate();
                                 }
                             }
                         }
                     }
-                    // logger.info("DIRIGERA HANDLER update performance - scene update {}",
-                    // Duration.between(startTime, Instant.now()).toMillis());
                     break;
                 default:
                     logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
             }
         }
-        // logger.info("DIRIGERA HANDLER update performance - total {}",
-        // Duration.between(startTime, Instant.now()).toMillis());
+    }
+
+    private void modelUpdate() {
+        model().update();
+        websocket.get().increase(Websocket.MODEL_UPDATES);
+        updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
     }
 
     private void handleUpdate(JSONObject data) {

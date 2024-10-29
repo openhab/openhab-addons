@@ -49,24 +49,27 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROLLER = new ThingTypeUID(BINDING_ID, "light-controller");
     public static final ThingTypeUID THING_TYPE_BLIND_CONTROLLER = new ThingTypeUID(BINDING_ID, "blind-controller");
     public static final ThingTypeUID THING_TYPE_SOUND_CONTROLLER = new ThingTypeUID(BINDING_ID, "sound-controller");
-    public static final ThingTypeUID THING_TYPE_SHORTCUT_CONTROLLER = new ThingTypeUID(BINDING_ID,
-            "shortcut-controller");
+    public static final ThingTypeUID THING_TYPE_SINGLE_SHORTCUT_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "single-shortcut");
+    public static final ThingTypeUID THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "double-shortcut");
     public static final ThingTypeUID THING_TYPE_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
     public static final ThingTypeUID THING_TYPE_NOT_FOUND = new ThingTypeUID(BINDING_ID, "not-found");
+    public static final ThingTypeUID THING_TYPE_IGNORE = new ThingTypeUID(BINDING_ID, "ignore");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_MOTION_SENSOR,
             THING_TYPE_CONTACT_SENSOR, THING_TYPE_SIMPLE_PLUG, THING_TYPE_POWER_PLUG, THING_TYPE_SMART_PLUG,
             THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER,
-            THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER, THING_TYPE_SHORTCUT_CONTROLLER,
-            THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY, THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR,
-            THING_TYPE_BLIND);
+            THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER, THING_TYPE_SINGLE_SHORTCUT_CONTROLLER,
+            THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND);
 
-    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR);
+    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR, THING_TYPE_IGNORE);
 
     public static final List<String> THING_PROPERTIES = List.of("model", "manufacturer", "firmwareVersion",
             "hardwareVersion", "serialNumber", "productCode");
@@ -78,6 +81,7 @@ public class Constants {
     public static final String HOME_URL = BASE_URL + "/home";
     public static final String DEVICE_URL = BASE_URL + "/devices/%s";
     public static final String SCENE_URL = BASE_URL + "/scenes/%s";
+    public static final String SCENES_URL = BASE_URL + "/scenes";
 
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
     public static final String PROPERTY_DEVICES = "devices";
@@ -106,6 +110,7 @@ public class Constants {
     public static final String DEVICE_TYPE_AIR_PURIFIER = "airPurifier";
     public static final String DEVICE_TYPE_BLINDS = "blinds";
     public static final String TYPE_USER_SCENE = "userScene";
+    public static final String TYPE_CUSTOM_SCENE = "customScene";
 
     public static final String DEVICE_TYPE_LIGHT = "light";
 
@@ -193,6 +198,10 @@ public class Constants {
     public static final String CHANNEL_BLIND_CURRENT_LEVEL = "current";
     public static final String CHANNEL_BLIND_TARGET_LEVEL = "target";
     public static final String CHANNEL_BLIND_STATE = "blind-state";
+
+    // Shortcut channels
+    public static final String CHANNEL_BUTTON_1 = "button1";
+    public static final String CHANNEL_BUTTON_2 = "button2";
 
     // Websocket update types
     public static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";

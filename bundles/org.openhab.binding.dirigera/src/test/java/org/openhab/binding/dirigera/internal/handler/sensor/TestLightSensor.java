@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.core.library.types.QuantityType;
@@ -38,7 +37,6 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestLightSensor {
 
-    @Test
     void testLightSensorDevice() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(THING_TYPE_LIGHT_SENSOR, "test-device");

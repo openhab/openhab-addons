@@ -8,6 +8,17 @@
 		<item-type>String</item-type>
 		<label>Simple Text</label>
 	</channel-type>
+	<channel-type id="button-trigger">
+		<kind>trigger</kind>
+		<label>Button Trigger</label>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="DOUBLE_PRESSED">Double pressed</option>
+				<option value="LONG_PRESSED">Long pressed</option>
+			</options>
+		</event>
+	</channel-type>
 	<channel-type id="repeat">
 		<item-type>Number</item-type>
 		<label>Repeat Options</label>

@@ -73,7 +73,7 @@ public class ColorLightHandler extends BaseHandler {
                 } else {
                     JSONObject colorAttributes = new JSONObject();
                     colorAttributes.put("colorHue", hsb.getHue().intValue());
-                    colorAttributes.put("colorSaturation", Math.round(hsb.getSaturation().doubleValue() / 100));
+                    colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
                     logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
                     gateway().api().sendPatch(config.id, colorAttributes);
                     colorSendToAPI = true;
