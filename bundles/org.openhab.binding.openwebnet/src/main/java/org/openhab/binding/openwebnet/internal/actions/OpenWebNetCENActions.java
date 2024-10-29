@@ -55,7 +55,7 @@ public class OpenWebNetCENActions implements ThingActions {
     }
 
     @RuleAction(label = "virtualPress", description = "@text/action.virtualPress.desc")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean virtualPress(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean virtualPress(
             @ActionInput(name = "press", label = "press", description = "@text/action.virtualPress.input.press.desc") @Nullable String press,
             @ActionInput(name = "button", label = "button", description = "@text/action.virtualPress.input.button.desc") int button) {
         OpenWebNetScenarioHandler handler = scenarioHandler;
