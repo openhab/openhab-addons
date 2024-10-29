@@ -163,9 +163,6 @@ public class SpeakerHandler extends BaseHandler {
                                 logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
                                 gateway().api().sendPatch(config.id, attributes);
                             }
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
-                                    channel);
                         }
                         break;
                 }
@@ -250,11 +247,7 @@ public class SpeakerHandler extends BaseHandler {
                             }
                         }
                         updateState(new ChannelUID(thing.getUID(), targetChannel), UnDefType.UNDEF);
-                    } else {
-                        logger.trace("DIRIGERA SPEAKER_DEVICE no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA SPEAKER_DEVICE no targetChannel for {}", key);
                 }
             }
             // outside of channel mapping - image
