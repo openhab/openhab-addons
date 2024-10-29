@@ -28,7 +28,7 @@ The following configuration parameters are available for the bridge:
 
 | Configuration Parameter | Required | Description                                                                                                                                                                                 |
 |-------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| clientId                | yes      | The clientId to login at myUplink cloud service. This is some kind of UUID. Visit https://dev.myuplink.com/apps to generate login credentials.                                              |
+| clientId                | yes      | The clientId to login at myUplink cloud service. This is some kind of UUID. Visit <https://dev.myuplink.com/apps> to generate login credentials.                                            |
 | clientSecret            | yes      | The secret which belongs to the clientId.                                                                                                                                                   |
 | dataPollingInterval     | no       | Interval (seconds) in which live data values are retrieved from the Easee Cloud API. (default = 60)                                                                                         |
 
