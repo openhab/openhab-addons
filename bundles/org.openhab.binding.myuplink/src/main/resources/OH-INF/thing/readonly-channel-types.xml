@@ -25,7 +25,7 @@
 	<channel-type id="type-flow">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Generic Flow</label>
-		<state pattern="%.1f l/min" readOnly="true">
+		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-electric-current" advanced="true">
