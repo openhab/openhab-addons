@@ -148,8 +148,8 @@ public class EnergyCapability extends RestCapability<EnergyApi> {
                         api.setThermMode(energyId, targetMode.apiDescriptor);
                         break;
                     case CHANNEL_SETPOINT_DURATION:
-                        logger.info(
-                                "'setpoint-duration is a read-only channel that must be updated in the Netatmo App");
+                        logger.info("'{}' is a read-only channel that must be updated in the Netatmo App",
+                                CHANNEL_SETPOINT_DURATION);
                         break;
                 }
                 handler.expireData();
