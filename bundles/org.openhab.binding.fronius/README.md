@@ -186,6 +186,8 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 
+All methods return a boolean value indicating whether the action was successful.
+
 ### Examples
 
 ```javascript
