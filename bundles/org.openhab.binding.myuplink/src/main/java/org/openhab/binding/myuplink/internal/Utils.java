@@ -49,7 +49,7 @@ public final class Utils {
     }
 
     /**
-     * parses a date string in api source format to ZonedDateTime which is used by Openhab.
+     * parses a date string in api source format to ZonedDateTime which is used by openHAB.
      *
      * @param date
      * @return
