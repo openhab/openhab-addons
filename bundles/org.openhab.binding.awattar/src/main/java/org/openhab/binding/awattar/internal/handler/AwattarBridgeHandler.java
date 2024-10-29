@@ -240,7 +240,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     public boolean containsPriceFor(long timestamp) {
         SortedSet<AwattarPrice> localPrices = getPrices();
         return localPrices != null && localPrices.first().timerange().start() <= timestamp
-                && localPrices.last().timerange().end() > timestamp;
+                && localPrices.last().timerange().end() >= timestamp;
     }
 
     @Override
