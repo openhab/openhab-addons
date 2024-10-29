@@ -45,8 +45,17 @@ import org.slf4j.LoggerFactory;
 @WebSocket
 @NonNullByDefault
 public class DirigeraAPIImpl implements DirigeraAPI {
-
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPIImpl.class);
+
+    /**
+     * Parameters
+     * 1) UUID of this scene
+     * 2) Name of this scene
+     * 3) click pattern
+     * 4) button index
+     * 5) controller id
+     */
+    private String scenePattern = "{\"id\": \"%s\",\"type\": \"customScene\",\"info\": {\"name\": \"%s\"},\"triggers\": [{\"type\": \"controller\",\"trigger\": {\"controllerType\": \"shortcutController\",\"clickPattern\": \"%s\",\"buttonIndex\": %s,\"deviceId\": \"%s\"}}],\"actions\": [],\"commands\": [],\"undoAllowedDuration\": 30}";
     private HttpClient httpClient;
     private Gateway gateway;
 
@@ -132,7 +141,6 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public int sendPatch(String id, JSONObject attributes) {
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
-        startCalling(url);
         // pack attributes into data json and then into an array
         JSONObject data = new JSONObject();
         data.put(Model.ATTRIBUTES, attributes);
@@ -144,12 +152,13 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         Request deviceRequest = httpClient.newRequest(url).method("PATCH")
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
 
+        startCalling(url);
         int responseStatus = 500;
         try {
             ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
             responseStatus = response.getStatus();
             if (responseStatus == 200 || responseStatus == 202) {
-                logger.info("DIRIGERA API send {} to {} delivered", dataArray, url);
+                logger.debug("DIRIGERA API send {} to {} delivered", dataArray, url);
             } else {
                 logger.info("DIRIGERA API send {} to {} failed with status {}", dataArray, url, response.getStatus());
             }
@@ -204,25 +213,72 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         return statusObject;
     }
 
+    @Override
+    public String createScene(String uuid, String clickPattern, String controllerId) {
+        String url = String.format(SCENES_URL, gateway.getIpAddress());
+        String payload = String.format(scenePattern, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
+        StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
+                StandardCharsets.UTF_8);
+        logger.info("DIRIGERA API send {} to {}", payload, url);
+        Request sceneCreateRequest = httpClient.newRequest(url).method("POST")
+                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+
+        startCalling(url);
+        int responseStatus = 500;
+        String responseUUID = "";
+        try {
+            ContentResponse response = addAuthorizationHeader(sceneCreateRequest).timeout(10, TimeUnit.SECONDS).send();
+            responseStatus = response.getStatus();
+            if (responseStatus == 200 || responseStatus == 202) {
+                logger.info("DIRIGERA API send {} to {} delivered", payload, url);
+                String responseString = response.getContentAsString();
+                JSONObject responseJSON = new JSONObject(responseString);
+                responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
+            } else {
+                logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url, response.getStatus());
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
+        }
+        endCalling(url);
+        return responseUUID;
+    }
+
+    @Override
+    public void deleteScene(String uuid) {
+        String url = String.format(SCENES_URL, gateway.getIpAddress()) + "/" + uuid;
+        Request sceneDeleteRequest = httpClient.newRequest(url).method("DELETE");
+        startCalling(url);
+        int responseStatus = 500;
+        try {
+            ContentResponse response = addAuthorizationHeader(sceneDeleteRequest).timeout(10, TimeUnit.SECONDS).send();
+            responseStatus = response.getStatus();
+            if (responseStatus == 200 || responseStatus == 202) {
+                logger.debug("DIRIGERA API delete {} delivered", url);
+            } else {
+                logger.debug("DIRIGERA API send {} failed with status {}", url, response.getStatus());
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
+        }
+        endCalling(url);
+    }
+
     private void startCalling(String request) {
-        logger.info("DIRIGERA API: request {}", request);
         synchronized (this) {
             while (calling) {
                 try {
-                    logger.info("DIRIGERA API: wait {}", request);
                     this.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
-            logger.info("DIRIGERA API: perform {}", request);
             calling = true;
         }
     }
 
     private void endCalling(String request) {
         synchronized (this) {
-            logger.info("DIRIGERA API: done {}", request);
             calling = false;
             this.notifyAll();
         }

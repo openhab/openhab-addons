@@ -14,9 +14,8 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 
 import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -38,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MotionLightSensorHandler extends MotionSensorHandler {
     private final Logger logger = LoggerFactory.getLogger(MotionLightSensorHandler.class);
-    private List<String> twinDevices = new ArrayList<>();
+    private Map<String, String> relations = new HashMap<>();
 
     public MotionLightSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -53,16 +52,17 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
 
-            // search for twin device in model to connect
-            twinDevices = gateway().model().getTwins(config.id);
-            logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", twinDevices.size());
+            // get all relations and register
+            String relationId = gateway().model().getRelationId(config.id);
+            relations = gateway().model().getRelations(relationId);
+            logger.info("DIRIGERA MOTION_LIGHT_DEVICE found {} twins", relations.size());
             // register for updates of twin devices
-            twinDevices.forEach(deviceId -> {
-                gateway().registerDevice(this, deviceId);
-                JSONObject twinValues = gateway().api().readDevice(deviceId);
+            relations.forEach((key, value) -> {
+                gateway().registerDevice(this, key);
+                JSONObject relationValues = gateway().api().readDevice(key);
                 // JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
-                logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", twinValues);
-                handleUpdate(twinValues);
+                logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", relationValues);
+                handleUpdate(relationValues);
             });
         }
     }

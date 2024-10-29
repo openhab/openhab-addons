@@ -69,8 +69,9 @@ public class AirQualityHandler extends BaseHandler {
                 if (targetChannel != null) {
                     switch (targetChannel) {
                         case CHANNEL_TEMPERATURE:
+                            double temperature = Math.round(attributes.getDouble(key) * 10) / 10.0;
                             updateState(new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE),
-                                    QuantityType.valueOf(attributes.getDouble(key), SIUnits.CELSIUS));
+                                    QuantityType.valueOf(temperature, SIUnits.CELSIUS));
                             break;
                         case CHANNEL_HUMIDITY:
                             updateState(new ChannelUID(thing.getUID(), CHANNEL_HUMIDITY),
