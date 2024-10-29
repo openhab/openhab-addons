@@ -17,9 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link SoundControllerHandler} for controlling SYMFONSIK speakers
@@ -41,16 +39,5 @@ public class SoundControllerHandler extends BaseHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-    }
-
-    @Override
-    public void handleUpdate(JSONObject update) {
-        // handle reachable flag, no more special handling
-        super.handleUpdate(update);
     }
 }

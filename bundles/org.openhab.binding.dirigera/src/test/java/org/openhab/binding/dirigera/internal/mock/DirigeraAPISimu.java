@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,6 +49,8 @@ public class DirigeraAPISimu implements DirigeraAPI {
     public static String fileName = "src/test/resources/home/home.json";
     public static Map<String, String> patchMap = new HashMap<>();
     private static JSONObject model = new JSONObject();
+    public static List<String> scenesAdded = new ArrayList<>();
+    public static List<String> scenesDeleted = new ArrayList<>();
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
     }
@@ -115,5 +119,18 @@ public class DirigeraAPISimu implements DirigeraAPI {
             }
         }
         return returnObject;
+    }
+
+    @Override
+    public String createScene(String uuid, String clickPattern, String controllerId) {
+        logger.warn("createScene {} {}", uuid, clickPattern);
+        scenesAdded.add(uuid);
+        return uuid;
+    }
+
+    @Override
+    public void deleteScene(String uuid) {
+        logger.warn("deleteScene {}", uuid);
+        scenesDeleted.add(uuid);
     }
 }

@@ -175,14 +175,10 @@ public class SpeakerHandler extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            // logger.trace("DIRIGERA LIGHT_DEVICE update delivered {} attributes", attributes.length());
-            logger.trace("DIRIGERA LIGHT_DEVICE update delivered {}", attributes);
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
@@ -215,7 +211,6 @@ public class SpeakerHandler extends BaseHandler {
                         }
                         if (playbackModes.has("repeat")) {
                             String repeatMode = playbackModes.getString("repeat");
-                            logger.trace("DIRIGERA SPEAKER_DEVICE repeat mode {}", repeatMode);
                             int playMode = -1;
                             switch (repeatMode) {
                                 case "off":
@@ -228,10 +223,14 @@ public class SpeakerHandler extends BaseHandler {
                                     playMode = 2;
                                     break;
                             }
-                            updateState(new ChannelUID(thing.getUID(), CHANNEL_REPEAT), new DecimalType(playMode));
-                        } else {
-                            logger.trace("DIRIGERA SPEAKER_DEVICE no repeat mode in {}", playbackModes);
+                            if (playMode != -1) {
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_REPEAT), new DecimalType(playMode));
+                            } else {
+                                logger.info("DIRIGERA SPEAKER_DEVICE no repeat mode {} in {}", repeatMode,
+                                        playbackModes);
+                            }
                         }
+
                     } else if (CHANNEL_TRACK.equals(targetChannel)) {
                         // track is nested into attributes playItem:id
                         JSONObject audio = attributes.getJSONObject(key);

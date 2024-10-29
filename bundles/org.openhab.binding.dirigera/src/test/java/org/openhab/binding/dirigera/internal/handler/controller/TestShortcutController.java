@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,11 +46,11 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TestShortcutController {
     String deviceId = "92dbcea1-3d7e-4d6a-a009-bdf3a1ae6691_1";
-    ThingTypeUID thingTypeUID = THING_TYPE_SHORTCUT_CONTROLLER;
+    ThingTypeUID thingTypeUID = THING_TYPE_SINGLE_SHORTCUT_CONTROLLER;
 
     @Test
     void testHandlerCreation() {
-        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        HandlerFactoryMock hfm = new HandlerFactoryMock(mock(StorageService.class));
         assertTrue(hfm.supportsThingType(thingTypeUID));
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         ThingHandler th = hfm.createHandler(thing);
@@ -61,7 +64,8 @@ class TestShortcutController {
                 false, List.of());
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
-        ShortcutControllerHandler handler = new ShortcutControllerHandler(thing, SHORTCUT_CONTROLLER_MAP);
+        ShortcutControllerHandler handler = new ShortcutControllerHandler(thing, SHORTCUT_CONTROLLER_MAP,
+                mock(Storage.class));
         CallbackMock callback = new CallbackMock();
         callback.setBridge(hubBridge);
         handler.setCallback(callback);
@@ -84,20 +88,20 @@ class TestShortcutController {
     }
 
     void checkStates(CallbackMock callback) {
-        State otaStatus = callback.getState("dirigera:shortcut-controller:test-device:ota-status");
+        State otaStatus = callback.getState("dirigera:single-shortcut:test-device:ota-status");
         assertNotNull(otaStatus);
         assertTrue(otaStatus instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
-        State otaState = callback.getState("dirigera:shortcut-controller:test-device:ota-state");
+        State otaState = callback.getState("dirigera:single-shortcut:test-device:ota-state");
         assertNotNull(otaState);
         assertTrue(otaState instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
-        State otaProgess = callback.getState("dirigera:shortcut-controller:test-device:ota-progress");
+        State otaProgess = callback.getState("dirigera:single-shortcut:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
-        State batteryState = callback.getState("dirigera:shortcut-controller:test-device:battery-level");
+        State batteryState = callback.getState("dirigera:single-shortcut:test-device:battery-level");
         assertNotNull(batteryState);
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));

@@ -55,7 +55,8 @@ public class CallbackMock implements ThingHandlerCallback {
 
     private @Nullable Bridge bridge;
     private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
-    private Map<String, State> stateMap = new HashMap<>();
+    public Map<String, State> stateMap = new HashMap<>();
+    public Map<String, String> triggerMap = new HashMap<>();
 
     public void clear() {
         stateMap.clear();
@@ -72,10 +73,10 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
         stateMap.put(channelUID.getAsString(), state);
-        logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
-        // if (CHANNEL_JSON.equals(channelUID.getIdWithoutGroup())) {
-        // logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
-        // }
+        // logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
+        if (!"json".equals(channelUID.getIdWithoutGroup())) {
+            logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
+        }
     }
 
     @Override
@@ -154,6 +155,8 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void channelTriggered(Thing thing, ChannelUID channelUID, String event) {
+        logger.warn("Callback trigger {} {}", channelUID.getAsString(), event);
+        triggerMap.put(channelUID.getAsString(), event);
     }
 
     @Override

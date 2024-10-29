@@ -30,9 +30,8 @@ import org.openhab.core.thing.binding.ThingHandler;
  */
 @NonNullByDefault
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
-    public HandlerFactoryMock() {
-        super(mock(StorageService.class), mock(NetworkAddressService.class), new DiscoveryMangerMock(),
-                DirigeraBridgeProvider.TZP);
+    public HandlerFactoryMock(StorageService storageService) {
+        super(storageService, mock(NetworkAddressService.class), new DiscoveryMangerMock(), DirigeraBridgeProvider.TZP);
     }
 
     @Override

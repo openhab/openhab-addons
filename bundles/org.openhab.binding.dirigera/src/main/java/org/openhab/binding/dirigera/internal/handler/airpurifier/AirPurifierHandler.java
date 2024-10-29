@@ -92,9 +92,7 @@ public class AirPurifierHandler extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();

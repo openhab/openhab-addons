@@ -45,6 +45,7 @@ import org.openhab.binding.dirigera.internal.mock.DiscoveryMangerMock;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -119,7 +120,10 @@ public class DirigeraBridgeProvider {
     }
 
     public static ThingHandler createHandler(ThingTypeUID thingTypeUID, Bridge hubBridge, String deviceId) {
-        HandlerFactoryMock hfm = new HandlerFactoryMock();
+        StorageService storageService = mock(StorageService.class);
+        Storage<Object> storage = mock(Storage.class);
+        when(storageService.getStorage(BINDING_ID)).thenReturn(storage);
+        HandlerFactoryMock hfm = new HandlerFactoryMock(storageService);
         assertTrue(hfm.supportsThingType(thingTypeUID));
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
