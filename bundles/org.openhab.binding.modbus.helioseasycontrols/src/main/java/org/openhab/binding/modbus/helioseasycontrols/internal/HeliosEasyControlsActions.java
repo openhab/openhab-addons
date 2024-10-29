@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -159,7 +160,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
-    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
+    public @ActionOutput(label = "Error Messages", type = "java.util.List<String>") List<String> getErrorMessages() {
         HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getErrorMessages() : new ArrayList<>();
     }
@@ -169,7 +170,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
-    public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
+    public @ActionOutput(label = "Warning Messages", type = "java.util.List<String>") List<String> getWarningMessages() {
         HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getWarningMessages() : new ArrayList<>();
     }
@@ -179,7 +180,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
-    public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
+    public @ActionOutput(label = "Info Messages", type = "java.util.List<String>") List<String> getInfoMessages() {
         HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getInfoMessages() : new ArrayList<>();
     }
@@ -189,7 +190,7 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
-    public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
+    public @ActionOutput(label = "Status Messages", type = "java.util.List<String>") List<String> getStatusMessages() {
         HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getStatusMessages() : new ArrayList<>();
     }
@@ -199,7 +200,11 @@ public class HeliosEasyControlsActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.getMessages.label", description = "@text/action.getMessages.description")
-    public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") @ActionOutput(name = "warningMessages", type = "java.util.List<String>") @ActionOutput(name = "infoMessages", type = "java.util.List<String>") @ActionOutput(name = "statusMessages", type = "java.util.List<String>") Map<String, Object> getMessages() {
+    public @ActionOutputs({
+            @ActionOutput(name = "errorMessages", label = "Error Messages", type = "java.util.List<String>"),
+            @ActionOutput(name = "warningMessages", label = "Warning Messages", type = "java.util.List<String>"),
+            @ActionOutput(name = "infoMessages", label = "Info Messages", type = "java.util.List<String>"),
+            @ActionOutput(name = "statusMessages", label = "Status Messages", type = "java.util.List<String>") }) Map<String, Object> getMessages() {
         Map<String, Object> messages = new HashMap<>();
         HeliosEasyControlsHandler handler = this.handler;
         if (handler != null) {
