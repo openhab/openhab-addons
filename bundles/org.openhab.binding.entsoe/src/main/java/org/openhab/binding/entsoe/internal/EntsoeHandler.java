@@ -26,8 +26,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.entsoe.internal.client.Client;
-import org.openhab.binding.entsoe.internal.client.Request;
+import org.openhab.binding.entsoe.internal.client.EntsoeRequest;
 import org.openhab.binding.entsoe.internal.client.SpotPrice;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
@@ -54,22 +55,18 @@ import org.slf4j.LoggerFactory;
 public class EntsoeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EntsoeHandler.class);
-
-    private EntsoeConfiguration config;
-
-    private @Nullable ScheduledFuture<?> refreshJob;
-
-    private Map<Instant, SpotPrice> entsoeTimeSeries = new LinkedHashMap<>();
-
     private final ZoneId cetZoneId = ZoneId.of("CET");
+    private final Client client;
 
+    private EntsoeConfiguration config = new EntsoeConfiguration();
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private Map<Instant, SpotPrice> entsoeTimeSeries = new LinkedHashMap<>();
     private ZonedDateTime lastDayAheadReceived = ZonedDateTime.of(LocalDateTime.MIN, cetZoneId);
-
     private int historicDaysInitially = 0;
 
-    public EntsoeHandler(Thing thing) {
+    public EntsoeHandler(final Thing thing, final HttpClient httpClient) {
         super(thing);
-        config = new EntsoeConfiguration();
+        this.client = new Client(httpClient);
     }
 
     @Override
@@ -101,7 +98,12 @@ public class EntsoeHandler extends BaseThingHandler {
         logger.trace("handleCommand(channelUID:{}, command:{})", channelUID.getAsString(), command.toFullString());
 
         if (command instanceof RefreshType) {
-            fetchNewPrices();
+            try {
+                fetchNewPrices();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
 
@@ -199,7 +201,11 @@ public class EntsoeHandler extends BaseThingHandler {
         }
 
         if (entsoeTimeSeries.isEmpty()) {
-            fetchNewPrices();
+            try {
+                fetchNewPrices();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             return;
         }
 
@@ -211,14 +217,19 @@ public class EntsoeHandler extends BaseThingHandler {
                 .isAfter(currentCetTimeWholeHours().withHour(config.spotPricesAvailableCetHour));
 
         if (needsInitialUpdate || (!hasNextDayValue && readyForNextDayValue)) {
-            fetchNewPrices();
+            try {
+                fetchNewPrices();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         } else {
             updateCurrentState(EntsoeBindingConstants.CHANNEL_SPOT_PRICE);
             schedule(true);
         }
     }
 
-    private void fetchNewPrices() {
+    private void fetchNewPrices() throws InterruptedException {
         logger.trace("Fetching new prices");
 
         Instant startUtc = ZonedDateTime.now(cetZoneId)
@@ -226,12 +237,11 @@ public class EntsoeHandler extends BaseThingHandler {
                 .toInstant();
         Instant endUtc = ZonedDateTime.now(cetZoneId).plusDays(2).with(LocalTime.MIDNIGHT).toInstant();
 
-        Request request = new Request(config.securityToken, config.area, startUtc, endUtc);
-        Client client = new Client();
+        EntsoeRequest request = new EntsoeRequest(config.securityToken, config.area, startUtc, endUtc);
         boolean success = false;
 
         try {
-            entsoeTimeSeries = client.doGetRequest(request, config.requestTimeout * 1000, config.resolution);
+            entsoeTimeSeries = client.doGetRequest(request, config.requestTimeout, config.resolution);
 
             TimeSeries baseTimeSeries = new TimeSeries(EntsoeBindingConstants.TIMESERIES_POLICY);
             for (Map.Entry<Instant, SpotPrice> entry : entsoeTimeSeries.entrySet()) {

@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class Request {
+public class EntsoeRequest {
 
     private static DateTimeFormatter requestFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
@@ -35,7 +35,7 @@ public class Request {
     private final Instant periodStart;
     private final Instant periodEnd;
 
-    public Request(String securityToken, String area, Instant periodStart, Instant periodEnd) {
+    public EntsoeRequest(String securityToken, String area, Instant periodStart, Instant periodEnd) {
         this.securityToken = securityToken;
         this.area = area;
         this.periodStart = periodStart;
