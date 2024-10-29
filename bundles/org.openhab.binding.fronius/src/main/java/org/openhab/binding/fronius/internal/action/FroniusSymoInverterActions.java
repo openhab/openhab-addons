@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.handler.FroniusSymoInverterHandler;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
@@ -107,7 +108,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.reset-battery-control.label", description = "@text/actions.reset-battery-control.description")
-    public boolean resetBatteryControl() {
+    public @ActionOutput(type = "boolean", label = "Success") boolean resetBatteryControl() {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
             return handler.resetBatteryControl();
@@ -116,7 +117,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
-    public boolean holdBatteryCharge() {
+    public @ActionOutput(type = "boolean", label = "Success") boolean holdBatteryCharge() {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
             return handler.holdBatteryCharge();
@@ -125,7 +126,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.add-hold-battery-charge-schedule.label", description = "@text/actions.add-hold-battery-charge-schedule.description")
-    public boolean addHoldBatteryChargeSchedule(
+    public @ActionOutput(type = "boolean", label = "Success") boolean addHoldBatteryChargeSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until) {
         FroniusSymoInverterHandler handler = this.handler;
@@ -140,7 +141,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
-    public boolean forceBatteryCharging(
+    public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryCharging(
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusSymoInverterHandler handler = this.handler;
         if (handler != null) {
@@ -150,7 +151,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.add-forced-battery-charging-schedule.label", description = "@text/actions.add-forced-battery-charging-schedule.description")
-    public boolean addForcedBatteryChargingSchedule(
+    public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryChargingSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
