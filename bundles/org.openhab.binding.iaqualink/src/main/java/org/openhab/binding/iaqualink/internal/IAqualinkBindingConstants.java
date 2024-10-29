@@ -21,6 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * across the whole binding.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Jonathan Gilbert - Added V2 channel types
  */
 @NonNullByDefault
 public class IAqualinkBindingConstants {
@@ -36,7 +37,10 @@ public class IAqualinkBindingConstants {
 
     public static final String CHANNEL_TYPE_ONETOUCH = "onetouch";
 
+    public static final String CHANNEL_TYPE_SCHEDULE_TIME = "schedule-time";
+
     public static final ThingTypeUID IAQUALINK_DEVICE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "controller");
+    public static final ThingTypeUID IAQUALINK_DEVICE_V2_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "controllerV2");
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_ONETOUCH = new ChannelTypeUID(BINDING_ID,
             CHANNEL_TYPE_ONETOUCH);
@@ -54,4 +58,6 @@ public class IAqualinkBindingConstants {
             CHANNEL_TYPE_AUX_PENTAIRIB);
     public static final ChannelTypeUID CHANNEL_TYPE_UID_AUX_HAYWARD = new ChannelTypeUID(BINDING_ID,
             CHANNEL_TYPE_AUX_HAYWARD);
+    public static final ChannelTypeUID CHANNEL_TYPE_UID_SCHEDULE_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_TYPE_SCHEDULE_TIME);
 }

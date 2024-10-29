@@ -121,6 +121,39 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="controllerV2">
+		<label>iAquaLink Pool Controller - New</label>
+		<description>An iAquaLink pool control thing represents an iAquaLink pool controller for Jandy/Zodiac systems.
+			This new
+			version currently only supports Zodiac Hydroxinator systems.</description>
+
+		<config-description>
+			<parameter name="userName" type="text" required="true">
+				<label>User Name</label>
+				<description>The username to use when connecting to an iAqualink Account</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to use when connecting to an iAqualink Account</description>
+			</parameter>
+			<parameter name="serialId" type="text" required="false">
+				<label>Serial Number</label>
+				<description>Optionally specify the serial number of the controller which can be found on the iAquaLink Owner's
+					Center. This is only useful if you have more then one controller (pool) associated with your account. Leave blank
+					to have the first controller used.
+				</description>
+			</parameter>
+			<parameter name="apiKey" type="text" required="false">
+				<label>API Key</label>
+				<description>Optionally specify the API key used for access. This is only useful for debugging or if the API key is
+					changed by the vendor
+				</description>
+				<default>EOOEMOW4YR6QNB07</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<!-- System Channels -->
 
 	<channel-type id="status">
@@ -365,4 +398,24 @@
 		<category>Other</category>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="schedule-time">
+		<item-type>String</item-type>
+		<label>Schedule Time</label>
+		<category>Other</category>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<category>Other</category>
+	</channel-type>
+
+	<channel-type id="readonly-switch">
+		<item-type>Switch</item-type>
+		<label>Readonly Switch</label>
+		<description>The current (readonly) state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
