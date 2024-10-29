@@ -7,7 +7,7 @@ The myUplink API is the successor of the Nibe Uplink API.
 This binding should in general be compatible with all heat pump models that support myUplink.
 Read or write access is supported by all channels as exposed by the API.
 Write access might only be available with a paid subscription for myUplink.
-You will need to create credentials at https://dev.myuplink.com/apps in order to use this binding.
+You will need to create credentials at <https://dev.myuplink.com/apps> in order to use this binding.
 
 ## Supported Things
 
