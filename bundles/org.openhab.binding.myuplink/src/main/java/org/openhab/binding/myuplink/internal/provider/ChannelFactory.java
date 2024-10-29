@@ -110,7 +110,7 @@ public class ChannelFactory {
             String dimension = parsedUnit == null ? null : UnitUtils.getDimensionName(parsedUnit);
 
             if (dimension == null || dimension.isEmpty()) {
-                logger.info("Could not parse unit: '{}'", unit);
+                logger.warn("Could not parse unit: '{}'", unit);
                 return CoreItemFactory.NUMBER;
             } else {
                 return CoreItemFactory.NUMBER + ":" + dimension;
