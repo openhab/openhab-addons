@@ -76,7 +76,6 @@ public class HueSyncConnection {
 
     public HueSyncConnection(HttpClient httpClient, String host, Integer port)
             throws CertificateException, IOException, URISyntaxException {
-
         this.host = host;
         this.port = port;
 
