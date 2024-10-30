@@ -234,8 +234,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         @SerializedName("temperature_low_state_topic")
         protected @Nullable String temperatureLowStateTopic;
 
-        @SerializedName("power_command_template")
-        protected @Nullable String powerCommandTemplate;
         @SerializedName("power_command_topic")
         protected @Nullable String powerCommandTopic;
 
@@ -351,7 +349,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.temperatureLowStateTopic, commandFilter);
 
         buildOptionalChannel(POWER_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(), updateListener, null,
-                // channelConfiguration.powerCommandTemplate, channelConfiguration.powerCommandTopic, null, null);
                 channelConfiguration.powerCommandTopic, null, null, null);
 
         if (channelConfiguration.jsonAttributesTopic != null) {
