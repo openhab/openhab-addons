@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class Request {
+public class FMIRequest {
 
     public static final String FMI_WFS_URL = "https://opendata.fmi.fi/wfs";
 
@@ -40,13 +40,13 @@ public class Request {
     private static final ZoneId UTC = ZoneId.of("Z");
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    public Request(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch,
+    public FMIRequest(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch,
             long timestepMinutes) {
         this(storedQueryId, location, startEpoch, endEpoch, timestepMinutes, new String[0]);
     }
 
-    public Request(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch, long timestepMinutes,
-            String[] parameters) {
+    public FMIRequest(String storedQueryId, QueryParameter location, long startEpoch, long endEpoch,
+            long timestepMinutes, String[] parameters) {
         this.storedQueryId = storedQueryId;
         this.location = location;
         this.startEpoch = startEpoch;

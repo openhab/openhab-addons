@@ -32,12 +32,13 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fmiweather.internal.client.Data;
+import org.openhab.binding.fmiweather.internal.client.FMIRequest;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.FMISID;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.ObservationRequest;
-import org.openhab.binding.fmiweather.internal.client.Request;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.thing.Channel;
@@ -107,8 +108,8 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
 
     private @NonNullByDefault({}) String fmisid;
 
-    public ObservationWeatherHandler(Thing thing) {
-        super(thing);
+    public ObservationWeatherHandler(final Thing thing, final HttpClient httpClient) {
+        super(thing, httpClient);
         pollIntervalSeconds = POLL_INTERVAL_SECONDS;
     }
 
@@ -124,7 +125,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     }
 
     @Override
-    protected Request getRequest() {
+    protected FMIRequest getRequest() {
         long now = Instant.now().getEpochSecond();
         return new ObservationRequest(new FMISID(fmisid),
                 floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),

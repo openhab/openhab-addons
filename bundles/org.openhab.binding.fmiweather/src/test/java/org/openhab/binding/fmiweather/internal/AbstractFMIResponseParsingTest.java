@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fmiweather.internal;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +24,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -122,6 +125,10 @@ public class AbstractFMIResponseParsingTest {
     }
 
     protected class ClientExposed extends Client {
+        public ClientExposed() {
+            super(mock(HttpClient.class));
+        }
+
         public FMIResponse parseMultiPointCoverageXml(String response) throws FMIUnexpectedResponseException,
                 FMIExceptionReportException, SAXException, IOException, XPathExpressionException {
             return super.parseMultiPointCoverageXml(response);

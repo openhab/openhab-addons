@@ -22,7 +22,7 @@ import org.openhab.binding.fmiweather.internal.config.ForecastConfiguration;
  *
  */
 @NonNullByDefault
-public class ForecastRequest extends Request {
+public class ForecastRequest extends FMIRequest {
 
     public static final String STORED_QUERY_ID_HARMONIE = "fmi::forecast::harmonie::surface::point::multipointcoverage";
     public static final String STORED_QUERY_ID_EDITED = "fmi::forecast::edited::weather::scandinavia::point::multipointcoverage";

@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
 
 import javax.xml.namespace.NamespaceContext;
@@ -33,11 +36,15 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse.Builder;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIExceptionReportException;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIIOException;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -79,6 +86,7 @@ public class Client {
             "ef", "http://inspire.ec.europa.eu/schemas/ef/4.0");
 
     private final Logger logger = LoggerFactory.getLogger(Client.class);
+    private final HttpClient httpClient;
 
     private static final NamespaceContext NAMESPACE_CONTEXT = new NamespaceContext() {
         @Override
@@ -101,7 +109,9 @@ public class Client {
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     private DocumentBuilder documentBuilder;
 
-    public Client() {
+    public Client(final HttpClient httpClient) {
+        this.httpClient = httpClient;
+
         documentBuilderFactory.setNamespaceAware(true);
         try {
             // see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
@@ -126,20 +136,30 @@ public class Client {
      * @throws FMIUnexpectedResponseException on all unexpected content errors
      * @throws FMIExceptionReportException on explicit error responses from the server
      */
-    public FMIResponse query(Request request, int timeoutMillis)
-            throws FMIExceptionReportException, FMIUnexpectedResponseException, FMIIOException {
+    public FMIResponse query(FMIRequest fmiRequest, int timeoutMillis)
+            throws FMIExceptionReportException, FMIUnexpectedResponseException, FMIIOException, InterruptedException {
         try {
-            String url = request.toUrl();
+            String url = fmiRequest.toUrl();
             logger.trace("GET request for {}", url);
-            String responseText = HttpUtil.executeUrl("GET", url, timeoutMillis);
-            if (responseText == null) {
-                throw new FMIIOException(String.format("HTTP error with %s", request.toUrl()));
+            Request request = httpClient.newRequest(url).timeout(timeoutMillis, TimeUnit.MILLISECONDS)
+                    .method(HttpMethod.GET);
+
+            ContentResponse response = request.send();
+
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new FMIIOException("The request failed with HTTP error " + status);
             }
-            logger.trace("Response content: '{}'", responseText);
-            FMIResponse response = parseMultiPointCoverageXml(responseText);
-            logger.debug("Request {} translated to url {}. Response: {}", request, url, response);
-            return response;
-        } catch (IOException e) {
+
+            String responseContent = response.getContentAsString();
+            if (responseContent == null) {
+                throw new FMIIOException(String.format("HTTP error with %s", url));
+            }
+            logger.trace("Response content: '{}'", responseContent);
+            FMIResponse fmiResponse = parseMultiPointCoverageXml(responseContent);
+            logger.debug("Request {} translated to url {}. Response: {}", fmiRequest, url, response);
+            return fmiResponse;
+        } catch (IOException | TimeoutException | ExecutionException e) {
             throw new FMIIOException(e);
         } catch (SAXException | XPathExpressionException e) {
             throw new FMIUnexpectedResponseException(e);
@@ -156,14 +176,24 @@ public class Client {
      * @throws FMIExceptionReportException on explicit error responses from the server
      */
     public Set<Location> queryWeatherStations(int timeoutMillis)
-            throws FMIIOException, FMIUnexpectedResponseException, FMIExceptionReportException {
+            throws FMIIOException, FMIUnexpectedResponseException, FMIExceptionReportException, InterruptedException {
         try {
-            String response = HttpUtil.executeUrl("GET", WEATHER_STATIONS_URL, timeoutMillis);
-            if (response == null) {
+            Request request = httpClient.newRequest(WEATHER_STATIONS_URL).timeout(timeoutMillis, TimeUnit.MILLISECONDS)
+                    .method(HttpMethod.GET);
+
+            ContentResponse response = request.send();
+
+            int status = response.getStatus();
+            if (!HttpStatus.isSuccess(status)) {
+                throw new FMIIOException("The request failed with HTTP error " + status);
+            }
+
+            String responseContent = response.getContentAsString();
+            if (responseContent == null) {
                 throw new FMIIOException(String.format("HTTP error with %s", WEATHER_STATIONS_URL));
             }
-            return parseStations(response);
-        } catch (IOException e) {
+            return parseStations(responseContent);
+        } catch (IOException | TimeoutException | ExecutionException e) {
             throw new FMIIOException(e);
         } catch (XPathExpressionException | SAXException e) {
             throw new FMIUnexpectedResponseException(e);
