@@ -37,7 +37,6 @@ public class HueSyncRegistrationTask implements Runnable {
 
     public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
             Consumer<HueSyncRegistration> action) {
-
         this.connection = connection;
         this.deviceInfo = deviceInfo;
         this.action = action;
