@@ -198,7 +198,7 @@ public class ChannelFactory {
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT, EMPTY);
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
-            list.add(new StateOption(enumOrdinal, StringUtils.capitalize(enumText)));
+            list.add(new StateOption(enumOrdinal, StringUtils.capitalizeByWhitespace(enumText.toLowerCase())));
         }
         return list;
     }
