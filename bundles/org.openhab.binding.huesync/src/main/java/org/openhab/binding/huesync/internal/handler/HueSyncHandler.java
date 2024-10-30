@@ -80,7 +80,6 @@ public class HueSyncHandler extends BaseThingHandler {
         super(thing);
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.httpClient.setName(this.thing.getUID().getAsString());
 
         this.connection = new HueSyncDeviceConnection(this.httpClient, this.getConfigAs(HueSyncConfiguration.class));
     }
