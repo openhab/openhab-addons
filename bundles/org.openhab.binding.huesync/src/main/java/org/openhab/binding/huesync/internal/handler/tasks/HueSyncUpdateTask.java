@@ -38,7 +38,6 @@ public class HueSyncUpdateTask implements Runnable {
 
     public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
             Consumer<@Nullable HueSyncUpdateTaskResultDto> action) {
-
         this.connection = connection;
         this.deviceInfo = deviceInfo;
 
