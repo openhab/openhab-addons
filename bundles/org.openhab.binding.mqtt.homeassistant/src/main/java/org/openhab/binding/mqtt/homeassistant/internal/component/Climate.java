@@ -33,6 +33,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -53,7 +54,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String AWAY_MODE_CH_ID = "away-mode";
     public static final String AWAY_MODE_CH_ID_DEPRECATED = "awayMode";
     public static final String CURRENT_HUMIDITY_CH_ID = "current-humidity";
-    public static final String CURRENT_HUMIDITY_CH_ID_DEPRECATED = "currentHumidity";
     public static final String CURRENT_TEMPERATURE_CH_ID = "current-temperature";
     public static final String CURRENT_TEMPERATURE_CH_ID_DEPRECATED = "currentTemperature";
     public static final String FAN_MODE_CH_ID = "fan-mode";
@@ -173,7 +173,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected @Nullable String modeStateTemplate;
         @SerializedName("mode_state_topic")
         protected @Nullable String modeStateTopic;
-        @SerializedName("modes")
         protected List<String> modes = Arrays.asList("auto", "off", "cool", "heat", "dry", "fan_only");
 
         @SerializedName("preset_mode_command_template")
@@ -185,8 +184,8 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         @SerializedName("preset_mode_value_template")
         protected @Nullable String presetModeStateTemplate;
         @SerializedName("preset_modes")
-        protected List<String> presetModes = Arrays.asList("auto", "manual", "off"); // defaults heavily depend on the
-                                                                                     // type of the device
+        protected List<String> presetModes = List.of(); // defaults heavily depend on the
+                                                        // type of the device
 
         @SerializedName("swing_command_template")
         protected @Nullable String swingCommandTemplate;
@@ -241,11 +240,10 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected @Nullable String powerCommandTopic;
 
         @SerializedName("max_humidity")
-        protected @Nullable BigDecimal maxHumidity;
+        protected BigDecimal maxHumidity = new BigDecimal(99);
         @SerializedName("min_humidity")
-        protected @Nullable BigDecimal minHumidity;
+        protected BigDecimal minHumidity = new BigDecimal(30);
 
-        @SerializedName("initial")
         protected Integer initial = 21;
         @SerializedName("max_temp")
         protected @Nullable BigDecimal maxTemp;
@@ -255,7 +253,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
         protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS; // System unit by default
         @SerializedName("temp_step")
         protected BigDecimal tempStep = BigDecimal.ONE;
-        @SerializedName("precision")
         protected @Nullable BigDecimal precision;
         @SerializedName("send_if_off")
         protected Boolean sendIfOff = true;
@@ -285,9 +282,9 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
         // Probably there should be PercentageValue, but I'm not sure how to use it
-        buildOptionalChannel(newStyleChannels ? CURRENT_HUMIDITY_CH_ID : CURRENT_HUMIDITY_CH_ID_DEPRECATED,
-                ComponentChannelType.NUMBER, new NumberValue(null, null, precision, null), updateListener, null, null,
-                channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, commandFilter);
+        buildOptionalChannel(CURRENT_HUMIDITY_CH_ID, ComponentChannelType.NUMBER,
+                new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), updateListener, null,
+                null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
 
         buildOptionalChannel(newStyleChannels ? CURRENT_TEMPERATURE_CH_ID : CURRENT_TEMPERATURE_CH_ID_DEPRECATED,
                 ComponentChannelType.NUMBER,
@@ -323,10 +320,9 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.swingCommandTemplate, channelConfiguration.swingCommandTopic,
                 channelConfiguration.swingStateTemplate, channelConfiguration.swingStateTopic, commandFilter);
 
-        // Probably there should be PercentageValue, but I'm not sure how to use it
         buildOptionalChannel(TARGET_HUMIDITY_CH_ID, ComponentChannelType.NUMBER,
-                new NumberValue(channelConfiguration.minHumidity, channelConfiguration.maxHumidity,
-                        channelConfiguration.precision, null),
+                new NumberValue(channelConfiguration.minHumidity, channelConfiguration.maxHumidity, null,
+                        Units.PERCENT),
                 updateListener, channelConfiguration.targetHumidityCommandTemplate,
                 channelConfiguration.targetHumidityCommandTopic, channelConfiguration.targetHumidityStateTemplate,
                 channelConfiguration.targetHumidityStateTopic, commandFilter);
