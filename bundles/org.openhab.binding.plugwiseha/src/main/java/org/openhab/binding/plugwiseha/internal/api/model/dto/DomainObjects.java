@@ -30,7 +30,6 @@ public class DomainObjects {
     @XStreamImplicit(itemFieldName = "location", keyFieldName = "id")
     private Locations locations = new Locations();
 
-    @SuppressWarnings("unused")
     @XStreamImplicit(itemFieldName = "module", keyFieldName = "id")
     private Modules modules = new Modules();
 
