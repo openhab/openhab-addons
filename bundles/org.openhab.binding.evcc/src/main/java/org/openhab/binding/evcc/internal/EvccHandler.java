@@ -964,7 +964,7 @@ public class EvccHandler extends BaseThingHandler {
 
         Plan plan = null;
         if (vehicle != null) {
-            vehicle.getPlan();
+            plan = vehicle.getPlan();
         }
         if (plan == null && vehiclePlans.get(vehicleName) == null) {
             vehiclePlans.put(vehicleName, new Triple<>(false, 100f, ZonedDateTime.now().plusHours(12)));
