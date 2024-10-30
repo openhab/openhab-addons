@@ -41,7 +41,7 @@ public class XActions implements ThingActions {
     private @Nullable XHandler handler;
 
     @RuleAction(label = "@text/sendPostActionLabel", description = "@text/sendPostActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPost(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPost(
             @ActionInput(name = "text") @Nullable String text) {
         if (text == null) {
             logger.warn("Cannot send Post as text is missing.");
@@ -58,7 +58,7 @@ public class XActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentPostActionLabel", description = "@text/sendAttachmentPostActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendPostWithAttachment(
             @ActionInput(name = "text") @Nullable String text, @ActionInput(name = "url") @Nullable String urlString) {
         if (text == null) {
             logger.warn("Cannot send Post as text is missing.");
@@ -79,7 +79,7 @@ public class XActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendDirectMessageActionLabel", description = "@text/sendDirectMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendDirectMessage(
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendDirectMessage(
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "text") @Nullable String text) {
         if (recipient == null) {
