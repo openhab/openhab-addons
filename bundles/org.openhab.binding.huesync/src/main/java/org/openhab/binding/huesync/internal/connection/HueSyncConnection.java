@@ -216,7 +216,6 @@ public class HueSyncConnection {
 
     private ContentResponse executeRequest(HttpMethod method, String endpoint, String payload)
             throws InterruptedException, TimeoutException, ExecutionException {
-
         String uri = String.format(REQUEST_FORMAT, this.host, this.port, API, endpoint);
 
         Request request = this.httpClient.newRequest(uri).method(method);
