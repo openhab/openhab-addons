@@ -31,6 +31,7 @@ import org.openhab.binding.plugwiseha.internal.api.exception.PlugwiseHAException
 import org.openhab.binding.plugwiseha.internal.api.model.PlugwiseHAController;
 import org.openhab.binding.plugwiseha.internal.api.model.dto.Location;
 import org.openhab.binding.plugwiseha.internal.config.PlugwiseHAThingConfig;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -127,17 +128,21 @@ public class PlugwiseHAZoneHandler extends PlugwiseHABaseHandler<Location, Plugw
                         }
                         break;
                     case ZONE_SETPOINT_CHANNEL:
+                        Unit<Temperature> remoteUnit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
+                                .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+                        QuantityType<?> state = null;
                         if (command instanceof QuantityType quantityCommand) {
-                            Unit<Temperature> unit = entity.getSetpointTemperatureUnit().orElse(UNIT_CELSIUS)
-                                    .equals(UNIT_CELSIUS) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
-                            QuantityType<?> state = quantityCommand.toUnit(unit);
-                            if (state != null) {
-                                try {
-                                    controller.setLocationThermostat(entity, state.doubleValue());
-                                } catch (PlugwiseHAException e) {
-                                    logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
-                                            entity.getSetpointTemperature().orElse(null), state.doubleValue());
-                                }
+                            state = quantityCommand.toUnit(remoteUnit);
+                        } else if (command instanceof DecimalType decimalCommand) {
+                            state = new QuantityType<>(decimalCommand.doubleValue(), remoteUnit);
+                        }
+                        if (state != null) {
+                            try {
+                                controller.setLocationThermostat(entity, state.doubleValue());
+                            } catch (InterruptedException | PlugwiseHAException e) {
+
+                                logger.warn("Unable to update setpoint for zone '{}': {} -> {}", entity.getName(),
+                                        entity.getSetpointTemperature().orElse(null), state.doubleValue());
                             }
                         }
                         break;

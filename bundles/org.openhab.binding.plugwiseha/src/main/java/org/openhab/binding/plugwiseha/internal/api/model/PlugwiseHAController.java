@@ -101,10 +101,13 @@ public class PlugwiseHAController {
         callback.run();
     }
 
+    /**
+     * Refreshes all changed objects. Will result in a call to the remote service.
+     * 
+     * @throws PlugwiseHAException
+     */
     public void refresh() throws PlugwiseHAException {
-        synchronized (this) {
-            this.getUpdatedDomainObjects();
-        }
+        this.getUpdatedDomainObjects();
     }
 
     // Public API methods
@@ -113,7 +116,7 @@ public class PlugwiseHAController {
         return getGatewayInfo(false);
     }
 
-    public GatewayInfo getGatewayInfo(Boolean forceRefresh) throws PlugwiseHAException {
+    private synchronized GatewayInfo getGatewayInfo(Boolean forceRefresh) throws PlugwiseHAException {
         GatewayInfo gatewayInfo = null;
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects != null) {
@@ -138,7 +141,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
+    private synchronized Appliances getAppliances(Boolean forceRefresh) throws PlugwiseHAException {
         Appliances appliances = null;
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects != null) {
@@ -167,6 +170,13 @@ public class PlugwiseHAController {
         }
     }
 
+    /**
+     * Gets the appliance with the givven id. May result in a call to the remote service.
+     * 
+     * @param id of the appliance
+     * @return Appliance may be null
+     * @throws PlugwiseHAException
+     */
     public @Nullable Appliance getAppliance(String id) throws PlugwiseHAException {
         Appliances appliances = this.getAppliances(false);
         if (!appliances.containsKey(id)) {
@@ -181,7 +191,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public Locations getLocations(Boolean forceRefresh) throws PlugwiseHAException {
+    private synchronized Locations getLocations(Boolean forceRefresh) throws PlugwiseHAException {
         Locations locations = null;
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects != null) {
@@ -209,6 +219,13 @@ public class PlugwiseHAController {
         }
     }
 
+    /**
+     * Gets the location with the givven id. May result in a call to the remote service.
+     * 
+     * @param id of the location
+     * @return Location may be null
+     * @throws PlugwiseHAException
+     */
     public @Nullable Location getLocation(String id) throws PlugwiseHAException {
         Locations locations = this.getLocations(false);
         if (!locations.containsKey(id)) {
@@ -223,7 +240,13 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable DomainObjects getDomainObjects() throws PlugwiseHAException {
+    /**
+     * Gets all objects from the remote service resulting in a call to the remote service.
+     * 
+     * @return DomainObjects may be null
+     * @throws PlugwiseHAException
+     */
+    public synchronized @Nullable DomainObjects getDomainObjects() throws PlugwiseHAException {
         PlugwiseHAControllerRequest<DomainObjects> request;
 
         request = newRequest(DomainObjects.class, this.domainObjectsTransformer);
@@ -239,14 +262,14 @@ public class PlugwiseHAController {
         return mergeDomainObjects(domainObjects);
     }
 
-    public @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
+    private @Nullable DomainObjects getUpdatedDomainObjects() throws PlugwiseHAException {
         ZonedDateTime localGatewayUpdateDateTime = this.gatewayUpdateDateTime;
         ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
 
         if (localGatewayUpdateDateTime == null || localGatewayFullUpdateDateTime == null) {
             return getDomainObjects();
         } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
-            return getUpdatedDomainObjects(localGatewayUpdateDateTime);
+            return getUpdatedDomainObjects(localGatewayUpdateDateTime.toEpochSecond());
         } else if (localGatewayFullUpdateDateTime
                 .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
             return getDomainObjects();
@@ -255,11 +278,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public @Nullable DomainObjects getUpdatedDomainObjects(ZonedDateTime since) throws PlugwiseHAException {
-        return getUpdatedDomainObjects(since.toEpochSecond());
-    }
-
-    public @Nullable DomainObjects getUpdatedDomainObjects(Long since) throws PlugwiseHAException {
+    private synchronized @Nullable DomainObjects getUpdatedDomainObjects(Long since) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<DomainObjects> request;
 
         request = newRequest(DomainObjects.class, this.domainObjectsTransformer);
@@ -276,7 +295,7 @@ public class PlugwiseHAController {
         return mergeDomainObjects(domainObjects);
     }
 
-    public void setLocationThermostat(Location location, Double temperature) throws PlugwiseHAException {
+    public synchronized void setLocationThermostat(Location location, Double temperature) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
@@ -291,7 +310,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public void setThermostat(Appliance appliance, Double temperature) throws PlugwiseHAException {
+    public synchronized void setThermostat(Appliance appliance, Double temperature) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = appliance.getActuatorFunctionalities()
                 .getFunctionalityThermostat();
@@ -307,7 +326,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public void setOffsetTemperature(Appliance appliance, Double temperature) throws PlugwiseHAException {
+    public synchronized void setOffsetTemperature(Appliance appliance, Double temperature) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> offsetTemperatureFunctionality = appliance.getActuatorFunctionalities()
                 .getFunctionalityOffsetTemperature();
@@ -323,7 +342,7 @@ public class PlugwiseHAController {
         }
     }
 
-    public void setPreHeating(Location location, Boolean state) throws PlugwiseHAException {
+    public synchronized void setPreHeating(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
@@ -335,7 +354,7 @@ public class PlugwiseHAController {
         executeRequest(request);
     }
 
-    public void setAllowCooling(Location location, Boolean state) throws PlugwiseHAException {
+    public synchronized void setAllowCooling(Location location, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
         Optional<ActuatorFunctionality> thermostat = location.getActuatorFunctionalities().getFunctionalityThermostat();
 
@@ -347,7 +366,7 @@ public class PlugwiseHAController {
         executeRequest(request);
     }
 
-    public void setRegulationControl(Location location, String state) throws PlugwiseHAException {
+    public synchronized void setRegulationControl(Location location, String state) throws PlugwiseHAException {
         List<String> allowStates = Arrays.asList("active", "passive", "off");
         if (!allowStates.contains(state.toLowerCase())) {
             this.logger.warn("Trying to set the regulation control to an invalid state");
@@ -365,7 +384,7 @@ public class PlugwiseHAController {
         executeRequest(request);
     }
 
-    public void setRelay(Appliance appliance, Boolean state) throws PlugwiseHAException {
+    public synchronized void setRelay(Appliance appliance, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
 
         request.setPath("/core/appliances");
@@ -375,7 +394,7 @@ public class PlugwiseHAController {
         executeRequest(request);
     }
 
-    public void setRelayLock(Appliance appliance, Boolean state) throws PlugwiseHAException {
+    public synchronized void setRelayLock(Appliance appliance, Boolean state) throws PlugwiseHAException {
         PlugwiseHAControllerRequest<Void> request = newRequest(Void.class);
 
         request.setPath("/core/appliances");
@@ -385,7 +404,7 @@ public class PlugwiseHAController {
         executeRequest(request);
     }
 
-    public void setPresetScene(Location location, String state) throws PlugwiseHAException {
+    public synchronized void setPresetScene(Location location, String state) throws PlugwiseHAException {
         List<String> allowStates = Arrays.asList("home", "asleep", "away", "vacation", "no_frost");
         if (!allowStates.contains(state.toLowerCase())) {
             this.logger.warn("Trying to set the preset scene to an invalid state");
@@ -407,19 +426,6 @@ public class PlugwiseHAController {
         request.setBodyParameter(locations);
 
         executeRequest(request);
-    }
-
-    public ZonedDateTime ping() throws PlugwiseHAException {
-        PlugwiseHAControllerRequest<Void> request;
-
-        request = newRequest(Void.class, null);
-
-        request.setPath("/cache/gateways");
-        request.addPathParameter("ping");
-
-        executeRequest(request);
-
-        return ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
     }
 
     // Protected and private methods
@@ -444,16 +450,13 @@ public class PlugwiseHAController {
 
     @SuppressWarnings("null")
     private <T> T executeRequest(PlugwiseHAControllerRequest<T> request) throws PlugwiseHAException {
-        T result;
-        result = request.execute();
-        return result;
+        return request.execute();
     }
 
     private DomainObjects mergeDomainObjects(@Nullable DomainObjects updatedDomainObjects) {
         DomainObjects localDomainObjects = this.domainObjects;
         if (localDomainObjects == null && updatedDomainObjects != null) {
-            this.domainObjects = updatedDomainObjects;
-            return updatedDomainObjects;
+            return this.domainObjects = updatedDomainObjects;
         } else if (localDomainObjects != null && updatedDomainObjects == null) {
             return localDomainObjects;
         } else if (localDomainObjects != null && updatedDomainObjects != null) {
@@ -467,8 +470,7 @@ public class PlugwiseHAController {
             if (locations != null) {
                 localDomainObjects.mergeLocations(locations);
             }
-            this.domainObjects = localDomainObjects;
-            return localDomainObjects;
+            return this.domainObjects = localDomainObjects;
         } else {
             return new DomainObjects();
         }

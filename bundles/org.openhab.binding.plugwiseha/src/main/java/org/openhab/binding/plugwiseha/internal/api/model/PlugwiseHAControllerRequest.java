@@ -72,6 +72,7 @@ public class PlugwiseHAControllerRequest<T> {
     private static final String CONTENT_TYPE_TEXT_XML = MimeTypes.Type.TEXT_XML_8859_1.toString();
     private static final long TIMEOUT_SECONDS = 5;
     private static final int REQUEST_MAX_RETRY_COUNT = 3;
+    private static final int RETRY_DELAY_TIMOUT = 3000;
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAControllerRequest.class);
     private final XStream xStream;
@@ -252,6 +253,12 @@ public class PlugwiseHAControllerRequest<T> {
         } catch (TimeoutException e) {
             if (retries > 0) {
                 this.logger.debug("TimeoutException occured, remaining retries {}", retries - 1);
+                try {
+                    Thread.sleep(RETRY_DELAY_TIMOUT);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new PlugwiseHATimeoutException(ie);
+                }
                 return getContentResponse(retries - 1);
             } else {
                 throw new PlugwiseHATimeoutException(e);
