@@ -55,7 +55,7 @@ public class HueSyncDeviceConnection {
 
     private HueSyncConnection connection;
 
-    private Map<String, Consumer<Command>> DeviceCommandExecutors = new HashMap<>();
+    private Map<String, Consumer<Command>> deviceCommandExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
@@ -67,15 +67,15 @@ public class HueSyncDeviceConnection {
     // #region private
 
     private void registerCommandHandlers() {
-        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.MODE,
+        this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.MODE,
                 defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.MODE));
-        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SOURCE,
+        this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SOURCE,
                 defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SOURCE));
-        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS,
+        this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS,
                 defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.BRIGHTNESS));
-        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
+        this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
                 defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.SYNC));
-        this.DeviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.HDMI,
+        this.deviceCommandExecutors.put(HueSyncConstants.CHANNELS.COMMANDS.HDMI,
                 defaultHandler(HueSyncConstants.ENDPOINTS.EXECUTION_ENDPOINTS.HDMI));
     }
 
@@ -123,8 +123,8 @@ public class HueSyncDeviceConnection {
             return;
         }
 
-        if (this.DeviceCommandExecutors.containsKey(commandId)) {
-            this.DeviceCommandExecutors.get(commandId).accept(command);
+        if (this.deviceCommandExecutors.containsKey(commandId)) {
+            this.deviceCommandExecutors.get(commandId).accept(command);
         } else {
             this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
         }
@@ -159,7 +159,7 @@ public class HueSyncDeviceConnection {
                 dto.appName = HueSyncConstants.APPLICATION_NAME;
                 dto.instanceName = id;
 
-                String payload = HueSyncConnection.ObjectMapper.writeValueAsString(dto);
+                String payload = HueSyncConnection.OBJECT_MAPPER.writeValueAsString(dto);
 
                 HueSyncRegistration registration = this.connection.executeRequest(HttpMethod.POST,
                         ENDPOINTS.REGISTRATIONS, payload, HueSyncRegistration.class);

@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class HueSyncConnection {
-    public static final ObjectMapper ObjectMapper = new ObjectMapper()
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root level (port 443,
@@ -194,7 +194,7 @@ public class HueSyncConnection {
 
     private @Nullable <T> T deserialize(String json, Class<T> type) {
         try {
-            return ObjectMapper.readValue(json, type);
+            return OBJECT_MAPPER.readValue(json, type);
         } catch (JsonProcessingException | NoClassDefFoundError e) {
             this.logger.error("{}", e.getMessage());
 
