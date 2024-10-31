@@ -13,7 +13,6 @@
 package org.openhab.binding.electroluxappliances.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link ElectroluxAppliancesBridgeConfiguration} class contains fields mapping bridge configuration parameters.
@@ -22,8 +21,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ElectroluxAppliancesBridgeConfiguration {
-    public @Nullable String apiKey;
-    public @Nullable String accessToken;
-    public @Nullable String refreshToken;
-    public int refresh;
+    public String apiKey = "";
+    public String accessToken = "";
+    public String refreshToken = "";
+    public int refresh = 600;
 }

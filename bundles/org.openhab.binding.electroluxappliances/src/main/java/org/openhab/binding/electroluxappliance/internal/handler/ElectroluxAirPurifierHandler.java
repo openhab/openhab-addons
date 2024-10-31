@@ -35,7 +35,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -105,13 +104,11 @@ public class ElectroluxAirPurifierHandler extends ElectroluxAppliancesHandler {
                     }
                 }
 
-                Bridge bridge = getBridge();
-                if (bridge != null) {
-                    BridgeHandler bridgeHandler = bridge.getHandler();
-                    if (bridgeHandler != null) {
-                        bridgeHandler.handleCommand(new ChannelUID(this.thing.getUID(),
-                                ElectroluxAppliancesBindingConstants.CHANNEL_STATUS), RefreshType.REFRESH);
-                    }
+                final Bridge bridge = getBridge();
+                if (bridge != null && bridge.getHandler() instanceof ElectroluxAppliancesBridgeHandler bridgeHandler) {
+                    bridgeHandler.handleCommand(
+                            new ChannelUID(this.thing.getUID(), ElectroluxAppliancesBindingConstants.CHANNEL_STATUS),
+                            RefreshType.REFRESH);
                 }
             }
         }
@@ -132,61 +129,38 @@ public class ElectroluxAirPurifierHandler extends ElectroluxAppliancesHandler {
     }
 
     private State getValue(String channelId, ApplianceDTO dto) {
+        var reported = ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported();
         switch (channelId) {
             case CHANNEL_TEMPERATURE:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getTemp(),
-                        SIUnits.CELSIUS);
+                return new QuantityType<>(reported.getTemp(), SIUnits.CELSIUS);
             case CHANNEL_HUMIDITY:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getHumidity(),
-                        Units.PERCENT);
+                return new QuantityType<>(reported.getHumidity(), Units.PERCENT);
             case CHANNEL_TVOC:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getTvoc(),
-                        Units.PARTS_PER_BILLION);
+                return new QuantityType<>(reported.getTvoc(), Units.PARTS_PER_BILLION);
             case CHANNEL_PM1:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getPm1(),
-                        Units.MICROGRAM_PER_CUBICMETRE);
+                return new QuantityType<>(reported.getPm1(), Units.MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_PM25:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getPm25(),
-                        Units.MICROGRAM_PER_CUBICMETRE);
+                return new QuantityType<>(reported.getPm25(), Units.MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_PM10:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getPm10(),
-                        Units.MICROGRAM_PER_CUBICMETRE);
+                return new QuantityType<>(reported.getPm10(), Units.MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_CO2:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getCo2(),
-                        Units.PARTS_PER_MILLION);
+                return new QuantityType<>(reported.getCo2(), Units.PARTS_PER_MILLION);
             case CHANNEL_FAN_SPEED:
-                return new StringType(Integer.toString(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getFanspeed()));
+                return new StringType(Integer.toString(reported.getFanspeed()));
             case CHANNEL_FILTER_LIFE:
-                return new QuantityType<>(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getFilterLife(),
-                        Units.PERCENT);
+                return new QuantityType<>(reported.getFilterLife(), Units.PERCENT);
             case CHANNEL_IONIZER:
-                return OnOffType.from(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().isIonizer());
+                return OnOffType.from(reported.isIonizer());
             case CHANNEL_UI_LIGHT:
-                return OnOffType.from(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().isUiLight());
+                return OnOffType.from(reported.isUiLight());
             case CHANNEL_SAFETY_LOCK:
-                return OnOffType.from(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().isSafetyLock());
+                return OnOffType.from(reported.isSafetyLock());
             case CHANNEL_WORK_MODE:
-                return new StringType(
-                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getWorkmode());
+                return new StringType(reported.getWorkmode());
             case CHANNEL_DOOR_OPEN:
-                return ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().isDoorOpen()
-                        ? OpenClosedType.OPEN
-                        : OpenClosedType.CLOSED;
+                return reported.isDoorOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case CONNECTION_STATE:
-                return "Connected".equals(((AirPurifierStateDTO) dto.getApplianceState()).getConnectionState())
-                        ? OnOffType.from(true)
+                return "Connected".equals(dto.getApplianceState().getConnectionState()) ? OnOffType.from(true)
                         : OnOffType.from(false);
         }
         return UnDefType.UNDEF;
@@ -195,22 +169,20 @@ public class ElectroluxAirPurifierHandler extends ElectroluxAppliancesHandler {
     @Override
     public Map<String, String> refreshProperties() {
         Map<String, String> properties = new HashMap<>();
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ElectroluxAppliancesBridgeHandler bridgeHandler = (ElectroluxAppliancesBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                ApplianceDTO dto = bridgeHandler.getElectroluxAppliancesThings().get(config.getSerialNumber());
-                if (dto != null) {
-                    properties.put(Thing.PROPERTY_VENDOR, dto.getApplianceInfo().getApplianceInfo().getBrand());
-                    properties.put(PROPERTY_COLOUR, dto.getApplianceInfo().getApplianceInfo().getColour());
-                    properties.put(PROPERTY_DEVICE, dto.getApplianceInfo().getApplianceInfo().getDeviceType());
-                    properties.put(Thing.PROPERTY_MODEL_ID, dto.getApplianceInfo().getApplianceInfo().getModel());
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER,
-                            dto.getApplianceInfo().getApplianceInfo().getSerialNumber());
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, ((AirPurifierStateDTO) dto.getApplianceState())
-                            .getProperties().getReported().getFrmVerNIU());
 
-                }
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof ElectroluxAppliancesBridgeHandler bridgeHandler) {
+            ApplianceDTO dto = bridgeHandler.getElectroluxAppliancesThings().get(config.getSerialNumber());
+            if (dto != null) {
+                var applianceInfo = dto.getApplianceInfo().getApplianceInfo();
+                properties.put(Thing.PROPERTY_VENDOR, applianceInfo.getBrand());
+                properties.put(PROPERTY_COLOUR, applianceInfo.getColour());
+                properties.put(PROPERTY_DEVICE, applianceInfo.getDeviceType());
+                properties.put(Thing.PROPERTY_MODEL_ID, applianceInfo.getModel());
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, applianceInfo.getSerialNumber());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                        ((AirPurifierStateDTO) dto.getApplianceState()).getProperties().getReported().getFrmVerNIU());
+
             }
         }
         return properties;

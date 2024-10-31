@@ -25,8 +25,8 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -53,12 +53,9 @@ public abstract class ElectroluxAppliancesHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Command received: {} on channelID: {}", command, channelUID);
         if (CHANNEL_STATUS.equals(channelUID.getId()) || command instanceof RefreshType) {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                BridgeHandler bridgeHandler = bridge.getHandler();
-                if (bridgeHandler != null) {
-                    bridgeHandler.handleCommand(channelUID, command);
-                }
+            final Bridge bridge = getBridge();
+            if (bridge != null && bridge.getHandler() instanceof ElectroluxAppliancesBridgeHandler bridgeHandler) {
+                bridgeHandler.handleCommand(channelUID, command);
             }
         }
     }
@@ -66,13 +63,18 @@ public abstract class ElectroluxAppliancesHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(ElectroluxAppliancesConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
+        if (config.getSerialNumber().isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration of Serial Number is mandatory");
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
 
-        scheduler.execute(() -> {
-            update();
-            Map<String, String> properties = refreshProperties();
-            updateProperties(properties);
-        });
+            scheduler.execute(() -> {
+                update();
+                Map<String, String> properties = refreshProperties();
+                updateProperties(properties);
+            });
+        }
     }
 
     public void update() {
@@ -85,23 +87,17 @@ public abstract class ElectroluxAppliancesHandler extends BaseThingHandler {
     }
 
     protected @Nullable ElectroluxGroupAPI getElectroluxGroupAPI() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ElectroluxAppliancesBridgeHandler handler = (ElectroluxAppliancesBridgeHandler) bridge.getHandler();
-            if (handler != null) {
-                return handler.getElectroluxDeltaAPI();
-            }
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof ElectroluxAppliancesBridgeHandler bridgeHandler) {
+            return bridgeHandler.getElectroluxDeltaAPI();
         }
         return null;
     }
 
     protected @Nullable ApplianceDTO getApplianceDTO() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            ElectroluxAppliancesBridgeHandler bridgeHandler = (ElectroluxAppliancesBridgeHandler) bridge.getHandler();
-            if (bridgeHandler != null) {
-                return bridgeHandler.getElectroluxAppliancesThings().get(config.getSerialNumber());
-            }
+        final Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof ElectroluxAppliancesBridgeHandler bridgeHandler) {
+            return bridgeHandler.getElectroluxAppliancesThings().get(config.getSerialNumber());
         }
         return null;
     }

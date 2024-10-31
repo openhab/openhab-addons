@@ -2,43 +2,40 @@
 
 This is an openHAB binding for Electrolux Appliances.
 
-![Electrolux Pure A9](doc/electrolux_pure_a9.png)
-
 ## Supported Things
 
 This binding supports the following thing types:
 
 - api: Bridge - Implements the Electrolux Group API that is used to communicate with the different appliances
-
-- electroluxairpurifier: The Electrolux Air Purifier
-
-- electroluxwashingmachine: The Electrolux Washing Machine
+- air-purifier: The Electrolux Air Purifier
+- washing-machine: The Electrolux Washing Machine
 
 ## Discovery
 
-After the configuration of the Bridge, your Electrolux appliances will be automatically discovered and placed as a thing in the inbox.
+After the configuration of the `api` bridge, your Electrolux appliances will be automatically discovered and placed as a thing in the inbox.
 
 ### Configuration Options
 
-Only the bridge require manual configuration. The Electrolux appliances things can be added by hand, or you can let the discovery mechanism automatically find them.
+Only the bridge requires manual configuration. 
+The Electrolux appliances things can be added by hand, or you can let the discovery mechanism automatically find them.
 
-#### Bridge
+#### `api` Bridge
 
-| Parameter    | Description                                           | Type   | Default  | Required |
-|--------------|-------------------------------------------------------|--------|----------|----------|
-| apiKey       | Your created API key on developer.electrolux.one      | String | NA       | yes      |        
-| accessToken  | Your created access token on developer.electrolux.one | String | NA       | yes      |
-| refreshToken | Your created access token on developer.electrolux.one | String | NA       | yes      |
-| refresh      | Specifies the refresh interval in second              | Number | 600      | yes      |
+| Parameter    | Description                                            | Type   | Default  | Required |
+|--------------|--------------------------------------------------------|--------|----------|----------|
+| apiKey       | Your created API key on developer.electrolux.one       | String | NA       | yes      |        
+| accessToken  | Your created access token on developer.electrolux.one  | String | NA       | yes      |
+| refreshToken | Your created refresh token on developer.electrolux.one | String | NA       | yes      |
+| refresh      | Specifies the refresh interval in second               | Number | 600      | yes      |
 
-#### Electrolux Air Purifier
+#### `air-purifier` Electrolux Air Purifier
 
 | Parameter    | Description                                                              | Type   | Default  | Required |
 |--------------|--------------------------------------------------------------------------|--------|----------|----------|
 | serialNumber | Serial Number of your Electrolux appliance found in the Electrolux app   | Number | NA       | yes      |
 
 
-#### Electrolux Washing Machine
+#### `washing-machine` Electrolux Washing Machine
 
 | Parameter    | Description                                                              | Type   | Default  | Required |
 |--------------|--------------------------------------------------------------------------|--------|----------|----------|
@@ -60,14 +57,14 @@ The following channels are supported:
 | pm2_5                       | Number:Density        | This channel reports the Particulate Matter 2.5 in microgram/m3.               |
 | pm10                        | Number:Density        | This channel reports the Particulate Matter 10 in microgram/m3.                |
 | co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                     |
-| fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                     |
-| filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                           |
+| fan-speed                   | Number                | This channel sets and reports the current fan speed (1-9).                     |
+| filter-life                 | Number:Dimensionless  | This channel reports the remaining filter life in %.                           |
 | ionizer                     | Switch                | This channel sets and reports the status of the Ionizer function (On/Off).     |
-| doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                       |
-| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)  |
-| uiLIght                     | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
-| safetyLock                  | Switch                | This channel sets and reports the status of the Safety Lock function (On/Off). |
-| connectionState             | Switch                | This channel reports the connection status.                                    |
+| door-open                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
+| work-mode                   | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)  |
+| ui-lIght                    | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
+| safety-lock                 | Contact               | This channel sets and reports the status of the Safety Lock function.          |
+| connection-state            | Switch                | This channel reports the connection status.                                    |
 
 
 
@@ -76,61 +73,60 @@ The following channels are supported:
 
 The following channels are supported:
 
-| Channel Type ID             | Item Type             | Description                                                                    |
-|-----------------------------|-----------------------|--------------------------------------------------------------------------------|
-| doorState                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
-| doorLock                    | Switch                | This channel reports the status of the door lock (On/Off).                     |
-| startTime                   | Number:Time           | This channel reports the start time for a washing program.                     |
-| timeToEnd                   | Number:Time           | This channel reports the time to end for a washing program.                    |
-| cyclePhase                  | String                | This channel reports the washing cycle phase.                                  |
-| analogTemperature           | String                | This channel reports the washing temperature.                                  |
-| steamValue                  | String                | This channel reports the washing steam value.                                  |
-| programsOrder               | String                | This channel reports the washing program.                                      |
-| analogSpinSpeed             | String                | This channel reports the washing spin speed.                                   |
-| applianceState              | String                | This channel reports the appliance state.                                      |
-| applianceMode               | String                | This channel reports the appliance mode.                                       |
-| applianceTotalWorkingTime   | Number:Time           | This channel reports the total working time for the washing machine.           |
-| applianceUiSwVersion        | String                | This channel reports the appliance UI SW version.                              |
-| optisenseResult             | String                | This channel reports the optisense result.                                     |
-| detergentExtradosage        | String                | This channel reports the detergent extra dosage.                               |
-| softenerExtradosage         | String                | This channel reports the softener extra dosage.                                |
-| waterUsage                  | Number                | This channel reports the water usage.                                          |
-| totalWashCyclesCount        | Number                | This channel reports the total number of washing cycles.                       |
-| connectionState             | Switch                | This channel reports the connection status.                                    |
+| Channel Type ID              | Item Type             | Description                                                                    |
+|------------------------------|-----------------------|--------------------------------------------------------------------------------|
+| door-state                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
+| door-lock                    | Contact               | This channel reports the status of the door lock.                              |
+| start-time                   | Number:Time           | This channel reports the start time for a washing program.                     |
+| time-to-end                  | Number:Time           | This channel reports the time to end for a washing program.                    |
+| cycle-phase                  | String                | This channel reports the washing cycle phase.                                  |
+| analog-temperature           | String                | This channel reports the washing temperature.                                  |
+| steam-value                  | String                | This channel reports the washing steam value.                                  |
+| programs-order               | String                | This channel reports the washing program.                                      |
+| analog-spin-speed            | String                | This channel reports the washing spin speed.                                   |
+| appliance-state              | String                | This channel reports the appliance state.                                      |
+| appliance-mode               | String                | This channel reports the appliance mode.                                       |
+| appliance-total-working-time | Number:Time           | This channel reports the total working time for the washing machine.           |
+| appliance-ui-sw-version      | String                | This channel reports the appliance UI SW version.                              |
+| optisense-result             | String                | This channel reports the optisense result.                                     |
+| detergent-extradosage        | String                | This channel reports the detergent extra dosage.                               |
+| softener-extradosage         | String                | This channel reports the softener extra dosage.                                |
+| water-usage                  | Number                | This channel reports the water usage.                                          |
+| total-wash-cycles-count      | Number                | This channel reports the total number of washing cycles.                       |
+| connection-state             | Switch                | This channel reports the connection status.                                    |
 
 
 
 
 ## Full Example
-
-### Things-file
+### `demo.things` Example
 
 ```java
 // Bridge configuration
 Bridge electroluxappliances:api:myAPI "Electrolux Group API" [apiKey="12345678", accessToken="12345678", refreshToken="12345678", refresh="300"] {
 
-     Thing electroluxpurea9 myElectroluxPureA9  "Electrolux Pure A9"    [ serialNummber="123456789" ]
+     Thing air-purifier myair-purifier  "Electrolux Pure A9"    [ serialNummber="123456789" ]
      
 }
 ```
 
-## Items-file
+##  `demo.items` Example
 
 ```java
 // CO2
-Number:Dimensionless electroluxappliancesCO2 "Electrolux Air CO2 [%d ppm]" {channel="electroluxappliances:electroluxpurea9:myAPI:MyElectroluxPureA9:co2"}
+Number:Dimensionless electroluxappliancesCO2 "Electrolux Air CO2 [%d ppm]" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:co2"}
 // Temperature
-Number:Temperature electroluxappliancesTemperature "Electrolux Air Temperature" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:temperature"}
+Number:Temperature electroluxappliancesTemperature "Electrolux Air Temperature" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:temperature"}
 // Door status
-Contact electroluxappliancesDoor "Electrolux Air Door Status" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:doorOpen"}
+Contact electroluxappliancesDoor "Electrolux Air Door Status" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:doorOpen"}
 // Work mode
-String electroluxappliancesWorkModeSetting "electroluxappliances Work Mode Setting" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:workMode"}
+String electroluxappliancesWorkModeSetting "electroluxappliances Work Mode Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:workMode"}
 // Fan speed
-Number electroluxappliancesFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:fanSpeed"}
+Number electroluxappliancesFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:fanSpeed"}
 // UI Light
-Switch electroluxappliancesUILight "Electrolux Air UI Light Setting" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:uiLight"}
+Switch electroluxappliancesUILight "Electrolux Air UI Light Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:uiLight"}
 // Ionizer
-Switch electroluxappliancesIonizer "Electrolux Air Ionizer Setting" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:ionizer"}
+Switch electroluxappliancesIonizer "Electrolux Air Ionizer Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:ionizer"}
 // Safety Lock
-Switch electroluxappliancesSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliances:electroluxpurea9:myAPI:myElectroluxPureA9:safetyLock"}
+Switch electroluxappliancesSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:safetyLock"}
 ```

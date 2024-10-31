@@ -79,22 +79,20 @@ public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler impleme
     public void initialize() {
         ElectroluxAppliancesBridgeConfiguration config = getConfigAs(ElectroluxAppliancesBridgeConfiguration.class);
 
-        ElectroluxGroupAPI electroluxGroupAPI = new ElectroluxGroupAPI(config, gson, httpClient, this);
         refreshTimeInSeconds = config.refresh;
 
-        if (config.apiKey == null || config.accessToken == null || config.refreshToken == null) {
+        if (config.apiKey.isBlank() || config.accessToken.isBlank() || config.refreshToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of API key, access and refresh token is mandatory");
-        } else if (refreshTimeInSeconds < 0) {
+        } else if (refreshTimeInSeconds < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh time cannot be negative!");
+                    "Refresh time cannot be less than 10!");
         } else {
             try {
-                this.api = electroluxGroupAPI;
+                this.api = new ElectroluxGroupAPI(config, gson, httpClient, this);
                 scheduler.execute(() -> {
                     updateStatus(ThingStatus.UNKNOWN);
                     startAutomaticRefresh();
-
                 });
             } catch (RuntimeException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -108,7 +106,6 @@ public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler impleme
         Configuration configuration = editConfiguration();
         configuration.put("accessToken", newAccessToken);
         configuration.put("refreshToken", newRefreshToken);
-
         // Update the configuration
         updateConfiguration(configuration);
     }
@@ -175,7 +172,7 @@ public class ElectroluxAppliancesBridgeHandler extends BaseBridgeHandler impleme
     private synchronized void updateNow() {
         Future<?> localRef = instantUpdate;
         if (localRef == null || localRef.isDone()) {
-            instantUpdate = scheduler.schedule(this::refreshAndUpdateStatus, 5, TimeUnit.SECONDS);
+            instantUpdate = scheduler.schedule(this::refreshAndUpdateStatus, 0, TimeUnit.SECONDS);
         } else {
             logger.debug("Already waiting for scheduled refresh");
         }

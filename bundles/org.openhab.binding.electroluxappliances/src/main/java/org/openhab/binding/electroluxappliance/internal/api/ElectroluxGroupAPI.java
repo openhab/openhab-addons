@@ -18,6 +18,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -54,7 +56,6 @@ public class ElectroluxGroupAPI {
     private static final String TOKEN_URL = BASE_URL + "/api/v1/token/refresh";
     private static final String APPLIANCES_URL = BASE_URL + "/api/v1/appliances";
 
-    private static final String JSON_CONTENT_TYPE = "application/json";
     private static final int MAX_RETRIES = 3;
     private static final int REQUEST_TIMEOUT_MS = 10_000;
 
@@ -200,20 +201,19 @@ public class ElectroluxGroupAPI {
     private Request createRequest(String uri, HttpMethod httpMethod) {
         Request request = httpClient.newRequest(uri).method(httpMethod);
         request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);
-        request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+        request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+        request.header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
-        logger.debug("HTTP Request {}.", request.toString());
+        logger.trace("HTTP Request {}.", request.toString());
 
         return request;
     }
 
     private void refreshToken() throws ElectroluxAppliancesException {
         try {
-
             String json = "{\"refreshToken\": \"" + this.configuration.refreshToken + "\"}";
             Request request = createRequest(TOKEN_URL, HttpMethod.POST);
-            request.content(new StringContentProvider(json), JSON_CONTENT_TYPE);
+            request.content(new StringContentProvider(json), MediaType.APPLICATION_JSON);
             logger.debug("HTTP POST Request {}.", request.toString());
             ContentResponse httpResponse;
             httpResponse = request.send();
@@ -296,7 +296,7 @@ public class ElectroluxGroupAPI {
                     Request request = createRequest(APPLIANCES_URL + "/" + applianceId + "/command", HttpMethod.PUT);
                     request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.configuration.accessToken);
                     request.header("x-api-key", this.configuration.apiKey);
-                    request.content(new StringContentProvider(commandJSON), JSON_CONTENT_TYPE);
+                    request.content(new StringContentProvider(commandJSON), MediaType.APPLICATION_JSON);
                     logger.trace("Command JSON: {}", commandJSON);
 
                     ContentResponse response = request.send();
