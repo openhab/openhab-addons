@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,9 @@ import java.net.SocketException;
 import java.rmi.UnknownHostException;
 import java.util.Enumeration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Utility class to perform some network routines.
  *
@@ -25,6 +28,7 @@ import java.util.Enumeration;
  * @author Joshua Freeman - Modified to get MAC matching IP
  *
  */
+@NonNullByDefault
 public final class NetworkUtils {
     /**
      * Returns the MAC address of the openHAB first network device.
@@ -33,7 +37,7 @@ public final class NetworkUtils {
      * @throws UnknownHostException
      * @throws SocketException
      */
-    public static String getMyMacAddress(String matchIP) throws UnknownHostException, SocketException {
+    public static @Nullable String getMyMacAddress(String matchIP) throws UnknownHostException, SocketException {
         String macAddress = null;
         Enumeration<NetworkInterface> networks = NetworkInterface.getNetworkInterfaces();
         while (networks.hasMoreElements()) {

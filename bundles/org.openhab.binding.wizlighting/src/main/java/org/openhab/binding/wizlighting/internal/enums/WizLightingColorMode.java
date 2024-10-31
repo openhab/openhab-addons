@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This enum represents the possible color modes for WiZ bulbs.
  * The bulbs come in three types - full color with tunable white,
@@ -22,6 +24,7 @@ package org.openhab.binding.wizlighting.internal.enums;
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
+@NonNullByDefault
 public enum WizLightingColorMode {
     // Full color mode
     RGBMode("Full Color"),

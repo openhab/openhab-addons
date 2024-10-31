@@ -17,6 +17,7 @@ Local control must also be enabled with-in the WiZ app in the app settings.
 (This is the default.)
 
 ## Supported Things
+
 * WiZ Full Color with Tunable White Bulbs
 * WiZ Tunable White Bulbs
 * WiZ Dimmable single-color bulbs
@@ -25,6 +26,7 @@ Local control must also be enabled with-in the WiZ app in the app settings.
 _Note_ This binding was created for and tested on the full color with tunable white bulbs, however, users have reported success with other bulb types and plugs.
 
 ## Discovery
+
 New devices can be discovered by scanning and may also be discovered by background discovery.
 All discovered devices will default to 'Full Color' bulbs if unable to automatically detect the specific device type. You may need to create devices manually if desired.
 
@@ -121,6 +123,7 @@ The Binding supports the following Light Modes
 | 32 | Steampunk     |
 
 ## Bulb Limitations
+
 - Full-color bulbs operate in either color mode OR tunable white/color temperature mode.
 The RGB LED's are NOT used to control temperature - separate warm and cool white LED's are used.
 Sending a command on the color channel or the temperature channel will cause the bulb to switch the relevant mode.

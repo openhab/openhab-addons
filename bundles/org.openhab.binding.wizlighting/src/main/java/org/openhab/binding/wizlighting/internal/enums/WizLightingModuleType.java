@@ -17,6 +17,8 @@ import static org.openhab.binding.wizlighting.internal.WizLightingBindingConstan
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -25,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
+@NonNullByDefault
 public enum WizLightingModuleType {
     FullColorWifi("ESP01_SHRGB1C_31", THING_TYPE_COLOR_BULB),
     TunableWhiteWifi("ESP56_SHTW3_01", THING_TYPE_TUNABLE_BULB),
@@ -56,7 +59,7 @@ public enum WizLightingModuleType {
         }
     }
 
-    public static ThingTypeUID getThingTypeUIDFromModuleName(String moduleName) {
+    public static @Nullable ThingTypeUID getThingTypeUIDFromModuleName(String moduleName) {
         return MODULE_NAME_MAP.get(moduleName);
     }
 }

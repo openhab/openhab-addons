@@ -18,6 +18,8 @@ import com.google.gson.annotations.Expose;
 
 /**
  * This POJO represents Fan State Request Param
+ *
+ * @author Stefan Fussenegger - Initial Contribution
  */
 @NonNullByDefault
 public class FanStateRequestParam implements Param {

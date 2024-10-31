@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wizlighting.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Sriram Balakrishnan - Initial contribution
  *
  */
+@NonNullByDefault
 public enum WizLightingMethodType {
     /**
      * Registration - used to "register" with the bulb: This notifies the bult that

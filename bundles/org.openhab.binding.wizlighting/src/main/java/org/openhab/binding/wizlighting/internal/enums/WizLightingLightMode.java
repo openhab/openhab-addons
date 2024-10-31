@@ -15,12 +15,16 @@ package org.openhab.binding.wizlighting.internal.enums;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * This enum represents the possible scene modes.
  *
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
+@NonNullByDefault
 public enum WizLightingLightMode {
     Ocean("Ocean", 1),
     Romance("Romance", 2),
@@ -89,7 +93,7 @@ public enum WizLightingLightMode {
         }
     }
 
-    public static WizLightingLightMode fromSceneId(int id) {
+    public static @Nullable WizLightingLightMode fromSceneId(int id) {
         WizLightingLightMode r = null;
         if (id > 0 && id < 33) {
             r = LIGHT_MODE_MAP_BY_ID.get(id);
@@ -97,7 +101,7 @@ public enum WizLightingLightMode {
         return r;
     }
 
-    public static WizLightingLightMode fromSceneName(String name) {
+    public static @Nullable WizLightingLightMode fromSceneName(String name) {
         WizLightingLightMode r = null;
         if (name != null && !"".equals(name)) {
             r = LIGHT_MODE_MAP_BY_NAME.get(name.toLowerCase().replaceAll("\\W+", ""));

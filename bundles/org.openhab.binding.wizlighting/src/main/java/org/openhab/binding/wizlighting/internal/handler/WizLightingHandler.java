@@ -238,7 +238,7 @@ public class WizLightingHandler extends BaseThingHandler {
             mostRecentState.sceneId = commandAsLightMode.getSceneId();
             setPilotCommand(new SceneRequestParam(commandAsLightMode.getSceneId()));
         } else {
-            logger.warn("[{}] Command [{}] not a recognized Light Mode!", config.bulbIpAddress);
+            logger.warn("[{}] Command [{}] not a recognized Light Mode!", config.bulbIpAddress, command);
         }
     }
 
@@ -455,8 +455,8 @@ public class WizLightingHandler extends BaseThingHandler {
 
         // Check if the bulb still has the same IP address it had previously
         // If not, we need to update the configuration for the thing.
-        if (receivedMessage.getWizResponseIpAddress() != MISSING_INVALID_IP_ADDRESS
-                && receivedMessage.getWizResponseIpAddress() != this.getBulbIpAddress()) {
+        if (!receivedMessage.getWizResponseIpAddress().equals(MISSING_INVALID_IP_ADDRESS)
+                && !receivedMessage.getWizResponseIpAddress().equals(this.getBulbIpAddress())) {
             // get the old config
             Configuration priorConfig = getConfig();
             // change the ip address property
