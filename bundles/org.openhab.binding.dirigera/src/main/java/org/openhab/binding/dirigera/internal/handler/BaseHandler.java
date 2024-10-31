@@ -157,6 +157,13 @@ public abstract class BaseHandler extends BaseThingHandler {
                             logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
                             gateway().api().sendPatch(config.id, attributes);
                         }
+                    case CHANNEL_CUSTOM_NAME:
+                        if (command instanceof StringType string) {
+                            JSONObject attributes = new JSONObject();
+                            attributes.put(targetProperty, string.toString());
+                            logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", attributes);
+                            gateway().api().sendPatch(config.id, attributes);
+                        }
                 }
             }
         }
@@ -170,6 +177,7 @@ public abstract class BaseHandler extends BaseThingHandler {
      * - Battery charge level
      * - Startup behavior for lights and plugs
      * - Power state for lights and plugs
+     * - custom name
      *
      * @param update
      */
@@ -226,6 +234,10 @@ public abstract class BaseHandler extends BaseThingHandler {
             if (attributes.has(PROPERTY_POWER_STATE)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE),
                         OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE)));
+            }
+            if (attributes.has(PROPERTY_CUSTOM_NAME)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME),
+                        StringType.valueOf(attributes.getString(PROPERTY_CUSTOM_NAME)));
             }
         }
 

@@ -154,6 +154,7 @@ Air cleaning device with particle filter.
 | `particulate-matter`  | Number:Density    | R          | Category 2.5 particulate matter              |          |
 | `disable-light`       | Switch            | RW         | Disable status light on plug                 |          |
 | `child-lock`          | Switch            | RW         | Child lock for button on plug                |          |
+| `custom-name`         | String            | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number            | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number            | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number            | R          | Over-the-air current progress                |    X     |
@@ -182,6 +183,7 @@ Window or door blind.
 | `target-level`        | Dimmer                | RW         | Target blind level                               |          |
 | `current-level`       | Dimmer                | R          | Current blind level                              |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering blind              |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
@@ -213,6 +215,7 @@ Light with brightness support.
 | `power-state`         | Switch                | RW         | Power state of light                             |          |
 | `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
@@ -243,6 +246,7 @@ Light with color temperature support.
 | `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
 | `temperature`         | Dimmer                | RW         | Control temperature of light from cold to warm   |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
@@ -260,6 +264,7 @@ Light with color support.
 | `power-state`         | Switch                | RW         | Power state of light                                 |          |
 | `color`               | Color                 | RW         | Control light with color, saturation and brightness  |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                      |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                          |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                           |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                        |    X     |
@@ -280,6 +285,7 @@ Simple plug with control of power state and startup behavior.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `power-state`         | Switch                | RW         | Power state of plug                          |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff          |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -298,6 +304,7 @@ Power plug with control of power state, startup behavior, hardware on/off button
 | `child-lock`          | Switch                | RW         | Child lock for button on plug                |          |
 | `disable-light`       | Switch                | RW         | Disable status light on plug                 |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff          |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -321,6 +328,7 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 | `ampere`              | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
 | `voltage`             | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
 | `startup`             | Number                    | RW         | Startup behavior after power cutoff          |          |
+| `custom-name`         | String                    | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                    | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                    | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                    | R          | Over-the-air current progress                |    X     |
@@ -342,6 +350,7 @@ Sensor detecting motion events.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `detection`           | Switch                | R          | Flag if detection happened                   |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -358,6 +367,7 @@ Sensor detecting motion events and measures light level.
 | `detection`           | Switch                | R          | Flag if detection happened                   |          |
 | `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 ## Water Sensor
@@ -368,6 +378,7 @@ Sensor to detect water leaks.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `detection`           | Switch                | R          | Flag if detection happened                   |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -384,6 +395,7 @@ Sensor tracking if windows or doors are open
 | `contact`             | Contact               | R          | State if door or window is open or closed    |          |
 | `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 ## Air Quality Sensor
@@ -396,6 +408,7 @@ Air measure for temperature, humidity and particles.
 | `humidity`            | Number:Dimensionless  | R          | Air Humidity                                 |          |
 | `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter              |          |
 | `voc-index`           | Number:Density        | R          | Volatile organic compounds measure           |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -415,6 +428,7 @@ Shortcut controller with one button.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `button1`             | trigger               | R          | Trigger of first button                      |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -439,6 +453,7 @@ Shortcut controller with two buttons.
 | `button1`             | trigger               | R          | Trigger of first button                      |          |
 | `button2`             | trigger               | R          | Trigger of second button                     |          |
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -459,6 +474,7 @@ Controller to handle light attributes.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -473,6 +489,7 @@ Controller to open and close blinds.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -487,6 +504,7 @@ Controller for speakers.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
@@ -508,6 +526,7 @@ Speaker with player activities.
 | `repeat`              | Number                | RW         | Over-the-air overall status                  |    X     |
 | `track`               | String                | R          | Current playing track                        |    X     |
 | `image`               | RawType               | R          | Current playing track image                  |    X     |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 ## Repeater
@@ -516,6 +535,7 @@ Repeater to strengthen signal.
  
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
+| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |

@@ -25,6 +25,10 @@
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
 			</channel>
+			<channel id="custom-name" typeId="text">
+				<label>Custom Name</label>
+				<description>Name given from IKEA home smart</description>
+			</channel>
 			<channel id="ota-state" typeId="ota-state">
 				<label>OTA State</label>
 				<description>Over-the-air current state</description>

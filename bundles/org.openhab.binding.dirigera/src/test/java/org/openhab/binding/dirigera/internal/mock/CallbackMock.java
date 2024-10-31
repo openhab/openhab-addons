@@ -75,7 +75,7 @@ public class CallbackMock implements ThingHandlerCallback {
         stateMap.put(channelUID.getAsString(), state);
         // logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
         if (!"json".equals(channelUID.getIdWithoutGroup())) {
-            logger.warn("Update {} state {}", channelUID.getAsString(), state.toFullString());
+            logger.warn("Update {} : {}", channelUID.getAsString(), state.toFullString());
         }
     }
 
