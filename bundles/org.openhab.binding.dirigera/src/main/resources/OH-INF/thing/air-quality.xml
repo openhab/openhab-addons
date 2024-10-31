@@ -10,12 +10,12 @@
 		</supported-bridge-type-refs>
 
 		<label>Air Quality</label>
-		<description>Air measure for temperature, humidity, VOC index and particulate matter</description>
+		<description>Air measure for temperature, humidity and particles</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature">
 				<label>Temperature</label>
-				<description>Air Temperature </description>
+				<description>Air Temperature</description>
 			</channel>
 			<channel id="humidity" typeId="humidity">
 				<label>Humidity</label>
@@ -39,7 +39,7 @@
 			</channel>
 			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>

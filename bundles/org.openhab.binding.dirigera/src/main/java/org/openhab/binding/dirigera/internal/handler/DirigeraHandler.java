@@ -102,7 +102,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
 
-    public static long DETECTION_TIME_SECONDS = 5;
+    public static long detectionTimeSeonds = 5;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
@@ -247,7 +247,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 }
             }
             // now start websocket an listen to changes
-            logger.warn("DIRIGERA HANDLER start websocket");
+            logger.info("DIRIGERA HANDLER start websocket");
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
             // when done do:
@@ -515,10 +515,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 previousSchedule.cancel(true);
             }
             detectionSchedule = Optional
-                    .of(scheduler.schedule(model.get()::detection, DETECTION_TIME_SECONDS, TimeUnit.SECONDS));
+                    .of(scheduler.schedule(model.get()::detection, detectionTimeSeonds, TimeUnit.SECONDS));
         }, () -> {
             detectionSchedule = Optional
-                    .of(scheduler.schedule(model.get()::detection, DETECTION_TIME_SECONDS, TimeUnit.SECONDS));
+                    .of(scheduler.schedule(model.get()::detection, detectionTimeSeonds, TimeUnit.SECONDS));
         });
     }
 
