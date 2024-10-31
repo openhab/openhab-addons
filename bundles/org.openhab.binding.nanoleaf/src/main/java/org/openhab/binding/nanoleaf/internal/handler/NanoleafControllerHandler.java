@@ -923,8 +923,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 IntegerState state = new Ct();
                 if (command instanceof DecimalType) {
                     state.setValue(((DecimalType) command).intValue());
-                } else if (command instanceof QuantityType) {
-                    QuantityType<?> tempKelvin = ((QuantityType) command).toInvertibleUnit(Units.KELVIN);
+                } else if (command instanceof QuantityType<?> quantityType) {
+                    QuantityType<?> tempKelvin = quantityType.toInvertibleUnit(Units.KELVIN);
                     if (tempKelvin == null) {
                         logger.warn("Cannot convert color temperature {} to Kelvin.", command);
                         return;
