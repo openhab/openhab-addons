@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="shortcut-controller">
+	<thing-type id="sound-controller">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Shortcut Controller</label>
-		<description>Controller to trigger actions on key presses</description>
+		<label>Sound Controller</label>
+		<description>Controller for speakers</description>
 
 		<channels>
 			<channel id="battery-level" typeId="percent">
@@ -27,7 +27,7 @@
 			</channel>
 			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>

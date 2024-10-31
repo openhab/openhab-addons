@@ -19,7 +19,7 @@
 			</channel>
 			<channel id="illuminance" typeId="illuminance">
 				<label>Illuminance</label>
-				<description>Shows illuminance in Lux </description>
+				<description>Illuminance in Lux </description>
 			</channel>
 			<channel id="battery-level" typeId="percent">
 				<label>Battery Level</label>

@@ -166,7 +166,7 @@ class TestModel {
         handler.initialize();
         callback.waitForOnline();
 
-        DirigeraHandler.DETECTION_TIME_SECONDS = 0;
+        DirigeraHandler.detectionTimeSeonds = 0;
         discovery.discoveries.clear();
         assertEquals(0, discovery.discoveries.size(), "Cleanup after handler creation");
         handler.dispose();

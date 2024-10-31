@@ -10,16 +10,28 @@
 		</supported-bridge-type-refs>
 
 		<label>Motion Sensor</label>
-		<description>Sensor detecting motion events to trigger actions</description>
+		<description>Sensor detecting motion events</description>
 
 		<channels>
+			<channel id="detection" typeId="switch-ro">
+				<label>Detection Flag</label>
+				<description>Flag if detection happened</description>
+			</channel>
 			<channel id="battery-level" typeId="percent">
 				<label>Battery Level</label>
 				<description>State of the battery powering the sensor</description>
 			</channel>
-			<channel id="detection" typeId="switch-ro">
-				<label>Detection Flag</label>
-				<description>Flag if detection happened.</description>
+			<channel id="ota-status" typeId="ota-status">
+				<label>OTA Status</label>
+				<description>Over-the-air overall status</description>
+			</channel>
+			<channel id="ota-state" typeId="ota-state">
+				<label>OTA State</label>
+				<description>Over-the-air current state</description>
+			</channel>
+			<channel id="ota-progress" typeId="ota-percent">
+				<label>OTA Progress</label>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>

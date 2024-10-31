@@ -10,16 +10,16 @@
 		</supported-bridge-type-refs>
 
 		<label>Scene</label>
-		<description>Scene which can be triggered</description>
+		<description>Scene from IKEA home smart App which can be triggered</description>
 
 		<channels>
 			<channel id="trigger" typeId="scene-trigger">
 				<label>Scene Trigger</label>
-				<description>Trigger / undo scene execution </description>
+				<description>Perform / undo scene execution </description>
 			</channel>
 			<channel id="last-trigger" typeId="datetime">
 				<label>Last Trigger</label>
-				<description>Date and time when last trigger occured</description>
+				<description>Date and time when last trigger occurred</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>
