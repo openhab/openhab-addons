@@ -664,7 +664,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
                         minKelvin, maxKelvin);
                 colorTemperatureState = new PercentType(
-                        Float.toString(100 * (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)));
+                        Float.toString(100.0f * (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)));
                 colorTemperatureAbsoluteState = QuantityType.valueOf(colorTemperature.getValue(), Units.KELVIN);
             } else {
                 logger.warn("Thing {} invalid color temperature range {} .. {}", thing.getUID(), minKelvin, maxKelvin);
