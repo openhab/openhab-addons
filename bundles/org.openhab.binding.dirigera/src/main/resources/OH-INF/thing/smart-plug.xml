@@ -18,7 +18,7 @@
 				<description>Turn plug on or off </description>
 			</channel>
 			<channel id="disable-light" typeId="switch">
-				<label>Disbale Status Light</label>
+				<label>Disable Status Light</label>
 				<description>Disable status light on plug</description>
 			</channel>
 			<channel id="child-lock" typeId="switch">

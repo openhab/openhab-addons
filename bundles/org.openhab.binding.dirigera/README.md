@@ -51,15 +51,15 @@ Devices connected to this bridge will be detected automatically unless you don't
 
 ### Bridge Configuration
 
-| Name            | Type    | Description                                                | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------|---------|----------|----------|
-| `ipAddress`     | text    | DIRIGERA IP Address                                        | N/A     | yes      | no       |
-| `id`            | text    | Unique id of this gateway                                  | N/A     | no       | no       |
-| `discovery`     | boolean | Configure if paired devices shall be detected by discovery | true    | no       | no       |
+| Name            | Type    | Description                                                | Default | Required |
+|-----------------|---------|------------------------------------------------------------|---------|----------|
+| `ipAddress`     | text    | DIRIGERA IP Address                                        | N/A     | yes      |
+| `id`            | text    | Unique id of this gateway                                  | N/A     | no       |
+| `discovery`     | boolean | Configure if paired devices shall be detected by discovery | true    | no       |
 
-- ipAddress - use discovery to obtain this value automatically or enter it manually if known
-- id - will be detected automatically after successful pairing
-- discovery - will run continuously in the background and detect new, deleted or changed devices. Switch it off to deactivate discovery
+- `ipAddress` - use discovery to obtain this value automatically or enter it manually if known
+- `id` - will be detected automatically after successful pairing
+- `discovery` - will run continuously in the background and detect new, deleted or changed devices. Switch it off to deactivate discovery
 
 ### Gateway Pairing
 
@@ -224,7 +224,7 @@ The startup defines how the device shall behave after a power cutoff.
 If there's a dedicated hardwired light switch which cuts power towards the bulb it makes sense to sitch them on every time the switch is pressed.
 But it's also possible to recover the last state.
 
-'startup'
+Mappings for `startup`
 
 - 0 : Previous
 - 1 : On
@@ -274,7 +274,7 @@ Power plugs in different variants.
 
 ## Simple Plug
 
-Simple plug with controler of power state and startup behavior.
+Simple plug with control of power state and startup behavior.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
@@ -544,10 +544,6 @@ State will switch to `Undef` after countdown.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
 ### Thing Configuration
 
 ```java
@@ -583,6 +579,21 @@ Number                      Dishwasher_OTA_State        { channel="dirigera:smar
 Number                      Dishwasher_OTA_Progress     { channel="dirigera:smart-plug:myhome:dishwasher:ota-progress" }
 String                      Dishwasher_JSON             { channel="dirigera:smart-plug:myhome:dishwasher:json" }
 ```
+
+### Rule Examples
+
+Catch triggers from shortcut controller and trigger a scene.
+
+```java
+rule "Ikea Button 1 Triggers"
+when
+    Channel 'dirigera:double-shortcut:myhome:my-shortcut-controller:button1' triggered
+then
+    logInfo("Ikea","Button 1 {}",receivedEvent)
+    myhome-light-scene.sendCommand(0)
+end
+```
+
 ## Roadmap
 
 - Configure connections between sensors and light / plug devices
