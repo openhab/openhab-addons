@@ -279,7 +279,6 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
                 channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
                 channelConfiguration.awayModeStateTopic, commandFilter);
 
-        // Probably there should be PercentageValue, but I'm not sure how to use it
         buildOptionalChannel(CURRENT_HUMIDITY_CH_ID, ComponentChannelType.NUMBER,
                 new NumberValue(new BigDecimal(0), new BigDecimal(100), null, Units.PERCENT), updateListener, null,
                 null, channelConfiguration.currentHumidityTemplate, channelConfiguration.currentHumidityTopic, null);
