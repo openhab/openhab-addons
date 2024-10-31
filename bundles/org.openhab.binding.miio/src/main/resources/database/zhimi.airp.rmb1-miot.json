@@ -74,7 +74,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"air-purifier-toggle\"\u003d\"Air Purifier Toggle\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"custom-service-toggle-mode\"\u003d\"Custom Service Toggle Mode\"]`"
 			},
 			{
 				"property": "on",
@@ -89,6 +90,10 @@
 						"command": "set_properties",
 						"parameterType": "ONOFFBOOL"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -117,13 +122,13 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No Faults\",\"2\"\u003d\"Motor Stop\",\"3\"\u003d\"Sensor Lost\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"2\"\u003d\"Motor Stop\",\"3\"\u003d\"Sensor Lost\"]`"
 			},
 			{
 				"property": "mode",
 				"siid": 2,
 				"piid": 4,
-				"friendlyName": "Air Purifier - Mode",
+				"friendlyName": "Mode",
 				"channel": "mode",
 				"type": "Number",
 				"stateDescription": {
@@ -149,7 +154,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
 			},
 			{
 				"property": "relative-humidity",
@@ -191,7 +196,7 @@
 				"property": "temperature",
 				"siid": 3,
 				"piid": 7,
-				"friendlyName": "Environment - Temperature",
+				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
 				"unit": "celsius",
@@ -294,8 +299,7 @@
 				"piid": 2,
 				"friendlyName": "Screen - Brightness",
 				"channel": "brightness",
-				"type": "Number:Dimensionless",
-				"unit": "percentage",
+				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
@@ -319,7 +323,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Close\",\"1\"\u003d\"Bright\",\"2\"\u003d\"Brightest\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Close\",\"1\"\u003d\"Bright\",\"2\"\u003d\"Brightest\"]`"
 			},
 			{
 				"property": "temperature-display-unit",
@@ -347,7 +351,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Celsius\",\"2\"\u003d\"Fahrenheit\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Celsius\",\"2\"\u003d\"Fahrenheit\"]`"
 			},
 			{
 				"property": "moto-speed-rpm",
@@ -412,7 +416,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"2\"\u003d\"EU\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"886\"\u003d\"TW\",\"66\"\u003d\"TH\",\"44\"\u003d\"UK\",\"91\"\u003d\"IN\"]"
+				"readmeComment": "Value mapping `[\"2\"\u003d\"EU\",\"1\"\u003d\"US\",\"82\"\u003d\"KR\",\"886\"\u003d\"TW\",\"66\"\u003d\"TH\",\"44\"\u003d\"UK\",\"91\"\u003d\"IN\"]`"
 			},
 			{
 				"property": "favorite-level",
@@ -457,6 +461,7 @@
 				]
 			}
 		],
+		"readmeComment": "This device may not work with direct connection hence require cloud connection",
 		"experimental": true
 	}
 }
