@@ -23,7 +23,7 @@
 			</channel>
 			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>

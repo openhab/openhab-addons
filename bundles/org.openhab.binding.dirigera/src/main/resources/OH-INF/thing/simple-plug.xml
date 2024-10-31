@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Simple Plug</label>
-		<description>Switchable power plug</description>
+		<description>Simple plug with control of power state and startup behavior</description>
 
 		<channels>
 			<channel id="power-state" typeId="switch">
@@ -31,7 +31,7 @@
 			</channel>
 			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>

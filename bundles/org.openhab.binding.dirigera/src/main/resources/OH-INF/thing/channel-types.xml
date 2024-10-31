@@ -133,7 +133,7 @@
 		<label>Scene Trigger</label>
 		<command>
 			<options>
-				<option value="0">Trigger</option>
+				<option value="0">Perform</option>
 				<option value="1">Undo</option>
 			</options>
 		</command>
