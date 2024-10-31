@@ -45,6 +45,10 @@
 				<label>Image</label>
 				<description>Current playing track image</description>
 			</channel>
+			<channel id="custom-name" typeId="text">
+				<label>Custom Name</label>
+				<description>Name given from IKEA home smart</description>
+			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>
 				<description>JSON structure and updates of this device</description>

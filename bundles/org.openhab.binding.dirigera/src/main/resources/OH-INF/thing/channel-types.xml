@@ -46,7 +46,7 @@
 				<option value="0">Previous</option>
 				<option value="1">On</option>
 				<option value="2">Off</option>
-				<option value="3">Switch</option>
+				<option value="3">Toggle</option>
 			</options>
 		</state>
 		<command>
@@ -54,7 +54,7 @@
 				<option value="0">Previous</option>
 				<option value="1">On</option>
 				<option value="2">Off</option>
-				<option value="3">Switch</option>
+				<option value="3">Toggle</option>
 			</options>
 		</command>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
