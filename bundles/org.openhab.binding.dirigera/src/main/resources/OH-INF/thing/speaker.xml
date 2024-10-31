@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Speaker</label>
-		<description>Speaker device from Sonos with player activities</description>
+		<description>Speaker with player activities</description>
 
 		<channels>
 			<channel id="player" typeId="player">

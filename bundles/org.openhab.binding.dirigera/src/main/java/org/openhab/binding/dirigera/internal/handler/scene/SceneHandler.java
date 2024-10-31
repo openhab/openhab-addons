@@ -17,8 +17,6 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class SceneHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(SceneHandler.class);
 
-    private Optional<ScheduledFuture<?>> sceneObserver = Optional.empty();
     private TimeZoneProvider timeZoneProvider;
     private Instant lastTrigger = Instant.MAX;
     private int undoDuration = 30;
@@ -68,9 +65,6 @@ public class SceneHandler extends BaseHandler {
                         "@text/dirigera.scene.status.scene-not-found");
             } else {
                 updateStatus(ThingStatus.ONLINE);
-                // shall be handled by sceneRemoved from Websocket
-                // sceneObserver = Optional.of(scheduler.scheduleWithFixedDelay(this::checkScene, 5, 5,
-                // TimeUnit.MINUTES));
             }
 
             // check if different undo duration is configured
@@ -78,14 +72,6 @@ public class SceneHandler extends BaseHandler {
                 undoDuration = values.getInt("undoAllowedDuration");
             }
         }
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        sceneObserver.ifPresent(job -> {
-            job.cancel(false);
-        });
     }
 
     @Override
@@ -127,15 +113,8 @@ public class SceneHandler extends BaseHandler {
             long countDown = undoDuration - seconds;
             updateState(new ChannelUID(thing.getUID(), CHANNEL_TRIGGER), new DecimalType(countDown));
             scheduler.schedule(this::countDown, 1, TimeUnit.SECONDS);
+        } else {
+            updateState(new ChannelUID(thing.getUID(), CHANNEL_TRIGGER), UnDefType.UNDEF);
         }
     }
-
-    // private void checkScene() {
-    // JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
-    // if (values.isEmpty()) {
-    // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "Scene not found");
-    // } else {
-    // updateStatus(ThingStatus.ONLINE);
-    // }
-    // }
 }

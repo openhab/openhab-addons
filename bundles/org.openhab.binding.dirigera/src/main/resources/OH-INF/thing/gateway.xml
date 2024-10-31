@@ -15,11 +15,11 @@
 			</channel>
 			<channel id="sunrise" typeId="datetime">
 				<label>Sunrise</label>
-				<description>Date and time of next sunrise but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
+				<description>Date and time of next sunrise</description>
 			</channel>
 			<channel id="sunset" typeId="datetime">
 				<label>Sunset</label>
-				<description>Date and time of next sunset but only if DIRIGERA hub is allowed to obtain GPS coordinates</description>
+				<description>Date and time of next sunset</description>
 			</channel>
 			<channel id="pairing" typeId="switch">
 				<label>Pairing</label>
@@ -35,7 +35,7 @@
 			</channel>
 			<channel id="ota-progress" typeId="ota-percent">
 				<label>OTA Progress</label>
-				<description>Over-the-air current progress if state is download in progress</description>
+				<description>Over-the-air update progress</description>
 			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>
