@@ -115,11 +115,6 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
 
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
-
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
     }
 
     /**
@@ -183,10 +178,15 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
         }
 
-        buildOptionalChannel(newStyleChannels ? JSON_ATTRIBUTES_CH_ID : JSON_ATTRIBUTES_CH_ID_DEPRECATED,
-                ComponentChannelType.STRING, new TextValue(), updateListener, null, null,
-                channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
         finalizeChannels();
+    }
+
+    // Overridden to use deprecated channel ID
+    @Override
+    protected void addJsonAttributesChannel() {
+        buildOptionalChannel(newStyleChannels ? JSON_ATTRIBUTES_CH_ID : JSON_ATTRIBUTES_CH_ID_DEPRECATED,
+                ComponentChannelType.STRING, new TextValue(), componentConfiguration.getUpdateListener(), null, null,
+                channelConfiguration.getJsonAttributesTemplate(), channelConfiguration.getJsonAttributesTopic());
     }
 
     @Nullable

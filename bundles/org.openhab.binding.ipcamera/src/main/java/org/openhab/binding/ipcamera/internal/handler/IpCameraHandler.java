@@ -1398,6 +1398,11 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.debug("Token thread for REOLINK was stopped, restarting it now.");
             authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45, TimeUnit.MINUTES);
         }
+        // Ask camera and update openHAB controls to match cameras settings
+        List<org.openhab.core.thing.Channel> channels = thing.getChannels();
+        for (org.openhab.core.thing.Channel channel : channels) {
+            this.handleCommand(channel.getUID(), RefreshType.REFRESH);
+        }
     }
 
     void snapshotIsFfmpeg() {
@@ -1757,6 +1762,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
                             + (cameraConfig.getNvrChannel() + 1) + "_sub";
+                }
+                if (cameraConfig.getAlarmInputUrl().isEmpty()) {
+                    cameraConfig.setAlarmInputUrl("rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
+                            + (cameraConfig.getNvrChannel() + 1) + "_sub");
                 }
                 break;
         }

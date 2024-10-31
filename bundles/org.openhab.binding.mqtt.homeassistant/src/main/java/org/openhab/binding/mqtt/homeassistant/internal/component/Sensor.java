@@ -23,7 +23,6 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -35,8 +34,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
-    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
+    public static final String SENSOR_CHANNEL_ID = "sensor";
 
     private static final Pattern TRIGGER_ICONS = Pattern.compile("^mdi:(toggle|gesture).*$");
 
@@ -61,11 +59,6 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
 
         @SerializedName("state_topic")
         protected String stateTopic = "";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -97,12 +90,6 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
 
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
         finalizeChannels();
     }
 

@@ -52,9 +52,6 @@ public class EmotivaBindingConstants {
      */
     static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
 
-    /** State name for storing keepAlive timestamp messages */
-    public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
-
     /**
      * Default Emotiva device considered list in milliseconds.
      * {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
