@@ -473,7 +473,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.electroluxappliances</artifactId>
+      <artifactId>org.openhab.binding.electroluxappliance</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
