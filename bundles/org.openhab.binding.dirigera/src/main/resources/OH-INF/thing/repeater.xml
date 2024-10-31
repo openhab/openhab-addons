@@ -13,6 +13,10 @@
 		<description>Repeater to strengthen signal</description>
 
 		<channels>
+			<channel id="custom-name" typeId="text">
+				<label>Custom Name</label>
+				<description>Name given from IKEA home smart</description>
+			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
