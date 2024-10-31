@@ -94,6 +94,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -651,22 +652,27 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         OnOffType powerState = state.getOnOff();
 
+        org.openhab.core.types.State colorTemperatureState = UnDefType.UNDEF;
+        org.openhab.core.types.State colorTemperatureAbsoluteState = UnDefType.UNDEF;
         Ct colorTemperature = state.getColorTemperature();
-
-        float colorTempPercent = 0.0F;
         if (colorTemperature != null) {
             Integer min = colorTemperature.getMin();
             Integer max = colorTemperature.getMax();
             int minKelvin = min == null ? 1000 : min;
             int maxKelvin = max == null ? 10000 : max;
-            stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
-                    minKelvin, maxKelvin);
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType(colorTemperature.getValue(), Units.KELVIN));
-            colorTempPercent = (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)
-                    * PercentType.HUNDRED.intValue();
+            if (maxKelvin > minKelvin) {
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                        minKelvin, maxKelvin);
+                colorTemperatureState = new PercentType(
+                        Float.toString(100 * (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)));
+                colorTemperatureAbsoluteState = QuantityType.valueOf(colorTemperature.getValue(), Units.KELVIN);
+            } else {
+                logger.warn("Thing {} invalid color temperature range {} .. {}", thing.getUID(), minKelvin, maxKelvin);
+            }
         }
+        updateState(CHANNEL_COLOR_TEMPERATURE, colorTemperatureState);
+        updateState(CHANNEL_COLOR_TEMPERATURE_ABS, colorTemperatureAbsoluteState);
 
-        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         Hue stateHue = state.getHue();
         int hue = stateHue != null ? stateHue.getValue() : 0;
