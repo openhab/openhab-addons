@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class TestSCene {
+class TestScene {
 
     @Test
     void testSceneHandler() {

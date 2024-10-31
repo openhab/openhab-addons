@@ -99,6 +99,7 @@ public class Constants {
     public static final String PROPERTY_PERMIT_JOIN = "permittingJoin";
     public static final String PROPERTY_STARTUP_BEHAVIOR = "startupOnOff";
     public static final String PROPERTY_POWER_STATE = "isOn";
+    public static final String PROPERTY_CUSTOM_NAME = "customName";
 
     public static final String PROPERTY_EMPTY = "";
 
@@ -131,6 +132,7 @@ public class Constants {
     public static final String CHANNEL_STATISTICS = "statistics";
 
     // Generic channels
+    public static final String CHANNEL_CUSTOM_NAME = "custom-name";
     public static final String CHANNEL_POWER_STATE = "power-state";
     public static final String CHANNEL_STARTUP_BEHAVIOR = "startup";
     public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
@@ -242,62 +244,65 @@ public class Constants {
     public static final Map<Integer, String> STARTUP_BEHAVIOR_REVERSE_MAPPING = reverseStateMapping(
             STARTUP_BEHAVIOR_MAPPING);
 
-    // Ikea property to openHAB channel mappings
-    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE,
-            "lightLevel", CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB,
-            "colorTemperature", "color-temperature", PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
+    // DIRIGERA property to openHAB channel mappings
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB,
+            "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature", "color-temperature", PROPERTY_STARTUP_BEHAVIOR,
+            CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
+            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
-    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE,
-            "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE,
-            PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
-            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature",
+            CHANNEL_LIGHT_TEMPERATURE, PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR, PROPERTY_OTA_STATUS,
+            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
     public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
             "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
+            PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
     // public static final Map<String, String> PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "statusLight",
     // CHANNEL_DISABLE_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
     // PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
 
-    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
-    public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isDetected", CHANNEL_DETECTION);
-    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isDetected", CHANNEL_DETECTION, "illuminance", CHANNEL_ILLUMINANCE);
+    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "illuminance", CHANNEL_ILLUMINANCE);
+    public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_DETECTION);
+    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_DETECTION, "illuminance",
+            CHANNEL_ILLUMINANCE);
 
-    public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "isOpen", CHANNEL_CONTACT);
+    public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isOpen", CHANNEL_CONTACT);
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
-    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
-            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
 
-    public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> SHORTCUT_CONTROLLER_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> AIR_QUALITY_MAP = Map.of("currentTemperature", CHANNEL_TEMPERATURE,
-            "currentRH", CHANNEL_HUMIDITY, "currentPM25", CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX,
-            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
-            CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> WATER_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
-            "waterLeakDetected", CHANNEL_DETECTION, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+    public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
             CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
-    public static final Map<String, String> BLINDS_MAP = Map.of("blindsState", CHANNEL_BLIND_STATE, "batteryPercentage",
-            CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel", CHANNEL_BLIND_CURRENT_LEVEL, "blindsTargetLevel",
-            CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
-            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> SHORTCUT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
+            CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> AIR_QUALITY_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "currentTemperature", CHANNEL_TEMPERATURE, "currentRH", CHANNEL_HUMIDITY, "currentPM25",
+            CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS,
+            PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> WATER_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_DETECTION, PROPERTY_OTA_STATUS,
+            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> BLINDS_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            "blindsState", CHANNEL_BLIND_STATE, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel",
+            CHANNEL_BLIND_CURRENT_LEVEL, "blindsTargetLevel", CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS,
+            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> AIR_PURIFIER_MAP = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
         {
@@ -309,6 +314,7 @@ public class Constants {
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
             put("currentPM25", CHANNEL_PARTICULATE_MATTER);
+            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
             put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
             put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
             put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
@@ -326,6 +332,7 @@ public class Constants {
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
             put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
+            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
             put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
             put(PROPERTY_OTA_STATE, CHANNEL_OTA_STATE);
             put(PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
