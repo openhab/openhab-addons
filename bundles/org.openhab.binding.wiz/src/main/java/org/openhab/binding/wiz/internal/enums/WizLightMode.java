@@ -103,7 +103,7 @@ public enum WizLightMode {
 
     public static @Nullable WizLightMode fromSceneName(String name) {
         WizLightMode r = null;
-        if (name != null && !"".equals(name)) {
+        if (!name.isEmpty()) {
             r = LIGHT_MODE_MAP_BY_NAME.get(name.toLowerCase().replaceAll("\\W+", ""));
         }
         return r;

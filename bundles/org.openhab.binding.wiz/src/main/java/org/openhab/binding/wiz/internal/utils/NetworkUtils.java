@@ -43,8 +43,12 @@ public final class NetworkUtils {
         while (networks.hasMoreElements()) {
             NetworkInterface network = networks.nextElement();
 
-            if (network != null && networkMatchesIP(network, matchIP)) {
-                macAddress = convertBytesToMACString(network.getHardwareAddress());
+            if (networkMatchesIP(network, matchIP)) {
+                byte[] hardwareAddress = network.getHardwareAddress();
+                if (hardwareAddress == null) {
+                    continue;
+                }
+                macAddress = convertBytesToMACString(hardwareAddress);
                 break; // Short circuit if we found it
             }
         }
@@ -52,12 +56,10 @@ public final class NetworkUtils {
     }
 
     private static boolean networkMatchesIP(NetworkInterface network, String ip) {
-        if (network != null && ip != null) {
-            for (InterfaceAddress interfaceAddress : network.getInterfaceAddresses()) {
-                String hostAddress = interfaceAddress.getAddress().getHostAddress();
-                if (ip.equals(hostAddress)) {
-                    return true;
-                }
+        for (InterfaceAddress interfaceAddress : network.getInterfaceAddresses()) {
+            String hostAddress = interfaceAddress.getAddress().getHostAddress();
+            if (ip.equals(hostAddress)) {
+                return true;
             }
         }
 
@@ -66,11 +68,9 @@ public final class NetworkUtils {
 
     private static String convertBytesToMACString(byte[] hardwareAddress) {
         StringBuilder macAddressBuilder = new StringBuilder();
-        if (hardwareAddress != null) {
-            for (int macAddressByteIndex = 0; macAddressByteIndex < hardwareAddress.length; macAddressByteIndex++) {
-                String macAddressHexByte = String.format("%02X", hardwareAddress[macAddressByteIndex]);
-                macAddressBuilder.append(macAddressHexByte);
-            }
+        for (int macAddressByteIndex = 0; macAddressByteIndex < hardwareAddress.length; macAddressByteIndex++) {
+            String macAddressHexByte = String.format("%02X", hardwareAddress[macAddressByteIndex]);
+            macAddressBuilder.append(macAddressHexByte);
         }
         return macAddressBuilder.toString();
     }
