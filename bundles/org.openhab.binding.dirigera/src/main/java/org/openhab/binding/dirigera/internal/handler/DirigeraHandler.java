@@ -94,7 +94,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<DirigeraAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
-    private Optional<ScheduledFuture<?>> modelUpdater = Optional.empty();
+    private Optional<ScheduledFuture<?>> sequentialScheduler = Optional.empty();
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
     private Optional<ScheduledFuture<?>> detectionSchedule = Optional.empty();
 
@@ -255,8 +255,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER start websocket");
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
-            // when done do:
-            modelUpdater = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 5, 5, TimeUnit.MINUTES));
             heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
 
             // update latest model data
@@ -363,6 +361,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         } else {
             updateStatus(ThingStatus.ONLINE);
             websocket.ifPresentOrElse((wsClient) -> {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
+                        StringType.valueOf(wsClient.getStatistics().toString()));
                 if (!wsClient.isRunning()) {
                     logger.trace("DIRIGERA HANDLER WS restart necessary");
                     wsClient.start();
@@ -386,13 +386,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 websocket = Optional.of(ws);
             });
         }
-    }
-
-    private void update() {
-        websocket.ifPresent(socket -> {
-            updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
-                    StringType.valueOf(socket.getStatistics().toString()));
-        });
     }
 
     /**
@@ -600,32 +593,34 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public synchronized void updateLinks() {
+    public void updateLinks() {
         Instant startTime = Instant.now();
-        // first clear start update cycle, softlinks are cleared
-        deviceTree.forEach((id, handler) -> {
-            handler.updateLinksStart();
-        });
-        // then update all linkss
-        deviceTree.forEach((id, handler) -> {
-            List<String> links = handler.getLinks();
-            logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
-            links.forEach(link -> {
-                // assure investigated handler is different from target handler
-                if (!id.equals(link)) {
-                    BaseHandler targetHandler = deviceTree.get(link);
-                    if (targetHandler != null) {
-                        targetHandler.addSoftlink(id);
-                    } else {
-                        logger.debug("DIRIGERA HANDLER no targethandler found to link {} to {}", id, link);
-                    }
-                }
+        // first clear start update cycle, softlinks are cleared before
+        synchronized (deviceTree) {
+            deviceTree.forEach((id, handler) -> {
+                handler.updateLinksStart();
             });
-        });
-        // finish update cycle so handler can update states
-        deviceTree.forEach((id, handler) -> {
-            handler.updateLinksDone();
-        });
+            // then update all links
+            deviceTree.forEach((id, handler) -> {
+                List<String> links = handler.getLinks();
+                logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
+                links.forEach(link -> {
+                    // assure investigated handler is different from target handler
+                    if (!id.equals(link)) {
+                        BaseHandler targetHandler = deviceTree.get(link);
+                        if (targetHandler != null) {
+                            targetHandler.addSoftlink(id);
+                        } else {
+                            logger.debug("DIRIGERA HANDLER no targethandler found to link {} to {}", id, link);
+                        }
+                    }
+                });
+            });
+            // finish update cycle so handler can update states
+            deviceTree.forEach((id, handler) -> {
+                handler.updateLinksDone();
+            });
+        }
         logger.debug("DIRIGERA HANDLER update links took {}", Duration.between(startTime, Instant.now()).toMillis());
     }
 

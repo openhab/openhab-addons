@@ -164,7 +164,7 @@ public abstract class BaseHandler extends BaseThingHandler {
                         if (command instanceof OnOffType onOff) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            logger.trace("DIRIGERA BASE_HANDLER send to API {}", attributes);
+                            logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
                             gateway().api().sendAttributes(config.id, attributes);
                         }
                         break;
@@ -172,57 +172,21 @@ public abstract class BaseHandler extends BaseThingHandler {
                         if (command instanceof StringType string) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, string.toString());
-                            logger.trace("DIRIGERA BASE_HANDLER send to API {}", attributes);
+                            logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
                             gateway().api().sendAttributes(config.id, attributes);
                         }
                         break;
                     case CHANNEL_LINKS:
-                        logger.debug("DIRIGERA BASE_HANDLER remove connection {}", command.toFullString());
+                        logger.debug("DIRIGERA BASE_HANDLER {} remove connection {}", thing.getLabel(),
+                                command.toFullString());
                         if (command instanceof StringType string) {
-                            // link has to be set to target, not to trigger
-                            String targetDevice = "";
-                            String linkDevice = "";
-                            // link has to be set to target device like light or outlet, not to the device which
-                            // triggers an action like lightController or motionSensor
-                            if (isControllerOrSensor()) {
-                                targetDevice = string.toFullString();
-                                linkDevice = config.id;
-                            } else {
-                                targetDevice = config.id;
-                                linkDevice = string.toFullString();
-                            }
-                            if (!targetDevice.isBlank() && !linkDevice.isBlank()) {
-                                links.remove(linkDevice);
-                                JSONArray newLinks = new JSONArray(links);
-                                JSONObject attributes = new JSONObject();
-                                attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
-                                logger.trace("DIRIGERA BASE_HANDLER send to API {}", attributes);
-                                gateway().api().sendPatch(targetDevice, attributes);
-                            }
+                            linkUpdate(string.toFullString(), false);
                         }
                         break;
                     case CHANNEL_LINK_CANDIDATES:
-                        logger.debug("DIRIGERA BASE_HANDLER add link {}", command.toFullString());
+                        logger.debug("DIRIGERA BASE_HANDLER {} add link {}", thing.getLabel(), command.toFullString());
                         if (command instanceof StringType string) {
-                            String targetDevice = "";
-                            String linkDevice = "";
-                            // link has to be set to target device like light or outlet, not to the device which
-                            // triggers an action like lightController or motionSensor
-                            if (isControllerOrSensor()) {
-                                targetDevice = string.toFullString();
-                                linkDevice = config.id;
-                            } else {
-                                targetDevice = config.id;
-                                linkDevice = string.toFullString();
-                            }
-                            if (!targetDevice.isBlank() && !linkDevice.isBlank()) {
-                                links.add(linkDevice);
-                                JSONArray newLinks = new JSONArray(links);
-                                JSONObject attributes = new JSONObject();
-                                attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
-                                logger.trace("DIRIGERA BASE_HANDLER send to API {}", attributes);
-                                gateway().api().sendPatch(targetDevice, attributes);
-                            }
+                            linkUpdate(string.toFullString(), true);
                         }
                         break;
                 }
@@ -257,13 +221,11 @@ public abstract class BaseHandler extends BaseThingHandler {
         }
         if (update.has(PROPERTY_REMOTE_LINKS)) {
             JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
-            logger.debug("DIRIGERA BASE_HANDLER Links found for {} {}", thing.getLabel(), remoteLinks.toString());
-            logger.debug("DIRIGERA BASE_HANDLER Links update {}", update);
+            logger.debug("DIRIGERA BASE_HANDLER {} Links found for {}", thing.getLabel(), remoteLinks.toString());
             links.clear();
             for (int i = 0; i < remoteLinks.length(); i++) {
                 links.add(remoteLinks.getString(i));
             }
-            updateLinks();
             gateway().updateLinks();
         }
         if (update.has(Model.ATTRIBUTES)) {
@@ -275,7 +237,8 @@ public abstract class BaseHandler extends BaseThingHandler {
                 if (otaStatus != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
                 } else {
-                    logger.warn("DIRIGERA BASE_HANDLER Cannot decode ota status {}", otaStatusString);
+                    logger.warn("DIRIGERA BASE_HANDLER {} Cannot decode ota status {}", thing.getLabel(),
+                            otaStatusString);
                 }
             }
             if (attributes.has(PROPERTY_OTA_STATE)) {
@@ -284,7 +247,8 @@ public abstract class BaseHandler extends BaseThingHandler {
                 if (otaState != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
                 } else {
-                    logger.warn("DIRIGERA BASE_HANDLER Cannot decode ota state {}", otaStateString);
+                    logger.warn("DIRIGERA BASE_HANDLER {} Cannot decode ota state {}", thing.getLabel(),
+                            otaStateString);
                 }
             }
             if (attributes.has(PROPERTY_OTA_PROGRESS)) {
@@ -303,7 +267,8 @@ public abstract class BaseHandler extends BaseThingHandler {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR),
                             new DecimalType(startupValue));
                 } else {
-                    logger.warn("DIRIGERA BASE_HANDLER Cannot decode startup behavior {}", startupString);
+                    logger.warn("DIRIGERA BASE_HANDLER {} Cannot decode startup behavior {}", thing.getLabel(),
+                            startupString);
                 }
             }
             if (attributes.has(PROPERTY_POWER_STATE)) {
@@ -426,6 +391,61 @@ public abstract class BaseHandler extends BaseThingHandler {
      */
     public List<String> getLinks() {
         return links;
+    }
+
+    private void linkUpdate(String linkedDeviceId, boolean add) {
+        /**
+         * link has to be set to target device like light or outlet, not to the device which triggers an action like
+         * lightController or motionSensor
+         */
+        String targetDevice = "";
+        List<String> linksToSend = new ArrayList<>();
+        if (isControllerOrSensor()) {
+            logger.debug("DIRIGERA BASE_HANDLER {} update softlink {}", thing.getLabel(),
+                    gateway().model().getCustonNameFor(linkedDeviceId));
+            // request needs to be sent to target device
+            targetDevice = linkedDeviceId;
+            // get current links
+            JSONObject deviceData = gateway().model().getAllFor(linkedDeviceId, PROPERTY_DEVICES);
+            if (deviceData.has(PROPERTY_REMOTE_LINKS)) {
+                JSONArray jsonLinks = deviceData.getJSONArray(PROPERTY_REMOTE_LINKS);
+                for (int i = 0; i < jsonLinks.length(); i++) {
+                    linksToSend.add(jsonLinks.getString(i));
+                }
+                if (add) {
+                    if (!linksToSend.contains(linkedDeviceId)) {
+                        linksToSend.add(linkedDeviceId);
+                    } else {
+                        logger.debug("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
+                                gateway().model().getCustonNameFor(linkedDeviceId));
+                    }
+                } else {
+                    if (!linksToSend.contains(linkedDeviceId)) {
+                        linksToSend.remove(linkedDeviceId);
+                    } else {
+                        logger.debug("DIRIGERA BASE_HANDLER {} not link to remove {}", thing.getLabel(),
+                                gateway().model().getCustonNameFor(linkedDeviceId));
+                    }
+                }
+            } else {
+                logger.debug("DIRIGERA BASE_HANDLER {} has no remoteLinks", thing.getLabel());
+            }
+        } else {
+            // send update to this device
+            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} Before: {}", thing.getLabel(),
+                    gateway().model().getCustonNameFor(linkedDeviceId), links);
+            targetDevice = config.id;
+            links.remove(linkedDeviceId);
+            linksToSend.addAll(links);
+            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} After: {}", thing.getLabel(),
+                    gateway().model().getCustonNameFor(linkedDeviceId), linksToSend);
+        }
+        JSONArray newLinks = new JSONArray(linksToSend);
+        JSONObject attributes = new JSONObject();
+        attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
+        logger.debug("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
+        gateway().api().sendPatch(targetDevice, attributes);
+        // after api command remoteLinks property will be updated and trigger new linkUpadte
     }
 
     /**
