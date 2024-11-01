@@ -94,6 +94,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +119,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
     private final HttpClientFactory httpClientFactory;
     private final HttpClient httpClient;
+    private final NanoLeafStateDescriptionProvider stateDescriptionProvider;
 
     private @Nullable HttpClient httpClientSSETouchEvent;
     private @Nullable Request sseTouchjobRequest;
@@ -141,10 +143,12 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
     private boolean touchJobRunning = false;
 
-    public NanoleafControllerHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+    public NanoleafControllerHandler(Bridge bridge, HttpClientFactory httpClientFactory,
+            NanoLeafStateDescriptionProvider nanoLeafStateDescriptionProvider) {
         super(bridge);
         this.httpClientFactory = httpClientFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.stateDescriptionProvider = nanoLeafStateDescriptionProvider;
     }
 
     private void initializeTouchHttpClient() {
@@ -648,28 +652,33 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
 
         OnOffType powerState = state.getOnOff();
 
+        org.openhab.core.types.State colorTemperatureState = UnDefType.UNDEF;
+        org.openhab.core.types.State colorTemperatureAbsoluteState = UnDefType.UNDEF;
         Ct colorTemperature = state.getColorTemperature();
-
-        float colorTempPercent = 0.0F;
-        int hue;
-        int saturation;
         if (colorTemperature != null) {
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType(colorTemperature.getValue(), Units.KELVIN));
             Integer min = colorTemperature.getMin();
-            hue = min == null ? 0 : min;
             Integer max = colorTemperature.getMax();
-            saturation = max == null ? 0 : max;
-            colorTempPercent = (colorTemperature.getValue() - hue) / (saturation - hue)
-                    * PercentType.HUNDRED.intValue();
+            int minKelvin = min == null ? 1000 : min;
+            int maxKelvin = max == null ? 10000 : max;
+            if (maxKelvin > minKelvin) {
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE_ABS),
+                        minKelvin, maxKelvin);
+                colorTemperatureState = new PercentType(
+                        Float.toString(100.0f * (colorTemperature.getValue() - minKelvin) / (maxKelvin - minKelvin)));
+                colorTemperatureAbsoluteState = QuantityType.valueOf(colorTemperature.getValue(), Units.KELVIN);
+            } else {
+                logger.warn("Thing {} invalid color temperature range {} .. {}", thing.getUID(), minKelvin, maxKelvin);
+            }
         }
+        updateState(CHANNEL_COLOR_TEMPERATURE, colorTemperatureState);
+        updateState(CHANNEL_COLOR_TEMPERATURE_ABS, colorTemperatureAbsoluteState);
 
-        updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
         Hue stateHue = state.getHue();
-        hue = stateHue != null ? stateHue.getValue() : 0;
+        int hue = stateHue != null ? stateHue.getValue() : 0;
 
         Sat stateSaturation = state.getSaturation();
-        saturation = stateSaturation != null ? stateSaturation.getValue() : 0;
+        int saturation = stateSaturation != null ? stateSaturation.getValue() : 0;
 
         Brightness stateBrightness = state.getBrightness();
         int brightness = stateBrightness != null ? stateBrightness.getValue() : 0;
@@ -914,8 +923,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                 IntegerState state = new Ct();
                 if (command instanceof DecimalType) {
                     state.setValue(((DecimalType) command).intValue());
-                } else if (command instanceof QuantityType) {
-                    QuantityType<?> tempKelvin = ((QuantityType) command).toInvertibleUnit(Units.KELVIN);
+                } else if (command instanceof QuantityType<?> quantityType) {
+                    QuantityType<?> tempKelvin = quantityType.toInvertibleUnit(Units.KELVIN);
                     if (tempKelvin == null) {
                         logger.warn("Cannot convert color temperature {} to Kelvin.", command);
                         return;

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nanoleaf.internal.handler.NanoLeafStateDescriptionProvider;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafControllerHandler;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafPanelHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -51,10 +52,13 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
     private final HttpClientFactory httpClientFactory;
+    private final NanoLeafStateDescriptionProvider nanoLeafStateDescriptionProvider;
 
     @Activate
-    public NanoleafHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public NanoleafHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference NanoLeafStateDescriptionProvider nanoLeafStateDescriptionProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.nanoLeafStateDescriptionProvider = nanoLeafStateDescriptionProvider;
     }
 
     @Override
@@ -67,7 +71,8 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (NanoleafBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
-            NanoleafControllerHandler handler = new NanoleafControllerHandler((Bridge) thing, this.httpClientFactory);
+            NanoleafControllerHandler handler = new NanoleafControllerHandler((Bridge) thing, this.httpClientFactory,
+                    this.nanoLeafStateDescriptionProvider);
             logger.debug("Nanoleaf controller handler created.");
             return handler;
         } else if (NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL.equals(thingTypeUID)) {
