@@ -34,7 +34,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
