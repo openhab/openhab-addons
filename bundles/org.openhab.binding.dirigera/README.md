@@ -547,17 +547,17 @@ Scene from IKEA home smart App which can be triggered.
  
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `trigger`             | Number                | RW         | Perform / undo scene execution               |          |
+| `trigger`             | Number                | RW         | Trigger / undo scene execution               |          |
 | `last-trigger`        | DateTime              | R          | Date and time when last trigger occurred     |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 Scenes are defined in IKEA home samrt App and can be perfomred via `trigger` channel.
 Two commands are defined:
 
-- 0 : Perform
+- 0 : Trigger
 - 1 : Undo
 
-If command 0 (Perform) is sent scene will be executed.
+If command 0 (Trigger) is sent scene will be executed.
 There's a 30 seconds timeslot to send command 1 (Undo). 
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.

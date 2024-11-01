@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
+import static org.openhab.binding.dirigera.internal.Constants.*;
+
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightControllerHandler} basic DeviceHandler for all devices
@@ -28,11 +29,12 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LightControllerHandler extends BaseHandler {
-    private final Logger logger = LoggerFactory.getLogger(LightControllerHandler.class);
 
     public LightControllerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // links of types which can be established towards this device
+        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT, DEVICE_TYPE_OUTLET);
     }
 
     @Override

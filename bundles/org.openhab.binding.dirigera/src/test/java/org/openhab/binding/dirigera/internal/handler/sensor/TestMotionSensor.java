@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -62,6 +64,14 @@ class TestMotionSensor {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DETECTION), RefreshType.REFRESH);
         checkMotionStates(callback);
+
+        // check commands
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION), new DecimalType(10));
+        assertEquals(String.format(MotionSensorHandler.durationUpdate, 10),
+                DirigeraAPISimu.patchMap.get("ee61c57f-8efa-44f4-ba8a-d108ae054138_1"), "10 seconds");
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION), QuantityType.valueOf("3 min"));
+        assertEquals(String.format(MotionSensorHandler.durationUpdate, 180),
+                DirigeraAPISimu.patchMap.get("ee61c57f-8efa-44f4-ba8a-d108ae054138_1"), "10 seconds");
     }
 
     void checkMotionStates(CallbackMock callback) {
