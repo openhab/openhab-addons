@@ -68,7 +68,9 @@ public abstract class BaseHandler extends BaseThingHandler {
     protected List<JSONObject> updates = new ArrayList<>();
     protected List<String> links = new ArrayList<>();
     protected List<String> softLinks = new ArrayList<>();
+    protected List<String> linkCandidateTypes = new ArrayList<>();
     protected BaseDeviceConfiguration config;
+    protected String customName = "";
     protected String deviceType = "";
     protected boolean disposed = true;
 
@@ -174,21 +176,20 @@ public abstract class BaseHandler extends BaseThingHandler {
                             gateway().api().sendAttributes(config.id, attributes);
                         }
                         break;
-                    case CHANNEL_CONNECTIONS:
+                    case CHANNEL_LINKS:
                         logger.debug("DIRIGERA BASE_HANDLER remove connection {}", command.toFullString());
                         if (command instanceof StringType string) {
                             // link has to be set to target, not to trigger
                             String targetDevice = "";
                             String linkDevice = "";
-                            if (Model.targetTypes.contains(deviceType)) {
-                                targetDevice = config.id;
-                                linkDevice = string.toFullString();
-                            } else if (Model.triggerTypes.contains(deviceType)) {
+                            // link has to be set to target device like light or outlet, not to the device which
+                            // triggers an action like lightController or motionSensor
+                            if (isControllerOrSensor()) {
                                 targetDevice = string.toFullString();
                                 linkDevice = config.id;
                             } else {
-                                logger.debug("DIRIGERA LIGHT_CONTROLLER devicetype neiter trigger nor target {}",
-                                        deviceType);
+                                targetDevice = config.id;
+                                linkDevice = string.toFullString();
                             }
                             if (!targetDevice.isBlank() && !linkDevice.isBlank()) {
                                 links.remove(linkDevice);
@@ -200,21 +201,19 @@ public abstract class BaseHandler extends BaseThingHandler {
                             }
                         }
                         break;
-                    case CHANNEL_CANDIDATES:
-                        logger.debug("DIRIGERA BASE_HANDLER add connection {}", command.toFullString());
+                    case CHANNEL_LINK_CANDIDATES:
+                        logger.debug("DIRIGERA BASE_HANDLER add link {}", command.toFullString());
                         if (command instanceof StringType string) {
-                            // link has to be set to target, not to trigger
                             String targetDevice = "";
                             String linkDevice = "";
-                            if (Model.targetTypes.contains(deviceType)) {
-                                targetDevice = config.id;
-                                linkDevice = string.toFullString();
-                            } else if (Model.triggerTypes.contains(deviceType)) {
+                            // link has to be set to target device like light or outlet, not to the device which
+                            // triggers an action like lightController or motionSensor
+                            if (isControllerOrSensor()) {
                                 targetDevice = string.toFullString();
                                 linkDevice = config.id;
                             } else {
-                                logger.debug("DIRIGERA LIGHT_CONTROLLER devicetype neiter trigger nor target {}",
-                                        deviceType);
+                                targetDevice = config.id;
+                                linkDevice = string.toFullString();
                             }
                             if (!targetDevice.isBlank() && !linkDevice.isBlank()) {
                                 links.add(linkDevice);
@@ -253,7 +252,7 @@ public abstract class BaseHandler extends BaseThingHandler {
                         "@text/dirigera.device.status.not-reachable");
             }
         }
-        if (update.has(PROPERTY_DEVICE_TYPE)) {
+        if (update.has(PROPERTY_DEVICE_TYPE) && deviceType.isBlank()) {
             deviceType = update.getString(PROPERTY_DEVICE_TYPE);
         }
         if (update.has(PROPERTY_REMOTE_LINKS)) {
@@ -311,9 +310,9 @@ public abstract class BaseHandler extends BaseThingHandler {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE),
                         OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE)));
             }
-            if (attributes.has(PROPERTY_CUSTOM_NAME)) {
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME),
-                        StringType.valueOf(attributes.getString(PROPERTY_CUSTOM_NAME)));
+            if (attributes.has(PROPERTY_CUSTOM_NAME) && customName.isBlank()) {
+                customName = attributes.getString(PROPERTY_CUSTOM_NAME);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
             }
         }
 
@@ -401,7 +400,16 @@ public abstract class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * HHandling of links
+     * Evaluates if this device is a controller or sensor
+     *
+     * @return boolean
+     */
+    protected boolean isControllerOrSensor() {
+        return deviceType.toLowerCase().contains("sensor") || deviceType.toLowerCase().contains("controller");
+    }
+
+    /**
+     * Handling of links
      */
 
     /**
@@ -412,26 +420,26 @@ public abstract class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * Get real connections from device updates
+     * Get real linkss from device updates
      *
-     * @return connections linked to this device
+     * @return links attached to this device
      */
     public List<String> getLinks() {
         return links;
     }
 
     /**
-     * Adds a soft link towards the device which has the connection stored in his attributes
+     * Adds a soft link towards the device which has the link stored in his attributes
      *
-     * @param device id of the device which contains this connection
+     * @param device id of the device which contains this link
      */
-    public void addSoflink(String id) {
+    public void addSoftlink(String id) {
         if (!softLinks.contains(id) && !config.id.equals(id)) {
             softLinks.add(id);
-            logger.debug("DIRIGERA BASE_HANDLER link soft added for {} to {}", thing.getLabel(),
+            logger.debug("DIRIGERA BASE_HANDLER {} link soft added for {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         } else {
-            logger.debug("DIRIGERA BASE_HANDLER link soft already established for {} to {}", thing.getLabel(),
+            logger.debug("DIRIGERA BASE_HANDLER {} link soft already established to {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         }
     }
@@ -440,65 +448,74 @@ public abstract class BaseHandler extends BaseThingHandler {
      * Update cycle of gateway is done
      */
     public void updateLinksDone() {
-        updateLinks();
-        updateCandidateLinks();
-    }
-
-    private void updateLinks() {
         if (linksSupported()) {
-            List<String> display = new ArrayList<>();
-            List<CommandOption> connectionOptions = new ArrayList<>();
-            List<String> allLinks = new ArrayList<>();
-            allLinks.addAll(links);
-            allLinks.addAll(softLinks);
-            Collections.sort(allLinks);
-            allLinks.forEach(link -> {
-                String customName = gateway().model().getCustonNameFor(link);
-                display.add(customName);
-                connectionOptions.add(new CommandOption(link, customName));
-            });
-            ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_CONNECTIONS);
-            gateway().getCommandProvider().setCommandOptions(channelUUID, connectionOptions);
-            logger.debug("DIRIGERA BASE_HANDLER link update connections {}", display);
-            updateState(channelUUID, StringType.valueOf(display.toString()));
+            updateLinks();
+            // The candidates needs to be evaluated by child class
+            // - blindController needs blinds and vice versa
+            // - soundCotroller needs speakers and vice versa
+            // - lightController needs light and outlet and vice versa
+            // So assure "linkCandidateTypes" are overwritten by child class with correct types
+            updateCandidateLinks();
         } else {
-            logger.info("DIRIGERA BASE_HANDLER Device doesn't support connections {}", thing.getLabel());
-        }
-    }
-
-    private void updateCandidateLinks() {
-        if (linksSupported()) {
-            List<String> possibleCandidates = List.of();
-            if (Model.targetTypes.contains(deviceType)) {
-                possibleCandidates = gateway().model().getTriggerCandidates();
-            } else if (Model.triggerTypes.contains(deviceType)) {
-                possibleCandidates = gateway().model().getTargetCandidates();
-            } else {
-                logger.debug("DIRIGERA BASE_HANDLER devicetype neiter trigger nor target {}", deviceType);
+            if (!links.isEmpty() || !softLinks.isEmpty()) {
+                logger.trace("DIRIGERA BASE_HANDLER {} Device doesn't support links {}", thing.getLabel(),
+                        (links.size() + softLinks.size()));
             }
-            logger.debug("DIRIGERA BASE_HANDLER candidates to control {}", possibleCandidates);
-            logger.debug("DIRIGERA BASE_HANDLER current connections {}", links);
-            List<String> candidates = new ArrayList<>();
-            possibleCandidates.forEach(entry -> {
-                if (!links.contains(entry) && !softLinks.contains(entry)) {
-                    candidates.add(entry);
-                }
-            });
-
-            List<String> display = new ArrayList<>();
-            List<CommandOption> candidateOptions = new ArrayList<>();
-            Collections.sort(candidates);
-            candidates.forEach(candidate -> {
-                String customName = gateway().model().getCustonNameFor(candidate);
-                display.add(customName);
-                candidateOptions.add(new CommandOption(candidate, customName));
-            });
-            ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_CANDIDATES);
-            gateway().getCommandProvider().setCommandOptions(channelUUID, candidateOptions);
-            updateState(channelUUID, StringType.valueOf(display.toString()));
-        } else {
-            logger.info("DIRIGERA BASE_HANDLER Device doesn't support connections {}", thing.getLabel());
         }
+    }
+
+    protected void updateLinks() {
+        List<String> display = new ArrayList<>();
+        List<CommandOption> linkCommandOptions = new ArrayList<>();
+        List<String> allLinks = new ArrayList<>();
+        allLinks.addAll(links);
+        allLinks.addAll(softLinks);
+        Collections.sort(allLinks);
+        allLinks.forEach(link -> {
+            String customName = gateway().model().getCustonNameFor(link);
+            if (!gateway().isKnownDevice(link)) {
+                // if device isn't present in OH attach this suffix
+                customName += " (!)";
+            }
+            display.add(customName);
+            linkCommandOptions.add(new CommandOption(link, customName));
+        });
+        ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINKS);
+        gateway().getCommandProvider().setCommandOptions(channelUUID, linkCommandOptions);
+        logger.debug("DIRIGERA BASE_HANDLER {} link update links {}", thing.getLabel(), display);
+        updateState(channelUUID, StringType.valueOf(display.toString()));
+    }
+
+    protected void updateCandidateLinks() {
+        List<String> possibleCandidates = gateway().model().getDevicesForTypes(linkCandidateTypes);
+        logger.debug("DIRIGERA BASE_HANDLER {} candidates to control {}", thing.getLabel(), possibleCandidates);
+        logger.debug("DIRIGERA BASE_HANDLER {} current links {} {}", thing.getLabel(), links, softLinks);
+        List<String> candidates = new ArrayList<>();
+        possibleCandidates.forEach(entry -> {
+            if (!links.contains(entry) && !softLinks.contains(entry)) {
+                candidates.add(entry);
+            } else {
+                logger.debug("DIRIGERA BASE_HANDLER {} link candidate discarded for {} ", thing.getLabel(),
+                        gateway().model().getCustonNameFor(entry));
+            }
+        });
+
+        List<String> display = new ArrayList<>();
+        List<CommandOption> candidateOptions = new ArrayList<>();
+        Collections.sort(candidates);
+        logger.debug("DIRIGERA BASE_HANDLER {} update candidates {}", thing.getLabel(), candidates.size());
+        candidates.forEach(candidate -> {
+            String customName = gateway().model().getCustonNameFor(candidate);
+            if (!gateway().isKnownDevice(candidate)) {
+                // if device isn't present in OH attach this suffix
+                customName += " (!)";
+            }
+            display.add(customName);
+            candidateOptions.add(new CommandOption(candidate, customName));
+        });
+        ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINK_CANDIDATES);
+        gateway().getCommandProvider().setCommandOptions(channelUUID, candidateOptions);
+        updateState(channelUUID, StringType.valueOf(display.toString()));
     }
 
     /**
@@ -507,7 +524,7 @@ public abstract class BaseHandler extends BaseThingHandler {
      * @return true is links are supported, false otherwise
      */
     public boolean linksSupported() {
-        return channel2PropertyMap.containsKey(CHANNEL_CONNECTIONS);
+        return channel2PropertyMap.containsKey(CHANNEL_LINKS);
     }
 
     /**

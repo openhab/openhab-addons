@@ -52,8 +52,6 @@ public class Model {
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_RELATION_ID = "relationId";
-    public static final List<String> triggerTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
-    public static final List<String> targetTypes = List.of("light", "outlet");
 
     private Map<String, DiscoveryResult> resultMap = new HashMap<>();
     private List<String> devices = new ArrayList<>();
@@ -512,27 +510,15 @@ public class Model {
         return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
     }
 
-    public List<String> getTargetCandidates() {
+    public List<String> getDevicesForTypes(List<String> types) {
         List<String> candidates = new ArrayList<>();
-        targetTypes.forEach(type -> {
+        types.forEach(type -> {
             JSONArray addons = getIdsForType(type);
             addons.forEach(entry -> {
                 candidates.add(entry.toString());
             });
         });
-        logger.debug("DIRIGERA MODEL target candidates {}", candidates);
-        return candidates;
-    }
-
-    public List<String> getTriggerCandidates() {
-        List<String> candidates = new ArrayList<>();
-        triggerTypes.forEach(type -> {
-            JSONArray addons = getIdsForType(type);
-            addons.forEach(entry -> {
-                candidates.add(entry.toString());
-            });
-        });
-        logger.debug("DIRIGERA MODEL trigger candidates {}", candidates);
+        logger.debug("DIRIGERA MODEL trigger candidates {} {}", types, candidates);
         return candidates;
     }
 }
