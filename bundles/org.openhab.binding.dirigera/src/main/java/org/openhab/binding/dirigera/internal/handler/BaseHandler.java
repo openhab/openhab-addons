@@ -466,10 +466,10 @@ public abstract class BaseHandler extends BaseThingHandler {
     public void addSoftlink(String id) {
         if (!softLinks.contains(id) && !config.id.equals(id)) {
             softLinks.add(id);
-            logger.debug("DIRIGERA BASE_HANDLER {} link soft added for {}", thing.getLabel(),
+            logger.debug("DIRIGERA BASE_HANDLER {} softlink added for {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         } else {
-            logger.debug("DIRIGERA BASE_HANDLER {} link soft already established to {}", thing.getLabel(),
+            logger.debug("DIRIGERA BASE_HANDLER {} softlink already established to {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         }
     }
