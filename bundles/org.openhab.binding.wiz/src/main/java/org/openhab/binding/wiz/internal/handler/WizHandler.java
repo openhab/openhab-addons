@@ -129,23 +129,22 @@ public class WizHandler extends BaseThingHandler {
 
         switch (channelUID.getId()) {
             case CHANNEL_COLOR:
-                if (command instanceof HSBType) {
-                    handleHSBCommand((HSBType) command);
-                } else if (command instanceof PercentType) {
-                    handlePercentCommand((PercentType) command);
-                } else if (command instanceof OnOffType) {
-                    handleOnOffCommand((OnOffType) command);
+                if (command instanceof HSBType hsbCommand) {
+                    handleHSBCommand(hsbCommand);
+                } else if (command instanceof PercentType percentCommand) {
+                    handlePercentCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handleOnOffCommand(onOffCommand);
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 
             case CHANNEL_TEMPERATURE:
-                if (command instanceof PercentType) {
-                    handleTemperatureCommand((PercentType) command);
-                } else if (command instanceof OnOffType) {
-                    handleTemperatureCommand(
-                            ((OnOffType) command) == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO);
+                if (command instanceof PercentType percentCommand) {
+                    handleTemperatureCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handleTemperatureCommand(onOffCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO);
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseTemperatureCommand(command == IncreaseDecreaseType.INCREASE);
                 }
@@ -161,21 +160,21 @@ public class WizHandler extends BaseThingHandler {
                 }
 
             case CHANNEL_BRIGHTNESS:
-                if (command instanceof PercentType) {
-                    handlePercentCommand((PercentType) command);
-                } else if (command instanceof OnOffType) {
-                    handleOnOffCommand((OnOffType) command);
+                if (command instanceof PercentType percentCommand) {
+                    handlePercentCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handleOnOffCommand(onOffCommand);
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
 
             case CHANNEL_STATE:
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     if (isFan) {
-                        handleFanOnOffCommand((OnOffType) command);
+                        handleFanOnOffCommand(onOffCommand);
                     } else {
-                        handleOnOffCommand((OnOffType) command);
+                        handleOnOffCommand(onOffCommand);
                     }
                 }
                 break;
@@ -187,10 +186,10 @@ public class WizHandler extends BaseThingHandler {
 
             case CHANNEL_SPEED:
                 // TODO: handle fan speed
-                if (command instanceof PercentType) {
-                    handleSpeedCommand((PercentType) command);
-                } else if (command instanceof OnOffType) {
-                    handleSpeedCommand(((OnOffType) command) == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO);
+                if (command instanceof PercentType percentCommand) {
+                    handleSpeedCommand(percentCommand);
+                } else if (command instanceof OnOffType onOffCommand) {
+                    handleSpeedCommand(onOffCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO);
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseSpeedCommand(command == IncreaseDecreaseType.INCREASE);
                 }
