@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class MotionLightSensorHandler extends MotionSensorHandler {
     private final Logger logger = LoggerFactory.getLogger(MotionLightSensorHandler.class);
 
-    private Map<String, String> relations = new HashMap<>();
+    private TreeMap<String, String> relations = new TreeMap<>();
 
     public MotionLightSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -50,6 +50,10 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
+            // assure deviceType is set from main device
+            if (values.has(PROPERTY_DEVICE_TYPE)) {
+                deviceType = values.getString(PROPERTY_DEVICE_TYPE);
+            }
 
             // get all relations and register
             String relationId = gateway().model().getRelationId(config.id);
@@ -82,9 +86,7 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
