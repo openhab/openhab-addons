@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -52,6 +53,7 @@ import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -94,16 +96,19 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<DirigeraAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
-    private Optional<ScheduledFuture<?>> sequentialScheduler = Optional.empty();
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
     private Optional<ScheduledFuture<?>> detectionSchedule = Optional.empty();
 
+    private ScheduledExecutorService sequentialScheduler;
     private List<Object> knownDevices = new ArrayList<>();
-    private ArrayList<String> queue = new ArrayList<>();
+    private ArrayList<String> websocketQueue = new ArrayList<>();
+    private ArrayList<DeviceUpdate> deviceModificationQueue = new ArrayList<>();
     private DirigeraConfiguration config;
     private Storage<String> storage;
     private HttpClient httpClient;
     private String token = PROPERTY_EMPTY;
+    private int websocketQueueSizePeak = 0;
+    private int deviceUpdateQueueSizePeak = 0;
 
     public static long detectionTimeSeonds = 5;
 
@@ -117,6 +122,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
         config = new DirigeraConfiguration();
+        /**
+         * structural changes like adding, removing devices and update links needs to be done in a sequential way.
+         * Pressure during startup is causing java.util.ConcurrentModificationException
+         */
+        sequentialScheduler = ThreadPoolManager
+                .getPoolBasedSequentialScheduledExecutorService(this.getClass().getName(), BINDING_ID);
     }
 
     @Override
@@ -136,7 +147,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void initialize() {
         // do this asynchronous in case of token and other parameters needs to be obtained via Rest API calls
-        scheduler.execute(this::doInitialize);
+        sequentialScheduler.execute(this::doInitialize);
     }
 
     private void doInitialize() {
@@ -273,9 +284,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         heartbeat.ifPresent(refresher -> {
             refresher.cancel(false);
         });
-        modelUpdater.ifPresent(refresher -> {
-            refresher.cancel(false);
-        });
         websocket.ifPresent(client -> {
             client.dispose();
         });
@@ -284,6 +292,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void handleRemoval() {
         super.handleRemoval();
+        sequentialScheduler.shutdownNow();
         // todo clear storage
     }
 
@@ -469,10 +478,46 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     /**
-     * register a running device
+     * Distributing the device update towards the correct function
      */
+    private void doDeviceUpdate() {
+        DeviceUpdate deviceUpdate = null;
+        synchronized (deviceModificationQueue) {
+            if (deviceUpdateQueueSizePeak < deviceModificationQueue.size()) {
+                deviceUpdateQueueSizePeak = deviceModificationQueue.size();
+                logger.warn("DIRIGERA HANDLER Device update queue size peak {}", deviceUpdateQueueSizePeak);
+            }
+            if (!deviceModificationQueue.isEmpty()) {
+                deviceUpdate = deviceModificationQueue.remove(0);
+            }
+        }
+        if (deviceUpdate != null) {
+            switch (deviceUpdate.action) {
+                case ADD:
+                    doRegisterDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    break;
+                case DISPOSE:
+                    doUnregisterDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    break;
+                case REMOVE:
+                    doDeleteDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    break;
+            }
+        }
+    }
+
     @Override
     public void registerDevice(BaseHandler deviceHandler, String deviceId) {
+        synchronized (deviceModificationQueue) {
+            deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.ADD));
+        }
+        sequentialScheduler.schedule(this::doDeviceUpdate, 0, TimeUnit.SECONDS);
+    }
+
+    /**
+     * register a running device
+     */
+    private void doRegisterDevice(BaseHandler deviceHandler, String deviceId) {
         logger.debug("DIRIGERA HANDLER device registered {}", deviceHandler.getThing().getThingTypeUID());
         if (!deviceId.isBlank()) {
             // if id isn't known yet - store it
@@ -486,21 +531,35 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         deviceTree.put(deviceId, deviceHandler);
     }
 
+    @Override
+    public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
+        synchronized (deviceModificationQueue) {
+            deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.DISPOSE));
+        }
+        sequentialScheduler.schedule(this::doDeviceUpdate, 0, TimeUnit.SECONDS);
+    }
+
     /**
      * unregister device, not running but still available
      */
-    @Override
-    public void unregisterDevice(BaseHandler deviceHandler, String deviceId) {
+    private void doUnregisterDevice(BaseHandler deviceHandler, String deviceId) {
         logger.debug("DIRIGERA HANDLER device unregistered {}", deviceHandler.getThing().getThingTypeUID());
         deviceTree.remove(deviceId);
         // unregister from dispose but don't remove it from known devices
     }
 
+    @Override
+    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
+        synchronized (deviceModificationQueue) {
+            deviceModificationQueue.add(new DeviceUpdate(deviceHandler, deviceId, DeviceUpdate.Action.REMOVE));
+        }
+        sequentialScheduler.schedule(this::doDeviceUpdate, 0, TimeUnit.SECONDS);
+    }
+
     /**
      * Called by all device on handleRe
      */
-    @Override
-    public void deleteDevice(BaseHandler deviceHandler, String deviceId) {
+    private void doDeleteDevice(BaseHandler deviceHandler, String deviceId) {
         logger.warn("DIRIGERA HANDLER device deleted {}", deviceHandler.getThing().getThingTypeUID());
         deviceTree.remove(deviceId);
         // removal of handler - store known devices
@@ -585,15 +644,12 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public void websocketUpdate(String update) {
-        synchronized (queue) {
-            queue.add(update);
-        }
-        scheduler.schedule(this::doUpdate, 0, TimeUnit.SECONDS);
+    public void updateLinks() {
+        sequentialScheduler.schedule(this::doUpdateLinks, 0, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void updateLinks() {
+    private void doUpdateLinks() {
+        logger.debug("DIRIGERA HANDLER ####### update links took cycle");
         Instant startTime = Instant.now();
         // first clear start update cycle, softlinks are cleared before
         synchronized (deviceTree) {
@@ -621,14 +677,27 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 handler.updateLinksDone();
             });
         }
-        logger.debug("DIRIGERA HANDLER update links took {}", Duration.between(startTime, Instant.now()).toMillis());
+        logger.debug("DIRIGERA HANDLER ####### update links took {}",
+                Duration.between(startTime, Instant.now()).toMillis());
+    }
+
+    @Override
+    public void websocketUpdate(String update) {
+        synchronized (websocketQueue) {
+            websocketQueue.add(update);
+        }
+        sequentialScheduler.schedule(this::doUpdate, 0, TimeUnit.SECONDS);
     }
 
     private void doUpdate() {
         String json = "";
-        synchronized (queue) {
-            if (!queue.isEmpty()) {
-                json = queue.remove(0);
+        synchronized (websocketQueue) {
+            if (websocketQueueSizePeak < websocketQueue.size()) {
+                websocketQueueSizePeak = websocketQueue.size();
+                logger.warn("DIRIGERA HANDLER Websocket update queue size peak {}", websocketQueueSizePeak);
+            }
+            if (!websocketQueue.isEmpty()) {
+                json = websocketQueue.remove(0);
             }
         }
         if (!json.isBlank()) {
