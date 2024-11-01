@@ -2083,7 +2083,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.wizlighting</artifactId>
+      <artifactId>org.openhab.binding.wiz</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
