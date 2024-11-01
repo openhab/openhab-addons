@@ -38,7 +38,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class MotionSensorHandler extends BaseHandler {
 
-    protected static final String durationUpdate = "{\"attributes\":{\"sensorConfig\":{\"onDuration\":%s}}}";
+    protected static final String DURATION_UPDATE = "{\"attributes\":{\"sensorConfig\":{\"onDuration\":%s}}}";
 
     public MotionSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -72,7 +72,7 @@ public class MotionSensorHandler extends BaseHandler {
                     }
                 }
                 if (seconds > 0) {
-                    String updateData = String.format(durationUpdate, seconds);
+                    String updateData = String.format(DURATION_UPDATE, seconds);
                     gateway().api().sendPatch(config.id, new JSONObject(updateData));
                 }
                 break;

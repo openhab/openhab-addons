@@ -67,10 +67,10 @@ class TestMotionSensor {
 
         // check commands
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION), new DecimalType(10));
-        assertEquals(String.format(MotionSensorHandler.durationUpdate, 10),
+        assertEquals(String.format(MotionSensorHandler.DURATION_UPDATE, 10),
                 DirigeraAPISimu.patchMap.get("ee61c57f-8efa-44f4-ba8a-d108ae054138_1"), "10 seconds");
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION), QuantityType.valueOf("3 min"));
-        assertEquals(String.format(MotionSensorHandler.durationUpdate, 180),
+        assertEquals(String.format(MotionSensorHandler.DURATION_UPDATE, 180),
                 DirigeraAPISimu.patchMap.get("ee61c57f-8efa-44f4-ba8a-d108ae054138_1"), "10 seconds");
     }
 
