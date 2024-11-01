@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_BRIGHTNESS;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +41,8 @@ public class DimmableLightHandler extends BaseHandler {
     public DimmableLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // links of types which can be established towards this device
+        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
     }
 
     @Override

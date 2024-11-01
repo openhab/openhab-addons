@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler.speaker;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SpeakerHandler} basic DeviceHandler for all devices
+ * The {@link SpeakerHandler} to control speaker devices
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -48,6 +49,8 @@ public class SpeakerHandler extends BaseHandler {
     public SpeakerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // links of types which can be established towards this device
+        linkCandidateTypes = List.of(DEVICE_TYPE_SOUND_CONTROLLER);
     }
 
     @Override

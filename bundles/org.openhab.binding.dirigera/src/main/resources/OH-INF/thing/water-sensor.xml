@@ -17,14 +17,6 @@
 				<label>Detection Flag</label>
 				<description>Flag if detection happened</description>
 			</channel>
-			<channel id="connections" typeId="text">
-				<label>Connections</label>
-				<description>Connections to controllers and sensors</description>
-			</channel>
-			<channel id="candidates" typeId="text">
-				<label>Connection Candidates</label>
-				<description>Candidates which can be connected</description>
-			</channel>
 			<channel id="battery-level" typeId="percent">
 				<label>Battery Level</label>
 				<description>State of the battery powering the sensor</description>
@@ -32,14 +24,6 @@
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
-			</channel>
-			<channel id="connections" typeId="text">
-				<label>Connections</label>
-				<description>Connections to controllers and sensors</description>
-			</channel>
-			<channel id="candidates" typeId="text">
-				<label>Connection Candidates</label>
-				<description>Candidates which can be connected</description>
 			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>

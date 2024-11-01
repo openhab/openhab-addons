@@ -133,7 +133,7 @@
 		<label>Scene Trigger</label>
 		<command>
 			<options>
-				<option value="0">Perform</option>
+				<option value="0">Trigger</option>
 				<option value="1">Undo</option>
 			</options>
 		</command>
@@ -162,7 +162,23 @@
 	<channel-type id="time">
 		<item-type>Number:Time</item-type>
 		<label>Time</label>
-		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<command>
+			<options>
+				<option value="1 min">1 minute</option>
+				<option value="3 min">3 minutes</option>
+				<option value="5 min">5 minutes</option>
+				<option value="10 min">10 minutes</option>
+				<option value="15 min">15 minutes</option>
+				<option value="20 min">20 minutes</option>
+				<option value="30 min">30 minutes</option>
+				<option value="40 min">40 minutes</option>
+				<option value="60 min">60 minutes</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="fan-mode">
 		<item-type>Number</item-type>
