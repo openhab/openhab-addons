@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.wiz.internal.entities;
 
-import static org.openhab.binding.wiz.internal.WizBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.PercentType;
 
 import com.google.gson.annotations.Expose;
 
@@ -36,11 +33,6 @@ public class ColorTemperatureRequestParam implements Param {
 
     public ColorTemperatureRequestParam(int temp) {
         this.temp = temp;
-    }
-
-    public ColorTemperatureRequestParam(PercentType colorPercent) {
-        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
-        temp = MAX_COLOR_TEMPERATURE - Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
     }
 
     public int getColorTemperature() {

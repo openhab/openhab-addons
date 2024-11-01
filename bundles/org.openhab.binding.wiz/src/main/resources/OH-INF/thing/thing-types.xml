@@ -11,7 +11,7 @@
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="temperature" typeId="system.color-temperature"/>
-			<channel id="temperature-abs" typeId="color-temperature-abs"/>
+			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
 			<channel id="mode" typeId="light-mode"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -27,7 +27,7 @@
 
 		<channels>
 			<channel id="temperature" typeId="system.color-temperature"/>
-			<channel id="temperature-abs" typeId="color-temperature-abs"/>
+			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
 			<channel id="dimming" typeId="system.brightness"/>
 			<channel id="mode" typeId="light-mode"/>
 			<channel id="speed" typeId="speed"/>
@@ -135,18 +135,6 @@
 		<label>Last Update</label>
 		<description>Timestamp of last status update</description>
 		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="color-temperature-abs" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Color Temperature</label>
-		<description>Controls the color temperature of the light in Kelvin</description>
-		<category>ColorLight</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>ColorTemperature</tag>
-		</tags>
-		<state min="2200" max="6500" pattern="%.0f K"/>
 	</channel-type>
 
 </thing:thing-descriptions>

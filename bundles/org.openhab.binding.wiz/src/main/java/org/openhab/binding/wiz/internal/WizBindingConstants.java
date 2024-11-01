@@ -119,7 +119,6 @@ public class WizBindingConstants {
      */
     public static final int MIN_COLOR_TEMPERATURE = 2200;
     public static final int MAX_COLOR_TEMPERATURE = 6500;
-    public static final int COLOR_TEMPERATURE_RANGE = MAX_COLOR_TEMPERATURE - MIN_COLOR_TEMPERATURE;
 
     // -------------- Bulb Properties ----------------
 
@@ -136,4 +135,5 @@ public class WizBindingConstants {
 
     public static final String EXPECTED_MODULE_NAME = "ESP01_SHRGB1C_31";
     public static final String LAST_KNOWN_FIRMWARE_VERSION = "1.18.0";
+    public static final String MODEL_CONFIG_MINIMUM_FIRMWARE_VERSION = "1.22";
 }

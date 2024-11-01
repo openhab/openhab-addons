@@ -61,7 +61,11 @@ public class WizResponse {
 
     // The system configuration result, if present
     @Expose(serialize = true, deserialize = true)
-    private @Nullable SystemConfigResult configResult;
+    private @Nullable SystemConfigResult systemConfigResult;
+
+    // The modeul configuration result, if present
+    @Expose(serialize = true, deserialize = true)
+    private @Nullable ModelConfigResult modelConfigResult;
 
     // The parameters or result of a command/response
     // A "result" is generally returned when solicited using a set/get method and a
@@ -76,11 +80,19 @@ public class WizResponse {
      */
 
     public @Nullable SystemConfigResult getSystemConfigResults() {
-        return this.configResult;
+        return this.systemConfigResult;
     }
 
     public void setSystemConfigResult(final SystemConfigResult configResult) {
-        this.configResult = configResult;
+        this.systemConfigResult = configResult;
+    }
+
+    public @Nullable ModelConfigResult getModelConfigResults() {
+        return this.modelConfigResult;
+    }
+
+    public void setModelConfigResult(final ModelConfigResult configResult) {
+        this.modelConfigResult = configResult;
     }
 
     public boolean getResultSuccess() {

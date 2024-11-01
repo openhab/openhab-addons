@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wiz.internal.entities.ErrorResponseResult;
+import org.openhab.binding.wiz.internal.entities.ModelConfigResult;
 import org.openhab.binding.wiz.internal.entities.SystemConfigResult;
 import org.openhab.binding.wiz.internal.entities.WizResponse;
 import org.openhab.binding.wiz.internal.entities.WizSyncState;
@@ -146,6 +147,16 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     deserializedResponse.setResultSucess(true);
                     deserializedResponse.setSystemConfigResult(parsedFBParams);
                     logger.trace("firstBeat result deserialized with mac {}", parsedFBParams.mac);
+                    break;
+
+                case GetModelConfig:
+                    if (!jobject.has("result")) {
+                        throw new JsonParseException("getModelConfig received, but no result object present");
+                    }
+                    ModelConfigResult parsedMResult = context.deserialize(jobject.getAsJsonObject("result"),
+                            ModelConfigResult.class);
+                    deserializedResponse.setResultSucess(true);
+                    deserializedResponse.setModelConfigResult(parsedMResult);
                     break;
 
                 case GetSystemConfig:

@@ -16,22 +16,27 @@ import static org.openhab.binding.wiz.internal.WizBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wiz.internal.WizStateDescriptionProvider;
 import org.openhab.binding.wiz.internal.config.WizDeviceConfiguration;
 import org.openhab.binding.wiz.internal.entities.ColorRequestParam;
 import org.openhab.binding.wiz.internal.entities.ColorTemperatureRequestParam;
 import org.openhab.binding.wiz.internal.entities.DimmingRequestParam;
 import org.openhab.binding.wiz.internal.entities.FanStateRequestParam;
+import org.openhab.binding.wiz.internal.entities.ModelConfigResult;
 import org.openhab.binding.wiz.internal.entities.Param;
 import org.openhab.binding.wiz.internal.entities.RegistrationRequestParam;
 import org.openhab.binding.wiz.internal.entities.SceneRequestParam;
@@ -63,6 +68,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
@@ -86,11 +93,15 @@ public class WizHandler extends BaseThingHandler {
     private WizSyncState mostRecentState;
 
     private final WizPacketConverter converter = new WizPacketConverter();
+    private final WizStateDescriptionProvider stateDescriptionProvider;
+    private final ChannelUID colorTempChannelUID;
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
     private long latestOfflineRefresh = -1;
     private int requestId = 0;
     private final boolean isFan;
+    private int minColorTemp = MIN_COLOR_TEMPERATURE;
+    private int maxColorTemp = MAX_COLOR_TEMPERATURE;
 
     private volatile boolean disposed;
     private volatile boolean fullyInitialized;
@@ -99,12 +110,16 @@ public class WizHandler extends BaseThingHandler {
      * Default constructor.
      *
      * @param thing the thing of the handler.
+     * @param stateDescriptionProvider A state description provider
      */
-    public WizHandler(final Thing thing, final RegistrationRequestParam registrationPacket) {
+    public WizHandler(final Thing thing, final RegistrationRequestParam registrationPacket,
+            WizStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.registrationInfo = registrationPacket;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         this.mostRecentState = new WizSyncState();
         this.isFan = thing.getThingTypeUID().equals(THING_TYPE_CEILING_FAN);
+        colorTempChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE_ABS);
         fullyInitialized = false;
     }
 
@@ -142,9 +157,10 @@ public class WizHandler extends BaseThingHandler {
 
             case CHANNEL_TEMPERATURE:
                 if (command instanceof PercentType percentCommand) {
-                    handleTemperatureCommand(percentCommand);
+                    handleTemperatureCommand(percentToColorTemp(percentCommand));
                 } else if (command instanceof OnOffType onOffCommand) {
-                    handleTemperatureCommand(onOffCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO);
+                    handleTemperatureCommand(
+                            percentToColorTemp(onOffCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO));
                 } else if (command instanceof IncreaseDecreaseType) {
                     handleIncreaseDecreaseTemperatureCommand(command == IncreaseDecreaseType.INCREASE);
                 }
@@ -283,26 +299,21 @@ public class WizHandler extends BaseThingHandler {
         handlePercentCommand(new PercentType(newDimming));
     }
 
-    private void handleTemperatureCommand(PercentType temperature) {
-        setPilotCommand(new ColorTemperatureRequestParam(temperature));
-        mostRecentState.setTemperaturePercent(temperature);
-    }
-
     private void handleTemperatureCommand(int temperature) {
         setPilotCommand(new ColorTemperatureRequestParam(temperature));
         mostRecentState.setTemperature(temperature);
     }
 
     private void handleIncreaseDecreaseTemperatureCommand(boolean isIncrease) {
-        int oldTempPct = mostRecentState.getTemperaturePercent().intValue();
-        int newTempPct = 50;
+        float oldTempPct = colorTempToPercent(mostRecentState.getTemperature()).floatValue();
+        float newTempPct = 50;
         if (isIncrease) {
             newTempPct = Math.min(100, oldTempPct + 5);
         } else {
             newTempPct = Math.max(0, oldTempPct - 5);
         }
         logger.debug("[{}] Changing color temperature from {}% to {}%.", config.bulbIpAddress, oldTempPct, newTempPct);
-        handleTemperatureCommand(new PercentType(newTempPct));
+        handleTemperatureCommand(percentToColorTemp(new PercentType(BigDecimal.valueOf(newTempPct))));
     }
 
     private void handleSpeedCommand(PercentType speed) {
@@ -417,6 +428,8 @@ public class WizHandler extends BaseThingHandler {
             keepAliveJob.cancel(true);
             this.keepAliveJob = null;
         }
+        stateDescriptionProvider.remove(colorTempChannelUID);
+        super.dispose();
     }
 
     private synchronized void getPilot() {
@@ -553,7 +566,7 @@ public class WizHandler extends BaseThingHandler {
                     HSBType color = ColorUtil.xyToHsb(xy);
                     updateState(CHANNEL_COLOR, new HSBType(color.getHue(), color.getSaturation(),
                             new PercentType(receivedParam.getDimming())));
-                    updateState(CHANNEL_TEMPERATURE, receivedParam.getTemperaturePercent());
+                    updateState(CHANNEL_TEMPERATURE, colorTempToPercent(receivedParam.getTemperature()));
                     updateState(CHANNEL_TEMPERATURE_ABS,
                             new QuantityType<>(receivedParam.getTemperature(), Units.KELVIN));
                     break;
@@ -676,21 +689,21 @@ public class WizHandler extends BaseThingHandler {
         }
         WizResponse registrationResponse = sendRequestPacket(WizMethodType.GetSystemConfig, null);
         if (registrationResponse != null) {
-            SystemConfigResult responseResult = registrationResponse.getSystemConfigResults();
-            if (responseResult != null) {
+            SystemConfigResult systemConfigResult = registrationResponse.getSystemConfigResults();
+            if (systemConfigResult != null) {
                 // Update all the thing properties based on the result
                 Map<String, String> thingProperties = new HashMap<String, String>();
                 thingProperties.put(PROPERTY_VENDOR, "WiZ Connected");
-                thingProperties.put(PROPERTY_FIRMWARE_VERSION, responseResult.fwVersion);
-                thingProperties.put(PROPERTY_MAC_ADDRESS, responseResult.mac);
+                thingProperties.put(PROPERTY_FIRMWARE_VERSION, systemConfigResult.fwVersion);
+                thingProperties.put(PROPERTY_MAC_ADDRESS, systemConfigResult.mac);
                 thingProperties.put(PROPERTY_IP_ADDRESS, registrationResponse.getWizResponseIpAddress());
-                thingProperties.put(PROPERTY_HOME_ID, String.valueOf(responseResult.homeId));
-                thingProperties.put(PROPERTY_ROOM_ID, String.valueOf(responseResult.roomId));
-                thingProperties.put(PROPERTY_HOME_LOCK, String.valueOf(responseResult.homeLock));
-                thingProperties.put(PROPERTY_PAIRING_LOCK, String.valueOf(responseResult.pairingLock));
-                thingProperties.put(PROPERTY_TYPE_ID, String.valueOf(responseResult.typeId));
-                thingProperties.put(PROPERTY_MODULE_NAME, responseResult.moduleName);
-                thingProperties.put(PROPERTY_GROUP_ID, String.valueOf(responseResult.groupId));
+                thingProperties.put(PROPERTY_HOME_ID, String.valueOf(systemConfigResult.homeId));
+                thingProperties.put(PROPERTY_ROOM_ID, String.valueOf(systemConfigResult.roomId));
+                thingProperties.put(PROPERTY_HOME_LOCK, String.valueOf(systemConfigResult.homeLock));
+                thingProperties.put(PROPERTY_PAIRING_LOCK, String.valueOf(systemConfigResult.pairingLock));
+                thingProperties.put(PROPERTY_TYPE_ID, String.valueOf(systemConfigResult.typeId));
+                thingProperties.put(PROPERTY_MODULE_NAME, systemConfigResult.moduleName);
+                thingProperties.put(PROPERTY_GROUP_ID, String.valueOf(systemConfigResult.groupId));
                 updateProperties(thingProperties);
                 updateTimestamps();
             } else {
@@ -699,8 +712,27 @@ public class WizHandler extends BaseThingHandler {
                         config.bulbIpAddress, config.bulbMacAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
+
+            // Firmware versions > 1.22 support more details
+            registrationResponse = sendRequestPacket(WizMethodType.GetModelConfig, null);
+            if (registrationResponse != null) {
+                ModelConfigResult modelConfigResult = registrationResponse.getModelConfigResults();
+                if (modelConfigResult != null && modelConfigResult.cctRange.length > 0) {
+                    minColorTemp = Arrays.stream(modelConfigResult.cctRange).min().getAsInt();
+                    maxColorTemp = Arrays.stream(modelConfigResult.cctRange).max().getAsInt();
+                    logger.warn("min temp: {} max temp: {}", minColorTemp, maxColorTemp);
+                    StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                            .withMinimum(BigDecimal.valueOf(minColorTemp)).withMaximum(BigDecimal.valueOf(maxColorTemp))
+                            .withPattern("%.0f K").build().toStateDescription();
+                    stateDescriptionProvider.setDescription(colorTempChannelUID,
+                            Objects.requireNonNull(stateDescription));
+                }
+            } else {
+                // Not a big deal; probably just an older bulb
+                logger.warn("[{}] No response to getModelConfig request from bulb", config.bulbIpAddress);
+            }
         } else {
-            logger.debug("[{}] No response to registration request from bulb at {}", config.bulbIpAddress,
+            logger.debug("[{}] No response to getSystemConfig request from bulb at {}", config.bulbIpAddress,
                     config.bulbMacAddress);
             // Not calling it "gone" because it's probably just been powered off and will beback any time
             updateStatus(ThingStatus.OFFLINE);
@@ -737,6 +769,16 @@ public class WizHandler extends BaseThingHandler {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
         return statusInfo.getStatus() == ThingStatus.OFFLINE
                 && statusInfo.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR;
+    }
+
+    private int percentToColorTemp(PercentType command) {
+        int range = maxColorTemp - minColorTemp;
+        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
+        return maxColorTemp - Math.round((range * command.floatValue()) / 100);
+    }
+
+    private PercentType colorTempToPercent(int temp) {
+        return new PercentType(BigDecimal.valueOf((float) temp - minColorTemp / (maxColorTemp - minColorTemp) * 100));
     }
 
     // SETTERS AND GETTERS

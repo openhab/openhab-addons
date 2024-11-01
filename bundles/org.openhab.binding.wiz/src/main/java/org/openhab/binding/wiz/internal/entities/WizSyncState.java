@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wiz.internal.enums.WizColorMode;
 import org.openhab.binding.wiz.internal.utils.WizColorConverter;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.PercentType;
 
 import com.google.gson.annotations.Expose;
 
@@ -138,15 +137,6 @@ public class WizSyncState {
 
     public int getTemperature() {
         return temp;
-    }
-
-    public PercentType getTemperaturePercent() {
-        return new PercentType((temp - MIN_COLOR_TEMPERATURE) / COLOR_TEMPERATURE_RANGE * 100);
-    }
-
-    public void setTemperaturePercent(PercentType colorPercent) {
-        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
-        this.temp = MAX_COLOR_TEMPERATURE - Math.round((COLOR_TEMPERATURE_RANGE * colorPercent.floatValue()) / 100);
     }
 
     public void setTemperature(int temp) {

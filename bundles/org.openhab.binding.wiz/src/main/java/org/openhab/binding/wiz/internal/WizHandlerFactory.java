@@ -41,10 +41,13 @@ public class WizHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(WizHandlerFactory.class);
 
     private final WizMediator mediator;
+    private final WizStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
-    public WizHandlerFactory(@Reference WizMediator mediator) {
+    public WizHandlerFactory(@Reference WizMediator mediator,
+            @Reference WizStateDescriptionProvider stateDescriptionProvider) {
         this.mediator = mediator;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class WizHandlerFactory extends BaseThingHandlerFactory {
         if (supportsThingType(thing.getThingTypeUID())) {
             WizHandler handler;
 
-            handler = new WizHandler(thing, this.mediator.getRegistrationParams());
+            handler = new WizHandler(thing, this.mediator.getRegistrationParams(), stateDescriptionProvider);
 
             mediator.registerThingAndWizBulbHandler(thing, handler);
             return handler;

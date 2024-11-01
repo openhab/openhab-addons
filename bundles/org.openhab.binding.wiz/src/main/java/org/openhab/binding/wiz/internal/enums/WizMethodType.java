@@ -81,6 +81,11 @@ public enum WizMethodType {
     @SerializedName("syncPilot")
     SyncPilot("syncPilot"),
     /**
+     * getModelConfig - gets more details on the bulb
+     */
+    @SerializedName("getModelConfig")
+    GetModelConfig("getModelConfig"),
+    /**
      * getSystemConfig - gets the current system configuration - no paramters need
      * to be included
      * Example Request:
