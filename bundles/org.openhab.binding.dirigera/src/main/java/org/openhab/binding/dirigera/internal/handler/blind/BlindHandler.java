@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler.blind;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,6 +45,8 @@ public class BlindHandler extends BaseHandler {
     public BlindHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // links of types which can be established towards this device
+        linkCandidateTypes = List.of(DEVICE_TYPE_BLIND_CONTROLLER);
     }
 
     @Override

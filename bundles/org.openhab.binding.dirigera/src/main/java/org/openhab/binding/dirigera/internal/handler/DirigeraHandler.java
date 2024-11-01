@@ -606,16 +606,16 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         deviceTree.forEach((id, handler) -> {
             handler.updateLinksStart();
         });
-        // then update all connections
+        // then update all linkss
         deviceTree.forEach((id, handler) -> {
-            List<String> connections = handler.getLinks();
-            logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), connections.size());
-            connections.forEach(link -> {
+            List<String> links = handler.getLinks();
+            logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
+            links.forEach(link -> {
                 // assure investigated handler is different from target handler
                 if (!id.equals(link)) {
                     BaseHandler targetHandler = deviceTree.get(link);
                     if (targetHandler != null) {
-                        targetHandler.addSoflink(id);
+                        targetHandler.addSoftlink(id);
                     } else {
                         logger.debug("DIRIGERA HANDLER no targethandler found to link {} to {}", id, link);
                     }
@@ -626,8 +626,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         deviceTree.forEach((id, handler) -> {
             handler.updateLinksDone();
         });
-        logger.debug("DIRIGERA HANDLER update connections took {}",
-                Duration.between(startTime, Instant.now()).toMillis());
+        logger.debug("DIRIGERA HANDLER update links took {}", Duration.between(startTime, Instant.now()).toMillis());
     }
 
     private void doUpdate() {

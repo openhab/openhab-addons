@@ -29,13 +29,13 @@
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
 			</channel>
-			<channel id="connections" typeId="text">
-				<label>Connections</label>
-				<description>Connections to controllers and sensors</description>
+			<channel id="links" typeId="text">
+				<label>Links</label>
+				<description>Linked controllers and sensors</description>
 			</channel>
-			<channel id="candidates" typeId="text">
-				<label>Connection Candidates</label>
-				<description>Candidates which can be connected</description>
+			<channel id="link-candidates" typeId="text">
+				<label>Link Candidates</label>
+				<description>Candidates which can be linked</description>
 			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>

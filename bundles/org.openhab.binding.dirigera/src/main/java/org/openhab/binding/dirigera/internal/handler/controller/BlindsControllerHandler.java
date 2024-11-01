@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
+import static org.openhab.binding.dirigera.internal.Constants.DEVICE_TYPE_BLINDS;
+
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +35,8 @@ public class BlindsControllerHandler extends BaseHandler {
     public BlindsControllerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // links of types which can be established towards this device
+        linkCandidateTypes = List.of(DEVICE_TYPE_BLINDS);
     }
 
     @Override
