@@ -1,0 +1,75 @@
+{
+	"data": {
+		"deviceType": "lightController",
+		"remoteLinks": [],
+		"createdAt": "2024-10-11T11:33:27.000Z",
+		"isReachable": true,
+		"lastSeen": "2024-11-01T09:43:34.000Z",
+		"attributes": {
+			"permittingJoin": false,
+			"serialNumber": "94B216FFFE6F9BA6",
+			"otaScheduleStart": "00:00",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"customName": "Remote Control Loft",
+			"otaStatus": "upToDate",
+			"otaPolicy": "autoUpdate",
+			"manufacturer": "IKEA of Sweden",
+			"lightLevel": 1,
+			"circadianPresets": [
+				{
+					"lightLevel": 100,
+					"startTime": "05:00",
+					"colorTemperature": 4000
+				},
+				{
+					"lightLevel": 100,
+					"startTime": "10:00",
+					"colorTemperature": 3800
+				},
+				{
+					"lightLevel": 75,
+					"startTime": "17:00",
+					"colorTemperature": 3500
+				},
+				{
+					"lightLevel": 45,
+					"startTime": "20:00",
+					"colorTemperature": 3000
+				},
+				{
+					"lightLevel": 20,
+					"startTime": "22:00",
+					"colorTemperature": 2400
+				},
+				{
+					"lightLevel": 1,
+					"startTime": "23:00",
+					"colorTemperature": 2200
+				}
+			],
+			"productCode": "E2001",
+			"otaState": "readyToCheck",
+			"isOn": false,
+			"model": "Remote Control N2",
+			"hardwareVersion": "1",
+			"batteryPercentage": 85,
+			"firmwareVersion": "2.4.16"
+		},
+		"id": "22e4b77b-9a60-4727-944b-0d5e3e33b58f_1",
+		"type": "controller",
+		"deviceSet": [],
+		"room": {
+			"color": "ikea_green_no_65",
+			"name": "Loft",
+			"icon": "rooms_sofa",
+			"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d"
+		},
+		"isHidden": false
+	},
+	"specversion": "3.163.0",
+	"id": "2e7c7f03-a114-424f-81d6-2576d7b51510",
+	"time": "2024-11-01T18:59:30.321Z",
+	"source": "urn:com:ikea:homesmart:iotc:rulesengine",
+	"type": "deviceStateChanged"
+}

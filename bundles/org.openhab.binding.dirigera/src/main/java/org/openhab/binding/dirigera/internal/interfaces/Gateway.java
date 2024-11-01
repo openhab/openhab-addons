@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.interfaces;
 
+import java.time.ZonedDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
@@ -49,6 +51,10 @@ public interface Gateway {
     public void websocketUpdate(String update);
 
     public void updateLinks();
+
+    public ZonedDateTime getSunriseDateTime();
+
+    public ZonedDateTime getSunsetDateTime();
 
     public DirigeraAPI api();
 

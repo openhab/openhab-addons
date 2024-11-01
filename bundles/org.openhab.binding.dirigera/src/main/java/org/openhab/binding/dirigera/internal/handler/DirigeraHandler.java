@@ -20,6 +20,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -109,6 +110,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private String token = PROPERTY_EMPTY;
     private int websocketQueueSizePeak = 0;
     private int deviceUpdateQueueSizePeak = 0;
+    private Instant sunriseInstant = Instant.MAX;
+    private Instant sunsetInstant = Instant.MIN;
 
     public static long detectionTimeSeonds = 5;
 
@@ -174,7 +177,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             if (!code.isBlank()) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
                         "@text/dirigera.gateway.status.pairing-button");
-                Instant stopAuth = Instant.now().plusSeconds(60); // 1 min possible to push button
+                /**
+                 * Approx 3 minutes possible to push DIRIGERA button
+                 */
+                Instant stopAuth = Instant.now().plusSeconds(180);
                 while (Instant.now().isBefore(stopAuth) && token.isBlank()) {
                     try {
                         logger.info("DIRIGERA HANDLER press button on DIRIGERA gateway - wait 3 secs");
@@ -822,15 +828,25 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
             // sunrise & sunset
             if (attributes.has("nextSunRise")) {
-                Instant sunriseInstant = Instant.parse(attributes.getString("nextSunRise"));
+                sunriseInstant = Instant.parse(attributes.getString("nextSunRise"));
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
                         new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
             }
             if (attributes.has("nextSunSet")) {
-                Instant sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
+                sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET),
                         new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
             }
         }
+    }
+
+    @Override
+    public ZonedDateTime getSunriseDateTime() {
+        return sunriseInstant.atZone(timeZoneProvider.getTimeZone());
+    }
+
+    @Override
+    public ZonedDateTime getSunsetDateTime() {
+        return sunsetInstant.atZone(timeZoneProvider.getTimeZone());
     }
 }
