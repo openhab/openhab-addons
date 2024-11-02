@@ -64,21 +64,20 @@ You can find the data type in the Wolf ISM8 document as well.
 Not all available data types of the ISM8 interface are fully supported.
 For the moment, the following data types are implemented:
 
-| Channel type   | Datapoint type                           | Item type                 | R/W | KNX-type's                 |
-|----------------|------------------------------------------|---------------------------|-----|----------------------------|
-| switch-rw      | Digital DataPoint                        | Switch                    | R/W | 1.001, 1.002, 1.003, 1.009 |
-| switch-r       | Digital Readonly DataPoint               | Switch                    | R   | 1.001, 1.002, 1.003, 1.009 |
-| percentage-rw  | Percentage  DataPoint                    | Number:Dimensionless      | R/W | 5.001                      |
-| percentage-r   | Percentage Readonly DataPoint            | Number:Dimensionless      | R   | 5.001                      |
-| value1ucount-r | Value 2-byte Unsigned Readonly DataPoint | Number:Dimensionless      | R   | 5.010                      |
-| value2ucount-r | Value 2-byte Unsigned Readonly DataPoint | Number:Dimensionless      | R   | 7.001                      |
-| temperature-rw | Temperature DataPoint                    | Number:Temperature        | R/W | 9.001,9.002                |
-| temperature-r  | Temperature Readonly DataPoint           | Number:Temperature        | R   | 9.002,9.002                |
-| pressure-r     | Pressure Readonly DataPoint              | Number:Pressure           | R   | 9.006                      |
-| flowrate-r     | Flowrate Readonly DataPoint              | Number:VolumetricFlowRate | R   | 9.025, 13.002              |
-| activeenergy-r | Active Energy Readonly DataPoint         | Number:Energy             | R   | 13.010, 13.013             |
-| mode-rw        | Mode DataPoint                           | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
-| mode-r         | Mode Readonly DataPoint                  | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
+| Channel type    | Datapoint type                           | Item type                 | R/W | KNX-type's                 |
+|-----------------|------------------------------------------|---------------------------|-----|----------------------------|
+| switch-rw       | Digital DataPoint                        | Switch                    | R/W | 1.001, 1.002, 1.003, 1.009 |
+| switch-r        | Digital Readonly DataPoint               | Switch                    | R   | 1.001, 1.002, 1.003, 1.009 |
+| percentage-rw   | Percentage  DataPoint                    | Number:Dimensionless      | R/W | 5.001                      |
+| percentage-r    | Percentage Readonly DataPoint            | Number:Dimensionless      | R   | 5.001                      |
+| number-r        | Numeric Readonly DataPoint               | Number:Dimensionless      | R   | 5.010, 7.001               |
+| temperature-rw  | Temperature DataPoint                    | Number:Temperature        | R/W | 9.001,9.002                |
+| temperature-r   | Temperature Readonly DataPoint           | Number:Temperature        | R   | 9.002,9.002                |
+| pressure-r      | Pressure Readonly DataPoint              | Number:Pressure           | R   | 9.006                      |
+| flowrate-r      | Flowrate Readonly DataPoint              | Number:VolumetricFlowRate | R   | 9.025, 13.002              |
+| active-energy-r | Active Energy Readonly DataPoint         | Number:Energy             | R   | 13.010, 13.013             |
+| mode-rw         | Mode DataPoint                           | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
+| mode-r          | Mode Readonly DataPoint                  | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
 
 Date and Time types used by for CWL Excellent and CWL2 are currently not supported by the ISM8 add-on.
 

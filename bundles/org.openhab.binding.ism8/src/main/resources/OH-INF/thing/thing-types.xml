@@ -98,9 +98,9 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="value1ucount-r">
+	<channel-type id="number-r">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Value 1-byte Unsigned Readonly DataPoint</label>
+		<label>Numeric Readonly DataPoint</label>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
@@ -111,23 +111,6 @@
 				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
 				<options>
 					<option value="5.010">DPT_Value_1_Ucount</option>
-				</options>
-			</parameter>
-		</config-description>
-	</channel-type>
-
-	<channel-type id="value2ucount-r">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Value 2-byte Unsigned Readonly DataPoint</label>
-		<config-description>
-			<parameter name="id" type="integer" required="true">
-				<label>DP ID</label>
-				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
-			</parameter>
-			<parameter name="type" type="text" required="true">
-				<label>Type</label>
-				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
-				<options>
 					<option value="7.001">DPT_Value_2_Ucount</option>
 				</options>
 			</parameter>
