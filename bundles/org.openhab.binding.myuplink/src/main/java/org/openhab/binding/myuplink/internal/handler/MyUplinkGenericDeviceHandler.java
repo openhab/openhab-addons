@@ -234,15 +234,16 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
         for (Channel channel : values.keySet()) {
             if (getThing().getChannels().contains(channel)) {
-                if (isLinked(channel.getUID()) {
+                if (isLinked(channel.getUID())) {
                     State value = values.get(channel);
-                if (value != null) {
-                    logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
-                    updateState(channel.getUID(), value);
-                } else {
-                    logger.debug("Value is null or not provided by myUplink Cloud (channel: {})",
-                            channel.getUID().getAsString());
-                    updateState(channel.getUID(), UnDefType.UNDEF);
+                    if (value != null) {
+                        logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
+                        updateState(channel.getUID(), value);
+                    } else {
+                        logger.debug("Value is null or not provided by myUplink Cloud (channel: {})",
+                                channel.getUID().getAsString());
+                        updateState(channel.getUID(), UnDefType.UNDEF);
+                    }
                 }
             } else {
                 logger.debug("Could not identify channel: {} for model {}", channel.getUID().getAsString(),
@@ -263,7 +264,9 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     }
 
     private @Nullable MyUplinkBridgeHandler getBridgeHandler() {
-        return getBridge() instanceof MyUplinkBridgeHandler handler ? handler : null;
+        Bridge bridge = getBridge();
+        return bridge == null ? null : ((MyUplinkBridgeHandler) bridge.getHandler());
+    }
 
     @Override
     public MyUplinkConfiguration getBridgeConfiguration() {
