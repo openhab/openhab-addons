@@ -61,12 +61,9 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
         if (command instanceof QuantityType<?> quantityCommand) {
             // this is necessary because we must not send the unit to the backend
             return String.valueOf(quantityCommand.doubleValue());
-        } else if (command instanceof OnOffType) {
+        } else if (command instanceof OnOffType onOffType) {
             // this is necessary because we must send 0/1 and not ON/OFF to the backend
-            return switch ((OnOffType) command) {
-                case ON -> "1";
-                default -> "0";
-            };
+            return  OnOffType.ON.equals(onOffType) ? "1" : "0";
         } else {
             return command.toString();
         }
