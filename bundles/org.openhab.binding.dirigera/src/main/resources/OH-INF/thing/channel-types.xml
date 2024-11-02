@@ -8,6 +8,19 @@
 		<item-type>String</item-type>
 		<label>Simple Text</label>
 	</channel-type>
+	<channel-type id="light-preset">
+		<item-type>String</item-type>
+		<label>Light Preset</label>
+		<command>
+			<options>
+				<option value="Off">Off</option>
+				<option value="UpDown">Up Down</option>
+				<option value="Slowdown">Slowdown</option>
+				<option value="Smooth">Smooth</option>
+				<option value="Bright">Bright</option>
+			</options>
+		</command>
+	</channel-type>
 	<channel-type id="button-trigger">
 		<kind>trigger</kind>
 		<label>Button Trigger</label>
@@ -146,6 +159,19 @@
 		<item-type>DateTime</item-type>
 		<label>Schedule Time</label>
 		<state pattern="%1$tH:%1$tM"/>
+		<command>
+			<options>
+				<option value="16:00">16:00</option>
+				<option value="16:30">16:30</option>
+				<option value="17:00">17:00</option>
+				<option value="17:30">17:30</option>
+				<option value="18:00">18:00</option>
+				<option value="18:30">18:30</option>
+				<option value="19:00">19:00</option>
+				<option value="19:30">19:30</option>
+				<option value="20:00">20:00</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="schedule-end-time">
 		<item-type>DateTime</item-type>
@@ -170,19 +196,6 @@
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM"/>
-		<command>
-			<options>
-				<option value="16:00">16:00</option>
-				<option value="16:30">16:30</option>
-				<option value="17:00">17:00</option>
-				<option value="17:30">17:30</option>
-				<option value="18:00">18:00</option>
-				<option value="18:30">18:30</option>
-				<option value="19:00">19:00</option>
-				<option value="19:30">19:30</option>
-				<option value="20:00">20:00</option>
-			</options>
-		</command>
 	</channel-type>
 	<channel-type id="scene-trigger">
 		<item-type>Number</item-type>

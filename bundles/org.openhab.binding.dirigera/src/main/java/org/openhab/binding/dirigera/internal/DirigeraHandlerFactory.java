@@ -115,7 +115,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager,
-                    timeZoneProvider, commandProvider);
+                    timeZoneProvider, commandProvider, bundleContext);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {

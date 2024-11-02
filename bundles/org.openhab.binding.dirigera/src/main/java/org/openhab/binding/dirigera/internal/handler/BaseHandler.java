@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -60,15 +61,28 @@ public abstract class BaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private @Nullable Gateway gateway;
 
+    // to be overwritten by child class in order to route the updates to the right instance
     protected @Nullable BaseHandler child;
+
+    // maps to route properties to channels and vice versa
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
+
+    // cache to handle each refresh command properly
     protected Map<String, State> channelStateMap;
+
+    // JSONObject for all device data for debug purposes. Maybe deleted in release version
     protected JSONObject deviceData = new JSONObject();
     protected List<JSONObject> updates = new ArrayList<>();
-    protected List<String> hardLinks = new ArrayList<>();
+
+    /*
+     * hardlinks initialized with invalid links because the first update shall trigger a link update. If it's declared
+     * as empty no link update will be triggered. This is only necessary for startup phase.
+     */
+    protected List<String> hardLinks = new ArrayList<>(Arrays.asList("undef"));
     protected List<String> softLinks = new ArrayList<>();
     protected List<String> linkCandidateTypes = new ArrayList<>();
+
     protected BaseDeviceConfiguration config;
     protected String customName = "";
     protected String deviceType = "";
@@ -229,6 +243,8 @@ public abstract class BaseHandler extends BaseThingHandler {
             Collections.sort(updateList);
             Collections.sort(hardLinks);
             if (!hardLinks.equals(updateList)) {
+                hardLinks = updateList;
+                // just update internal link list and let the gateway update do all updates regarding soft links
                 gateway().updateLinks();
             } else {
                 logger.debug("DIRIGERA BASE_HANDLER {} no link updates found, skip update cycle", thing.getLabel());
@@ -405,32 +421,35 @@ public abstract class BaseHandler extends BaseThingHandler {
          * lightController or motionSensor
          */
         String targetDevice = "";
+        String triggerDevice = "";
         List<String> linksToSend = new ArrayList<>();
         if (isControllerOrSensor()) {
             logger.debug("DIRIGERA BASE_HANDLER {} update softlink {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(linkedDeviceId));
             // request needs to be sent to target device
             targetDevice = linkedDeviceId;
+            triggerDevice = config.id;
             // get current links
-            JSONObject deviceData = gateway().model().getAllFor(linkedDeviceId, PROPERTY_DEVICES);
+            JSONObject deviceData = gateway().model().getAllFor(targetDevice, PROPERTY_DEVICES);
             if (deviceData.has(PROPERTY_REMOTE_LINKS)) {
                 JSONArray jsonLinks = deviceData.getJSONArray(PROPERTY_REMOTE_LINKS);
                 for (int i = 0; i < jsonLinks.length(); i++) {
                     linksToSend.add(jsonLinks.getString(i));
                 }
+                // this is sensot branch so add link of sensor
                 if (add) {
-                    if (!linksToSend.contains(linkedDeviceId)) {
-                        linksToSend.add(linkedDeviceId);
+                    if (!linksToSend.contains(triggerDevice)) {
+                        linksToSend.add(triggerDevice);
                     } else {
                         logger.debug("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
-                                gateway().model().getCustonNameFor(linkedDeviceId));
+                                gateway().model().getCustonNameFor(triggerDevice));
                     }
                 } else {
-                    if (!linksToSend.contains(linkedDeviceId)) {
-                        linksToSend.remove(linkedDeviceId);
+                    if (!linksToSend.contains(triggerDevice)) {
+                        linksToSend.remove(triggerDevice);
                     } else {
                         logger.debug("DIRIGERA BASE_HANDLER {} not link to remove {}", thing.getLabel(),
-                                gateway().model().getCustonNameFor(linkedDeviceId));
+                                gateway().model().getCustonNameFor(triggerDevice));
                     }
                 }
             } else {
@@ -438,17 +457,18 @@ public abstract class BaseHandler extends BaseThingHandler {
             }
         } else {
             // send update to this device
-            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} Before: {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(linkedDeviceId), hardLinks);
             targetDevice = config.id;
+            triggerDevice = linkedDeviceId;
+            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} Before: {}", thing.getLabel(),
+                    gateway().model().getCustonNameFor(targetDevice), hardLinks);
             if (add) {
-                hardLinks.add(linkedDeviceId);
+                hardLinks.add(triggerDevice);
             } else {
-                hardLinks.remove(linkedDeviceId);
+                hardLinks.remove(triggerDevice);
             }
             linksToSend.addAll(hardLinks);
             logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} After: {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(linkedDeviceId), linksToSend);
+                    gateway().model().getCustonNameFor(triggerDevice), linksToSend);
         }
         JSONArray newLinks = new JSONArray(linksToSend);
         JSONObject attributes = new JSONObject();
