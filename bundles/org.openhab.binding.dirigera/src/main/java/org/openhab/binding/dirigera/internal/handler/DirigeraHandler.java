@@ -14,7 +14,9 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -71,7 +74,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.StringUtils;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +98,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final DirigeraDiscoveryManager discoveryManager;
     private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private final BundleContext bundleContext;
 
     private Optional<Websocket> websocket = Optional.empty();
     private Optional<DirigeraAPI> api = Optional.empty();
@@ -117,13 +123,14 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider,
-            DirigeraCommandProvider commandProvider) {
+            DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
         super(bridge);
         this.discoveryManager = discoveryManager;
         this.timeZoneProvider = timeZoneProvider;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
+        this.bundleContext = bundleContext;
         config = new DirigeraConfiguration();
         /**
          * structural changes like adding, removing devices and update links needs to be done in a sequential way.
@@ -827,26 +834,59 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
             }
             // sunrise & sunset
-            if (attributes.has("nextSunRise")) {
-                sunriseInstant = Instant.parse(attributes.getString("nextSunRise"));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
-                        new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
+            if (!attributes.isNull("nextSunRise")) {
+                String sunRiseString = attributes.getString("nextSunRise");
+                if (sunRiseString != null) {
+                    sunriseInstant = Instant.parse(sunRiseString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
+                            new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
+                }
+            } else {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE), UnDefType.UNDEF);
             }
-            if (attributes.has("nextSunSet")) {
-                sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET),
-                        new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+            if (!attributes.isNull("nextSunSet")) {
+                String sunsetString = attributes.getString("nextSunSet");
+                if (sunsetString != null) {
+                    sunsetInstant = Instant.parse(attributes.getString("nextSunSet"));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET),
+                            new DateTimeType(sunsetInstant.atZone(timeZoneProvider.getTimeZone())));
+                }
+            } else {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNSET), UnDefType.UNDEF);
             }
         }
     }
 
     @Override
-    public ZonedDateTime getSunriseDateTime() {
+    public @Nullable ZonedDateTime getSunriseDateTime() {
+        if (sunriseInstant.equals(Instant.MAX)) {
+            return null;
+        }
         return sunriseInstant.atZone(timeZoneProvider.getTimeZone());
     }
 
     @Override
-    public ZonedDateTime getSunsetDateTime() {
+    public @Nullable ZonedDateTime getSunsetDateTime() {
+        if (sunsetInstant.equals(Instant.MIN)) {
+            return null;
+        }
         return sunsetInstant.atZone(timeZoneProvider.getTimeZone());
+    }
+
+    @Override
+    public String getResourceFile(String fileName) {
+        try {
+            URL url = bundleContext.getBundle().getResource(fileName);
+            InputStream input = url.openStream();
+            try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                String result = scanner.hasNext() ? scanner.next() : "";
+                String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
+                scanner.close();
+                return resultReplaceAll;
+            }
+        } catch (Throwable t) {
+            logger.warn("Resource file failed {}", t.getMessage());
+        }
+        return "";
     }
 }

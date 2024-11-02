@@ -15,11 +15,13 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
@@ -33,6 +35,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MotionSensorHandler} basic DeviceHandler for all devices
@@ -42,13 +46,10 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class MotionSensorHandler extends BaseHandler {
 
-    protected static final String DURATION_UPDATE = "{\"attributes\":{\"sensorConfig\":{\"onDuration\":%s}}}";
-
-    protected static final String SCHEDULE_ALWAYS_ON = "{\"attributes\":{\"sensorConfig\":{\"scheduleOn\":false}}}";
-    protected static final String SCHEDULE_FOLLOW_SUN = "{\"attributes\":{\"sensorConfig\":{\"scheduleOn\": true,\"schedule\": {\"onCondition\": {\"time\": \"sunset\"},\"offCondition\": {\"time\": \"sunrise\"}}}}}";
-    protected static final String SCHEDULE_SCHEDULE_ON = "{\"attributes\":{\"sensorConfig\":{\"scheduleOn\":true}}}";
-    protected static final String SCHEDULE_START_TIME = "{\"attributes\":{\"sensorConfig\":{\"schedule\": {\" onCondition\": {\"time\": %s}}}}}";
-    protected static final String SCHEDULE_END_TIME = "{\"attributes\":{\"sensorConfig\":{\"schedule\": {,\"offCondition\": {\"time\": %s}}}}}";
+    private final Logger logger = LoggerFactory.getLogger(MotionSensorHandler.class);
+    private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+    private String startTime = "20:00";
+    private String endTime = "07:00";
 
     public MotionSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -82,7 +83,8 @@ public class MotionSensorHandler extends BaseHandler {
                     }
                 }
                 if (seconds > 0) {
-                    String updateData = String.format(DURATION_UPDATE, seconds);
+                    String updateData = String
+                            .format(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_DURATION_UPDATE), seconds);
                     gateway().api().sendPatch(config.id, new JSONObject(updateData));
                 }
                 break;
@@ -90,44 +92,83 @@ public class MotionSensorHandler extends BaseHandler {
                 if (command instanceof DecimalType decimal) {
                     switch (decimal.intValue()) {
                         case 0:
-                            gateway().api().sendPatch(config.id, new JSONObject(SCHEDULE_ALWAYS_ON));
+                            gateway().api().sendPatch(config.id,
+                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
+                            break;
                         case 1:
-                            gateway().api().sendPatch(config.id, new JSONObject(SCHEDULE_FOLLOW_SUN));
+                            gateway().api().sendPatch(config.id,
+                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
+                            break;
                         case 2:
-                            gateway().api().sendPatch(config.id, new JSONObject(SCHEDULE_SCHEDULE_ON));
+                            String template = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                            logger.trace("MOTION_SENSOR schedule on {}", template);
+                            logger.trace("MOTION_SENSOR schedule on {}", String.format(template, startTime, endTime));
 
+                            gateway().api().sendPatch(config.id,
+                                    new JSONObject(String.format(template, startTime, endTime)));
+                            break;
                     }
                 }
+                break;
             case CHANNEL_SCHEDULE_START:
+                logger.trace("MOTION_SENSOR schedule start {} {}", command, (command instanceof StringType));
+                String startSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     // take string as it is, no consistency check
-                    String scheduleStart = String.format(SCHEDULE_START_TIME, string.toFullString());
-                    gateway().api().sendPatch(config.id, new JSONObject(scheduleStart));
+                    startTime = string.toFullString();
                 } else if (command instanceof DateTimeType dateTime) {
-                    String startTime = dateTime.getZonedDateTime().getHour() + ":"
-                            + dateTime.getZonedDateTime().getMinute();
-                    String scheduleStart = String.format(SCHEDULE_START_TIME, startTime);
-                    gateway().api().sendPatch(config.id, new JSONObject(scheduleStart));
+                    startTime = dateTime.getZonedDateTime().format(timeFormat);
                 }
+                gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
+                break;
             case CHANNEL_SCHEDULE_END:
+                logger.trace("MOTION_SENSOR schedule end {} {}", command, (command instanceof StringType));
+                String endSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
+                    endTime = string.toFullString();
                     // take string as it is, no consistency check
-                    String scheduleStart = String.format(SCHEDULE_START_TIME, string.toFullString());
-                    gateway().api().sendPatch(config.id, new JSONObject(scheduleStart));
                 } else if (command instanceof DateTimeType dateTime) {
-                    String endTime = dateTime.getZonedDateTime().getHour() + ":"
-                            + dateTime.getZonedDateTime().getMinute();
-                    String scheduleEnd = String.format(SCHEDULE_END_TIME, endTime);
-                    gateway().api().sendPatch(config.id, new JSONObject(scheduleEnd));
+                    endTime = dateTime.getZonedDateTime().format(timeFormat);
+                }
+                gateway().api().sendPatch(config.id, new JSONObject(String.format(endSchedule, startTime, endTime)));
+                break;
+            case CHANNEL_LIGHT_PRESET:
+                if (command instanceof StringType string) {
+                    JSONArray presetValues = new JSONArray();
+                    // handle the standard presets from IKEA app, custom otherwise without consistency check
+                    switch (string.toFullString()) {
+                        case "Off":
+                            // fine - array stays empty
+                            break;
+                        case "UpDown":
+                            presetValues = new JSONArray(
+                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_UPDOWN));
+                            break;
+                        case "Slowdown":
+                            presetValues = new JSONArray(
+                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                            break;
+                        case "Smooth":
+                            presetValues = new JSONArray(
+                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                            break;
+                        case "Bright":
+                            presetValues = new JSONArray(
+                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                            break;
+                        default:
+                            presetValues = new JSONArray(string.toFullString());
+                    }
+                    JSONObject preset = new JSONObject();
+                    preset.put("circadianPresets", presetValues);
+                    gateway().api().sendAttributes(config.id, preset);
                 }
         }
     }
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
@@ -154,20 +195,33 @@ public class MotionSensorHandler extends BaseHandler {
                 }
                 // no direct channel mapping - sensor mapping is deeply nested :(
                 switch (key) {
-                    case "schedule":
-                    case "schedule-start":
-                    case "schedule-end":
+                    case "circadianPresets":
+                        if (attributes.has("circadianPresets")) {
+                            JSONArray lightPresets = attributes.getJSONArray("circadianPresets");
+                            updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_PRESET),
+                                    StringType.valueOf(lightPresets.toString()));
+                        }
+                        break;
+                    case "sensorConfig":
+                        logger.trace("MOTION_SENSOR check sensorconfig");
                         if (attributes.has("sensorConfig")) {
                             JSONObject sensorConfig = attributes.getJSONObject("sensorConfig");
-                            if (sensorConfig.has("onDuration")) {
+                            logger.trace("MOTION_SENSOR check sensorconfig {}", sensorConfig);
+                            if (sensorConfig.has("scheduleOn")) {
                                 boolean scheduled = sensorConfig.getBoolean("scheduleOn");
+                                logger.trace("MOTION_SENSOR check sensorconfig scheduleOn {}", scheduled);
                                 if (scheduled) {
                                     // examine schedule
                                     if (sensorConfig.has("schedule")) {
                                         JSONObject schedule = sensorConfig.getJSONObject("schedule");
+                                        logger.trace("MOTION_SENSOR check sensorconfig scheduleOn schedule {}",
+                                                schedule);
                                         if (schedule.has("onCondition") && schedule.has("offCondition")) {
                                             JSONObject onCondition = schedule.getJSONObject("onCondition");
                                             JSONObject offCondition = schedule.getJSONObject("offCondition");
+                                            logger.trace(
+                                                    "MOTION_SENSOR check sensorconfig scheduleOn schedule on off condition {} {}",
+                                                    onCondition, offCondition);
                                             if (onCondition.has("time")) {
                                                 String onTime = onCondition.getString("time");
                                                 String offTime = offCondition.getString("time");
@@ -175,10 +229,30 @@ public class MotionSensorHandler extends BaseHandler {
                                                     // finally it's identified to follow the sun
                                                     updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
                                                             new DecimalType(1));
-                                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
-                                                            new DateTimeType(gateway().getSunsetDateTime()));
-                                                    updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
-                                                            new DateTimeType(gateway().getSunriseDateTime()));
+                                                    ZonedDateTime sunsetDateTime = gateway().getSunsetDateTime();
+                                                    if (sunsetDateTime != null) {
+                                                        updateState(
+                                                                new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
+                                                                new DateTimeType(sunsetDateTime));
+                                                    } else {
+                                                        updateState(
+                                                                new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
+                                                                UnDefType.UNDEF);
+                                                        logger.warn(
+                                                                "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
+                                                    }
+                                                    ZonedDateTime sunriseDateTime = gateway().getSunriseDateTime();
+                                                    if (sunriseDateTime != null) {
+                                                        updateState(
+                                                                new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
+                                                                new DateTimeType(sunriseDateTime));
+                                                    } else {
+                                                        updateState(
+                                                                new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_END),
+                                                                UnDefType.UNDEF);
+                                                        logger.warn(
+                                                                "MOTION_SENSOR Location not activated in IKEA App - cannot follow sun");
+                                                    }
                                                 } else {
                                                     // custom times - even worse parsing
                                                     String[] onHourMinute = onTime.split(":");
@@ -186,8 +260,8 @@ public class MotionSensorHandler extends BaseHandler {
                                                     if (onHourMinute.length == 2 && offHourMinute.length == 2) {
                                                         int onHour = Integer.parseInt(onHourMinute[0]);
                                                         int onMinute = Integer.parseInt(onHourMinute[1]);
-                                                        int offHour = Integer.parseInt(onHourMinute[0]);
-                                                        int offMinute = Integer.parseInt(onHourMinute[1]);
+                                                        int offHour = Integer.parseInt(offHourMinute[0]);
+                                                        int offMinute = Integer.parseInt(offHourMinute[1]);
                                                         updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
                                                                 new DecimalType(2));
                                                         ZonedDateTime on = ZonedDateTime.now().withHour(onHour)
@@ -214,6 +288,7 @@ public class MotionSensorHandler extends BaseHandler {
                                 }
                             }
                         }
+                        break;
                 }
             }
         }
