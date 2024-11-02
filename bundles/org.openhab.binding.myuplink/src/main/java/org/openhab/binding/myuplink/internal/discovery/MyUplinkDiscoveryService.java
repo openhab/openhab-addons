@@ -99,7 +99,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
         String systemId = Utils.getAsString(system, JSON_KEY_SYSTEM_ID);
         JsonArray devices = system.getAsJsonArray(JSON_KEY_DEVICES);
         if (devices == null || devices.isEmpty()) {
-            logger.info("System discovery finished, no devices found.");
+            logger.debug("System discovery finished, no devices found.");
         } else {
             devices.forEach(device -> handleDeviceDiscovery(device, systemId));
         }
