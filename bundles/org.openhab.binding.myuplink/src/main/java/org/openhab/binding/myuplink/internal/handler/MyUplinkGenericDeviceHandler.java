@@ -211,7 +211,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      */
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
+        logger.debug("Handler disposing.");
         cancelJobReference(dataPollingJobReference);
     }
 
