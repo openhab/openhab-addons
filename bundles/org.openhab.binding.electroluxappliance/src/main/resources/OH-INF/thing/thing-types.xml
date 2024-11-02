@@ -57,7 +57,6 @@
 			<channel id="ui-light" typeId="ui-light"/>
 			<channel id="safety-lock" typeId="safety-lock"/>
 			<channel id="status" typeId="status"/>
-			<channel id="connection-state" typeId="connection-state"/>
 		</channels>
 
 		<properties>
@@ -86,7 +85,7 @@
 		<channels>
 			<channel id="door-state" typeId="door-state"/>
 			<channel id="door-lock" typeId="door-lock"/>
-			<channel id="start-time" typeId="start-time"/>
+			<channel id="time-to-start" typeId="time-to-start"/>
 			<channel id="time-to-end" typeId="time-to-end"/>
 			<channel id="cycle-phase" typeId="cycle-phase"/>
 			<channel id="analog-temperature" typeId="analog-temperature"/>
@@ -102,7 +101,7 @@
 			<channel id="softener-extradosage" typeId="softener-extradosage"/>
 			<channel id="water-usage" typeId="water-usage"/>
 			<channel id="total-wash-cycles-count" typeId="total-wash-cycles-count"/>
-			<channel id="connection-state" typeId="connection-state"/>
+			<channel id="status" typeId="status"/>
 		</channels>
 
 		<properties>
@@ -123,8 +122,8 @@
 
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>Current Status</label>
-		<description>Information on current status.</description>
+		<label>Fetch Current Status</label>
+		<description>Used to fetch latest status from API.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -240,10 +239,9 @@
 	</channel-type>
 
 	<channel-type id="safety-lock">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Safety Lock</label>
 		<description>The safety lock status.</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="door-lock">
@@ -260,24 +258,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="connection-state">
-		<item-type>Switch</item-type>
-		<label>Connection State</label>
-		<description>The connection state status.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="start-time">
+	<channel-type id="time-to-start">
 		<item-type>Number:Time</item-type>
-		<label>Start Time</label>
-		<description>The start time of a washing.</description>
+		<label>Time To Delayed Start</label>
+		<description>The time remaining until the delayed start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="time-to-end">
 		<item-type>Number:Time</item-type>
 		<label>Time To End</label>
-		<description>The time to end of a program.</description>
+		<description>The time remaining until the program will end.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -317,9 +308,9 @@
 	</channel-type>
 
 	<channel-type id="water-usage">
-		<item-type>Number</item-type>
+		<item-type>Number:Volume</item-type>
 		<label>Water Usage</label>
-		<description>The water usage.</description>
+		<description>The water usage in litres.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

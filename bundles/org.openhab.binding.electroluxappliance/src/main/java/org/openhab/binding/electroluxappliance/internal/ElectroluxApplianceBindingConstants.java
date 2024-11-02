@@ -29,14 +29,13 @@ public class ElectroluxApplianceBindingConstants {
     public static final String BINDING_ID = "electroluxappliance";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_ELECTROLUX_AIR_PURIFIER = new ThingTypeUID(BINDING_ID,
-            "electroluxairpurifier");
+    public static final ThingTypeUID THING_TYPE_ELECTROLUX_AIR_PURIFIER = new ThingTypeUID(BINDING_ID, "air-purifier");
     public static final ThingTypeUID THING_TYPE_ELECTROLUX_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
-            "electroluxwashingmachine");
+            "washing-machine");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "api");
 
     // List of all common Channel ids
-    public static final String CONNECTION_STATE = "connectionState";
+    public static final String CONNECTION_STATE = "connection-state";
 
     // List of all Channel ids for Air Purifers
     public static final String CHANNEL_STATUS = "status";
@@ -58,7 +57,7 @@ public class ElectroluxApplianceBindingConstants {
     // List of all Channel ids for Washing Machines
     public static final String CHANNEL_DOOR_STATE = "door-state";
     public static final String CHANNEL_DOOR_LOCK = "door-lock";
-    public static final String CHANNEL_START_TIME = "start-time";
+    public static final String CHANNEL_TIME_TO_START = "time-to-start";
     public static final String CHANNEL_TIME_TO_END = "time-to-end";
     public static final String CHANNEL_APPLIANCE_UI_SW_VERSION = "appliance-ui-sw-version";
     public static final String CHANNEL_APPLIANCE_TOTAL_WORKING_TIME = "appliance-total-working-time";

@@ -35,6 +35,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -124,7 +125,11 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
                         logger.trace("Channel: {}, State: {}", channelUID, state);
                         updateState(channelUID, state);
                     });
-            updateStatus(ThingStatus.ONLINE);
+            if ("Connected".equalsIgnoreCase(dto.getApplianceState().getConnectionState())) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Air Purifier not connected");
+            }
         }
     }
 
@@ -159,9 +164,6 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
                 return new StringType(reported.getWorkmode());
             case CHANNEL_DOOR_OPEN:
                 return reported.isDoorOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            case CONNECTION_STATE:
-                return "Connected".equals(dto.getApplianceState().getConnectionState()) ? OnOffType.from(true)
-                        : OnOffType.from(false);
         }
         return UnDefType.UNDEF;
     }

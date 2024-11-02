@@ -74,7 +74,7 @@ public class ElectroluxGroupAPI {
         this.tokenUpdateListener = listener;
     }
 
-    public boolean refresh(Map<String, ApplianceDTO> electroluxAppliancesThings, boolean isCommunicationError) {
+    public boolean refresh(Map<String, ApplianceDTO> electroluxApplianceThings, boolean isCommunicationError) {
         try {
             if (Instant.now().isAfter(this.tokenExpiry) || isCommunicationError) {
                 logger.debug("Is communication error: {}", isCommunicationError);
@@ -103,7 +103,7 @@ public class ElectroluxGroupAPI {
                             if (applianceState != null) {
                                 dto.setApplianceState(applianceState);
                             }
-                            electroluxAppliancesThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
+                            electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
                         } else if ("WASHING_MACHINE".equals(applianceInfo.getApplianceInfo().getDeviceType())) {
                             // Get appliance state
                             String jsonApplianceState = getApplianceState(applianceId);
@@ -112,7 +112,7 @@ public class ElectroluxGroupAPI {
                             if (applianceState != null) {
                                 dto.setApplianceState(applianceState);
                             }
-                            electroluxAppliancesThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
+                            electroluxApplianceThings.put(applianceInfo.getApplianceInfo().getSerialNumber(), dto);
                         }
                     }
                 }

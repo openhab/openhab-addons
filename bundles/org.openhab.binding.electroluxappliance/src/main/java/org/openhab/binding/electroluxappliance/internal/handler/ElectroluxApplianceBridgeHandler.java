@@ -63,7 +63,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
 
     private final Gson gson;
     private final HttpClient httpClient;
-    private final Map<String, ApplianceDTO> electroluxAppliancesThings = new ConcurrentHashMap<>();
+    private final Map<String, ApplianceDTO> electroluxApplianceThings = new ConcurrentHashMap<>();
 
     private @Nullable ElectroluxGroupAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -111,7 +111,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     }
 
     public Map<String, ApplianceDTO> getElectroluxApplianceThings() {
-        return electroluxAppliancesThings;
+        return electroluxApplianceThings;
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
 
     private boolean refreshAndUpdateStatus() {
         if (api != null) {
-            if (api.refresh(electroluxAppliancesThings, isCommunicationError)) {
+            if (api.refresh(electroluxApplianceThings, isCommunicationError)) {
                 getThing().getThings().stream().forEach(thing -> {
                     ElectroluxApplianceHandler handler = (ElectroluxApplianceHandler) thing.getHandler();
                     if (handler != null) {

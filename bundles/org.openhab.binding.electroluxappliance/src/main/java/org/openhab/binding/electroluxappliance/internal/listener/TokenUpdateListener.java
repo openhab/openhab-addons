@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.electroluxappliance.internal.listener;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TokenUpdateListener} callback interface for notifying about token updates
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public interface TokenUpdateListener {
     /**
      * Called when the access token and refresh token are updated.

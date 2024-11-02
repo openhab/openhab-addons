@@ -63,10 +63,8 @@ The following channels are supported:
 | door-open                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
 | work-mode                   | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)  |
 | ui-lIght                    | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
-| safety-lock                 | Contact               | This channel sets and reports the status of the Safety Lock function.          |
-| connection-state            | Switch                | This channel reports the connection status.                                    |
-
-
+| safety-lock                 | Switch                | This channel sets and reports the status of the Safety Lock function.          |
+| status                      | String                | This channel is used to fetch latest status from the API.                      |
 
 
 ### Electrolux Washing Machine
@@ -77,8 +75,8 @@ The following channels are supported:
 |------------------------------|-----------------------|--------------------------------------------------------------------------------|
 | door-state                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
 | door-lock                    | Contact               | This channel reports the status of the door lock.                              |
-| start-time                   | Number:Time           | This channel reports the start time for a washing program.                     |
-| time-to-end                  | Number:Time           | This channel reports the time to end for a washing program.                    |
+| time-to-start                | Number:Time           | This channel reports the remaining time for a delayed start washing program.   |
+| time-to-end                  | Number:Time           | This channel reports the remaining time to the end for a washing program.      |
 | cycle-phase                  | String                | This channel reports the washing cycle phase.                                  |
 | analog-temperature           | String                | This channel reports the washing temperature.                                  |
 | steam-value                  | String                | This channel reports the washing steam value.                                  |
@@ -91,14 +89,13 @@ The following channels are supported:
 | optisense-result             | String                | This channel reports the optisense result.                                     |
 | detergent-extradosage        | String                | This channel reports the detergent extra dosage.                               |
 | softener-extradosage         | String                | This channel reports the softener extra dosage.                                |
-| water-usage                  | Number                | This channel reports the water usage.                                          |
+| water-usage                  | Number:Volume         | This channel reports the water usage in litres.                                |
 | total-wash-cycles-count      | Number                | This channel reports the total number of washing cycles.                       |
-| connection-state             | Switch                | This channel reports the connection status.                                    |
-
-
+| status                       | String                | This channel is used to fetch latest status from the API.                      |
 
 
 ## Full Example
+
 ### `demo.things` Example
 
 ```java

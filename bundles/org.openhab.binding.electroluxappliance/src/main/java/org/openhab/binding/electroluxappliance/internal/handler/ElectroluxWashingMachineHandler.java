@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceConfiguration;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.WashingMachineStateDTO;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -32,6 +31,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -75,7 +75,12 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
                         logger.trace("Channel: {}, State: {}", channelUID, state);
                         updateState(channelUID, state);
                     });
-            updateStatus(ThingStatus.ONLINE);
+            if ("Connected".equalsIgnoreCase(dto.getApplianceState().getConnectionState())) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Washing Machine not connected");
+            }
         }
     }
 
@@ -85,16 +90,13 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
             case CHANNEL_DOOR_STATE:
                 return "OPEN".equals(reported.getDoorState()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case CHANNEL_DOOR_LOCK:
-                return OnOffType.from(reported.getDoorLock());
-            case CHANNEL_START_TIME:
+                return "ON".equals(reported.getDoorLock()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case CHANNEL_TIME_TO_START:
                 return new QuantityType<>(reported.getStartTime(), Units.SECOND);
             case CHANNEL_TIME_TO_END:
                 return new QuantityType<>(reported.getTimeToEnd(), Units.SECOND);
             case CHANNEL_APPLIANCE_UI_SW_VERSION:
                 return new StringType(reported.getApplianceUiSwVersion());
-            case CONNECTION_STATE:
-                return "Connected".equals(dto.getApplianceState().getConnectionState()) ? OnOffType.from(true)
-                        : OnOffType.from(false);
             case CHANNEL_OPTISENSE_RESULT:
                 return new StringType(Integer.toString(reported.getFCMiscellaneousState().getOptisenseResult()));
             case CHANNEL_DETERGENT_EXTRA_DOSAGE:
@@ -102,7 +104,7 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
             case CHANNEL_SOFTENER_EXTRA_DOSAGE:
                 return new StringType(Integer.toString(reported.getFCMiscellaneousState().getSoftenerExtradosage()));
             case CHANNEL_WATER_USAGE:
-                return new StringType(Integer.toString(reported.getFCMiscellaneousState().getWaterUsage()));
+                return new QuantityType<>(reported.getFCMiscellaneousState().getWaterUsage(), Units.LITRE);
             case CHANNEL_TOTAL_WASH_CYCLES_COUNT:
                 return new StringType(Integer.toString(reported.getTotalWashCyclesCount()));
             case CHANNEL_CYCLE_PHASE:
