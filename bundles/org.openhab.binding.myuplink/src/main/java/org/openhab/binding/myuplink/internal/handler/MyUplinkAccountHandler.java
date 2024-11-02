@@ -113,7 +113,7 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                super.updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
