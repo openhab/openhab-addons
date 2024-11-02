@@ -86,7 +86,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
 
         JsonArray systems = json.getAsJsonArray(JSON_KEY_SYSTEMS);
         if (systems == null || systems.isEmpty()) {
-            logger.info("System discovery finished, no systems found.");
+            logger.debug("System discovery finished, no systems found.");
         } else {
             systems.forEach(this::handleSystemDiscovery);
         }
