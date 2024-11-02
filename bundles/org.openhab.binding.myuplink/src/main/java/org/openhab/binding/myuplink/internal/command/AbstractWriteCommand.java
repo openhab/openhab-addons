@@ -108,7 +108,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
         if (value.matches(expr)) {
             return prepareWriteRequest(requestToPrepare);
         } else {
-            logger.info("channel '{}' does not allow value '{}' - validation rule '{}'", channelId, value, expr);
+            logger.debug("channel '{}' does not allow value '{}' - validation rule '{}'", channelId, value, expr);
             throw new ValidationException("channel (" + channelId + ") could not be updated due to a validation error");
         }
     }
