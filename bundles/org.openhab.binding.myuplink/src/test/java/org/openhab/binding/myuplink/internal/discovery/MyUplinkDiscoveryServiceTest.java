@@ -104,7 +104,6 @@ public class MyUplinkDiscoveryServiceTest {
 
     @Test
     public void testEmptyResponse() {
-
         discoveryService.processMyUplinkDiscoveryResult(communicationStatus, emptyResponse);
 
         // testdata contains no systems -> no further processing
