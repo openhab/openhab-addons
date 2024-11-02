@@ -125,7 +125,7 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
      */
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
+        logger.debug("Handler disposing");
         cancelJobReference(dataPollingJobReference);
         webInterface.dispose();
     }
