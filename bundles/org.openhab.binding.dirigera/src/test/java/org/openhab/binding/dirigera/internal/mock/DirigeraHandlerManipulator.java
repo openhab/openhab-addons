@@ -22,6 +22,7 @@ import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
+import org.osgi.framework.BundleContext;
 
 /**
  * The {@link DirigeraHandlerManipulator} basic DeviceHandler for all devices
@@ -34,7 +35,7 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
         super(bridge, insecureClient, bindingStorage, discoveryManager, timeZoneProvider,
-                mock(DirigeraCommandProvider.class));
+                mock(DirigeraCommandProvider.class), mock(BundleContext.class));
         // Changes the class of the provider. During initialize this class will be used for instantiation
         super.apiProvider = DirigeraAPISimu.class;
     }

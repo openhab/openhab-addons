@@ -33,6 +33,10 @@
 				<label>Activity Schedule End</label>
 				<description>End time of sensor activity</description>
 			</channel>
+			<channel id="light-preset" typeId="light-preset">
+				<label>Light Preset</label>
+				<description>Light presets for different times of the day</description>
+			</channel>
 			<channel id="links" typeId="text">
 				<label>Links</label>
 				<description>Linked controllers and sensors</description>

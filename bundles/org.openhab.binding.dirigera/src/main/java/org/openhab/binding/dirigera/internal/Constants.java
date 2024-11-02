@@ -152,6 +152,7 @@ public class Constants {
     public static final String CHANNEL_LIGHT_HSB = "hsb";
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "brightness";
     public static final String CHANNEL_LIGHT_TEMPERATURE = "temperature";
+    public static final String CHANNEL_LIGHT_PRESET = "light-preset";
 
     // Sensor channels
     public static final String CHANNEL_DETECTION = "detection";
@@ -310,22 +311,33 @@ public class Constants {
     public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE,
             CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS,
-            "candidates", CHANNEL_LINK_CANDIDATES);
+            "candidates", CHANNEL_LINK_CANDIDATES, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "illuminance", CHANNEL_ILLUMINANCE);
 
-    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_DETECTION, "illuminance",
-            CHANNEL_ILLUMINANCE, "sensorConfig", CHANNEL_ACTIVE_DURATION, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS,
-            "candidates", CHANNEL_LINK_CANDIDATES, "schedule", CHANNEL_SCHEDULE, "schedule-start",
-            CHANNEL_SCHEDULE_START, "schedule-end", CHANNEL_SCHEDULE_END);
+    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = new HashMap<String, String>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
+            put("batteryPercentage", CHANNEL_BATTERY_LEVEL);
+            put("isDetected", CHANNEL_DETECTION);
+            put("illuminance", CHANNEL_ILLUMINANCE);
+            put("sensorConfig", CHANNEL_ACTIVE_DURATION);
+            put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
+            put("candidates", CHANNEL_LINK_CANDIDATES);
+            put("schedule", CHANNEL_SCHEDULE);
+            put("schedule-start", CHANNEL_SCHEDULE_START);
+            put("schedule-end", CHANNEL_SCHEDULE_END);
+            put("circadianPresets", CHANNEL_LIGHT_PRESET);
+        }
+    };
 
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_DETECTION, "sensorConfig",
             CHANNEL_ACTIVE_DURATION, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates", CHANNEL_LINK_CANDIDATES,
             "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end",
-            CHANNEL_SCHEDULE_END);
+            CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
     public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
