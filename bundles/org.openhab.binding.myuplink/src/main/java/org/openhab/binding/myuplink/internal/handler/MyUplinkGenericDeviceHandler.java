@@ -34,6 +34,7 @@ import org.openhab.binding.myuplink.internal.command.device.SetSmartHomeMode;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.provider.ChannelFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -70,23 +71,25 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
     private final ChannelFactory channelFactory;
 
+    private final Configuration config;
+
     public MyUplinkGenericDeviceHandler(Thing thing, ChannelFactory channelFactory) {
         super(thing);
         this.dataPollingJobReference = new AtomicReference<>(null);
         this.channelFactory = channelFactory;
+        this.config = getConfig();
     }
 
     @Override
     public void initialize() {
-        logger.debug("About to initialize myUplink Generic Device");
-        logger.debug("myUplink Generic Device initialized with id: {}", getDeviceId());
+        logger.debug("About to initialize myUplink Generic Device with id: {}", getDeviceId());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
     }
 
     public String getDeviceId() {
-        return getConfig().get(THING_CONFIG_ID).toString();
+        return config.get(THING_CONFIG_ID).toString();
     }
 
     private void updatePropertiesAndOnlineStatus(CommunicationStatus status, JsonObject systemsJson) {
@@ -132,16 +135,16 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
     @Override
     public MyUplinkCommand buildMyUplinkCommand(Command command, Channel channel) {
-        var deviceId = getConfig().get(MyUplinkBindingConstants.THING_CONFIG_ID).toString();
+        var deviceId = config.get(MyUplinkBindingConstants.THING_CONFIG_ID).toString();
         String systemId = "";
-        if (getConfig().containsKey(THING_CONFIG_SYSTEM_ID)) {
-            systemId = getConfig().get(THING_CONFIG_SYSTEM_ID).toString();
+        if (config.containsKey(THING_CONFIG_SYSTEM_ID)) {
+            systemId = config.get(THING_CONFIG_SYSTEM_ID).toString();
         }
 
         var channelTypeId = Utils.getChannelTypeId(channel);
         return switch (channelTypeId) {
-            case CHANNEL_TYPE_RW_COMMAND ->
-                new SetPointsAdvanced(this, channel, command, deviceId, this::updateOnlineStatus);
+            case CHANNEL_TYPE_RW_COMMAND -> new SetPointsAdvanced(this, channel, command, deviceId,
+                    this::updateOnlineStatus);
             case CHANNEL_TYPE_RW_MODE -> {
                 if (systemId.isBlank()) {
                     throw new UnsupportedOperationException("systemId not configured");
@@ -164,10 +167,10 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      * Poll the myUplink Cloud API one time.
      */
     void pollingRun() {
-        String deviceId = getConfig().get(THING_CONFIG_ID).toString();
+        String deviceId = config.get(THING_CONFIG_ID).toString();
         String systemId = "";
-        if (getConfig().containsKey(THING_CONFIG_SYSTEM_ID)) {
-            systemId = getConfig().get(THING_CONFIG_SYSTEM_ID).toString();
+        if (config.containsKey(THING_CONFIG_SYSTEM_ID)) {
+            systemId = config.get(THING_CONFIG_SYSTEM_ID).toString();
         }
         logger.debug("polling device data for {}", deviceId);
 
