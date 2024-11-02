@@ -25,8 +25,7 @@ public class MyUplinkConfiguration {
     private String clientId = "";
     private String clientSecret = "";
 
-    private static int ASYNC_TIMEOUT = 120;
-    private static int SYNC_TIMEOUT = 120;
+    private int dataPollingInterval = 60;
     private static final int ASYNC_TIMEOUT = 120;
     private static final int SYNC_TIMEOUT = 120;
 
