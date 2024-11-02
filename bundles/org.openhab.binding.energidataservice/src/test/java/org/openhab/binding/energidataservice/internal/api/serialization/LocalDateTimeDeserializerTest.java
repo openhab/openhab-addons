@@ -30,13 +30,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
 /**
- * Tests for {@link LocalDateDeserializer}.
+ * Tests for {@link LocalDateTimeDeserializer}.
  * 
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-public class LocalDateDeserializerTest {
+public class LocalDateTimeDeserializerTest {
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer()).create();

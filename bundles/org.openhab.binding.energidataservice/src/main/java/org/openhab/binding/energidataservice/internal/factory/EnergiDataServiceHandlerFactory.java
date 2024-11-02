@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.energidataservice.internal.api.filter.DatahubTariffFilterFactory;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
 import org.openhab.binding.energidataservice.internal.provider.Co2EmissionProvider;
 import org.openhab.binding.energidataservice.internal.provider.ElectricityPriceProvider;
@@ -50,6 +51,7 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final ElectricityPriceProvider electricityPriceProvider;
     private final Co2EmissionProvider co2EmissionProvider;
+    private final DatahubTariffFilterFactory datahubTariffFilterFactory;
 
     @Activate
     public EnergiDataServiceHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
@@ -61,6 +63,7 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
         this.timeZoneProvider = timeZoneProvider;
         this.electricityPriceProvider = electricityPriceProvider;
         this.co2EmissionProvider = co2EmissionProvider;
+        this.datahubTariffFilterFactory = new DatahubTariffFilterFactory();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SERVICE.equals(thingTypeUID)) {
             return new EnergiDataServiceHandler(thing, httpClient, timeZoneProvider, electricityPriceProvider,
-                    co2EmissionProvider);
+                    co2EmissionProvider, datahubTariffFilterFactory);
         }
 
         return null;
