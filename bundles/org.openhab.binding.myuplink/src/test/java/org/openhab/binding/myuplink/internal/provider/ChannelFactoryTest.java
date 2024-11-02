@@ -17,6 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
@@ -42,7 +44,8 @@ public class ChannelFactoryTest {
             new VolatileStorageService());
     private final ChannelFactory channelFactory = new ChannelFactory(channelTypeProvider, new ChannelTypeRegistry());
 
-    private static final ThingUID TEST_THING_UID = new ThingUID(MyUplinkBindingConstants.BINDING_ID, "genericThing", "myUnit");
+    private static final ThingUID TEST_THING_UID = new ThingUID(MyUplinkBindingConstants.BINDING_ID, "genericThing",
+            "myUnit");
 
     private final String testChannelDataTemperature = """
             {"category":"NIBEF VVM 320 E","parameterId":"40121","parameterName":"Add. heat (BT63)","parameterUnit":"°C","writable":false,"timestamp":"2024-05-10T05:35:50+00:00","value":39.0,"strVal":"39Â°C","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[],"scaleValue":"0.1","zoneId":null}
@@ -80,7 +83,7 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is("Number:Temperature"));
-        assertThat(result.getChannelTypeUID().getId(), is("type-temperature"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-temperature"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is("40121"));
         assertThat(result.getDescription(), is("Add. heat (BT63)"));
@@ -95,7 +98,7 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.SWITCH));
-        assertThat(result.getChannelTypeUID().getId(), is("rwtype-switch"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("rwtype-switch"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is("50004"));
         assertThat(result.getDescription(), is("Temporary lux"));
@@ -110,7 +113,7 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.NUMBER));
-        assertThat(result.getChannelTypeUID().getId(), is("type-on-off"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-on-off"));
         assertThat(result.getUID().getThingUID(), is(TEST_THING_UID));
         assertThat(result.getUID().getId(), is("49992"));
         assertThat(result.getDescription(), is("Pump: Heating medium (GP6)"));
@@ -125,7 +128,7 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.NUMBER));
-        assertThat(result.getChannelTypeUID().getId(), is("type-enum-49994"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-enum-49994"));
     }
 
     @Test
@@ -136,7 +139,7 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.NUMBER));
-        assertThat(result.getChannelTypeUID().getId(), is("type-enum-44064"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-enum-44064"));
     }
 
     @Test
@@ -147,11 +150,11 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.NUMBER));
-        assertThat(result.getChannelTypeUID().getId(), is("type-enum-49993"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-enum-49993"));
 
         var type = channelTypeProvider.getChannelType(new ChannelTypeUID(BINDING_ID, "type-enum-49993"), null);
         assertNotNull(type);
-        assertThat(type.getState().getOptions().size(), is(7));
+        assertThat(Objects.requireNonNull(type.getState()).getOptions().size(), is(7));
     }
 
     @Test
@@ -162,11 +165,11 @@ public class ChannelFactoryTest {
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
         assertThat(result.getAcceptedItemType(), is(CoreItemFactory.NUMBER));
-        assertThat(result.getChannelTypeUID().getId(), is("type-enum-62017"));
+        assertThat(Objects.requireNonNull(result.getChannelTypeUID()).getId(), is("type-enum-62017"));
 
         var type = channelTypeProvider.getChannelType(new ChannelTypeUID(BINDING_ID, "type-enum-62017"), null);
         assertNotNull(type);
-        assertThat(type.getState().getOptions().size(), is(13));
+        assertThat(Objects.requireNonNull(type.getState()).getOptions().size(), is(13));
     }
 
     @Test

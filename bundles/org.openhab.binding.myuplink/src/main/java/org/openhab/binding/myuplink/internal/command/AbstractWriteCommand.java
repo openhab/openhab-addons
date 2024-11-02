@@ -63,7 +63,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
             return String.valueOf(quantityCommand.doubleValue());
         } else if (command instanceof OnOffType onOffType) {
             // this is necessary because we must send 0/1 and not ON/OFF to the backend
-            return  OnOffType.ON.equals(onOffType) ? "1" : "0";
+            return OnOffType.ON.equals(onOffType) ? "1" : "0";
         } else {
             return command.toString();
         }
