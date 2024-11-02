@@ -234,7 +234,8 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
         for (Channel channel : values.keySet()) {
             if (getThing().getChannels().contains(channel)) {
-                State value = values.get(channel);
+                if (isLinked(channel.getUID()) {
+                    State value = values.get(channel);
                 if (value != null) {
                     logger.debug("Channel is to be updated: {}: {}", channel.getUID().getAsString(), value);
                     updateState(channel.getUID(), value);
