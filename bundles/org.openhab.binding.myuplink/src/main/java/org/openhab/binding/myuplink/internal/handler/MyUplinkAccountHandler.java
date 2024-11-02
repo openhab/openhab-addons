@@ -96,11 +96,6 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
     void pollingRun() {
         GetSystems state = new GetSystems(this, this::updateOnlineStatus);
         enqueueCommand(state);
-
-        // proceed if site is online
-        if (getThing().getStatus() == ThingStatus.ONLINE) {
-            // add further polling commands here
-        }
     }
 
     /**
