@@ -244,7 +244,6 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     protected @Nullable JsonObject transform(@Nullable String json) {
         if (json != null) {
             try {
-
                 JsonElement jsonElement = gson.fromJson(json, JsonElement.class);
                 JsonObject jsonObject;
                 if (jsonElement instanceof JsonObject) {
