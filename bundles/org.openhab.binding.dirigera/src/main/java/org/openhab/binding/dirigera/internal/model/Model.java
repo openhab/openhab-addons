@@ -53,7 +53,17 @@ public class Model {
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_RELATION_ID = "relationId";
 
+    public static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
+    public static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
+    public static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";
+    public static final String TEMPLATE_LIGHT_PRESET_UPDOWN = "/json/light-presets/updown.json";
+    public static final String TEMPLATE_SENSOR_ALWQAYS_ON = "/json/sensor-config/always-on.json";
+    public static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
+    public static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
+    public static final String TEMPLATE_SENSOR_SCHEDULE_ON = "/json/sensor-config/schedule-on.json";
+
     private Map<String, DiscoveryResult> resultMap = new HashMap<>();
+    private Map<String, String> templates = new HashMap<>();
     private List<String> devices = new ArrayList<>();
     private JSONObject model = new JSONObject();
     private Gateway gateway;
@@ -520,5 +530,19 @@ public class Model {
         });
         logger.debug("DIRIGERA MODEL trigger candidates {} {}", types, candidates);
         return candidates;
+    }
+
+    public String getTemplate(String name) {
+        String template = templates.get(name);
+        if (template == null) {
+            template = gateway.getResourceFile(name);
+            if (!template.isBlank()) {
+                templates.put(name, template);
+            } else {
+                logger.warn("DIRIGERA MODEL empty template for {}", name);
+                template = "{}";
+            }
+        }
+        return template;
     }
 }

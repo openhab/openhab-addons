@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.interfaces;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
@@ -52,9 +53,11 @@ public interface Gateway {
 
     public void updateLinks();
 
-    public ZonedDateTime getSunriseDateTime();
+    public String getResourceFile(String fileName);
 
-    public ZonedDateTime getSunsetDateTime();
+    public @Nullable ZonedDateTime getSunriseDateTime();
+
+    public @Nullable ZonedDateTime getSunsetDateTime();
 
     public DirigeraAPI api();
 
