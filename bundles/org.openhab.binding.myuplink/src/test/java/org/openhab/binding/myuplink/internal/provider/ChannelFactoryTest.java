@@ -42,7 +42,7 @@ public class ChannelFactoryTest {
             new VolatileStorageService());
     private final ChannelFactory channelFactory = new ChannelFactory(channelTypeProvider, new ChannelTypeRegistry());
 
-    private final ThingUID TEST_THING_UID = new ThingUID(MyUplinkBindingConstants.BINDING_ID, "genericThing", "myUnit");
+    private static final ThingUID TEST_THING_UID = new ThingUID(MyUplinkBindingConstants.BINDING_ID, "genericThing", "myUnit");
 
     private final String testChannelDataTemperature = """
             {"category":"NIBEF VVM 320 E","parameterId":"40121","parameterName":"Add. heat (BT63)","parameterUnit":"°C","writable":false,"timestamp":"2024-05-10T05:35:50+00:00","value":39.0,"strVal":"39Â°C","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[],"scaleValue":"0.1","zoneId":null}
