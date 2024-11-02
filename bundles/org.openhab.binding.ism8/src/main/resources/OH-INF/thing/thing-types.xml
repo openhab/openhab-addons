@@ -215,7 +215,7 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="activeenergy-r">
+	<channel-type id="active-energy-r">
 		<item-type>Number:Energy</item-type>
 		<label>Active Energy Readonly DataPoint</label>
 		<state readOnly="true"/>
