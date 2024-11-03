@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_MOTION_DETECTION;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +20,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -81,9 +80,6 @@ public class MotionSensorHandler extends BaseDeviceHandler {
                     if (CHANNEL_MOTION_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
-                    } else if (CHANNEL_BATTERY_LEVEL.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                new DecimalType(attributes.getInt(key)));
                     } else {
                         logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
