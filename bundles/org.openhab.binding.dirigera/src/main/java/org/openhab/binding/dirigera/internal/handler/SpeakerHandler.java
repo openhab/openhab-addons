@@ -283,6 +283,7 @@ public class SpeakerHandler extends BaseDeviceHandler {
                     JSONObject playItem = playbackAudio.getJSONObject("playItem");
                     if (playItem.has("imageURL")) {
                         String imageURL = playItem.getString("imageURL");
+                        System.out.println(imageURL);
                         Map<String, ?> image = gateway().api().getImage(imageURL);
                         String mimeType = (String) image.get("mimeType");
                         if (!mimeType.isBlank()) {

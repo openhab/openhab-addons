@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_STATE;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +20,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,7 +49,7 @@ public class ContactSensorHandler extends BaseDeviceHandler {
         gateway().registerDevice(this);
         // finally get attributes from model in order to get initial values
         JSONObject values = gateway().model().getAllFor(config.id);
-        logger.error("DIRIGERA MOTION_DEVICE values for initial update {}", values);
+        logger.warn("DIRIGERA MOTION_DEVICE values for initial update {}", values);
         handleUpdate(values);
     }
 
@@ -73,7 +72,7 @@ public class ContactSensorHandler extends BaseDeviceHandler {
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
-            logger.trace("DIRIGERA MOTION_DEVICE update delivered {} attributes", attributes.length());
+            logger.info("DIRIGERA MOTION_DEVICE update delivered {} attributes", attributes.length());
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
@@ -84,9 +83,6 @@ public class ContactSensorHandler extends BaseDeviceHandler {
                             state = OpenClosedType.OPEN;
                         }
                         updateState(new ChannelUID(thing.getUID(), targetChannel), state);
-                    } else if (CHANNEL_BATTERY_LEVEL.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                new DecimalType(attributes.getInt(key)));
                     } else {
                         logger.trace("DIRIGERA MOTION_DEVICE no channel for {} available", key);
                     }
