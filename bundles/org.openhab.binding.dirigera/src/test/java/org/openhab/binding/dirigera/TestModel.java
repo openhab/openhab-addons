@@ -104,7 +104,6 @@ class TestModel {
             if (deviceId.equals(id)) {
                 Map origin = device;
                 origin.putAll(modelPatchData.toMap());
-            } else {
             }
         });
     }

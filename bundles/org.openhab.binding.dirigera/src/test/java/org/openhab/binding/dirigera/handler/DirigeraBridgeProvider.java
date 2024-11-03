@@ -37,8 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.FileReader;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
-import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.mock.CallbackMock;
+import org.openhab.binding.dirigera.mock.DirigeraHandlerManipulator;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -116,7 +116,11 @@ class DirigeraBridgeProvider {
         // prepare instances
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
         hubBridge.setBridgeUID(new ThingUID(BINDING_ID + ":" + "gateway:9876"));
-        DirigeraHandler hubHandler = new DirigeraHandler(hubBridge, httpMock, mockStorage,
+
+        /**
+         * new version with api simulation in background
+         */
+        DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
                 mock(DirigeraDiscoveryManager.class), TZP);
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
@@ -131,5 +135,23 @@ class DirigeraBridgeProvider {
         hubHandler.initialize();
         bridgeCallback.waitForOnline();
         return hubBridge;
+        /**
+         * Old working version
+         */
+        // DirigeraHandler hubHandler = new DirigeraHandler(hubBridge, httpMock, mockStorage,
+        // mock(DirigeraDiscoveryManager.class), TZP);
+        // hubBridge.setHandler(hubHandler);
+        // CallbackMock bridgeCallback = new CallbackMock();
+        // hubHandler.setCallback(bridgeCallback);
+        //
+        // // set handler to full configured with token, ipAddress and if
+        // Map<String, Object> config = new HashMap<>();
+        // config.put("ipAddress", ipAddress);
+        // config.put("id", "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
+        // hubHandler.handleConfigurationUpdate(config);
+        //
+        // hubHandler.initialize();
+        // bridgeCallback.waitForOnline();
+        // return hubBridge;
     }
 }

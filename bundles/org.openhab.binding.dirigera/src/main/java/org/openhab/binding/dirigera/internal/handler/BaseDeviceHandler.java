@@ -114,6 +114,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Handles RefreshType.REFRESH completely from cache
+     * Child classes are responsible to
+     * - initialize properly with actual values
+     * - use updateState of this class to update items and store last values fro proper refresh
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -125,6 +131,15 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Handles generic channels for many devices. If they are not present in child configuration they won't be
+     * triggered.
+     * - reachable flag for every device to evaluate ONLINE and OFFLINE states
+     * - all Over the Air update states
+     * - battery charge level
+     *
+     * @param update
+     */
     public void handleUpdate(JSONObject update) {
         // check online offline for each device
         if (update.has(Model.REACHABLE)) {
@@ -139,8 +154,8 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             // check ota for each device
             if (attributes.has(PROPERTY_OTA_STATUS)) {
                 String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
-                if (OTA_STATUS_MAP.containsKey(otaStatusString)) {
-                    int otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                if (otaStatus != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
                 } else {
                     logger.warn("Cannot decode ota status {}", otaStatusString);
@@ -148,8 +163,8 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             }
             if (attributes.has(PROPERTY_OTA_STATE)) {
                 String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
-                if (OTA_STATE_MAP.containsKey(otaStateString)) {
-                    int otaState = OTA_STATE_MAP.get(otaStateString);
+                Integer otaState = OTA_STATE_MAP.get(otaStateString);
+                if (otaState != null) {
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
                 } else {
                     logger.warn("Cannot decode ota state {}", otaStateString);

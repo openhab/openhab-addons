@@ -58,10 +58,9 @@ public class SceneHandler extends BaseDeviceHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_SCENES);
+            JSONObject values = gateway().api().readScene(config.id);
             handleUpdate(values);
 
             if (values.isEmpty()) {

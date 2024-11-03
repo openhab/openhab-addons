@@ -44,11 +44,9 @@ public class SmartPlugHandler extends PowerPlugHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            logger.trace("DIRIGERA SMART_PLUG values for initial update {}", values);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }
@@ -80,11 +78,7 @@ public class SmartPlugHandler extends PowerPlugHandler {
                     } else if (CHANNEL_POTENTIAL.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 QuantityType.valueOf(attributes.getDouble(key), Units.VOLT));
-                    } else {
-                        logger.trace("DIRIGERA SMART_PLUG no channel for {} available", key);
                     }
-                } else {
-                    logger.trace("DIRIGERA SMART_PLUG no targetChannel for {}", key);
                 }
             }
         }
