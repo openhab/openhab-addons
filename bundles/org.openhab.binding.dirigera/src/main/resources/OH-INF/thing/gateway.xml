@@ -9,6 +9,10 @@
 		<description>Ikea Gateway for smart products</description>
 
 		<channels>
+			<channel id="custom-name" typeId="text">
+				<label>Custom Name</label>
+				<description>Name given from IKEA home smart</description>
+			</channel>
 			<channel id="statistics" typeId="text">
 				<label>Gateway Statistics</label>
 				<description>Several statistics about gateway activities</description>

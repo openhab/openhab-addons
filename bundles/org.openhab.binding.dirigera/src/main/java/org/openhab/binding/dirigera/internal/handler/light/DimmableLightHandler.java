@@ -64,7 +64,7 @@ public class DimmableLightHandler extends BaseHandler {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, percent.intValue());
                         logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
-                        gateway().api().sendPatch(config.id, attributes);
+                        gateway().api().sendAttributes(config.id, attributes);
                     }
                     break;
             }
