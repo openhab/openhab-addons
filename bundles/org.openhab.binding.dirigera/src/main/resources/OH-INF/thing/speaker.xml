@@ -45,6 +45,14 @@
 				<label>Image</label>
 				<description>Current playing track image</description>
 			</channel>
+			<channel id="links" typeId="text">
+				<label>Links</label>
+				<description>Linked controllers and sensors</description>
+			</channel>
+			<channel id="link-candidates" typeId="text">
+				<label>Link Candidates</label>
+				<description>Candidates which can be linked</description>
+			</channel>
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
