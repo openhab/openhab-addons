@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -83,6 +84,13 @@ public class DirigeraAPISimu implements DirigeraAPI {
     @Override
     public void triggerScene(String sceneId, String trigger) {
         logger.info("trigger scnene {}", trigger);
+    }
+
+    @Override
+    public int sendAttributes(String id, JSONObject attributes) {
+        JSONObject data = new JSONObject();
+        data.put(Model.ATTRIBUTES, attributes);
+        return sendPatch(id, data);
     }
 
     @Override

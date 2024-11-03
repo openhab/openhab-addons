@@ -75,7 +75,7 @@ public class ColorLightHandler extends BaseHandler {
                     colorAttributes.put("colorHue", hsb.getHue().intValue());
                     colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
                     logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
-                    gateway().api().sendPatch(config.id, colorAttributes);
+                    gateway().api().sendAttributes(config.id, colorAttributes);
                     colorSendToAPI = true;
                 }
                 if (hsb.getBrightness().intValue() == hsbCurrent.getBrightness().intValue()) {
@@ -92,11 +92,9 @@ public class ColorLightHandler extends BaseHandler {
                     }
                     JSONObject brightnessattributes = new JSONObject();
                     brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                    gateway().api().sendPatch(config.id, brightnessattributes);
+                    gateway().api().sendAttributes(config.id, brightnessattributes);
                 }
             }
-        } else {
-            logger.debug("DIRIGERA LIGHT_DEVICE no property found for channel {}", channel);
         }
     }
 

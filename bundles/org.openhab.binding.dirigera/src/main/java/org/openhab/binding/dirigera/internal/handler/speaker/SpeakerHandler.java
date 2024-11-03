@@ -75,14 +75,14 @@ public class SpeakerHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else if (command instanceof NextPreviousType nextPrevious) {
                             String playState = (NextPreviousType.NEXT.equals(nextPrevious) ? "playbackNext"
                                     : "playbackPrevious");
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, playState);
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -93,7 +93,7 @@ public class SpeakerHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, percent.intValue());
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -104,7 +104,7 @@ public class SpeakerHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, onOff.equals(OnOffType.ON));
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -121,7 +121,7 @@ public class SpeakerHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -134,7 +134,7 @@ public class SpeakerHandler extends BaseHandler {
                             JSONObject attributes = new JSONObject();
                             attributes.put("playbackModes", mode);
                             logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA SPEAKER_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);
@@ -161,7 +161,7 @@ public class SpeakerHandler extends BaseHandler {
                                 JSONObject attributes = new JSONObject();
                                 attributes.put("playbackModes", mode);
                                 logger.trace("DIRIGERA SPEAKER_DEVICE send to API {}", attributes);
-                                gateway().api().sendPatch(config.id, attributes);
+                                gateway().api().sendAttributes(config.id, attributes);
                             }
                         }
                         break;

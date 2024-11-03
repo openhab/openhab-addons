@@ -55,7 +55,7 @@ public class PowerPlugHandler extends SimplePlugHandler {
                     if (command instanceof OnOffType onOff) {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                        gateway().api().sendPatch(config.id, attributes);
+                        gateway().api().sendAttributes(config.id, attributes);
                     }
                     break;
             }

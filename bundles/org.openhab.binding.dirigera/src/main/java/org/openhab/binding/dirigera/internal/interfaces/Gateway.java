@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
@@ -31,6 +32,8 @@ public interface Gateway {
 
     public String getToken();
 
+    public DirigeraCommandProvider getCommandProvider();
+
     public boolean discoverEnabled();
 
     public void registerDevice(BaseHandler deviceHandler, String deviceId);
@@ -44,6 +47,8 @@ public interface Gateway {
     public boolean isKnownDevice(String deviceId);
 
     public void websocketUpdate(String update);
+
+    public void updateLinks();
 
     public DirigeraAPI api();
 

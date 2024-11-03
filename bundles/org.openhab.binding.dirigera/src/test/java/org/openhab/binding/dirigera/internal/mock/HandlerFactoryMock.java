@@ -16,6 +16,7 @@ import static org.mockito.Mockito.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.DirigeraHandlerFactory;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.core.net.NetworkAddressService;
@@ -31,7 +32,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 @NonNullByDefault
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
     public HandlerFactoryMock(StorageService storageService) {
-        super(storageService, mock(NetworkAddressService.class), new DiscoveryMangerMock(), DirigeraBridgeProvider.TZP);
+        super(storageService, mock(NetworkAddressService.class), new DiscoveryMangerMock(), DirigeraBridgeProvider.TZP,
+                mock(DirigeraCommandProvider.class));
     }
 
     @Override

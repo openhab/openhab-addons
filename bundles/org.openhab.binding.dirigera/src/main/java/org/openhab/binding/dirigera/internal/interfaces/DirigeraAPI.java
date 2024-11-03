@@ -31,7 +31,9 @@ public interface DirigeraAPI {
 
     public void triggerScene(String sceneId, String trigger);
 
-    public int sendPatch(String id, JSONObject attributes);
+    public int sendAttributes(String id, JSONObject attributes);
+
+    public int sendPatch(String id, JSONObject data);
 
     public State getImage(String imageURL);
 

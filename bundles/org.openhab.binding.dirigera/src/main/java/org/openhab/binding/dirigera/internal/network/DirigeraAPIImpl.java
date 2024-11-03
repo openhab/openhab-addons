@@ -139,11 +139,16 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     }
 
     @Override
-    public int sendPatch(String id, JSONObject attributes) {
-        String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
-        // pack attributes into data json and then into an array
+    public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
         data.put(Model.ATTRIBUTES, attributes);
+        return sendPatch(id, data);
+    }
+
+    @Override
+    public int sendPatch(String id, JSONObject data) {
+        String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
+        // pack attributes into data json and then into an array
         JSONArray dataArray = new JSONArray();
         dataArray.put(data);
         StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
