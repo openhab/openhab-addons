@@ -145,6 +145,11 @@ Discovery will automatically identify the id.
 |-------------------|---------|-------------------------------------|---------|----------|
 | `id`              | text    | Unique id of this device / scene    | N/A     | yes      |
 
+### Thing Properties
+
+Each thing has properties attached for identification.
+
+<img align="center" width="500" src="doc/thing-properties.png">
 
 ## Air Purifier
 
@@ -582,9 +587,9 @@ Speaker with player activities.
 | `mute`                | Switch                | RW         | Mute current audio without stop playing      |          |
 | `shuffle`             | Switch                | RW         | Control shuffle mode                         |          |
 | `crossfade`           | Switch                | RW         | Cross fading between tracks                  |          |
-| `repeat`              | Number                | RW         | Over-the-air overall status                  |    X     |
-| `track`               | String                | R          | Current playing track                        |    X     |
-| `image`               | RawType               | R          | Current playing track image                  |    X     |
+| `repeat`              | Number                | RW         | Over-the-air overall status                  |          |
+| `track`               | String                | R          | Current playing track                        |          |
+| `image`               | RawType               | R          | Current playing track image                  |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
@@ -696,12 +701,6 @@ then
     myhome-light-scene.sendCommand(0)
 end
 ```
-
-## Roadmap
-
-- Configure connections between sensors and light / plug devices
-- Timeout after sensor detection
-- Controller circadianPresets
 
 ## Credits
 
