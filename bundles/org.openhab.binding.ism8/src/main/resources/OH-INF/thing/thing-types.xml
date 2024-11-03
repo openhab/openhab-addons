@@ -101,6 +101,7 @@
 	<channel-type id="number-r">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Numeric Readonly DataPoint</label>
+		<state readOnly="true"/>
 		<config-description>
 			<parameter name="id" type="integer" required="true">
 				<label>DP ID</label>
