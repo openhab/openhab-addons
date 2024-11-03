@@ -29,10 +29,6 @@
 				<label>Startup Behavior</label>
 				<description>Startup behavior after power cutoff</description>
 			</channel>
-			<channel id="custom-name" typeId="text">
-				<label>Custom Name</label>
-				<description>Name given from IKEA home smart</description>
-			</channel>
 			<channel id="links" typeId="text">
 				<label>Links</label>
 				<description>Linked controllers and sensors</description>
@@ -40,6 +36,10 @@
 			<channel id="link-candidates" typeId="text">
 				<label>Link Candidates</label>
 				<description>Candidates which can be linked</description>
+			</channel>
+			<channel id="custom-name" typeId="text">
+				<label>Custom Name</label>
+				<description>Name given from IKEA home smart</description>
 			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
