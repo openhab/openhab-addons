@@ -70,7 +70,7 @@ public class BlindHandler extends BaseHandler {
                             if (commandAttribute != null) {
                                 JSONObject attributes = new JSONObject();
                                 attributes.put(targetProperty, commandAttribute);
-                                gateway().api().sendPatch(config.id, attributes);
+                                gateway().api().sendAttributes(config.id, attributes);
                             } else {
                                 logger.info("DIRIGERA BLIND_DEVICE Blind state unknown {}", state.intValue());
                             }
@@ -84,7 +84,7 @@ public class BlindHandler extends BaseHandler {
                         if (command instanceof PercentType percent) {
                             JSONObject attributes = new JSONObject();
                             attributes.put(targetProperty, percent.intValue());
-                            gateway().api().sendPatch(config.id, attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA BLIND_DEVICE command {} doesn't fit to channel {}", command,
                                     channel);

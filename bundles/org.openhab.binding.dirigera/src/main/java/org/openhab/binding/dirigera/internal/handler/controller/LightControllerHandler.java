@@ -17,9 +17,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightControllerHandler} basic DeviceHandler for all devices
@@ -28,6 +28,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class LightControllerHandler extends BaseHandler {
+    private final Logger logger = LoggerFactory.getLogger(LightControllerHandler.class);
 
     public LightControllerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -41,16 +42,5 @@ public class LightControllerHandler extends BaseHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        super.handleCommand(channelUID, command);
-    }
-
-    @Override
-    public void handleUpdate(JSONObject update) {
-        // handle reachable flag, no more special handling
-        super.handleUpdate(update);
     }
 }

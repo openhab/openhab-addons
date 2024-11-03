@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
 public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandlerFactory.class);
     private final DirigeraDiscoveryManager discoveryManager;
+    private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
@@ -76,9 +77,11 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference NetworkAddressService networkService, final @Reference DirigeraDiscoveryManager manager,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference DirigeraCommandProvider commandProvider) {
         this.discoveryManager = manager;
         this.timeZoneProvider = timeZoneProvider;
+        this.commandProvider = commandProvider;
         this.insecureClient = new HttpClient(new SslContextFactory.Client(true));
         insecureClient.setUserAgentField(null);
         try {
@@ -103,7 +106,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         boolean isSupported = SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-        // logger.warn("Request for {} is suppoerted {}", thingTypeUID, isSupported);
+        // logger.warn("Request for {} is supported {}", thingTypeUID, isSupported);
         return isSupported;
     }
 
@@ -112,7 +115,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager,
-                    timeZoneProvider);
+                    timeZoneProvider, commandProvider);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {

@@ -86,7 +86,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, kelvin);
                         logger.trace("DIRIGERA TEMPERATURE_LIGHT send to API {}", attributes);
-                        gateway().api().sendPatch(config.id, attributes);
+                        gateway().api().sendAttributes(config.id, attributes);
                     }
                     break;
             }
