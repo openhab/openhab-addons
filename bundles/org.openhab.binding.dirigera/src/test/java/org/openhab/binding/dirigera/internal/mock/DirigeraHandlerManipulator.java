@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.dirigera.internal.mock;
 
+import static org.mockito.Mockito.mock;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -30,7 +33,8 @@ public class DirigeraHandlerManipulator extends DirigeraHandler {
 
     public DirigeraHandlerManipulator(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider) {
-        super(bridge, insecureClient, bindingStorage, discoveryManager, timeZoneProvider);
+        super(bridge, insecureClient, bindingStorage, discoveryManager, timeZoneProvider,
+                mock(DirigeraCommandProvider.class));
         // Changes the class of the provider. During initialize this class will be used for instantiation
         super.apiProvider = DirigeraAPISimu.class;
     }

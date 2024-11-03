@@ -72,7 +72,7 @@ public class AirPurifierHandler extends BaseHandler {
                     if (command instanceof OnOffType onOff) {
                         JSONObject onOffAttributes = new JSONObject();
                         onOffAttributes.put(targetProperty, OnOffType.ON.equals(onOff));
-                        gateway().api().sendPatch(config.id, onOffAttributes);
+                        gateway().api().sendAttributes(config.id, onOffAttributes);
                     }
                     break;
                 case CHANNEL_PURIFIER_FAN_MODE:
@@ -82,7 +82,7 @@ public class AirPurifierHandler extends BaseHandler {
                         if (fanModeAttribute != null) {
                             JSONObject fanModeAttributes = new JSONObject();
                             fanModeAttributes.put(targetProperty, fanModeAttribute);
-                            gateway().api().sendPatch(config.id, fanModeAttributes);
+                            gateway().api().sendAttributes(config.id, fanModeAttributes);
                         }
                     }
                     break;

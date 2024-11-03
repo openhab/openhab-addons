@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
 public class Model {
     private final Logger logger = LoggerFactory.getLogger(Model.class);
 
-    private Map<String, DiscoveryResult> resultMap = new HashMap<>();
-    private List<String> devices = new ArrayList<>();
     public static final String REACHABLE = "isReachable";
     public static final String ATTRIBUTES = "attributes";
     public static final String SCENES = "scenes";
@@ -54,7 +52,11 @@ public class Model {
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_RELATION_ID = "relationId";
+    public static final List<String> triggerTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
+    public static final List<String> targetTypes = List.of("light", "outlet");
 
+    private Map<String, DiscoveryResult> resultMap = new HashMap<>();
+    private List<String> devices = new ArrayList<>();
     private JSONObject model = new JSONObject();
     private Gateway gateway;
 
@@ -508,5 +510,29 @@ public class Model {
      */
     public synchronized boolean has(String id) {
         return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
+    }
+
+    public List<String> getTargetCandidates() {
+        List<String> candidates = new ArrayList<>();
+        targetTypes.forEach(type -> {
+            JSONArray addons = getIdsForType(type);
+            addons.forEach(entry -> {
+                candidates.add(entry.toString());
+            });
+        });
+        logger.debug("DIRIGERA MODEL target candidates {}", candidates);
+        return candidates;
+    }
+
+    public List<String> getTriggerCandidates() {
+        List<String> candidates = new ArrayList<>();
+        triggerTypes.forEach(type -> {
+            JSONArray addons = getIdsForType(type);
+            addons.forEach(entry -> {
+                candidates.add(entry.toString());
+            });
+        });
+        logger.debug("DIRIGERA MODEL trigger candidates {}", candidates);
+        return candidates;
     }
 }
