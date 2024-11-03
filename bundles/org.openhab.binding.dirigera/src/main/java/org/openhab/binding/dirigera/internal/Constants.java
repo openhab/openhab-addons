@@ -57,6 +57,11 @@ public class Constants {
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_ATTRIBUTES = "attributes";
     public static final String PROPERTY_HTTP_ERROR_STATUS = "http-error-status";
+    public static final String PROPERTY_OTA_STATUS = "otaStatus";
+    public static final String PROPERTY_OTA_STATE = "otaState";
+    public static final String PROPERTY_OTA_PROGRESS = "otaProgress";
+    public static final String PROPERTY_BATTERY_PERCENTAGE = "batteryPercentage";
+
     public static final String PROPERTY_EMPTY = "";
 
     public static final String ATTRIBUTE_COLOR_MODE = "colorMode";
@@ -75,6 +80,13 @@ public class Constants {
     // Generic channels
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
+    public static final String CHANNEL_OTA_STATUS = "ota-status";
+    public static final String CHANNEL_OTA_STATE = "ota-state";
+    public static final String CHANNEL_OTA_PROGRESS = "ota-progress";
+
+    // Gateway channels
+    public static final String CHANNEL_SUNRISE = "sunrise";
+    public static final String CHANNEL_SUNSET = "sunset";
 
     // Light channels
     public static final String CHANNEL_LIGHT_HSB = "hsb";
@@ -107,20 +119,33 @@ public class Constants {
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
 
+    // Mappings for ota
+    public static final Map<String, Integer> OTA_STATUS_MAP = Map.of("upToDate", 0, "updateAvailable", 1);
+    public static final Map<String, Integer> OTA_STATE_MAP = Map.of("readyToCheck", 0, "checkInProgress", 1,
+            "readyToDownload", 2, "downloadInProgress", 3);
+
     // Ikea property to openHAB channel mappings
     public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
-            "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES);
+            "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> SMART_PLUG_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
             CHANNEL_STATUS_BRIGHTNESS, "currentActivePower", CHANNEL_POWER, "currentVoltage", CHANNEL_POTENTIAL,
-            "currentAmps", CHANNEL_CURRENT, "statusLight", CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK);
+            "currentAmps", CHANNEL_CURRENT, "statusLight", CHANNEL_STATUS_LIGHT, "childLock", CHANNEL_CHILD_LOCK,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
-            CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
+            CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE, PROPERTY_OTA_STATUS,
+            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", CHANNEL_STATE, "lightLevel",
             CHANNEL_LIGHT_HSB, "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
-            "color-temperature");
+            "color-temperature", PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
+            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isDetected", CHANNEL_MOTION_DETECTION);
     public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isOpen", CHANNEL_STATE);
-    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
 }
