@@ -516,7 +516,7 @@ Controller to handle light attributes.
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
-<img align="right" width="300" src="doc/light-presets.png">
+<img align="right" width="150" src="doc/light-presets.png">
 
 Channel `light-preset` provides a JSON array with time an light settings for different times.
 If light is switched on by the controller the light attributes for the configured time section is used.
