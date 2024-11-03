@@ -51,11 +51,9 @@ public class SpeakerHandler extends BaseDeviceHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
-            logger.trace("DIRIGERA SPEAKER_DEVICE values for initial update {}", values);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }

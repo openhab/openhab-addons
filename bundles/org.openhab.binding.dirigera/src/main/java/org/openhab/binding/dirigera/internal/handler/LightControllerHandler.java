@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICES;
-
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,8 +19,6 @@ import org.json.JSONObject;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LightControllerHandler} basic DeviceHandler for all devices
@@ -31,7 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LightControllerHandler extends BaseDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(LightControllerHandler.class);
 
     public LightControllerHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -40,10 +35,9 @@ public class LightControllerHandler extends BaseDeviceHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }

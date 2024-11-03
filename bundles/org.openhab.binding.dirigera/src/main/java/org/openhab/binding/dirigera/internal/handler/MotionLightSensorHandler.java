@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,7 +50,7 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
         // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
 
             // search for twin device in model to connect
@@ -59,7 +59,8 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
             // register for updates of twin devices
             twinDevices.forEach(deviceId -> {
                 gateway().registerDevice(this, deviceId);
-                JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
+                JSONObject twinValues = gateway().api().readDevice(deviceId);
+                // JSONObject twinValues = gateway().model().getAllFor(deviceId, PROPERTY_DEVICES);
                 logger.trace("DIRIGERA MOTION_LIGHT_DEVICE values for initial update {}", twinValues);
                 handleUpdate(twinValues);
             });
