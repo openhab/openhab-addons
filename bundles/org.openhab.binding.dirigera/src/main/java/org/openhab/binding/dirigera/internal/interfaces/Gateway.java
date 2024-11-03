@@ -15,7 +15,6 @@ package org.openhab.binding.dirigera.internal.interfaces;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dirigera.internal.handler.BaseDeviceHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
-import org.openhab.binding.dirigera.internal.network.RestAPI;
 
 /**
  * The {@link Gateway} Gateway interface
@@ -30,7 +29,7 @@ public interface Gateway {
 
     public void deleteDevice(BaseDeviceHandler deviceHandler, String deviceId);
 
-    public RestAPI api();
+    public DirigeraAPI api();
 
     public Model model();
 

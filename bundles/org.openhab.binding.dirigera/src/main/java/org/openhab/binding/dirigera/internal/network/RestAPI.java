@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.library.types.RawType;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @WebSocket
 @NonNullByDefault
-public class RestAPI {
+public class RestAPI implements DirigeraAPI {
 
     private final Logger logger = LoggerFactory.getLogger(RestAPI.class);
     private HttpClient httpClient;
@@ -63,6 +64,7 @@ public class RestAPI {
         }
     }
 
+    @Override
     public synchronized JSONObject readHome() {
         JSONObject statusObject = new JSONObject();
         String url = String.format(HOME_URL, gateway.getIpAddress());
@@ -82,6 +84,7 @@ public class RestAPI {
         return statusObject;
     }
 
+    @Override
     public synchronized JSONObject readDevice(String deviceId) {
         JSONObject statusObject = new JSONObject();
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
@@ -101,6 +104,7 @@ public class RestAPI {
         return statusObject;
     }
 
+    @Override
     public synchronized void triggerScene(String sceneId, String trigger) {
         JSONObject statusObject = new JSONObject();
         String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId) + "/" + trigger;
@@ -117,6 +121,7 @@ public class RestAPI {
         }
     }
 
+    @Override
     public int sendPatch(String id, JSONObject attributes) {
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
         // pack attributes into correct send data
@@ -145,6 +150,7 @@ public class RestAPI {
         }
     }
 
+    @Override
     public synchronized State getImage(String imageURL) {
         try {
             ContentResponse response = httpClient.GET(imageURL);
@@ -161,5 +167,25 @@ public class RestAPI {
             logger.warn("DIRIGERA API call to {} failed {}", imageURL, e.getMessage());
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    public JSONObject readScene(String sceneId) {
+        JSONObject statusObject = new JSONObject();
+        String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId);
+        try {
+            Request homeRequest = httpClient.newRequest(url);
+            ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
+            int responseStatus = response.getStatus();
+            if (responseStatus == 200) {
+                return new JSONObject(response.getContentAsString());
+            } else {
+                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
+            logger.warn("DIRIGERA Exception calling  {}", url);
+        }
+        return statusObject;
     }
 }

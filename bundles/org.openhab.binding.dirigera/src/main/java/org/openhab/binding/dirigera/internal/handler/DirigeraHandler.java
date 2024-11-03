@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -48,6 +49,7 @@ import org.openhab.binding.dirigera.internal.dto.CodeResponse;
 import org.openhab.binding.dirigera.internal.dto.TokenResponse;
 import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
+import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.binding.dirigera.internal.network.RestAPI;
@@ -91,6 +93,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     public static final Gson GSON = new Gson();
 
+    // Used for unit tests
+    protected Class<?> apiProvider = RestAPI.class;
+
     private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryManager discoveryManager;
     private final TimeZoneProvider timeZoneProvider;
@@ -98,7 +103,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             .getPoolBasedSequentialScheduledExecutorService("thingHandler", BINDING_ID);
 
     private Optional<Websocket> websocket = Optional.empty();
-    private Optional<RestAPI> api = Optional.empty();
+    private Optional<DirigeraAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
     private Optional<ScheduledFuture<?>> modelUpdater = Optional.empty();
     private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
@@ -202,8 +207,20 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         logger.info("DIRIGERA HANDLER Step 3 with {}", config.toString());
         if (!config.ipAddress.isBlank() && !token.isBlank()) {
             // looks good, ip and token fine, now create api and model
-            RestAPI restAPI = new RestAPI(httpClient, this);
-            api = Optional.of(restAPI);
+
+            DirigeraAPI apiProviderInstance = null;
+            try {
+                apiProviderInstance = (DirigeraAPI) apiProvider.getConstructor(HttpClient.class, Gateway.class)
+                        .newInstance(httpClient, this);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
+            }
+            if (apiProviderInstance != null) {
+                api = Optional.of(apiProviderInstance);
+            } else {
+                return;
+            }
             Model houseModel = new Model(this);
             model = Optional.of(houseModel);
             houseModel.update();
@@ -514,6 +531,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id, PROPERTY_DEVICES));
             } else if (THING_TYPE_GATEWAY.equals(discoveredThingTypeUID)) {
                 // ignore gateway findings
+                return;
             } else {
                 String customName = model().getCustonNameFor(id);
                 Map<String, Object> properties = model().getPropertiesFor(id);
@@ -547,7 +565,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public RestAPI api() {
+    public DirigeraAPI api() {
         if (api.isEmpty()) {
             throw new ApiMissingException("No API available yet");
         }

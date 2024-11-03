@@ -25,8 +25,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PowerPlugHandler} basic DeviceHandler for all devices
@@ -35,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PowerPlugHandler extends BaseDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(PowerPlugHandler.class);
-
     public PowerPlugHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
@@ -47,7 +43,7 @@ public class PowerPlugHandler extends BaseDeviceHandler {
         // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }
