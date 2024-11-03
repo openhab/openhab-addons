@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.exception.ModelUpdateException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.network.RestAPI;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +57,8 @@ public class Model {
      * No query shall happen in parallel to an update
      */
     public synchronized void update() {
-        RestAPI api = gateway.api();
         try {
-            JSONObject home = api.readHome();
+            JSONObject home = gateway.api().readHome();
             if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
                 logger.warn("DIRIGERA MODEL received model with error code {} - don't take it",
                         home.get(PROPERTY_HTTP_ERROR_STATUS));
