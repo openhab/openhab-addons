@@ -72,21 +72,17 @@ public class ColorLightHandler extends BaseHandler {
                 boolean colorSendToAPI = false;
                 if (Math.round(hsb.getHue().intValue()) == Math.round(hsbCurrent.getHue().intValue()) && Math
                         .round(hsb.getSaturation().intValue()) == Math.round(hsbCurrent.getSaturation().intValue())) {
-                    logger.trace("DIRIGERA LIGHT_DEVICE hno need to update color, it's the same");
                 } else {
                     JSONObject colorAttributes = new JSONObject();
                     colorAttributes.put("colorHue", hsb.getHue().intValue());
                     colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
-                    logger.trace("DIRIGERA LIGHT_DEVICE send to API {}", colorAttributes);
                     gateway().api().sendAttributes(config.id, colorAttributes);
                     colorSendToAPI = true;
                 }
-                if (hsb.getBrightness().intValue() == hsbCurrent.getBrightness().intValue()) {
-                    logger.trace("DIRIGERA LIGHT_DEVICE hno need to update brightness, it's the same");
-                } else {
+                if (hsb.getBrightness().intValue() != hsbCurrent.getBrightness().intValue()) {
                     if (colorSendToAPI) {
                         // seems that IKEA lamps cannot handle consecutive calls it really short time frame
-                        // so give it 100ms pause until next call
+                        // so give it 500ms pause until next call
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {

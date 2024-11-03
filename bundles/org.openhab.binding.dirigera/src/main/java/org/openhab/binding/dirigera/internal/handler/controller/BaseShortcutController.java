@@ -129,9 +129,9 @@ public class BaseShortcutController extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        logger.info("Stored trigger times {}", triggerTimes);
+        // logger.info("Stored trigger times {}", triggerTimes);
         super.handleUpdate(update);
-        logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER update {}", update);
+        // logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER update {}", update);
         if (update.has(PROPERTY_DEVICE_ID) && update.has("triggers")) {
             // first check if trigger happened
             String sceneId = update.getString(PROPERTY_DEVICE_ID);
@@ -143,15 +143,12 @@ public class BaseShortcutController extends BaseHandler {
                     String triggerTimeString = triggerObject.getString("triggeredAt");
                     Instant triggerTime = Instant.parse(triggerTimeString);
                     Instant lastTriggered = triggerTimes.get(sceneId);
-                    logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Trigger time {}, last triggered {}", triggerTime,
-                            lastTriggered);
+                    // logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Trigger time {}, last triggered {}", triggerTime,
+                    // lastTriggered);
                     if (lastTriggered != null) {
                         if (triggerTime.isAfter(lastTriggered)) {
                             triggerTimes.put(sceneId, triggerTime);
                             triggered = true;
-                        } else {
-                            logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER no new trigger time");
-                            break;
                         }
                     } else {
                         triggered = true;
@@ -162,7 +159,7 @@ public class BaseShortcutController extends BaseHandler {
             }
             // if triggered deliver
             if (triggered) {
-                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver trigger");
+                // logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver trigger");
                 sceneMapping.forEach((key, value) -> {
                     logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Check {} {}", key, value);
                     if (sceneId.equals(value)) {

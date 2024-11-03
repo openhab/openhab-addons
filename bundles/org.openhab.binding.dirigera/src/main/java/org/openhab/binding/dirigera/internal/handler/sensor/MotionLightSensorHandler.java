@@ -58,7 +58,6 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
             // get all relations and register
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            logger.trace("DIRIGERA MOTION_LIGHT_DEVICE has {} relations", relations.size());
             // register for updates of twin devices
             relations.forEach((key, value) -> {
                 gateway().registerDevice(this, key);

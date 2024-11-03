@@ -397,7 +397,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         ws.start();
                         websocket = Optional.of(ws);
                     } else {
-                        logger.trace("DIRIGERA HANDLER WS running fine - send ping");
                         wsClient.ping();
                     }
                 }
@@ -594,7 +593,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     /**
      * Interface to Model called if device isn't found anymore
-     *
      */
     @Override
     public void deleteDevice(String deviceId) {
@@ -672,7 +670,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             // then update all links
             deviceTree.forEach((id, handler) -> {
                 List<String> links = handler.getLinks();
-                logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
+                if (links.size() > 0) {
+                    logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
+                }
                 links.forEach(link -> {
                     // assure investigated handler is different from target handler
                     if (!id.equals(link)) {
@@ -715,7 +715,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         }
         if (!json.isBlank()) {
             JSONObject update = new JSONObject(json);
-            logger.trace("DIRIGERA HANDLER update {}", update.toString());
             JSONObject data = update.getJSONObject("data");
             String targetId = data.getString("id");
             // First update device
@@ -732,6 +731,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     }
                 case EVENT_TYPE_DEVICE_ADDED:
                 case EVENT_TYPE_DEVICE_REMOVED:
+                    logger.trace("DIRIGERA HANDLER update {}", update.toString());
                     // update model - it will take control on newly added, changed and removed devices
                     modelUpdate();
                     break;
