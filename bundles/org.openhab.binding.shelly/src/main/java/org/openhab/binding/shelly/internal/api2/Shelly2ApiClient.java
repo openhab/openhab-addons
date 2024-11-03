@@ -605,12 +605,12 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
 
-    protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Integer timerDuration) {
+    protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {
         if (timerStartedAt == null || timerDuration == null) {
             return null;
         }
-        int duration = (int) (now() - timerStartedAt.longValue());
-        return duration <= timerDuration ? timerDuration - duration : 0;
+        double duration = now() - timerStartedAt;
+        return duration <= timerDuration ? (int) (timerDuration - duration) : 0;
     }
 
     // Addon
