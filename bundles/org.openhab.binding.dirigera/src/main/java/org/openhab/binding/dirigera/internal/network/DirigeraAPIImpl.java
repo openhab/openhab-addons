@@ -153,7 +153,6 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         dataArray.put(data);
         StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
                 StandardCharsets.UTF_8);
-        logger.info("DIRIGERA API send {} to {}", dataArray, url);
         Request deviceRequest = httpClient.newRequest(url).method("PATCH")
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
 
@@ -163,7 +162,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
             responseStatus = response.getStatus();
             if (responseStatus == 200 || responseStatus == 202) {
-                logger.debug("DIRIGERA API send {} to {} delivered", dataArray, url);
+                logger.debug("DIRIGERA API send {} with {} {}", url, dataArray, responseStatus);
             } else {
                 logger.info("DIRIGERA API send {} to {} failed with status {}", dataArray, url, response.getStatus());
             }
