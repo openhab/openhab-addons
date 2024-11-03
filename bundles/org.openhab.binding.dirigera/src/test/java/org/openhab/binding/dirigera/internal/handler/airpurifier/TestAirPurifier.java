@@ -93,7 +93,7 @@ class TestAirPurifier {
         handler.handleCommand(new ChannelUID(thing.getUID(), "fan-mode"), new DecimalType(4));
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
-        assertEquals("{\"fanMode\":\"on\"}", patch, "Fan Mode on");
+        assertEquals("{\"attributes\":{\"fanMode\":\"on\"}}", patch, "Fan Mode on");
     }
 
     void checkAirPurifierStates(CallbackMock callback) {
