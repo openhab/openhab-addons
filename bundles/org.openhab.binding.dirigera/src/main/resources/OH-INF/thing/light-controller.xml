@@ -21,11 +21,11 @@
 				<label>Battery Level</label>
 				<description>State of the battery powering the controller</description>
 			</channel>
-			<channel id="links" typeId="text">
+			<channel id="links" typeId="text-veto">
 				<label>Links</label>
 				<description>Linked controllers and sensors</description>
 			</channel>
-			<channel id="link-candidates" typeId="text">
+			<channel id="link-candidates" typeId="text-veto">
 				<label>Link Candidates</label>
 				<description>Candidates which can be linked</description>
 			</channel>

@@ -235,19 +235,16 @@ public abstract class BaseHandler extends BaseThingHandler {
         }
         if (update.has(PROPERTY_REMOTE_LINKS)) {
             JSONArray remoteLinks = update.getJSONArray(PROPERTY_REMOTE_LINKS);
-            logger.debug("DIRIGERA BASE_HANDLER {} Links found for {}", thing.getLabel(), remoteLinks.toString());
             List<String> updateList = new ArrayList<>();
-            for (int i = 0; i < remoteLinks.length(); i++) {
-                updateList.add(remoteLinks.getString(i));
-            }
+            remoteLinks.forEach(link -> {
+                updateList.add(link.toString());
+            });
             Collections.sort(updateList);
             Collections.sort(hardLinks);
             if (!hardLinks.equals(updateList)) {
                 hardLinks = updateList;
                 // just update internal link list and let the gateway update do all updates regarding soft links
                 gateway().updateLinks();
-            } else {
-                logger.debug("DIRIGERA BASE_HANDLER {} no link updates found, skip update cycle", thing.getLabel());
             }
         }
         if (update.has(Model.ATTRIBUTES)) {
@@ -407,7 +404,7 @@ public abstract class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * Get real linkss from device updates
+     * Get real links from device updates
      *
      * @return links attached to this device
      */
@@ -424,8 +421,6 @@ public abstract class BaseHandler extends BaseThingHandler {
         String triggerDevice = "";
         List<String> linksToSend = new ArrayList<>();
         if (isControllerOrSensor()) {
-            logger.debug("DIRIGERA BASE_HANDLER {} update softlink {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(linkedDeviceId));
             // request needs to be sent to target device
             targetDevice = linkedDeviceId;
             triggerDevice = config.id;
@@ -433,47 +428,44 @@ public abstract class BaseHandler extends BaseThingHandler {
             JSONObject deviceData = gateway().model().getAllFor(targetDevice, PROPERTY_DEVICES);
             if (deviceData.has(PROPERTY_REMOTE_LINKS)) {
                 JSONArray jsonLinks = deviceData.getJSONArray(PROPERTY_REMOTE_LINKS);
-                for (int i = 0; i < jsonLinks.length(); i++) {
-                    linksToSend.add(jsonLinks.getString(i));
-                }
-                // this is sensot branch so add link of sensor
+                jsonLinks.forEach(link -> {
+                    linksToSend.add(link.toString());
+                });
+                logger.trace("DIRIGERA BASE_HANDLER {} links for {} {}", thing.getLabel(),
+                        gateway().model().getCustonNameFor(targetDevice), linksToSend);
+                // this is sensor branch so add link of sensor
                 if (add) {
                     if (!linksToSend.contains(triggerDevice)) {
                         linksToSend.add(triggerDevice);
                     } else {
-                        logger.debug("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
+                        logger.trace("DIRIGERA BASE_HANDLER {} already linked {}", thing.getLabel(),
                                 gateway().model().getCustonNameFor(triggerDevice));
                     }
                 } else {
-                    if (!linksToSend.contains(triggerDevice)) {
+                    if (linksToSend.contains(triggerDevice)) {
                         linksToSend.remove(triggerDevice);
                     } else {
-                        logger.debug("DIRIGERA BASE_HANDLER {} not link to remove {}", thing.getLabel(),
+                        logger.trace("DIRIGERA BASE_HANDLER {} no link to remove {}", thing.getLabel(),
                                 gateway().model().getCustonNameFor(triggerDevice));
                     }
                 }
             } else {
-                logger.debug("DIRIGERA BASE_HANDLER {} has no remoteLinks", thing.getLabel());
+                logger.trace("DIRIGERA BASE_HANDLER {} has no remoteLinks", thing.getLabel());
             }
         } else {
             // send update to this device
             targetDevice = config.id;
             triggerDevice = linkedDeviceId;
-            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} Before: {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(targetDevice), hardLinks);
             if (add) {
                 hardLinks.add(triggerDevice);
             } else {
                 hardLinks.remove(triggerDevice);
             }
             linksToSend.addAll(hardLinks);
-            logger.debug("DIRIGERA BASE_HANDLER {} update hardlink {} After: {}", thing.getLabel(),
-                    gateway().model().getCustonNameFor(triggerDevice), linksToSend);
         }
         JSONArray newLinks = new JSONArray(linksToSend);
         JSONObject attributes = new JSONObject();
         attributes.put(PROPERTY_REMOTE_LINKS, newLinks);
-        logger.debug("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
         gateway().api().sendPatch(targetDevice, attributes);
         // after api command remoteLinks property will be updated and trigger new linkUpadte
     }
@@ -532,28 +524,22 @@ public abstract class BaseHandler extends BaseThingHandler {
         });
         ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINKS);
         gateway().getCommandProvider().setCommandOptions(channelUUID, linkCommandOptions);
-        logger.debug("DIRIGERA BASE_HANDLER {} link update links {}", thing.getLabel(), display);
+        logger.debug("DIRIGERA BASE_HANDLER {} links {}", thing.getLabel(), display);
         updateState(channelUUID, StringType.valueOf(display.toString()));
     }
 
     protected void updateCandidateLinks() {
         List<String> possibleCandidates = gateway().model().getDevicesForTypes(linkCandidateTypes);
-        logger.debug("DIRIGERA BASE_HANDLER {} candidates to control {}", thing.getLabel(), possibleCandidates);
-        logger.debug("DIRIGERA BASE_HANDLER {} current links {} {}", thing.getLabel(), hardLinks, softLinks);
         List<String> candidates = new ArrayList<>();
         possibleCandidates.forEach(entry -> {
             if (!hardLinks.contains(entry) && !softLinks.contains(entry)) {
                 candidates.add(entry);
-            } else {
-                logger.debug("DIRIGERA BASE_HANDLER {} link candidate discarded for {} ", thing.getLabel(),
-                        gateway().model().getCustonNameFor(entry));
             }
         });
 
         List<String> display = new ArrayList<>();
         List<CommandOption> candidateOptions = new ArrayList<>();
         Collections.sort(candidates);
-        logger.debug("DIRIGERA BASE_HANDLER {} update candidates {}", thing.getLabel(), candidates.size());
         candidates.forEach(candidate -> {
             String customName = gateway().model().getCustonNameFor(candidate);
             if (!gateway().isKnownDevice(candidate)) {
