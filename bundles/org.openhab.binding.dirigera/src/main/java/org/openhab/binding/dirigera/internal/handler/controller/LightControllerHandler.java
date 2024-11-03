@@ -65,9 +65,9 @@ public class LightControllerHandler extends BaseHandler {
                         case "Off":
                             // fine - array stays empty
                             break;
-                        case "UpDown":
+                        case "Warm":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_UPDOWN));
+                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
                             presetValues = new JSONArray(

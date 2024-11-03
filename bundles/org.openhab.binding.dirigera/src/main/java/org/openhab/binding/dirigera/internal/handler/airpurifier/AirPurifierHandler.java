@@ -63,7 +63,7 @@ public class AirPurifierHandler extends BaseHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
-        logger.trace("DIRIGERA LIGHT_DEVICE handle command {} for {}", command, channel);
+        logger.trace("DIRIGERA AIR_PURIFIER handle command {} for {}", command, channel);
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
             switch (channel) {
