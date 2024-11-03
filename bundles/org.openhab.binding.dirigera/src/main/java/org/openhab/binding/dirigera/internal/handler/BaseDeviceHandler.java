@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
+import static org.openhab.binding.dirigera.internal.Constants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +24,17 @@ import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,11 +105,43 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     }
 
     public void handleUpdate(JSONObject update) {
+        // check online offline for each device
         if (update.has(Model.REACHABLE)) {
             if (update.getBoolean(Model.REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable");
+            }
+        }
+        if (update.has(Model.ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+            // check ota for each device
+            if (attributes.has(PROPERTY_OTA_STATUS)) {
+                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
+                if (OTA_STATUS_MAP.containsKey(otaStatusString)) {
+                    int otaStatus = OTA_STATUS_MAP.get(otaStatusString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
+                } else {
+                    logger.warn("Cannot decode ota status {}", otaStatusString);
+                }
+            }
+            if (attributes.has(PROPERTY_OTA_STATE)) {
+                String otaStateString = attributes.getString(PROPERTY_OTA_STATE);
+                if (OTA_STATE_MAP.containsKey(otaStateString)) {
+                    int otaState = OTA_STATE_MAP.get(otaStateString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), new DecimalType(otaState));
+                } else {
+                    logger.warn("Cannot decode ota state {}", otaStateString);
+                }
+            }
+            if (attributes.has(PROPERTY_OTA_PROGRESS)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS),
+                        QuantityType.valueOf(attributes.getInt(PROPERTY_OTA_PROGRESS), Units.PERCENT));
+            }
+            // battery also common, not for all but sensors and remote controller
+            if (attributes.has(PROPERTY_BATTERY_PERCENTAGE)) {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL),
+                        QuantityType.valueOf(attributes.getInt(PROPERTY_BATTERY_PERCENTAGE), Units.PERCENT));
             }
         }
     }
@@ -142,5 +181,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             reverseMap.put(value, key);
         });
         return reverseMap;
+    }
+
+    /**
+     * for unit testing
+     */
+    public @Nullable ThingHandlerCallback getCallbackListener() {
+        return super.getCallback();
     }
 }
