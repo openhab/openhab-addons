@@ -69,18 +69,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MetOfficeDataHubSiteApiHandler} is responsible for handling commands, which are
+ * The {@link MetOfficeDataHubSiteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements IForecastDataPollable {
+public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IForecastDataPollable {
 
     public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
     public static final int REQUEST_TIMEOUT_SECONDS = 3;
 
-    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteHandler.class);
     private final Object checkDataRequiredSchedulerLock = new Object();
     private final Object checkDailySchedulerLock = new Object();
     private final TranslationProvider translationProvider;
@@ -93,8 +93,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private boolean requiresDailyData = false;
     private boolean requiresHourlyData = false;
 
-    private volatile MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
-            MetOfficeDataHubSiteApiConfiguration.class);
+    private volatile MetOfficeDataHubSiteConfiguration config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
     private volatile boolean authFailed = false;
     private volatile String lastDailyResponse = "";
     private volatile String lastHourlyResponse = "";
@@ -118,7 +117,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      */
     MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
 
-    public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider,
+    public MetOfficeDataHubSiteHandler(Thing thing, IHttpClientProvider httpClientProvider,
             @Reference LocationProvider locationProvider, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -239,7 +238,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        final String startOfHour = MetOfficeDataHubSiteApiHandler.getLastHour();
+        final String startOfHour = MetOfficeDataHubSiteHandler.getLastHour();
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
 
         for (int hrOffset = 0; hrOffset <= 24; ++hrOffset) {
@@ -247,7 +246,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             final int dataIdx = forecastForthisHour + hrOffset;
             final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
 
-            final String channelPrefix = MetOfficeDataHubSiteApiHandler.calculatePrefix(GROUP_PREFIX_HOURS_FORECAST,
+            final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_HOURS_FORECAST,
                     hrOffset);
 
             updateState(channelPrefix + SITE_TIMESTAMP, new DateTimeType(data.getTime()).toLocaleZone());
@@ -314,14 +313,14 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        final String startOfHour = MetOfficeDataHubSiteApiHandler.getStartOfDay();
+        final String startOfHour = MetOfficeDataHubSiteHandler.getStartOfDay();
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
 
         for (int dayOffset = 0; dayOffset <= 6; ++dayOffset) {
             // Calculate the correct array position for the data
             final int dataIdx = forecastForthisHour + dayOffset;
 
-            final String channelPrefix = MetOfficeDataHubSiteApiHandler.calculatePrefix(GROUP_PREFIX_DAILY_FORECAST,
+            final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_DAILY_FORECAST,
                     dayOffset);
 
             final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
@@ -567,7 +566,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
+        config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
 
         if (config.location.isBlank()) {
             @Nullable

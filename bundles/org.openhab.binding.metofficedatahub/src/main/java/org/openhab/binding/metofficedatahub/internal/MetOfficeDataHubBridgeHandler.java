@@ -125,7 +125,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             };
-            MetOfficeDataHubSiteApiHandler.sendAsyncSiteApiRequest(httpClient, true, getApiKey(), siteApiTestLocation,
+            MetOfficeDataHubSiteHandler.sendAsyncSiteApiRequest(httpClient, true, getApiKey(), siteApiTestLocation,
                     siteResponseListener);
             initTask = null;
         }, 1, TimeUnit.SECONDS);

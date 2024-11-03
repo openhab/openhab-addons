@@ -15,12 +15,12 @@ package org.openhab.binding.metofficedatahub.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MetOfficeDataHubSiteApiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MetOfficeDataHubSiteConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class MetOfficeDataHubSiteApiConfiguration {
+public class MetOfficeDataHubSiteConfiguration {
 
     public String location = "";
 
