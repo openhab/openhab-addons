@@ -107,6 +107,13 @@ Mappings for `ota-state`
 - 9 : Update complete
 - 10 : Battery check failed
 
+### Follow Sun
+
+<img align="right" height="100" src="doc/follow-sun.png">
+
+[Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
+One schedule is follow the sun which needs to be activated in the DIRIGERA GATEWAY.
+
 ## Things
 
 The binding is in development phase alpha.
@@ -192,7 +199,7 @@ Window or door blind.
 | `json`                | String                | R          | JSON structure and updates of this device        |    X     |
 
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
  
 #### Blind Channel Mappings
 
@@ -229,7 +236,7 @@ Light with brightness support.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ### Startup Channel Mappings
 
@@ -266,7 +273,7 @@ Light with color temperature support.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Color Lights
 
@@ -287,7 +294,7 @@ Light with color support.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Power Plugs
 
@@ -311,7 +318,7 @@ Simple plug with control of power state and startup behavior.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Power Plug
 
@@ -333,7 +340,7 @@ Power plug with control of power state, startup behavior, hardware on/off button
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Smart Power Plug
 
@@ -360,7 +367,7 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 
 ## Sensors
@@ -399,7 +406,7 @@ If option 1, follow sun is selected ensure you gave the permission in the IKEA s
 See [Light Controller](#light-controller) for light-preset`.
 
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Motion Light Sensor
 
@@ -489,22 +496,9 @@ Shortcut controller with two buttons.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `button1`             | trigger               |            | Trigger of first button                      |          |
 | `button2`             | trigger               |            | Trigger of second button                     |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
-| `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
-| `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
-See [OTA channel mappings](#ota-mappings) for over the air updates.
-
-Triggers for `button1` and `button2`
-
-- PRESSED
-- DOUBLE_PRESSED
-- LONG_PRESSED
+Same as [Single Shortcut Controller](#single-shortcut-controller) with additional `button2` trigger channel.
 
 ## Light Controller
 
@@ -522,13 +516,24 @@ Controller to handle light attributes.
 | `ota-progress`        | Number                | R          | Over-the-air current progress                |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
+<img align="right" width="300" src="doc/light-presets.png">
+
 Channel `light-preset` provides a JSON array with time an light settings for different times.
 If light is switched on by the controller the light attributes for the configured time section is used.
-IKEA provided some presets which can be selected but it's also possible to generate a custom schedule.
 This only works for connected devices schown in channel `links`.
 
+IKEA provided some presets which can be selected but it's also possible to generate a custom schedule.
+They are provided as options as strings
+
+- Warm
+- Slowdown
+- Smooth
+- Bright
+
+This feature is from IKEA test center and not officially present in the IKEA Smart home app now.
+
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Blind Controller
 
@@ -546,7 +551,7 @@ Controller to open and close blinds.
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Sound Controller
 
@@ -564,7 +569,7 @@ Controller for speakers.
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 See [OTA channel mappings](#ota-mappings) for over the air updates.
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Speaker
 
@@ -585,7 +590,7 @@ Speaker with player activities.
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
-See section [Links and Candidates](#links#and-candidates) how to handle channels `links` and `link-candidates`.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Repeater
 
@@ -622,11 +627,13 @@ State will switch to `Undef` after countdown.
 
 ## Links and Candidates
 
+<img align="right" width="300" src="doc/link-candidates.png">
+
 Several devices can be linked together like
 
-- [Light Controller](#light-controller) and [Motion Sensors](#motion-sensor) to [Plugs](#plugs) and [Lights](#lights)
+- [Light Controller](#light-controller) and [Motion Sensors](#motion-sensor) to [Plugs](#power-plugs) and [Lights](#lights)
 - [Blind Controller](#blind-controller) to [Blinds](#blinds)
-- [Sound Controller](#sound-controller) to [Speakers](#speakers)
+- [Sound Controller](#sound-controller) to [Speakers](#speaker)
 
 Established links are shown in channel `links`.
 The linked devices can be clicked in the UI and the link will be removed.
@@ -636,6 +643,7 @@ If a candidate is clicked in the UI the link will be established.
 
 Candidates and links marked with `(!)` are not present in openHAB environment so no handler is created yet.
 In this case it's possible not all links are shown in the UI, but the present ones shall work.
+
 
 ## Full Example
 

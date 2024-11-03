@@ -56,7 +56,7 @@ public class Model {
     public static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
     public static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
     public static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";
-    public static final String TEMPLATE_LIGHT_PRESET_UPDOWN = "/json/light-presets/updown.json";
+    public static final String TEMPLATE_LIGHT_PRESET_WARM = "/json/light-presets/warm.json";
     public static final String TEMPLATE_SENSOR_ALWQAYS_ON = "/json/sensor-config/always-on.json";
     public static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
     public static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
@@ -528,7 +528,7 @@ public class Model {
                 candidates.add(entry.toString());
             });
         });
-        logger.debug("DIRIGERA MODEL trigger candidates {} {}", types, candidates);
+        // logger.debug("DIRIGERA MODEL trigger candidates {} {}", types, candidates);
         return candidates;
     }
 
