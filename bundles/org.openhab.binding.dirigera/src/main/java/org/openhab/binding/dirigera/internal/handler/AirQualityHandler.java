@@ -26,8 +26,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link AirQualityHandler} basic DeviceHandler for all devices
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AirQualityHandler extends BaseDeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(AirQualityHandler.class);
 
     public AirQualityHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -45,11 +42,9 @@ public class AirQualityHandler extends BaseDeviceHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            // finally get attributes from model in order to get initial values
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }

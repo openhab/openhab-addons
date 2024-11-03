@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -44,10 +44,9 @@ public class LightSensorHandler extends BaseDeviceHandler {
 
     @Override
     public void initialize() {
-        // handle general initialize like setting bridge
         super.initialize();
         if (super.checkHandler()) {
-            JSONObject values = gateway().model().getAllFor(config.id, PROPERTY_DEVICES);
+            JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
         }
     }
