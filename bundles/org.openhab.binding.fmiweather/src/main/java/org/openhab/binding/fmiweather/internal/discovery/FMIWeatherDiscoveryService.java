@@ -15,6 +15,7 @@ package org.openhab.binding.fmiweather.internal.discovery;
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.discovery.CitiesOfFinland.CITIES_OF_FINLAND;
 
+import java.text.Normalizer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,9 +141,9 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private void createForecastForCurrentLocation(@Nullable PointType currentLocation) {
         if (currentLocation != null) {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(UID_LOCAL_FORECAST)
-                    .withLabel(String.format("FMI local weather forecast"))
+                    .withLabel("FMI local weather forecast")
                     .withProperty(LOCATION,
-                            String.format("%s,%s", currentLocation.getLatitude(), currentLocation.getLongitude()))
+                            "%s,%s".formatted(currentLocation.getLatitude(), currentLocation.getLongitude()))
                     .withRepresentationProperty(LOCATION).build();
             thingDiscovered(discoveryResult);
         }
@@ -151,11 +152,11 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private void createForecastsForCities(@Nullable PointType currentLocation) {
         CITIES_OF_FINLAND.stream().filter(location2 -> isClose(currentLocation, location2)).forEach(city -> {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_FORECAST, cleanId(String.format("city_%s", city.name))))
+                    .create(new ThingUID(THING_TYPE_FORECAST, cleanId("city_%s".formatted(city.name))))
                     .withProperty(LOCATION,
-                            String.format("%s,%s", city.latitude.toPlainString(), city.longitude.toPlainString()))
-                    .withLabel(String.format("FMI weather forecast for %s", city.name))
-                    .withRepresentationProperty(LOCATION).build();
+                            "%s,%s".formatted(city.latitude.toPlainString(), city.longitude.toPlainString()))
+                    .withLabel("FMI weather forecast for %s".formatted(city.name)).withRepresentationProperty(LOCATION)
+                    .build();
             thingDiscovered(discoveryResult);
         });
     }
@@ -174,25 +175,24 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
         }).forEach(station -> {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(THING_TYPE_OBSERVATION,
-                            cleanId(String.format("station_%s_%s", station.id, station.name))))
-                    .withLabel(String.format("FMI weather observation for %s", station.name))
+                            cleanId("station_%s_%s".formatted(station.id, station.name))))
+                    .withLabel("FMI weather observation for %s".formatted(station.name))
                     .withProperty(BindingConstants.FMISID, station.id)
                     .withRepresentationProperty(BindingConstants.FMISID).build();
             thingDiscovered(discoveryResult);
         });
         if (logger.isDebugEnabled()) {
             logger.debug("Candidate stations: {}",
-                    candidateStations.stream().map(station -> String.format("%s (%s)", station.name, station.id))
+                    candidateStations.stream().map(station -> "%s (%s)".formatted(station.name, station.id))
                             .collect(Collectors.toCollection(TreeSet<String>::new)));
             logger.debug("Filtered stations: {}",
-                    filteredStations.stream().map(station -> String.format("%s (%s)", station.name, station.id))
+                    filteredStations.stream().map(station -> "%s (%s)".formatted(station.name, station.id))
                             .collect(Collectors.toCollection(TreeSet<String>::new)));
         }
     }
 
     private static String cleanId(String id) {
-        return id.replace("ä", "a").replace("ö", "o").replace("å", "a").replace("Ä", "A").replace("Ö", "O")
-                .replace("Å", "a").replaceAll("[^a-zA-Z0-9_]", "_");
+        return Normalizer.normalize(id, Normalizer.Form.NFKD).replaceAll("\\p{M}", "").replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
     private static boolean isClose(@Nullable PointType location, Location location2) {
