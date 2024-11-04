@@ -3,7 +3,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Color WiFi Bulb Thing Type -->
 	<thing-type id="color-bulb">
 		<label>WiZ Color Bulb</label>
 		<description>Supports WiZ Full Color with Tunable White Bulbs</description>
@@ -17,10 +16,9 @@
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
-	<!-- Tunable White WiFi Bulb Thing Type -->
 	<thing-type id="tunable-bulb">
 		<label>WiZ Tunable Bulb</label>
 		<description>Supports WiZ Tunable White Bulbs</description>
@@ -34,10 +32,9 @@
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
-	<!-- Single Color Dimmable WiFi Bulb Thing Type -->
 	<thing-type id="dimmable-bulb">
 		<label>WiZ Dimmable Bulb</label>
 		<description>Supports WiZ Single Color Dimmable Bulbs</description>
@@ -49,10 +46,9 @@
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
-	<!-- WiFi Smart Plug Thing Type -->
 	<thing-type id="plug">
 		<label>WiZ Smart Plug</label>
 		<description>Supports WiZ Smart Plugs</description>
@@ -62,10 +58,9 @@
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="last-update" typeId="last-update"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
-	<!-- WiFi Smart Ceiling Fan Thing Type -->
 	<thing-type id="fan">
 		<label>WiZ Ceiling Fan</label>
 		<description>Supports WiZ Ceiling Fans</description>
@@ -76,7 +71,7 @@
 			<channel id="reverse" typeId="fan-reverse"/>
 			<channel id="mode" typeId="fan-mode"/>
 		</channels>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
 	<thing-type id="fan-with-dimmable-bulb">
@@ -88,10 +83,9 @@
 			<channel-group id="light" typeId="dimmable-light"/>
 			<channel-group id="fan" typeId="fan-group"/>
 		</channel-groups>
-		<config-description-ref uri="thing-type:wiz:light"/>
+		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
 
-	<!-- Bulb Channel Types -->
 	<channel-type id="light-mode">
 		<item-type>String</item-type>
 		<label>Light Mode</label>

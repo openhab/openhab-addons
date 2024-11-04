@@ -64,7 +64,7 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
 
     private final WizPacketConverter converter = new WizPacketConverter();
 
-    private @Nullable ScheduledFuture<?> bulbBackgroudDiscovery;
+    private @Nullable ScheduledFuture<?> backgroundDiscovery;
 
     /**
      * Constructor of the discovery service.
@@ -90,22 +90,22 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
      * is called with true as parameter and when the component is being activated
      * (see {@link AbstractDiscoveryService#activate()}.
      *
-     * This will also serve to "re-discover" any bulbs that have changed to a new IP address.
+     * This will also serve to "re-discover" any devices that have changed to a new IP address.
      */
     @Override
     protected void startBackgroundDiscovery() {
-        ScheduledFuture<?> backgroundDiscovery = bulbBackgroudDiscovery;
+        ScheduledFuture<?> backgroundDiscovery = this.backgroundDiscovery;
         if (backgroundDiscovery == null || backgroundDiscovery.isCancelled()) {
-            bulbBackgroudDiscovery = scheduler.scheduleWithFixedDelay(this::startScan, 1, 60, TimeUnit.MINUTES);
+            this.backgroundDiscovery = scheduler.scheduleWithFixedDelay(this::startScan, 1, 60, TimeUnit.MINUTES);
         }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> backgroundDiscovery = bulbBackgroudDiscovery;
+        ScheduledFuture<?> backgroundDiscovery = this.backgroundDiscovery;
         if (backgroundDiscovery != null && !backgroundDiscovery.isCancelled()) {
             backgroundDiscovery.cancel(true);
-            bulbBackgroudDiscovery = null;
+            this.backgroundDiscovery = null;
         }
     }
 
@@ -122,20 +122,20 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
                 byte[] message = this.converter.transformToByteMessage(request);
 
                 // Initialize a datagram packet with data and address
-                DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
+                DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_UDP_PORT);
 
                 // Create a datagram socket, send the packet through it, close it.
                 // For discovery we will "fire and forget" and let the mediator take care of the
                 // responses
                 dsocket = new DatagramSocket();
                 dsocket.send(packet);
-                logger.debug("Broadcast packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
+                logger.debug("Broadcast packet to address: {} and port {}", address, DEFAULT_UDP_PORT);
             } else {
                 logger.warn("No broadcast address was configured or discovered! No broadcast sent.");
             }
         } catch (IOException exception) {
             logger.debug("Something wrong happened when broadcasting the packet to port {}... msg: {}",
-                    DEFAULT_BULB_UDP_PORT, exception.getMessage());
+                    DEFAULT_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
                 dsocket.close();
@@ -144,17 +144,17 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Method called by mediator, after receiving a packet from an unknown WiZ bulb
+     * Method called by mediator, after receiving a packet from an unknown WiZ device
      *
-     * @param bulbMacAddress the mac address from the device.
-     * @param bulbIpAddress the host address from the device.
+     * @param macAddress the mac address from the device.
+     * @param ipAddress the host address from the device.
      */
-    public void discoveredLight(final String lightMacAddress, final String lightIpAddress) {
+    public void discoveredLight(final String macAddress, final String ipAddress) {
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(CONFIG_MAC_ADDRESS, lightMacAddress);
-        properties.put(CONFIG_IP_ADDRESS, lightIpAddress);
-        logger.trace("New bulb discovered at {} with MAC {}.  Requesting configuration info from the bulb.",
-                lightIpAddress, lightMacAddress);
+        properties.put(CONFIG_MAC_ADDRESS, macAddress);
+        properties.put(CONFIG_IP_ADDRESS, ipAddress);
+        logger.trace("New device discovered at {} with MAC {}.  Requesting configuration info from it.", ipAddress,
+                macAddress);
 
         // Assume it is a full color bulb, unless we get confirmation otherwise.
         // This will ensure the maximum number of channels will be created so there's no
@@ -165,62 +165,62 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
         // The bulbs will merely ignore or return an error for specific commands they
         // cannot carry-out (ie, setting color on a non-color bulb) and continue to
         // function as they were before the bad command.
-        ThingTypeUID thisBulbType = THING_TYPE_COLOR_BULB;
-        String thisBulbLabel = "WiZ Full Color Bulb at " + lightIpAddress;
-        ThingUID newThingId = new ThingUID(thisBulbType, lightMacAddress);
+        ThingTypeUID thisDeviceType = THING_TYPE_COLOR_BULB;
+        String thisDeviceLabel = "WiZ Full Color Bulb at " + ipAddress;
+        ThingUID newThingId = new ThingUID(thisDeviceType, macAddress);
 
-        WizResponse configResponse = getDiscoveredBulbConfig(lightIpAddress);
+        WizResponse configResponse = getDiscoveredDeviceConfig(ipAddress);
         if (configResponse != null) {
-            SystemConfigResult discoveredBulbConfig = configResponse.getSystemConfigResults();
-            if (discoveredBulbConfig != null) {
-                String discoveredModel = discoveredBulbConfig.moduleName.toUpperCase();
-                logger.trace("Returned model from discovered bulb at {}: {}", lightIpAddress, discoveredModel);
+            SystemConfigResult discoveredDeviceConfig = configResponse.getSystemConfigResults();
+            if (discoveredDeviceConfig != null) {
+                String discoveredModel = discoveredDeviceConfig.moduleName.toUpperCase();
+                logger.trace("Returned model from discovered device at {}: {}", ipAddress, discoveredModel);
 
                 // “moduleName”:“ESP10_SOCKET_06” confirmed example module name for Wiz Smart Plug
                 // Check for "SOCKET" this seems safe based on other naming conventions observed
                 if (discoveredModel.contains("SOCKET")) {
-                    thisBulbType = THING_TYPE_SMART_PLUG;
-                    thisBulbLabel = "WiZ Smart Plug at " + lightIpAddress;
-                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
+                    thisDeviceType = THING_TYPE_SMART_PLUG;
+                    thisDeviceLabel = "WiZ Smart Plug at " + ipAddress;
+                    newThingId = new ThingUID(thisDeviceType, macAddress);
                     logger.trace("New device appears to be a smart plug and will be given the UUID: {}", newThingId);
 
                     // We'll try to key off "TW" for tunable white
                 } else if (discoveredModel.contains("TW")) {
-                    thisBulbType = THING_TYPE_TUNABLE_BULB;
-                    thisBulbLabel = "WiZ Tunable White Bulb at " + lightIpAddress;
-                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
-                    logger.trace("New bulb appears to be a tunable white bulb and will be given the UUID: {}",
+                    thisDeviceType = THING_TYPE_TUNABLE_BULB;
+                    thisDeviceLabel = "WiZ Tunable White Bulb at " + ipAddress;
+                    newThingId = new ThingUID(thisDeviceType, macAddress);
+                    logger.trace("New device appears to be a tunable white bulb and will be given the UUID: {}",
                             newThingId);
 
                     // Check for "FANDIMS" as in confirmed example ESP03_FANDIMS_31 for Faro Barcelona Smart Fan
                 } else if (discoveredModel.contains("FANDIMS")) {
-                    thisBulbType = THING_TYPE_FAN;
-                    thisBulbLabel = "WiZ Smart Fan at " + lightIpAddress;
-                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
+                    thisDeviceType = THING_TYPE_FAN;
+                    thisDeviceLabel = "WiZ Smart Fan at " + ipAddress;
+                    newThingId = new ThingUID(thisDeviceType, macAddress);
                     logger.trace("New device appears to be a smart fan and will be given the UUID: {}", newThingId);
 
                     // We key off "RGB" for color bulbs
                 } else if (!discoveredModel.contains("RGB")) {
-                    thisBulbType = THING_TYPE_DIMMABLE_BULB;
-                    thisBulbLabel = "WiZ Dimmable White Bulb at " + lightIpAddress;
-                    newThingId = new ThingUID(thisBulbType, lightMacAddress);
+                    thisDeviceType = THING_TYPE_DIMMABLE_BULB;
+                    thisDeviceLabel = "WiZ Dimmable White Bulb at " + ipAddress;
+                    newThingId = new ThingUID(thisDeviceType, macAddress);
                     logger.trace(
-                            "New bulb appears not to be either tunable white bulb or full color and will be called dimmable only and given the UUID: {}",
+                            "New device appears not to be either tunable white bulb or full color and will be called a dimmable only bulb and given the UUID: {}",
                             newThingId);
                 }
 
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(newThingId).withProperties(properties)
-                        .withLabel(thisBulbLabel).withRepresentationProperty(CONFIG_MAC_ADDRESS).build();
+                        .withLabel(thisDeviceLabel).withRepresentationProperty(CONFIG_MAC_ADDRESS).build();
 
                 this.thingDiscovered(discoveryResult);
             }
         } else {
             logger.trace(
-                    "Couldn't get or couldn't parse configuration information from discovered bulb.  Discovery result will not be created.");
+                    "Couldn't get or couldn't parse configuration information from discovered device.  Discovery result will not be created.");
         }
     }
 
-    private synchronized @Nullable WizResponse getDiscoveredBulbConfig(final String lightIpAddress) {
+    private synchronized @Nullable WizResponse getDiscoveredDeviceConfig(final String lightIpAddress) {
         DatagramSocket dsocket = null;
         try {
             WizRequest request = new WizRequest(WizMethodType.GetSystemConfig, null);
@@ -230,12 +230,12 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
 
             // Initialize a datagram packet with data and address
             InetAddress address = InetAddress.getByName(lightIpAddress);
-            DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
+            DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_UDP_PORT);
 
             // Create a datagram socket, send the packet through it, close it.
             dsocket = new DatagramSocket();
             dsocket.send(packet);
-            logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_BULB_UDP_PORT);
+            logger.debug("Sent packet to address: {} and port {}", address, DEFAULT_UDP_PORT);
 
             byte[] responseMessage = new byte[1024];
             packet = new DatagramPacket(responseMessage, responseMessage.length);
@@ -246,7 +246,7 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
             logger.trace("Socket timeout after sending command; no response from {} within 500ms", lightIpAddress);
         } catch (IOException exception) {
             logger.debug("Something wrong happened when sending the packet to address: {} and port {}... msg: {}",
-                    lightIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
+                    lightIpAddress, DEFAULT_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
                 dsocket.close();

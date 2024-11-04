@@ -75,13 +75,13 @@ public class WizBindingConstants {
     /**
      * Mac address configuration argument key.
      */
-    public static final String CONFIG_MAC_ADDRESS = "bulbMacAddress";
+    public static final String CONFIG_MAC_ADDRESS = "macAddress";
     public static final String MISSING_INVALID_MAC_ADDRESS = "bulbMacAddress";
 
     /**
      * Host address configuration argument key.
      */
-    public static final String CONFIG_IP_ADDRESS = "bulbIpAddress";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
 
     /**
      * Wifi socket update interval configuration argument key.
@@ -106,7 +106,7 @@ public class WizBindingConstants {
     /**
      * Default Wifi socket default UDP port.
      */
-    public static final int DEFAULT_BULB_UDP_PORT = 38899;
+    public static final int DEFAULT_UDP_PORT = 38899;
 
     /**
      * Default listener socket default UDP port.

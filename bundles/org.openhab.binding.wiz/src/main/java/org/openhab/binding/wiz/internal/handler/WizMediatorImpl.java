@@ -146,13 +146,13 @@ public class WizMediatorImpl implements WizMediator {
      * Utility method to get the registered thing handler in mediator by the mac
      * address.
      *
-     * @param bulbMacAddress the mac address of the thing of the handler.
+     * @param macAddress the mac address of the thing of the handler.
      * @return {@link WizHandler} if found.
      */
-    private @Nullable WizHandler getHandlerRegisteredByMac(final String bulbMacAddress) {
+    private @Nullable WizHandler getHandlerRegisteredByMac(final String macAddress) {
         WizHandler searchedHandler = null;
         for (WizHandler handler : this.handlersRegisteredByThing.values()) {
-            if (bulbMacAddress.equalsIgnoreCase(handler.getBulbMacAddress())) {
+            if (macAddress.equalsIgnoreCase(handler.getMacAddress())) {
                 searchedHandler = handler;
                 // don't spend more computation. Found the handler.
                 break;

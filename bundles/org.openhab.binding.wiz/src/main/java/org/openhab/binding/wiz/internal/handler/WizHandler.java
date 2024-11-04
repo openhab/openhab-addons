@@ -138,8 +138,8 @@ public class WizHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (hasConfigurationError() || disposed || !fullyInitialized) {
             logger.debug(
-                    "[{}] WiZ handler for blub {} received command {} on channel {} but is not yet prepared to handle it.",
-                    config.bulbIpAddress, config.bulbMacAddress, command, channelUID);
+                    "[{}] WiZ handler for device {} received command {} on channel {} but is not yet prepared to handle it.",
+                    config.ipAddress, config.macAddress, command, channelUID);
             return;
         }
 
@@ -281,13 +281,13 @@ public class WizHandler extends BaseThingHandler {
             mostRecentState.sceneId = commandAsLightMode.getSceneId();
             setPilotCommand(new SceneRequestParam(commandAsLightMode.getSceneId()));
         } else {
-            logger.warn("[{}] Command [{}] not a recognized Light Mode!", config.bulbIpAddress, command);
+            logger.warn("[{}] Command [{}] not a recognized Light Mode!", config.ipAddress, command);
         }
     }
 
     private void handleHSBCommand(HSBType hsb) {
         if (hsb.getBrightness().intValue() == 0) {
-            logger.debug("[{}] Zero intensity requested, turning bulb off.", config.bulbIpAddress);
+            logger.debug("[{}] Zero intensity requested, turning bulb off.", config.ipAddress);
             setPilotCommand(new StateRequestParam(false));
         } else {
             setPilotCommand(new ColorRequestParam(hsb));
@@ -297,7 +297,7 @@ public class WizHandler extends BaseThingHandler {
 
     private void handlePercentCommand(PercentType brightness) {
         if (brightness.equals(PercentType.ZERO)) {
-            logger.debug("[{}] Zero brightness requested, turning bulb off.", config.bulbIpAddress);
+            logger.debug("[{}] Zero brightness requested, turning bulb off.", config.ipAddress);
             setPilotCommand(new StateRequestParam(false));
         } else {
             setPilotCommand(new DimmingRequestParam(brightness.intValue()));
@@ -338,7 +338,7 @@ public class WizHandler extends BaseThingHandler {
         } else {
             newDimming = Math.max(10, oldDimming - 5);
         }
-        logger.debug("[{}] Changing bulb brightness from {}% to {}%.", config.bulbIpAddress, oldDimming, newDimming);
+        logger.debug("[{}] Changing bulb brightness from {}% to {}%.", config.ipAddress, oldDimming, newDimming);
         handlePercentCommand(new PercentType(newDimming));
     }
 
@@ -355,7 +355,7 @@ public class WizHandler extends BaseThingHandler {
         } else {
             newTempPct = Math.max(0, oldTempPct - 5);
         }
-        logger.debug("[{}] Changing color temperature from {}% to {}%.", config.bulbIpAddress, oldTempPct, newTempPct);
+        logger.debug("[{}] Changing color temperature from {}% to {}%.", config.ipAddress, oldTempPct, newTempPct);
         handleTemperatureCommand(percentToColorTemp(new PercentType(BigDecimal.valueOf(newTempPct))));
     }
 
@@ -392,18 +392,18 @@ public class WizHandler extends BaseThingHandler {
             long timePassedFromLastUpdateInSeconds = (now - latestUpdate) / 1000;
             long timePassedFromLastRefreshInSeconds = (now - latestOfflineRefresh) / 1000;
 
-            // If the bulb has an online status, check if we it's been too long since the
+            // If the device has an online status, check if we it's been too long since the
             // last response and re-set offline accordingly
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                logger.trace("[{}] MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.bulbIpAddress,
-                        config.bulbMacAddress, latestUpdate, now, timePassedFromLastUpdateInSeconds);
+                logger.trace("[{}] MAC address: {}  Latest Update: {} Now: {} Delta: {} seconds", config.ipAddress,
+                        config.macAddress, latestUpdate, now, timePassedFromLastUpdateInSeconds);
 
                 boolean considerThingOffline = (latestUpdate < 0)
                         || (timePassedFromLastUpdateInSeconds > MARK_OFFLINE_AFTER_SEC);
                 if (considerThingOffline) {
                     logger.debug(
                             "[{}] Since no updates have been received from mac address {} in {} seconds, setting its status to OFFLINE and discontinuing polling.",
-                            config.bulbIpAddress, config.bulbMacAddress, MARK_OFFLINE_AFTER_SEC);
+                            config.ipAddress, config.macAddress, MARK_OFFLINE_AFTER_SEC);
                     updateStatus(ThingStatus.OFFLINE);
 
                 }
@@ -414,20 +414,19 @@ public class WizHandler extends BaseThingHandler {
                 if (config.useHeartBeats) {
                     // If we're using 5s heart-beats, we must re-register every 30s to maintain
                     // connection
-                    logger.debug("[{}] Re-registering for heart-beats.", config.bulbIpAddress);
-                    registerWithBulb();
+                    logger.debug("[{}] Re-registering for heart-beats.", config.ipAddress);
+                    registerWithDevice();
                 } else {
                     // If we're not using heart-beats, just request the current status
-                    logger.debug("[{}] Polling for status from bulb at {}.", config.bulbIpAddress,
-                            config.bulbMacAddress);
+                    logger.debug("[{}] Polling for status from device at {}.", config.ipAddress, config.macAddress);
                     getPilot();
                 }
 
-                // Else if we are offline, but it's been a while, re-check if the bulb re-appeared
+                // Else if we are offline, but it's been a while, re-check if the device re-appeared
             } else if (timePassedFromLastRefreshInSeconds > config.reconnectInterval * 60) {
                 // Request the current status
-                logger.debug("[{}] Checking for reappearance of offline bulb at {}.", config.bulbIpAddress,
-                        config.bulbMacAddress);
+                logger.debug("[{}] Checking for reappearance of offline device at {}.", config.ipAddress,
+                        config.macAddress);
                 latestOfflineRefresh = now;
                 getPilot();
             }
@@ -436,12 +435,12 @@ public class WizHandler extends BaseThingHandler {
          * Schedule the keep-alive job.
          *
          * The scheduling inteval is:
-         * - every 30 seconds for online bulbs receiving heart-beats
-         * - every config.updateInterval for other online bulbs
+         * - every 30 seconds for online devices receiving heart-beats
+         * - every config.updateInterval for other online devices
          */
         long updateIntervalInUse = config.useHeartBeats ? 30 : config.updateInterval;
-        logger.debug("[{}] Scheduling reoccuring keep alive for every {} seconds for bulb at {}.", config.bulbIpAddress,
-                updateIntervalInUse, config.bulbMacAddress);
+        logger.debug("[{}] Scheduling reoccuring keep alive for every {} seconds for device at {}.", config.ipAddress,
+                updateIntervalInUse, config.macAddress);
         this.keepAliveJob = scheduler.scheduleWithFixedDelay(runnable, 1, updateIntervalInUse, TimeUnit.SECONDS);
     }
 
@@ -453,10 +452,10 @@ public class WizHandler extends BaseThingHandler {
 
         // set the thing status to UNKNOWN temporarily
         updateStatus(ThingStatus.UNKNOWN);
-        if (ValidationUtils.isMacNotValid(config.bulbMacAddress)) {
+        if (ValidationUtils.isMacNotValid(config.macAddress)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
         }
-        updateBulbProperties();
+        updateDeviceProperties();
         initGetStatusAndKeepAliveThread();
         fullyInitialized = true;
     }
@@ -483,35 +482,35 @@ public class WizHandler extends BaseThingHandler {
                 updateTimestamps();
                 updateStatesFromParams(rParam);
             } else {
-                logger.trace("[{}] No parameters in getPilot response!", config.bulbIpAddress);
+                logger.trace("[{}] No parameters in getPilot response!", config.ipAddress);
             }
         } else {
-            logger.trace("[{}] No response from getPilot request!", config.bulbIpAddress);
+            logger.trace("[{}] No response from getPilot request!", config.ipAddress);
         }
     }
 
     /**
      * Method called by {@link WizMediator} when any "unsolicited" messages
-     * come in on the listening socket and appear to be a WiZ bulb. "Unsolicited"
-     * messages from the bulb are could be:
-     * - a "firstBeat" broadcast to the subnet by the bulb on first powering up
-     * - an "hb" (heartbeat) specifically directed to OpenHab within 30 seconds of registration
-     * - or a response to a registration request broadcast by this binding to all bulbs on the subnet
+     * come in on the listening socket and appear to be a WiZ device. "Unsolicited"
+     * messages from the device could be:
+     * - a "firstBeat" broadcast to the subnet by the device on first powering up
+     * - an "hb" (heartbeat) specifically directed to openHAB within 30 seconds of registration
+     * - or a response to a registration request broadcast by this binding to all devices on the subnet
      *
-     * @note The mediator finds the correct handler for the bulb based on the (unchanging) bulb
+     * @note The mediator finds the correct handler for the device based on the (unchanging) device
      *       MAC address. If the mediator matches a message to the handler by MAC address, but the IP address
-     *       the message came from doesn't match the bulb's configured IP address, this will update the
-     *       bulb's configuration to reflect whatever the current IP is.
+     *       the message came from doesn't match the device's configured IP address, this will update the
+     *       device's configuration to reflect whatever the current IP is.
      *
      * @param receivedMessage the received {@link WizResponse}.
      */
     public synchronized void newReceivedResponseMessage(final WizResponse receivedMessage) {
         Boolean updatePropertiesAfterParams = false;
 
-        // Check if the bulb still has the same IP address it had previously
+        // Check if the device still has the same IP address it had previously
         // If not, we need to update the configuration for the thing.
         if (!receivedMessage.getWizResponseIpAddress().isEmpty()
-                && !receivedMessage.getWizResponseIpAddress().equals(this.getBulbIpAddress())) {
+                && !receivedMessage.getWizResponseIpAddress().equals(this.getIpAddress())) {
             // get the old config
             Configuration priorConfig = getConfig();
             // change the ip address property
@@ -524,7 +523,7 @@ public class WizHandler extends BaseThingHandler {
             updatePropertiesAfterParams = true;
         }
 
-        // Grab the ID number and mark the bulb online
+        // Grab the ID number and mark the device online
         requestId = receivedMessage.getId();
         updateTimestamps();
 
@@ -534,10 +533,10 @@ public class WizHandler extends BaseThingHandler {
             updateStatesFromParams(params);
         }
 
-        // After updating state, we'll update all other bulb parameters from bulbs that
+        // After updating state, we'll update all other device parameters from devices that
         // presented with a new IP address.
         if (updatePropertiesAfterParams) {
-            updateBulbProperties();
+            updateDeviceProperties();
         }
     }
 
@@ -598,7 +597,7 @@ public class WizHandler extends BaseThingHandler {
                 case RGBMode:
                     logger.trace(
                             "[{}] Received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}; translate to HSBType: {}",
-                            config.bulbIpAddress, receivedParam.r, receivedParam.g, receivedParam.b, receivedParam.w,
+                            config.ipAddress, receivedParam.r, receivedParam.g, receivedParam.b, receivedParam.w,
                             receivedParam.c, receivedParam.dimming, receivedParam.getHSBColor());
 
                     updateLightState(CHANNEL_COLOR, receivedParam.getHSBColor());
@@ -649,7 +648,7 @@ public class WizHandler extends BaseThingHandler {
             final @Nullable Param param) {
         DatagramSocket dsocket = null;
         try {
-            InetAddress address = InetAddress.getByName(config.bulbIpAddress);
+            InetAddress address = InetAddress.getByName(config.ipAddress);
             if (address != null) {
                 WizRequest request = new WizRequest(method, param);
                 request.setId(requestId++);
@@ -658,7 +657,7 @@ public class WizHandler extends BaseThingHandler {
                 logger.trace("Raw packet to send: {}", message);
 
                 // Initialize a datagram packet with data and address
-                DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_BULB_UDP_PORT);
+                DatagramPacket packet = new DatagramPacket(message, message.length, address, DEFAULT_UDP_PORT);
 
                 // Create a datagram socket, send the packet through it, close it.
                 dsocket = new DatagramSocket(null);
@@ -666,8 +665,8 @@ public class WizHandler extends BaseThingHandler {
                 dsocket.setBroadcast(true);
                 dsocket.setSoTimeout(500); // Timeout in 500ms
                 dsocket.send(packet);
-                logger.debug("[{}] Sent packet to address: {} and port {}", config.bulbIpAddress, address,
-                        DEFAULT_BULB_UDP_PORT);
+                logger.debug("[{}] Sent packet to address: {} and port {}", config.ipAddress, address,
+                        DEFAULT_UDP_PORT);
 
                 byte[] responseMessage = new byte[1024];
                 packet = new DatagramPacket(responseMessage, responseMessage.length);
@@ -677,10 +676,10 @@ public class WizHandler extends BaseThingHandler {
             }
         } catch (SocketTimeoutException e) {
             logger.trace("[{}] Socket timeout after sending command; no response from {} within 500ms",
-                    config.bulbIpAddress, config.bulbMacAddress);
+                    config.ipAddress, config.macAddress);
         } catch (IOException exception) {
             logger.debug("[{}] Something wrong happened when sending the packet to port {}... msg: {}",
-                    config.bulbIpAddress, DEFAULT_BULB_UDP_PORT, exception.getMessage());
+                    config.ipAddress, DEFAULT_UDP_PORT, exception.getMessage());
         } finally {
             if (dsocket != null) {
                 dsocket.close();
@@ -712,7 +711,7 @@ public class WizHandler extends BaseThingHandler {
     }
 
     /**
-     * Makes note of the latest timestamps and sets the bulb online
+     * Makes note of the latest timestamps and sets the device online
      */
     private synchronized void updateTimestamps() {
         if (hasConfigurationError() || disposed) {
@@ -726,9 +725,9 @@ public class WizHandler extends BaseThingHandler {
     }
 
     /**
-     * Asks the bulb for its current system configuration
+     * Asks the device for its current system configuration
      */
-    private synchronized void updateBulbProperties() {
+    private synchronized void updateDeviceProperties() {
         if (hasConfigurationError() || disposed) {
             return;
         }
@@ -753,8 +752,8 @@ public class WizHandler extends BaseThingHandler {
                 updateTimestamps();
             } else {
                 logger.debug(
-                        "[{}] Received response to getConfigRequest from bulb at {}, but id did not contain bulb configuration information.",
-                        config.bulbIpAddress, config.bulbMacAddress);
+                        "[{}] Received response to getConfigRequest from device at {}, but it did not contain device configuration information.",
+                        config.ipAddress, config.macAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
 
@@ -773,37 +772,37 @@ public class WizHandler extends BaseThingHandler {
                             Objects.requireNonNull(stateDescription));
                 }
             } else {
-                // Not a big deal; probably just an older bulb
-                logger.warn("[{}] No response to getModelConfig request from bulb", config.bulbIpAddress);
+                // Not a big deal; probably just an older device
+                logger.warn("[{}] No response to getModelConfig request from device", config.ipAddress);
             }
         } else {
-            logger.debug("[{}] No response to getSystemConfig request from bulb at {}", config.bulbIpAddress,
-                    config.bulbMacAddress);
+            logger.debug("[{}] No response to getSystemConfig request from device at {}", config.ipAddress,
+                    config.macAddress);
             // Not calling it "gone" because it's probably just been powered off and will beback any time
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     /**
-     * Registers with the bulb - this tells the bulb to begin sending 5-second
-     * heartbeat (hb) status updates. Status updates are sent by the bulb every 5
+     * Registers with the device - this tells the device to begin sending 5-second
+     * heartbeat (hb) status updates. Status updates are sent by the device every 5
      * sec and on any state change for 30s after registration. For continuous
      * heart-beats the registration must be re-sent after 30s.
      */
-    private synchronized void registerWithBulb() {
+    private synchronized void registerWithDevice() {
         WizResponse registrationResponse = sendRequestPacket(WizMethodType.Registration, this.registrationInfo);
         if (registrationResponse != null) {
             if (registrationResponse.getResultSuccess()) {
                 updateTimestamps();
             } else {
                 logger.debug(
-                        "[{}] Received response to getConfigRequest from bulb at {}, but id did not contain bulb configuration information.",
-                        config.bulbIpAddress, config.bulbMacAddress);
+                        "[{}] Received response to getConfigRequest from device at {}, but it did not contain device configuration information.",
+                        config.ipAddress, config.macAddress);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
-            logger.debug("[{}] No response to registration request from bulb at {}", config.bulbIpAddress,
-                    config.bulbMacAddress);
+            logger.debug("[{}] No response to registration request from device at {}", config.ipAddress,
+                    config.macAddress);
             // Not calling it "gone" because it's probably just been powered off and will be
             // back any time
             updateStatus(ThingStatus.OFFLINE);
@@ -827,12 +826,12 @@ public class WizHandler extends BaseThingHandler {
     }
 
     // SETTERS AND GETTERS
-    public String getBulbIpAddress() {
-        return config.bulbIpAddress;
+    public String getIpAddress() {
+        return config.ipAddress;
     }
 
-    public String getBulbMacAddress() {
-        return config.bulbMacAddress;
+    public String getMacAddress() {
+        return config.macAddress;
     }
 
     public int getHomeId() {
