@@ -20,13 +20,11 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MotionLightSensorHandler} basic DeviceHandler for all devices
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MotionLightSensorHandler extends MotionSensorHandler {
-    private final Logger logger = LoggerFactory.getLogger(MotionLightSensorHandler.class);
 
     private TreeMap<String, String> relations = new TreeMap<>();
 

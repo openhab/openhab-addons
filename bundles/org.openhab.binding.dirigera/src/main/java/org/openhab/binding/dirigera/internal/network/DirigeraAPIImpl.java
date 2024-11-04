@@ -30,7 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
