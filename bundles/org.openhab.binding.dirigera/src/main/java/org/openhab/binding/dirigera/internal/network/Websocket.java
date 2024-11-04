@@ -61,6 +61,8 @@ public class Websocket {
     private static final String PING_LAST = "lastPing";
     private static final String MESSAGES = "messages";
     public static final String MODEL_UPDATES = "modelUpdates";
+    public static final String MODEL_UPDATE_TIME = "modelUpdateDuration";
+    public static final String MODEL_UPDATE_LAST = "lastModelUpdate";
 
     private Optional<WebSocketClient> websocketClient = Optional.empty();
     private Optional<Session> session = Optional.empty();

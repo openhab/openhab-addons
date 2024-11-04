@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
+import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_UNKNNOWN;
+
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.internal.ThingImpl;
 
 /**
  * The {@link DeviceUpdate} element handled in device update queue
@@ -21,19 +27,34 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DeviceUpdate {
+    public static final BaseHandler DUMMY_HANDLER = new BaseHandler(new ThingImpl(THING_TYPE_UNKNNOWN, ""), Map.of());
+
     public enum Action {
         ADD,
         DISPOSE,
-        REMOVE;
+        REMOVE,
+        LINKS;
     }
 
-    public BaseHandler handler;
+    public BaseHandler handler = DUMMY_HANDLER;
     public String deviceId;
     public Action action;
 
-    public DeviceUpdate(BaseHandler handler, String deviceId, Action action) {
-        this.handler = handler;
+    public DeviceUpdate(@Nullable BaseHandler handler, String deviceId, Action action) {
+        if (handler != null) {
+            this.handler = handler;
+        }
         this.deviceId = deviceId;
         this.action = action;
+    }
+
+    /**
+     * Link updates are equal because they are generic, all others false
+     *
+     * @param other
+     * @return
+     */
+    public boolean equals(DeviceUpdate other) {
+        return (this.action.equals(other.action)) && handler.equals(handler) && this.deviceId.equals(other.deviceId);
     }
 }

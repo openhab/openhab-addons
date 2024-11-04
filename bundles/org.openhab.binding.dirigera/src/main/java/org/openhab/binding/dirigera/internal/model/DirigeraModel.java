@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.exception.ModelUpdateException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,25 +47,8 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class Model {
-    private final Logger logger = LoggerFactory.getLogger(Model.class);
-
-    public static final String REACHABLE = "isReachable";
-    public static final String ATTRIBUTES = "attributes";
-    public static final String SCENES = "scenes";
-    public static final String CUSTOM_NAME = "customName";
-    public static final String DEVICE_MODEL = "model";
-    public static final String DEVICE_TYPE = "deviceType";
-    public static final String PROPERTY_RELATION_ID = "relationId";
-
-    public static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
-    public static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
-    public static final String TEMPLATE_LIGHT_PRESET_SMOOTH = "/json/light-presets/smooth.json";
-    public static final String TEMPLATE_LIGHT_PRESET_WARM = "/json/light-presets/warm.json";
-    public static final String TEMPLATE_SENSOR_ALWQAYS_ON = "/json/sensor-config/always-on.json";
-    public static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
-    public static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
-    public static final String TEMPLATE_SENSOR_SCHEDULE_ON = "/json/sensor-config/schedule-on.json";
+public class DirigeraModel implements Model {
+    private final Logger logger = LoggerFactory.getLogger(DirigeraModel.class);
 
     private Map<String, DiscoveryResult> resultMap = new HashMap<>();
     private Map<String, String> templates = new HashMap<>();
@@ -72,14 +56,16 @@ public class Model {
     private JSONObject model = new JSONObject();
     private Gateway gateway;
 
-    public Model(Gateway gateway) {
+    public DirigeraModel(Gateway gateway) {
         this.gateway = gateway;
     }
 
+    @Override
     public synchronized String getModelString() {
         return model.toString();
     }
 
+    @Override
     public synchronized void update() {
         Instant startTime = Instant.now();
         try {
@@ -98,6 +84,7 @@ public class Model {
         logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
     }
 
+    @Override
     public synchronized void detection() {
         if (gateway.discoveryEnabled()) {
             logger.debug("DIRIGERA MODEL detection started");
@@ -140,6 +127,7 @@ public class Model {
      *
      * @return
      */
+    @Override
     public synchronized List<String> getResolvedDeviceList() {
         List<String> deviceList = new ArrayList<>();
         if (!model.isNull(PROPERTY_DEVICES)) {
@@ -167,6 +155,7 @@ public class Model {
      *
      * @return
      */
+    @Override
     public synchronized List<String> getAllDeviceIds() {
         List<String> deviceList = new ArrayList<>();
         if (!model.isNull(PROPERTY_DEVICES)) {
@@ -217,7 +206,19 @@ public class Model {
         gateway.deleteDevice(id);
     }
 
-    public synchronized JSONArray getIdsForType(String type) {
+    @Override
+    public synchronized List<String> getDevicesForTypes(List<String> types) {
+        List<String> candidates = new ArrayList<>();
+        types.forEach(type -> {
+            JSONArray addons = getIdsForType(type);
+            addons.forEach(entry -> {
+                candidates.add(entry.toString());
+            });
+        });
+        return candidates;
+    }
+
+    private JSONArray getIdsForType(String type) {
         JSONArray returnArray = new JSONArray();
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
@@ -246,6 +247,7 @@ public class Model {
         return attributeValue;
     }
 
+    @Override
     public synchronized JSONObject getAllFor(String id, String type) {
         JSONObject returnObject = new JSONObject();
         if (model.has(type)) {
@@ -261,6 +263,7 @@ public class Model {
         return returnObject;
     }
 
+    @Override
     public synchronized String getCustonNameFor(String id) {
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
         if (deviceObject.has(ATTRIBUTES)) {
@@ -297,12 +300,7 @@ public class Model {
         return id;
     }
 
-    /**
-     * Properties Map for Discovery
-     *
-     * @param id
-     * @return Map with attributes for Thing properties
-     */
+    @Override
     public synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
@@ -318,21 +316,7 @@ public class Model {
         return properties;
     }
 
-    /**
-     * Gets all relations marked into relationId property
-     * Rationale:
-     * VALLHORN Motion Sensor registers 2 devices
-     * - Motion Sensor
-     * - Light Sensor
-     *
-     * Shortcut Controller with 2 buttons registers 2 controllers
-     * They shall not be splitted in 2 different things so one Thing shall receive updates for both id's
-     *
-     * Use TreeMap to sort device id's so suffix _1 comes before _2
-     *
-     * @param relationId
-     * @return List of id's with same serial number
-     */
+    @Override
     public synchronized TreeMap<String, String> getRelations(String relationId) {
         final TreeMap<String, String> relationsMap = new TreeMap<>();
         List<String> allDevices = getAllDeviceIds();
@@ -382,6 +366,7 @@ public class Model {
      * @param id
      * @return
      */
+    @Override
     public synchronized ThingTypeUID identifyDeviceFromModel(String id) {
         JSONObject entry = getAllFor(id, PROPERTY_DEVICES);
         if (entry.isEmpty()) {
@@ -394,14 +379,7 @@ public class Model {
         }
     }
 
-    /**
-     * Crucial function to identify DeviceHandler - all options needs to be listed here to deliver the right
-     * ThingTypeUID
-     *
-     * @param DIRIGERA Id
-     * @return ThingTypeUID
-     */
-    public synchronized ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
+    private ThingTypeUID identifyDeviceFromJSON(String id, JSONObject data) {
         String typeDeviceType = "";
         if (data.has(Model.PROPERTY_RELATION_ID)) {
             return identifiyComplexDevice(data.getString(Model.PROPERTY_RELATION_ID));
@@ -506,6 +484,7 @@ public class Model {
      * @param id to check
      * @return same id if no relations are found or relationId
      */
+    @Override
     public synchronized String getRelationId(String id) {
         JSONObject dataObject = getAllFor(id, PROPERTY_DEVICES);
         if (dataObject.has(PROPERTY_RELATION_ID)) {
@@ -520,21 +499,12 @@ public class Model {
      * @param id to check
      * @return true if id is found
      */
+    @Override
     public synchronized boolean has(String id) {
         return getAllDeviceIds().contains(id) || getAllSceneIds().contains(id);
     }
 
-    public List<String> getDevicesForTypes(List<String> types) {
-        List<String> candidates = new ArrayList<>();
-        types.forEach(type -> {
-            JSONArray addons = getIdsForType(type);
-            addons.forEach(entry -> {
-                candidates.add(entry.toString());
-            });
-        });
-        return candidates;
-    }
-
+    @Override
     public String getTemplate(String name) {
         String template = templates.get(name);
         if (template == null) {
