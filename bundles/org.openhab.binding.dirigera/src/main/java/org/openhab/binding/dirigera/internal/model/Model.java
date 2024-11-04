@@ -14,6 +14,8 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Model} is the central instance identifying devices and
+ * The {@link Model} is representing the structural data of the gateway. Concrete values of devices shall not be
+ * accessed.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -95,7 +99,7 @@ public class Model {
     }
 
     public synchronized void detection() {
-        if (gateway.discoverEnabled()) {
+        if (gateway.discoveryEnabled()) {
             logger.debug("DIRIGERA MODEL detection started");
             List<String> previousDevices = new ArrayList<>();
             previousDevices.addAll(devices);
@@ -528,14 +532,13 @@ public class Model {
                 candidates.add(entry.toString());
             });
         });
-        // logger.debug("DIRIGERA MODEL trigger candidates {} {}", types, candidates);
         return candidates;
     }
 
     public String getTemplate(String name) {
         String template = templates.get(name);
         if (template == null) {
-            template = gateway.getResourceFile(name);
+            template = getResourceFile(name);
             if (!template.isBlank()) {
                 templates.put(name, template);
             } else {
@@ -544,5 +547,21 @@ public class Model {
             }
         }
         return template;
+    }
+
+    private String getResourceFile(String fileName) {
+        try {
+            URL url = gateway.getBundleContext().getBundle().getResource(fileName);
+            InputStream input = url.openStream();
+            try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                String result = scanner.hasNext() ? scanner.next() : "";
+                String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
+                scanner.close();
+                return resultReplaceAll;
+            }
+        } catch (Throwable t) {
+            logger.warn("Resource file failed {}", t.getMessage());
+        }
+        return "";
     }
 }

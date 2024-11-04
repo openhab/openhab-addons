@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Dirigera Binding</name>
-	<description>Ikea Smarthome binding for DIRIGERA Gateway</description>
+	<name>DIRIGERA Binding</name>
+	<description>IKEA Smarthome binding for DIRIGERA Gateway</description>
+	<connection>local</connection>
 
 </addon:addon>

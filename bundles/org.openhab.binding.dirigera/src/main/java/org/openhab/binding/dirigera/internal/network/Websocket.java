@@ -57,7 +57,8 @@ public class Websocket {
     private static final String DISCONNECTS = "disconnetcs";
     private static final String ERRORS = "errors";
     private static final String PINGS = "pings";
-    private static final String LAST_LATENCY = "pingLatency";
+    private static final String PING_LATENCY = "pingLatency";
+    private static final String PING_LAST = "lastPing";
     private static final String MESSAGES = "messages";
     public static final String MODEL_UPDATES = "modelUpdates";
 
@@ -166,9 +167,8 @@ public class Websocket {
             Instant sent = pingPongMap.remove(paylodString);
             if (sent != null) {
                 long durationMS = Duration.between(sent, Instant.now()).toMillis();
-                logger.trace("DIRIGERA WS ping answered after {} ms, {} unanswered pings",
-                        Duration.between(sent, Instant.now()).toMillis(), pingPongMap.size());
-                statistics.put(LAST_LATENCY, durationMS);
+                statistics.put(PING_LATENCY, durationMS);
+                statistics.put(PING_LAST, Instant.now().atZone(gateway.getTimeZoneProvider().getTimeZone()));
             } else {
                 logger.info("DIRIGERA WS receiced pong without ping {}", paylodString);
             }
