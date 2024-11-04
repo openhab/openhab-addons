@@ -99,7 +99,6 @@ The available init commands depend on the sketch that is running on the USB stic
 | Sensor ID         | Number       | The ID of the connected sensor                                                                                         |
 | Sensor Timeout    | Number       | The amount of time in seconds that should result in OFFLINE status when no readings have been received from the sensor |
 
-
 ## Channels
 
 ### LaCrosse temperature sensors
@@ -161,7 +160,6 @@ The available init commands depend on the sketch that is running on the USB stic
 | consumptionTotal  | Number:Energy            | Total energy consumption in kWh       |
 | electricCurrent   | Number:ElectricCurrent   | The measured Electric Current         |
 | electricPotential | Number:ElectricPotential | The measured Electric Potential in mA |
-
 
 ## Commands
 

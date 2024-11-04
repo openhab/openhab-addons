@@ -137,7 +137,6 @@ Contact stiebel_eltron_mode_water              "Heating Water [%d]"   { channel=
 Contact stiebel_eltron_mode_cooling             "Cooling [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-cooling" }
 Contact stiebel_eltron_mode_summer             "Summer Mode [%d]"   { channel="modbus:heatpump:stiebelEltron:systemState#is-summer" }
 
-
 Number:Energy stiebel_eltron_production_heat_today            "Heat quantity today [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_today" }
 Number:Energy stiebel_eltron_production_heat_total            "Heat quantity total  [%.3f MWh]"   {channel="modbus:heatpump:stiebelEltron:energyInformation#production_heat_total"}
 Number:Energy stiebel_eltron_production_water_today            "Water heat quantity today  [%.0f kWh]"    { channel="modbus:heatpump:stiebelEltron:energyInformation#production_water_today" }
@@ -154,10 +153,10 @@ Number:Energy stiebel_eltron_consumption_water_total            "Water heating p
 ```perl
 Text label="Heat pumpt" icon="temperature" {
  Frame label="Optation Mode" {
-  Default item=stiebel_eltron_mode_pump 
+  Default item=stiebel_eltron_mode_pump
   Default item=stiebel_eltron_mode_heating
-  Default item=stiebel_eltron_mode_water 
-  Default item=stiebel_eltron_mode_cooling 
+  Default item=stiebel_eltron_mode_water
+  Default item=stiebel_eltron_mode_cooling
   Default item=stiebel_eltron_mode_summer
  }
  Frame label= "State" {

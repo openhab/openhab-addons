@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fmiweather.internal.BindingConstants;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Location;
@@ -39,10 +40,12 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -65,35 +68,45 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private static final int LOCATION_CHANGED_CHECK_INTERVAL_SECONDS = 60;
     private static final int FIND_STATION_METERS = 80_000;
 
+    private final LocationProvider locationProvider;
+    private final HttpClient httpClient;
+    private final ExpiringCache<Set<Location>> stationsCache;
+
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable PointType previousLocation;
-    private @NonNullByDefault({}) LocationProvider locationProvider;
-
-    private ExpiringCache<Set<Location>> stationsCache = new ExpiringCache<>(STATIONS_CACHE_MILLIS, () -> {
-        try {
-            return new Client().queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
-        } catch (FMIUnexpectedResponseException e) {
-            logger.warn("Unexpected error with the response, potentially API format has changed. Printing out details",
-                    e);
-        } catch (FMIResponseException e) {
-            logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
-        }
-        // Return empty set on errors
-        return Collections.emptySet();
-    });
 
     /**
      * Creates a {@link FMIWeatherDiscoveryService} with immediately enabled background discovery.
      */
-    public FMIWeatherDiscoveryService() {
+    @Activate
+    public FMIWeatherDiscoveryService(final @Reference LocationProvider locationProvider,
+            final @Reference HttpClientFactory httpClientFactory) {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+        this.locationProvider = locationProvider;
+        httpClient = httpClientFactory.getCommonHttpClient();
+
+        stationsCache = new ExpiringCache<>(STATIONS_CACHE_MILLIS, () -> {
+            try {
+                return new Client(httpClient).queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
+            } catch (FMIUnexpectedResponseException e) {
+                logger.warn(
+                        "Unexpected error with the response, potentially API format has changed. Printing out details",
+                        e);
+            } catch (FMIResponseException e) {
+                logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted");
+            }
+            // Return empty set on errors
+            return Collections.emptySet();
+        });
     }
 
     @Override
     protected void startScan() {
         PointType location = null;
         logger.debug("Starting FMI Weather discovery scan");
-        LocationProvider locationProvider = getLocationProvider();
         location = locationProvider.getLocation();
         if (location == null) {
             logger.debug("LocationProvider.getLocation() is not set -> Will discover all stations");
@@ -207,18 +220,5 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Stopped FMI Weather background discovery");
             }
         }
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider provider) {
-        this.locationProvider = null;
-    }
-
-    protected LocationProvider getLocationProvider() {
-        return locationProvider;
     }
 }

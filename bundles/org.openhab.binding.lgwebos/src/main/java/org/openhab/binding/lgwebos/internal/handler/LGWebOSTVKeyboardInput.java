@@ -35,6 +35,7 @@ package org.openhab.binding.lgwebos.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceCommand;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -48,6 +49,8 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
+
+@NonNullByDefault
 public class LGWebOSTVKeyboardInput {
 
     private LGWebOSTVSocket service;

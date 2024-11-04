@@ -42,8 +42,8 @@ public class Place implements LocationEx {
     }
 
     @Override
-    public Optional<String> getTimezone() {
-        return Optional.ofNullable(timezone);
+    public @Nullable String getTimezone() {
+        return timezone;
     }
 
     @Override

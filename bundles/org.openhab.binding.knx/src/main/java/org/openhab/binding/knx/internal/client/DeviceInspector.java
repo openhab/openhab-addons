@@ -51,23 +51,7 @@ public class DeviceInspector {
     private final DeviceInfoClient client;
     private final IndividualAddress address;
 
-    public static class Result {
-        private final Map<String, String> properties;
-        private final Set<GroupAddress> groupAddresses;
-
-        public Result(Map<String, String> properties, Set<GroupAddress> groupAddresses) {
-            super();
-            this.properties = properties;
-            this.groupAddresses = groupAddresses;
-        }
-
-        public Map<String, String> getProperties() {
-            return properties;
-        }
-
-        public Set<GroupAddress> getGroupAddresses() {
-            return groupAddresses;
-        }
+    public record Result(Map<String, String> properties, Set<GroupAddress> groupAddresses) {
     }
 
     public DeviceInspector(DeviceInfoClient client, IndividualAddress address) {
@@ -114,7 +98,7 @@ public class DeviceInspector {
      *           task immediately on connection loss or thing deconstruction.
      *
      * @param address Individual address of KNX device
-     * @return List of device properties
+     * @return Map of device properties
      * @throws InterruptedException
      */
     private Map<String, String> readDeviceProperties(IndividualAddress address) throws InterruptedException {
@@ -179,7 +163,7 @@ public class DeviceInspector {
             if (!maxApdu.isEmpty()) {
                 logger.trace("Max APDU of device {} is {} bytes (routing)", address, maxApdu);
             } else {
-                // fallback: MAX_APDU_LENGTH; if availble set the default is 14 according to spec
+                // fallback: MAX_APDU_LENGTH; if available set the default is 14 according to spec
                 Thread.sleep(OPERATION_INTERVAL);
                 try {
                     byte[] result = getClient().readDeviceProperties(address, ADDRESS_TABLE_OBJECT,
@@ -247,7 +231,7 @@ public class DeviceInspector {
                         logger.debug("Identified device {} as \"{}\"", address, result);
                         ret.put(FRIENDLY_NAME, result);
                     } else {
-                        // this is due to devices which have a buggy implememtation (and show a broken string also
+                        // this is due to devices which have a buggy implementation (and show a broken string also
                         // in ETS tool)
                         logger.debug("Ignoring FRIENDLY_NAME of device {} as it contains non-printable characters",
                                 address);
@@ -288,7 +272,7 @@ public class DeviceInspector {
      *           Currently only data from DD0 is returned; DD2 is just logged in debug mode.
      *
      * @param address Individual address of KNX device
-     * @return List of device properties
+     * @return Map of device properties
      * @throws InterruptedException
      */
     private Map<String, String> readDeviceDescription(IndividualAddress address) throws InterruptedException {
@@ -315,7 +299,7 @@ public class DeviceInspector {
             if (data != null) {
                 try {
                     final DD2 dd = DeviceDescriptor.DD2.from(data);
-                    logger.debug("The device with address {} is has DD2 {}", address, dd.toString());
+                    logger.debug("The device with address {} is has DD2 {}", address, dd);
                 } catch (KNXIllegalArgumentException e) {
                     logger.warn("Can not parse device descriptor 2 of device with address {}: {}", address,
                             e.getMessage());
@@ -342,21 +326,14 @@ public class DeviceInspector {
     }
 
     private static String getMediumType(int type) {
-        switch (type) {
-            case 0:
-                return "TP";
-            case 1:
-                return "PL";
-            case 2:
-                return "RF";
-            case 3:
-                return "TP0 (deprecated)";
-            case 4:
-                return "PL123 (deprecated)";
-            case 5:
-                return "IP";
-            default:
-                return "unknown (" + type + ")";
-        }
+        return switch (type) {
+            case 0 -> "TP";
+            case 1 -> "PL";
+            case 2 -> "RF";
+            case 3 -> "TP0 (deprecated)";
+            case 4 -> "PL123 (deprecated)";
+            case 5 -> "IP";
+            default -> "unknown (" + type + ")";
+        };
     }
 }

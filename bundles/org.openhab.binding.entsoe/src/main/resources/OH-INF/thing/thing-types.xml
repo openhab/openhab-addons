@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="entsoe"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="day-ahead">
+
+		<label>Day-ahead prices</label>
+		<description>Hourly spot prices of the electricity market from European Network of Transmission System Operators
+			(ENTSO-E)</description>
+		<category>WebService</category>
+		<channels>
+			<channel id="spot-price" typeId="spot-price"/>
+			<channel id="prices-received" typeId="trigger-prices-received"/>
+		</channels>
+
+		<config-description>
+			<parameter name="securityToken" type="text" required="true">
+				<context>password</context>
+				<label>Security Token</label>
+				<description>Security token for ENTSO-E API</description>
+			</parameter>
+			<parameter name="area" type="text" required="true">
+				<label>Area</label>
+				<description>Choose from list or enter custom EIC area. See
+					https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_areas
+					and
+					https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/ (Area Y, Bidding Zone)</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<!--
+						url: https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+						filter:
+						EIC Type Code: Area Y
+						Function: Bidding Zone
+					-->
+					<option value="10Y1001A1001A39I">EE Estonia</option>
+					<option value="10Y1001A1001A44P">SE1 Swedish Elspot Area 1</option>
+					<option value="10Y1001A1001A45N">SE2 Swedish Elspot Area 2</option>
+					<option value="10Y1001A1001A46L">SE3 Swedish Elspot Area 3</option>
+					<option value="10Y1001A1001A47J">SE4 Swedish Elspot Area 4</option>
+					<option value="10Y1001A1001A48H">NO5 Norwegian Area Elspot Area 5</option>
+					<option value="10Y1001A1001A50U">KALININGRAD_AREA Kaliningrad area</option>
+					<option value="10Y1001A1001A51S">BELARUS_AREA Belarus area</option>
+					<option value="10Y1001A1001A55K">LT_BEL_IMP_AREA Lithuania-Belarus Import Area</option>
+					<option value="10Y1001A1001A56I">LT_BEL_EXP_AREA Lithuania-Belarus Export Area</option>
+					<option value="10Y1001A1001A57G">GB_N2EX_PRICZONE Bidding Zone - Great Britain (N2EX)</option>
+					<option value="10Y1001A1001A58E">GB_APX_PRICEZONE Bidding Zone - Great Britain (APX)</option>
+					<option value="10Y1001A1001A59C">SEM Ireland and Northern Ireland</option>
+					<option value="10Y1001A1001A63L">DE_AT_LU Germany_Austria_Luxemburg</option>
+					<option value="10Y1001A1001A66F">IT-GR Italy Greece</option>
+					<option value="10Y1001A1001A67D">IT-NORTH_SI Italy North_Slovenia</option>
+					<option value="10Y1001A1001A68B">IT-NORTH_CH Italy North_Switzerland</option>
+					<option value="10Y1001A1001A70O">IT-CENTRE_NORTH Italy Centre-North</option>
+					<option value="10Y1001A1001A71M">IT-CENTRE_SOUTH Italy Centre-South</option>
+					<option value="10Y1001A1001A73I">IT-NORTH Italy North</option>
+					<option value="10Y1001A1001A74G">IT-SARDINIA Italy Sardinia</option>
+					<option value="10Y1001A1001A75E">IT-SICILY Italy Sicily</option>
+					<option value="10Y1001A1001A788">IT-SOUTH Italy South</option>
+					<option value="10Y1001A1001A80L">IT-NORTH_AT Italy North_Austria</option>
+					<option value="10Y1001A1001A81J">IT-NORTH_FR Italy North_France</option>
+					<option value="10Y1001A1001A82H">DE_LU Germany_Luxemburg</option>
+					<option value="10Y1001A1001A877">IT-MT Italy_Malta</option>
+					<option value="10Y1001A1001A885">IT-SACO_AC Italy Saco_AC</option>
+					<option value="10Y1001A1001A893">IT-SACODC Italy Saco_DC</option>
+					<option value="10Y1001A1001A90I">IT-MONFALCONE Italy Monfalcone</option>
+					<option value="10Y1001A1001A958">ICELAND Member State Iceland</option>
+					<option value="10Y1001A1001A990">MOLDOVA Moldova</option>
+					<option value="10Y1001C--000182">UA-IPS Ukraine IPS</option>
+					<option value="10Y1001C--000611">IT-MONTENEGRO BIDDING ZONE ITALY-MONTENEGRO</option>
+					<option value="10Y1001C--00096J">IT-CALABRIA Italy Calabria</option>
+					<option value="10Y1001C--00098F">FR_UK_IFA_BZN IFA Bidding Zone</option>
+					<option value="10Y1001C--00100H">CAKOSTT Control Area Kosovo*</option>
+					<option value="10Y1001C--001219">NO_FICT_AREA_2A Norwegian Fictitious Area 2A</option>
+					<option value="10Y1001C--00146U">NORDIC_SYNC_AREA Nordic Synchronous Area</option>
+					<option value="10Y1001C--00148Q">SE3A Swedish Fictitious Area SE3A</option>
+					<option value="10YAL-KESH-----5">AL Albania</option>
+					<option value="10YAT-APG------L">AT Austria</option>
+					<option value="10YBA-JPCC-----D">BA Bosnia and Herzegovina</option>
+					<option value="10YBE----------2">BE Belgium</option>
+					<option value="10YCA-BULGARIA-R">BG Bulgaria</option>
+					<option value="10YCH-SWISSGRIDZ">CH Switzerland</option>
+					<option value="10YCS-CG-TSO---S">ME Montenegro</option>
+					<option value="10YCS-SERBIATSOV">RS Serbia</option>
+					<option value="10YCY-1001A0003J">CY Cyprus</option>
+					<option value="10YCZ-CEPS-----N">CZ Czech Republic</option>
+					<option value="10YDK-1--------W">DK1 Denmark DK1</option>
+					<option value="10YDK-2--------M">DK2 Denmark DK2</option>
+					<option value="10YES-REE------0">ES Spain</option>
+					<option value="10YFI-1--------U">FI Finland</option>
+					<option value="10YFR-RTE------C">FR France</option>
+					<option value="10YGB----------A">GB Great Britain</option>
+					<option value="10YGR-HTSO-----Y">GR Greece</option>
+					<option value="10YHR-HEP------M">HR Croatia</option>
+					<option value="10YHU-MAVIR----U">HU Hungary</option>
+					<option value="10YLT-1001A0008Q">LT Lithuania</option>
+					<option value="10YLV-1001A00074">LV Latvia</option>
+					<option value="10YMK-MEPSO----8">MK FYROM</option>
+					<option value="10YNL----------L">NL Netherlands</option>
+					<option value="10YNO-1--------2">NO1 Norwegian Area Elspot Area 1</option>
+					<option value="10YNO-2--------T">NO2 Norwegian Area Elspot Area 2</option>
+					<option value="10YNO-3--------J">NO3 Norwegian Area Elspot Area 3</option>
+					<option value="10YNO-4--------9">NO4 Norwegian Area Elspot Area 4</option>
+					<option value="10YPL-AREA-----S">PL Poland</option>
+					<option value="10YPT-REN------W">PT Portugal</option>
+					<option value="10YRO-TEL------P">RO Romania</option>
+					<option value="10YSI-ELES-----O">SI Slovenia</option>
+					<option value="10YSK-SEPS-----K">SK Slovak Republic</option>
+					<option value="10YTR-TEIAS----W">TEIAS_AREA TEIAS Area</option>
+					<option value="10YUA-WEPS-----0">UA-BEI Ukrainian Area of Burshtyn island</option>
+					<option value="14Y----0000041-W">AT-EXAAMC Virtual Bidding Zone EXAA</option>
+					<option value="14YCCPADATENMLDW">CCPACCP1 CCP Austria GmbH</option>
+					<option value="14YEXAADATENMLDU">EXAACCP EXAA Abwicklungsstelle für Energieprodukte AG</option>
+					<option value="17Y000000930808E">FR_UK_IFA2000_1 vhub_UK_IFA2000_link1</option>
+					<option value="17Y000000930809C">FR_FR_IFA2000_1 vhub_FR_IFA2000_link1</option>
+					<option value="17Y000000930810R">FR_UK_IFA2000_2 vhub_UK_IFA2000_link2</option>
+					<option value="17Y000000930811P">FR_FR_IFA2000_2 vhub_FR_IFA2000_link2</option>
+					<option value="17Y000000930814J">FR_UK_IFA2 vhub_UK_IFA2</option>
+					<option value="17Y000000930815H">FR_FR_IFA2 vhub_FR_IFA2</option>
+					<option value="17Y000000930816F">FR_IT_SAV_PIE vhub_IT_Savoie_Piemont</option>
+					<option value="17Y000000930817D">FR_FR_SAV_PIE vhub_FR_Savoie_Piemont</option>
+					<option value="17Y0000009369493">FR_UK_IFA2_V_BZN IFA2_virtual_BZN</option>
+					<option value="44Y-00000000160K">FI_FS Fingrid Oyj</option>
+					<option value="44Y-00000000161I">FI_EL Fingrid Oyj</option>
+					<option value="45Y000000000001C">DKW-NO2 DKW-NO2 virtual Bidding Zone Border</option>
+					<option value="45Y000000000002A">DKW-SE3 DKW-SE3 virtual Bidding Zone Border</option>
+					<option value="45Y0000000000038">DKW-DKE DKW-DKE virtual Bidding Zone Border</option>
+					<option value="46Y000000000001Y">SE3_FS SE3_FS (SE3, Fennoskan)</option>
+					<option value="46Y000000000002W">SE3_KS SE3_KS (SE3, Kontiskan)</option>
+					<option value="46Y000000000003U">SE4_SP SE4_SP (SE4, Swepol link)</option>
+					<option value="46Y000000000004S">SE4_NB SE4_NB (SE4, Nordbalt)</option>
+					<option value="46Y000000000005Q">SE4_BC SE4_BC (SE4, Baltic Cable)</option>
+					<option value="46Y000000000007M">CUT_AREA_SE3LS Cut area SE3LS</option>
+					<option value="46Y000000000008K">CUT_AREA_SE3 Cut area SE3</option>
+					<option value="46Y000000000009I">CUTCOR_SE3LS-SE3 Cut corridor SE3LS-SE3</option>
+					<option value="46Y000000000015N">VBZ_SE3-SE4_ACSW Virtual bidding zone border SE3-SE4 AC+SWL</option>
+					<option value="46Y000000000016L">VBZ_SE4-SE3_ACSW Virtual bidding zone border SE4-SE3 AC+SWL</option>
+					<option value="46Y000000000017J">SE3_SWL SE3_SWL (SE3, Sydvastlanken)</option>
+					<option value="46Y000000000018H">SE4_SWL SE4_SWL (SE4, Sydvastlanken)</option>
+					<option value="46Y000000000019F">CUTCOR_SE3A-SE3 Cut corridor SE3A-SE3</option>
+					<option value="50Y0JVU59B4JWQCU">NO_NO2NSL Virtual Bidding Zone NO2NSL</option>
+					<option value="50Y73EMZ34CQL9AJ">NO_NO2_NL Virtual Bidding Zone NO2-NL</option>
+					<option value="50YCUY85S1HH29EK">NO_NO2_DK1 Virtual Bidding Zone NO2-DK1</option>
+					<option value="50Y-HTS3792HUOAC">NO_NO2-GB Virtual bidding Zone NO2-GB</option>
+					<option value="50YNBFFTWZRAHA3P">NO_NO2-DE Virtual bidding Zone NO2-DE</option>
+					<option value="67Y-VISKOL-2003T">VISKOL2003 VISKOL DOO NOVI SAD SRBIJA</option>
+				</options>
+			</parameter>
+			<parameter name="historicDays" type="integer" min="1" max="365" required="false">
+				<label>Historic Data</label>
+				<default>1</default>
+				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
+					rate of today)</description>
+			</parameter>
+			<parameter name="resolution" type="text" required="false">
+				<label>Resolution</label>
+				<default>PT60M</default>
+				<description>Data resolution</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="PT15M">15 minutes</option>
+					<option value="PT30M">30 minutes</option>
+					<option value="PT60M">60 minutes</option>
+				</options>
+			</parameter>
+			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
+				<label>Publish Hour</label>
+				<default>13</default>
+				<description>CET hour spot prices will get published on ENTSO-E. Usually at 13 CET.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="10" max="300" required="false">
+				<label>Request Timeout</label>
+				<default>30</default>
+				<description>Request timeout value in seconds</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="spot-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Spot Price</label>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="trigger-prices-received">
+		<kind>trigger</kind>
+		<label>Trigger Prices Received</label>
+	</channel-type>
+
+</thing:thing-descriptions>

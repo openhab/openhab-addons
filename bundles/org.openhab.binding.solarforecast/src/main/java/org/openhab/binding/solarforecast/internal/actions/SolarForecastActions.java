@@ -26,13 +26,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +48,9 @@ public class SolarForecastActions implements ThingActions {
     private Optional<ThingHandler> thingHandler = Optional.empty();
 
     @RuleAction(label = "@text/actionDayLabel", description = "@text/actionDayDesc")
-    public QuantityType<Energy> getDay(
+    public @ActionOutput(label = "Energy Of Day", type = "QuantityType<Energy>") QuantityType<Energy> getEnergyOfDay(
             @ActionInput(name = "localDate", label = "@text/actionInputDayLabel", description = "@text/actionInputDayDesc") LocalDate localDate,
-            String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -78,9 +78,9 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionPowerLabel", description = "@text/actionPowerDesc")
-    public QuantityType<Power> getPower(
+    public @ActionOutput(label = "Power", type = "QuantityType<Power>") QuantityType<Power> getPower(
             @ActionInput(name = "timestamp", label = "@text/actionInputDateTimeLabel", description = "@text/actionInputDateTimeDesc") Instant timestamp,
-            String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -108,10 +108,10 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionEnergyLabel", description = "@text/actionEnergyDesc")
-    public QuantityType<Energy> getEnergy(
+    public @ActionOutput(label = "Energy", type = "QuantityType<Energy>") QuantityType<Energy> getEnergy(
             @ActionInput(name = "start", label = "@text/actionInputDateTimeBeginLabel", description = "@text/actionInputDateTimeBeginDesc") Instant start,
             @ActionInput(name = "end", label = "@text/actionInputDateTimeEndLabel", description = "@text/actionInputDateTimeEndDesc") Instant end,
-            String... args) {
+            @ActionInput(name = "args") String... args) {
         if (thingHandler.isPresent()) {
             List<SolarForecast> l = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             if (!l.isEmpty()) {
@@ -139,7 +139,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionForecastBeginLabel", description = "@text/actionForecastBeginDesc")
-    public Instant getForecastBegin() {
+    public @ActionOutput(label = "Forecast Begin", type = "java.time.Instant") Instant getForecastBegin() {
         if (thingHandler.isPresent()) {
             List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             return Utils.getCommonStartTime(forecastObjectList);
@@ -150,7 +150,7 @@ public class SolarForecastActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionForecastEndLabel", description = "@text/actionForecastEndDesc")
-    public Instant getForecastEnd() {
+    public @ActionOutput(label = "Forecast End", type = "java.time.Instant") Instant getForecastEnd() {
         if (thingHandler.isPresent()) {
             List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
             return Utils.getCommonEndTime(forecastObjectList);
@@ -160,15 +160,27 @@ public class SolarForecastActions implements ThingActions {
         }
     }
 
-    public static State getDay(ThingActions actions, LocalDate ld, String... args) {
-        return ((SolarForecastActions) actions).getDay(ld, args);
+    @RuleAction(label = "@text/actionTriggerUpdateLabel", description = "@text/actionTriggerUpdateDesc")
+    public void triggerUpdate() {
+        if (thingHandler.isPresent()) {
+            List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
+            forecastObjectList.forEach(forecast -> {
+                forecast.triggerUpdate();
+            });
+        } else {
+            logger.trace("Handler missing");
+        }
     }
 
-    public static State getPower(ThingActions actions, Instant dateTime, String... args) {
+    public static QuantityType<Energy> getEnergyOfDay(ThingActions actions, LocalDate ld, String... args) {
+        return ((SolarForecastActions) actions).getEnergyOfDay(ld, args);
+    }
+
+    public static QuantityType<Power> getPower(ThingActions actions, Instant dateTime, String... args) {
         return ((SolarForecastActions) actions).getPower(dateTime, args);
     }
 
-    public static State getEnergy(ThingActions actions, Instant begin, Instant end, String... args) {
+    public static QuantityType<Energy> getEnergy(ThingActions actions, Instant begin, Instant end, String... args) {
         return ((SolarForecastActions) actions).getEnergy(begin, end, args);
     }
 
@@ -178,6 +190,10 @@ public class SolarForecastActions implements ThingActions {
 
     public static Instant getForecastEnd(ThingActions actions) {
         return ((SolarForecastActions) actions).getForecastEnd();
+    }
+
+    public static void triggerUpdate(ThingActions actions) {
+        ((SolarForecastActions) actions).triggerUpdate();
     }
 
     @Override

@@ -12,7 +12,7 @@ The IoTaWatt binding supports one Thing called `iotawatt`.
 
 ## Discovery
 
-The binding does not auto-discover the IoTaWatt device.  
+The binding does not auto-discover the IoTaWatt device.
 
 ## Thing Configuration
 

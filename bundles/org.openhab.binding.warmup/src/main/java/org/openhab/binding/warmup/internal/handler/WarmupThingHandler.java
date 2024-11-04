@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
@@ -79,11 +81,46 @@ public class WarmupThingHandler extends BaseThingHandler {
 
     /**
      *
+     * @param temperature value returned from the API as a String * 10. i.e. "215" = 21.5 degrees C
+     * @return the temperature as a {@link QuantityType}
+     */
+    protected State parseTemperature(@Nullable String temperature) {
+        try {
+            return temperature != null ? parseTemperature(Integer.parseInt(temperature)) : UnDefType.UNDEF;
+        } catch (NumberFormatException e) {
+            return UnDefType.UNDEF;
+        }
+    }
+
+    /**
+     *
      * @param temperature value returned from the API as an Integer * 10. i.e. 215 = 21.5 degrees C
      * @return the temperature as a {@link QuantityType}
      */
     protected State parseTemperature(@Nullable Integer temperature) {
         return temperature != null ? new QuantityType<>(temperature / 10.0, SIUnits.CELSIUS) : UnDefType.UNDEF;
+    }
+
+    /**
+     *
+     * @param temperature {@link QuantityType} a temperature
+     * @return the temperature as an int in degrees C * 10. i.e. 21.5 degrees C = 215
+     */
+    protected int formatTemperature(QuantityType<Temperature> temperature) {
+        return (int) (temperature.toUnit(SIUnits.CELSIUS).doubleValue() * 10);
+    }
+
+    /**
+     *
+     * @param enery value returned from the API as a string "10.5" = 10.5 kWh
+     * @return the energy as a {@link QuantityType}
+     */
+    protected State parseEnergy(@Nullable String energy) {
+        try {
+            return energy != null ? new QuantityType<>(Float.parseFloat(energy), Units.KILOWATT_HOUR) : UnDefType.UNDEF;
+        } catch (NumberFormatException e) {
+            return UnDefType.UNDEF;
+        }
     }
 
     /**

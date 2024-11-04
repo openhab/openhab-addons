@@ -451,7 +451,7 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
             if (deserializedState == null) {
                 return null;
             }
-            return new DynamoDBHistoricItem(getName(), deserializedState, getTime());
+            return new DynamoDBHistoricItem(getName(), deserializedState, getTime().toInstant());
         } catch (Exception e) {
             logger.trace("Failed to convert state '{}' to item {} {}: {} {}. Data persisted with incompatible item.",
                     this.state, item.getClass().getSimpleName(), item.getName(), e.getClass().getSimpleName(),

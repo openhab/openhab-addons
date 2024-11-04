@@ -41,7 +41,7 @@ import org.openhab.core.types.UnDefType;
  * RFXCOM data class for lighting5 message.
  *
  * @author Paul Hampson, Neil Renaud - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  * @author Martin van Wingerden - added support for IT and some other subtypes
  */
 public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighting5Message.SubType> {

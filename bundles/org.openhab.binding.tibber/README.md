@@ -3,7 +3,7 @@
 The Tibber Binding connects to the [Tibber API](https://developer.tibber.com), and enables users to retrieve electricity data:
 
 - Default: Frequent polls are performed to retrieve electricity price and cost/consumption information
-- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements  
+- Optional: For users having Tibber Pulse, a websocket connection is established to retrieve live measurements
 
 Refresh time (poll frequency) is set manually as part of setup, minimum 1 minute.
 
@@ -214,13 +214,13 @@ Example of tomorrow and today prices data structure - an array of tuples:
 
 ## Full Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Thing tibber:tibberapi:7cfae492 [ homeid="xxx", token="xxxxxxx" ]
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 Number:Dimensionless       TibberAPICurrentTotal                 "Current Total Price [%.2f NOK]"            {channel="tibber:tibberapi:7cfae492:current_total"}

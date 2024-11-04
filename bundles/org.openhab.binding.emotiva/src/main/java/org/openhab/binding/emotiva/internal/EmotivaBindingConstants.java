@@ -52,9 +52,6 @@ public class EmotivaBindingConstants {
      */
     static final int DEFAULT_KEEP_ALIVE_IN_MILLISECONDS = 7500;
 
-    /** State name for storing keepAlive timestamp messages */
-    public static final String LAST_SEEN_STATE_NAME = "no-channel#last-seen";
-
     /**
      * Default Emotiva device considered list in milliseconds.
      * {@link org.openhab.binding.emotiva.internal.dto.ControlDTO}
@@ -86,6 +83,9 @@ public class EmotivaBindingConstants {
     public static final int DEFAULT_TRIM_MAX_DECIBEL = 12;
     public static final String MAP_SOURCES_MAIN_ZONE = "sources";
     public static final String MAP_SOURCES_ZONE_2 = "zone2-sources";
+    public static final String MAP_TUNER_CHANNELS = "tuner-channel";
+    public static final String MAP_TUNER_BANDS = "tuner-bands";
+    public static final String MAP_MODES = "modes";
 
     /** Miscellaneous Constants **/
     public static final int PROTOCOL_V3_LEVEL_MULTIPLIER = 2;
@@ -115,7 +115,7 @@ public class EmotivaBindingConstants {
     public static final String CHANNEL_MODE_SURROUND = "general#mode-surround";
     public static final String CHANNEL_SPEAKER_PRESET = "general#speaker-preset";
     public static final String CHANNEL_MAIN_VOLUME = "main-zone#volume";
-    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume_db";
+    public static final String CHANNEL_MAIN_VOLUME_DB = "main-zone#volume-db";
     public static final String CHANNEL_LOUDNESS = "general#loudness";
     public static final String CHANNEL_ZONE2_POWER = "zone2#power";
     public static final String CHANNEL_ZONE2_VOLUME = "zone2#volume";

@@ -2,15 +2,7 @@
 
 The openHAB ChatGPT Binding allows openHAB to communicate with the ChatGPT language model provided by OpenAI and manage openHAB system via [Function calling](https://platform.openai.com/docs/guides/function-calling).
 
-ChatGPT is a powerful natural language processing (NLP) tool that can be used to understand and respond to a wide range of text-based commands and questions. 
-With this binding, users can:
 
-- Control openHAB Devices: Manage lights, climate systems, media players, and more with natural language commands.
-- Multi-language Support: Issue commands in almost any language, enhancing accessibility.
-- Engage in Conversations: Have casual conversations, ask questions, and receive informative responses.
-- Extended Capabilities: Utilize all other functionalities of ChatGPT, from composing creative content to answering complex questions.
-
-This integration significantly enhances user experience, providing seamless control over smart home environments and access to the full range of ChatGPT’s capabilities.
 
 ## Supported Things
 
@@ -57,12 +49,6 @@ Each channel of type `chat` takes the following configuration parameters:
 | maxTokens     | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 1000    | no       | yes      |
 
 
-## Items Configuration
-
-Items to be used by the HLI service must be tagged with the [ "ChatGPT" ] tag.
-If no semantic model is set up, you can set the parameter `useSemanticModel` to false.
-In this case, the item names must follow the naming convention '<Location>_***', for example "Kitchen_Light". The label of the items are expected to briefly describe the item in more detail.
-If the item accepts different text commands, add these commands to the "am" metadata key (see Item Configuration example below).
 
 ## Full Example
 
@@ -108,7 +94,7 @@ A text-to-speech service must be configured.
 ```java
 rule "Weather forecast update"
 when
-  Item Temperature_Forecast_High changed 
+  Item Temperature_Forecast_High changed
 then
     Weather_Announcement.sendCommand("High: " + Temperature_Forecast_High.state + "°C, Low: " + Temperature_Forecast_Low.state + "°C")
 end

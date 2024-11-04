@@ -38,10 +38,12 @@ class EmotivaBarNotifyDTOTest extends AbstractDTOTestBase {
     void testUnmarshall() throws JAXBException {
         EmotivaBarNotifyWrapper dto = (EmotivaBarNotifyWrapper) xmlUtils
                 .unmarshallToEmotivaDTO(emotivaBarNotifyBigText);
+
         assertThat(dto.getSequence(), is("98"));
         assertThat(dto.getTags().size(), is(1));
 
         List<EmotivaBarNotifyDTO> commands = xmlUtils.unmarshallToBarNotify(dto.getTags());
+
         assertThat(commands.get(0).getType(), is("bigText"));
         assertThat(commands.get(0).getText(), is("XBox One"));
         assertThat(commands.get(0).getUnits(), is(nullValue()));

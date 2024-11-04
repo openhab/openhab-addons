@@ -43,8 +43,7 @@ public class TPLinkSmartHomeActions implements ThingActions, ThingHandlerService
     private @Nullable SmartHomeHandler handler;
 
     @RuleAction(label = "@text/actions.tplinksmarthome.send.label", description = "@text/actions.tplinksmarthome.send.description")
-    @ActionOutput(name = "response", label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String")
-    public String send(
+    public @ActionOutput(label = "@text/actions.tplinksmarthome.send.response.label", description = "@text/actions.tplinksmarthome.send.response.description", type = "java.lang.String") String send(
             @ActionInput(name = "command", label = "@text/actions.tplinksmarthome.send.command.label", description = "@text/actions.tplinksmarthome.send.command.description", type = "java.lang.String", required = true) final String command)
             throws IOException {
         if (handler instanceof SmartHomeHandler) {

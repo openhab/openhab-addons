@@ -580,7 +580,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("timer_started_at")
             public Double timerStartedAt;
             @SerializedName("timer_duration")
-            public Integer timerDuration;
+            public Double timerDuration;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -704,6 +704,16 @@ public class Shelly2ApiJsonDTO {
 
             public static class Shelly2DeviceStatusEmData {
                 public Integer id;
+
+                @SerializedName("a_total_act_energy")
+                public Double aTotal;
+                @SerializedName("b_total_act_energy")
+                public Double bTotal;
+                @SerializedName("c_total_act_energy")
+                public Double cTotal;
+
+                @SerializedName("total_act")
+                public Double totalKWH;
                 public String[] errors;
             }
 
@@ -855,7 +865,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("timer_started_at")
         public Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Integer timerDuration;
+        public Double timerDuration;
         public Double apower;
         public Double voltage;
         public Double current;
@@ -872,7 +882,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("timer_started_at")
         public Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Integer timerDuration;
+        public Double timerDuration;
         public Double apower;
         public Double voltage;
         public Double current;

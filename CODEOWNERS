@@ -50,6 +50,7 @@
 /bundles/org.openhab.binding.bluetooth.generic/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.govee/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.grundfosalpha/ @tisoft
+/bundles/org.openhab.binding.bluetooth.hdpowerview/ @andrewfg
 /bundles/org.openhab.binding.bluetooth.radoneye/ @petero-dk
 /bundles/org.openhab.binding.bluetooth.roaming/ @cpmeister
 /bundles/org.openhab.binding.bluetooth.ruuvitag/ @ssalonen
@@ -95,7 +96,6 @@
 /bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
 /bundles/org.openhab.binding.ekey/ @hmerk
-/bundles/org.openhab.binding.electroluxair/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
 /bundles/org.openhab.binding.emotiva/ @espenaf
@@ -104,6 +104,7 @@
 /bundles/org.openhab.binding.enigma2/ @gdolfen
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enphase/ @Hilbrand
+/bundles/org.openhab.binding.entsoe/ @jmelhus
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.ephemeris/ @clinique
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
@@ -113,6 +114,7 @@
 /bundles/org.openhab.binding.exec/ @kgoderis
 /bundles/org.openhab.binding.feed/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.feican/ @Hilbrand
+/bundles/org.openhab.binding.fenecon/ @nixoso
 /bundles/org.openhab.binding.fineoffsetweatherstation/ @Andy2003
 /bundles/org.openhab.binding.flicbutton/ @pfink
 /bundles/org.openhab.binding.fmiweather/ @ssalonen
@@ -154,7 +156,7 @@
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
-/bundles/org.openhab.binding.http/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.http/ @J-N-K
 /bundles/org.openhab.binding.hue/ @cweitkamp @andrewfg
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
@@ -163,7 +165,7 @@
 /bundles/org.openhab.binding.icalendar/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.icloud/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.ihc/ @paulianttila
-/bundles/org.openhab.binding.insteon/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.insteon/ @jsetton
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.iotawatt/ @PRosenb
 /bundles/org.openhab.binding.ipcamera/ @Skinah
@@ -210,8 +212,8 @@
 /bundles/org.openhab.binding.mecmeter/ @kaikreuzer
 /bundles/org.openhab.binding.melcloud/ @lucacalcaterra @paulianttila @thewiep
 /bundles/org.openhab.binding.mercedesme/ @weymann
-/bundles/org.openhab.binding.meteoalerte/ @clinique
 /bundles/org.openhab.binding.meteoblue/ @9037568
+/bundles/org.openhab.binding.meteofrance/ @clinique
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.mffan/ @mark-brooks-180
 /bundles/org.openhab.binding.miele/ @kgoderis @jlaur
@@ -234,6 +236,7 @@
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
+/bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
 /bundles/org.openhab.binding.mqtt.generic/ @ccutrer
 /bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
@@ -251,7 +254,6 @@
 /bundles/org.openhab.binding.network/ @mettke
 /bundles/org.openhab.binding.networkupstools/ @Hilbrand
 /bundles/org.openhab.binding.nibeheatpump/ @paulianttila
-/bundles/org.openhab.binding.nibeuplink/ @alexf2015
 /bundles/org.openhab.binding.nikobus/ @crnjan
 /bundles/org.openhab.binding.nikohomecontrol/ @mherwege
 /bundles/org.openhab.binding.nobohub/ @espenaf
@@ -359,6 +361,7 @@
 /bundles/org.openhab.binding.speedtest/ @MikeTheTux
 /bundles/org.openhab.binding.spotify/ @Hilbrand
 /bundles/org.openhab.binding.squeezebox/ @digitaldan @mhilbush
+/bundles/org.openhab.binding.sunsynk/ @leeC77
 /bundles/org.openhab.binding.surepetcare/ @renescherer @HerzScheisse
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @mherwege
@@ -395,6 +398,7 @@
 /bundles/org.openhab.binding.verisure/ @jannegpriv
 /bundles/org.openhab.binding.vesync/ @dag81
 /bundles/org.openhab.binding.vigicrues/ @clinique
+/bundles/org.openhab.binding.visualcrossing/ @magx2
 /bundles/org.openhab.binding.vitotronic/ @steand
 /bundles/org.openhab.binding.vizio/ @mlobstein
 /bundles/org.openhab.binding.volvooncall/ @Jamstah
@@ -433,6 +437,7 @@
 /bundles/org.openhab.persistence.mapdb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mongodb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.basicprofiles/ @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314
