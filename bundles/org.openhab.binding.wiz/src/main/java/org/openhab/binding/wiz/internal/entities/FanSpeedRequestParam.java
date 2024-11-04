@@ -17,24 +17,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.Expose;
 
 /**
- * This POJO represents Fan State Request Param
+ * This POJO represents Fan Speed Request Param
  *
- * @author Stefan Fussenegger - Initial Contribution
+ * @author Cody Cutrer - Initial Contribution
  */
 @NonNullByDefault
-public class FanStateRequestParam implements Param {
+public class FanSpeedRequestParam implements Param {
     @Expose(serialize = true, deserialize = true)
-    private boolean fanState; // true = 1, false = 0
+    private int fanSpeed; // 0-6
 
-    public FanStateRequestParam(boolean fanState) {
-        this.fanState = fanState;
+    public FanSpeedRequestParam(int fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 
-    public boolean getFanState() {
-        return fanState;
+    public int getFanSpeed() {
+        return fanSpeed;
     }
 
-    public void setFanState(boolean fanState) {
-        this.fanState = fanState;
+    public void setFanSpeed(int fanSpeed) {
+        this.fanSpeed = fanSpeed;
     }
 }

@@ -17,24 +17,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.Expose;
 
 /**
- * This POJO represents Fan State Request Param
+ * This POJO represents Fan Reverse Request Param
  *
- * @author Stefan Fussenegger - Initial Contribution
+ * @author Cody Cutrer - Initial Contribution
  */
 @NonNullByDefault
-public class FanStateRequestParam implements Param {
+public class FanReverseRequestParam implements Param {
     @Expose(serialize = true, deserialize = true)
-    private boolean fanState; // true = 1, false = 0
+    private boolean fanRevrs; // true = 1, false = 0
 
-    public FanStateRequestParam(boolean fanState) {
-        this.fanState = fanState;
+    public FanReverseRequestParam(boolean reverse) {
+        this.fanRevrs = reverse;
     }
 
-    public boolean getFanState() {
-        return fanState;
+    public boolean getReverse() {
+        return fanRevrs;
     }
 
-    public void setFanState(boolean fanState) {
-        this.fanState = fanState;
+    public void setReverse(boolean reverse) {
+        this.fanRevrs = reverse;
     }
 }

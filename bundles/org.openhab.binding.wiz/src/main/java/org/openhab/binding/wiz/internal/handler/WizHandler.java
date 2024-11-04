@@ -36,6 +36,9 @@ import org.openhab.binding.wiz.internal.config.WizDeviceConfiguration;
 import org.openhab.binding.wiz.internal.entities.ColorRequestParam;
 import org.openhab.binding.wiz.internal.entities.ColorTemperatureRequestParam;
 import org.openhab.binding.wiz.internal.entities.DimmingRequestParam;
+import org.openhab.binding.wiz.internal.entities.FanModeRequestParam;
+import org.openhab.binding.wiz.internal.entities.FanReverseRequestParam;
+import org.openhab.binding.wiz.internal.entities.FanSpeedRequestParam;
 import org.openhab.binding.wiz.internal.entities.FanStateRequestParam;
 import org.openhab.binding.wiz.internal.entities.ModelConfigResult;
 import org.openhab.binding.wiz.internal.entities.Param;
@@ -225,13 +228,19 @@ public class WizHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_MODE:
-                // TODO: handle fan mode
+                if (command instanceof OnOffType onOffCommand) {
+                    handleFanModeCommand(onOffCommand);
+                }
                 break;
             case CHANNEL_SPEED:
-                // TODO: handle fan speed
+                if (command instanceof DecimalType numberCommand) {
+                    handleFanSpeedCommand(numberCommand);
+                }
                 break;
             case CHANNEL_REVERSE:
-                // TODO: handle fan direction
+                if (command instanceof OnOffType onOffCommand) {
+                    handleFanReverseCommand(onOffCommand);
+                }
                 break;
         }
     }
@@ -297,13 +306,28 @@ public class WizHandler extends BaseThingHandler {
     }
 
     private void handleOnOffCommand(OnOffType onOff) {
-        setPilotCommand(new StateRequestParam(onOff == OnOffType.ON ? true : false));
+        setPilotCommand(new StateRequestParam(onOff == OnOffType.ON));
         mostRecentState.state = onOff == OnOffType.ON;
     }
 
     private void handleFanOnOffCommand(OnOffType onOff) {
-        setPilotCommand(new FanStateRequestParam(onOff == OnOffType.ON ? 1 : 0));
-        mostRecentState.state = onOff == OnOffType.ON;
+        setPilotCommand(new FanStateRequestParam(onOff == OnOffType.ON));
+        mostRecentState.fanState = onOff == OnOffType.ON;
+    }
+
+    private void handleFanSpeedCommand(DecimalType speed) {
+        setPilotCommand(new FanSpeedRequestParam(speed.intValue()));
+        mostRecentState.fanSpeed = speed.intValue();
+    }
+
+    private void handleFanReverseCommand(OnOffType onOff) {
+        setPilotCommand(new FanReverseRequestParam(onOff == OnOffType.ON));
+        mostRecentState.fanRevrs = onOff == OnOffType.ON;
+    }
+
+    private void handleFanModeCommand(OnOffType onOff) {
+        setPilotCommand(new FanModeRequestParam(onOff == OnOffType.ON));
+        mostRecentState.fanMode = onOff == OnOffType.ON;
     }
 
     private void handleIncreaseDecreaseCommand(boolean isIncrease) {
@@ -609,10 +633,10 @@ public class WizHandler extends BaseThingHandler {
      * @param receivedParam The received {@link WizSyncState}
      */
     private void updateFanStatesFromParams(final WizSyncState receivedParam) {
-        updateFanState(CHANNEL_STATE, new DecimalType(receivedParam.fanState));
+        updateFanState(CHANNEL_STATE, OnOffType.from(receivedParam.fanState));
         updateFanState(CHANNEL_SPEED, new DecimalType(receivedParam.fanSpeed));
-        updateFanState(CHANNEL_REVERSE, new DecimalType(receivedParam.fanRevrs));
-        updateFanState(CHANNEL_MODE, new DecimalType(receivedParam.fanMode));
+        updateFanState(CHANNEL_REVERSE, OnOffType.from(receivedParam.fanRevrs));
+        updateFanState(CHANNEL_MODE, OnOffType.from(receivedParam.fanMode));
     }
 
     /**
