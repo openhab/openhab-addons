@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.chatgpt.internal.hli;
 
-import static org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIConstants.METADATA_KEY;
 import static org.openhab.binding.chatgpt.internal.hli.ChatGPTHLIConstants.SERVICE_ID;
 
 import java.io.IOException;
@@ -46,9 +45,6 @@ import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.Metadata;
-import org.openhab.core.items.MetadataKey;
-import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -58,6 +54,8 @@ import org.openhab.core.model.script.actions.Semantics;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.voice.text.HumanLanguageInterpreter;
 import org.osgi.service.component.annotations.Activate;
@@ -90,14 +88,11 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     private @Nullable ItemRegistry itemRegistry;
     private @Nullable EventPublisher eventPublisher;
     private @Nullable ChatGPTConfiguration config;
-    private MetadataRegistry metadataRegistry;
 
     @Activate
-    public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher,
-            @Reference MetadataRegistry metadataRegistry) {
+    public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher) {
         this.itemRegistry = itemRegistry;
         this.eventPublisher = eventPublisher;
-        this.metadataRegistry = metadataRegistry;
 
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/json/tools.json");
                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
@@ -190,11 +185,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public void activate() {
-    }
-
-    private @Nullable String getItemMetaData(Item item) {
-        final @Nullable Metadata metadata = this.metadataRegistry.get(new MetadataKey(METADATA_KEY, item.getUID()));
-        return metadata.getValue();
     }
 
     private String processChatResponse(@Nullable String response) {
@@ -363,6 +353,12 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             openaiItems.forEach(item -> {
                 String location = "";
                 String itemType = item.getType();
+                CommandDescription description = item.getCommandDescription();
+                List<CommandOption> options = new ArrayList<>();
+
+                if (description != null) {
+                    options = description.getCommandOptions();
+                }
 
                 content.append("name: \"").append(item.getName()).append("\", type: \"").append(itemType);
 
@@ -380,11 +376,13 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                     content.append("\", location: \"").append(location);
                 }
 
-                if ("String".equals(itemType)) {
-                    String metadata = getItemMetaData(item);
-                    if (metadata != null) {
-                        content.append("\", accepted modes: \"").append(metadata);
-                    }
+                if (!options.isEmpty()) {
+                    content.append("\", accepted commands: \"");
+                    options.forEach(option -> {
+                        content.append(option.getCommand()).append(", ");
+                    });
+                    content.delete(content.length() - 2, content.length());
+                    content.append("\"").append(System.lineSeparator());
                 }
 
                 content.append("\", description: \"").append(item.getLabel()).append("\", state: \"")

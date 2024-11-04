@@ -21,5 +21,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class ChatGPTHLIConstants {
 
     public static final String SERVICE_ID = "chatgpthli";
-    public static final String METADATA_KEY = "am";
 }
