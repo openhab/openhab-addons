@@ -60,14 +60,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link OauthLgEmpAuthenticator} main service to authenticate against LG Emp Server via Oauth
+ * The {@link LGThinqOauthEmpAuthenticator} main service to authenticate against LG Emp Server via Oauth
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class OauthLgEmpAuthenticator {
+public class LGThinqOauthEmpAuthenticator {
 
-    private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
+    private static final Logger logger = LoggerFactory.getLogger(LGThinqOauthEmpAuthenticator.class);
     private static final Map<String, String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -78,7 +78,7 @@ public class OauthLgEmpAuthenticator {
 
     private final HttpClient httpClient;
 
-    public OauthLgEmpAuthenticator(HttpClient httpClient) {
+    public LGThinqOauthEmpAuthenticator(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
@@ -155,11 +155,10 @@ public class OauthLgEmpAuthenticator {
                 username));
         RestResult resp = RestUtils.postCall(httpClient, preLoginUrl, headers, formData);
         if (resp == null) {
-            logger.error("Error preLogin into account. Null data returned");
             throw new IllegalStateException("Error login into account. Null data returned");
         } else if (resp.getStatusCode() != 200) {
-            logger.error("Error preLogin into account. The reason is:{}", resp.getJsonResponse());
-            throw new IllegalStateException(String.format("Error login into account:%s", resp.getJsonResponse()));
+            throw new IllegalStateException(
+                    String.format("Error preLogin into account: The reason is: %s", resp.getJsonResponse()));
         }
 
         Map<String, String> preLoginResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
@@ -187,11 +186,10 @@ public class OauthLgEmpAuthenticator {
                 + URLEncoder.encode(preLoginResult.username(), StandardCharsets.UTF_8);
         RestResult resp = RestUtils.postCall(httpClient, loginUrl, headers, formData);
         if (resp == null) {
-            logger.error("Error login into account. Null data returned");
             throw new IllegalStateException("Error loggin into acccount. Null data returned");
         } else if (resp.getStatusCode() != 200) {
-            logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
-            throw new IllegalStateException(String.format("Error login into account:%s", resp.getJsonResponse()));
+            throw new IllegalStateException(
+                    String.format("Error login into account. The reason is: %s", resp.getJsonResponse()));
         }
         Map<String, Object> loginResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
@@ -224,8 +222,8 @@ public class OauthLgEmpAuthenticator {
 
         RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, oauthSearchKeyQueryParams);
         if (resp.getStatusCode() != 200) {
-            logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
-            throw new IllegalStateException(String.format("Error loggin into acccount:%s", resp.getJsonResponse()));
+            throw new IllegalStateException(
+                    String.format("Error loggin into acccount. The reason is:%s", resp.getJsonResponse()));
         }
         Map<String, String> secretResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
@@ -289,8 +287,6 @@ public class OauthLgEmpAuthenticator {
         Map<String, Object> result = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
         });
         if (resp.getStatusCode() != 200) {
-            logger.error("LG API returned error when trying to get user account information. The reason is:{}",
-                    resp.getJsonResponse());
             throw new IllegalStateException(
                     String.format("LG API returned error when trying to get user account information. The reason is:%s",
                             resp.getJsonResponse()));
@@ -335,9 +331,9 @@ public class OauthLgEmpAuthenticator {
             throw new IllegalStateException("Error getting oauth token. Null data returned");
         }
         if (resp.getStatusCode() != 200) {
-            logger.error("Error getting oauth token. HTTP Status Code is:{}, The reason is:{}", resp.getStatusCode(),
-                    resp.getJsonResponse());
-            throw new IllegalStateException(String.format("Error getting oauth token:%s", resp.getJsonResponse()));
+            throw new IllegalStateException(
+                    String.format("Error getting oauth token. HTTP Status Code is:%s, The reason is:%s",
+                            resp.getStatusCode(), resp.getJsonResponse()));
         } else {
             tokenResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
             });
@@ -362,13 +358,12 @@ public class OauthLgEmpAuthenticator {
             throws IOException, RefreshTokenException {
         Map<String, String> tokenResult;
         if (resp == null) {
-            logger.error("Error getting oauth token. Null data returned");
             throw new RefreshTokenException("Error getting oauth token. Null data returned");
         }
         if (resp.getStatusCode() != 200) {
-            logger.error("Error getting oauth token. HTTP Status Code is:{}, The reason is:{}", resp.getStatusCode(),
-                    resp.getJsonResponse());
-            throw new RefreshTokenException(String.format("Error getting oauth token:%s", resp.getJsonResponse()));
+            throw new RefreshTokenException(
+                    String.format("Error getting oauth token. HTTP Status Code is:%s, The reason is:%s",
+                            resp.getStatusCode(), resp.getJsonResponse()));
         } else {
             tokenResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
             });

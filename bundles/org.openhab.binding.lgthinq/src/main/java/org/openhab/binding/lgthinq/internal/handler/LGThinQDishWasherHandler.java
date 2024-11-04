@@ -157,7 +157,7 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     protected void processCommand(AsyncCommandParams params) {
-        logger.error("Command {} to the channel {} not supported. Ignored.", params.command, params.channelUID);
+        logger.warn("Command {} to the channel {} not supported. Ignored.", params.command, params.channelUID);
     }
 
     @Override

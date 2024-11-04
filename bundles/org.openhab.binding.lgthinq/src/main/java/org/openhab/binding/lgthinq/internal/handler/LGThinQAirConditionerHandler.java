@@ -229,7 +229,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                         maxTempConstraint = shot.getHpWaterTempHeatMax();
                     }
                 } else {
-                    logger.error("Invalid value received by HP snapshot fo the air/water switch property: {}",
+                    logger.warn("Invalid value received by HP snapshot for the air/water switch property: {}",
                             shot.getHpAirWaterTempSwitch());
                 }
                 updateState(minTempChannelUID, new DecimalType(BigDecimal.valueOf(minTempConstraint)));
@@ -431,7 +431,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 // analise temperature constraints
                 if (targetTemp > maxTempConstraint || targetTemp < minTempConstraint) {
                     // values out of range
-                    logger.error("Target Temperature: {} is out of range: {} - {}. Ignoring command", targetTemp,
+                    logger.warn("Target Temperature: {} is out of range: {} - {}. Ignoring command", targetTemp,
                             minTempConstraint, maxTempConstraint);
                     break;
                 }
@@ -443,7 +443,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 break;
             }
             default: {
-                logger.error("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }
         }
     }

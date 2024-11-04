@@ -96,7 +96,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
             ThingUID thingUID = getThingUID(device);
             thingRemoved(thingUID);
         } catch (LGThinqException e) {
-            logger.error("Error getting Thing UID");
+            logger.warn("Error getting Thing UID");
         }
     }
 

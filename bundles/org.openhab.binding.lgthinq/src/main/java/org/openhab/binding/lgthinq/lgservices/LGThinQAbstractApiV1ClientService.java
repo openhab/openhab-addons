@@ -146,16 +146,9 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         }
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                if (logger.isDebugEnabled()) {
-                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}\n {}",
-                            resp.getStatusCode(), resp.getJsonResponse(), Thread.currentThread().getStackTrace());
-                } else {
-                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
-                            resp.getStatusCode(), resp.getJsonResponse());
-                }
+                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(),
+                        resp.getJsonResponse());
             } else {
-                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
-                        resp.getStatusCode(), resp.getJsonResponse());
                 throw new LGThinqApiException(
                         String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s",
                                 resp.getStatusCode(), resp.getJsonResponse()));
@@ -178,8 +171,6 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
                         // Disconnected Device
                         throw new LGThinqDeviceV1OfflineException("Device is offline. No data available");
                     }
-                    logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
-                            getErrorCodeMessage(code));
                     throw new LGThinqApiException(String
                             .format("Status error executing endpoint. resultCode must be 0000, but was:%s", code));
                 }
@@ -197,7 +188,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
      * @param cmdDef command definition with template of the payload and data (binary or not)
      * @param snapData snapshot data with features to be set in the device
      * @return return the command structure.
-     * @throws JsonProcessingException
+     * @throws JsonProcessingException - unmarshall error.
      */
     protected Map<String, Object> prepareCommandV1(CommandDefinition cmdDef, Map<String, Object> snapData)
             throws JsonProcessingException {

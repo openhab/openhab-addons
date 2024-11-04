@@ -334,7 +334,7 @@ public class LGThinQWasherDryerHandler
         }
         String selectedCourse = getItemLinkedValue(remoteStartCourseChannelUID);
         if (selectedCourse == null) {
-            logger.error("Remote Start Channel must be linked to proceed with remote start.");
+            logger.warn("Remote Start Channel must be linked to proceed with remote start.");
             return Collections.emptyMap();
         }
         WasherDryerCapability cap = getCapabilities();
@@ -421,7 +421,7 @@ public class LGThinQWasherDryerHandler
                 break;
             }
             default: {
-                logger.error("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }
         }
     }

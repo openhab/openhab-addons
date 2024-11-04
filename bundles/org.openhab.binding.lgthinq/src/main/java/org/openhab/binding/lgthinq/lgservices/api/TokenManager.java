@@ -46,12 +46,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
     private static final Logger logger = LoggerFactory.getLogger(TokenManager.class);
-    private final OauthLgEmpAuthenticator oAuthAuthenticator;
+    private final LGThinqOauthEmpAuthenticator authenticator;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final Map<String, TokenResult> tokenCached = new ConcurrentHashMap<>();
 
     public TokenManager(HttpClient httpClient) {
-        oAuthAuthenticator = new OauthLgEmpAuthenticator(httpClient);
+        authenticator = new LGThinqOauthEmpAuthenticator(httpClient);
     }
 
     public boolean isTokenExpired(TokenResult token) {
@@ -64,7 +64,7 @@ public class TokenManager {
 
     public TokenResult refreshToken(String bridgeName, TokenResult currentToken) throws RefreshTokenException {
         try {
-            TokenResult token = oAuthAuthenticator.doRefreshToken(currentToken);
+            TokenResult token = authenticator.doRefreshToken(currentToken);
             objectMapper.writeValue(new File(getConfigDataFileName(bridgeName)), token);
             return token;
         } catch (IOException e) {
@@ -91,38 +91,35 @@ public class TokenManager {
             String password, String alternativeGtwServer)
             throws LGThinqGatewayException, PreLoginException, AccountLoginException, TokenException, IOException {
         LGThinqGateway gw;
-        OauthLgEmpAuthenticator.PreLoginResult preLogin;
-        OauthLgEmpAuthenticator.LoginAccountResult accountLogin;
+        LGThinqOauthEmpAuthenticator.PreLoginResult preLogin;
+        LGThinqOauthEmpAuthenticator.LoginAccountResult accountLogin;
         TokenResult token;
         UserInfo userInfo;
         try {
-            gw = oAuthAuthenticator.discoverGatewayConfiguration(getGatewayUrl(alternativeGtwServer), language, country,
+            gw = authenticator.discoverGatewayConfiguration(getGatewayUrl(alternativeGtwServer), language, country,
                     alternativeGtwServer);
         } catch (Exception ex) {
-            throw new LGThinqGatewayException(
-                    "Error trying to discovery the LG Gateway Setting for the region informed", ex);
+            throw new LGThinqGatewayException("Error trying to discover the LG Gateway Setting for the region informed",
+                    ex);
         }
 
         try {
-            preLogin = oAuthAuthenticator.preLoginUser(gw, username, password);
+            preLogin = authenticator.preLoginUser(gw, username, password);
         } catch (Exception ex) {
-            logger.error("Error pre-login with gateway: {}", gw);
             throw new PreLoginException("Error doing pre-login of the user in the Emp LG Server", ex);
         }
         try {
-            accountLogin = oAuthAuthenticator.loginUser(gw, preLogin);
+            accountLogin = authenticator.loginUser(gw, preLogin);
         } catch (Exception ex) {
-            logger.error("Error logging with gateway: {}", gw);
             throw new AccountLoginException("Error doing user's account login on the Emp LG Server", ex);
         }
         try {
-            token = oAuthAuthenticator.getToken(gw, accountLogin);
+            token = authenticator.getToken(gw, accountLogin);
         } catch (Exception ex) {
-            logger.error("Error getting token with gateway: {}", gw);
             throw new TokenException("Error getting Token", ex);
         }
         try {
-            userInfo = oAuthAuthenticator.getUserInfo(token);
+            userInfo = authenticator.getUserInfo(token);
             token.setUserInfo(userInfo);
             token.setGatewayInfo(gw);
         } catch (Exception ex) {

@@ -174,7 +174,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 // force update states after first snapshot fetched to fit changes in temperature unit
                 updateChannelDynStateDescription();
             } catch (Exception ex) {
-                logger.error("Error updating dynamic state description", ex);
+                logger.error("Unexpected error updating dynamic state description.", ex);
             }
         }
     }
@@ -411,7 +411,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 break;
             }
             default: {
-                logger.error("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
+                logger.warn("Command {} to the channel {} not supported. Ignored.", command, params.channelUID);
             }
         }
     }

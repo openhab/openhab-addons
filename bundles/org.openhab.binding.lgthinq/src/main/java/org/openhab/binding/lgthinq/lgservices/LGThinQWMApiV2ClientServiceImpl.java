@@ -44,7 +44,6 @@ public class LGThinQWMApiV2ClientServiceImpl
 
     @Override
     protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
-        // there's no before settings to send command
         return false;
     }
 

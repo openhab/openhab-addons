@@ -109,8 +109,6 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                 }
                 return Collections.emptyMap();
             } else {
-                logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
-                        resp.getStatusCode(), resp.getJsonResponse());
                 throw new LGThinqApiException(
                         String.format("Error returned by LG Server API. HTTP Status: %s. The reason is: %s",
                                 resp.getStatusCode(), resp.getJsonResponse()));
@@ -121,11 +119,9 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
                 });
                 String code = (String) metaResult.get("resultCode");
                 if (!ResultCodes.OK.containsResultCode(String.valueOf(metaResult.get("resultCode")))) {
-                    logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
-                            getErrorCodeMessage(code));
                     throw new LGThinqApiException(
-                            String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
-                                    metaResult.get("resultCode")));
+                            String.format("LG API report error processing the request -> resultCode=[%s], message=[%s]",
+                                    code, getErrorCodeMessage(code)));
                 }
                 return metaResult;
             } catch (JsonProcessingException e) {

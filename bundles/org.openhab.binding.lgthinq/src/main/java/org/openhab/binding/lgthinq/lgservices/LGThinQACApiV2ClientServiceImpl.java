@@ -175,11 +175,6 @@ public class LGThinQACApiV2ClientServiceImpl extends
     }
 
     @Override
-    public void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException {
-        super.initializeDevice(bridgeName, deviceId);
-    }
-
-    @Override
     protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
         try {
             RestResult resp = sendCommand(bridgeName, deviceId, "control", "allEventEnable", "Set",

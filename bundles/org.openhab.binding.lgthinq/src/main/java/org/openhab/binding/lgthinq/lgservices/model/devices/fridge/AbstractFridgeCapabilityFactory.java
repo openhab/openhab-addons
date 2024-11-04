@@ -53,8 +53,7 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
         FridgeCapability frCap = super.create(rootNode);
         JsonNode node = mapper.valueToTree(rootNode);
         if (node.isNull()) {
-            logger.error("Can't parse json capability for Fridge. The payload has been ignored");
-            logger.debug("payload {}", rootNode);
+            logger.debug("Can't parse json capability for Fridge. The payload has been ignored. Payload:{}", rootNode);
             throw new LGThinqException("Can't parse json capability for Fridge. The payload has been ignored");
         }
 

@@ -139,4 +139,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_WM_REMOTE_START_TEMP = "rs-temperature-level";
 
     // ==============================================================================
+    // DIGEST CONSTANTS
+    public static final String MESSAGE_DIGEST_ALGORITHM = "SHA-512";
+    public static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 }

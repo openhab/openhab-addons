@@ -111,7 +111,7 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
                     Objects.requireNonNull(thinqChannelProvider), Objects.requireNonNull(thinqChannelGroupProvider),
                     Objects.requireNonNull(itemChannelLinkRegistry), httpClientFactory);
         }
-        logger.error("Thing not supported by this Factory: {}", thingTypeUID.getId());
+        logger.warn("Thing not supported by this Factory: {}", thingTypeUID.getId());
         return null;
     }
 

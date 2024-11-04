@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import java.io.IOException;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.HMAC_SHA1_ALGORITHM;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.MESSAGE_DIGEST_ALGORITHM;
+
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -51,14 +53,13 @@ import org.slf4j.LoggerFactory;
 public class RestUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
-    private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 
     public static String getPreLoginEncPwd(String pwdToEnc) {
         MessageDigest digest;
         try {
-            digest = MessageDigest.getInstance("SHA-512");
+            digest = MessageDigest.getInstance(MESSAGE_DIGEST_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
-            logger.error("Definitively, it is unexpected.", e);
+            logger.warn("The required algorithm is not available.", e);
             throw new IllegalStateException("Unexpected error. SHA-512 algorithm must exists in JDK distribution", e);
         }
         digest.reset();
@@ -76,10 +77,10 @@ public class RestUtils {
             mac.init(signingKey);
             return Base64.getEncoder().encode(mac.doFinal(messageSign.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
-            logger.error("Unexpected error. SHA1 algorithm must exists in JDK distribution.", e);
+            logger.debug("Unexpected error. SHA1 algorithm must exists in JDK distribution.", e);
             throw new IllegalStateException("Unexpected error. SHA1 algorithm must exists in JDK distribution", e);
         } catch (InvalidKeyException e) {
-            logger.error("Unexpected error.", e);
+            logger.debug("Unexpected error.", e);
             throw new IllegalStateException("Unexpected error.", e);
         }
     }
@@ -116,20 +117,20 @@ public class RestUtils {
 
             return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.error("Exception occurred during GET execution: {}", e.getMessage(), e);
+            logger.debug("Exception occurred during GET execution: {}", e.getMessage(), e);
             throw new CommunicationException(e);
         }
     }
 
     @Nullable
     public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
-            String jsonData) throws IOException {
+            String jsonData) {
         return postCall(httpClient, encodedUrl, headers, new StringContentProvider(jsonData));
     }
 
     @Nullable
     public static RestResult postCall(HttpClient httpClient, String encodedUrl, Map<String, String> headers,
-            Map<String, String> formParams) throws IOException {
+            Map<String, String> formParams) {
         Fields fields = new Fields();
         formParams.forEach(fields::put);
         return postCall(httpClient, encodedUrl, headers, new FormContentProvider(fields));
@@ -143,9 +144,7 @@ public class RestUtils {
             Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider).timeout(10,
                     TimeUnit.SECONDS);
             headers.forEach(request::header);
-            if (logger.isTraceEnabled()) {
-                logger.trace("POST request: {}", request.getURI());
-            }
+            logger.debug("POST request to URI: {}", request.getURI());
 
             ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
 
@@ -153,20 +152,15 @@ public class RestUtils {
 
             return new RestResult(response.getContentAsString(), response.getStatus());
         } catch (TimeoutException e) {
-            if (logger.isDebugEnabled()) {
-                logger.warn("Timeout reading post call result from LG API", e);
-            } else {
-                logger.warn("Timeout reading post call result from LG API");
-            }
-            // In SocketTimeout cases I'm considering that I have no response on time. Then, I return null data
+            logger.warn("Timeout reading post call result from LG API", e); // In SocketTimeout cases I'm considering
+                                                                            // that I have no response on time. Then, I
+                                                                            // return null data
             // forcing caller to retry.
             return null;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.error("InterruptedException occurred during POST execution: {}", e.getMessage(), e);
             throw new CommunicationException(e);
         } catch (ExecutionException e) {
-            logger.error("ExecutionException occurred during POST execution: {}", e.getMessage(), e);
             throw new CommunicationException(e);
         }
     }

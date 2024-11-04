@@ -151,7 +151,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 }
             }
         } catch (IOException e) {
-            logger.error("Error reading resource from URI: {}", uri, e);
             throw new LGThinqApiException("Error reading IO interface", e);
         }
         return regFile;
@@ -201,16 +200,13 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 });
                 resultCode = respMap.get("resultCode");
                 if (resultCode != null) {
-                    LGThinQAbstractApiClientService.logger.error(
-                            "Error calling device settings from LG Server API. The code is: {} and The reason is: {}",
-                            resultCode, ResultCodes.fromCode(resultCode));
-                    throw new LGThinqApiException("Error calling device settings from LG Server API.");
+                    throw new LGThinqApiException(String.format(
+                            "Error calling device settings from LG Server API. The code is: %s and The reason is: %s",
+                            resultCode, ResultCodes.fromCode(resultCode)));
                 }
             } catch (JsonProcessingException e) {
                 // This exception doesn't matter, it's because response is not in json format. Logging raw response.
             }
-            LGThinQAbstractApiClientService.logger.error(
-                    "Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
             throw new LGThinqApiException(String.format(
                     "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));
 
@@ -220,12 +216,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 });
                 String code = Objects.requireNonNullElse((String) deviceSettings.get("resultCode"), "");
                 if (!ResultCodes.OK.containsResultCode(code)) {
-                    LGThinQAbstractApiClientService.logger.error(
-                            "LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
-                            getErrorCodeMessage(code));
-                    throw new LGThinqApiException(
-                            String.format("Status error getting device list. resultCode must be 0000, but was:%s",
-                                    deviceSettings.get("resultCode")));
+                    throw new LGThinqApiException(String.format(
+                            "LG API report error processing the request -> resultCode=[{%s], message=[%s]", code,
+                            getErrorCodeMessage(code)));
                 }
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
@@ -245,21 +238,18 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                         resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                 return Collections.emptyList();
             }
-            logger.error("Error calling device list from LG Server API. HTTP Status: {}. The reason is: {}",
-                    resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
-            throw new LGThinqApiException(String
-                    .format("Error calling device list from LG Server API. The reason is: %s", resp.getJsonResponse()));
+            throw new LGThinqApiException(
+                    String.format("Error calling device list from LG Server API. HTTP Status: %s. The reason is: %s",
+                            resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse())));
         } else {
             try {
                 devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 String code = Objects.requireNonNullElse((String) devicesResult.get("resultCode"), "");
                 if (!ResultCodes.OK.containsResultCode(code)) {
-                    logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
-                            getErrorCodeMessage(code));
                     throw new LGThinqApiException(
-                            String.format("Status error getting device list. resultCode must be 0000, but was:%s",
-                                    devicesResult.get("resultCode")));
+                            String.format("LG API report error processing the request -> resultCode=[%s], message=[%s]",
+                                    code, getErrorCodeMessage(code)));
                 }
                 List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) Objects
                         .requireNonNull(devicesResult.get("result"), "Not expected null here")).get("item");
@@ -311,7 +301,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             shot.setOnline(false);
             return shot;
         } catch (Exception ex) {
-            logger.error("Unexpected Error. The default constructor of this Snapshot wasn't found", ex);
             throw new IllegalStateException("Unexpected Error. The default constructor of this Snapshot wasn't found",
                     ex);
         }
@@ -346,7 +335,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                             LGThinQBindingConstants.THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-datatrace.json",
                             deviceId)), workList);
                 } catch (IOException e) {
-                    logger.error("Error saving data trace", e);
+                    // Only debug since datatrace is a trace data.
+                    logger.debug("Unexpected error saving data trace", e);
                 }
             }
 
@@ -371,8 +361,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                     shot = (S) SnapshotBuilderFactory.getInstance().getBuilder(snapshotClass).createFromBinary(monData,
                             deviceCapability.getMonitoringBinaryProtocol(), deviceCapability);
                 } else {
-                    logger.error("Returned data format not supported: {}", deviceCapability.getMonitoringDataFormat());
-                    throw new LGThinqApiException("Returned data format not supported");
+                    throw new LGThinqApiException(String.format("Returned data format not supported: %s",
+                            deviceCapability.getMonitoringDataFormat()));
                 }
                 shot.setOnline("E".equals(workList.get("deviceState")));
             } catch (LGThinqUnmarshallException ex) {
@@ -390,13 +380,14 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
 
     @Override
     public void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException {
+        logger.debug("Initializing device [{}] from bridge [{}]", deviceId, bridgeName);
     }
 
     /**
      * Perform some routine before getting data device. Depending on the kind of the device, this is needed
      * to update or prepare some informations before go to get the data.
      *
-     * @return
+     * @return false if the device doesn't support pre-condition commands
      */
     protected abstract boolean beforeGetDataDevice(String bridgeName, String deviceId);
 
@@ -427,7 +418,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                             LGThinQBindingConstants.THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-datatrace.json",
                             deviceId)), deviceSettings);
                 } catch (IOException e) {
-                    logger.error("Error saving data trace", e);
+                    logger.debug("Error saving data trace", e);
                 }
             }
             if (snapMap == null) {

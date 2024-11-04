@@ -122,7 +122,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                     try {
                         tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
-                        logger.error("Error reading LGThinq TokenFile", e);
+                        logger.error("Unexpected error reading LGThinq TokenFile", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                 "@text/error.toke-file-corrupted");
                         return;
@@ -159,7 +159,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                 try {
                     doConnectedRun();
                 } catch (Exception e) {
-                    logger.error("Error getting device list from LG account", e);
+                    logger.error("Unexpected error getting device list from LG account", e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/error.lgapi-getting-devices");
                 }
@@ -317,7 +317,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
         if (f.isFile()) {
             // file exists. Delete it
             if (!f.delete()) {
-                logger.error("Error deleting file:{}", f.getAbsolutePath());
+                logger.error("Unexpected error deleting file:{}", f.getAbsolutePath());
             }
         }
         super.handleConfigurationUpdate(configurationParameters);

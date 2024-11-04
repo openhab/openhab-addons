@@ -75,10 +75,9 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
                 cap.setMonitoringBinaryProtocol(protocols);
             } else {
                 if (protocol.isMissingNode()) {
-                    logger.error("protocol node is missing in the capability descriptor for a binary monitoring");
+                    logger.warn("protocol node is missing in the capability descriptor for a binary monitoring");
                 } else {
-                    logger.error(
-                            "protocol node is not and array in the capability descriptor for a binary monitoring ");
+                    logger.warn("protocol node is not and array in the capability descriptor for a binary monitoring ");
                 }
             }
         }

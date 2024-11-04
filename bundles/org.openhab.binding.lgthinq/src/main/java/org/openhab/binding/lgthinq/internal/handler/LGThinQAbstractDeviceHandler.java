@@ -259,18 +259,21 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 // Ensure commands are send in a pipe per device.
                 commandBlockQueue.add(params);
             } catch (IllegalStateException ex) {
-                getLogger().error(
-                        "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command. Above the ThreadDump to analise the stuck");
-                getLogger().error("Status of the commandQueue: consumer: {}, size: {}",
+                getLogger().warn(
+                        "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command.");
+                getLogger().debug("Status of the commandQueue: consumer: {}, size: {}",
                         commandExecutorQueueJob == null || commandExecutorQueueJob.isDone() ? "OFF" : "ON",
                         commandBlockQueue.size());
-                ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-                ThreadInfo[] infos = bean.dumpAllThreads(true, true);
-                String message = "";
-                for (ThreadInfo i : infos) {
-                    message = String.format("%s\n%s", message, i.toString());
+                if (logger.isTraceEnabled()) {
+                    // logging the thread dump to analise possible stuck thread.
+                    ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+                    ThreadInfo[] infos = bean.dumpAllThreads(true, true);
+                    String message = "";
+                    for (ThreadInfo i : infos) {
+                        message = String.format("%s\n%s", message, i.toString());
+                    }
+                    logger.trace("{}", message);
                 }
-                logger.error("{}", message);
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device Command Queue is Busy");
             }
@@ -385,22 +388,14 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-device-id");
         }
-        // finally, start command queue, regardless of the thing state, as we can still try to send commands without
+        // finally, start command queue, regardless of the thing state, since we can still try to send commands without
         // property ONLINE (the successful result from command request can put the thing in ONLINE status).
         startCommandExecutorQueueJob();
         if (getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 getLgThinQAPIClientService().initializeDevice(bridgeId, getDeviceId());
             } catch (Exception e) {
-                if (logger.isDebugEnabled()) {
-                    logger.error(
-                            "Error initializing device {} from bridge {}. Is the device support pre-condition setup ?",
-                            thingId, bridgeId, e);
-                } else {
-                    logger.error(
-                            "Error initializing device {} from bridge {}. Is the device support pre-condition setup ?",
-                            getDeviceId(), bridgeId);
-                }
+                logger.warn("Error initializing the device {} from bridge {}.", thingId, bridgeId, e);
             }
             // force start state pooling if the device is ONLINE
             resetExtraInfoChannels();

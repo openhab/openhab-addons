@@ -18,9 +18,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 /**
  * The {@link JsonUtils}
  *
@@ -29,17 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class JsonUtils {
-    public static <T> T unmashallJson(String fileName) {
-        InputStream inputStream = JsonUtils.class.getResourceAsStream(fileName);
-        try {
-            return new ObjectMapper().readValue(inputStream, new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Unexpected error. It is not expected this behaviour since json test files must be present.");
-        }
-    }
-
     public static String loadJson(String fileName) {
         ClassLoader classLoader = JsonUtils.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
