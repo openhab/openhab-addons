@@ -320,8 +320,8 @@ public class RdsHandler extends BaseThingHandler {
                                 if (temp != null) {
                                     targetTemperature = temp.doubleValue();
                                 }
-                            } else if (command instanceof DecimalType decimal) {
-                                targetTemperature = decimal.doubleValue();
+                            } else if (command instanceof DecimalType decimalCommand) {
+                                targetTemperature = decimalCommand.doubleValue();
                             }
                             if (targetTemperature != Double.NaN) {
                                 points.setValue(apiKey, token, channel.clazz,
