@@ -19,6 +19,7 @@
 					<option value="pt-BR">Brazilian Portuguese</option>
 					<option value="it-IT">Italian</option>
 					<option value="de-LU">Luxembourg German</option>
+					<option value="nl-NL">Netherlands Dutch</option>
 					<option value="pl-PL">Polish</option>
 					<option value="pt-PT">Portugal Portuguese</option>
 					<option value="de-DE">German (Standard)</option>
@@ -36,6 +37,7 @@
 					<option value="BR">Brazil</option>
 					<option value="IT">Italy</option>
 					<option value="LU">Luxembourg</option>
+					<option value="NL">Netherlands</option>
 					<option value="PL">Poland</option>
 					<option value="PT">Portugal</option>
 					<option value="DE">Germany</option>
@@ -46,11 +48,11 @@
 			</parameter>
 			<parameter name="manualLanguage" type="text" required="false">
 				<label>Manual User Lang.</label>
-				<description>Fill this only if selected "Other" in the Language above</description>
+				<description>Fill this only if selected "Other" in the Language above. Example value: de-DE </description>
 			</parameter>
 			<parameter name="manualCountry" type="text" required="false">
 				<label>Manual User Country</label>
-				<description>Fill this only if selected "Other" in the Country above</description>
+				<description>Fill this only if selected "Other" in the Country above. Example value: "DE"</description>
 			</parameter>
 			<parameter name="username" type="text">
 				<label>Username</label>
