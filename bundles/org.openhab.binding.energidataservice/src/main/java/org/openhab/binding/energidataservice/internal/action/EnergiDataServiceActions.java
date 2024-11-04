@@ -66,7 +66,7 @@ public class EnergiDataServiceActions implements ThingActions {
     private @Nullable EnergiDataServiceHandler handler;
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", id = "getPrices1", visibility = Visibility.HIDDEN)
-    public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
+    public @ActionOutput(type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
         EnergiDataServiceHandler handler = this.handler;
         if (handler == null) {
             logger.warn("EnergiDataServiceActions ThingHandler is null.");
@@ -82,7 +82,7 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", id = "getPrices2", visibility = Visibility.HIDDEN)
-    public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices(
+    public @ActionOutput(type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices(
             @ActionInput(name = "priceComponents", label = "@text/action.get-prices.priceComponents.label", description = "@text/action.get-prices.priceComponents.description") @Nullable String priceComponents) {
         if (priceComponents == null) {
             logger.warn("Argument 'priceComponents' is null");
