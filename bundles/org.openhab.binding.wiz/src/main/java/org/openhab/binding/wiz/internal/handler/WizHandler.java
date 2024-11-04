@@ -764,7 +764,6 @@ public class WizHandler extends BaseThingHandler {
                 if (modelConfigResult != null && modelConfigResult.cctRange.length > 0) {
                     minColorTemp = Arrays.stream(modelConfigResult.cctRange).min().getAsInt();
                     maxColorTemp = Arrays.stream(modelConfigResult.cctRange).max().getAsInt();
-                    logger.warn("min temp: {} max temp: {}", minColorTemp, maxColorTemp);
                     StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
                             .withMinimum(BigDecimal.valueOf(minColorTemp)).withMaximum(BigDecimal.valueOf(maxColorTemp))
                             .withPattern("%.0f K").build().toStateDescription();
@@ -822,7 +821,7 @@ public class WizHandler extends BaseThingHandler {
     }
 
     private PercentType colorTempToPercent(int temp) {
-        return new PercentType(BigDecimal.valueOf((float) temp - minColorTemp / (maxColorTemp - minColorTemp) * 100));
+        return new PercentType(BigDecimal.valueOf(((float) temp - minColorTemp) / (maxColorTemp - minColorTemp) * 100));
     }
 
     // SETTERS AND GETTERS
