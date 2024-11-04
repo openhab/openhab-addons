@@ -144,7 +144,7 @@ public class RestUtils {
             Request request = httpClient.newRequest(encodedUrl).method("POST").content(contentProvider).timeout(10,
                     TimeUnit.SECONDS);
             headers.forEach(request::header);
-            logger.debug("POST request to URI: {}", request.getURI());
+            logger.trace("POST request to URI: {}", request.getURI());
 
             ContentResponse response = request.content(contentProvider).timeout(10, TimeUnit.SECONDS).send();
 
