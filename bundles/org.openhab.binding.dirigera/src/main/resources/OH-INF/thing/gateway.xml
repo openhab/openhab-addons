@@ -6,7 +6,7 @@
 
 	<bridge-type id="gateway">
 		<label>DIRIGERA Gateway</label>
-		<description>Ikea Gateway for smart products</description>
+		<description>IKEA Gateway for smart products</description>
 
 		<channels>
 			<channel id="custom-name" typeId="text">

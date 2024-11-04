@@ -14,9 +14,7 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -91,7 +88,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
 
-    // Used for unit tests
+    // Can be overwritten by Unit test for mocking API
     protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
@@ -118,6 +115,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private int deviceUpdateQueueSizePeak = 0;
     private Instant sunriseInstant = Instant.MAX;
     private Instant sunsetInstant = Instant.MIN;
+    private Instant peakRecognitionTime = Instant.MIN;
 
     public static long detectionTimeSeonds = 5;
 
@@ -161,7 +159,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void doInitialize() {
-        config = getConfigAs(DirigeraConfiguration.class); // get new config in case of previous update
+        config = getConfigAs(DirigeraConfiguration.class);
 
         // for discovery known device are stored in storage in order not to report them again and again through
         // DiscoveryService
@@ -252,29 +250,28 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
                 if (gatewayArray.isEmpty()) {
                     logger.warn("DIRIGERA HANDLER no Gateway found in model");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "@text/dirigera.gateway.status.no-gateway");
+                    return;
                 } else if (gatewayArray.length() > 1) {
                     logger.warn("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result",
                             gatewayArray.length());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                            "@text/dirigera.gateway.status.ambiguous-gateway");
+                    return;
                 } else {
                     logger.info("DIRIGERA HANDLER try found id {}", gatewayArray.getString(0));
                     Configuration configUpdate = editConfiguration();
                     String id = gatewayArray.getString(0);
                     configUpdate.put(PROPERTY_DEVICE_ID, id);
                     updateConfiguration(configUpdate);
-
+                    // get fresh config after update
+                    config = getConfigAs(DirigeraConfiguration.class);
                     // now we've ip, token and id so let's store the token
                     storeToken(token, true);
-
-                    // now edit properties with gateway data
-                    Map<String, Object> propertiesMap = houseModel.getPropertiesFor(id);
-                    Map<String, String> currentProperties = editProperties();
-                    propertiesMap.forEach((key, value) -> {
-                        currentProperties.put(key, value.toString());
-                    });
-                    updateProperties(currentProperties);
-
                 }
             }
+            updateProperties();
             // now start websocket an listen to changes
             logger.info("DIRIGERA HANDLER start websocket");
             websocket = Optional.of(new Websocket(this, httpClient));
@@ -309,9 +306,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         // todo clear storage
     }
 
+    private void updateProperties() {
+        Map<String, Object> propertiesMap = model().getPropertiesFor(config.id);
+        Map<String, String> currentProperties = editProperties();
+        propertiesMap.forEach((key, value) -> {
+            currentProperties.put(key, value.toString());
+        });
+        updateProperties(currentProperties);
+    }
+
     private String getTokenFromStorage() {
         logger.info("DIRIGERA HANDLER try to get token from storage");
-        config = getConfigAs(DirigeraConfiguration.class);
         if (!config.id.isBlank()) {
             JSONObject gatewayStorageJson = getStorageJson();
             if (gatewayStorageJson.has(PROPERTY_TOKEN)) {
@@ -332,7 +337,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER don't override current token {}", forceStore);
             return;
         }
-        config = getConfigAs(DirigeraConfiguration.class);
         if (!config.id.isBlank()) {
             JSONObject tokenStore = new JSONObject();
             tokenStore.put(PROPERTY_TOKEN, token);
@@ -362,7 +366,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private JSONObject getStorageJson() {
-        config = getConfigAs(DirigeraConfiguration.class);
         if (!config.id.isBlank()) {
             String gatewayStorageObject = storage.get(config.id);
             if (gatewayStorageObject != null) {
@@ -497,7 +500,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         synchronized (deviceModificationQueue) {
             if (deviceUpdateQueueSizePeak < deviceModificationQueue.size()) {
                 deviceUpdateQueueSizePeak = deviceModificationQueue.size();
-                logger.warn("DIRIGERA HANDLER Device update queue size peak {}", deviceUpdateQueueSizePeak);
+                logger.info("DIRIGERA HANDLER Peak device updates {}", deviceUpdateQueueSizePeak);
+                peakRecognitionTime = Instant.now();
             }
             if (!deviceModificationQueue.isEmpty()) {
                 deviceUpdate = deviceModificationQueue.remove(0);
@@ -515,6 +519,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     doDeleteDevice(deviceUpdate.handler, deviceUpdate.deviceId);
                     break;
             }
+        }
+        if (deviceModificationQueue.isEmpty() && !Instant.MIN.equals(peakRecognitionTime)) {
+            logger.info("DIRIGERA HANDLER Peak to zero time {} ms",
+                    Duration.between(peakRecognitionTime, Instant.now()).toMillis());
+            peakRecognitionTime = Instant.MIN;
         }
     }
 
@@ -630,6 +639,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+    @Override
     public boolean isKnownDevice(String id) {
         return knownDevices.contains(id);
     }
@@ -645,12 +659,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
+    public TimeZoneProvider getTimeZoneProvider() {
+        return timeZoneProvider;
+    }
+
+    @Override
     public String getIpAddress() {
         return config.ipAddress;
     }
 
     @Override
-    public boolean discoverEnabled() {
+    public boolean discoveryEnabled() {
         return config.discovery;
     }
 
@@ -670,7 +689,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             // then update all links
             deviceTree.forEach((id, handler) -> {
                 List<String> links = handler.getLinks();
-                if (links.size() > 0) {
+                if (!links.isEmpty()) {
                     logger.debug("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(), links.size());
                 }
                 links.forEach(link -> {
@@ -871,22 +890,5 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             return null;
         }
         return sunsetInstant.atZone(timeZoneProvider.getTimeZone());
-    }
-
-    @Override
-    public String getResourceFile(String fileName) {
-        try {
-            URL url = bundleContext.getBundle().getResource(fileName);
-            InputStream input = url.openStream();
-            try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
-                String result = scanner.hasNext() ? scanner.next() : "";
-                String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                scanner.close();
-                return resultReplaceAll;
-            }
-        } catch (Throwable t) {
-            logger.warn("Resource file failed {}", t.getMessage());
-        }
-        return "";
     }
 }

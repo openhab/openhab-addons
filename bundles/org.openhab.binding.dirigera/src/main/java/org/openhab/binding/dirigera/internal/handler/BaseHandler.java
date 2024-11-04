@@ -77,7 +77,7 @@ public abstract class BaseHandler extends BaseThingHandler {
 
     /*
      * hardlinks initialized with invalid links because the first update shall trigger a link update. If it's declared
-     * as empty no link update will be triggered. This is only necessary for startup phase.
+     * as empty no link update will be triggered. This is necessary for startup phase.
      */
     protected List<String> hardLinks = new ArrayList<>(Arrays.asList("undef"));
     protected List<String> softLinks = new ArrayList<>();
