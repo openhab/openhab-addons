@@ -70,6 +70,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.UnDefType;
@@ -103,6 +104,7 @@ public class WizHandler extends BaseThingHandler {
     private long latestOfflineRefresh = -1;
     private int requestId = 0;
     private final boolean isFan;
+    private final boolean isFanOnly;
     private int minColorTemp = MIN_COLOR_TEMPERATURE;
     private int maxColorTemp = MAX_COLOR_TEMPERATURE;
 
@@ -122,7 +124,9 @@ public class WizHandler extends BaseThingHandler {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.mostRecentState = new WizSyncState();
-        this.isFan = thing.getThingTypeUID().equals(THING_TYPE_CEILING_FAN);
+        this.isFan = thing.getThingTypeUID().equals(THING_TYPE_FAN)
+                || thing.getThingTypeUID().equals(THING_TYPE_FAN_WITH_DIMMABLE_BULB);
+        this.isFanOnly = thing.getThingTypeUID().equals(THING_TYPE_FAN);
         colorTempChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE_ABS);
         fullyInitialized = false;
     }
@@ -146,7 +150,15 @@ public class WizHandler extends BaseThingHandler {
             return;
         }
 
-        switch (channelUID.getId()) {
+        if (isFanOnly || (isFan && CHANNEL_GROUP_FAN.equals(channelUID.getGroupId()))) {
+            handleFanCommand(channelUID.getIdWithoutGroup(), command);
+        } else if (!isFan || (isFan && CHANNEL_GROUP_LIGHT.equals(channelUID.getGroupId()))) {
+            handleLightCommand(channelUID.getIdWithoutGroup(), command);
+        }
+    }
+
+    private void handleLightCommand(final String channelId, final Command command) {
+        switch (channelId) {
             case CHANNEL_COLOR:
                 if (command instanceof HSBType hsbCommand) {
                     handleHSBCommand(hsbCommand);
@@ -158,7 +170,6 @@ public class WizHandler extends BaseThingHandler {
                     handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
-
             case CHANNEL_TEMPERATURE:
                 if (command instanceof PercentType percentCommand) {
                     handleTemperatureCommand(percentToColorTemp(percentCommand));
@@ -169,7 +180,6 @@ public class WizHandler extends BaseThingHandler {
                     handleIncreaseDecreaseTemperatureCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
-
             case CHANNEL_TEMPERATURE_ABS:
                 QuantityType<?> kelvinQt;
                 if (command instanceof QuantityType<?> commandQt
@@ -178,7 +188,6 @@ public class WizHandler extends BaseThingHandler {
                 } else {
                     handleTemperatureCommand(Integer.valueOf(command.toString()));
                 }
-
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType percentCommand) {
                     handlePercentCommand(percentCommand);
@@ -188,24 +197,15 @@ public class WizHandler extends BaseThingHandler {
                     handleIncreaseDecreaseCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
-
             case CHANNEL_STATE:
                 if (command instanceof OnOffType onOffCommand) {
-                    if (isFan) {
-                        handleFanOnOffCommand(onOffCommand);
-                    } else {
-                        handleOnOffCommand(onOffCommand);
-                    }
+                    handleOnOffCommand(onOffCommand);
                 }
                 break;
-
             case CHANNEL_MODE:
-                // TODO: handle fan mode
                 handleLightModeCommand(command);
                 break;
-
             case CHANNEL_SPEED:
-                // TODO: handle fan speed
                 if (command instanceof PercentType percentCommand) {
                     handleSpeedCommand(percentCommand);
                 } else if (command instanceof OnOffType onOffCommand) {
@@ -214,7 +214,22 @@ public class WizHandler extends BaseThingHandler {
                     handleIncreaseDecreaseSpeedCommand(command == IncreaseDecreaseType.INCREASE);
                 }
                 break;
+        }
+    }
 
+    private void handleFanCommand(final String channelId, final Command command) {
+        switch (channelId) {
+            case CHANNEL_STATE:
+                if (command instanceof OnOffType onOffCommand) {
+                    handleFanOnOffCommand(onOffCommand);
+                }
+                break;
+            case CHANNEL_MODE:
+                // TODO: handle fan mode
+                break;
+            case CHANNEL_SPEED:
+                // TODO: handle fan speed
+                break;
             case CHANNEL_REVERSE:
                 // TODO: handle fan direction
                 break;
@@ -517,7 +532,8 @@ public class WizHandler extends BaseThingHandler {
 
         if (isFan) {
             updateFanStatesFromParams(receivedParam);
-        } else {
+        }
+        if (!isFanOnly) {
             updateLightStatesFromParams(receivedParam);
         }
 
@@ -535,7 +551,7 @@ public class WizHandler extends BaseThingHandler {
             } else {
                 strength = 4;
             }
-            updateState(CHANNEL_SIGNAL_STRING, new DecimalType(strength));
+            updateDeviceState(CHANNEL_SIGNAL_STRENGTH, new DecimalType(strength));
         }
     }
 
@@ -546,14 +562,14 @@ public class WizHandler extends BaseThingHandler {
      */
     private void updateLightStatesFromParams(final WizSyncState receivedParam) {
         if (!receivedParam.state) {
-            updateState(CHANNEL_COLOR, HSBType.BLACK);
-            updateState(CHANNEL_BRIGHTNESS, PercentType.ZERO);
-            updateState(CHANNEL_STATE, OnOffType.OFF);
-            updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
-            updateState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
+            updateLightState(CHANNEL_COLOR, HSBType.BLACK);
+            updateLightState(CHANNEL_BRIGHTNESS, PercentType.ZERO);
+            updateLightState(CHANNEL_STATE, OnOffType.OFF);
+            updateLightState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
+            updateLightState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
         } else {
-            updateState(CHANNEL_BRIGHTNESS, new PercentType(receivedParam.dimming));
-            updateState(CHANNEL_STATE, OnOffType.ON);
+            updateLightState(CHANNEL_BRIGHTNESS, new PercentType(receivedParam.dimming));
+            updateLightState(CHANNEL_STATE, OnOffType.ON);
             switch (receivedParam.getColorMode()) {
                 case RGBMode:
                     logger.trace(
@@ -561,30 +577,30 @@ public class WizHandler extends BaseThingHandler {
                             config.bulbIpAddress, receivedParam.r, receivedParam.g, receivedParam.b, receivedParam.w,
                             receivedParam.c, receivedParam.dimming, receivedParam.getHSBColor());
 
-                    updateState(CHANNEL_COLOR, receivedParam.getHSBColor());
-                    updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
-                    updateState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
+                    updateLightState(CHANNEL_COLOR, receivedParam.getHSBColor());
+                    updateLightState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
+                    updateLightState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
                     break;
                 case CTMode:
                     double[] xy = ColorUtil.kelvinToXY(receivedParam.getTemperature());
                     HSBType color = ColorUtil.xyToHsb(xy);
-                    updateState(CHANNEL_COLOR, new HSBType(color.getHue(), color.getSaturation(),
+                    updateLightState(CHANNEL_COLOR, new HSBType(color.getHue(), color.getSaturation(),
                             new PercentType(receivedParam.getDimming())));
-                    updateState(CHANNEL_TEMPERATURE, colorTempToPercent(receivedParam.getTemperature()));
-                    updateState(CHANNEL_TEMPERATURE_ABS,
+                    updateLightState(CHANNEL_TEMPERATURE, colorTempToPercent(receivedParam.getTemperature()));
+                    updateLightState(CHANNEL_TEMPERATURE_ABS,
                             new QuantityType<>(receivedParam.getTemperature(), Units.KELVIN));
                     break;
                 case SingleColorMode:
-                    updateState(CHANNEL_COLOR, new HSBType(DecimalType.ZERO, PercentType.ZERO,
+                    updateLightState(CHANNEL_COLOR, new HSBType(DecimalType.ZERO, PercentType.ZERO,
                             new PercentType(receivedParam.getDimming())));
-                    updateState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
-                    updateState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
+                    updateLightState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
+                    updateLightState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
                     break;
             }
         }
 
-        updateState(CHANNEL_MODE, new StringType(String.valueOf(receivedParam.sceneId)));
-        updateState(CHANNEL_SPEED, new PercentType(receivedParam.speed));
+        updateLightState(CHANNEL_MODE, new StringType(String.valueOf(receivedParam.sceneId)));
+        updateLightState(CHANNEL_SPEED, new PercentType(receivedParam.speed));
     }
 
     /**
@@ -593,10 +609,10 @@ public class WizHandler extends BaseThingHandler {
      * @param receivedParam The received {@link WizSyncState}
      */
     private void updateFanStatesFromParams(final WizSyncState receivedParam) {
-        updateState(CHANNEL_STATE, new DecimalType(receivedParam.fanState));
-        updateState(CHANNEL_SPEED, new DecimalType(receivedParam.fanSpeed));
-        updateState(CHANNEL_REVERSE, new DecimalType(receivedParam.fanRevrs));
-        updateState(CHANNEL_MODE, new DecimalType(receivedParam.fanMode));
+        updateFanState(CHANNEL_STATE, new DecimalType(receivedParam.fanState));
+        updateFanState(CHANNEL_SPEED, new DecimalType(receivedParam.fanSpeed));
+        updateFanState(CHANNEL_REVERSE, new DecimalType(receivedParam.fanRevrs));
+        updateFanState(CHANNEL_MODE, new DecimalType(receivedParam.fanMode));
     }
 
     /**
@@ -682,7 +698,7 @@ public class WizHandler extends BaseThingHandler {
         latestUpdate = System.currentTimeMillis();
         latestOfflineRefresh = System.currentTimeMillis();
         final ZonedDateTime zonedDateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
-        updateState(CHANNEL_LAST_UPDATE, new DateTimeType(zonedDateTime));
+        updateDeviceState(CHANNEL_LAST_UPDATE, new DateTimeType(zonedDateTime));
     }
 
     /**
@@ -797,5 +813,29 @@ public class WizHandler extends BaseThingHandler {
 
     public int getHomeId() {
         return homeId;
+    }
+
+    private void updateLightState(String channelId, State state) {
+        if (isFan) {
+            updateState(new ChannelUID(this.getThing().getUID(), CHANNEL_GROUP_LIGHT, channelId), state);
+        } else {
+            updateState(channelId, state);
+        }
+    }
+
+    private void updateFanState(String channelId, State state) {
+        if (isFanOnly) {
+            updateState(channelId, state);
+        } else {
+            updateState(new ChannelUID(this.getThing().getUID(), CHANNEL_GROUP_LIGHT, channelId), state);
+        }
+    }
+
+    private void updateDeviceState(String channelId, State state) {
+        if (isFan && !isFanOnly) {
+            updateState(new ChannelUID(this.getThing().getUID(), CHANNEL_GROUP_DEVICE, channelId), state);
+        } else {
+            updateState(channelId, state);
+        }
     }
 }

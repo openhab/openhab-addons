@@ -194,7 +194,7 @@ public class WizDiscoveryService extends AbstractDiscoveryService {
 
                     // Check for "FANDIMS" as in confirmed example ESP03_FANDIMS_31 for Faro Barcelona Smart Fan
                 } else if (discoveredModel.contains("FANDIMS")) {
-                    thisBulbType = THING_TYPE_CEILING_FAN;
+                    thisBulbType = THING_TYPE_FAN;
                     thisBulbLabel = "WiZ Smart Fan at " + lightIpAddress;
                     newThingId = new ThingUID(thisBulbType, lightMacAddress);
                     logger.trace("New device appears to be a smart fan and will be given the UUID: {}", newThingId);

@@ -28,7 +28,7 @@
 		<channels>
 			<channel id="temperature" typeId="system.color-temperature"/>
 			<channel id="temperature-abs" typeId="system.color-temperature-abs"/>
-			<channel id="dimming" typeId="system.brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="mode" typeId="light-mode"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -43,7 +43,7 @@
 		<description>Supports WiZ Single Color Dimmable Bulbs</description>
 
 		<channels>
-			<channel id="dimming" typeId="system.brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="mode" typeId="light-mode"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
@@ -66,13 +66,25 @@
 	</thing-type>
 
 	<!-- WiFi Smart Ceiling Fan Thing Type -->
-	<thing-type id="ceiling-fan">
+	<thing-type id="fan">
 		<label>WiZ Ceiling Fan</label>
 		<description>Supports WiZ Ceiling Fans</description>
 
 		<channels>
 			<channel id="state" typeId="system.power"/>
 		</channels>
+		<config-description-ref uri="thing-type:wiz:light"/>
+	</thing-type>
+
+	<thing-type id="fan-with-dimmable-bulb">
+		<label>WiZ Ceiling Fan With Dimmable Bulb</label>
+		<description>Supports WiZ Ceiling Fans With a Dimmable Bulb</description>
+
+		<channel-groups>
+			<channel-group id="device" typeId="device-channels"/>
+			<channel-group id="light" typeId="dimmable-light"/>
+			<channel-group id="fan" typeId="fan-group"/>
+		</channel-groups>
 		<config-description-ref uri="thing-type:wiz:light"/>
 	</thing-type>
 
@@ -138,4 +150,27 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-group-type id="device-channels">
+		<label>Device</label>
+		<channels>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dimmable-light">
+		<label>Light</label>
+		<channels>
+			<channel id="state" typeId="system.power"/>
+			<channel id="mode" typeId="light-mode"/>
+			<channel id="speed" typeId="speed"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fan-group">
+		<label>Fan</label>
+		<channels>
+			<channel id="state" typeId="system.power"/>
+		</channels>
+	</channel-group-type>
 </thing:thing-descriptions>

@@ -41,13 +41,16 @@ public class WizBindingConstants {
     public static final ThingTypeUID THING_TYPE_TUNABLE_BULB = new ThingTypeUID(BINDING_ID, "tunable-bulb");
     public static final ThingTypeUID THING_TYPE_DIMMABLE_BULB = new ThingTypeUID(BINDING_ID, "dimmable-bulb");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(BINDING_ID, "plug");
-    public static final ThingTypeUID THING_TYPE_CEILING_FAN = new ThingTypeUID(BINDING_ID, "ceiling-fan");
+    public static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");
+    public static final ThingTypeUID THING_TYPE_FAN_WITH_DIMMABLE_BULB = new ThingTypeUID(BINDING_ID,
+            "fan-with-dimmable-bulb");
 
     /**
      * The supported thing types.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_COLOR_BULB,
-            THING_TYPE_TUNABLE_BULB, THING_TYPE_DIMMABLE_BULB, THING_TYPE_SMART_PLUG, THING_TYPE_CEILING_FAN)
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(THING_TYPE_COLOR_BULB, THING_TYPE_TUNABLE_BULB, THING_TYPE_DIMMABLE_BULB, THING_TYPE_SMART_PLUG,
+                    THING_TYPE_FAN, THING_TYPE_FAN_WITH_DIMMABLE_BULB)
             .collect(Collectors.toSet());
 
     /**
@@ -58,11 +61,15 @@ public class WizBindingConstants {
     public static final String CHANNEL_LAST_UPDATE = "last-update";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_REVERSE = "reverse";
-    public static final String CHANNEL_SIGNAL_STRING = "signal-strength";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
     public static final String CHANNEL_SPEED = "speed";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMPERATURE_ABS = "temperature-abs";
+
+    public static final String CHANNEL_GROUP_DEVICE = "device";
+    public static final String CHANNEL_GROUP_LIGHT = "light";
+    public static final String CHANNEL_GROUP_FAN = "fan";
 
     // -------------- Configuration arguments ----------------
     /**
