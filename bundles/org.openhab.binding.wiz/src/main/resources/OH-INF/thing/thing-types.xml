@@ -186,7 +186,7 @@
 	<channel-group-type id="dimmable-light">
 		<label>Light</label>
 		<channels>
-			<channel id="state" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="mode" typeId="light-mode"/>
 			<channel id="speed" typeId="light-mode-speed"/>
 		</channels>
