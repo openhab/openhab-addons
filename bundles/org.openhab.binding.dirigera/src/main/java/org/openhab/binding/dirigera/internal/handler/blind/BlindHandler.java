@@ -21,7 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
