@@ -26,7 +26,7 @@ public class ChatGPTConfiguration {
     public String apiUrl = "https://api.openai.com/v1/chat/completions";
     public String modelUrl = "https://api.openai.com/v1/models";
     public boolean useSemanticModel = false;
-    public String chatGPTModel = "gpt-4o-mini";
+    public String model = "gpt-4o-mini";
     public Double temperature = 1.0;
     public Integer maxTokens = 1000;
     public Double topP = 1.0;

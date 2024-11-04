@@ -28,13 +28,12 @@ API keys can be created and managed under <https://platform.openai.com/account/a
 | topP             | decimal | A value between 0 and 1. An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. We generally recommend altering this or temperature but not both. | 1.0                                        | no       | yes      |
 | apiUrl           | text    | The server API where to reach the AI service                                                                                                                                                                                                                                                                                           | https://api.openai.com/v1/chat/completions | no       | yes      |
 | modelUrl         | text    | The model url where to retrieve the available models from                                                                                                                                                                                                                                                                              | https://api.openai.com/v1/models           | no       | yes      |
-| chatGPTModel     | text    | The model to be used for the HLI service                                                                                                                                                                                                                                                                                               | gpt-4o-mini                                | no       | yes      |
+| model            | text    | The model to be used for the HLI service                                                                                                                                                                                                                                                                                               | gpt-4o-mini                                | no       | yes      |
 | systemMessage    | text    | Here you need to describe your openHAB system that will help AI control your smart home.                                                                                                                                                                                                                                               | N/A                                        | if HLI   | yes      |
 | maxTokens        | decimal | The maximum number of tokens to generate in the completion.                                                                                                                                                                                                                                                                            | 500                                        | no       | yes      |
 | keepContext      | decimal | How long should the HLI service retain context between requests (in minutes)                                                                                                                                                                                                                                                           | 2                                          | no       | yes      |
 | contextThreshold | decimal | Limit total tokens included in context.                                                                                                                                                                                                                                                                                                | 10000                                      | no       | yes      |
 | useSemanticModel | boolean | Use the semantic model to determine the location of an item.                                                                                                                                                                                                                                                                           | true                                       | no       | yes      |
-
 
 The advanced parameters `apiUrl` and `modelUrl` can be used, if any other ChatGPT-compatible service is used, e.g. a local installation of [LocalAI](https://github.com/go-skynet/LocalAI).
 
@@ -60,7 +59,7 @@ Each channel of type `chat` takes the following configuration parameters:
 
 ## Items Configuration
 
-Items to be used by the HLI service must be tagged with the [ "OpenAI" ] tag.
+Items to be used by the HLI service must be tagged with the [ "ChatGPT" ] tag.
 If no semantic model is set up, you can set the parameter `useSemanticModel` to false.
 In this case, the item names must follow the naming convention '<Location>_***', for example "Kitchen_Light". The label of the items are expected to briefly describe the item in more detail.
 If the item accepts different text commands, add these commands to the "am" metadata key (see Item Configuration example below).
@@ -95,8 +94,8 @@ String Morning_Message      { channel="chatgpt:account:1:morningMessage" }
 
 Number Temperature_Forecast_Low
 Number Temperature_Forecast_High
-Dimmer Kitchen_Dimmer "Kitchen main light" [ "OpenAI" ]
-String LivingRoom_AC_Mode "Thermostat mode in the living room" [ "OpenAI" ]  {channel="", am="OFF, HEAT, AUTO, COOL, FAN, DRY" }
+Dimmer Kitchen_Dimmer "Kitchen main light" [ "ChatGPT" ]
+String LivingRoom_AC_Mode "Thermostat mode in the living room" [ "ChatGPT" ]  {channel="", am="OFF, HEAT, AUTO, COOL, FAN, DRY" }
 ```
 
 ### UI Configuration of the HLI Service

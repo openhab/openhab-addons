@@ -327,12 +327,12 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         this.messages.add(userMessage);
         ChatRequestBody chatRequestBody = new ChatRequestBody();
 
-        if (this.config.chatGPTModel == null || this.config.chatGPTModel.isEmpty()) {
+        if (this.config.model == null || this.config.model.isEmpty()) {
             logger.debug("Model is not set");
             return null;
         }
 
-        chatRequestBody.setModel(this.config.chatGPTModel);
+        chatRequestBody.setModel(this.config.model);
         chatRequestBody.setTemperature(this.config.temperature);
         chatRequestBody.setMaxTokens(this.config.maxTokens);
         chatRequestBody.setTopP(this.config.topP);
@@ -357,7 +357,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         StringBuilder content = new StringBuilder();
         content.append(this.config.systemMessage);
 
-        Collection<Item> openaiItems = itemRegistry.getItemsByTag("OpenAI");
+        Collection<Item> openaiItems = itemRegistry.getItemsByTag("ChatGPT");
 
         if (!openaiItems.isEmpty()) {
             openaiItems.forEach(item -> {
