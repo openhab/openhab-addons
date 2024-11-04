@@ -21,6 +21,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +52,7 @@ import org.openhab.binding.wiz.internal.enums.WizMethodType;
 import org.openhab.binding.wiz.internal.utils.ValidationUtils;
 import org.openhab.binding.wiz.internal.utils.WizPacketConverter;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -94,6 +96,7 @@ public class WizHandler extends BaseThingHandler {
 
     private final WizPacketConverter converter = new WizPacketConverter();
     private final WizStateDescriptionProvider stateDescriptionProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private final ChannelUID colorTempChannelUID;
     private @Nullable ScheduledFuture<?> keepAliveJob;
     private long latestUpdate = -1;
@@ -113,10 +116,11 @@ public class WizHandler extends BaseThingHandler {
      * @param stateDescriptionProvider A state description provider
      */
     public WizHandler(final Thing thing, final RegistrationRequestParam registrationPacket,
-            WizStateDescriptionProvider stateDescriptionProvider) {
+            WizStateDescriptionProvider stateDescriptionProvider, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.registrationInfo = registrationPacket;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.timeZoneProvider = timeZoneProvider;
         this.mostRecentState = new WizSyncState();
         this.isFan = thing.getThingTypeUID().equals(THING_TYPE_CEILING_FAN);
         colorTempChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_TEMPERATURE_ABS);
@@ -467,7 +471,7 @@ public class WizHandler extends BaseThingHandler {
 
         // Check if the bulb still has the same IP address it had previously
         // If not, we need to update the configuration for the thing.
-        if (!receivedMessage.getWizResponseIpAddress().equals(MISSING_INVALID_IP_ADDRESS)
+        if (!receivedMessage.getWizResponseIpAddress().isEmpty()
                 && !receivedMessage.getWizResponseIpAddress().equals(this.getBulbIpAddress())) {
             // get the old config
             Configuration priorConfig = getConfig();
@@ -531,7 +535,7 @@ public class WizHandler extends BaseThingHandler {
             } else {
                 strength = 4;
             }
-            updateState(CHANNEL_RSSI, new DecimalType(strength));
+            updateState(CHANNEL_SIGNAL_STRING, new DecimalType(strength));
         }
     }
 
@@ -677,7 +681,8 @@ public class WizHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
         latestUpdate = System.currentTimeMillis();
         latestOfflineRefresh = System.currentTimeMillis();
-        updateState(CHANNEL_LAST_UPDATE, new DateTimeType());
+        final ZonedDateTime zonedDateTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        updateState(CHANNEL_LAST_UPDATE, new DateTimeType(zonedDateTime));
     }
 
     /**

@@ -104,7 +104,7 @@ public class WizMediatorImpl implements WizMediator {
             if (handler != null) {
                 // deliver message to handler.
                 handler.newReceivedResponseMessage(receivedMessage);
-            } else if (!bulbIp.equals(MISSING_INVALID_IP_ADDRESS)) {
+            } else if (!bulbIp.isEmpty()) {
                 logger.debug("There is no handler registered for mac address: {}",
                         receivedMessage.getWizResponseMacAddress());
                 WizDiscoveryService discoveryServe = this.wizDiscoveryService;

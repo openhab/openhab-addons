@@ -1,4 +1,4 @@
-![logo](https://www.wizconnected.com/content/dam/wiz/master/logo-wiz-black-navigation.svg)
+# WiZ Binding
 
 This binding integrates [WiZ Connected](https://www.wizconnected.com/en-US/) smart devices.
 These inexpensive devices, typically smart bulbs, are available online and in most Home Depot stores.

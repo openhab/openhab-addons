@@ -58,7 +58,7 @@ public class WizBindingConstants {
     public static final String CHANNEL_LAST_UPDATE = "last-update";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_REVERSE = "reverse";
-    public static final String CHANNEL_RSSI = "signal-strength";
+    public static final String CHANNEL_SIGNAL_STRING = "signal-strength";
     public static final String CHANNEL_SPEED = "speed";
     public static final String CHANNEL_STATE = "state";
     public static final String CHANNEL_TEMPERATURE = "temperature";
@@ -75,7 +75,6 @@ public class WizBindingConstants {
      * Host address configuration argument key.
      */
     public static final String CONFIG_IP_ADDRESS = "bulbIpAddress";
-    public static final String MISSING_INVALID_IP_ADDRESS = "bulbIpAddress";
 
     /**
      * Wifi socket update interval configuration argument key.
@@ -122,7 +121,6 @@ public class WizBindingConstants {
 
     // -------------- Bulb Properties ----------------
 
-    public static final String PROPERTY_BINDING_VERSION = "bindingVersion";
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
 
     public static final String PROPERTY_HOME_ID = "homeId";

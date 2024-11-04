@@ -26,10 +26,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WizDeviceConfiguration {
 
     /**
-     * Configuration for a Bond Bridge or Device
+     * Configuration for a WiZ Device
      */
     public String bulbMacAddress = MISSING_INVALID_MAC_ADDRESS;
-    public String bulbIpAddress = MISSING_INVALID_IP_ADDRESS;
+    public String bulbIpAddress = "";
     public long updateInterval = DEFAULT_REFRESH_INTERVAL_SEC;
     public boolean useHeartBeats = false; // true: register to get 5s heart-beats
     public long reconnectInterval = DEFAULT_RECONNECT_INTERVAL_MIN;

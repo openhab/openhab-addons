@@ -134,6 +134,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>Timestamp of last status update</description>
+		<category>Time</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
