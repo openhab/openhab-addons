@@ -163,7 +163,6 @@ class TestModel {
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         CallbackMock callback = (CallbackMock) proxyCallback;
-        handler.initialize();
         callback.waitForOnline();
 
         DirigeraHandler.detectionTimeSeonds = 0;
