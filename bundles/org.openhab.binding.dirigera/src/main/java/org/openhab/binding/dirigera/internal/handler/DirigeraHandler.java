@@ -51,7 +51,8 @@ import org.openhab.binding.dirigera.internal.exception.ApiMissingException;
 import org.openhab.binding.dirigera.internal.exception.ModelMissingException;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.model.Model;
+import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.binding.dirigera.internal.model.DirigeraModel;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.common.ThreadPoolManager;
@@ -117,6 +118,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Instant sunsetInstant = Instant.MIN;
     private Instant peakRecognitionTime = Instant.MIN;
 
+    public static final DeviceUpdate LINK_UPDATE = new DeviceUpdate(null, "", DeviceUpdate.Action.LINKS);
     public static long detectionTimeSeonds = 5;
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
@@ -241,28 +243,27 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 logger.error("DIRIGERA HANDLER unable to create API {}", apiProvider.descriptorString());
                 return;
             }
-            Model houseModel = new Model(this);
+            Model houseModel = new DirigeraModel(this);
             model = Optional.of(houseModel);
             houseModel.update();
             // Step 3.1 - check if id is already obtained
             if (config.id.isBlank()) {
-                JSONArray gatewayArray = houseModel.getIdsForType(DEVICE_TYPE_GATEWAY);
-                logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayArray);
-                if (gatewayArray.isEmpty()) {
+                List<String> gatewayList = houseModel.getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
+                logger.info("DIRIGERA HANDLER try to get gateway id {}", gatewayList);
+                if (gatewayList.isEmpty()) {
                     logger.warn("DIRIGERA HANDLER no Gateway found in model");
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/dirigera.gateway.status.no-gateway");
                     return;
-                } else if (gatewayArray.length() > 1) {
+                } else if (gatewayList.size() > 1) {
                     logger.warn("DIRIGERA HANDLER found {} Gateways - don't choose, ambigious result",
-                            gatewayArray.length());
+                            gatewayList.size());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                             "@text/dirigera.gateway.status.ambiguous-gateway");
                     return;
                 } else {
-                    logger.info("DIRIGERA HANDLER try found id {}", gatewayArray.getString(0));
+                    String id = gatewayList.get(0);
                     Configuration configUpdate = editConfiguration();
-                    String id = gatewayArray.getString(0);
                     configUpdate.put(PROPERTY_DEVICE_ID, id);
                     updateConfiguration(configUpdate);
                     // get fresh config after update
@@ -505,6 +506,14 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
             if (!deviceModificationQueue.isEmpty()) {
                 deviceUpdate = deviceModificationQueue.remove(0);
+                /**
+                 * check if other link update is still in queue. If yes dismiss this request and wait for latest one
+                 */
+                if (deviceUpdate.action.equals(DeviceUpdate.Action.LINKS)
+                        && deviceModificationQueue.contains(deviceUpdate)) {
+                    deviceUpdate = null;
+                    logger.warn("DIRIGERA HANDLER Dismiss link update, there's a later one scheduled");
+                }
             }
         }
         if (deviceUpdate != null) {
@@ -517,6 +526,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     break;
                 case REMOVE:
                     doDeleteDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    break;
+                case LINKS:
+                    doUpdateLinks();
                     break;
             }
         }
@@ -618,7 +630,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public DirigeraAPI api() {
+    public DirigeraAPI api() throws ApiMissingException {
         if (api.isEmpty()) {
             throw new ApiMissingException("No API available yet");
         }
@@ -626,7 +638,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     @Override
-    public Model model() {
+    public Model model() throws ModelMissingException {
         if (model.isEmpty()) {
             throw new ModelMissingException("No Model available yet");
         }
@@ -675,7 +687,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void updateLinks() {
-        sequentialScheduler.schedule(this::doUpdateLinks, 0, TimeUnit.SECONDS);
+        synchronized (deviceModificationQueue) {
+            deviceModificationQueue.add(LINK_UPDATE);
+        }
+        sequentialScheduler.schedule(this::doDeviceUpdate, 0, TimeUnit.SECONDS);
     }
 
     private void doUpdateLinks() {
@@ -805,8 +820,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     }
 
     private void modelUpdate() {
+        Instant modelUpdateStartTime = Instant.now();
         model().update();
+        long durationUpdateTime = Duration.between(modelUpdateStartTime, Instant.now()).toMillis();
         websocket.get().increase(Websocket.MODEL_UPDATES);
+        websocket.get().getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
+        websocket.get().getStatistics().put(Websocket.MODEL_UPDATE_LAST,
+                Instant.now().atZone(timeZoneProvider.getTimeZone()));
         updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(model().getModelString()));
     }
 
