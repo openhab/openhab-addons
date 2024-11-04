@@ -15,7 +15,7 @@ package org.openhab.binding.lgthinq.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 
@@ -40,9 +40,8 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
      * Handle must implement this method to update device's extra information collected to the respective channels.
      * 
      * @param energyStateAttributes map containing the key and values collected
-     * @throws LGThinqException if some error occur
      */
-    protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) throws LGThinqException {
+    protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) {
         throw new UnsupportedOperationException(
                 "Method must be implemented in the Handle that supports energy collector. It most likely a bug");
     }
@@ -61,5 +60,5 @@ public abstract class BaseThingWithExtraInfoHandler extends BaseThingHandler {
      * Reset (put in UNDEF) the channels related to extra information. Normally called when the collector stops.
      */
     protected void resetExtraInfoChannels() {
-    };
+    }
 }

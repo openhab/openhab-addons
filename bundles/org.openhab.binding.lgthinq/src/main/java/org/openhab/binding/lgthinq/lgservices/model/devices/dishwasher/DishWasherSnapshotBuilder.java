@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.DW_SNAPSHOT_WASHER_DRYER_NODE_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.DW_SNAPSHOT_WASHER_DRYER_NODE_V2;
 
 import java.util.Map;
 import java.util.Objects;
@@ -22,6 +22,8 @@ import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DefaultSnapshotBuilder;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * The {@link DishWasherSnapshotBuilder}
@@ -48,8 +50,8 @@ public class DishWasherSnapshotBuilder extends DefaultSnapshotBuilder<DishWasher
                 throw new IllegalArgumentException("Version 1.0 for DishWasher is not supported yet.");
             case V2_0:
                 Map<String, Object> dishWasher = Objects.requireNonNull(
-                        (Map<String, Object>) snapMap.get(DW_SNAPSHOT_WASHER_DRYER_NODE_V2),
-                        "dishwasher node must be present in the snapshot");
+                        objectMapper.convertValue(snapMap.get(DW_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
+                        }), "dishwasher node must be present in the snapshot");
                 snap = objectMapper.convertValue(dishWasher, snapClass);
                 snap.setRawData(dishWasher);
                 return snap;

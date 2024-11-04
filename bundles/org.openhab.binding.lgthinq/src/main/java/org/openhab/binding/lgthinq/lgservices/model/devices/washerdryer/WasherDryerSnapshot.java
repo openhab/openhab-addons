@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_POWER_OFF_VALUE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
@@ -238,7 +238,7 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     public void setState(String state) {
         this.state = state;
-        if (state.equals(WM_POWER_OFF_VALUE)) {
+        if (state.equals(WMD_POWER_OFF_VALUE)) {
             powerState = DevicePowerState.DV_POWER_OFF;
         } else {
             powerState = DevicePowerState.DV_POWER_ON;
@@ -256,9 +256,9 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
     }
 
     public void setRemoteStart(String remoteStart) {
-        this.remoteStart = remoteStart.contains("ON") || remoteStart.equals("1") ? "ON"
-                : (remoteStart.contains("OFF") || remoteStart.equals("0") ? "OFF" : remoteStart);
-        remoteStartEnabled = this.remoteStart.equals("ON");
+        this.remoteStart = remoteStart.contains("ON") || "1".equals(remoteStart) ? "ON"
+                : (remoteStart.contains("OFF") || "0".equals(remoteStart) ? "OFF" : remoteStart);
+        remoteStartEnabled = "ON".equals(this.remoteStart);
     }
 
     @JsonProperty("standby")
@@ -268,9 +268,8 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
     }
 
     public void setStandByStatus(String standByStatus) {
-        this.standByStatus = standByStatus.contains("ON") || standByStatus.equals("1") ? "ON"
-                : (standByStatus.contains("OFF") || standByStatus.equals("0") ? "OFF" : standByStatus);
-        ;
+        this.standByStatus = standByStatus.contains("ON") || "1".equals(standByStatus) ? "ON"
+                : (standByStatus.contains("OFF") || "0".equals(standByStatus) ? "OFF" : standByStatus);
         standBy = this.standByStatus.contains("ON");
     }
 

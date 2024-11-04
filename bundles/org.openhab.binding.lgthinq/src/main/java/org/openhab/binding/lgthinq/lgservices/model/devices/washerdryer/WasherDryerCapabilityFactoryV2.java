@@ -12,12 +12,22 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.WasherFeatureDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,14 +67,11 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
     protected FeatureDefinition newFeatureDefinition(String featureName, JsonNode featuresNode,
             @Nullable String targetChannelId, @Nullable String refChannelId) {
         JsonNode featureNode = featuresNode.path(featureName);
-        if (featureNode.isMissingNode()) {
-            return FeatureDefinition.NULL_DEFINITION;
+        FeatureDefinition fd;
+        if ((fd = WasherFeatureDefinition.getBasicFeatureDefinition(featureName, featureNode, targetChannelId,
+                refChannelId)) == FeatureDefinition.NULL_DEFINITION) {
+            return fd;
         }
-        FeatureDefinition fd = new FeatureDefinition();
-        fd.setName(featureName);
-        fd.setChannelId(Objects.requireNonNullElse(targetChannelId, ""));
-        fd.setRefChannelId(Objects.requireNonNullElse(refChannelId, ""));
-
         JsonNode labelNode = featureNode.path("label");
         if (!labelNode.isMissingNode() && !labelNode.isNull()) {
             fd.setLabel(labelNode.asText());
@@ -197,13 +204,13 @@ public class WasherDryerCapabilityFactoryV2 extends AbstractWasherDryerCapabilit
         List<String> escapeDataValues = Arrays.asList("course", "SmartCourse", "doorLock", "childLock");
         if (commandNode.isMissingNode()) {
             logger.warn("No commands found in the DryerWasher definition. This is most likely a bug.");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         Map<String, CommandDefinition> commands = new HashMap<>();
         for (Iterator<Map.Entry<String, JsonNode>> it = commandNode.fields(); it.hasNext();) {
             Map.Entry<String, JsonNode> e = it.next();
             String commandName = e.getKey();
-            if (commandName.equals("vtCtrl")) {
+            if ("vtCtrl".equals(commandName)) {
                 // ignore command
                 continue;
             }

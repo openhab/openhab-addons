@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +39,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 @NonNullByDefault
 public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> {
-    protected ObjectMapper mapper = new ObjectMapper();
+    protected final ObjectMapper mapper = new ObjectMapper();
     private static final Logger logger = LoggerFactory.getLogger(AbstractCapabilityFactory.class);
 
     public T create(JsonNode rootNode) throws LGThinqException {
@@ -41,7 +47,8 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
         cap.setModelName(rootNode.path("Info").path("modelName").textValue());
         cap.setDeviceType(ModelUtils.getDeviceType(rootNode));
         cap.setDeviceVersion(ModelUtils.discoveryAPIVersion(rootNode));
-        cap.setRawData(mapper.convertValue(rootNode, Map.class));
+        cap.setRawData(mapper.convertValue(rootNode, new TypeReference<>() {
+        }));
         switch (cap.getDeviceVersion()) {
             case V1_0:
                 // V1 has Monitoring node describing the protocol data format
@@ -121,8 +128,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
         }
     }
 
-    protected abstract Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode)
-            throws LGThinqApiException;
+    protected abstract Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode);
 
     /**
      * General method to parse commands for average of V1 Thinq Devices.
@@ -136,7 +142,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
         JsonNode commandNode = rootNode.path("ControlWifi").path("action");
         if (commandNode.isMissingNode()) {
             logger.warn("No commands found in the devices's definition. This is most likely a bug.");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         Map<String, CommandDefinition> commands = new HashMap<>();
         for (Iterator<Map.Entry<String, JsonNode>> it = commandNode.fields(); it.hasNext();) {
@@ -150,7 +156,7 @@ public abstract class AbstractCapabilityFactory<T extends CapabilityDefinition> 
                 continue;
             }
             cd.setCommand(cmdField.textValue());
-            cd.setCmdOpt(thisCommandNode.path("cmdOpt").textValue());
+            // cd.setCmdOpt(thisCommandNode.path("cmdOpt").textValue());
             cd.setCmdOptValue(thisCommandNode.path("value").textValue());
             cd.setBinary(isBinaryCommands);
             String strData = Objects.requireNonNullElse(thisCommandNode.path("data").textValue(), "");

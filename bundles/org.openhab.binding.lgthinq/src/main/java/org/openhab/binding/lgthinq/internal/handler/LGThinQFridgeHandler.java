@@ -12,7 +12,32 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_GRP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_ACTIVE_SAVING;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_DOOR_OPEN;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_EXPRESS_COOL_MODE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_EXPRESS_FREEZE_MODE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_FREEZER_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_FRESH_AIR_FILTER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_FRIDGE_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_ICE_PLUS;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_REF_TEMP_UNIT;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_SMART_SAVING_MODE_V2;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_SMART_SAVING_SWITCH_V1;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_VACATION_MODE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_RE_WATER_FILTER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_FRESH_AIR_FILTER_MAP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_WATER_FILTER;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_CELSIUS_UNIT_VALUES;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_DOOR_CLOSE_VALUES;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_DOOR_OPEN_VALUES;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_FAHRENHEIT_UNIT_VALUES;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,18 +48,20 @@ import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQFridgeApiClientService;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
-import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -71,9 +98,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     private final ChannelUID freshAirFilterChannelUID;
     private final ChannelUID waterFilterChannelUID;
     private final ChannelUID tempUnitUID;
-    private String tempUnit = TEMP_UNIT_CELSIUS;
+    private String tempUnit = RE_TEMP_UNIT_CELSIUS;
     private final Logger logger = LoggerFactory.getLogger(LGThinQFridgeHandler.class);
-    @NonNullByDefault
+
     private final LGThinQFridgeApiClientService lgThinqFridgeApiClientService;
 
     public LGThinQFridgeHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
@@ -83,30 +110,30 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
-        fridgeTempChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_FRIDGE_TEMP_ID);
-        freezerTempChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_FREEZER_TEMP_ID);
-        doorChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_DOOR_ID);
-        tempUnitUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_REF_TEMP_UNIT);
-        icePlusChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_ICE_PLUS);
-        expressFreezeModeChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_EXPRESS_FREEZE_MODE);
-        expressCoolModeChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_EXPRESS_COOL_MODE);
-        vacationModeChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_VACATION_MODE);
+        fridgeTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_FRIDGE_TEMP_ID);
+        freezerTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_FREEZER_TEMP_ID);
+        doorChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_DOOR_OPEN);
+        tempUnitUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_REF_TEMP_UNIT);
+        icePlusChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_ICE_PLUS);
+        expressFreezeModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_EXPRESS_FREEZE_MODE);
+        expressCoolModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_EXPRESS_COOL_MODE);
+        vacationModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_VACATION_MODE);
         smartSavingModeChannelUID = new ChannelUID(channelGroupDashboardUID,
-                PLATFORM_TYPE_V2.equals(lgPlatformType) ? FR_CHANNEL_SMART_SAVING_MODE_V2
-                        : FR_CHANNEL_SMART_SAVING_SWITCH_V1);
-        activeSavingChannelUID = new ChannelUID(channelGroupDashboardUID, FR_CHANNEL_ACTIVE_SAVING);
-        freshAirFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, FR_CHANNEL_FRESH_AIR_FILTER);
-        waterFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, FR_CHANNEL_WATER_FILTER);
+                LG_API_PLATFORM_TYPE_V2.equals(lgPlatformType) ? CHANNEL_RE_SMART_SAVING_MODE_V2
+                        : CHANNEL_RE_SMART_SAVING_SWITCH_V1);
+        activeSavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_RE_ACTIVE_SAVING);
+        freshAirFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_RE_FRESH_AIR_FILTER);
+        waterFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_RE_WATER_FILTER);
     }
 
     private Unit<Temperature> getTemperatureUnit(FridgeCanonicalSnapshot shot) {
-        if (!(CELSIUS_UNIT_VALUES.contains(shot.getTempUnit())
-                || FAHRENHEIT_UNIT_VALUES.contains(shot.getTempUnit()))) {
+        if (!(RE_CELSIUS_UNIT_VALUES.contains(shot.getTempUnit())
+                || RE_FAHRENHEIT_UNIT_VALUES.contains(shot.getTempUnit()))) {
             logger.warn(
                     "Temperature Unit not recognized (must be Celsius or Fahrenheit). Ignoring and considering Celsius as default");
             return SIUnits.CELSIUS;
         }
-        return CELSIUS_UNIT_VALUES.contains(shot.getTempUnit()) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
+        return RE_CELSIUS_UNIT_VALUES.contains(shot.getTempUnit()) ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT;
     }
 
     @Override
@@ -153,9 +180,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     }
 
     private State parseDoorStatus(String doorStatus) {
-        if (DOOR_CLOSE_FR_VALUES.contains(doorStatus)) {
+        if (RE_DOOR_CLOSE_VALUES.contains(doorStatus)) {
             return OpenClosedType.CLOSED;
-        } else if (DOOR_OPEN_FR_VALUES.contains(doorStatus)) {
+        } else if (RE_DOOR_OPEN_VALUES.contains(doorStatus)) {
             return OpenClosedType.OPEN;
         } else {
             return UnDefType.UNDEF;
@@ -163,7 +190,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     }
 
     protected Integer decodeTempValue(ChannelUID ch, Integer value) {
-        FridgeCapability refCap = null;
+        FridgeCapability refCap;
         try {
             refCap = getCapabilities();
         } catch (LGThinqApiException e) {
@@ -171,16 +198,8 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             return 0;
         }
         // temperature channels are little different. First we need to get the tempUnit in the first snapshot,
-        Map<String, String> convertionMap;
-        if (fridgeTempChannelUID.equals(ch)) {
-            convertionMap = TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFridgeTempFMap()
-                    : refCap.getFridgeTempCMap();
-        } else if (freezerTempChannelUID.equals(ch)) {
-            convertionMap = TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFreezerTempFMap()
-                    : refCap.getFreezerTempCMap();
-        } else {
-            throw new IllegalStateException("Conversion Map Channel temperature not mapped. It's most likely a bug");
-        }
+        Map<String, String> convertionMap = new HashMap<>();
+        convertionMap = getConvertionMap(ch, refCap);
         String strValue = convertionMap.get(value.toString());
         if (strValue == null) {
             logger.error(
@@ -197,7 +216,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     }
 
     protected Integer encodeTempValue(ChannelUID ch, Integer value) {
-        FridgeCapability refCap = null;
+        FridgeCapability refCap;
         try {
             refCap = getCapabilities();
         } catch (LGThinqApiException e) {
@@ -205,17 +224,9 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             return 0;
         }
         // temperature channels are little different. First we need to get the tempUnit in the first snapshot,
-        final Map<String, String> convertionMap, invertedMap;
-        if (fridgeTempChannelUID.equals(ch)) {
-            convertionMap = TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFridgeTempFMap()
-                    : refCap.getFridgeTempCMap();
-        } else if (freezerTempChannelUID.equals(ch)) {
-            convertionMap = TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFreezerTempFMap()
-                    : refCap.getFreezerTempCMap();
-        } else {
-            throw new IllegalStateException("Conversion Map Channel temperature not mapped. It's most likely a bug");
-        }
-        invertedMap = new HashMap<>();
+        final Map<String, String> convertionMap = new HashMap<>();
+        getConvertionMap(ch, refCap);
+        final Map<String, String> invertedMap = new HashMap<>();
         convertionMap.forEach((k, v) -> {
             invertedMap.put(v, k);
         });
@@ -233,6 +244,20 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
         }
     }
 
+    private Map<String, String> getConvertionMap(ChannelUID ch, FridgeCapability refCap) {
+        Map<String, String> convertionMap;
+        if (fridgeTempChannelUID.equals(ch)) {
+            convertionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFridgeTempFMap()
+                    : refCap.getFridgeTempCMap();
+        } else if (freezerTempChannelUID.equals(ch)) {
+            convertionMap = RE_TEMP_UNIT_FAHRENHEIT.equals(tempUnit) ? refCap.getFreezerTempFMap()
+                    : refCap.getFreezerTempCMap();
+        } else {
+            throw new IllegalStateException("Conversion Map Channel temperature not mapped. It's most likely a bug");
+        }
+        return convertionMap;
+    }
+
     @Override
     public LGThinQApiClientService<FridgeCapability, FridgeCanonicalSnapshot> getLgThinQAPIClientService() {
         return lgThinqFridgeApiClientService;
@@ -248,18 +273,13 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     }
 
     @Override
-    public void onDeviceAdded(LGDevice device) {
-        // TODO - handle it. Think if it's needed
-    }
-
-    @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -275,12 +295,12 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         FridgeCapability cap = getCapabilities();
-        manageDynChannel(icePlusChannelUID, FR_CHANNEL_ICE_PLUS, "Switch", !cap.getIcePlusMap().isEmpty());
-        manageDynChannel(expressFreezeModeChannelUID, FR_CHANNEL_EXPRESS_FREEZE_MODE, "String",
+        manageDynChannel(icePlusChannelUID, CHANNEL_RE_ICE_PLUS, "Switch", !cap.getIcePlusMap().isEmpty());
+        manageDynChannel(expressFreezeModeChannelUID, CHANNEL_RE_EXPRESS_FREEZE_MODE, "String",
                 !cap.getExpressFreezeModeMap().isEmpty());
-        manageDynChannel(expressCoolModeChannelUID, FR_CHANNEL_EXPRESS_COOL_MODE, "Switch",
+        manageDynChannel(expressCoolModeChannelUID, CHANNEL_RE_EXPRESS_COOL_MODE, "Switch",
                 cap.isExpressCoolModePresent());
-        manageDynChannel(vacationModeChannelUID, FR_CHANNEL_VACATION_MODE, "Switch", cap.isEcoFriendlyModePresent());
+        manageDynChannel(vacationModeChannelUID, CHANNEL_RE_VACATION_MODE, "Switch", cap.isEcoFriendlyModePresent());
 
         Unit<Temperature> unTemp = getTemperatureUnit(getLastShot());
         if (SIUnits.CELSIUS.equals(unTemp)) {
@@ -295,32 +315,26 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
         loadChannelStateOption(cap.getActiveSavingMap(), activeSavingChannelUID);
         loadChannelStateOption(cap.getSmartSavingMap(), smartSavingModeChannelUID);
         loadChannelStateOption(cap.getTempUnitMap(), tempUnitUID);
-        loadChannelStateOption(CAP_FR_FRESH_AIR_FILTER_MAP, freshAirFilterChannelUID);
-        loadChannelStateOption(CAP_FR_WATER_FILTER, waterFilterChannelUID);
+        loadChannelStateOption(CAP_RE_FRESH_AIR_FILTER_MAP, freshAirFilterChannelUID);
+        loadChannelStateOption(CAP_RE_WATER_FILTER, waterFilterChannelUID);
     }
 
     private void loadChannelStateOption(Map<String, String> cap, ChannelUID channelUID) {
-        loadChannelStateOption(cap, channelUID, null);
+        final List<StateOption> faOptions = new ArrayList<>();
+        cap.forEach((k, v) -> faOptions.add(new StateOption(k, v)));
+        stateDescriptionProvider.setStateOptions(channelUID, faOptions);
     }
 
     private void loadChannelTempStateOption(Map<String, String> cap, ChannelUID channelUID, Unit<Temperature> unTemp) {
         final List<StateOption> faOptions = new ArrayList<>();
         cap.forEach((k, v) -> {
             try {
-                Integer vInt = Integer.valueOf(v);
                 QuantityType<Temperature> t = new QuantityType<>(Integer.valueOf(v), unTemp);
                 faOptions.add(new StateOption(t.toString(), t.toString()));
             } catch (NumberFormatException ex) {
                 logger.debug("Error converting invalid temperature number: {}. This can be safely ignored", v);
             }
         });
-        stateDescriptionProvider.setStateOptions(channelUID, faOptions);
-    }
-
-    private void loadChannelStateOption(Map<String, String> cap, ChannelUID channelUID,
-            @Nullable Map<String, String> decodeMap) {
-        final List<StateOption> faOptions = new ArrayList<>();
-        cap.forEach((k, v) -> faOptions.add(new StateOption(k, decodeMap == null ? v : decodeMap.get(v))));
         stateDescriptionProvider.setStateOptions(channelUID, faOptions);
     }
 
@@ -332,8 +346,8 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
         String simpleChannelUID;
         simpleChannelUID = getSimpleChannelUID(params.channelUID);
         switch (simpleChannelUID) {
-            case FR_CHANNEL_FREEZER_TEMP_ID:
-            case FR_CHANNEL_FRIDGE_TEMP_ID: {
+            case CHANNEL_RE_FREEZER_TEMP_ID:
+            case CHANNEL_RE_FRIDGE_TEMP_ID: {
                 int targetTemp;
                 if (command instanceof DecimalType) {
                     targetTemp = ((DecimalType) command).intValue();
@@ -344,7 +358,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                     break;
                 }
 
-                if (FR_CHANNEL_FRIDGE_TEMP_ID.equals(simpleChannelUID)) {
+                if (CHANNEL_RE_FRIDGE_TEMP_ID.equals(simpleChannelUID)) {
                     targetTemp = encodeTempValue(fridgeTempChannelUID, targetTemp);
                     lgThinqFridgeApiClientService.setFridgeTemperature(getBridgeId(), getDeviceId(), getCapabilities(),
                             targetTemp, lastShot.getTempUnit(), cmdSnap);
@@ -355,7 +369,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 }
                 break;
             }
-            case FR_CHANNEL_ICE_PLUS: {
+            case CHANNEL_RE_ICE_PLUS: {
                 if (command instanceof OnOffType) {
                     lgThinqFridgeApiClientService.setIcePlus(getBridgeId(), getDeviceId(), getCapabilities(),
                             OnOffType.ON.equals(command), cmdSnap);
@@ -364,7 +378,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 }
                 break;
             }
-            case FR_CHANNEL_EXPRESS_FREEZE_MODE: {
+            case CHANNEL_RE_EXPRESS_FREEZE_MODE: {
                 String targetExpressMode;
                 if (command instanceof StringType) {
                     targetExpressMode = ((StringType) command).toString();
@@ -376,7 +390,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 lgThinqFridgeApiClientService.setExpressMode(getBridgeId(), getDeviceId(), targetExpressMode);
                 break;
             }
-            case FR_CHANNEL_EXPRESS_COOL_MODE: {
+            case CHANNEL_RE_EXPRESS_COOL_MODE: {
                 if (command instanceof OnOffType) {
                     lgThinqFridgeApiClientService.setExpressCoolMode(getBridgeId(), getDeviceId(),
                             OnOffType.ON.equals(command));
@@ -386,7 +400,7 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
                 }
                 break;
             }
-            case FR_CHANNEL_VACATION_MODE: {
+            case CHANNEL_RE_VACATION_MODE: {
                 if (command instanceof OnOffType) {
                     lgThinqFridgeApiClientService.setEcoFriendlyMode(getBridgeId(), getDeviceId(),
                             OnOffType.ON.equals(command));

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LGAPIVerion}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public enum LGAPIVerion {
     V1_0(1.0),
     V2_0(2.0),

@@ -24,5 +24,5 @@ import org.openhab.core.config.core.ConfigDescriptionProvider;
 @NonNullByDefault
 public interface ThinqConfigDescriptionProvider extends ConfigDescriptionProvider {
 
-    public void addConfigDescription(ConfigDescription configDescription);
+    void addConfigDescription(ConfigDescription configDescription);
 }

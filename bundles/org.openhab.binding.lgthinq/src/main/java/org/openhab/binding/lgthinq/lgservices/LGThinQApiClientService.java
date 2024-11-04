@@ -17,14 +17,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 
 /**
  * The {@link LGThinQApiClientService}
@@ -38,7 +41,7 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
 
     Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGThinqApiException;
 
-    void initializeDevice(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException;
+    void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException;
 
     /**
      * Retrieve actual data from device (its sensors and points states).
@@ -49,8 +52,7 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
      * @throws LGThinqApiException if some error interacting with LG API Server occur.
      */
     @Nullable
-    S getDeviceData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull CapabilityDefinition capDef)
-            throws LGThinqApiException;
+    S getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) throws LGThinqApiException;
 
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
@@ -58,13 +60,13 @@ public interface LGThinQApiClientService<C extends CapabilityDefinition, S exten
 
     C getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 
-    File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate)
-            throws LGThinqApiException, IOException;
+    S buildDefaultOfflineSnapshot();
+
+    File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 
     void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqException, IOException;
 
     @Nullable
-    S getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId,
-            DeviceTypes deviceType, @NonNull C deviceCapability)
+    S getMonitorData(String bridgeName, String deviceId, String workerId, DeviceTypes deviceType, C deviceCapability)
             throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException;
 }

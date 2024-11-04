@@ -15,7 +15,12 @@ package org.openhab.binding.lgthinq.lgservices.model;
 import static org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition.NULL_DEFINITION;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,12 +33,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("unchecked")
 public abstract class AbstractCapability<C extends CapabilityDefinition> implements CapabilityDefinition {
+    // Define if the device supports sending setup commands before monitoring
+    // This is to control result 400 for some devices that doesn't support or permit setup commands before monitoring
+    boolean isBeforeCommandSupporter = true;
+
+    public boolean isBeforeCommandSupported() {
+        return isBeforeCommandSupporter;
+    }
+
+    public void setBeforeCommandSupported(boolean beforeCommandSupporter) {
+        isBeforeCommandSupporter = beforeCommandSupporter;
+    }
+
     // default result format
     protected Map<String, Function<C, FeatureDefinition>> featureDefinitionMap = new HashMap<>();
 
     protected String modelName = "";
-    Class<C> realClass;
+    final Class<C> realClass;
 
     @Override
     public String getModelName() {
@@ -46,7 +64,8 @@ public abstract class AbstractCapability<C extends CapabilityDefinition> impleme
     }
 
     protected AbstractCapability() {
-        this.realClass = (Class<C>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.realClass = (Class<C>) ((ParameterizedType) Objects.requireNonNull(getClass().getGenericSuperclass()))
+                .getActualTypeArguments()[0];
     }
 
     protected DeviceTypes deviceType = DeviceTypes.UNKNOWN;

@@ -14,12 +14,11 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.fridge.FridgeCapability;
@@ -42,13 +41,13 @@ public class LGThinQFridgeApiV2ClientServiceImpl
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
-        // TODO - Analise what to do here
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
+        // there's no before settings to send command
+        return false;
     }
 
     @Override
-    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-            throws LGThinqApiException {
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
@@ -99,7 +98,7 @@ public class LGThinQFridgeApiV2ClientServiceImpl
 
     @Override
     public void setIcePlus(String bridgeId, String deviceId, FridgeCapability fridgeCapability, boolean trueOnFalseOff,
-            Map<String, Object> snapCmdData) throws LGThinqApiException {
+            Map<String, Object> snapCmdData) {
         throw new UnsupportedOperationException("V2 Fridge doesn't support IcePlus feature. It mostly like a bug");
     }
 

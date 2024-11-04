@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_FRESH_AIR_FILTER_MAP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_ON_OFF;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_SMART_SAVING_MODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_WATER_FILTER_USED_POSTFIX;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,12 +23,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(FridgeCapabilityFactoryV1.class);
 
     @Override
     protected FeatureDefinition newFeatureDefinition(String featureName, JsonNode featuresNode,
@@ -46,7 +45,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
     }
 
     @Override
-    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) {
         return getCommandsDefinitionV1(rootNode);
     }
 
@@ -71,12 +70,12 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadIcePlus(JsonNode icePlusNode, Map<String, String> icePlusMap) {
-        loadGenericFeatNode(icePlusNode, icePlusMap, CAP_FR_ON_OFF);
+        loadGenericFeatNode(icePlusNode, icePlusMap, CAP_RE_ON_OFF);
     }
 
     @Override
     protected void loadFreshAirFilter(JsonNode freshAirFilterNode, Map<String, String> freshAirFilterMap) {
-        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_FR_FRESH_AIR_FILTER_MAP);
+        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_RE_FRESH_AIR_FILTER_MAP);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
         int minValue = waterFilterNode.path("min").asInt(0);
         int maxValue = waterFilterNode.path("max").asInt(6);
         for (int i = minValue; i <= maxValue; i++) {
-            waterFilterMap.put(String.valueOf(i), i + CAP_FR_WATER_FILTER_USED_POSTFIX);
+            waterFilterMap.put(String.valueOf(i), i + CAP_RE_WATER_FILTER_USED_POSTFIX);
         }
     }
 
@@ -95,7 +94,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap) {
-        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_FR_SMART_SAVING_MODE);
+        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_RE_SMART_SAVING_MODE);
     }
 
     @Override

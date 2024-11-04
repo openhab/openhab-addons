@@ -24,5 +24,5 @@ import org.openhab.core.thing.type.ThingType;
 @NonNullByDefault
 public interface ThinqThingTypeProvider extends ThingTypeProvider {
 
-    public void addThingType(ThingType thingType);
+    void addThingType(ThingType thingType);
 }

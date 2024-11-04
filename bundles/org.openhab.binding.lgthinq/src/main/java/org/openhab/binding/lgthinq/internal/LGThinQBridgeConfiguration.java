@@ -28,8 +28,8 @@ public class LGThinQBridgeConfiguration {
     public String password = "";
     public String country = "";
     public String language = "";
-    public String manualCountry = "";
-    public String manualLanguage = "";
+    public final String manualCountry = "";
+    public final String manualLanguage = "";
     public Integer poolingIntervalSec = 0;
     public String alternativeServer = "";
 

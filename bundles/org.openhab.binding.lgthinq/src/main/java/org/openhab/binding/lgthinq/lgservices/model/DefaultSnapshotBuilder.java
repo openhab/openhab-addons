@@ -18,12 +18,16 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,11 +58,12 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
      * Create a Snapshot result based on snapshotData collected from LG API (V1/C2)
      *
      * @param binaryData V1: decoded returnedData
-     * @param capDef
+     * @param capDef Capability Definition
      * @return returns Snapshot implementation based on device type provided
      * @throws LGThinqApiException any error.
      */
     @Override
+    @SuppressWarnings("null")
     public S createFromBinary(String binaryData, List<MonitoringBinaryProtocol> prot, CapabilityDefinition capDef)
             throws LGThinqUnmarshallException, LGThinqApiException {
         try {
@@ -76,6 +81,7 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                     aliasesMethod.putIfAbsent(value, property);
                 }
                 if (m.isAnnotationPresent(JsonAlias.class)) {
+                    @SuppressWarnings("null")
                     String[] values = m.getAnnotation(JsonAlias.class).value();
                     for (String v : values) {
                         aliasesMethod.putIfAbsent(v, property);
@@ -144,8 +150,8 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     @Override
     public S createFromJson(Map<String, Object> deviceSettings, CapabilityDefinition capDef)
             throws LGThinqApiException {
-        DeviceTypes type = getDeviceType(deviceSettings);
-        Map<String, Object> snapMap = ((Map<String, Object>) deviceSettings.get("snapshot"));
+        Map<String, Object> snapMap = objectMapper.convertValue(deviceSettings.get("snapshot"), new TypeReference<>() {
+        });
         if (snapMap == null) {
             throw new LGThinqApiException("snapshot node not present in device monitoring result.");
         }
@@ -163,12 +169,12 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
     }
 
     /**
-     * Used
+     * Create the map containing the bit representation of device features
      * 
-     * @param key
-     * @param capFeatureValues
-     * @param cachedBitKey
-     * @return
+     * @param key raw value
+     * @param capFeatureValues capability features defined to the device
+     * @param cachedBitKey chached bitKey representation if any was done previously
+     * @return the bitKey - map os key features, position and options available
      */
     private Map<String, Object> getBitKey(String key, final Map<String, Map<String, Object>> capFeatureValues,
             final Map<String, Map<String, Object>> cachedBitKey) {
@@ -186,7 +192,9 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
                     continue;
                 }
 
-                List<Map<String, Object>> optionList = (List<Map<String, Object>>) option.get("option");
+                List<Map<String, Object>> optionList = objectMapper.convertValue(option.get("option"),
+                        new TypeReference<>() {
+                        });
 
                 if (optionList == null) {
                     continue;
@@ -264,8 +272,8 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         }
 
         int bitValue = Integer.parseInt(value);
-        int startBit = (int) bitKey.get("startbit");
-        int length = (int) bitKey.get("length");
+        int startBit = (int) Objects.requireNonNull(bitKey.get("startbit"), "Not expected null here");
+        int length = (int) bitKey.getOrDefault("length", 0);
         int val = 0;
 
         for (int i = 0; i < length; i++) {

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -36,15 +35,11 @@ public enum MonitoringResultFormat {
         return format;
     }
 
-    public static MonitoringResultFormat getFormatOf(@NonNull String formatValue) {
-        switch (formatValue.toUpperCase()) {
-            case "BINARY(BYTE)":
-                return BINARY_FORMAT;
-            case "JSON":
-                return JSON_FORMAT;
-            default:
-                return UNKNOWN_FORMAT;
-
-        }
+    public static MonitoringResultFormat getFormatOf(String formatValue) {
+        return switch (formatValue.toUpperCase()) {
+            case "BINARY(BYTE)" -> BINARY_FORMAT;
+            case "JSON" -> JSON_FORMAT;
+            default -> UNKNOWN_FORMAT;
+        };
     }
 }

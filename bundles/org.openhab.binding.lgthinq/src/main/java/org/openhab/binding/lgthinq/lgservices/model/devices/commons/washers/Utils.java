@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class Utils {
 
     public static Map<String, CourseDefinition> getGenericCourseDefinitions(JsonNode courseNode, CourseType type,
@@ -53,7 +56,7 @@ public class Utils {
                     if (f.isSelectable()) {
                         List<String> selectableValues = f.getSelectableValues();
                         // map values acceptable for this function
-                        for (JsonNode v : (ArrayNode) selectableNode) {
+                        for (JsonNode v : selectableNode) {
                             if (v.isValueNode()) {
                                 selectableValues.add(v.textValue());
                             }

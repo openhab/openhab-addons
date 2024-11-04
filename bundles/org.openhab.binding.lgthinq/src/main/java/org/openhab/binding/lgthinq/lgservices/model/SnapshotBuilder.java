@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
 
 /**
  * The {@link SnapshotBuilder}

@@ -12,13 +12,25 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_AIR_CONDITIONER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DISHWASHER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER_TOWER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_FRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
 
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.handler.*;
+import org.openhab.binding.lgthinq.internal.handler.LGThinQAirConditionerHandler;
+import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
+import org.openhab.binding.lgthinq.internal.handler.LGThinQDishWasherHandler;
+import org.openhab.binding.lgthinq.internal.handler.LGThinQFridgeHandler;
+import org.openhab.binding.lgthinq.internal.handler.LGThinQWasherDryerHandler;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.core.config.core.Configuration;
@@ -49,7 +61,7 @@ public class LGThinQHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQHandlerFactory.class);
 
-    private HttpClientFactory httpClientFactory;
+    private final HttpClientFactory httpClientFactory;
 
     private final LGThinQStateDescriptionProvider stateDescriptionProvider;
 

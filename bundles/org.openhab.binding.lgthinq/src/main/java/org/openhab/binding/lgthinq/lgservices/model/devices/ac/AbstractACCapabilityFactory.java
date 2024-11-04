@@ -12,16 +12,34 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIRCLEAN;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIR_CLEAN_COMMAND_OFF;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AIR_CLEAN_COMMAND_ON;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_AUTODRY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COMMAND_OFF;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COMMAND_ON;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_COOL_JET;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_ENERGYSAVING;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_COOL_JET;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_STEP_LEFT_RIGHT;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_SUB_MODE_STEP_UP_DOWN;
 import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.HEAT_PUMP;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +96,7 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
     private Map<String, String> extractOptions(JsonNode optionsNode, boolean invertKeyValue) {
         if (optionsNode.isMissingNode()) {
             logger.warn("Error extracting options supported by the device");
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         } else {
             Map<String, String> modes = new HashMap<String, String>();
             optionsNode.fields().forEachRemaining(e -> {
@@ -134,18 +152,17 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         acCap.setFanSpeed(fanSpeeds);
 
         // ===== get supported extra modes
-        boolean isSupportDryMode = false, isSupportEnergyMode = false;
 
         JsonNode supRacSubModeOps = valuesNode.path(getSupSubRacModeNodeName()).path(getOptionsMapNodeName());
         if (!supRacSubModeOps.isMissingNode()) {
             supRacSubModeOps.fields().forEachRemaining(f -> {
-                if (AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
                     acCap.setJetModeAvailable(true);
                 }
-                if (AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
                     acCap.setStepUpDownAvailable(true);
                 }
-                if (AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
                     acCap.setStepLeftRightAvailable(true);
                 }
             });
@@ -235,14 +252,11 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             JsonNode supHpAirSwitchNode = valuesNode.path(getHpAirWaterSwitchNodeName()).path(getOptionsMapNodeName());
             if (!supHpAirSwitchNode.isMissingNode()) {
                 supHpAirSwitchNode.fields().forEachRemaining(r -> {
-                    String racOpValue = r.getValue().asText();
+                    r.getValue().asText();
                 });
             }
         }
 
-        if (!supRACModeOps.isMissingNode()) {
-
-        }
         JsonNode infoNode = rootNode.get("Info");
         if (infoNode.isMissingNode()) {
             logger.warn("No info session defined in the cap data.");

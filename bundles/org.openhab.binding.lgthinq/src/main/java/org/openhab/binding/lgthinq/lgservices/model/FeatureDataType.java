@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FeatureDataType}
  * Feature is the values the device has to expose its sensor attributes
  * 
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public enum FeatureDataType {
     ENUM,
     RANGE,

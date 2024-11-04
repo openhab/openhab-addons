@@ -13,6 +13,7 @@
 package org.openhab.binding.lgthinq.lgservices.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link DevicePowerState}
@@ -35,18 +36,12 @@ public enum DevicePowerState {
         powerState = i;
     }
 
-    public static DevicePowerState statusOf(double value) {
-        switch ((int) value) {
-            case 0:
-                return DV_POWER_OFF;
-            case 1:
-            case 256:
-            case 257:
-                return DV_POWER_ON;
-
-            default:
-                return DV_POWER_UNK;
-        }
+    public static DevicePowerState statusOf(@Nullable Integer value) {
+        return switch (value == null ? -1 : value) {
+            case 0 -> DV_POWER_OFF;
+            case 1, 256, 257 -> DV_POWER_ON;
+            default -> DV_POWER_UNK;
+        };
     }
 
     public static double valueOf(DevicePowerState dps) {

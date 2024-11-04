@@ -37,7 +37,7 @@ public enum ACOpMode {
     }
 
     public static ACOpMode statusOf(int value) {
-        switch ((int) value) {
+        switch (value) {
             case 0:
                 return COOL;
             case 1:

@@ -12,28 +12,41 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_COURSE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_DOOR_LOCK_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_PROCESS_STATE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_REMAIN_TIME_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SMART_COURSE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_STATE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_DOOR_STATE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_PROCESS_STATE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_DW_STATE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_POWER_OFF_VALUE;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQDishWasherApiClientService;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
-import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -61,7 +74,7 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     public final ChannelGroupUID channelGroupDashboardUID;
 
     private final Logger logger = LoggerFactory.getLogger(LGThinQDishWasherHandler.class);
-    @NonNullByDefault
+
     private final LGThinQDishWasherApiClientService lgThinqDishWasherApiClientService;
 
     public LGThinQDishWasherHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
@@ -74,11 +87,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
         lgThinqDishWasherApiClientService = LGThinQApiClientServiceFactory.newDishWasherApiClientService(lgPlatformType,
                 httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        courseChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_COURSE_ID);
-        stateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STATE_ID);
-        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_PROCESS_STATE_ID);
-        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_REMAIN_TIME_ID);
-        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_DOOR_LOCK_ID);
+        courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
+        stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
+        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
+        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
+        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
     }
 
     private void loadOptionsCourse(DishWasherCapability cap, ChannelUID courseChannel) {
@@ -121,16 +134,13 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     protected void updateDeviceChannels(DishWasherSnapshot shot) {
-        DishWasherSnapshot lastShot = getLastShot();
-        updateState("dashboard#" + CHANNEL_POWER_ID,
+        updateState("dashboard#" + CHANNEL_AC_POWER_ID,
                 (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));
         updateState(courseChannelUID, new StringType(shot.getCourse()));
         updateState(doorLockChannelUID, new StringType(shot.getDoorLock()));
         updateState(remainTimeChannelUID, new StringType(shot.getRemainingTime()));
-        final List<Channel> dynChannels = new ArrayList<>();
-        // only can have remote start channel is the WM is not in sleep mode, and remote start is enabled.
     }
 
     @Override
@@ -146,23 +156,18 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     }
 
     @Override
-    protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
+    protected void processCommand(AsyncCommandParams params) {
         logger.error("Command {} to the channel {} not supported. Ignored.", params.command, params.channelUID);
     }
 
     @Override
-    public void onDeviceAdded(LGDevice device) {
-        // TODO - handle it. Think if it's needed
-    }
-
-    @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -175,11 +180,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
      */
     @Override
     public void onDeviceDisconnected() {
-        updateState(CHANNEL_POWER_ID, OnOffType.OFF);
-        updateState(WM_CHANNEL_STATE_ID, new StringType(WM_POWER_OFF_VALUE));
-        updateState(WM_CHANNEL_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
-        updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
+        updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
+        updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
+        updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
     }
 }

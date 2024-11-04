@@ -12,21 +12,39 @@
  */
 package org.openhab.binding.lgthinq.handler;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_GATEWAY_SERVICE_PATH_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_OAUTH_SEARCH_KEY_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V1;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PRE_LOGIN_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_LS_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SESSION_LOGIN_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_USER_INFO;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,13 +52,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.lgthinq.internal.LGThinQBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinQBridgeConfiguration;
-import org.openhab.binding.lgthinq.internal.api.RestUtils;
-import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQWMApiClientService;
+import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
+import org.openhab.binding.lgthinq.lgservices.api.TokenManager;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -56,13 +76,15 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
  */
 @ExtendWith(MockitoExtension.class)
 @WireMockTest(httpPort = 8880)
+@NonNullByDefault
+@SuppressWarnings({ "unchecked", "null" })
 class LGThinqBridgeTests {
     private static final Logger logger = LoggerFactory.getLogger(LGThinqBridgeTests.class);
     private final String fakeBridgeName = "fakeBridgeId";
-    private String fakeLanguage = "pt-BR";
-    private String fakeCountry = "BR";
-    private String fakeUserName = "someone@some.url";
-    private String fakePassword = "somepassword";
+    private final String fakeLanguage = "pt-BR";
+    private final String fakeCountry = "BR";
+    private final String fakeUserName = "someone@some.url";
+    private final String fakePassword = "somepassword";
     private final String gtwResponse = JsonUtils.loadJson("gtw-response-1.json");
     private final String preLoginResponse = JsonUtils.loadJson("prelogin-response-1.json");
     private final String userIdType = "LGE";
@@ -80,19 +102,20 @@ class LGThinqBridgeTests {
     private final String sessionTokenReturned = String.format(JsonUtils.loadJson("session-token-response-1.json"),
             accessToken, refreshToken);
 
-    private String getCurrentTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf.format(new Date());
-    }
+    // private String getCurrentTimestamp() {
+    // SimpleDateFormat sdf = new SimpleDateFormat(LG_API_DATE_FORMAT);
+    // sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    // return sdf.format(new Date());
+    // }
 
     @Test
     public void testDiscoveryACThings() {
         setupAuthenticationMock();
-        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V1,
-                mock(HttpClientFactory.class));
-        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V2,
-                mock(HttpClientFactory.class));
+        // LGThinQApiClientService service1 =
+        // LGThinQApiClientServiceFactory.newACApiClientService(LG_API_PLATFORM_TYPE_V1,
+        // mock(HttpClientFactory.class));
+        LGThinQApiClientService<ACCapability, ACCanonicalSnapshot> service2 = LGThinQApiClientServiceFactory
+                .newACApiClientService(LG_API_PLATFORM_TYPE_V2, mock(HttpClientFactory.class));
         try {
             List<LGDevice> devices = service2.listAccountDevices("bridgeTest");
             assertEquals(devices.size(), 2);
@@ -102,21 +125,20 @@ class LGThinqBridgeTests {
     }
 
     private void setupAuthenticationMock() {
-        stubFor(get(GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
+        stubFor(get(LG_API_GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
-        stubFor(post("/spx" + PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
+        stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + OAUTH_SEARCH_KEY_PATH)
+        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
                 .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
         stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
         String fakeUserNameEncoded = URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8);
-        stubFor(post(V2_SESSION_LOGIN_PATH + fakeUserNameEncoded)
+        stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + fakeUserNameEncoded)
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
                 .withHeader("X-Timestamp", equalTo("1643236928")).willReturn(ok(loginSessionResponse)));
-        stubFor(get(V2_USER_INFO).willReturn(ok(userInfoReturned)));
-        stubFor(get("/v1" + V2_LS_PATH).willReturn(ok(dashboardListReturned)));
-        String currTimestamp = getCurrentTimestamp();
+        stubFor(get(LG_API_V2_USER_INFO).willReturn(ok(userInfoReturned)));
+        stubFor(get("/v1" + LG_API_V2_LS_PATH).willReturn(ok(dashboardListReturned)));
         Map<String, String> empData = new LinkedHashMap<>();
         empData.put("account_type", userIdType);
         empData.put("country_code", fakeCountry);
@@ -159,22 +181,21 @@ class LGThinqBridgeTests {
 
     @Test
     public void testDiscoveryWMThings() {
-        stubFor(get(GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
+        stubFor(get(LG_API_GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
-        stubFor(post("/spx" + PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
+        stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + OAUTH_SEARCH_KEY_PATH)
+        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
                 .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
         stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
-        stubFor(post(V2_SESSION_LOGIN_PATH + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8))
+        stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8))
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
                 .withHeader("X-Timestamp", equalTo("1643236928")).willReturn(ok(loginSessionResponse)));
-        stubFor(get(V2_USER_INFO).willReturn(ok(userInfoReturned)));
-        stubFor(get("/v1" + V2_LS_PATH).willReturn(ok(dashboardWMListReturned)));
+        stubFor(get(LG_API_V2_USER_INFO).willReturn(ok(userInfoReturned)));
+        stubFor(get("/v1" + LG_API_V2_LS_PATH).willReturn(ok(dashboardWMListReturned)));
         String dataCollectedWM = JsonUtils.loadJson("wm-data-result.json");
         stubFor(get("/v1/service/devices/fakeDeviceId").willReturn(ok(dataCollectedWM)));
-        String currTimestamp = getCurrentTimestamp();
         Map<String, String> empData = new LinkedHashMap<>();
         empData.put("account_type", userIdType);
         empData.put("country_code", fakeCountry);
@@ -185,18 +206,19 @@ class LGThinqBridgeTests {
                 .withRequestBody(containing("username=" + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8)))
                 .withHeader("lgemp-x-session-key", equalTo(loginSessionId)).willReturn(ok(sessionTokenReturned)));
 
-        Bridge fakeThing = mock(Bridge.class);
-        ThingUID fakeThingUid = mock(ThingUID.class);
-        when(fakeThingUid.getId()).thenReturn(fakeBridgeName);
-        when(fakeThing.getUID()).thenReturn(fakeThingUid);
-        String tempDir = System.getProperty("java.io.tmpdir");
-        LGThinQBindingConstants.THINQ_USER_DATA_FOLDER = "" + tempDir;
+        // Bridge fakeThing = mock(Bridge.class);
+        // ThingUID fakeThingUid = mock(ThingUID.class);
+        // when(fakeThingUid.getId()).thenReturn(fakeBridgeName);
+        // when(fakeThing.getUID()).thenReturn(fakeThingUid);
+        String tempDir = Objects.requireNonNull(System.getProperty("java.io.tmpdir"),
+                "java.io.tmpdir environment variable must be set");
+        LGThinQBindingConstants.THINQ_USER_DATA_FOLDER = tempDir;
         LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE = tempDir + File.separator + "token.json";
         LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE = tempDir + File.separator + "thinq-cap.json";
-        LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
+        // LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
 
         final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory
-                .newWMApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
+                .newWMApiClientService(LG_API_PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
         TokenManager tokenManager = new TokenManager(mock(HttpClient.class));
         try {
             if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {
@@ -210,11 +232,4 @@ class LGThinqBridgeTests {
             logger.error("Error testing facade", e);
         }
     }
-
-    // @Test
-    // void TestWakeUp() throws LGThinqApiException {
-    // setupAuthenticationMock();
-    // LGThinQWMApiClientService service = LGThinQWMApiV1ClientServiceImpl.getInstance();
-    // service.wakeUp("xxx", "yyyy", true);
-    // }
 }

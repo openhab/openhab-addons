@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.REFRIGERATOR_SNAPSHOT_NODE_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_SNAPSHOT_NODE_V2;
 import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.REFRIGERATOR;
 
 import java.util.List;
@@ -20,9 +20,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.DefaultSnapshotBuilder;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringBinaryProtocol;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * The {@link FridgeSnapshotBuilder}
@@ -46,17 +50,18 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
         FridgeCanonicalSnapshot snap;
         if (REFRIGERATOR.equals(capDef.getDeviceType())) {
             switch (capDef.getDeviceVersion()) {
-                case V1_0: {
-                    throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
-                }
+                case V1_0:
+                    throw new IllegalArgumentException("Version 1.0 for Fridge driver is not supported yet.");
                 case V2_0: {
                     Map<String, Object> refMap = Objects.requireNonNull(
-                            (Map<String, Object>) snapMap.get(REFRIGERATOR_SNAPSHOT_NODE_V2),
-                            "washerDryer node must be present in the snapshot");
+                            objectMapper.convertValue(snapMap.get(RE_SNAPSHOT_NODE_V2), new TypeReference<>() {
+                            }), "washerDryer node must be present in the snapshot");
                     snap = objectMapper.convertValue(refMap, snapClass);
                     snap.setRawData(snapMap);
                     return snap;
                 }
+                default:
+                    throw new IllegalArgumentException("Version informed is not supported for the Fridge driver.");
             }
         }
 

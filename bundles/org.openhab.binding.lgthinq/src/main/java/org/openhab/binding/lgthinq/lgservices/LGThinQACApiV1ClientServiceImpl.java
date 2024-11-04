@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
-import static org.openhab.binding.lgthinq.internal.api.LGThinqCanonicalModelUtil.LG_ROOT_TAG_V1;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_CONTROL_OP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_ROOT_TAG_V1;
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
@@ -52,8 +51,9 @@ public class LGThinQACApiV1ClientServiceImpl extends
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
-        // Nothing to do on V1 ACCapability here
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
+        // there's no before settings to send command
+        return false;
     }
 
     /**
@@ -63,12 +63,10 @@ public class LGThinQACApiV1ClientServiceImpl extends
      * @param deviceId device ID for de desired V2 LG Thinq.
      * @param capDef
      * @return return map containing metamodel of settings and snapshot
-     * @throws LGThinqApiException if some communication error occur.
      */
     @Override
     @Nullable
-    public ACCanonicalSnapshot getDeviceData(@NonNull String bridgeName, @NonNull String deviceId,
-            @NonNull CapabilityDefinition capDef) throws LGThinqApiException {
+    public ACCanonicalSnapshot getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) {
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 
@@ -90,16 +88,15 @@ public class LGThinQACApiV1ClientServiceImpl extends
     }
 
     @Override
-    public ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException {
+    public ExtendedDeviceInfo getExtendedDeviceInfo(String bridgeName, String deviceId) throws LGThinqApiException {
         ExtendedDeviceInfo info = new ExtendedDeviceInfo();
         try {
-            RestResult resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "",
+            RestResult resp = sendCommand(bridgeName, deviceId, LG_API_V1_CONTROL_OP, "Config", "Get", "",
                     "InOutInstantPower");
             handleGenericErrorResult(resp);
             readDataResultNodeToObject(resp.getJsonResponse(), info);
 
-            resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "", "Filter");
+            resp = sendCommand(bridgeName, deviceId, LG_API_V1_CONTROL_OP, "Config", "Get", "", "Filter");
             handleGenericErrorResult(resp);
             readDataResultNodeToObject(resp.getJsonResponse(), info);
 

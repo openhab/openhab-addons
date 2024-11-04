@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link DeviceTypes}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public enum DeviceTypes {
     AIR_CONDITIONER(401, "AC", "", "air-conditioner-401"),
     HEAT_PUMP(401, "AC", "AWHP", "heatpump-401HP"),
@@ -74,24 +77,23 @@ public enum DeviceTypes {
     }
 
     public static DeviceTypes fromDeviceTypeAcron(String deviceTypeAcron, String modelType) {
-        switch (deviceTypeAcron) {
-            case "AC":
+        return switch (deviceTypeAcron) {
+            case "AC" -> {
                 if ("AWHP".equals(modelType)) {
-                    return HEAT_PUMP;
+                    yield HEAT_PUMP;
                 }
-                return AIR_CONDITIONER;
-            case "WM":
+                yield AIR_CONDITIONER;
+            }
+            case "WM" -> {
                 if ("Dryer".equals(modelType)) {
-                    return DRYER;
+                    yield DRYER;
                 }
-                return WASHERDRYER_MACHINE;
-            case "REF":
-                return REFRIGERATOR;
-            case "DW":
-                return DISH_WASHER;
-            default:
-                return UNKNOWN;
-        }
+                yield WASHERDRYER_MACHINE;
+            }
+            case "REF" -> REFRIGERATOR;
+            case "DW" -> DISH_WASHER;
+            default -> UNKNOWN;
+        };
     }
 
     DeviceTypes(int i, String n, String submodel, String thingTypeId) {

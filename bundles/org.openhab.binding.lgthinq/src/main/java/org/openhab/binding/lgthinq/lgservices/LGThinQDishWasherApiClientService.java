@@ -15,7 +15,6 @@ package org.openhab.binding.lgthinq.lgservices;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
 
@@ -27,8 +26,7 @@ import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWashe
 @NonNullByDefault
 public interface LGThinQDishWasherApiClientService
         extends LGThinQApiClientService<DishWasherCapability, DishWasherSnapshot> {
-    void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data)
-            throws LGThinqApiException;
+    void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data);
 
-    void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException;
+    void wakeUp(String bridgeName, String deviceId, Boolean wakeUp);
 }

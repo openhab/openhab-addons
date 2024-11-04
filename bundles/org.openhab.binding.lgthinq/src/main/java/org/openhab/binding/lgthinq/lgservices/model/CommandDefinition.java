@@ -16,8 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CommandDefinition}
@@ -26,22 +24,19 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CommandDefinition {
-    private static final Logger logger = LoggerFactory.getLogger(CommandDefinition.class);
     /**
      * This is the command tag value that is used by the API to launch the command service
      */
-    private String dataKey = "";
     private String command = "";
     private Map<String, Object> data = new HashMap<>();
 
     // =========== Used only for thinq V1 commands =============
-    private String cmdOpt = "";
     private String cmdOptValue = "";
     private boolean isBinary;
     // This is the template in the device definition of data that must be send to the LG API complementing the command
     private String dataTemplate = "";
     /*
-     * holds the how command (in text) as defined in the node command definition. Ex: For Remote Start (WM):
+     * holds how command (in text) as defined in the node command definition. Ex: For Remote Start (WM):
      * {
      * "cmd":"Control",
      * "cmdOpt":"Operation",
@@ -77,14 +72,6 @@ public class CommandDefinition {
 
     public void setData(Map<String, Object> data) {
         this.data = data;
-    }
-
-    public String getCmdOpt() {
-        return cmdOpt;
-    }
-
-    public void setCmdOpt(String cmdOpt) {
-        this.cmdOpt = cmdOpt;
     }
 
     public String getCmdOptValue() {

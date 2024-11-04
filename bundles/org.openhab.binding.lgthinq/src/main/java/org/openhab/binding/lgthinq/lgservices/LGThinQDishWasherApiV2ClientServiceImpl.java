@@ -14,10 +14,8 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherSnapshot;
@@ -37,24 +35,23 @@ public class LGThinQDishWasherApiV2ClientServiceImpl
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
-        // TODO - Analise what to do here
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
+        // there's no before settings to send command
+        return false;
     }
 
     @Override
-    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-            throws LGThinqApiException {
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) {
         throw new UnsupportedOperationException("Unsupported for this device");
     }
 
     @Override
-    public void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data)
-            throws LGThinqApiException {
+    public void remoteStart(String bridgeName, DishWasherCapability cap, String deviceId, Map<String, Object> data) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) throws LGThinqApiException {
+    public void wakeUp(String bridgeName, String deviceId, Boolean wakeUp) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

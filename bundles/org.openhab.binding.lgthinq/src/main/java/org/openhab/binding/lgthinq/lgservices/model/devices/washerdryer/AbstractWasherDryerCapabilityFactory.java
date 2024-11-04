@@ -12,14 +12,21 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_RINSE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_SPIN_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WMD_TEMP_LEVEL_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_RINSE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_SPIN;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_WM_REMOTE_START_TEMP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_KEY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WM_LOST_WASHING_STATE_VALUE;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
@@ -27,8 +34,6 @@ import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -39,7 +44,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapabilityFactory<WasherDryerCapability> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractWasherDryerCapabilityFactory.class);
 
     protected abstract String getStateFeatureNodeName();
 
@@ -94,11 +98,11 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
         wdCap.setProcessState(newFeatureDefinition(getProcessStateNodeName(), monitorValueNode));
         // --- Selectable features -----
         wdCap.setRinseFeat(newFeatureDefinition(getRinseFeatureNodeName(), monitorValueNode,
-                WM_CHANNEL_REMOTE_START_RINSE, WM_CHANNEL_RINSE_ID));
+                CHANNEL_WM_REMOTE_START_RINSE, CHANNEL_WMD_RINSE_ID));
         wdCap.setTemperatureFeat(newFeatureDefinition(getTemperatureFeatureNodeName(), monitorValueNode,
-                WM_CHANNEL_REMOTE_START_TEMP, WM_CHANNEL_TEMP_LEVEL_ID));
-        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode, WM_CHANNEL_REMOTE_START_SPIN,
-                WM_CHANNEL_SPIN_ID));
+                CHANNEL_WM_REMOTE_START_TEMP, CHANNEL_WMD_TEMP_LEVEL_ID));
+        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode, CHANNEL_WM_REMOTE_START_SPIN,
+                CHANNEL_WMD_SPIN_ID));
         // ----------------------------
         wdCap.setDryLevel(newFeatureDefinition(getDryLevelNodeName(), monitorValueNode));
         wdCap.setSoilWash(newFeatureDefinition(getSoilWashFeatureNodeName(), monitorValueNode));

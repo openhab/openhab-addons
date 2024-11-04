@@ -12,24 +12,56 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_FILTER_USED_TIME;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CAP_EXTRA_ATTR_INSTANT_POWER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AIR_CLEAN_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AIR_WATER_SWITCH_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AUTO_DRY_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_COOL_JET_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_POWER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_ENERGY_SAVING_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_FAN_SPEED_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MAX_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MIN_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_MOD_OP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_REMAINING_FILTER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_STEP_LEFT_RIGHT_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_STEP_UP_DOWN_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_TARGET_TEMP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_DASHBOARD_GRP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_COLLECTOR_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_GRP_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_AIR_CONDITIONER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_ACHP_OP_MODE_COOL_KEY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_ACHP_OP_MODE_HEAT_KEY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_FAN_SPEED;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_OP_MODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_STEP_LEFT_RIGHT_MODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_AC_STEP_UP_DOWN_MODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_HP_AIR_SWITCH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_HP_WATER_SWITCH;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.LGThinQACApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
-import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACTargetTmp;
@@ -85,7 +117,6 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     private double minTempConstraint = 16, maxTempConstraint = 30;
     private final ObjectMapper mapper = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(LGThinQAirConditionerHandler.class);
-    @NonNullByDefault
     private final LGThinQACApiClientService lgThinqACApiClientService;
 
     public LGThinQAirConditionerHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
@@ -96,24 +127,24 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
 
-        opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MOD_OP_ID);
-        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_WATER_SWITCH_ID);
-        targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_TARGET_TEMP_ID);
-        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MIN_TEMP_ID);
-        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MAX_TEMP_ID);
-        currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_CURRENT_TEMP_ID);
-        fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FAN_SPEED_ID);
-        jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_COOL_JET_ID);
-        airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_CLEAN_ID);
-        autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AUTO_DRY_ID);
-        energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_ENERGY_SAVING_ID);
-        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_UP_DOWN_ID);
-        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_LEFT_RIGHT_ID);
-        powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_POWER_ID);
+        opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MOD_OP_ID);
+        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_WATER_SWITCH_ID);
+        targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_TARGET_TEMP_ID);
+        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MIN_TEMP_ID);
+        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MAX_TEMP_ID);
+        currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_CURRENT_TEMP_ID);
+        fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_FAN_SPEED_ID);
+        jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_COOL_JET_ID);
+        airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_CLEAN_ID);
+        autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AUTO_DRY_ID);
+        energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_ENERGY_SAVING_ID);
+        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_UP_DOWN_ID);
+        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID);
+        powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_POWER_ID);
         extendedInfoCollectorChannelUID = new ChannelUID(channelGroupExtendedInfoUID,
                 CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-        currentPowerEnergyChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_CURRENT_POWER_ID);
-        remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_REMAINING_FILTER_ID);
+        currentPowerEnergyChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_CURRENT_POWER_ID);
+        remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_REMAINING_FILTER_ID);
     }
 
     @Override
@@ -179,7 +210,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 // HP has different combination of min and max target temperature depending on the switch mode and
                 // operation
                 // mode
-                String opModeValue = acCap.getOpMode().get(getLastShot().getOperationMode().toString());
+                String opModeValue = Objects
+                        .requireNonNullElse(acCap.getOpMode().get(getLastShot().getOperationMode().toString()), "");
                 if (CAP_HP_AIR_SWITCH.equals(shot.getHpAirWaterTempSwitch())) {
                     if (opModeValue.equals(CAP_ACHP_OP_MODE_COOL_KEY)) {
                         minTempConstraint = shot.getHpAirTempCoolMin();
@@ -214,14 +246,15 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getCapabilities();
-        manageDynChannel(jetModeChannelUID, CHANNEL_COOL_JET_ID, "Switch", acCap.isJetModeAvailable());
-        manageDynChannel(autoDryChannelUID, CHANNEL_AUTO_DRY_ID, "Switch", acCap.isAutoDryModeAvailable());
-        manageDynChannel(airCleanChannelUID, CHANNEL_AIR_CLEAN_ID, "Switch", acCap.isAirCleanAvailable());
-        manageDynChannel(energySavingChannelUID, CHANNEL_ENERGY_SAVING_ID, "Switch", acCap.isEnergySavingAvailable());
-        manageDynChannel(stepUpDownChannelUID, CHANNEL_STEP_UP_DOWN_ID, "Number", acCap.isStepUpDownAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+        manageDynChannel(jetModeChannelUID, CHANNEL_AC_COOL_JET_ID, "Switch", acCap.isJetModeAvailable());
+        manageDynChannel(autoDryChannelUID, CHANNEL_AC_AUTO_DRY_ID, "Switch", acCap.isAutoDryModeAvailable());
+        manageDynChannel(airCleanChannelUID, CHANNEL_AC_AIR_CLEAN_ID, "Switch", acCap.isAirCleanAvailable());
+        manageDynChannel(energySavingChannelUID, CHANNEL_AC_ENERGY_SAVING_ID, "Switch",
+                acCap.isEnergySavingAvailable());
+        manageDynChannel(stepUpDownChannelUID, CHANNEL_AC_STEP_UP_DOWN_ID, "Number", acCap.isStepUpDownAvailable());
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, "Number",
                 acCap.isStepLeftRightAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, "Number",
                 acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {
@@ -271,18 +304,13 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     }
 
     @Override
-    public void onDeviceAdded(LGDevice device) {
-        // TODO - handle it. Think if it's needed
-    }
-
-    @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -305,7 +333,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
         Command command = params.command;
         switch (getSimpleChannelUID(params.channelUID)) {
-            case CHANNEL_MOD_OP_ID: {
+            case CHANNEL_AC_MOD_OP_ID: {
                 if (params.command instanceof DecimalType) {
                     lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
                             ((DecimalType) command).intValue());
@@ -314,7 +342,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_FAN_SPEED_ID: {
+            case CHANNEL_AC_FAN_SPEED_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
                             ((DecimalType) command).intValue());
@@ -323,7 +351,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_STEP_UP_DOWN_ID: {
+            case CHANNEL_AC_STEP_UP_DOWN_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeStepUpDown(getBridgeId(), getDeviceId(), getLastShot(),
                             ((DecimalType) command).intValue());
@@ -332,7 +360,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_STEP_LEFT_RIGHT_ID: {
+            case CHANNEL_AC_STEP_LEFT_RIGHT_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeStepLeftRight(getBridgeId(), getDeviceId(), getLastShot(),
                             ((DecimalType) command).intValue());
@@ -341,7 +369,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_POWER_ID: {
+            case CHANNEL_AC_POWER_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
@@ -350,7 +378,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_COOL_JET_ID: {
+            case CHANNEL_AC_COOL_JET_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnCoolJetMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getCoolJetModeCommandOn()
@@ -360,7 +388,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_AIR_CLEAN_ID: {
+            case CHANNEL_AC_AIR_CLEAN_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnAirCleanMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getAirCleanModeCommandOn()
@@ -370,7 +398,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_AUTO_DRY_ID: {
+            case CHANNEL_AC_AUTO_DRY_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnAutoDryMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getAutoDryModeCommandOn()
@@ -380,7 +408,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_ENERGY_SAVING_ID: {
+            case CHANNEL_AC_ENERGY_SAVING_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnEnergySavingMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getEnergySavingModeCommandOn()
@@ -390,7 +418,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_TARGET_TEMP_ID: {
+            case CHANNEL_AC_TARGET_TEMP_ID: {
                 double targetTemp;
                 if (command instanceof DecimalType) {
                     targetTemp = ((DecimalType) command).doubleValue();
@@ -437,6 +465,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     }
 
     @Override
+    @SuppressWarnings("null")
     protected Map<String, Object> collectExtraInfoState() throws LGThinqException {
         ExtendedDeviceInfo info = lgThinqACApiClientService.getExtendedDeviceInfo(getBridgeId(), getDeviceId());
         return mapper.convertValue(info, new TypeReference<>() {
@@ -444,29 +473,33 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     }
 
     @Override
-    protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) throws LGThinqException {
+    protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) {
         logger.debug("Calling updateExtraInfoStateChannels for device: {}", getDeviceId());
-        String instantPowerConsumption = (String) energyStateAttributes.get(EXTENDED_ATTR_INSTANT_POWER);
-        String filterUsed = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_USED_TIME);
-        String filterTimelife = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE);
+        String instantPowerConsumption = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_INSTANT_POWER);
+        String filterUsed = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_USED_TIME);
+        String filterTimelife = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE);
         if (instantPowerConsumption == null) {
             updateState(currentPowerEnergyChannelUID, UnDefType.NULL);
-        } else if (NumberUtils.isCreatable(instantPowerConsumption)) {
-            double ip = Double.parseDouble(instantPowerConsumption);
-            updateState(currentPowerEnergyChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
         } else {
-            updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
+            try {
+                double ip = Double.parseDouble(instantPowerConsumption);
+                updateState(currentPowerEnergyChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
+            } catch (NumberFormatException e) {
+                updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
+            }
         }
 
         if (filterTimelife == null || filterUsed == null) {
             updateState(remainingFilterChannelUID, UnDefType.NULL);
-        } else if (NumberUtils.isCreatable(filterTimelife) && NumberUtils.isCreatable(filterUsed)) {
-            double used = Double.parseDouble(filterUsed);
-            double max = Double.parseDouble(filterTimelife);
-            double perc = (1 - ((double) used / max)) * 100;
-            updateState(remainingFilterChannelUID, new QuantityType<>(perc, Units.PERCENT));
         } else {
-            updateState(remainingFilterChannelUID, UnDefType.UNDEF);
+            try {
+                double used = Double.parseDouble(filterUsed);
+                double max = Double.parseDouble(filterTimelife);
+                double perc = (1 - (used / max)) * 100;
+                updateState(remainingFilterChannelUID, new QuantityType<>(perc, Units.PERCENT));
+            } catch (NumberFormatException ex) {
+                updateState(remainingFilterChannelUID, UnDefType.UNDEF);
+            }
         }
     }
 }

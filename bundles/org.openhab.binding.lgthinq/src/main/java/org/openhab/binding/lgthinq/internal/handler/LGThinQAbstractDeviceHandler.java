@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.BINDING_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_POWER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_EXTENDED_INFO_COLLECTOR_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.MAX_GET_MONITOR_RETRIES;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_PLATFORM_TYPE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PLATFORM_TYPE_V2;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -23,20 +30,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinQStateDescriptionProvider;
-import org.openhab.binding.lgthinq.internal.errors.*;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelGroupTypeProvider;
 import org.openhab.binding.lgthinq.internal.type.ThinqChannelTypeProvider;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientService;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiExhaustionException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
+import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelKind;
@@ -52,15 +81,13 @@ import org.slf4j.LoggerFactory;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinition, S extends SnapshotDefinition>
+public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends CapabilityDefinition, @NonNull S extends SnapshotDefinition>
         extends BaseThingWithExtraInfoHandler {
     private final Logger logger = LoggerFactory.getLogger(LGThinQAbstractDeviceHandler.class);
     protected @Nullable LGThinQBridgeHandler account;
     protected final String lgPlatformType;
-    @Nullable
     private S lastShot;
     protected final ItemChannelLinkRegistry itemChannelLinkRegistry;
-    private final Class<S> snapshotClass;
     @Nullable
     protected C thinQCapability;
     private @Nullable Future<?> commandExecutorQueueJob;
@@ -93,18 +120,25 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     protected ThinqChannelGroupTypeProvider thinqChannelGroupProvider;
 
     protected S getLastShot() {
-        return Objects.requireNonNull(lastShot);
+        return Objects.requireNonNull(lastShot, "LastShot shouldn't be null. It most likely a bug.");
     }
 
+    @SuppressWarnings("unchecked")
+    public Class<S> getSnapshotClass() {
+        return (Class<S>) (Objects.requireNonNull((ParameterizedType) getClass().getGenericSuperclass(),
+                "Unexpected null here")).getActualTypeArguments()[1];
+    }
+
+    @SuppressWarnings("null")
     public LGThinQAbstractDeviceHandler(Thing thing, LGThinQStateDescriptionProvider stateDescriptionProvider,
             ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing);
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
         normalizeConfigurationsAndProperties();
-        lgPlatformType = String.valueOf(thing.getProperties().get(PLATFORM_TYPE));
-        this.snapshotClass = (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass())
-                .getActualTypeArguments()[1];
+        lgPlatformType = String.valueOf(thing.getProperties().get(PROP_INFO_PLATFORM_TYPE));
+
+        Class<S> snapshotClass = getSnapshotClass();
         try {
             this.lastShot = snapshotClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
@@ -112,8 +146,12 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         }
     }
 
+    private LGThinQBridgeHandler getAccountBridgeHandler() {
+        return Objects.requireNonNull(this.account, "BridgeHandler not initialized. It most likely a bug");
+    }
+
     private void normalizeConfigurationsAndProperties() {
-        List.of(PLATFORM_TYPE, MODEL_URL_INFO, DEVICE_ID).forEach(p -> {
+        List.of(PROP_INFO_PLATFORM_TYPE, PROP_INFO_MODEL_URL_INFO, PROP_INFO_DEVICE_ID).forEach(p -> {
             if (!thing.getProperties().containsKey(p)) {
                 thing.setProperty(p, (String) thing.getConfiguration().get(p));
             }
@@ -164,16 +202,18 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
      * @param key key to search for a value into map
      * @return return value related to that key in the map, or the own key if there is no correspondent.
      */
-    protected final String keyIfValueNotFound(Map<String, String> map, @NonNull String key) {
+    protected final String keyIfValueNotFound(Map<String, String> map, String key) {
         return Objects.requireNonNullElse(map.get(key), key);
     }
 
+    @SuppressWarnings("null")
     protected void startCommandExecutorQueueJob() {
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
             commandExecutorQueueJob = getExecutorService().submit(getQueuedCommandExecutor());
         }
     }
 
+    @SuppressWarnings("null")
     protected void stopCommandExecutorQueueJob() {
         if (commandExecutorQueueJob != null) {
             commandExecutorQueueJob.cancel(true);
@@ -181,6 +221,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         commandExecutorQueueJob = null;
     }
 
+    @SuppressWarnings("null")
     protected void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
         if (lastThingStatus != ThingStatus.ONLINE && newStatus == ThingStatus.ONLINE) {
             // start the thing polling
@@ -208,6 +249,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     }
 
     @Override
+    @SuppressWarnings("null")
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateThingStateFromLG();
@@ -240,10 +282,8 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         return executorService;
     }
 
-    public abstract void onDeviceAdded(@NonNullByDefault LGDevice device);
-
     public String getDeviceId() {
-        return Objects.requireNonNullElse(getThing().getProperties().get(DEVICE_ID), "undef");
+        return Objects.requireNonNullElse(getThing().getProperties().get(PROP_INFO_DEVICE_ID), "undef");
     }
 
     public abstract String getDeviceAlias();
@@ -257,18 +297,6 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     public abstract void updateChannelDynStateDescription() throws LGThinqApiException;
 
     public abstract LGThinQApiClientService<@NonNull C, @NonNull S> getLgThinQAPIClientService();
-
-    protected void createDynSwitchChannel(String channelName, ChannelUID chanelUuid) {
-        if (getCallback() == null) {
-            logger.error("Unexpected behaviour. Callback not ready! Can't create dynamic channels");
-        } else {
-            // dynamic create channel
-            ChannelBuilder builder = getCallback().createChannelBuilder(chanelUuid,
-                    new ChannelTypeUID(BINDING_ID, channelName));
-            Channel channel = builder.withKind(ChannelKind.STATE).withAcceptedItemType("Switch").build();
-            updateThing(editThing().withChannel(channel).build());
-        }
-    }
 
     public C getCapabilities() throws LGThinqApiException {
         if (thinQCapability == null) {
@@ -287,7 +315,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     @Nullable
     protected String getItemLinkedValue(ChannelUID channelUID) {
         Set<Item> items = itemChannelLinkRegistry.getLinkedItems(channelUID);
-        if (items.size() > 0) {
+        if (!items.isEmpty()) {
             for (Item i : items) {
                 return i.getState().toString();
             }
@@ -332,21 +360,25 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             if (account == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Account not set");
             } else {
-                account.registryListenerThing(this);
-                switch (bridgeStatus) {
-                    case ONLINE:
-                        updateStatus(ThingStatus.ONLINE);
-                        break;
-                    case INITIALIZING:
-                    case UNINITIALIZED:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                        break;
-                    case UNKNOWN:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        break;
-                    default:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                        break;
+                getAccountBridgeHandler().registryListenerThing(this);
+                if (bridgeStatus == null) {
+                    updateStatus(ThingStatus.UNINITIALIZED);
+                } else {
+                    switch (bridgeStatus) {
+                        case ONLINE:
+                            updateStatus(ThingStatus.ONLINE);
+                            break;
+                        case INITIALIZING:
+                        case UNINITIALIZED:
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            break;
+                        case UNKNOWN:
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            break;
+                        default:
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                            break;
+                    }
                 }
             }
         } else {
@@ -466,7 +498,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     protected void updateThingStateFromLG() {
         try {
             @Nullable
-            S shot = getSnapshotDeviceAdapter(getDeviceId(), getCapabilities());
+            S shot = getSnapshotDeviceAdapter(getDeviceId());
             if (shot == null) {
                 // no data to update. Maybe, the monitor stopped, then it's going to be restarted next try.
                 return;
@@ -500,7 +532,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             getLogger().error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry: {}",
                     getDeviceAlias(), getDeviceId(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        } catch (Throwable e) {
+        } catch (Exception e) {
             getLogger().error(
                     "System error in pooling thread (UpdateDevice) for device {}/{}. Filtering to do not stop the thread",
                     getDeviceAlias(), getDeviceId(), e);
@@ -544,10 +576,10 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         startThingStatePolling();
     }
 
-    private void updateDeviceChannelsWrapper(S snapshot) {
+    private void updateDeviceChannelsWrapper(S snapshot) throws LGThinqApiException {
         updateDeviceChannels(snapshot);
         // handle power changes
-        handlePowerChange(lastShot == null ? null : lastShot.getPowerStatus(), snapshot.getPowerStatus());
+        handlePowerChange(getLastShot().getPowerStatus(), snapshot.getPowerStatus());
         // after updated successfully, copy snapshot to last snapshot
         lastShot = snapshot;
         // and finish the cycle of thing reconfiguration (when thing starts or has configurations changed - if it's the
@@ -555,31 +587,28 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         isThingReconfigured = false;
     }
 
-    protected abstract void updateDeviceChannels(S snapshot);
+    protected abstract void updateDeviceChannels(S snapshot) throws LGThinqApiException;
 
     protected String translateFeatureToItemType(FeatureDataType dataType) {
-        switch (dataType) {
-            case UNDEF:
-            case ENUM:
-                return "String";
-            case RANGE:
-                return "Dimmer";
-            case BOOLEAN:
-                return "Switch";
-            default:
-                throw new IllegalStateException(
-                        String.format("Feature DataType %s not supported for this ThingHandler", dataType));
-        }
+        return switch (dataType) {
+            case UNDEF, ENUM -> "String";
+            case RANGE -> "Dimmer";
+            case BOOLEAN -> "Switch";
+            default -> throw new IllegalStateException(
+                    String.format("Feature DataType %s not supported for this ThingHandler", dataType));
+        };
     }
 
+    @SuppressWarnings("null")
     protected void stopThingStatePolling() {
-        if (thingStatePollingJob != null && !thingStatePollingJob.isDone()) {
+        if (!(thingStatePollingJob == null || thingStatePollingJob.isDone())) {
             getLogger().debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
             thingStatePollingJob.cancel(true);
         }
         thingStatePollingJob = null;
     }
 
+    @SuppressWarnings("null")
     private void stopExtraInfoCollectorPolling() {
         if (extraInfoCollectorPollingJob != null && !extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Stopping Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
@@ -589,6 +618,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         extraInfoCollectorPollingJob = null;
     }
 
+    @SuppressWarnings("null")
     protected void startThingStatePolling() {
         if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
             getLogger().debug("Starting LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
@@ -602,6 +632,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
      * Normally, the thing has a Switch Channel that enable/disable the energy collector. By default, the collector is
      * disabled.
      */
+    @SuppressWarnings("null")
     private void startExtraInfoCollectorPolling() {
         if (extraInfoCollectorPollingJob == null || extraInfoCollectorPollingJob.isDone()) {
             getLogger().debug("Starting Energy Collector for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
@@ -627,32 +658,17 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             getLogger().error("Configuration error um Thinq Thing - No Bridge defined for the thing.");
             return "UNKNOWN";
         } else if (bridgeId.isBlank() && getBridge() != null) {
-            bridgeId = getBridge().getUID().getId();
+            bridgeId = Objects.requireNonNull(getBridge()).getUID().getId();
         }
         return bridgeId;
     }
 
     abstract protected DeviceTypes getDeviceType();
 
-    private S handleV1OfflineException() {
-        try {
-            // As I don't know the current device status, then I reset to default values.
-            S shot = snapshotClass.getDeclaredConstructor().newInstance();
-            shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
-            shot.setOnline(false);
-            return shot;
-        } catch (Exception ex) {
-            logger.error("Unexpected Error. The default constructor of this Snapshot wasn't found", ex);
-            throw new IllegalStateException("Unexpected Error. The default constructor of this Snapshot wasn't found",
-                    ex);
-        }
-    }
-
     @Nullable
-    protected S getSnapshotDeviceAdapter(String deviceId, CapabilityDefinition capDef)
-            throws LGThinqApiException, LGThinqApiExhaustionException {
+    protected S getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException, LGThinqApiExhaustionException {
         // analise de platform version
-        if (PLATFORM_TYPE_V2.equals(lgPlatformType)) {
+        if (LG_API_PLATFORM_TYPE_V2.equals(lgPlatformType)) {
             return getLgThinQAPIClientService().getDeviceData(getBridgeId(), getDeviceId(), getCapabilities());
         } else {
             try {
@@ -665,7 +681,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                     stopDeviceV1Monitor(deviceId);
                 } catch (Exception ignored) {
                 }
-                return handleV1OfflineException();
+                return getLgThinQAPIClientService().buildDefaultOfflineSnapshot();
             } catch (Exception e) {
                 stopDeviceV1Monitor(deviceId);
                 throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
@@ -723,7 +739,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             try {
                 processCommand(params);
                 String channelUid = getSimpleChannelUID(params.channelUID);
-                if (CHANNEL_POWER_ID.equals(channelUid)) {
+                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
                     // if processed command come from POWER channel, then force updateDeviceChannels immediatly
                     // this is importante to analise if the poolings need to be changed in time.
                     updateThingStateFromLG();
@@ -758,7 +774,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         logger.debug("Disposing Thinq Thing {}", getDeviceId());
 
         if (account != null) {
-            account.unRegistryListenerThing(this);
+            getAccountBridgeHandler().unRegistryListenerThing(this);
         }
 
         stopThingStatePolling();
@@ -788,8 +804,9 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             throw new IllegalStateException("Unexpected behaviour. Callback not ready! Can't create dynamic channels");
         } else {
             // dynamic create channel
-            ChannelBuilder builder = getCallback().createChannelBuilder(channelUuid,
-                    new ChannelTypeUID(BINDING_ID, channelNameAndTypeName));
+            ChannelBuilder builder = Objects
+                    .requireNonNull(getCallback(), "Not expected callback null here. It most likely a bug")
+                    .createChannelBuilder(channelUuid, new ChannelTypeUID(BINDING_ID, channelNameAndTypeName));
             Channel channel = builder.withKind(ChannelKind.STATE).withAcceptedItemType(itemType).build();
             updateThing(editThing().withChannel(channel).build());
             return channel;

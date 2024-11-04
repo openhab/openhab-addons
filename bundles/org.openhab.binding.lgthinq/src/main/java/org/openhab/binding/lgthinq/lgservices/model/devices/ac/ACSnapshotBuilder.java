@@ -16,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.DefaultSnapshotBuilder;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringBinaryProtocol;
 
 /**
  * The {@link ACSnapshotBuilder}
@@ -46,8 +48,9 @@ public class ACSnapshotBuilder extends DefaultSnapshotBuilder<ACCanonicalSnapsho
                 snap = objectMapper.convertValue(snapMap, snapClass);
                 snap.setRawData(snapMap);
                 return snap;
+            default:
+                throw new IllegalStateException("Snapshot for device type " + capDef.getDeviceType()
+                        + " not supported for this builder. It most likely a bug");
         }
-        throw new IllegalStateException("Snapshot for device type " + capDef.getDeviceType()
-                + " not supported for this builder. It most likely a bug");
     }
 }

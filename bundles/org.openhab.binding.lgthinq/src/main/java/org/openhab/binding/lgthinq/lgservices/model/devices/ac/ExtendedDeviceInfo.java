@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_FILTER_USED_TIME;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_EXTRA_ATTR_INSTANT_POWER;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -32,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ExtendedDeviceInfo {
     private String instantPower = "";
 
-    @JsonProperty(EXTENDED_ATTR_FILTER_USED_TIME)
+    @JsonProperty(CAP_EXTRA_ATTR_FILTER_USED_TIME)
     @JsonAlias("airState.filterMngStates.useTime")
     public String getFilterHoursUsed() {
         return filterHoursUsed;
@@ -42,7 +43,7 @@ public class ExtendedDeviceInfo {
         this.filterHoursUsed = filterHoursUsed;
     }
 
-    @JsonProperty(EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE)
+    @JsonProperty(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE)
     @JsonAlias("airState.filterMngStates.maxTime")
     public String getFilterHoursMax() {
         return filterHoursMax;
@@ -60,14 +61,18 @@ public class ExtendedDeviceInfo {
      * 
      * @return the instant total power consumption
      */
-    @JsonProperty(EXTENDED_ATTR_INSTANT_POWER)
+    @JsonProperty(CAP_EXTRA_ATTR_INSTANT_POWER)
     @JsonAlias("airState.energy.totalCurrent")
     public String getRawInstantPower() {
         return instantPower;
     }
 
     public Double getInstantPower() {
-        return NumberUtils.isCreatable(instantPower) ? Double.parseDouble(instantPower) : 0.0;
+        try {
+            return Double.parseDouble(instantPower);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 
     public void setRawInstantPower(String instantPower) {

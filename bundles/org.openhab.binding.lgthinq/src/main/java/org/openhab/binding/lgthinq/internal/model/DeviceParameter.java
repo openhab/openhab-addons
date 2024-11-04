@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.lgthinq.internal.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescriptionParameter.Type;
 import org.openhab.core.config.core.ParameterOption;
 
@@ -32,32 +32,32 @@ public class DeviceParameter {
     private final String label;
     private final String description;
     private final String defaultValue;
-    @Nullable
-    private final List<ParameterOption> options;
+    private DeviceParameterGroup group = new DeviceParameterGroup("", "");
+    private final List<ParameterOption> options = new ArrayList<ParameterOption>();
 
     private final boolean isReadOnly;
-    @Nullable
-    DeviceParameterGroup group;
 
     public DeviceParameter(String name, Type type, String label, String description, String defaultValue,
-            @Nullable List<ParameterOption> options, boolean isReadOnly) {
+            List<ParameterOption> options, boolean isReadOnly) {
         this.name = name;
         this.type = type;
         this.label = label;
         this.description = description;
         this.defaultValue = defaultValue;
-        this.options = options;
+        this.options.addAll(options);
         this.isReadOnly = isReadOnly;
     }
 
-    @Nullable
-    public List<ParameterOption> getOptions() {
-        return options;
-    }
-
-    @Nullable
     public DeviceParameterGroup getGroup() {
         return group;
+    }
+
+    public void setGroup(DeviceParameterGroup group) {
+        this.group = group;
+    }
+
+    public List<ParameterOption> getOptions() {
+        return options;
     }
 
     public boolean isReadOnly() {

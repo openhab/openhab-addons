@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_CONTROL_OP;
 
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.api.RestUtils;
-import org.openhab.binding.lgthinq.internal.api.TokenResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
+import org.openhab.binding.lgthinq.lgservices.api.TokenResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
@@ -90,11 +95,6 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
                 }
             }
         });
-        // String payload = String.format(
-        // "{\n" + " \"lgedmRoot\":{\n" + " \"cmd\": \"%s\"," + " \"cmdOpt\": \"%s\","
-        // + " \"value\": {\"%s\": \"%s\"}," + " \"deviceId\": \"%s\","
-        // + " \"workId\": \"%s\"," + " \"data\": \"\"" + " }\n" + "}",
-        // controlKey, command, keyName, value, deviceId, UUID.randomUUID());
         if (extraNode != null) {
             payloadNode.setAll(extraNode);
         }
@@ -111,14 +111,15 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
 
     protected RestResult sendCommand(String bridgeName, String deviceId, Object cmdPayload) throws Exception {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_CONTROL_OP);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_CONTROL_OP);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-        ObjectNode payloadNode = null;
+        ObjectNode payloadNode;
         if (cmdPayload instanceof ObjectNode) {
             payloadNode = ((ObjectNode) cmdPayload).deepCopy();
         } else {
-            payloadNode = objectMapper.convertValue(cmdPayload, ObjectNode.class);
+            payloadNode = objectMapper.convertValue(cmdPayload, new TypeReference<>() {
+            });
         }
         ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
         ObjectNode bodyNode = JsonNodeFactory.instance.objectNode();
@@ -145,8 +146,13 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
         }
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(),
-                        resp.getJsonResponse());
+                if (logger.isDebugEnabled()) {
+                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}\n {}",
+                            resp.getStatusCode(), resp.getJsonResponse(), Thread.currentThread().getStackTrace());
+                } else {
+                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
+                            resp.getStatusCode(), resp.getJsonResponse());
+                }
             } else {
                 logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
                         resp.getStatusCode(), resp.getJsonResponse());
@@ -158,7 +164,8 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             try {
                 metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
-                envelope = (Map<String, Object>) metaResult.get("lgedmRoot");
+                envelope = objectMapper.convertValue(metaResult.get("lgedmRoot"), new TypeReference<>() {
+                });
                 String code = String.valueOf(envelope.get("returnCd"));
                 if (envelope.isEmpty()) {
                     throw new LGThinqApiException(String.format(
@@ -215,8 +222,12 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             List<Integer> list = objectMapper.readValue(dataStr, new TypeReference<>() {
             });
             // convert the list of integer to a bytearray
-            byte[] bytes = ArrayUtils.toPrimitive(list.stream().map(Integer::byteValue).toArray(Byte[]::new));
-            String str_data_encoded = new String(Base64.getEncoder().encode(bytes));
+
+            byte[] byteArray = new byte[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                byteArray[i] = list.get(i).byteValue(); // Converte Integer para byte
+            }
+            String str_data_encoded = new String(Base64.getEncoder().encode(byteArray));
             data.put("data", str_data_encoded);
         } else {
             data.put("data", dataStr);

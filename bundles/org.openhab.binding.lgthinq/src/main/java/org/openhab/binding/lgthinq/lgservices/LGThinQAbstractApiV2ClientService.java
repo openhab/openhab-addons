@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_CTRL_DEVICE_CONFIG_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_CTRL_DEVICE_CONFIG_PATH;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,10 +23,10 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.api.RestUtils;
-import org.openhab.binding.lgthinq.internal.api.TokenResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
+import org.openhab.binding.lgthinq.lgservices.api.TokenResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
@@ -63,7 +63,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
             throws LGThinqApiException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                .path(String.format(V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
+                .path(String.format(LG_API_V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
         Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, payload);
@@ -100,8 +100,13 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
         }
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}", resp.getStatusCode(),
-                        resp.getJsonResponse());
+                if (logger.isDebugEnabled()) {
+                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}\n {}",
+                            resp.getStatusCode(), resp.getJsonResponse(), Thread.currentThread().getStackTrace());
+                } else {
+                    logger.warn("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",
+                            resp.getStatusCode(), resp.getJsonResponse());
+                }
                 return Collections.emptyMap();
             } else {
                 logger.error("Error returned by LG Server API. HTTP Status: {}. The reason is: {}",

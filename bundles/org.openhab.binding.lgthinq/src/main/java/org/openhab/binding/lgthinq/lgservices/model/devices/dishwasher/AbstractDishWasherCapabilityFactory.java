@@ -18,15 +18,13 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -37,7 +35,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public abstract class AbstractDishWasherCapabilityFactory extends AbstractCapabilityFactory<DishWasherCapability> {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDishWasherCapabilityFactory.class);
 
     protected abstract String getStateFeatureNodeName();
 
@@ -49,6 +46,7 @@ public abstract class AbstractDishWasherCapabilityFactory extends AbstractCapabi
 
     protected abstract String getControlConvertingRulesNodeName();
 
+    @SuppressWarnings("unused")
     protected abstract MonitoringResultFormat getMonitorDataFormat(JsonNode rootNode);
 
     @Override

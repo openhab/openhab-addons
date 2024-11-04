@@ -18,12 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -34,7 +31,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ACCapabilityFactoryV1.class);
 
     @Override
     protected List<LGAPIVerion> getSupportedAPIVersions() {
@@ -42,7 +38,7 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     }
 
     @Override
-    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) {
         return Collections.emptyMap();
     }
 

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("null")
 public class JsonUtils {
     public static <T> T unmashallJson(String fileName) {
         InputStream inputStream = JsonUtils.class.getResourceAsStream(fileName);

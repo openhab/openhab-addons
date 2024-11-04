@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_CELSIUS_SYMBOL;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.TEMP_UNIT_FAHRENHEIT_SYMBOL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS_SYMBOL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT_SYMBOL;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.slf4j.Logger;
@@ -97,17 +97,17 @@ public abstract class AbstractFridgeCapabilityFactory extends AbstractCapability
         if (!node.path(getMonitorValueNodeName()).path(getEcoFriendlyNodeName()).isMissingNode()) {
             frCap.setEcoFriendlyModePresent(true);
         }
-        loadTempNode(fridgeTempCNode, frCap.getFridgeTempCMap(), TEMP_UNIT_CELSIUS_SYMBOL);
+        loadTempNode(fridgeTempCNode, frCap.getFridgeTempCMap(), RE_TEMP_UNIT_CELSIUS_SYMBOL);
         if (fridgeTempFNode.isMissingNode()) {
             frCap.getFridgeTempFMap().putAll(convertCelsius2Fahrenheit(frCap.getFridgeTempCMap()));
         } else {
-            loadTempNode(fridgeTempFNode, frCap.getFridgeTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+            loadTempNode(fridgeTempFNode, frCap.getFridgeTempFMap(), RE_TEMP_UNIT_FAHRENHEIT_SYMBOL);
         }
-        loadTempNode(freezerTempCNode, frCap.getFreezerTempCMap(), TEMP_UNIT_CELSIUS_SYMBOL);
+        loadTempNode(freezerTempCNode, frCap.getFreezerTempCMap(), RE_TEMP_UNIT_CELSIUS_SYMBOL);
         if (freezerTempFNode.isMissingNode()) {
             frCap.getFreezerTempFMap().putAll(convertCelsius2Fahrenheit(frCap.getFreezerTempCMap()));
         } else {
-            loadTempNode(freezerTempFNode, frCap.getFreezerTempFMap(), TEMP_UNIT_FAHRENHEIT_SYMBOL);
+            loadTempNode(freezerTempFNode, frCap.getFreezerTempFMap(), RE_TEMP_UNIT_FAHRENHEIT_SYMBOL);
         }
         loadTempUnitNode(tempUnitNode, frCap.getTempUnitMap());
         loadIcePlus(icePlusNode, frCap.getIcePlusMap());

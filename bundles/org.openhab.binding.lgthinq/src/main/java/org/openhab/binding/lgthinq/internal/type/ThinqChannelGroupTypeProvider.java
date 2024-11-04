@@ -26,9 +26,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 @NonNullByDefault
 public interface ThinqChannelGroupTypeProvider extends ChannelGroupTypeProvider {
 
-    public void addChannelGroupType(ChannelGroupType channelGroupType);
+    void addChannelGroupType(ChannelGroupType channelGroupType);
 
-    public void removeChannelGroupType(ChannelGroupType channelGroupType);
-
-    public List<ChannelGroupType> internalGroupTypes();
+    List<ChannelGroupType> internalGroupTypes();
 }

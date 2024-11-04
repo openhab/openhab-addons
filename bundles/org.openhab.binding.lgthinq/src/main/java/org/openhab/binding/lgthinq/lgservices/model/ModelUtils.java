@@ -17,6 +17,8 @@ import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.fromDevic
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,14 +28,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class ModelUtils {
     public static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static DeviceTypes getDeviceType(Map<String, Object> rootMap) {
-        Map<String, String> infoMap = (Map<String, String>) rootMap.get("Info");
+        Map<String, String> infoMap = objectMapper.convertValue(rootMap.get("Info"), new TypeReference<>() {
+        });
         Objects.requireNonNull(infoMap, "Unexpected error. Info node not present in capability schema");
-        String productType = infoMap.get("productType");
-        String modelType = infoMap.get("modelType");
+        String productType = infoMap.getOrDefault("productType", "");
+        String modelType = infoMap.getOrDefault("modelType", "");
         Objects.requireNonNull(infoMap, "Unexpected error. ProductType attribute not present in capability schema");
         return fromDeviceTypeAcron(productType, modelType);
     }
@@ -55,7 +59,8 @@ public class ModelUtils {
         switch (type) {
             case AIR_CONDITIONER:
             case HEAT_PUMP:
-                Map<String, Object> valueNode = (Map<String, Object>) rootMap.get("Value");
+                Map<String, Object> valueNode = objectMapper.convertValue(rootMap.get("Value"), new TypeReference<>() {
+                });
                 if (valueNode.containsKey("support.airState.opMode")) {
                     return LGAPIVerion.V2_0;
                 } else if (valueNode.containsKey("SupportOpMode")) {

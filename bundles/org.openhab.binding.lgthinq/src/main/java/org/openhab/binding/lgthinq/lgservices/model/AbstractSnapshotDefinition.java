@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NonNullByDefault
 public abstract class AbstractSnapshotDefinition implements SnapshotDefinition {
 
-    protected Map<String, Object> otherInfo = new HashMap<>();
+    protected final Map<String, Object> otherInfo = new HashMap<>();
 
     @JsonAnySetter
     public void addOtherInfo(String propertyKey, Object value) {
@@ -51,4 +51,24 @@ public abstract class AbstractSnapshotDefinition implements SnapshotDefinition {
     public void setRawData(Map<String, Object> rawData) {
         this.rawData = rawData;
     }
+
+    public static final AbstractSnapshotDefinition EMPTY_SHOT = new AbstractSnapshotDefinition() {
+        @Override
+        public DevicePowerState getPowerStatus() {
+            return DevicePowerState.DV_POWER_UNK;
+        }
+
+        @Override
+        public void setPowerStatus(DevicePowerState value) {
+        }
+
+        @Override
+        public boolean isOnline() {
+            return false;
+        }
+
+        @Override
+        public void setOnline(boolean online) {
+        }
+    };
 }

@@ -12,7 +12,20 @@
  */
 package org.openhab.binding.lgthinq.internal.discovery;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.DISCOVERY_SEARCH_TIMEOUT;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ALIAS;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_DEVICE_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_MODEL_URL_INFO;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PROP_INFO_PLATFORM_TYPE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.SUPPORTED_THING_TYPES;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_AIR_CONDITIONER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DISHWASHER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_DRYER_TOWER;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_FRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_HEAT_PUMP;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_MACHINE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THING_TYPE_WASHING_TOWER;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.time.Instant;
@@ -22,10 +35,10 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory.LGThinQGeneralApiClientService;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -51,7 +64,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
     private @Nullable LGThinQGeneralApiClientService lgApiClientService;
 
     public LGThinqDiscoveryService() {
-        super(LGThinQBridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(LGThinQBridgeHandler.class, SUPPORTED_THING_TYPES, DISCOVERY_SEARCH_TIMEOUT);
     }
 
     @Override
@@ -94,7 +107,8 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         ThingTypeUID thingTypeUID;
         try {
             // load capability to cache and troubleshooting
-            lgApiClientService.loadDeviceCapability(device.getDeviceId(), device.getModelJsonUri(), false);
+            Objects.requireNonNull(lgApiClientService, "Unexpected null here")
+                    .loadDeviceCapability(device.getDeviceId(), device.getModelJsonUri(), false);
             thingUID = getThingUID(device);
             thingTypeUID = getThingTypeUID(device);
         } catch (LGThinqException e) {
@@ -104,14 +118,14 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
         }
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put(DEVICE_ID, device.getDeviceId());
-        properties.put(DEVICE_ALIAS, device.getAlias());
-        properties.put(MODEL_URL_INFO, device.getModelJsonUri());
-        properties.put(PLATFORM_TYPE, device.getPlatformType());
+        properties.put(PROP_INFO_DEVICE_ID, device.getDeviceId());
+        properties.put(PROP_INFO_DEVICE_ALIAS, device.getAlias());
+        properties.put(PROP_INFO_MODEL_URL_INFO, device.getModelJsonUri());
+        properties.put(PROP_INFO_PLATFORM_TYPE, device.getPlatformType());
         properties.put(PROPERTY_MODEL_ID, modelId);
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(DEVICE_ID)
+                .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(PROP_INFO_DEVICE_ID)
                 .withLabel(device.getAlias()).build();
 
         thingDiscovered(discoveryResult);

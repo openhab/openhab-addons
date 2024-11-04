@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import org.openhab.binding.lgthinq.internal.handler.LGThinQAbstractDeviceHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
@@ -23,10 +23,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link LGThinQAbstractDeviceHandler} is a main interface contract for all LG Thinq things
+ * The {@link LGThinQStateDescriptionProvider} Custom State Description Provider
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 @Component(service = { DynamicStateDescriptionProvider.class, LGThinQStateDescriptionProvider.class })
 public class LGThinQStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate

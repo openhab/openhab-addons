@@ -23,5 +23,5 @@ import org.openhab.core.thing.type.ChannelTypeProvider;
  */
 @NonNullByDefault
 public interface ThinqChannelTypeProvider extends ChannelTypeProvider {
-    public void addChannelType(final ChannelType channelType);
+    void addChannelType(final ChannelType channelType);
 }

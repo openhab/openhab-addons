@@ -15,12 +15,11 @@ package org.openhab.binding.lgthinq.lgservices;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
@@ -47,20 +46,19 @@ public class LGThinQWMApiV1ClientServiceImpl
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
-        // Nothing to do for V1 thinq
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
+        // there's no before settings to send command
+        return false;
     }
 
     @Override
-    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-            throws LGThinqApiException {
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
     @Nullable
-    public WasherDryerSnapshot getDeviceData(@NonNull String bridgeName, @NonNull String deviceId,
-            @NonNull CapabilityDefinition capDef) throws LGThinqApiException {
+    public WasherDryerSnapshot getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) {
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 

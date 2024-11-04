@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.FR_SET_CONTROL_COMMAND_NAME_V1;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_SET_CONTROL_COMMAND_NAME_V1;
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
@@ -46,20 +45,19 @@ public class LGThinQFridgeApiV1ClientServiceImpl
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId) {
-        // Nothing to do for V1 thinq
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
+        // there's no before settings to send command
+        return false;
     }
 
     @Override
-    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-            throws LGThinqApiException {
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
     @Nullable
-    public FridgeCanonicalSnapshot getDeviceData(@NonNull String bridgeName, @NonNull String deviceId,
-            @NonNull CapabilityDefinition capDef) throws LGThinqApiException {
+    public FridgeCanonicalSnapshot getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) {
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 
@@ -67,35 +65,39 @@ public class LGThinQFridgeApiV1ClientServiceImpl
     public void setFridgeTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
             throws LGThinqApiException {
-        assert snapCmdData != null;
-        snapCmdData.put("TempRefrigerator", targetTemperatureIndex);
-        setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        if (snapCmdData != null) {
+            snapCmdData.put("TempRefrigerator", targetTemperatureIndex);
+            setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        } else {
+            logger.warn("Snapshot Command Data is null");
+        }
     }
 
     @Override
     public void setFreezerTemperature(String bridgeId, String deviceId, FridgeCapability fridgeCapability,
             Integer targetTemperatureIndex, String tempUnit, @Nullable Map<String, Object> snapCmdData)
             throws LGThinqApiException {
-        assert snapCmdData != null;
-        snapCmdData.put("TempFreezer", targetTemperatureIndex);
-        setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        if (snapCmdData != null) {
+            snapCmdData.put("TempFreezer", targetTemperatureIndex);
+            setControlCommand(bridgeId, deviceId, fridgeCapability, snapCmdData);
+        } else {
+            logger.warn("Snapshot command is null");
+        }
     }
 
     @Override
-    public void setExpressMode(String bridgeId, String deviceId, String expressModeIndex) throws LGThinqApiException {
+    public void setExpressMode(String bridgeId, String deviceId, String expressModeIndex) {
         throw new UnsupportedOperationException("V1 Fridge doesn't support ExpressMode feature. It mostly like a bug");
     }
 
     @Override
-    public void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
-            throws LGThinqApiException {
+    public void setExpressCoolMode(String bridgeId, String deviceId, boolean trueOnFalseOff) {
         throw new UnsupportedOperationException(
                 "V1 Fridge doesn't support ExpressCoolMode feature. It mostly like a bug");
     }
 
     @Override
-    public void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff)
-            throws LGThinqApiException {
+    public void setEcoFriendlyMode(String bridgeId, String deviceId, boolean trueOnFalseOff) {
         throw new UnsupportedOperationException(
                 "V1 Fridge doesn't support ExpressCoolMode feature. It mostly like a bug");
     }
@@ -111,7 +113,7 @@ public class LGThinQFridgeApiV1ClientServiceImpl
             @Nullable Map<String, Object> snapCmdData) throws LGThinqApiException {
         try {
             CommandDefinition cmdSetControlDef = fridgeCapability.getCommandsDefinition()
-                    .get(FR_SET_CONTROL_COMMAND_NAME_V1);
+                    .get(RE_SET_CONTROL_COMMAND_NAME_V1);
             if (cmdSetControlDef == null) {
                 logger.warn("No command definition found for set control command. Ignoring command");
                 return;

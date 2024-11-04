@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
+import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.WasherFeatureDefinition;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -35,7 +34,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(WasherDryerCapabilityFactoryV1.class);
 
     @Override
     public WasherDryerCapability create(JsonNode rootNode) throws LGThinqException {
@@ -108,7 +106,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
     }
 
     @Override
-    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) {
         return getCommandsDefinitionV1(rootNode);
     }
 
@@ -160,23 +158,7 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
         fd.setChannelId(Objects.requireNonNullElse(targetChannelId, ""));
         fd.setRefChannelId(Objects.requireNonNullElse(refChannelId, ""));
         // All features from V1 are ENUMs
-        fd.setDataType(FeatureDataType.ENUM);
-        JsonNode valuesMappingNode = featureNode.path("option");
-        if (!valuesMappingNode.isMissingNode()) {
-
-            Map<String, String> valuesMapping = new HashMap<>();
-            valuesMappingNode.fields().forEachRemaining(e -> {
-                // collect values as:
-                //
-                // "option":{
-                // "0":"@WM_STATE_POWER_OFF_W",
-                // to "0" -> "@WM_STATE_POWER_OFF_W"
-                valuesMapping.put(e.getKey(), e.getValue().asText());
-            });
-            fd.setValuesMapping(valuesMapping);
-        }
-
-        return fd;
+        return WasherFeatureDefinition.setAllValuesMapping(fd, featureNode);
     }
 
     @Override
@@ -217,7 +199,6 @@ public class WasherDryerCapabilityFactoryV1 extends AbstractWasherDryerCapabilit
         JsonNode refOptions = rootNode.path(getMonitorValueNodeName()).path(getConfigCourseType(rootNode))
                 .path("option");
         if (refOptions.isArray()) {
-            AtomicReference<String> courseNodeName = new AtomicReference<>("");
             for (JsonNode node : refOptions) {
                 return node.asText();
             }

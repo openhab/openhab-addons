@@ -14,6 +14,8 @@ package org.openhab.binding.lgthinq.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
 
 /**
  * The {@link LGThinQBridge}
@@ -24,7 +26,9 @@ import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 public interface LGThinQBridge {
     void registerDiscoveryListener(LGThinqDiscoveryService listener);
 
-    void registryListenerThing(LGThinQAbstractDeviceHandler thing);
+    void registryListenerThing(
+            LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> thing);
 
-    void unRegistryListenerThing(LGThinQAbstractDeviceHandler thing);
+    void unRegistryListenerThing(
+            LGThinQAbstractDeviceHandler<? extends CapabilityDefinition, ? extends SnapshotDefinition> thing);
 }

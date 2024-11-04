@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapabilityFactoryV1;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCapabilityFactoryV2;
 import org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher.DishWasherCapabilityFactoryV2;
@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link CapabilityFactory}
@@ -39,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class CapabilityFactory {
-    Map<DeviceTypes, Map<LGAPIVerion, AbstractCapabilityFactory<? extends CapabilityDefinition>>> capabilityDeviceFactories = new HashMap<>();
+    final Map<DeviceTypes, Map<LGAPIVerion, AbstractCapabilityFactory<? extends CapabilityDefinition>>> capabilityDeviceFactories = new HashMap<>();
 
     private CapabilityFactory() {
         List<AbstractCapabilityFactory<?>> factories = Arrays.asList(new ACCapabilityFactoryV1(),
@@ -55,7 +54,6 @@ public class CapabilityFactory {
                 for (LGAPIVerion v : f.getSupportedAPIVersions()) {
                     versionMap.put(v, f);
                 }
-                ;
                 capabilityDeviceFactories.put(d, versionMap);
             });
         });
@@ -66,7 +64,6 @@ public class CapabilityFactory {
         instance = new CapabilityFactory();
     }
     private static final Logger logger = LoggerFactory.getLogger(CapabilityFactory.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static CapabilityFactory getInstance() {
         return instance;

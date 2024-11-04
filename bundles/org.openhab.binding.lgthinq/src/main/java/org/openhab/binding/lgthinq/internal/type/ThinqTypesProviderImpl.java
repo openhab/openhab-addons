@@ -13,7 +13,12 @@
 package org.openhab.binding.lgthinq.internal.type;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,7 +27,13 @@ import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingTypeProvider;
-import org.openhab.core.thing.type.*;
+import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelGroupTypeProvider;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.ThingType;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -77,11 +88,6 @@ public class ThinqTypesProviderImpl implements ThinqChannelTypeProvider, ThinqCh
     @Override
     public void addChannelGroupType(ChannelGroupType channelGroupType) {
         channelGroupTypesByUID.put(channelGroupType.getUID(), channelGroupType);
-    }
-
-    @Override
-    public void removeChannelGroupType(ChannelGroupType channelGroupType) {
-        channelGroupTypesByUID.remove(channelGroupType.getUID());
     }
 
     @Override

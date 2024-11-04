@@ -40,7 +40,7 @@ public class SnapshotBuilderFactory {
     }
 
     private SnapshotBuilderFactory() {
-    };
+    }
 
     public static SnapshotBuilderFactory getInstance() {
         return instance;

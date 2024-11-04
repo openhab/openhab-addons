@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.handler.JsonUtils;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer.WasherDryerCapability;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,8 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 class CapabilityFactoryTest {
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void create() throws IOException, LGThinqException {
@@ -40,8 +44,7 @@ class CapabilityFactoryTest {
         try (InputStream inputStream = classLoader.getResourceAsStream("thinq-washer-v2-cap.json")) {
             assertNotNull(inputStream);
             JsonNode mapper = objectMapper.readTree(inputStream);
-            WasherDryerCapability wpCap = (WasherDryerCapability) CapabilityFactory.getInstance().create(mapper,
-                    WasherDryerCapability.class);
+            WasherDryerCapability wpCap = CapabilityFactory.getInstance().create(mapper, WasherDryerCapability.class);
             assertNotNull(wpCap);
             assertEquals(40, wpCap.getCourses().size());
             assertTrue(wpCap.getRinseFeat().getValuesMapping().size() > 1);

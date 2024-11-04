@@ -48,7 +48,6 @@ public class WasherDryerCapability extends AbstractCapability<WasherDryerCapabil
     private FeatureDefinition dryLevel = FeatureDefinition.NULL_DEFINITION;
     private FeatureDefinition processState = FeatureDefinition.NULL_DEFINITION;
     private boolean hasDoorLook;
-    private boolean hasTurboWash;
     private Map<String, CommandDefinition> commandsDefinition = new HashMap<>();
     private Map<String, CourseDefinition> courses = new LinkedHashMap<>();
 

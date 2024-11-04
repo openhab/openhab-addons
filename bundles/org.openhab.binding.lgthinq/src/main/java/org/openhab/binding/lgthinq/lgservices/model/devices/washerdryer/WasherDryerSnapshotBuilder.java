@@ -12,16 +12,22 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE_V2;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.WMD_SNAPSHOT_WASHER_DRYER_NODE_V2;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqUnmarshallException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.DefaultSnapshotBuilder;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringBinaryProtocol;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * The {@link WasherDryerSnapshotBuilder}
@@ -54,42 +60,36 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
         DeviceTypes type = capDef.getDeviceType();
         LGAPIVerion version = capDef.getDeviceVersion();
         switch (type) {
+            case DRYER_TOWER:
+            case DRYER:
             case WASHER_TOWER:
             case WASHERDRYER_MACHINE:
                 switch (version) {
                     case V1_0: {
-                        snap = objectMapper.convertValue(snapMap, snapClass);
-                        snap.setRawData(snapMap);
+                        if (type == DeviceTypes.DRYER || type == DeviceTypes.DRYER_TOWER) {
+                            throw new IllegalArgumentException("Version 1.0 for Dryer is not supported yet.");
+                        } else {
+                            snap = objectMapper.convertValue(snapMap, snapClass);
+                            snap.setRawData(snapMap);
+                        }
                     }
                     case V2_0: {
-                        Map<String, Object> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, Object>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
-                                "washerDryer node must be present in the snapshot");
+                        Map<String, Object> washerDryerMap = Objects.requireNonNull(objectMapper
+                                .convertValue(snapMap.get(WMD_SNAPSHOT_WASHER_DRYER_NODE_V2), new TypeReference<>() {
+                                }), "washerDryer node must be present in the snapshot");
                         snap = objectMapper.convertValue(washerDryerMap, snapClass);
                         setAltCourseNodeName(capDef, snap, washerDryerMap);
                         snap.setRawData(washerDryerMap);
                         return snap;
                     }
+                    default:
+                        throw new IllegalStateException("Snapshot for device type " + type + " and version " + version
+                                + " are not supported for this builder. It most likely a bug");
                 }
-            case DRYER_TOWER:
-            case DRYER:
-                switch (version) {
-                    case V1_0: {
-                        throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
-                    }
-                    case V2_0: {
-                        Map<String, Object> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, Object>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
-                                "washerDryer node must be present in the snapshot");
-                        snap = objectMapper.convertValue(washerDryerMap, snapClass);
-                        setAltCourseNodeName(capDef, snap, washerDryerMap);
-                        snap.setRawData(snapMap);
-                        return snap;
-                    }
-                }
+            default:
+                throw new IllegalStateException(
+                        "Snapshot for device type " + type + " not supported for this builder. It most likely a bug");
         }
-        throw new IllegalStateException(
-                "Snapshot for device type " + type + " not supported for this builder. It most likely a bug");
     }
 
     private static void setAltCourseNodeName(CapabilityDefinition capDef, WasherDryerSnapshot snap,

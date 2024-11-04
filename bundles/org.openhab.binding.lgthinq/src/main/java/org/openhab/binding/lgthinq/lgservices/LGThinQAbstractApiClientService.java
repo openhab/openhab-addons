@@ -12,7 +12,20 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.BASE_CAP_CONFIG_DATA_FILE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SECURITY_KEY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SVC_CODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_MON_DATA_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V1_START_MON_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_API_KEY;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_LEVEL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_OS;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_TYPE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_APP_VER;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_CLIENT_ID;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_DEVICE_CONFIG_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_LS_PATH;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SVC_PHASE;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,21 +33,38 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.lgthinq.internal.LGThinQBindingConstants;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.api.RestUtils;
-import org.openhab.binding.lgthinq.internal.api.TokenManager;
-import org.openhab.binding.lgthinq.internal.api.TokenResult;
-import org.openhab.binding.lgthinq.internal.errors.*;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.api.RestUtils;
+import org.openhab.binding.lgthinq.lgservices.api.TokenManager;
+import org.openhab.binding.lgthinq.lgservices.api.TokenResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqUnmarshallException;
+import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityDefinition;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityFactory;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
+import org.openhab.binding.lgthinq.lgservices.model.ResultCodes;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +80,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("unchecked")
 public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefinition, S extends AbstractSnapshotDefinition>
         implements LGThinQApiClientService<C, S> {
     private static final Logger logger = LoggerFactory.getLogger(LGThinQAbstractApiClientService.class);
     protected final ObjectMapper objectMapper = new ObjectMapper();
     protected final TokenManager tokenManager;
-    protected Class<C> capabilityClass;
-    protected Class<S> snapshotClass;
-    protected HttpClient httpClient;
+    protected final Class<C> capabilityClass;
+    protected final Class<S> snapshotClass;
+    protected final HttpClient httpClient;
 
     protected LGThinQAbstractApiClientService(Class<C> capabilityClass, Class<S> snapshotClass, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -71,18 +102,18 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
         headers.put("Content-type", "application/json;charset=UTF-8");
-        headers.put("x-api-key", V2_API_KEY);
-        headers.put("x-client-id", V2_CLIENT_ID);
+        headers.put("x-api-key", LG_API_V2_API_KEY);
+        headers.put("x-client-id", LG_API_V2_CLIENT_ID);
         headers.put("x-country-code", country);
         headers.put("x-language-code", language);
         headers.put("x-message-id", UUID.randomUUID().toString());
-        headers.put("x-service-code", SVC_CODE);
-        headers.put("x-service-phase", V2_SVC_PHASE);
-        headers.put("x-thinq-app-level", V2_APP_LEVEL);
-        headers.put("x-thinq-app-os", V2_APP_OS);
-        headers.put("x-thinq-app-type", V2_APP_TYPE);
-        headers.put("x-thinq-app-ver", V2_APP_VER);
-        headers.put("x-thinq-security-key", SECURITY_KEY);
+        headers.put("x-service-code", LG_API_SVC_CODE);
+        headers.put("x-service-phase", LG_API_V2_SVC_PHASE);
+        headers.put("x-thinq-app-level", LG_API_V2_APP_LEVEL);
+        headers.put("x-thinq-app-os", LG_API_V2_APP_OS);
+        headers.put("x-thinq-app-type", LG_API_V2_APP_TYPE);
+        headers.put("x-thinq-app-ver", LG_API_V2_APP_VER);
+        headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
         if (!accessToken.isBlank())
             headers.put("x-emp-token", accessToken);
         if (!userNumber.isBlank())
@@ -100,7 +131,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException {
         try {
             TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
+            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(LG_API_V2_LS_PATH);
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
@@ -139,7 +170,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         try {
             TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                    .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
+                    .path(String.format("%s/%s", LG_API_V2_DEVICE_CONFIG_PATH, deviceId));
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
@@ -150,32 +181,27 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     }
 
     private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGThinqApiException {
-        return genericHandleDeviceSettingsResult(resp, logger, objectMapper);
+        return genericHandleDeviceSettingsResult(resp, objectMapper);
     }
 
-    @SuppressWarnings("unchecked")
-    static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, Logger logger,
-            ObjectMapper objectMapper) throws LGThinqApiException {
+    static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, ObjectMapper objectMapper)
+            throws LGThinqApiException {
         Map<String, Object> deviceSettings;
-        Map<String, String> respMap = Collections.EMPTY_MAP;
-        String resultCode = "???";
+        Map<String, String> respMap;
+        String resultCode;
         if (resp.getStatusCode() != 200) {
             if (resp.getStatusCode() == 400) {
-                logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
+                LGThinQAbstractApiClientService.logger.warn(
+                        "Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
                         resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
                 return Collections.emptyMap();
             }
             try {
-                if (resp.getStatusCode() == 400) {
-                    logger.warn("Error calling device settings from LG Server API. HTTP Status: {}. The reason is: {}",
-                            resp.getStatusCode(), ResultCodes.getReasonResponse(resp.getJsonResponse()));
-                    return Collections.emptyMap();
-                }
                 respMap = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 resultCode = respMap.get("resultCode");
                 if (resultCode != null) {
-                    logger.error(
+                    LGThinQAbstractApiClientService.logger.error(
                             "Error calling device settings from LG Server API. The code is: {} and The reason is: {}",
                             resultCode, ResultCodes.fromCode(resultCode));
                     throw new LGThinqApiException("Error calling device settings from LG Server API.");
@@ -183,7 +209,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             } catch (JsonProcessingException e) {
                 // This exception doesn't matter, it's because response is not in json format. Logging raw response.
             }
-            logger.error("Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
+            LGThinQAbstractApiClientService.logger.error(
+                    "Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
             throw new LGThinqApiException(String.format(
                     "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));
 
@@ -193,7 +220,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 });
                 String code = Objects.requireNonNullElse((String) deviceSettings.get("resultCode"), "");
                 if (!ResultCodes.OK.containsResultCode(code)) {
-                    logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
+                    LGThinQAbstractApiClientService.logger.error(
+                            "LG API report error processing the request -> resultCode=[{}], message=[{}]", code,
                             getErrorCodeMessage(code));
                     throw new LGThinqApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
@@ -208,7 +236,6 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                 "Unexpected json result asking for Device Settings. Node 'result' no present");
     }
 
-    @SuppressWarnings("unchecked")
     private List<LGDevice> handleListAccountDevicesResult(RestResult resp) throws LGThinqApiException {
         Map<String, Object> devicesResult;
         List<LGDevice> devices;
@@ -234,8 +261,8 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
                                     devicesResult.get("resultCode")));
                 }
-                List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) devicesResult
-                        .get("result")).get("item");
+                List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) Objects
+                        .requireNonNull(devicesResult.get("result"), "Not expected null here")).get("item");
                 devices = objectMapper.convertValue(items, new TypeReference<>() {
                 });
             } catch (JsonProcessingException e) {
@@ -275,9 +302,10 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         }
     }
 
-    private S handleV1OfflineException() {
+    public S buildDefaultOfflineSnapshot() {
         try {
             // As I don't know the current device status, then I reset to default values.
+            @SuppressWarnings("null")
             S shot = snapshotClass.getDeclaredConstructor().newInstance();
             shot.setPowerStatus(DevicePowerState.DV_POWER_OFF);
             shot.setOnline(false);
@@ -289,11 +317,11 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         }
     }
 
-    public @Nullable S getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId,
-            DeviceTypes deviceType, @NonNull C deviceCapability) throws LGThinqApiException,
-            LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException {
+    public @Nullable S getMonitorData(String bridgeName, String deviceId, String workId, DeviceTypes deviceType,
+            C deviceCapability) throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException,
+            LGThinqUnmarshallException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_MON_DATA_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_MON_DATA_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String jsonData = String.format("{\n" + "   \"lgedmRoot\":{\n" + "      \"workList\":[\n" + "         {\n"
@@ -306,11 +334,12 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         try {
             envelop = handleGenericErrorResult(resp);
         } catch (LGThinqDeviceV1OfflineException e) {
-            return handleV1OfflineException();
+            return buildDefaultOfflineSnapshot();
         }
-        if (envelop.get("workList") != null
-                && ((Map<String, Object>) envelop.get("workList")).get("returnData") != null) {
-            Map<String, Object> workList = ((Map<String, Object>) envelop.get("workList"));
+        Map<String, Object> workList = objectMapper
+                .convertValue(envelop.getOrDefault("workList", Collections.emptyMap()), new TypeReference<>() {
+                });
+        if (workList.get("returnData") != null) {
             if (logger.isDebugEnabled()) {
                 try {
                     objectMapper.writeValue(new File(String.format(
@@ -360,16 +389,16 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     }
 
     @Override
-    public void initializeDevice(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
+    public void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException {
     }
 
     /**
      * Perform some routine before getting data device. Depending on the kind of the device, this is needed
      * to update or prepare some informations before go to get the data.
      *
+     * @return
      */
-    protected abstract void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException;
+    protected abstract boolean beforeGetDataDevice(String bridgeName, String deviceId);
 
     /**
      * Get snapshot data from the device.
@@ -382,11 +411,12 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
      */
     @Override
     @Nullable
-    public S getDeviceData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull CapabilityDefinition capDef)
-            throws LGThinqApiException {
+    public S getDeviceData(String bridgeName, String deviceId, CapabilityDefinition capDef) throws LGThinqApiException {
         // Exec pre-conditions (normally ask for update monitoring sensors of the device - temp and power) before call
         // for data
-        beforeGetDataDevice(bridgeName, deviceId);
+        if (capDef.isBeforeCommandSupported() && !beforeGetDataDevice(bridgeName, deviceId)) {
+            capDef.setBeforeCommandSupported(false);
+        }
 
         Map<String, Object> deviceSettings = getDeviceSettings(bridgeName, deviceId);
         if (deviceSettings.get("snapshot") != null) {
@@ -406,7 +436,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             }
             S shot = (S) SnapshotBuilderFactory.getInstance().getBuilder(snapshotClass).createFromJson(deviceSettings,
                     capDef);
-            shot.setOnline((Boolean) snapMap.get("online"));
+            shot.setOnline((Boolean) snapMap.getOrDefault("online", Boolean.FALSE));
             return shot;
         }
         return null;
@@ -420,10 +450,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
      * @throws LGThinqApiException If some communication error occur.
      */
     @Override
-    public String startMonitor(String bridgeName, String deviceId)
-            throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException {
+    public String startMonitor(String bridgeName, String deviceId) throws LGThinqApiException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_START_MON_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_START_MON_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String workerId = UUID.randomUUID().toString();
@@ -440,10 +469,9 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     }
 
     @Override
-    public void stopMonitor(String bridgeName, String deviceId, String workId)
-            throws LGThinqApiException, RefreshTokenException, IOException, LGThinqDeviceV1OfflineException {
+    public void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqApiException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_START_MON_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_START_MON_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Stop\","

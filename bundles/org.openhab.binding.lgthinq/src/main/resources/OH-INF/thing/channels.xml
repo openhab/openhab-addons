@@ -46,7 +46,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="extra_info_collector">
+	<channel-type id="extra-info-collector">
 		<item-type>Switch</item-type>
 		<label>Info Collector</label>
 		<description>This switch enable collector for energy and filter consumption (if presents)</description>
@@ -136,28 +136,11 @@
 		<label>Fan Speed</label>
 		<description>AC Wind Strength</description>
 		<category>Wind</category>
-		<state>
-			<options>
-				<option value="2">Lower</option>
-				<option value="3">Low</option>
-				<option value="4">Medium</option>
-				<option value="5">Fast</option>
-				<option value="6">Faster</option>
-				<option value="8">Auto</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="operation-mode">
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>AC Operation Mode</description>
-		<state>
-			<options>
-				<option value="1">Cool</option>
-				<option value="2">Dry</option>
-				<option value="3">Fan</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="washerdryer-remote-start">

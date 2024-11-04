@@ -18,10 +18,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapability;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link FridgeCanonicalCapability}
@@ -32,23 +28,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class FridgeCanonicalCapability extends AbstractCapability<FridgeCanonicalCapability>
         implements FridgeCapability {
 
-    private static final Logger logger = LoggerFactory.getLogger(FridgeCanonicalCapability.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     private final Map<String, String> fridgeTempCMap = new LinkedHashMap<String, String>();
     private final Map<String, String> fridgeTempFMap = new LinkedHashMap<String, String>();
     private final Map<String, String> freezerTempCMap = new LinkedHashMap<String, String>();
     private final Map<String, String> freezerTempFMap = new LinkedHashMap<String, String>();
     private final Map<String, String> tempUnitMap = new LinkedHashMap<String, String>();
-    private final Map<String, String> icePlusMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> freshAirFilterMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> waterFilterMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> expressFreezeModeMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> smartSavingMap = new LinkedHashMap<String, String>();;
-    private final Map<String, String> activeSavingMap = new LinkedHashMap<String, String>();;
+    private final Map<String, String> icePlusMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> freshAirFilterMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> waterFilterMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> expressFreezeModeMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> smartSavingMap = new LinkedHashMap<String, String>();
+    private final Map<String, String> activeSavingMap = new LinkedHashMap<String, String>();
     private final Map<String, String> atLeastOneDoorOpenMap = new LinkedHashMap<>();
     private final Map<String, CommandDefinition> commandsDefinition = new LinkedHashMap<>();
-    private final Map<Object, Object> expressCoolModeMap = new LinkedHashMap<>();;
     private boolean isExpressCoolModePresent = false;
     private boolean isEcoFriendlyModePresent = false;
 

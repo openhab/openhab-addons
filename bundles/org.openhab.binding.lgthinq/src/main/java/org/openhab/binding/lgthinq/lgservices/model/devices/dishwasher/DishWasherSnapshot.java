@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.DW_POWER_OFF_VALUE;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.DW_STATE_COMPLETE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.DW_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.DW_STATE_COMPLETE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;

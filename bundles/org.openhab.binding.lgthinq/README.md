@@ -1,10 +1,11 @@
 # LG ThinQ Bridge & Things
 
-This binding was developed to integrate the LG ThinQ API into openHAB. 
+This binding was developed to integrate the LG ThinQ API with openHAB. 
 The ThinQ Bridge is necessary to work as a hub/bridge to discovery and first configure the LG ThinQ devices related with the LG's user account.
 Then, the first thing is to create the LG ThinQ Bridge and then, it will discover all Things you have related in your LG Account.
 
 ## Supported Things
+
 This binding support several devices from the LG ThinQ Devices V1 & V2 line. Se the table bellow:
 
 | Device ID | Device Name     | Versions | Special Functions            | Commands                                        | Obs                                                                                                                                                              |
@@ -58,6 +59,7 @@ All the configurations are pre-defined by the discovery process. But you can cus
 ## Channels
 
 ### Air Conditioner
+
 LG ThinQ Air Conditioners supports the following channels (for some models, some channels couldn't be available):
 
 #### Dashboard Channels
@@ -84,6 +86,7 @@ LG ThinQ Air Conditioners supports the following channels (for some models, some
 | remaining-filter     | Remaining Filter               | Number:Dimensionless | Percentage of the remaining filter                                           |
 
 ### Heat Pump
+
 LG ThinQ Heat Pump supports the following channels
 
 #### Dashboard Channels
@@ -106,6 +109,7 @@ LG ThinQ Heat Pump supports the following channels
 | current-power        | Current Power                  | Number:Energy        | The current power consumption in Kw/h                                        |
 
 ### Washer Machine
+
 LG ThinQ Washer Machine supports the following channels
 
 #### Dashboard Channels
@@ -137,6 +141,7 @@ This Channel Group is only available if the Washer is configured to Remote Start
 | rs-rinse             | Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
 
 ### Dryer Machine
+
 LG ThinQ Dryer Machine supports the following channels
 
 #### Dashboard Channels
@@ -164,9 +169,11 @@ This Channel Group is only available if the Dryer is configured to Remote Start
 | rs-course     | Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
 
 ### Dryer/Washer Tower
+
 LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines. Thus, for this device, follow the sessions for Dryer Machine and Washer Machine
 
 ### Refrigerator
+
 LG ThinQ Refrigerator supports the following channels
 
 #### Dashboard Channels

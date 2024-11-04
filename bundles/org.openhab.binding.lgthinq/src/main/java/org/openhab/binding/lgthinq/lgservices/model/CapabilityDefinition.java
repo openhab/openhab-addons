@@ -24,6 +24,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface CapabilityDefinition {
+    boolean isBeforeCommandSupported();
+
+    void setBeforeCommandSupported(boolean supports);
+
     String getModelName();
 
     void setModelName(String modelName);

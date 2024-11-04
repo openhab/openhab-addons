@@ -14,15 +14,11 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import java.io.IOException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.lgthinq.internal.api.RestResult;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
-import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
+import org.openhab.binding.lgthinq.lgservices.api.RestResult;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.devices.ac.ACCanonicalSnapshot;
@@ -161,42 +157,42 @@ public class LGThinQACApiV2ClientServiceImpl extends
      * 
      * @param deviceId Device ID
      * @return Work1 to be uses to grab data during monitoring.
-     * @throws LGThinqApiException If some communication error occur.
      */
     @Override
-    public String startMonitor(String bridgeName, String deviceId)
-            throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException {
+    public String startMonitor(String bridgeName, String deviceId) {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
     @Override
-    public void stopMonitor(String bridgeName, String deviceId, String workId)
-            throws LGThinqApiException, RefreshTokenException, IOException, LGThinqDeviceV1OfflineException {
+    public void stopMonitor(String bridgeName, String deviceId, String workId) {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
     @Override
-    public @Nullable ACCanonicalSnapshot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId,
-            @NonNull String workId, DeviceTypes deviceType, @NonNull ACCapability deviceCapability)
-            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException {
+    public @Nullable ACCanonicalSnapshot getMonitorData(String bridgeName, String deviceId, String workId,
+            DeviceTypes deviceType, ACCapability deviceCapability) {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
     @Override
-    public void initializeDevice(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
+    public void initializeDevice(String bridgeName, String deviceId) throws LGThinqApiException {
         super.initializeDevice(bridgeName, deviceId);
     }
 
     @Override
-    protected void beforeGetDataDevice(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException {
+    protected boolean beforeGetDataDevice(String bridgeName, String deviceId) {
         try {
             RestResult resp = sendCommand(bridgeName, deviceId, "control", "allEventEnable", "Set",
                     "airState.mon.timeout", "70");
             handleGenericErrorResult(resp);
+            if (resp.getStatusCode() == 400) {
+                // Access Denied. Return false to indicate user don't have access to this functionality
+                return false;
+            }
         } catch (Exception e) {
             logger.debug("Can't execute Before Update command", e);
         }
+        return true;
     }
 
     /**
@@ -226,8 +222,7 @@ public class LGThinQACApiV2ClientServiceImpl extends
     }
 
     @Override
-    public ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
-            throws LGThinqApiException {
+    public ExtendedDeviceInfo getExtendedDeviceInfo(String bridgeName, String deviceId) throws LGThinqApiException {
         ExtendedDeviceInfo info = new ExtendedDeviceInfo();
         try {
             ObjectNode dataList = JsonNodeFactory.instance.objectNode();

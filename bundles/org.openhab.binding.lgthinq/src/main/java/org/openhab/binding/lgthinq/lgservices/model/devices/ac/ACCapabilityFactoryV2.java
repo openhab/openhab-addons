@@ -17,12 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
+import org.openhab.binding.lgthinq.lgservices.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -33,7 +30,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @NonNullByDefault
 public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ACCapabilityFactoryV2.class);
 
     @Override
     protected List<LGAPIVerion> getSupportedAPIVersions() {
@@ -41,7 +37,7 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
     }
 
     @Override
-    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) {
         Map<String, CommandDefinition> result = new HashMap<>();
         JsonNode controlDeviceNode = rootNode.path("ControlDevice");
         if (controlDeviceNode.isArray()) {
@@ -50,15 +46,12 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
                 // commands variations are described separated by pipe "|"
                 String[] commands = c.path("command").asText().split("\\|");
                 String dataValues = c.path("dataValue").asText();
-                int i = 0;
-                for (String cOpt : commands) {
+                for (String cmd : commands) {
                     CommandDefinition cd = new CommandDefinition();
-                    cd.setCommand(ctrlKey);
-                    cd.setCmdOpt(cOpt);
+                    cd.setCommand(cmd);
                     cd.setCmdOptValue(dataValues.replaceAll("[{%}]", ""));
                     cd.setRawCommand(c.toPrettyString());
                     result.put(ctrlKey, cd);
-                    i++;
                 }
             });
         }

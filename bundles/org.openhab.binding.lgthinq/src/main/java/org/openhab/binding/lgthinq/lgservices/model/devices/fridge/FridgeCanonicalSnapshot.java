@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.FREEZER_TEMPERATURE_IGNORE_VALUE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.FRIDGE_TEMPERATURE_IGNORE_VALUE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_CELSIUS_SYMBOL;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.RE_TEMP_UNIT_FAHRENHEIT_SYMBOL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
@@ -38,7 +43,7 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     private boolean online;
     private Double fridgeTemp = FRIDGE_TEMPERATURE_IGNORE_VALUE;
     private Double freezerTemp = FREEZER_TEMPERATURE_IGNORE_VALUE;
-    private String tempUnit = TEMP_UNIT_CELSIUS; // celsius as default
+    private String tempUnit = RE_TEMP_UNIT_CELSIUS; // celsius as default
 
     private String doorStatus = "";
     private String waterFilterUsedMonth = "";
@@ -84,8 +89,8 @@ public class FridgeCanonicalSnapshot extends AbstractFridgeSnapshot {
     }
 
     private String getStrTempWithUnit(Double temp) {
-        return temp.intValue() + (TEMP_UNIT_CELSIUS.equals(tempUnit) ? " " + TEMP_UNIT_CELSIUS_SYMBOL
-                : (TEMP_UNIT_FAHRENHEIT).equals(tempUnit) ? " " + TEMP_UNIT_FAHRENHEIT_SYMBOL : "");
+        return temp.intValue() + (RE_TEMP_UNIT_CELSIUS.equals(tempUnit) ? " " + RE_TEMP_UNIT_CELSIUS_SYMBOL
+                : (RE_TEMP_UNIT_FAHRENHEIT).equals(tempUnit) ? " " + RE_TEMP_UNIT_FAHRENHEIT_SYMBOL : "");
     }
 
     @Override

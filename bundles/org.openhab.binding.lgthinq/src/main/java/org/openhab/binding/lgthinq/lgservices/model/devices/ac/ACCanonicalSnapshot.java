@@ -63,7 +63,7 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
 
     @JsonIgnore
     public DevicePowerState getPowerStatus() {
-        return operation == null ? DevicePowerState.DV_POWER_UNK : DevicePowerState.statusOf(operation);
+        return DevicePowerState.statusOf(operation);
     }
 
     @JsonIgnore

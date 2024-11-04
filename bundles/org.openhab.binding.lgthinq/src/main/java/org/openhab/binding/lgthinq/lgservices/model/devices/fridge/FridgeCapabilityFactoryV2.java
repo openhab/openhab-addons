@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_EXPRESS_FREEZE_MODES;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_FRESH_AIR_FILTER_MAP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_LABEL_CLOSE_OPEN;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_LABEL_ON_OFF;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_SMART_SAVING_V2_MODE;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_TEMP_UNIT_V2_MAP;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.CAP_RE_WATER_FILTER;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +26,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
@@ -41,7 +46,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
     }
 
     @Override
-    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) throws LGThinqApiException {
+    protected Map<String, CommandDefinition> getCommandsDefinition(JsonNode rootNode) {
         // doesn't meter command definition for V2
         return Collections.emptyMap();
     }
@@ -75,7 +80,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadTempUnitNode(JsonNode tempUnitNode, Map<String, String> tempUnitMap) {
-        tempUnitMap.putAll(CAP_FR_TEMP_UNIT_V2_MAP);
+        tempUnitMap.putAll(CAP_RE_TEMP_UNIT_V2_MAP);
     }
 
     @Override
@@ -85,32 +90,32 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadFreshAirFilter(JsonNode freshAirFilterNode, Map<String, String> freshAirFilterMap) {
-        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_FR_FRESH_AIR_FILTER_MAP);
+        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_RE_FRESH_AIR_FILTER_MAP);
     }
 
     @Override
     protected void loadWaterFilter(JsonNode waterFilterNode, Map<String, String> waterFilterMap) {
-        loadGenericFeatNode(waterFilterNode, waterFilterMap, CAP_FR_WATER_FILTER);
+        loadGenericFeatNode(waterFilterNode, waterFilterMap, CAP_RE_WATER_FILTER);
     }
 
     @Override
     protected void loadExpressFreezeMode(JsonNode expressFreezeModeNode, Map<String, String> expressFreezeModeMap) {
-        loadGenericFeatNode(expressFreezeModeNode, expressFreezeModeMap, CAP_FR_EXPRESS_FREEZE_MODES);
+        loadGenericFeatNode(expressFreezeModeNode, expressFreezeModeMap, CAP_RE_EXPRESS_FREEZE_MODES);
     }
 
     @Override
     protected void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap) {
-        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_FR_SMART_SAVING_V2_MODE);
+        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_RE_SMART_SAVING_V2_MODE);
     }
 
     @Override
     protected void loadActiveSaving(JsonNode activeSavingNode, Map<String, String> activeSavingMap) {
-        loadGenericFeatNode(activeSavingNode, activeSavingMap, CAP_FR_LABEL_ON_OFF);
+        loadGenericFeatNode(activeSavingNode, activeSavingMap, CAP_RE_LABEL_ON_OFF);
     }
 
     @Override
     protected void loadAtLeastOneDoorOpen(JsonNode atLeastOneDoorOpenNode, Map<String, String> atLeastOneDoorOpenMap) {
-        loadGenericFeatNode(atLeastOneDoorOpenNode, atLeastOneDoorOpenMap, CAP_FR_LABEL_CLOSE_OPEN);
+        loadGenericFeatNode(atLeastOneDoorOpenNode, atLeastOneDoorOpenMap, CAP_RE_LABEL_CLOSE_OPEN);
     }
 
     @Override

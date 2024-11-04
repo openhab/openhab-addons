@@ -29,29 +29,19 @@ public enum ACFanSpeed {
     F_AUTO(8.0),
     F_UNK(-1);
 
-    private final double funStrength;
-
     ACFanSpeed(double v) {
-        this.funStrength = v;
     }
 
     public static ACFanSpeed statusOf(double value) {
-        switch ((int) value) {
-            case 2:
-                return F1;
-            case 3:
-                return F2;
-            case 4:
-                return F3;
-            case 5:
-                return F4;
-            case 6:
-                return F5;
-            case 8:
-                return F_AUTO;
-            default:
-                return F_UNK;
-        }
+        return switch ((int) value) {
+            case 2 -> F1;
+            case 3 -> F2;
+            case 4 -> F3;
+            case 5 -> F4;
+            case 6 -> F5;
+            case 8 -> F_AUTO;
+            default -> F_UNK;
+        };
     }
 
     /**
