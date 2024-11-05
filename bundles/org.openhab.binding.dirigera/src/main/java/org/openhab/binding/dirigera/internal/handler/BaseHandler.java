@@ -96,6 +96,11 @@ public class BaseHandler extends BaseThingHandler {
         property2ChannelMap = mapping;
         channel2PropertyMap = reverse(mapping);
         channelStateMap = initializeCache(mapping);
+
+        // Scenes don't have links
+        if (THING_TYPE_SCENE.equals(thing.getThingTypeUID())) {
+            hardLinks = Arrays.asList();
+        }
     }
 
     protected void setChildHandler(BaseHandler child) {
@@ -500,8 +505,8 @@ public class BaseHandler extends BaseThingHandler {
             updateCandidateLinks();
         } else {
             if (!hardLinks.isEmpty() || !softLinks.isEmpty()) {
-                logger.trace("DIRIGERA BASE_HANDLER {} Device doesn't support links {}", thing.getLabel(),
-                        (hardLinks.size() + softLinks.size()));
+                logger.trace("DIRIGERA BASE_HANDLER {} Device doesn't support links hard {} soft {}", thing.getLabel(),
+                        hardLinks.size(), softLinks.size());
             }
         }
     }
