@@ -21,8 +21,8 @@ public class PortalIotCommandXmlResponse extends AbstractPortalIotCommandRespons
     @SerializedName("resp")
     private final String responseXml;
 
-    public PortalIotCommandXmlResponse(String result, String responseXml, int errorCode, String errorMessage) {
-        super(result, errorCode, errorMessage);
+    public PortalIotCommandXmlResponse(String result, String responseXml, int errorCode, Object errorObject) {
+        super(result, errorCode, errorObject);
         this.responseXml = responseXml;
     }
 
