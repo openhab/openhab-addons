@@ -37,7 +37,7 @@
     <dependency>
       <groupId>io.ktor</groupId>
       <artifactId>ktor-client-core-jvm</artifactId>
-      <version>1.6.8</version>
+      <version>3.0.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
