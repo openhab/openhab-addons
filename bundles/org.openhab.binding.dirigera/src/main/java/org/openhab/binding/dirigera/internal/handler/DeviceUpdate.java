@@ -12,13 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.THING_TYPE_UNKNNOWN;
-
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.internal.ThingImpl;
 
 /**
  * The {@link DeviceUpdate} element handled in device update queue
@@ -27,8 +22,6 @@ import org.openhab.core.thing.internal.ThingImpl;
  */
 @NonNullByDefault
 public class DeviceUpdate {
-    public static final BaseHandler DUMMY_HANDLER = new BaseHandler(new ThingImpl(THING_TYPE_UNKNNOWN, ""), Map.of());
-
     public enum Action {
         ADD,
         DISPOSE,
@@ -36,14 +29,12 @@ public class DeviceUpdate {
         LINKS;
     }
 
-    public BaseHandler handler = DUMMY_HANDLER;
+    public @Nullable BaseHandler handler;
     public String deviceId;
     public Action action;
 
     public DeviceUpdate(@Nullable BaseHandler handler, String deviceId, Action action) {
-        if (handler != null) {
-            this.handler = handler;
-        }
+        this.handler = handler;
         this.deviceId = deviceId;
         this.action = action;
     }
@@ -55,6 +46,10 @@ public class DeviceUpdate {
      * @return
      */
     public boolean equals(DeviceUpdate other) {
-        return (this.action.equals(other.action)) && handler.equals(handler) && this.deviceId.equals(other.deviceId);
+        boolean result = this.action.equals(other.action) && this.deviceId.equals(other.deviceId);
+        if (result && this.handler != null && other.handler != null) {
+            result = handler.equals(other.handler);
+        }
+        return result;
     }
 }

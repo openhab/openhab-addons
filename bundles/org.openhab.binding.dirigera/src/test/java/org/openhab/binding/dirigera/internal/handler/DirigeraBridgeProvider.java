@@ -92,7 +92,7 @@ public class DirigeraBridgeProvider {
         storageObject.put(PROPERTY_TOKEN, "1234");
         // now mock it
         Storage<String> mockStorage = mock(Storage.class);
-        when(mockStorage.get("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1")).thenReturn(storageObject.toString());
+        when(mockStorage.get(ipAddress)).thenReturn(storageObject.toString());
 
         // prepare instances
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));
@@ -193,7 +193,7 @@ public class DirigeraBridgeProvider {
         storageObject.put(PROPERTY_TOKEN, "1234");
         // now mock it
         Storage<String> mockStorage = mock(Storage.class);
-        when(mockStorage.get("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1")).thenReturn(storageObject.toString());
+        when(mockStorage.get(ipAddress)).thenReturn(storageObject.toString());
 
         // prepare instances
         BridgeImpl hubBridge = new BridgeImpl(THING_TYPE_GATEWAY, new ThingUID(BINDING_ID + ":" + "gateway:9876"));

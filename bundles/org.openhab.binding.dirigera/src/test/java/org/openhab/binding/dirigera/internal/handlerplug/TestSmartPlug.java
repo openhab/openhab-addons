@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
@@ -60,6 +61,8 @@ class TestSmartPlug {
 
     @Test
     void testInitialization() {
+        BaseHandler DUMMY_HANDLER = new BaseHandler(new ThingImpl(THING_TYPE_UNKNNOWN, "dummy"), Map.of());
+
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
         ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
         thing.setBridgeUID(hubBridge.getBridgeUID());
