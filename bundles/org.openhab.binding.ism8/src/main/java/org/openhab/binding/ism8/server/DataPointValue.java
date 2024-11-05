@@ -47,6 +47,14 @@ public class DataPointValue extends DataPointBase<@Nullable Double> {
             this.setUnit(Units.BAR);
             this.factor = 0.0000001f;
             this.outputFormat = "%.2f";
+        } else if ("9.024".equals(knxDataType)) {
+            this.setUnit(Units.WATT);
+            this.factor = 0.01f * 1000.0f;
+            this.outputFormat = "%.2f";
+        } else if ("9.025".equals(knxDataType)) {
+            this.setUnit(Units.LITRE_PER_MINUTE);
+            this.factor = 0.01f / 60.0f;
+            this.outputFormat = "%.2f";
         }
     }
 

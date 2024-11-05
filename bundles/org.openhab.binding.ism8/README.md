@@ -1,18 +1,21 @@
 # Ism8 Binding
 
-_This binding can receive values of the Wolf heating system._
+_This binding can receive measurements from a Wolf heating system._
 
 The ISM8 card can be placed into the Wolf heating system.
-The card is usually used in combination with an object server, where the object server does forward those messages into the KNX bus system.
-In case there is no need to handle the heating system values directly in the KNX system you can use this binding to monitor and control your heating system without the need to buy an object server.
-The system works in a way that the ISM8 connects to a partner and sends from time to time an update. The frequency depends on the change of the values.
+The card is usually used in combination with an object server, where the object server forwards those messages into the KNX bus system.
+If there is no need to handle the heating system values directly in the KNX system, you can use this binding to monitor and control your heating system without the need to buy an object server.
+The system works in such a way that the ISM8 connects to a partner and sends, from time to time, an update. The frequency depends on the change in values.
 This binding is listening to those messages.
-After the first connection there is an active command send to the ISM8 in order to receive all available data points.
-The manual of the ISM8 can be downloaded from the supplier (<https://www.wolf.eu/fileadmin/Wolf_Profi/Downloads/Montage-Bedienungsanleitungen/Regelungen/Zubehoer/3064356_201611_ISM8i_Montage-u.Bedienungsanleitung.pdf>)
+After the first connection, there is an active command sent to the ISM8 in order to receive all available data points.
+The manual for the ISM8 can be downloaded here: (<https://oxomi.com/service/json/catalog/pdf?portal=2024876&user=&roles=&accessToken=&catalog=10572791>)
+
+Note that there are different firmware versions of the ISM8 module.
+Some data points are not available with older firmware versions.
 
 ## Supported Things
 
-_This binding does only support one Thing - the Ism8-Device._
+_This binding does only support one Thing - the ISM8-Device._
 
 ## Discovery
 
@@ -20,18 +23,19 @@ _Auto-discovery is not supported._
 
 ## Thing Configuration
 
-The intention was to have a generic ISM8 binding in order to offer the full flexibilty for the different heating systems.
-For this reason you need to create a Thing configuration, where basically only the port is required next to the channel configuration.
+The intention was to have a generic ISM8 binding in order to offer full flexibility for the different heating systems.
+For this reason, you need to create a Thing configuration, where basically only the port is required next to the channel configuration.
 (`Thing ism8:device:heater "Wolf Heizung" [portNumber=12004]`)
+
 
 ## Channels
 
-You can use any channel supported by the ISM8 as data point. Please have a look at the official manual from Wolf.
-Within this document you'll find a table containing all supported data points.
-The available data points are depending on your heating system configuration.
-The ISM8 does currently support 4 different devices at the same moment of time (e.g. CGB-2, CWL Excellent, Solar, ...).
+You can use any channel supported by the ISM8 as a data point. Please take a look at the official manual from Wolf.
+Within this document, you'll find a table containing all supported data points.
+Depending on your heating system configuration, different data points are available.
+The ISM8 does currently support 4 different devices at the same moment of time (e.g., CHA, CGB-2, CWL Excellent, Solar, etc.).
 
-Once you have an overview of your heating system set you can start to create the channels accordingly.
+Once you have an overview of your heating system, you can start to create the channels accordingly.
 Each channel should be created in the following way:
 
 | Type               | Name    | Description        | Configuration |
@@ -49,28 +53,33 @@ Description:
 Configuration:
 
 - id=1            - Please enter here the ID of the data point you'd like to map to this channel.
-A list of the available IDs are available within the Wolf manual.
-The supported IDs are depending on the firmware version of the ISM8 and the connected systems.
-- type="1.001"    - Please enter here the knx type of the data point.
+A list of the available IDs is available within the Wolf manual.
+
+Depending on the firmware version of the ISM8 and the connected systems, the supported IDs differ.
+- type="1.001"    - Please enter here the KNX type of the data point.
 You can find the data type in the Wolf ISM8 document as well.
 - write=true      - This parameter defines if the channel is bidirectional, but the parameter is optional and by default false.
 
-Note:
-Not all available types of the ISM8 interface are fully supported, but this can be extended.
-For the moment the following data types are implemented:
+> Note:
+Not all available data types of the ISM8 interface are fully supported.
+For the moment, the following data types are implemented:
 
-| Channel type   | Datapoint type                 | Item type                 | R/W | KNX-type's                 |
-|----------------|--------------------------------|---------------------------|-----|----------------------------|
-| switch-rw      | Digital DataPoint              | Switch                    | R/W | 1.001, 1.002, 1.003, 1.009 |
-| switch-r       | Digital Readonly DataPoint     | Switch                    | R   | 1.001, 1.002, 1.003, 1.009 |
-| percentage-rw  | Percentage  DataPoint          | Number:Dimensionless      | R/W | 5.001                      |
-| percentage-r   | Percentage Readonly DataPoint  | Number:Dimensionless      | R   | 5.001                      |
-| temperature-rw | Temperature DataPoint          | Number:Temperature        | R/W | 9.001,9.002                |
-| temperature-r  | Temperature Readonly DataPoint | Number:Temperature        | R   | 9.002,9.002                |
-| pressure-r     | Pressure Readonly DataPoint    | Number:Pressure           | R   | 9.006                      |
-| flowrate-r     | Flowrate Readonly DataPoint    | Number:VolumetricFlowRate | R   | 13.002                     |
-| mode-rw        | Mode DataPoint                 | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
-| mode-r         | Mode Readonly DataPoint        | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
+| Channel type    | Datapoint type                           | Item type                 | R/W | KNX-type's                 |
+|-----------------|------------------------------------------|---------------------------|-----|----------------------------|
+| switch-rw       | Digital DataPoint                        | Switch                    | R/W | 1.001, 1.002, 1.003, 1.009 |
+| switch-r        | Digital Readonly DataPoint               | Switch                    | R   | 1.001, 1.002, 1.003, 1.009 |
+| percentage-rw   | Percentage  DataPoint                    | Number:Dimensionless      | R/W | 5.001                      |
+| percentage-r    | Percentage Readonly DataPoint            | Number:Dimensionless      | R   | 5.001                      |
+| number-r        | Numeric Readonly DataPoint               | Number:Dimensionless      | R   | 5.010, 7.001               |
+| temperature-rw  | Temperature DataPoint                    | Number:Temperature        | R/W | 9.001,9.002                |
+| temperature-r   | Temperature Readonly DataPoint           | Number:Temperature        | R   | 9.002,9.002                |
+| pressure-r      | Pressure Readonly DataPoint              | Number:Pressure           | R   | 9.006                      |
+| flowrate-r      | Flowrate Readonly DataPoint              | Number:VolumetricFlowRate | R   | 9.025, 13.002              |
+| active-energy-r | Active Energy Readonly DataPoint         | Number:Energy             | R   | 13.010, 13.013             |
+| mode-rw         | Mode DataPoint                           | Number:Dimensionless      | R/W | 20.102, 20.103, 20.105     |
+| mode-r          | Mode Readonly DataPoint                  | Number:Dimensionless      | R   | 20.102, 20.103, 20.105     |
+
+Date and Time types used by for CWL Excellent and CWL2 are currently not supported by the ISM8 add-on.
 
 ## Full Example
 
@@ -80,28 +89,28 @@ For the moment the following data types are implemented:
 Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
     {
         Type switch-r       : DpId001 "Störung Heizgerät"            [id=1, type="1.001"]
-        Type number-r       : DpId002 "Betriebsart"                  [id=2, type="20.105"]
+        Type mode-r         : DpId002 "Betriebsart"                  [id=2, type="20.105"]
         Type percentage-r   : DpId003 "Brennerleistung"              [id=3, type="5.001"]
         Type temperature-r  : DpId004 "Kesseltemperatur"             [id=4, type="9.001"]
         Type temperature-r  : DpId006 "Rücklauftemperatur"           [id=6, type="9.001"]
         Type temperature-r  : DpId007 "Warmwassertemperatur"         [id=7, type="9.001"]
         Type temperature-r  : DpId008 "Außentemperatur"              [id=8, type="9.001"]
         Type switch-r       : DpId009 "Status Flamme"                [id=9, type="1.001"]
-        Type temperature-r  : DpId013 "Anlagendruck"                 [id=13, type="9.006"]
+        Type pressure-r     : DpId013 "Anlagendruck"                 [id=13, type="9.006"]
         Type switch-r       : DpId053 "Störung Systemmodul"          [id=53, type="1.001"]
         Type temperature-r  : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"]
         Type temperature-rw : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"]
         Type mode-rw        : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"]
         Type mode-rw        : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"]
         Type temperature-rw : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"]
-        Type switch-rw      : DpId148 "CML Störung"                  [id=148, type="1.001"]
+        Type switch-rw      : DpId148 "CWL Störung"                  [id=148, type="1.001"]
         Type mode-rw        : DpId149 "CWL Betriebsart"              [id=149, type="20.102"]
         Type percentage-r   : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"]
         Type temperature-r  : DpId164 "CWL Ablufttemperatur"         [id=164, type="9.001"]
         Type temperature-r  : DpId165 "CWL Zulufttemperatur"         [id=165, type="9.001"]
         Type flowrate-r     : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
         Type flowrate-r     : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
-        Type switch-r       : DpId192 "CML Filterwarnung"            [id=192, type="1.001"]
+        Type switch-r       : DpId192 "CWL Filterwarnung"            [id=192, type="1.001"]
     }
 ```
 
@@ -123,14 +132,14 @@ Number ISM_HeizungSollwertWarmwasser    "Sollwert Warmwasser [%.1f °C]"        
 Number ISM_HeizungBetriebsartHeizkreis  "Betriebsart Heizkreis"                  { channel="ism8:device:heater:DpId057" }
 Number ISM_HeizungBetriebsartWarmwasser "Betriebsart Warmwasser"                 { channel="ism8:device:heater:DpId058" }
 Number ISM_HeizungSollwertverschiebung  "Sollwertverschiebung [%.1f °C]"         { channel="ism8:device:heater:DpId065" }
-Switch ISM_LueftungStoerung             "CML Störung"                            { channel="ism8:device:heater:DpId148" }
+Switch ISM_LueftungStoerung             "CWL Störung"                            { channel="ism8:device:heater:DpId148" }
 Number ISM_LueftungBetriebsart          "CWL Betriebsart"                        { channel="ism8:device:heater:DpId149" }
 Number ISM_LueftungLueftungsstufe       "CWL Lüftungsstufe [%.1f %%]"            { channel="ism8:device:heater:DpId163" }
 Number ISM_LueftungAblufttemperatur     "CWL Ablufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId164" }
 Number ISM_LueftungZulufttemperatur     "CWL Zulufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId165" }
 Number ISM_LueftungLuftdurchsatzZuluft  "CWL Luftdurchsatz Zuluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId166" }
 Number ISM_LueftungLuftdurchsatzAbluft  "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
-Switch ISM_LueftungFilterwarnung        "CML Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
+Switch ISM_LueftungFilterwarnung        "CWL Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
 ```
 
 ### demo.sitemap
