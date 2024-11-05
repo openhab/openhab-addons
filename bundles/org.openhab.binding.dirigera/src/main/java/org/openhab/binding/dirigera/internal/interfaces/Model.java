@@ -61,7 +61,7 @@ public interface Model {
      * - add / remove device to DIRIGERA gateway, not openHAB
      * - custom name changes for Discovery updates
      */
-    public void update();
+    public int update();
 
     /**
      * Starts a new detection without model update. If handlers are removed they shall appear in discovery again.

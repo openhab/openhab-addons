@@ -91,7 +91,6 @@ public class BaseShortcutController extends BaseHandler {
     @Override
     public void dispose() {
         sceneMapping.forEach((key, value) -> {
-            // cleanup storage and hub
             BaseHandler proxy = child;
             if (proxy != null) {
                 gateway().unregisterDevice(proxy, value);
