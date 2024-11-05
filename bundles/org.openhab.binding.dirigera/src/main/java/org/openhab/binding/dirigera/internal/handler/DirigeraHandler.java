@@ -245,7 +245,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
             Model houseModel = new DirigeraModel(this);
             model = Optional.of(houseModel);
-            houseModel.update();
+            int status = houseModel.update();
+            if (status != 200) {
+                logger.error("DIRIGERA HANDLER Model init failed {}", status);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.gateway.status.comm-error" + " [\"" + status + "\"]");
+                return;
+            }
             // Step 3.1 - check if id is already obtained
             if (config.id.isBlank()) {
                 List<String> gatewayList = houseModel.getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
@@ -318,13 +324,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private String getTokenFromStorage() {
         logger.info("DIRIGERA HANDLER try to get token from storage");
-        if (!config.id.isBlank()) {
-            JSONObject gatewayStorageJson = getStorageJson();
-            if (gatewayStorageJson.has(PROPERTY_TOKEN)) {
-                String token = gatewayStorageJson.getString(PROPERTY_TOKEN);
-                if (!token.isBlank()) {
-                    return token;
-                }
+        JSONObject gatewayStorageJson = getStorageJson();
+        if (gatewayStorageJson.has(PROPERTY_TOKEN)) {
+            String token = gatewayStorageJson.getString(PROPERTY_TOKEN);
+            if (!token.isBlank()) {
+                return token;
             }
         }
         logger.info("DIRIGERA HANDLER no token in storage");
@@ -338,11 +342,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER don't override current token {}", forceStore);
             return;
         }
-        if (!config.id.isBlank()) {
+        if (!config.ipAddress.isBlank()) {
             JSONObject tokenStore = new JSONObject();
             tokenStore.put(PROPERTY_TOKEN, token);
             logger.info("DIRIGERA HANDLER write into store {}", tokenStore.toString());
-            storage.put(config.id, tokenStore.toString());
+            storage.put(config.ipAddress, tokenStore.toString());
         } else {
             logger.info("DIRIGERA HANDLER Cannnot store token, device id missing");
         }
@@ -363,14 +367,23 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONObject gatewayStorageJson = getStorageJson();
         JSONArray toStoreArray = new JSONArray(knownDevices);
         gatewayStorageJson.put(PROPERTY_DEVICES, toStoreArray.toString());
-        storage.put(config.id, gatewayStorageJson.toString());
+        storage.put(config.ipAddress, gatewayStorageJson.toString());
     }
 
     private JSONObject getStorageJson() {
+        if (!config.ipAddress.isBlank()) {
+            String gatewayStorageObject = storage.get(config.ipAddress);
+            if (gatewayStorageObject != null) {
+                JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
+                return gatewayStorageJson;
+            }
+        }
+        // fallback copy from id to ip
         if (!config.id.isBlank()) {
             String gatewayStorageObject = storage.get(config.id);
             if (gatewayStorageObject != null) {
                 JSONObject gatewayStorageJson = new JSONObject(gatewayStorageObject.toString());
+                storage.put(config.ipAddress, gatewayStorageJson.toString());
                 return gatewayStorageJson;
             }
         }
@@ -382,7 +395,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONObject gatewayInfo = api().readDevice(config.id);
         if (gatewayInfo.has(PROPERTY_HTTP_ERROR_STATUS)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/dirigera.device.status.pairing-retry" + " [\"" + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS)
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS)
                             + "\"]");
         } else {
             updateStatus(ThingStatus.ONLINE);
@@ -501,7 +514,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         synchronized (deviceModificationQueue) {
             if (deviceUpdateQueueSizePeak < deviceModificationQueue.size()) {
                 deviceUpdateQueueSizePeak = deviceModificationQueue.size();
-                logger.info("DIRIGERA HANDLER Peak device updates {}", deviceUpdateQueueSizePeak);
+                logger.trace("DIRIGERA HANDLER Peak device updates {}", deviceUpdateQueueSizePeak);
                 peakRecognitionTime = Instant.now();
             }
             if (!deviceModificationQueue.isEmpty()) {
@@ -517,15 +530,22 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
         }
         if (deviceUpdate != null) {
+            BaseHandler handler = deviceUpdate.handler;
             switch (deviceUpdate.action) {
                 case ADD:
-                    doRegisterDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    if (handler != null) {
+                        doRegisterDevice(handler, deviceUpdate.deviceId);
+                    }
                     break;
                 case DISPOSE:
-                    doUnregisterDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    if (handler != null) {
+                        doUnregisterDevice(handler, deviceUpdate.deviceId);
+                    }
                     break;
                 case REMOVE:
-                    doDeleteDevice(deviceUpdate.handler, deviceUpdate.deviceId);
+                    if (handler != null) {
+                        doDeleteDevice(handler, deviceUpdate.deviceId);
+                    }
                     break;
                 case LINKS:
                     doUpdateLinks();
@@ -533,7 +553,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
         }
         if (deviceModificationQueue.isEmpty() && !Instant.MIN.equals(peakRecognitionTime)) {
-            logger.info("DIRIGERA HANDLER Peak to zero time {} ms",
+            logger.trace("DIRIGERA HANDLER Peak to zero time {} ms",
                     Duration.between(peakRecognitionTime, Instant.now()).toMillis());
             peakRecognitionTime = Instant.MIN;
         }
