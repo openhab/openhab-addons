@@ -154,7 +154,7 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                 break;
             case CHANNEL_AP_LED:
                 String override = device.getLedOverride();
-                state = "default".equals(override) ? UnDefType.UNDEF : OnOffType.from("on".equals(override));
+                state = "default".equals(override) ? UnDefType.UNDEF : OnOffType.from(override);
                 break;
         }
         return state;
