@@ -203,25 +203,17 @@ public class MotionSensorHandler extends BaseHandler {
                         }
                         break;
                     case "sensorConfig":
-                        logger.trace("MOTION_SENSOR check sensorconfig");
                         if (attributes.has("sensorConfig")) {
                             JSONObject sensorConfig = attributes.getJSONObject("sensorConfig");
-                            logger.trace("MOTION_SENSOR check sensorconfig {}", sensorConfig);
                             if (sensorConfig.has("scheduleOn")) {
                                 boolean scheduled = sensorConfig.getBoolean("scheduleOn");
-                                logger.trace("MOTION_SENSOR check sensorconfig scheduleOn {}", scheduled);
                                 if (scheduled) {
                                     // examine schedule
                                     if (sensorConfig.has("schedule")) {
                                         JSONObject schedule = sensorConfig.getJSONObject("schedule");
-                                        logger.trace("MOTION_SENSOR check sensorconfig scheduleOn schedule {}",
-                                                schedule);
                                         if (schedule.has("onCondition") && schedule.has("offCondition")) {
                                             JSONObject onCondition = schedule.getJSONObject("onCondition");
                                             JSONObject offCondition = schedule.getJSONObject("offCondition");
-                                            logger.trace(
-                                                    "MOTION_SENSOR check sensorconfig scheduleOn schedule on off condition {} {}",
-                                                    onCondition, offCondition);
                                             if (onCondition.has("time")) {
                                                 String onTime = onCondition.getString("time");
                                                 String offTime = offCondition.getString("time");
