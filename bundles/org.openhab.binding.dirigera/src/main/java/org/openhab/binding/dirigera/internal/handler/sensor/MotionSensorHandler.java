@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MotionSensorHandler} basic DeviceHandler for all devices
+ * The {@link MotionSensorHandler}
  *
  * @author Bernd Weymann - Initial contribution
  */

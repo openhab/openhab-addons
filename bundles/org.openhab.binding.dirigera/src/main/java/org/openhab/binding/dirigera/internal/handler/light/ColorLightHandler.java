@@ -14,9 +14,11 @@ package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -40,6 +42,8 @@ import org.slf4j.LoggerFactory;
 public class ColorLightHandler extends BaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ColorLightHandler.class);
 
+    private List<LightUpdate> lightRequestQueue = new ArrayList<>();
+    private int colorBrightnessDelayMS = 1250;
     private HSBType hsbCurrent;
 
     public ColorLightHandler(Thing thing, Map<String, String> mapping) {
@@ -62,7 +66,7 @@ public class ColorLightHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA LIGHT_DEVICE handle {} {}", channelUID, command);
+        logger.trace("DIRIGERA LIGHT_DEVICE handle {} {} {}", channelUID, command, hsbCurrent);
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
 
@@ -70,30 +74,53 @@ public class ColorLightHandler extends BaseHandler {
         if (targetProperty != null) {
             if (command instanceof HSBType hsb) {
                 boolean colorSendToAPI = false;
-                if (Math.round(hsb.getHue().intValue()) == Math.round(hsbCurrent.getHue().intValue()) && Math
-                        .round(hsb.getSaturation().intValue()) == Math.round(hsbCurrent.getSaturation().intValue())) {
-                } else {
+                int differenceHue = Math.abs(hsb.getHue().intValue() - hsbCurrent.getHue().intValue());
+                int saturationDifference = Math
+                        .abs(hsb.getSaturation().intValue() - hsbCurrent.getSaturation().intValue());
+                if (differenceHue > 2 || saturationDifference > 2) {
                     JSONObject colorAttributes = new JSONObject();
                     colorAttributes.put("colorHue", hsb.getHue().intValue());
                     colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
-                    gateway().api().sendAttributes(config.id, colorAttributes);
+                    synchronized (lightRequestQueue) {
+                        lightRequestQueue.add(new LightUpdate(colorAttributes, LightUpdate.Action.COLOR));
+                    }
+                    scheduler.schedule(this::doUpdate, 0, TimeUnit.MILLISECONDS);
                     colorSendToAPI = true;
                 }
-                if (hsb.getBrightness().intValue() != hsbCurrent.getBrightness().intValue()) {
-                    if (colorSendToAPI) {
-                        // seems that IKEA lamps cannot handle consecutive calls it really short time frame
-                        // so give it 500ms pause until next call
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
+                if (Math.abs(hsb.getBrightness().intValue() - hsbCurrent.getBrightness().intValue()) > 2) {
                     JSONObject brightnessattributes = new JSONObject();
                     brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                    gateway().api().sendAttributes(config.id, brightnessattributes);
+                    synchronized (lightRequestQueue) {
+                        lightRequestQueue.add(new LightUpdate(brightnessattributes, LightUpdate.Action.BRIGHTNESS));
+                    }
+                    if (colorSendToAPI) {
+                        /**
+                         * IKEA lamps cannot handle consecutive calls for color and brightness due to fading activity
+                         * So first fade to color then fade brightness
+                         */
+                        scheduler.schedule(this::doUpdate, colorBrightnessDelayMS, TimeUnit.MILLISECONDS);
+                    } else {
+                        scheduler.schedule(this::doUpdate, 0, TimeUnit.MILLISECONDS);
+                    }
                 }
             }
+        }
+    }
+
+    private void doUpdate() {
+        LightUpdate request = null;
+        synchronized (lightRequestQueue) {
+            request = lightRequestQueue.remove(0);
+            if (lightRequestQueue.contains(request)) {
+                logger.trace("DIRIGERA LIGHT_DEVICE dismiss light request and wait for next one {}",
+                        lightRequestQueue.size());
+            }
+            if (!lightRequestQueue.isEmpty()) {
+                logger.trace("DIRIGERA LIGHT_DEVICE queue size {}", lightRequestQueue.size());
+            }
+        }
+        if (request != null) {
+            gateway().api().sendAttributes(config.id, request.request);
         }
     }
 
@@ -119,8 +146,6 @@ public class ColorLightHandler extends BaseHandler {
                                     break;
                                 case "colorSaturation":
                                     double saturationValue = Math.round(attributes.getDouble(key) * 100);
-                                    logger.trace("DIRIGERA LIGHT_DEVICE new Saturation value {} {}", saturationValue,
-                                            (int) saturationValue);
                                     hsbCurrent = new HSBType(hsbCurrent.getHue(),
                                             new PercentType((int) saturationValue), hsbCurrent.getBrightness());
                                     deliverHSB = true;
