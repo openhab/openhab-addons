@@ -66,13 +66,14 @@ public class DirigeraModel implements Model {
     }
 
     @Override
-    public synchronized void update() {
+    public synchronized int update() {
         Instant startTime = Instant.now();
         try {
             JSONObject home = gateway.api().readHome();
             if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
-                logger.warn("DIRIGERA MODEL received model with error code {} - don't take it",
-                        home.get(PROPERTY_HTTP_ERROR_STATUS));
+                int status = home.getInt(PROPERTY_HTTP_ERROR_STATUS);
+                logger.warn("DIRIGERA MODEL received model with error code {} - don't take it", status);
+                return status;
             } else {
                 model = home;
                 detection();
@@ -82,6 +83,7 @@ public class DirigeraModel implements Model {
             throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
         }
         logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
+        return 200;
     }
 
     @Override
