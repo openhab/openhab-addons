@@ -60,10 +60,9 @@ public class BaseShortcutController extends BaseHandler {
         CLICK_PATTERNS.forEach(pattern -> {
             String patternKey = deviceId + ":" + channel + ":" + pattern;
             if (!sceneMapping.containsKey(patternKey)) {
-                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER {} mapping not in Map", patternKey);
+                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER {} pattern not found in storage", patternKey);
                 String patternSceneId = storage.get(patternKey);
                 if (patternSceneId != null) {
-                    logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER {} scene found in storage", patternKey);
                     sceneMapping.put(patternKey, patternSceneId);
                 } else {
                     String uuid = getUID();
@@ -76,8 +75,6 @@ public class BaseShortcutController extends BaseHandler {
                         logger.warn("DIRIGERA BASE_SHORTCUT_CONTROLLER scene create failed for {}", patternKey);
                     }
                 }
-            } else {
-                logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER {} scene found in Map", patternKey);
             }
 
             // after all check if scene is created and register for updates
@@ -158,9 +155,7 @@ public class BaseShortcutController extends BaseHandler {
             }
             // if triggered deliver
             if (triggered) {
-                // logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Deliver trigger");
                 sceneMapping.forEach((key, value) -> {
-                    logger.debug("DIRIGERA BASE_SHORTCUT_CONTROLLER Check {} {}", key, value);
                     if (sceneId.equals(value)) {
                         String[] channelPattern = key.split(":");
                         String pattern = "";
