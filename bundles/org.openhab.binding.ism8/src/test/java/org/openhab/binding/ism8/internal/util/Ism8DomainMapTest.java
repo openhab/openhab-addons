@@ -37,8 +37,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.util.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -48,7 +46,6 @@ import org.slf4j.LoggerFactory;
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class Ism8DomainMapTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Ism8DomainMap.class);
 
     @BeforeEach
     public void initialize() {
