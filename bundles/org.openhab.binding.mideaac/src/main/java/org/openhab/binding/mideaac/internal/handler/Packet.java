@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.binding.mideaac.internal.security.Security;
 
 /**
  * The {@link Packet} class for Midea AC creates the
@@ -28,18 +29,18 @@ import org.openhab.binding.mideaac.internal.Utils;
 public class Packet {
     private CommandBase command;
     private byte[] packet;
-    private MideaACHandler mideaACHandler;
+    private Security security;
 
     /**
      * The Packet class parameters
      * 
      * @param command command from Command Base
      * @param deviceId the device ID
-     * @param mideaACHandler the MideaACHandler class
+     * @param security the Security class
      */
-    public Packet(CommandBase command, String deviceId, MideaACHandler mideaACHandler) {
+    public Packet(CommandBase command, String deviceId, Security security) {
         this.command = command;
-        this.mideaACHandler = mideaACHandler;
+        this.security = security;
 
         packet = new byte[] {
                 // 2 bytes - StaticHeader
@@ -78,7 +79,7 @@ public class Packet {
         command.compose();
 
         // Append the command data(48 bytes) to the packet
-        byte[] cmdEncrypted = mideaACHandler.getSecurity().aesEncrypt(command.getBytes());
+        byte[] cmdEncrypted = security.aesEncrypt(command.getBytes());
 
         // Ensure 48 bytes
         if (cmdEncrypted.length < 48) {
@@ -97,7 +98,7 @@ public class Packet {
         System.arraycopy(lenBytes, 0, packet, 4, 2);
 
         // calculate checksum data
-        byte[] checksumData = mideaACHandler.getSecurity().encode32Data(packet);
+        byte[] checksumData = security.encode32Data(packet);
 
         // Append a basic checksum data(16 bytes) to the packet
         byte[] newPacketTwo = new byte[packet.length + checksumData.length];
