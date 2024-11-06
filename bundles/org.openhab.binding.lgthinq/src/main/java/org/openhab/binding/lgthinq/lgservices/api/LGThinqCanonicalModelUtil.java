@@ -38,9 +38,9 @@ public class LGThinqCanonicalModelUtil {
         });
         String resultCode = (String) map.get("resultCode");
         if (content == null) {
-            throw new IllegalArgumentException("Enexpected result. Gateway Content Result is null");
+            throw new IllegalArgumentException("Unexpected result. Gateway Content Result is null");
         } else if (resultCode == null) {
-            throw new IllegalArgumentException("Enexpected result. resultCode code is null");
+            throw new IllegalArgumentException("Unexpected result. resultCode code is null");
         }
 
         return new GatewayResult(Objects.requireNonNull(resultCode, "Expected resultCode field in json"), "",
