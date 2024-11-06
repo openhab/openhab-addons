@@ -120,9 +120,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
         // The channel should get triggered at last (after super and sub methods), because this allows rules to access
         // the new updated data from the other channels.
         final String eventType = event.getEventType().name();
-        handler.recurseUpToHomeHandler(handler)
-                .ifPresent(homeHandler -> homeHandler.triggerChannel(CHANNEL_HOME_EVENT, eventType));
-        handler.triggerChannel(CHANNEL_HOME_EVENT, eventType);
+        handler.recurseUpToHomeHandler(handler).ifPresent(
+                homeHandler -> homeHandler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType));
+        handler.triggerChannel(GROUP_SECURITY_EVENT, CHANNEL_HOME_EVENT, eventType);
     }
 
     private void updateSubGroup(WebhookEvent event, String group) {

@@ -76,9 +76,12 @@ public class Capability {
 
             if (newData instanceof HomeEvent homeEvent) {
                 updateHomeEvent(homeEvent);
-            } else if (newData instanceof WebhookEvent webhookEvent
-                    && webhookEvent.getEventType().validFor(moduleType)) {
-                updateWebhookEvent(webhookEvent);
+            } else if (newData instanceof WebhookEvent webhookEvent) {
+                if (webhookEvent.getEventType().validFor(moduleType)) {
+                    updateWebhookEvent(webhookEvent);
+                } else {
+                    // dropped
+                }
             } else if (newData instanceof Event event) {
                 updateEvent(event);
             }

@@ -109,8 +109,8 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     }
 
     @Override
-    public void triggerChannel(String channelID, String event) {
-        super.triggerChannel(channelID, event);
+    public void triggerChannel(String groupID, String channelID, String event) {
+        super.triggerChannel(new ChannelUID(this.getThing().getUID(), groupID, channelID), event);
     }
 
     @Override

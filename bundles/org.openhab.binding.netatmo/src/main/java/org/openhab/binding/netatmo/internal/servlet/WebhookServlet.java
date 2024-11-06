@@ -123,6 +123,7 @@ public class WebhookServlet extends NetatmoServlet {
         event.getNAObjectList().forEach(id -> {
             Capability module = dataListeners.get(id);
             if (module != null) {
+                logger.trace("Dispatching webhook event to {}", id);
                 module.setNewData(event);
             }
         });
