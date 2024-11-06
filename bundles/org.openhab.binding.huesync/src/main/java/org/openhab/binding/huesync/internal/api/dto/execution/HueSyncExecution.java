@@ -59,7 +59,7 @@ public class HueSyncExecution {
     public void setMode(String mode) {
         if (!HueSyncExecution.KNOWN_MODES.contains(mode)) {
             logger.warn(
-                    "device mode [{}] is not known by this version of the binding ➡️ please open an issue to notify the maintainer(s). Fallback will be used. ",
+                    "device mode [{}] is not known by this version of the binding. Please open an issue to notify the maintainer(s). Fallback will be used. ",
                     mode);
         }
 

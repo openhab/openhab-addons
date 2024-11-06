@@ -134,9 +134,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
 
         if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            boolean value = Boolean.valueOf(autoDiscoveryPropertyValue);
+            boolean value = Boolean.parseBoolean(autoDiscoveryPropertyValue);
             if (value != this.autoDiscoveryEnabled) {
-                logger.debug("{} update: {} ➡️ {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                logger.debug("{} update: {} - {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
                         autoDiscoveryPropertyValue, value);
                 this.autoDiscoveryEnabled = value;
             }

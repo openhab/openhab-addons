@@ -25,11 +25,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.huesync.internal.HdmiChannels;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDetailed;
 import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecution;
 import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmi;
+import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiConnectionInfo;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
@@ -71,9 +73,9 @@ public class HueSyncHandler extends BaseThingHandler {
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
 
     private Optional<HueSyncDevice> deviceInfo = Optional.empty();
-    private HueSyncDeviceConnection connection;
 
-    private HttpClient httpClient;
+    private final HueSyncDeviceConnection connection;
+    private final HttpClient httpClient;
 
     public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory)
             throws CertificateException, IOException, URISyntaxException {
@@ -199,37 +201,25 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     private void logMissingUpdateInformation(String api) {
-        this.logger.warn("⚠️ Device information - {} status missing ⚠️", api);
+        this.logger.warn("Device information - {} status missing", api);
     }
 
-    @SuppressWarnings("null")
     private void updateHdmiInformation(HueSyncHdmi hdmiStatus) {
-        // TODO: Resolve warnings ➡️ consider to encapsulate hdmi status obj to avoid complex null
-        // handling ...
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.NAME, new StringType(hdmiStatus.input1.name));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.TYPE, new StringType(hdmiStatus.input1.type));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.STATUS, new StringType(hdmiStatus.input1.status));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_1.MODE, new StringType(hdmiStatus.input1.lastSyncMode));
+        updateHdmiStatus(HueSyncConstants.CHANNELS.HDMI.IN_1, hdmiStatus.input1);
+        updateHdmiStatus(HueSyncConstants.CHANNELS.HDMI.IN_2, hdmiStatus.input2);
+        updateHdmiStatus(HueSyncConstants.CHANNELS.HDMI.IN_3, hdmiStatus.input3);
+        updateHdmiStatus(HueSyncConstants.CHANNELS.HDMI.IN_4, hdmiStatus.input4);
 
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.NAME, new StringType(hdmiStatus.input2.name));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.TYPE, new StringType(hdmiStatus.input2.type));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.STATUS, new StringType(hdmiStatus.input2.status));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_2.MODE, new StringType(hdmiStatus.input2.lastSyncMode));
+        updateHdmiStatus(HueSyncConstants.CHANNELS.HDMI.OUT, hdmiStatus.output);
+    }
 
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.NAME, new StringType(hdmiStatus.input3.name));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.TYPE, new StringType(hdmiStatus.input3.type));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.STATUS, new StringType(hdmiStatus.input3.status));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_3.MODE, new StringType(hdmiStatus.input3.lastSyncMode));
-
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.NAME, new StringType(hdmiStatus.input4.name));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.TYPE, new StringType(hdmiStatus.input4.type));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.STATUS, new StringType(hdmiStatus.input4.status));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.IN_4.MODE, new StringType(hdmiStatus.input4.lastSyncMode));
-
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.NAME, new StringType(hdmiStatus.output.name));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.TYPE, new StringType(hdmiStatus.output.type));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.STATUS, new StringType(hdmiStatus.output.status));
-        this.updateState(HueSyncConstants.CHANNELS.HDMI.OUT.MODE, new StringType(hdmiStatus.output.lastSyncMode));
+    private void updateHdmiStatus(HdmiChannels channels, @Nullable HueSyncHdmiConnectionInfo hdmiStatusInfo) {
+        if (hdmiStatusInfo != null) {
+            this.updateState(channels.NAME, new StringType(hdmiStatusInfo.name));
+            this.updateState(channels.TYPE, new StringType(hdmiStatusInfo.type));
+            this.updateState(channels.MODE, new StringType(hdmiStatusInfo.lastSyncMode));
+            this.updateState(channels.STATUS, new StringType(hdmiStatusInfo.status));
+        }
     }
 
     private void updateFirmwareInformation(HueSyncDeviceDetailed deviceStatus) {
@@ -306,8 +296,6 @@ public class HueSyncHandler extends BaseThingHandler {
     // #endregion
 
     // #region Override
-    // TODO: Life cycle handling for connection should resolve complex null problem (➡️ mode
-    // constructor)
     @Override
     public void initialize() {
         try {
@@ -326,7 +314,7 @@ public class HueSyncHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (thing.getStatus() != ThingStatus.ONLINE) {
-            this.logger.warn("Device status: {} ➡️ Command {} for chanel {} will be ignored",
+            this.logger.warn("Device status: {} - Command {} for chanel {} will be ignored",
                     thing.getStatus().toString(), command.toFullString(), channelUID.toString());
             return;
         }
