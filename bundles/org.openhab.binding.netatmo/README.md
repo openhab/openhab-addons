@@ -480,7 +480,14 @@ All channels are read only.
 | security      | unknown-person-count   | Number    | Total number of unknown persons that are at home |
 | security      | unknown-person-picture | Image     | Snapshot of unknown person that is at home       |
 
-**Supported trigger channels for the Security Home thing:**
+**Supported channels for the Energy Home thing:**
+
+| Channel Group | Channel Id             | Item Type   | Read/Write | Description                                               |
+| ------------- | ---------------------- | ----------- |----------- | --------------------------------------------------------- |
+| energy        | setpoint-duration      | Number:Time | Read-only  | Default duration of manual setpoint changes               |
+| energy        | planning               | String      | Read-write | Planning currently applied when following weekly schedule |
+| energy        | mode                   | String      | Read-write | Chosen thermostat mode (home, frost guard, manual, max)   |
+| energy        | end                    | DateTime    | Read-only  | End time of the currently applied thermostat mode         |
 
 **Supported trigger channels for the Security Home, Presence and Doorbell thing:**
 
