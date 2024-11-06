@@ -3,13 +3,13 @@
 
 requests:
   - start: 0x0003
-    end: 0x0059
+    end: 0x0011
     mb_functioncode: 0x03
   - start: 0x0063
     end: 0x006D
     mb_functioncode: 0x03
   - start: 0x0085
-    end: 0x0085
+    end: 0x0086
     mb_functioncode: 0x03
   - start: 0x0202
     end: 0x022E

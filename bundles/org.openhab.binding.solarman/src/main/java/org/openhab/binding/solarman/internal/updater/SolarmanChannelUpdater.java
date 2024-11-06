@@ -33,6 +33,7 @@ import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
@@ -120,6 +121,7 @@ public class SolarmanChannelUpdater {
                 .map(rawVal -> String.format("%02d", rawVal / 100) + ":" + String.format("%02d", rawVal % 100))
                 .collect(Collectors.joining());
 
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -143,6 +145,7 @@ public class SolarmanChannelUpdater {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy/M/d H:m:s");
             LocalDateTime dateTime = LocalDateTime.parse(stringValue, formatter);
 
+            logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), dateTime.toString());
             stateUpdater.updateState(channelUID, new DateTimeType(dateTime.atZone(ZoneId.systemDefault())));
         } catch (DateTimeParseException e) {
             logger.debug("Unable to parse string date {} to a DateTime object", stringValue);
@@ -156,6 +159,7 @@ public class SolarmanChannelUpdater {
                         + (rawVal & 0x0F))
                 .collect(Collectors.joining());
 
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -166,6 +170,7 @@ public class SolarmanChannelUpdater {
             return acc.append((char) (shortValue >> 8)).append((char) (shortValue & 0xFF));
         }, StringBuilder::append).toString();
 
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
@@ -175,23 +180,42 @@ public class SolarmanChannelUpdater {
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
         String uom = Objects.requireNonNullElse(parameterItem.getUom(), "");
 
-        State state;
-        if (!uom.isBlank()) {
-            try {
-                Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
-                if (unitFromDefinition != null) {
-                    state = new QuantityType<>(convertedValue, unitFromDefinition);
-                } else {
-                    logger.debug("Unable to parse unit: {}", uom);
+        List<Lookup> lookupList = parameterItem.getLookup();
+        if (lookupList != null && !lookupList.isEmpty()) {
+            String stringValue = getStringFromLookupList(value.intValue(), lookupList);
+            logger.debug("Update state: channelUID: {}, key: {}, state: {}", channelUID.getAsString(), value.intValue(),
+                    stringValue);
+            stateUpdater.updateState(channelUID, new StringType(stringValue));
+        } else {
+            State state;
+            if (!uom.isBlank()) {
+                try {
+                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
+                    if (unitFromDefinition != null) {
+                        state = new QuantityType<>(convertedValue, unitFromDefinition);
+                    } else {
+                        logger.debug("Unable to parse unit: {}", uom);
+                        state = new DecimalType(convertedValue);
+                    }
+                } catch (MeasurementParseException e) {
                     state = new DecimalType(convertedValue);
                 }
-            } catch (MeasurementParseException e) {
+            } else {
                 state = new DecimalType(convertedValue);
             }
-        } else {
-            state = new DecimalType(convertedValue);
+            logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), state.toFullString());
+            stateUpdater.updateState(channelUID, state);
         }
-        stateUpdater.updateState(channelUID, state);
+    }
+
+    private String getStringFromLookupList(int key, List<Lookup> lookupList) {
+        String stringValue = "";
+        for (Lookup lookup : lookupList) {
+            if (key == lookup.getKey()) {
+                return lookup.getValue();
+            }
+        }
+        return stringValue;
     }
 
     private void updateChannelWithRawValue(ParameterItem parameterItem, ChannelUID channelUID, List<Integer> registers,
@@ -200,7 +224,7 @@ public class SolarmanChannelUpdater {
                 reversed(registers).stream().map(readRegistersMap::get).map(
                         val -> String.format("0x%02X", ByteBuffer.wrap(val).order(ByteOrder.BIG_ENDIAN).getShort()))
                         .collect(Collectors.joining(",")));
-
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), hexString);
         stateUpdater.updateState(channelUID, new StringType(hexString));
     }
 

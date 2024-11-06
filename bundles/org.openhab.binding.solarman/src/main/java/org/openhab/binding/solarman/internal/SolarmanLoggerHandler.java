@@ -155,7 +155,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             }
 
             return new AbstractMap.SimpleEntry<>(new ParameterItem(label, "N/A", "N/A", bcc.uom, bcc.scale, bcc.rule,
-                    parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE),
+                    parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE, null),
                     channel.getUID());
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }

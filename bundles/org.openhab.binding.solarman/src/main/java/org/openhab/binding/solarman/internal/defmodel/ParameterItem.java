@@ -46,13 +46,16 @@ public class ParameterItem {
     private BigDecimal offset;
     @Nullable
     private Boolean isstr;
+    @Nullable
+    private List<Lookup> lookup;
 
     public ParameterItem() {
     }
 
     public ParameterItem(String name, @Nullable String itemClass, @Nullable String stateClass, @Nullable String uom,
             @Nullable BigDecimal scale, Integer rule, List<Integer> registers, @Nullable String icon,
-            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr) {
+            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr,
+            @Nullable List<Lookup> lookup) {
         this.name = name;
         this.itemClass = itemClass;
         this.stateClass = stateClass;
@@ -64,6 +67,7 @@ public class ParameterItem {
         this.validation = validation;
         this.offset = offset;
         this.isstr = isstr;
+        this.lookup = lookup;
     }
 
     public String getName() {
@@ -152,5 +156,13 @@ public class ParameterItem {
 
     public void setItemClass(String itemClass) {
         this.itemClass = itemClass;
+    }
+
+    public @Nullable List<Lookup> getLookup() {
+        return lookup;
+    }
+
+    public void setLookup(List<Lookup> lookup) {
+        this.lookup = lookup;
     }
 }
