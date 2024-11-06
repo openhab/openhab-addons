@@ -30,14 +30,14 @@ public class LGThinQBridgeConfiguration {
     public String language = "";
     public final String manualCountry = "";
     public final String manualLanguage = "";
-    public Integer pollingIntervalSec = 0;
+    public int pollingIntervalSec = 0;
     public String alternativeServer = "";
 
     public LGThinQBridgeConfiguration() {
     }
 
     public LGThinQBridgeConfiguration(String username, String password, String country, String language,
-            Integer pollingIntervalSec, String alternativeServer) {
+            int pollingIntervalSec, String alternativeServer) {
         this.username = username;
         this.password = password;
         this.country = country;
@@ -68,7 +68,7 @@ public class LGThinQBridgeConfiguration {
         return language;
     }
 
-    public Integer getPollingIntervalSec() {
+    public int getPollingIntervalSec() {
         return pollingIntervalSec;
     }
 
@@ -88,7 +88,7 @@ public class LGThinQBridgeConfiguration {
         this.language = language;
     }
 
-    public void setPollingIntervalSec(Integer pollingIntervalSec) {
+    public void setPollingIntervalSec(int pollingIntervalSec) {
         this.pollingIntervalSec = pollingIntervalSec;
     }
 
