@@ -113,10 +113,10 @@ public class HomeCapability extends CacheCapability<HomeApi> {
         List<NAObject> result = new ArrayList<>();
         homeIds.stream().filter(id -> !id.isEmpty()).forEach(id -> {
             try {
-                if (firstLaunch) {
-                    HomeData homeData = api.getHomeData(id);
-                    if (homeData != null) {
-                        result.add(homeData);
+                HomeData homeData = api.getHomeData(id);
+                if (homeData != null) {
+                    result.add(homeData);
+                    if (featureAreas.isEmpty()) {
                         featureAreas.addAll(homeData.getFeatures());
                     }
                 }
