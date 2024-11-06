@@ -295,7 +295,7 @@ public class EcobeeActions implements ThingActions {
     /**
      * Set a hold by providing the cool and heat temperatures and the number of hours.
      */
-    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold for the specified number of hours.")
+    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold for the specified number of hours.", id = "setHold2")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "coolHoldTemp", description = "The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
             @ActionInput(name = "heatHoldTemp", description = "The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
@@ -320,7 +320,7 @@ public class EcobeeActions implements ThingActions {
     /**
      * Set an indefinite hold using the supplied climateRef
      */
-    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
+    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.", id = "setHold3")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef) {
         EcobeeThermostatBridgeHandler localHandler = handler;
@@ -343,7 +343,7 @@ public class EcobeeActions implements ThingActions {
     /**
      * Set a hold using the supplied climateRef for the supplied number of hours.
      */
-    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.")
+    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified climate ref.", id = "setHol4")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "holdClimateRef", description = "The holdClimateRef used to set the hold.") @Nullable String holdClimateRef,
             @ActionInput(name = "holdHours", description = "The number of hours for the hold.") @Nullable Number holdHours) {
@@ -370,7 +370,7 @@ public class EcobeeActions implements ThingActions {
     /**
      * Set a hold
      */
-    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperature or climate ref.")
+    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified temperature or climate ref.", id = "setHold5")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "coolHoldTemp", description = "(opt) The temperature at which to set the cool hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> coolHoldTemp,
             @ActionInput(name = "heatHoldTemp", description = "(opt) The temperature at which to set the heat hold.", type = "QuantityType<Temperature>") @Nullable QuantityType<Temperature> heatHoldTemp,
@@ -403,7 +403,7 @@ public class EcobeeActions implements ThingActions {
     /**
      * Set a hold by providing a parameter map
      */
-    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified event parameters.")
+    @RuleAction(label = "set the thermostat into hold", description = "The set hold function sets the thermostat into a hold with the specified event parameters.", id = "setHold6")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean setHold(
             @ActionInput(name = "params", description = "The map of hold parameters.") @Nullable Map<String, Object> params,
             @ActionInput(name = "holdType", description = "(opt) The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.") @Nullable String holdType,
