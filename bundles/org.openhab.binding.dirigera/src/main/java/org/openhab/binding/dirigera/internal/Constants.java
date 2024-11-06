@@ -91,7 +91,6 @@ public class Constants {
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_ATTRIBUTES = "attributes";
-    public static final String PROPERTY_HTTP_ERROR_STATUS = "http-error-status";
     public static final String PROPERTY_OTA_STATUS = "otaStatus";
     public static final String PROPERTY_OTA_STATE = "otaState";
     public static final String PROPERTY_OTA_PROGRESS = "otaProgress";

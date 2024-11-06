@@ -478,7 +478,7 @@ Shortcut controller with one button.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `button1`             | trigger               |            | Trigger of first button                      |          |
-| `battery-level`       | Number:Dimensionless  |            | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
