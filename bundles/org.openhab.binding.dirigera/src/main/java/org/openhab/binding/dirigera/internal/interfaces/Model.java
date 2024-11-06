@@ -45,6 +45,7 @@ public interface Model {
     public static final String TEMPLATE_SENSOR_DURATION_UPDATE = "/json/sensor-config/duration-update.json";
     public static final String TEMPLATE_SENSOR_FOLLOW_SUN = "/json/sensor-config/follow-sun.json";
     public static final String TEMPLATE_SENSOR_SCHEDULE_ON = "/json/sensor-config/schedule-on.json";
+    public static final String TEMPLATE_CLICK_SCENE = "/json/scenes/click-scene.json";
 
     /**
      * Get structure model as JSON String.

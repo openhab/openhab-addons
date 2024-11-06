@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.exception.ModelUpdateException;
+import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -70,8 +71,8 @@ public class DirigeraModel implements Model {
         Instant startTime = Instant.now();
         try {
             JSONObject home = gateway.api().readHome();
-            if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
-                int status = home.getInt(PROPERTY_HTTP_ERROR_STATUS);
+            if (home.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
+                int status = home.getInt(DirigeraAPI.HTTP_ERROR_STATUS);
                 logger.warn("DIRIGERA MODEL received model with error code {} - don't take it", status);
                 return status;
             } else {
