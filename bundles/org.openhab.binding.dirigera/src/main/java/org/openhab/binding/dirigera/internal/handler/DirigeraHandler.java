@@ -393,10 +393,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private void heartbeat() {
         JSONObject gatewayInfo = api().readDevice(config.id);
-        if (gatewayInfo.has(PROPERTY_HTTP_ERROR_STATUS)) {
+        if (gatewayInfo.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
+            String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
+                    + gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_MESSAGE);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/dirigera.gateway.status.comm-error" + " [\"" + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS)
-                            + "\"]");
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
         } else {
             updateStatus(ThingStatus.ONLINE);
             websocket.ifPresentOrElse((wsClient) -> {

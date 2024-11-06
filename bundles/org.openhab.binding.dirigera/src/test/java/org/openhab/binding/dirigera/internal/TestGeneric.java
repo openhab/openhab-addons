@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -23,12 +24,11 @@ import org.json.JSONObject;
 @NonNullByDefault
 class TestGeneric {
 
+    @Test
     void testJsonChannel() {
-        String deviceInspelning = FileReader.readFileInString("src/test/resources/devices/inspelning.json");
-        JSONObject inspelningObject = new JSONObject(deviceInspelning);
-        final JSONObject newObject = new JSONObject();
-        inspelningObject.keySet().forEach(key -> {
-            newObject.put(key, inspelningObject.getString(key));
-        });
+        String error = String
+                .format("{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", "5", null);
+        System.out.println(error);
+        System.out.println(new JSONObject(error));
     }
 }
