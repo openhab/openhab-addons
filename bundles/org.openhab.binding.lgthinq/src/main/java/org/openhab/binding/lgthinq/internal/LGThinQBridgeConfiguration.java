@@ -68,7 +68,7 @@ public class LGThinQBridgeConfiguration {
         return language;
     }
 
-    public Integer getPoolingIntervalSec() {
+    public Integer getPollingIntervalSec() {
         return pollingIntervalSec;
     }
 
@@ -88,7 +88,7 @@ public class LGThinQBridgeConfiguration {
         this.language = language;
     }
 
-    public void setPoolingIntervalSec(Integer pollingIntervalSec) {
+    public void setPollingIntervalSec(Integer pollingIntervalSec) {
         this.pollingIntervalSec = pollingIntervalSec;
     }
 
