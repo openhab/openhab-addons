@@ -120,7 +120,7 @@ public class HueSyncConnection {
         } catch (ExecutionException e) {
             this.handleExecutionException(e);
         } catch (InterruptedException | TimeoutException e) {
-            this.logger.error("{}", e.getMessage());
+            this.logger.warn("{}", e.getMessage());
         }
 
         return null;
