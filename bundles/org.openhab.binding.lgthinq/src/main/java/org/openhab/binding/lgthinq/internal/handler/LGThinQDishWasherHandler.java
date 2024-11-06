@@ -172,7 +172,6 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     public void onDeviceRemoved() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     /**

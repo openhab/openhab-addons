@@ -40,7 +40,6 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
     @Override
     protected FeatureDefinition newFeatureDefinition(String featureName, JsonNode featuresNode,
             @Nullable String targetChannelId, @Nullable String refChannelId) {
-        // TODO - Implement feature definition
         return FeatureDefinition.NULL_DEFINITION;
     }
 

@@ -78,7 +78,6 @@ public class TokenManager {
 
     public boolean isOauthTokenRegistered(String bridgeName) {
         File tokenFile = new File(getConfigDataFileName(bridgeName));
-        // TODO - check if the file content is valid.
         return tokenFile.isFile();
     }
 

@@ -257,7 +257,6 @@ public class LGThinQWasherDryerHandler
                 updateState(remoteStartStopChannelUID, OnOffType.OFF);
                 // === creating selectable channels for the Course (if any)
                 WasherDryerCapability cap = getCapabilities();
-                // TODO - V1 - App will always get the default course, and V2 ?
                 loadOptionsCourse(cap, remoteStartCourseChannelUID);
                 updateState(remoteStartCourseChannelUID, new StringType(cap.getDefaultCourseId()));
 
@@ -438,7 +437,6 @@ public class LGThinQWasherDryerHandler
 
     @Override
     public void onDeviceRemoved() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     /**

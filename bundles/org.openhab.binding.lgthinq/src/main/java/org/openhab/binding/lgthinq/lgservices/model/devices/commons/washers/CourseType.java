@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CourseType {
-    // TODO - review DownloadCourse value, in remote start debugging
     COURSE("Course"),
     SMART_COURSE("SmartCourse"),
     DOWNLOADED_COURSE("DownloadedCourse"),

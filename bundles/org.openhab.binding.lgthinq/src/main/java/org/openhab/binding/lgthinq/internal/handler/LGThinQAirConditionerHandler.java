@@ -19,7 +19,7 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANN
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AIR_WATER_SWITCH_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_AUTO_DRY_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_COOL_JET_ID;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_POWER_ID;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_ENERGY_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_CURRENT_TEMP_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_ENERGY_SAVING_ID;
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.CHANNEL_AC_FAN_SPEED_ID;
@@ -111,7 +111,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     private final ChannelUID stepLeftRightChannelUID;
     private final ChannelUID energySavingChannelUID;
     private final ChannelUID extendedInfoCollectorChannelUID;
-    private final ChannelUID currentPowerEnergyChannelUID;
+    private final ChannelUID currentEnergyConsumptionChannelUID;
     private final ChannelUID remainingFilterChannelUID;
 
     private double minTempConstraint = 16, maxTempConstraint = 30;
@@ -143,7 +143,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_POWER_ID);
         extendedInfoCollectorChannelUID = new ChannelUID(channelGroupExtendedInfoUID,
                 CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-        currentPowerEnergyChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_CURRENT_POWER_ID);
+        currentEnergyConsumptionChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_CURRENT_ENERGY_ID);
         remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_REMAINING_FILTER_ID);
     }
 
@@ -157,7 +157,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                         .withoutChannels(this.getThing().getChannelsOfGroup(channelGroupExtendedInfoUID.getId()));
                 updateThing(builder.build());
             } else if (!cap.isEnergyMonitorAvailable()) {
-                ThingBuilder builder = editThing().withoutChannel(currentPowerEnergyChannelUID);
+                ThingBuilder builder = editThing().withoutChannel(currentEnergyConsumptionChannelUID);
                 updateThing(builder.build());
             } else if (!cap.isFilterMonitorAvailable()) {
                 ThingBuilder builder = editThing().withoutChannel(remainingFilterChannelUID);
@@ -315,16 +315,14 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     public void onDeviceRemoved() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     @Override
     public void onDeviceDisconnected() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     protected void resetExtraInfoChannels() {
-        updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
+        updateState(currentEnergyConsumptionChannelUID, UnDefType.UNDEF);
         if (!isExtraInfoCollectorEnabled()) { // if collector is enabled we can keep the current value
             updateState(remainingFilterChannelUID, UnDefType.UNDEF);
         }
@@ -475,26 +473,26 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) {
         logger.debug("Calling updateExtraInfoStateChannels for device: {}", getDeviceId());
-        String instantPowerConsumption = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_INSTANT_POWER);
+        String instantEnergyConsumption = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_INSTANT_POWER);
         String filterUsed = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_USED_TIME);
-        String filterTimelife = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE);
-        if (instantPowerConsumption == null) {
-            updateState(currentPowerEnergyChannelUID, UnDefType.NULL);
+        String filterLifetime = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE);
+        if (instantEnergyConsumption == null) {
+            updateState(currentEnergyConsumptionChannelUID, UnDefType.NULL);
         } else {
             try {
-                double ip = Double.parseDouble(instantPowerConsumption);
-                updateState(currentPowerEnergyChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
+                double ip = Double.parseDouble(instantEnergyConsumption);
+                updateState(currentEnergyConsumptionChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
             } catch (NumberFormatException e) {
-                updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
+                updateState(currentEnergyConsumptionChannelUID, UnDefType.UNDEF);
             }
         }
 
-        if (filterTimelife == null || filterUsed == null) {
+        if (filterLifetime == null || filterUsed == null) {
             updateState(remainingFilterChannelUID, UnDefType.NULL);
         } else {
             try {
                 double used = Double.parseDouble(filterUsed);
-                double max = Double.parseDouble(filterTimelife);
+                double max = Double.parseDouble(filterLifetime);
                 double perc = (1 - (used / max)) * 100;
                 updateState(remainingFilterChannelUID, new QuantityType<>(perc, Units.PERCENT));
             } catch (NumberFormatException ex) {

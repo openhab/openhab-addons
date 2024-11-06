@@ -115,18 +115,18 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="current-power">
+	<channel-type id="current-energy">
 		<item-type>Number:Energy</item-type>
-		<label>Current Power</label>
-		<description>Current Power Consumption (kWh)</description>
+		<label>Current Energy</label>
+		<description>Current Energy Consumption (kWh)</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current-watts-power">
 		<item-type>Number:Power</item-type>
-		<label>Current Power</label>
-		<description>Current Power Consumption (W)</description>
+		<label>Current Energy</label>
+		<description>Current Energy Consumption (W)</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

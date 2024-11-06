@@ -24,6 +24,11 @@ import org.openhab.binding.lgthinq.lgservices.model.SnapshotDefinition;
  */
 @NonNullByDefault
 public interface LGThinQBridge {
+    /**
+     * Register
+     * 
+     * @param listener
+     */
     void registerDiscoveryListener(LGThinqDiscoveryService listener);
 
     void registryListenerThing(

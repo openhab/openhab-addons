@@ -83,7 +83,7 @@ public class LGThinQBindingConstants extends LGServicesConstants {
     public static final String CHANNEL_AC_AIR_WATER_SWITCH_ID = "air-water-switch";
     public static final String CHANNEL_AC_AUTO_DRY_ID = "auto-dry";
     public static final String CHANNEL_AC_COOL_JET_ID = "cool-jet";
-    public static final String CHANNEL_AC_CURRENT_POWER_ID = "current-power";
+    public static final String CHANNEL_AC_CURRENT_ENERGY_ID = "current-energy";
     public static final String CHANNEL_AC_CURRENT_TEMP_ID = "current-temperature";
     public static final String CHANNEL_AC_ENERGY_SAVING_ID = "energy-saving";
     public static final String CHANNEL_AC_FAN_SPEED_ID = "fan-speed";

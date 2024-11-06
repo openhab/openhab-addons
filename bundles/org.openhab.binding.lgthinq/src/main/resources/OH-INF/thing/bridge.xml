@@ -63,7 +63,7 @@
 				<description>Password from LG Thinq Personal Account</description>
 				<context>password</context>
 			</parameter>
-			<parameter name="poolingIntervalSec" type="integer">
+			<parameter name="pollingIntervalSec" type="integer">
 				<label>Discovery Interval</label>
 				<description>Polling interval to discover new devices from LG Account (in Seconds >300 or 0 disabled).</description>
 				<default>86400</default>

@@ -75,7 +75,7 @@
 		<description>Show more information about the device.</description>
 		<channels>
 			<channel id="extra-info-collector" typeId="extra-info-collector"/>
-			<channel id="current-power" typeId="current-power"/>
+			<channel id="current-energy" typeId="current-energy"/>
 			<channel id="remaining-filter" typeId="remaining-filter"/>
 		</channels>
 	</channel-group-type>

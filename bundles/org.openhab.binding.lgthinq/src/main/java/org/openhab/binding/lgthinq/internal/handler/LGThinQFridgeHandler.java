@@ -284,12 +284,10 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
 
     @Override
     public void onDeviceRemoved() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     @Override
     public void onDeviceDisconnected() {
-        // TODO - HANDLE IT, Think if it's needed
     }
 
     @Override

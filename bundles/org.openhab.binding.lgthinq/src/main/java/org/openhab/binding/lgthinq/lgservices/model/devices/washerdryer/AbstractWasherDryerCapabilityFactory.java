@@ -84,7 +84,6 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
 
         Map<String, CourseDefinition> allCourses = new HashMap<>(getCourseDefinitions(coursesNode));
         allCourses.putAll(getSmartCourseDefinitions(smartCoursesNode));
-        // TODO - Put Downloaded Course
         wdCap.setCourses(allCourses);
 
         JsonNode monitorValueNode = rootNode.path(getMonitorValueNodeName());
