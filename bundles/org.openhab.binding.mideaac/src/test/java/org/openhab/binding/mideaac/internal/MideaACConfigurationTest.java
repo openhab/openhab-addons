@@ -36,7 +36,7 @@ public class MideaACConfigurationTest {
     @Test
     public void testValidConfigs() {
         config.ipAddress = "192.168.0.1";
-        config.ipPort = "6444";
+        config.ipPort = 6444;
         config.deviceId = "1234567890";
         assertTrue(config.isValid());
         assertFalse(config.isDiscoveryNeeded());
@@ -48,7 +48,7 @@ public class MideaACConfigurationTest {
     @Test
     public void testnonValidConfigs() {
         config.ipAddress = "192.168.0.1";
-        config.ipPort = "";
+        config.ipPort = 0;
         config.deviceId = "1234567890";
         assertFalse(config.isValid());
         assertTrue(config.isDiscoveryNeeded());
@@ -60,7 +60,7 @@ public class MideaACConfigurationTest {
     @Test
     public void testBadIpConfigs() {
         config.ipAddress = "192.1680.1";
-        config.ipPort = "6444";
+        config.ipPort = 6444;
         config.deviceId = "1234567890";
         assertTrue(config.isValid());
         assertTrue(config.isDiscoveryNeeded());

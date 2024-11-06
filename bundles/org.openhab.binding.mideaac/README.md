@@ -64,7 +64,6 @@ Following channels are available:
 | off-timer                    | String             | Sets the future time to turn off the AC.                                                               |           | Yes      |
 | screen-display               | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
 | humidity                     | Number             | If device supports, the indoor humidity.                                                               | Yes       | Yes      |
-| dropped-commands             | Number             | Quality of WiFi connections - For debugging only.                                                      | Yes       | Yes      |
 | appliance-error              | Switch             | If device supports, appliance error                                                                    | Yes       | Yes      |
 | auxiliary-heat               | Switch             | If device supports, auxiliary heat                                                                     | Yes       | Yes      |
 | alternate-target-temperature | Number:Temperature | Alternate Target Temperature - not currently used                                                      | Yes       | Yes      |
