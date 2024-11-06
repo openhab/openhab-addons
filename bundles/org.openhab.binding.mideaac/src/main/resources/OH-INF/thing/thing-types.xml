@@ -31,7 +31,6 @@
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="screen-display" typeId="screen-display"/>
 			<channel id="alternate-target-temperature" typeId="alternate-target-temperature"/>
-			<channel id="dropped-commands" typeId="dropped-commands"/>
 		</channels>
 
 		<representation-property>ipAddress</representation-property>
@@ -255,12 +254,5 @@
 		<description>Alternate Target Temperature (Read Only).</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="dropped-commands" advanced="true">
-		<item-type>Number</item-type>
-		<label>Dropped Command Monitor</label>
-		<description>Commands dropped due to TCP read() issues.</description>
-		<category>Number</category>
-		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

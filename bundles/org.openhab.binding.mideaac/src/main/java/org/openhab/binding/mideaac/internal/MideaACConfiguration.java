@@ -25,7 +25,7 @@ public class MideaACConfiguration {
 
     public String ipAddress = "";
 
-    public String ipPort = "6444";
+    public int ipPort = 6444;
 
     public String deviceId = "";
 
@@ -45,7 +45,7 @@ public class MideaACConfiguration {
 
     public boolean promptTone;
 
-    public String version = "";
+    public int version = 0;
 
     /**
      * Check during initialization that the params are valid
@@ -53,7 +53,7 @@ public class MideaACConfiguration {
      * @return true(valid), false (not valid)
      */
     public boolean isValid() {
-        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort.isBlank() || ipAddress.isBlank());
+        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank());
     }
 
     /**
@@ -62,7 +62,26 @@ public class MideaACConfiguration {
      * @return true(discovery needed), false (not needed)
      */
     public boolean isDiscoveryNeeded() {
-        return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort.isBlank() || ipAddress.isBlank()
+        return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
                 || !Utils.validateIP(ipAddress));
+    }
+
+    /**
+     * Check during initialization if key and token can be obtained
+     * from the cloud.
+     * 
+     * @return true (yes they can), false (they cannot)
+     */
+    public boolean isTokenKeyObtainable() {
+        return (!email.isBlank() && !password.isBlank() && !"".equals(cloud));
+    }
+
+    /**
+     * Check during initialization if cloud, key and token are true for v3
+     * 
+     * @return true (Valid, all items are present) false (key, token and/or provider missing)
+     */
+    public boolean isV3ConfigValid() {
+        return (!key.isBlank() && !token.isBlank() && !"".equals(cloud));
     }
 }
