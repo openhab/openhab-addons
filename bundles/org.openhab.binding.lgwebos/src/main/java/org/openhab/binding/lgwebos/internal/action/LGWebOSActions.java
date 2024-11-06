@@ -96,7 +96,7 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
-    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconDesc")
+    @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconDesc", id = "showToastWithIcon")
     public void showToast(
             @ActionInput(name = "icon", label = "@text/actionShowToastInputIconLabel", description = "@text/actionShowToastInputIconDesc") String icon,
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
@@ -144,7 +144,7 @@ public class LGWebOSActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")
+    @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc", id = "launchApplicationWithParameters")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
             @ActionInput(name = "params", label = "@text/actionLaunchApplicationInputParamsLabel", description = "@text/actionLaunchApplicationInputParamsDesc") String params) {
