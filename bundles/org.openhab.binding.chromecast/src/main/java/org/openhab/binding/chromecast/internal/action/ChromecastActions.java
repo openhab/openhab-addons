@@ -57,7 +57,7 @@ public class ChromecastActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/playURLTypeActionLabel", description = "@text/playURLTypeActionDescription")
+    @RuleAction(label = "@text/playURLTypeActionLabel", description = "@text/playURLTypeActionDescription", id = "playURLWithMediaType")
     public @ActionOutput(name = "result", label = "Success", type = "java.lang.Boolean") Boolean playURL(
             @ActionInput(name = "url") @Nullable String url,
             @ActionInput(name = "mediaType") @Nullable String mediaType) {
