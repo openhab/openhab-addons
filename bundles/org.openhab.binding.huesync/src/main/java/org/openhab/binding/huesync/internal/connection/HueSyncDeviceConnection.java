@@ -94,7 +94,8 @@ public class HueSyncDeviceConnection {
             value = Integer.toString(((QuantityType<?>) command).intValue());
         } else if (command instanceof OnOffType) {
             value = ((OnOffType) command).name().equals("ON") ? "true" : "false";
-        } else if (command instanceof StringType) {
+        } else if (command instanceof OnOffType onOffCommand) {
+            value = OnOffType.ON.equals(onOffCommand) ? "true" : "false";
             value = "\"" + ((StringType) command).toString() + "\"";
         } else {
             this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
