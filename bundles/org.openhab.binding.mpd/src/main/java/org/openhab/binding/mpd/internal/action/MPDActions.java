@@ -51,7 +51,7 @@ public class MPDActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "send a command with a parameter", description = "Send a command to the Music Player Daemon.")
+    @RuleAction(label = "send a command with a parameter", description = "Send a command to the Music Player Daemon.", id = "sendCommandWithParameter")
     public void sendCommand(@ActionInput(name = "command") @Nullable String command,
             @ActionInput(name = "parameter") @Nullable String parameter) {
         logger.debug("sendCommand called with {}", command);
