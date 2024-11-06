@@ -92,7 +92,8 @@ public class HueSyncDeviceConnection {
 
         if (command instanceof QuantityType) {
             value = Integer.toString(((QuantityType<?>) command).intValue());
-        } else if (command instanceof OnOffType) {
+        if (command instanceof QuantityType quantityCommand) {
+            value = Integer.toString(quantityCommand.intValue());
             value = ((OnOffType) command).name().equals("ON") ? "true" : "false";
         } else if (command instanceof OnOffType onOffCommand) {
             value = OnOffType.ON.equals(onOffCommand) ? "true" : "false";
