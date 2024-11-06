@@ -189,7 +189,7 @@ public class HueSyncDeviceConnection {
     }
 
     public void updateConfiguration(HueSyncConfiguration config) {
-        this.logger.debug("🔧 Connection configuration update for device {}:{} - Registration Id [{}]", config.host,
+        this.logger.debug("Connection configuration update for device {}:{} - Registration Id [{}]", config.host,
                 config.port, config.registrationId);
 
         this.connection.updateAuthentication(config.registrationId, config.apiAccessToken);
