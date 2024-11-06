@@ -98,7 +98,8 @@ public class HueSyncDeviceConnection {
         } else if (command instanceof OnOffType onOffCommand) {
             value = OnOffType.ON.equals(onOffCommand) ? "true" : "false";
             value = "\"" + ((StringType) command).toString() + "\"";
-        } else {
+        } else if (command instanceof StringType stringCommand) {
+            value = "\"" + stringCommand.toString() + "\"";
             this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
             return;
         }
