@@ -39,9 +39,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.mideaac", service = ThingHandlerFactory.class)
 public class MideaACHandlerFactory extends BaseThingHandlerFactory {
 
-    private UnitProvider unitProvider;
     private final HttpClientFactory httpClientFactory;
     private final CloudsDTO clouds;
+    private final UnitProvider unitProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,8 +56,8 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
      */
     @Activate
     public MideaACHandlerFactory(@Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {
-        this.unitProvider = unitProvider;
         this.httpClientFactory = httpClientFactory;
+        this.unitProvider = unitProvider;
         clouds = new CloudsDTO();
     }
 
