@@ -60,7 +60,7 @@ public class Enigma2Actions implements ThingActions {
         handler.sendInfo(Enigma2BindingConstants.MESSAGE_TIMEOUT, text);
     }
 
-    @RuleAction(label = "@text/actions.enigma2.send-info.label", description = "@text/actions.enigma2.send-info.description")
+    @RuleAction(label = "@text/actions.enigma2.send-info.label", description = "@text/actions.enigma2.send-info.description", id = "sendInfoWithTimeout")
     @SuppressWarnings("null")
     public void sendInfo(
             @ActionInput(name = "text", label = "@text/actions-input.enigma2.text.label", description = "@text/actions-input.enigma2.text.description") String text,
@@ -75,7 +75,7 @@ public class Enigma2Actions implements ThingActions {
         handler.sendWarning(Enigma2BindingConstants.MESSAGE_TIMEOUT, text);
     }
 
-    @RuleAction(label = "@text/actions.enigma2.send-warning.label", description = "@text/actions.enigma2.send-warning.description")
+    @RuleAction(label = "@text/actions.enigma2.send-warning.label", description = "@text/actions.enigma2.send-warning.description", id = "sendWarningWithTimeout")
     @SuppressWarnings("null")
     public void sendWarning(
             @ActionInput(name = "text", label = "@text/actions-input.enigma2.text.label", description = "@text/actions-input.enigma2.text.description") String text,
@@ -90,7 +90,7 @@ public class Enigma2Actions implements ThingActions {
         handler.sendError(Enigma2BindingConstants.MESSAGE_TIMEOUT, text);
     }
 
-    @RuleAction(label = "@text/actions.enigma2.send-error.label", description = "@text/actions.enigma2.send-error.description")
+    @RuleAction(label = "@text/actions.enigma2.send-error.label", description = "@text/actions.enigma2.send-error.description", id = "sendErrorWithTimeout")
     @SuppressWarnings("null")
     public void sendError(
             @ActionInput(name = "text", label = "@text/actions-input.enigma2.text.label", description = "@text/actions-input.enigma2.text.description") String text,
@@ -105,7 +105,7 @@ public class Enigma2Actions implements ThingActions {
         handler.sendQuestion(Enigma2BindingConstants.MESSAGE_TIMEOUT, text);
     }
 
-    @RuleAction(label = "@text/actions.enigma2.send-error.label", description = "@text/actions.enigma2.send-question.description")
+    @RuleAction(label = "@text/actions.enigma2.send-error.label", description = "@text/actions.enigma2.send-question.description", id = "sendQuestionWithTimeout")
     @SuppressWarnings("null")
     public void sendQuestion(
             @ActionInput(name = "text", label = "@text/actions-input.enigma2.text.label", description = "@text/actions-input.enigma2.text.description") String text,
