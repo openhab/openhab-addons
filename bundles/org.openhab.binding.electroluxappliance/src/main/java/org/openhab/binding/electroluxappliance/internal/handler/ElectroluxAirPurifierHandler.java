@@ -162,7 +162,7 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
                 return OnOffType.from(reported.isSafetyLock());
             case CHANNEL_WORK_MODE:
                 return new StringType(reported.getWorkmode());
-            case CHANNEL_DOOR_OPEN:
+            case CHANNEL_DOOR_STATE:
                 return reported.isDoorOpen() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
         }
         return UnDefType.UNDEF;

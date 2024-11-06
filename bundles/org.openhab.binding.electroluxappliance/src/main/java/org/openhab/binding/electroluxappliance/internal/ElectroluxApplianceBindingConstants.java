@@ -35,7 +35,7 @@ public class ElectroluxApplianceBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "api");
 
     // List of all common Channel ids
-    public static final String CONNECTION_STATE = "connection-state";
+    public static final String CHANNEL_DOOR_STATE = "door-state";
 
     // List of all Channel ids for Air Purifers
     public static final String CHANNEL_STATUS = "status";
@@ -47,7 +47,6 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_PM10 = "pm10";
     public static final String CHANNEL_CO2 = "co2";
     public static final String CHANNEL_FILTER_LIFE = "filter-life";
-    public static final String CHANNEL_DOOR_OPEN = "door-open";
     public static final String CHANNEL_FAN_SPEED = "fan-speed";
     public static final String CHANNEL_WORK_MODE = "work-mode";
     public static final String CHANNEL_IONIZER = "ionizer";
@@ -55,7 +54,6 @@ public class ElectroluxApplianceBindingConstants {
     public static final String CHANNEL_SAFETY_LOCK = "safety-lock";
 
     // List of all Channel ids for Washing Machines
-    public static final String CHANNEL_DOOR_STATE = "door-state";
     public static final String CHANNEL_DOOR_LOCK = "door-lock";
     public static final String CHANNEL_TIME_TO_START = "time-to-start";
     public static final String CHANNEL_TIME_TO_END = "time-to-end";

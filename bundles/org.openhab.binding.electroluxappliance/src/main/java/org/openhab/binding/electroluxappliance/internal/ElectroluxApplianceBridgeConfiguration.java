@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ElectroluxApplianceBridgeConfiguration {
     public String apiKey = "";
-    public String accessToken = "";
     public String refreshToken = "";
     public int refresh = 600;
 }

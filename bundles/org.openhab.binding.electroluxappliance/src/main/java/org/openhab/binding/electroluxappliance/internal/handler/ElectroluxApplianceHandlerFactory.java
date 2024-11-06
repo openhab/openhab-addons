@@ -74,10 +74,4 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        logger.debug("setHttpClientFactory this: {}", this);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
 }

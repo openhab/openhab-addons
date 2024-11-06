@@ -63,6 +63,7 @@ public class ElectroluxGroupAPI {
     private final Gson gson;
     private final HttpClient httpClient;
     private final ElectroluxApplianceBridgeConfiguration configuration;
+    private String accessToken = "";
     private Instant tokenExpiry = Instant.MAX;
     private final TokenUpdateListener tokenUpdateListener;
 
@@ -78,7 +79,7 @@ public class ElectroluxGroupAPI {
         try {
             if (Instant.now().isAfter(this.tokenExpiry) || isCommunicationError) {
                 logger.debug("Is communication error: {}", isCommunicationError);
-                // Refresh since token is expired
+                // Refresh since token has expired
                 refreshToken();
             } else {
                 logger.debug("Now: {} Token expiry: {}", Instant.now(), this.tokenExpiry);
@@ -223,10 +224,10 @@ public class ElectroluxGroupAPI {
             json = httpResponse.getContentAsString();
             logger.trace("Tokens: {}", json);
             JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-            this.configuration.accessToken = jsonObject.get("accessToken").getAsString();
+            this.accessToken = jsonObject.get("accessToken").getAsString();
             this.configuration.refreshToken = jsonObject.get("refreshToken").getAsString();
             // Notify the listener about the updated tokens
-            tokenUpdateListener.onTokenUpdated(this.configuration.accessToken, this.configuration.refreshToken);
+            tokenUpdateListener.onTokenUpdated(this.configuration.refreshToken);
             long expiresIn = jsonObject.get("expiresIn").getAsLong();
             logger.debug("Token expires in: {}s", expiresIn);
             this.tokenExpiry = Instant.now().plusSeconds(expiresIn);
@@ -242,7 +243,7 @@ public class ElectroluxGroupAPI {
                 try {
                     Request request = createRequest(uri, HttpMethod.GET);
                     request.header("x-api-key", this.configuration.apiKey);
-                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.configuration.accessToken);
+                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
                     logger.trace("Request header {}", request);
 
                     ContentResponse response = request.send();
@@ -294,7 +295,7 @@ public class ElectroluxGroupAPI {
             for (int i = 0; i < MAX_RETRIES; i++) {
                 try {
                     Request request = createRequest(APPLIANCES_URL + "/" + applianceId + "/command", HttpMethod.PUT);
-                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.configuration.accessToken);
+                    request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.accessToken);
                     request.header("x-api-key", this.configuration.apiKey);
                     request.content(new StringContentProvider(commandJSON), MediaType.APPLICATION_JSON);
                     logger.trace("Command JSON: {}", commandJSON);

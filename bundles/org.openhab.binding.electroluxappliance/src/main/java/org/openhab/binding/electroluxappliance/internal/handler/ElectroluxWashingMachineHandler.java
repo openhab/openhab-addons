@@ -110,8 +110,7 @@ public class ElectroluxWashingMachineHandler extends ElectroluxApplianceHandler 
             case CHANNEL_CYCLE_PHASE:
                 return new StringType(reported.getCyclePhase());
             case CHANNEL_APPLIANCE_TOTAL_WORKING_TIME:
-                return new StringType(Integer.toString(((WashingMachineStateDTO) dto.getApplianceState())
-                        .getProperties().getReported().getApplianceTotalWorkingTime()));
+                return new StringType(Integer.toString(reported.getApplianceTotalWorkingTime()));
             case CHANNEL_APPLIANCE_STATE:
                 return new StringType(reported.getApplianceState());
             case CHANNEL_APPLIANCE_MODE:

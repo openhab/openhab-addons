@@ -1,6 +1,6 @@
-# Electrolux Appliances Binding
+# Electrolux Appliance Binding
 
-This is an openHAB binding for Electrolux Appliances.
+This is a binding for Electrolux appliances.
 
 ## Supported Things
 
@@ -17,14 +17,13 @@ After the configuration of the `api` bridge, your Electrolux appliances will be 
 ### Configuration Options
 
 Only the bridge requires manual configuration. 
-The Electrolux appliances things can be added by hand, or you can let the discovery mechanism automatically find them.
+The Electrolux appliance things can be added by hand, or you can let the discovery mechanism automatically find them.
 
 #### `api` Bridge
 
 | Parameter    | Description                                            | Type   | Default  | Required |
 |--------------|--------------------------------------------------------|--------|----------|----------|
 | apiKey       | Your created API key on developer.electrolux.one       | String | NA       | yes      |        
-| accessToken  | Your created access token on developer.electrolux.one  | String | NA       | yes      |
 | refreshToken | Your created refresh token on developer.electrolux.one | String | NA       | yes      |
 | refresh      | Specifies the refresh interval in second               | Number | 600      | yes      |
 
@@ -34,13 +33,11 @@ The Electrolux appliances things can be added by hand, or you can let the discov
 |--------------|--------------------------------------------------------------------------|--------|----------|----------|
 | serialNumber | Serial Number of your Electrolux appliance found in the Electrolux app   | Number | NA       | yes      |
 
-
 #### `washing-machine` Electrolux Washing Machine
 
 | Parameter    | Description                                                              | Type   | Default  | Required |
 |--------------|--------------------------------------------------------------------------|--------|----------|----------|
 | serialNumber | Serial Number of your Electrolux appliance found in the Electrolux app   | Number | NA       | yes      |
-
 
 ## Channels
 
@@ -60,12 +57,11 @@ The following channels are supported:
 | fan-speed                   | Number                | This channel sets and reports the current fan speed (1-9).                     |
 | filter-life                 | Number:Dimensionless  | This channel reports the remaining filter life in %.                           |
 | ionizer                     | Switch                | This channel sets and reports the status of the Ionizer function (On/Off).     |
-| door-open                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
+| door-state                  | Contact               | This channel reports the status of the door (Opened/Closed).                   |
 | work-mode                   | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)  |
-| ui-lIght                    | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
+| ui-light                    | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
 | safety-lock                 | Switch                | This channel sets and reports the status of the Safety Lock function.          |
 | status                      | String                | This channel is used to fetch latest status from the API.                      |
-
 
 ### Electrolux Washing Machine
 
@@ -73,7 +69,7 @@ The following channels are supported:
 
 | Channel Type ID              | Item Type             | Description                                                                    |
 |------------------------------|-----------------------|--------------------------------------------------------------------------------|
-| door-state                   | Contact               | This channel reports the status of door (Opened/Closed).                       |
+| door-state                   | Contact               | This channel reports the status of the door (Opened/Closed).                   |
 | door-lock                    | Contact               | This channel reports the status of the door lock.                              |
 | time-to-start                | Number:Time           | This channel reports the remaining time for a delayed start washing program.   |
 | time-to-end                  | Number:Time           | This channel reports the remaining time to the end for a washing program.      |
@@ -93,17 +89,14 @@ The following channels are supported:
 | total-wash-cycles-count      | Number                | This channel reports the total number of washing cycles.                       |
 | status                       | String                | This channel is used to fetch latest status from the API.                      |
 
-
 ## Full Example
 
 ### `demo.things` Example
 
 ```java
 // Bridge configuration
-Bridge electroluxappliances:api:myAPI "Electrolux Group API" [apiKey="12345678", accessToken="12345678", refreshToken="12345678", refresh="300"] {
-
+Bridge electroluxappliance:api:myAPI "Electrolux Group API" [apiKey="12345678", refreshToken="12345678", refresh="300"] {
      Thing air-purifier myair-purifier  "Electrolux Pure A9"    [ serialNummber="123456789" ]
-     
 }
 ```
 
@@ -111,19 +104,19 @@ Bridge electroluxappliances:api:myAPI "Electrolux Group API" [apiKey="12345678",
 
 ```java
 // CO2
-Number:Dimensionless electroluxappliancesCO2 "Electrolux Air CO2 [%d ppm]" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:co2"}
+Number:Dimensionless electroluxapplianceCO2 "Electrolux Air CO2 [%d ppm]" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:co2"}
 // Temperature
-Number:Temperature electroluxappliancesTemperature "Electrolux Air Temperature" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:temperature"}
+Number:Temperature electroluxapplianceTemperature "Electrolux Air Temperature" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:temperature"}
 // Door status
-Contact electroluxappliancesDoor "Electrolux Air Door Status" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:doorOpen"}
+Contact electroluxapplianceDoor "Electrolux Air Door Status" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:doorOpen"}
 // Work mode
-String electroluxappliancesWorkModeSetting "electroluxappliances Work Mode Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:workMode"}
+String electroluxapplianceWorkModeSetting "electroluxappliance Work Mode Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:workMode"}
 // Fan speed
-Number electroluxappliancesFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:fanSpeed"}
+Number electroluxapplianceFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:fanSpeed"}
 // UI Light
-Switch electroluxappliancesUILight "Electrolux Air UI Light Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:uiLight"}
+Switch electroluxapplianceUILight "Electrolux Air UI Light Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:uiLight"}
 // Ionizer
-Switch electroluxappliancesIonizer "Electrolux Air Ionizer Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:ionizer"}
+Switch electroluxapplianceIonizer "Electrolux Air Ionizer Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:ionizer"}
 // Safety Lock
-Switch electroluxappliancesSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliances:air-purifier:myAPI:myair-purifier:safetyLock"}
+Switch electroluxapplianceSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxappliance:air-purifier:myAPI:myair-purifier:safetyLock"}
 ```

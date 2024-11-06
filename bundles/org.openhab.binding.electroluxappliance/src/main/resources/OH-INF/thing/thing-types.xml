@@ -17,10 +17,6 @@
 				<label>API Key</label>
 				<description>Your personal API key.</description>
 			</parameter>
-			<parameter name="accessToken" type="text" required="true">
-				<label>Access Token</label>
-				<description>Your personal Access Token.</description>
-			</parameter>
 			<parameter name="refreshToken" type="text" required="true">
 				<label>Refresh Token</label>
 				<description>Your personal Refresh Token.</description>
@@ -50,7 +46,7 @@
 			<channel id="pm10" typeId="pm10"/>
 			<channel id="co2" typeId="co2"/>
 			<channel id="filter-life" typeId="filter-life"/>
-			<channel id="door-open" typeId="door-open"/>
+			<channel id="door-state" typeId="door-state"/>
 			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="work-mode" typeId="work-mode"/>
 			<channel id="ionizer" typeId="ionizer"/>
@@ -187,13 +183,6 @@
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="door-open">
-		<item-type>Contact</item-type>
-		<label>Door Status</label>
-		<description>The door status Open/Closed.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="fan-speed">
 		<item-type>Number</item-type>
 		<label>Fan Speed Setting</label>
@@ -247,26 +236,26 @@
 	<channel-type id="door-lock">
 		<item-type>Contact</item-type>
 		<label>Door Lock</label>
-		<description>The door lock status.</description>
+		<description>The door lock status Open/Closed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="door-state">
 		<item-type>Contact</item-type>
-		<label>Door Status</label>
+		<label>Door State</label>
 		<description>The door status Open/Closed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="time-to-start">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To Delayed Start</label>
 		<description>The time remaining until the delayed start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="time-to-end">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To End</label>
 		<description>The time remaining until the program will end.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -280,7 +269,7 @@
 	</channel-type>
 
 	<channel-type id="appliance-total-working-time">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Appliance Total Working Time</label>
 		<description>The appliance total working time.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -308,7 +297,7 @@
 	</channel-type>
 
 	<channel-type id="water-usage">
-		<item-type>Number:Volume</item-type>
+		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Water Usage</label>
 		<description>The water usage in litres.</description>
 		<state readOnly="true"/>

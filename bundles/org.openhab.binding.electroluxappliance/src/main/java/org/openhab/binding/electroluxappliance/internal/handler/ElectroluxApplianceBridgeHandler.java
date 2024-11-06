@@ -81,7 +81,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
 
         refreshTimeInSeconds = config.refresh;
 
-        if (config.apiKey.isBlank() || config.accessToken.isBlank() || config.refreshToken.isBlank()) {
+        if (config.apiKey.isBlank() || config.refreshToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of API key, access and refresh token is mandatory");
         } else if (refreshTimeInSeconds < 10) {
@@ -101,10 +101,9 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     }
 
     @Override
-    public void onTokenUpdated(@Nullable String newAccessToken, @Nullable String newRefreshToken) {
+    public void onTokenUpdated(@Nullable String newRefreshToken) {
         // Create a new configuration object with the updated tokens
         Configuration configuration = editConfiguration();
-        configuration.put("accessToken", newAccessToken);
         configuration.put("refreshToken", newRefreshToken);
         // Update the configuration
         updateConfiguration(configuration);

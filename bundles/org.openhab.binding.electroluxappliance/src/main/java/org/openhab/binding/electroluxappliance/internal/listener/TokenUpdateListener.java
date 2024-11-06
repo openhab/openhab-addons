@@ -27,5 +27,5 @@ public interface TokenUpdateListener {
      * @param newAccessToken the new access token
      * @param newRefreshToken the new refresh token
      */
-    void onTokenUpdated(String newAccessToken, String newRefreshToken);
+    void onTokenUpdated(String newRefreshToken);
 }
