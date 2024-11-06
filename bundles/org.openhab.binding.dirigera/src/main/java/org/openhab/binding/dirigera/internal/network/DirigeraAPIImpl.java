@@ -241,6 +241,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                     String responseString = response.getContentAsString();
                     JSONObject responseJSON = new JSONObject(responseString);
                     responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
+                    break;
                 } else {
                     logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url, response.getStatus());
                 }
@@ -268,6 +269,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 responseStatus = response.getStatus();
                 if (responseStatus == 200 || responseStatus == 202) {
                     logger.debug("DIRIGERA API delete {} performed", url);
+                    break;
                 } else {
                     logger.debug("DIRIGERA API send {} failed with status {}", url, response.getStatus());
                 }

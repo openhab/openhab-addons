@@ -443,10 +443,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             Request codeRequest = httpClient.newRequest(url).param("audience", "homesmart.local")
                     .param("response_type", "code").param("code_challenge", challenge)
                     .param("code_challenge_method", "S256");
-            logger.info("DIRIGERA HANDLER Call {} with params", url);
+            logger.info("DIRIGERA HANDLER Call {}", url);
 
             ContentResponse response = codeRequest.timeout(10, TimeUnit.SECONDS).send();
             int responseStatus = response.getStatus();
+            if (responseStatus != 200) {
+                String reason = response.getReason();
+                logger.warn("DIRIGERA HANDLER exception during code request {} {}", responseStatus, reason);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.gateway.status.comm-error" + " [\"" + responseStatus + " - " + reason + "\"]");
+                return "";
+            }
             String responseString = response.getContentAsString();
             logger.info("DIRIGERA HANDLER code challenge {} : {}", responseStatus, responseString);
             JSONObject codeResponse = new JSONObject(responseString);
@@ -455,6 +462,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             return code;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("DIRIGERA HANDLER exception during code request {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + e.getMessage() + "\"]");
             return "";
         }
     }
