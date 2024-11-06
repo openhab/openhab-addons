@@ -12,24 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.api;
 
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_API_KEY_V2;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_APPLICATION_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_APP_LEVEL;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_APP_OS;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_APP_TYPE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_APP_VER;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_CLIENT_ID;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_DATE_FORMAT;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_MESSAGE_ID;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_OAUTH_CLIENT_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_OAUTH_SEARCH_KEY_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_OAUTH_SECRET_KEY;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_PRE_LOGIN_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SVC_CODE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_SVC_PHASE;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_AUTH_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_SESSION_LOGIN_PATH;
-import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.LG_API_V2_USER_INFO;
+import static org.openhab.binding.lgthinq.lgservices.LGServicesConstants.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -90,17 +73,17 @@ public class LGThinqOauthEmpAuthenticator {
 
     private Map<String, String> getGatewayRestHeader(String language, String country) {
         return Map.ofEntries(new AbstractMap.SimpleEntry<String, String>("Accept", "application/json"),
-                new AbstractMap.SimpleEntry<String, String>("x-api-key", LG_API_API_KEY_V2),
-                new AbstractMap.SimpleEntry<String, String>("x-country-code", country),
-                new AbstractMap.SimpleEntry<String, String>("x-client-id", LG_API_CLIENT_ID),
-                new AbstractMap.SimpleEntry<String, String>("x-language-code", language),
-                new AbstractMap.SimpleEntry<String, String>("x-message-id", LG_API_MESSAGE_ID),
-                new AbstractMap.SimpleEntry<String, String>("x-service-code", LG_API_SVC_CODE),
-                new AbstractMap.SimpleEntry<String, String>("x-service-phase", LG_API_SVC_PHASE),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-level", LG_API_APP_LEVEL),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-os", LG_API_APP_OS),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-type", LG_API_APP_TYPE),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-ver", LG_API_APP_VER));
+                new AbstractMap.SimpleEntry<>("x-api-key", LG_API_API_KEY_V2),
+                new AbstractMap.SimpleEntry<>("x-country-code", country),
+                new AbstractMap.SimpleEntry<>("x-client-id", LG_API_CLIENT_ID),
+                new AbstractMap.SimpleEntry<>("x-language-code", language),
+                new AbstractMap.SimpleEntry<>("x-message-id", LG_API_MESSAGE_ID),
+                new AbstractMap.SimpleEntry<>("x-service-code", LG_API_SVC_CODE),
+                new AbstractMap.SimpleEntry<>("x-service-phase", LG_API_SVC_PHASE),
+                new AbstractMap.SimpleEntry<>("x-thinq-app-level", LG_API_APP_LEVEL),
+                new AbstractMap.SimpleEntry<>("x-thinq-app-os", LG_API_APP_OS),
+                new AbstractMap.SimpleEntry<>("x-thinq-app-type", LG_API_APP_TYPE),
+                new AbstractMap.SimpleEntry<>("x-thinq-app-ver", LG_API_APP_VER));
     }
 
     private Map<String, String> getLoginHeader(LGThinqGateway gw) {
@@ -123,7 +106,7 @@ public class LGThinqOauthEmpAuthenticator {
         return headers;
     }
 
-    public LGThinqGateway discoverGatewayConfiguration(String gwUrl, String language, String country,
+    LGThinqGateway discoverGatewayConfiguration(String gwUrl, String language, String country,
             String alternativeEmpServer) throws IOException {
         Map<String, String> header = getGatewayRestHeader(language, country);
         RestResult result;
@@ -145,7 +128,7 @@ public class LGThinqOauthEmpAuthenticator {
         }
     }
 
-    public PreLoginResult preLoginUser(LGThinqGateway gw, String username, String password) throws IOException {
+    PreLoginResult preLoginUser(LGThinqGateway gw, String username, String password) throws IOException {
         String encPwd = RestUtils.getPreLoginEncPwd(password);
         Map<String, String> headers = getLoginHeader(gw);
         // 1) Doing preLogin -> getting the password key
@@ -174,7 +157,7 @@ public class LGThinqOauthEmpAuthenticator {
                         "Unexpected login json result. Node 'signature' not found"));
     }
 
-    public LoginAccountResult loginUser(LGThinqGateway gw, PreLoginResult preLoginResult) throws IOException {
+    LoginAccountResult loginUser(LGThinqGateway gw, PreLoginResult preLoginResult) throws IOException {
         // 2 - Login with username and hashed password
         Map<String, String> headers = getLoginHeader(gw);
         headers.put("X-Signature", preLoginResult.signature());
@@ -267,7 +250,7 @@ public class LGThinqOauthEmpAuthenticator {
         return oauthEmpHeaders;
     }
 
-    public UserInfo getUserInfo(TokenResult token) throws IOException {
+    UserInfo getUserInfo(TokenResult token) throws IOException {
         UriBuilder builder = UriBuilder.fromUri(token.getOauthBackendUrl()).path(LG_API_V2_USER_INFO);
         String oauthUrl = builder.build().toURL().toString();
         String timestamp = getCurrentTimestamp();
@@ -307,7 +290,7 @@ public class LGThinqOauthEmpAuthenticator {
                 Objects.requireNonNullElse(accountInfo.get("displayUserID"), ""));
     }
 
-    public TokenResult doRefreshToken(TokenResult currentToken) throws IOException, RefreshTokenException {
+    TokenResult doRefreshToken(TokenResult currentToken) throws IOException, RefreshTokenException {
         UriBuilder builder = UriBuilder.fromUri(currentToken.getOauthBackendUrl()).path(LG_API_V2_AUTH_PATH);
         String oauthUrl = builder.build().toURL().toString();
         String timestamp = getCurrentTimestamp();
