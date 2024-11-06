@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -79,7 +80,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     public JSONObject readHome() {
         String url = String.format(HOME_URL, gateway.getIpAddress());
         startCalling(url);
-        JSONObject statusObject = new JSONObject();
+        JSONObject statusObject;
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -87,10 +88,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             if (responseStatus == 200) {
                 statusObject = new JSONObject(response.getContentAsString());
             } else {
-                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
+                statusObject = getErrorJson(responseStatus, response.getReason());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
+            statusObject = getErrorJson(-1, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         endCalling(url);
@@ -109,10 +110,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             if (responseStatus == 200) {
                 statusObject = new JSONObject(response.getContentAsString());
             } else {
-                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
+                statusObject = getErrorJson(responseStatus, response.getReason());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
+            statusObject = getErrorJson(-1, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         endCalling(url);
@@ -123,7 +124,6 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     public void triggerScene(String sceneId, String trigger) {
         String url = String.format(SCENE_URL, gateway.getIpAddress(), sceneId) + "/" + trigger;
         startCalling(url);
-        JSONObject statusObject = new JSONObject();
         try {
             Request homeRequest = httpClient.POST(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -132,7 +132,6 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 logger.warn("DIRIGERA Scene trigger failed with {}", responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
             logger.warn("DIRIGERA Exception calling {}", url);
         }
         endCalling(url);
@@ -207,10 +206,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             if (responseStatus == 200) {
                 statusObject = new JSONObject(response.getContentAsString());
             } else {
-                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
+                statusObject = getErrorJson(responseStatus, response.getReason());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, e.getMessage());
+            statusObject = getErrorJson(-1, e.getMessage());
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
         endCalling(url);
@@ -220,7 +219,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public String createScene(String uuid, String clickPattern, String controllerId) {
         String url = String.format(SCENES_URL, gateway.getIpAddress());
-        String payload = String.format(scenePattern, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
+        String sceneTemplate = gateway.model().getTemplate(Model.TEMPLATE_CLICK_SCENE);
+        String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
         StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
                 StandardCharsets.UTF_8);
         logger.info("DIRIGERA API send {} to {}", payload, url);
@@ -279,6 +279,12 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             retryCounter--;
         }
         endCalling(url);
+    }
+
+    public JSONObject getErrorJson(int status, @Nullable String message) {
+        String error = String.format(
+                "{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", status, message);
+        return new JSONObject(error);
     }
 
     private void startCalling(String request) {
