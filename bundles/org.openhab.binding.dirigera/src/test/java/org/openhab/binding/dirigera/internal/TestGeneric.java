@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -25,10 +27,14 @@ import org.junit.jupiter.api.Test;
 class TestGeneric {
 
     @Test
-    void testJsonChannel() {
-        String error = String
-                .format("{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", "5", null);
-        System.out.println(error);
-        System.out.println(new JSONObject(error));
+    void testStringFormatWithNull() {
+        try {
+            String error = String.format(
+                    "{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", "5", null);
+            JSONObject errorJSON = new JSONObject(error);
+            assertFalse(errorJSON.isNull("http-error-message"));
+        } catch (Throwable t) {
+            fail();
+        }
     }
 }
