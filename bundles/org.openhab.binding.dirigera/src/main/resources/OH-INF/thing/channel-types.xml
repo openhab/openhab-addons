@@ -37,4 +37,9 @@
 		<label>Illiminance</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<state readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>
