@@ -671,7 +671,7 @@ In this case it's possible not all links are shown in the UI, but the present on
 
 ### Speaker Limitations
 
-Speaker channel `mute` is not working.
+Speaker channel `mute` is relfecting the state correctly but isn't writeable.
 The Model is reflecting the device `canReceive` command `isMuted` but in fact sending the command is answering with http status 400.
 If mute is performed on Sonos App the channel is updating correctly, but sending the command fails!
 
