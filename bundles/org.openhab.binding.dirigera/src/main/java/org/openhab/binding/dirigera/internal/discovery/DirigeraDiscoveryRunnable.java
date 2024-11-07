@@ -55,16 +55,15 @@ public class DirigeraDiscoveryRunnable implements Runnable {
             response = httpClient.newRequest(homeUrl).header(HttpHeader.WWW_AUTHENTICATE, "Basic")
                     .timeout(5, TimeUnit.SECONDS).send();
             // status shall be unauthorized, not anything else
-            // logger.info("DIRIGERA DISCOVERY check {} responded {}", ipAddress, response.getStatus());
             if (response.getStatus() == 401) {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PROPERTY_IP_ADDRESS, ipAddress);
-                logger.info("DIRIGERA DISCOVERY possible candidate {}", homeUrl);
                 discovery.gatewayDiscovered(ipAddress, properties);
+                logger.info("DIRIGERA DISCOVERY possible candidate {}", ipAddress);
                 return;
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            // logger.info("DIRIGERA DISCOVERY discard candidate {} {}", ipAddress, e.getMessage());
+            /** simply dismiss candidate, no further action **/
         }
     }
 }
