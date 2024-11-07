@@ -152,6 +152,10 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
                     state = new QuantityType<>(device.getExperience(), Units.PERCENT);
                 }
                 break;
+            case CHANNEL_AP_LED:
+                String override = device.getLedOverride();
+                state = "default".equals(override) ? UnDefType.UNDEF : OnOffType.from(override);
+                break;
         }
         return state;
     }
@@ -171,6 +175,8 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
 
         if (CHANNEL_AP_ENABLE.equals(channelID) && command instanceof OnOffType onOffCommand) {
             return handleEnableCommand(controller, device, channelUID, onOffCommand);
+        } else if (CHANNEL_AP_LED.equals(channelID) && command instanceof OnOffType onOffCommand) {
+            return handleLedCommand(controller, device, channelUID, onOffCommand);
         }
         return false;
     }
@@ -178,6 +184,13 @@ public class UniFiAccessPointThingHandler extends UniFiBaseThingHandler<UniFiDev
     private boolean handleEnableCommand(final UniFiController controller, final UniFiDevice device,
             final ChannelUID channelUID, final OnOffType command) throws UniFiException {
         controller.disableAccessPoint(device, command == OnOffType.OFF);
+        refresh();
+        return true;
+    }
+
+    private boolean handleLedCommand(final UniFiController controller, final UniFiDevice device,
+            final ChannelUID channelUID, final OnOffType command) throws UniFiException {
+        controller.setLedOverride(device, command == OnOffType.ON ? "on" : "off");
         refresh();
         return true;
     }
