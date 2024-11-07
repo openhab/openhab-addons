@@ -39,6 +39,9 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.metofficedatahub.internal.api.IConnectionStatusListener;
+import org.openhab.binding.metofficedatahub.internal.api.ISiteResponseListener;
+import org.openhab.binding.metofficedatahub.internal.api.RequestLimiter;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureCollection;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperties;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
@@ -75,10 +78,10 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IForecastDataPollable {
+public class MetOfficeDataHubSiteHandler extends BaseThingHandler
+        implements IForecastDataPollable, ISiteResponseListener, IConnectionStatusListener {
 
     public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
-    public static final int REQUEST_TIMEOUT_SECONDS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteHandler.class);
     private final Object checkDataRequiredSchedulerLock = new Object();
@@ -142,19 +145,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         super.dispose();
     }
 
-    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
-        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
-        return Objects.nonNull(result) ? result : key;
-    }
-
-    protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {
-        return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
-    }
-
-    protected State getDecimalTypeState(@Nullable Number value) {
-        return (value == null) ? UnDefType.UNDEF : new DecimalType(value);
-    }
-
     private void checkDataRequired() {
         final List<@Nullable String> activeGroups = getThing().getChannels().stream().filter(x -> isLinked(x.getUID()))
                 .map(x -> x.getUID().getGroupId()).distinct().toList();
@@ -195,6 +185,42 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
     }
 
     @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
+        config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
+
+        if (config.location.isBlank()) {
+            @Nullable
+            PointType userLocation = locationProvider.getLocation();
+            if (userLocation == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        getLocalizedText("site.error.no-user-location"));
+                return;
+            } else {
+                location = userLocation;
+            }
+        } else {
+            try {
+                location = new PointType(config.location);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        getLocalizedText("site.error.invalid-location"));
+                return;
+            }
+        }
+
+        /**
+         * Setup the initial device's status
+         */
+        initTask = scheduler.schedule(() -> {
+            updateStatus(ThingStatus.ONLINE);
+            checkDataRequired();
+            reconfigurePolling();
+        }, 1, TimeUnit.SECONDS);
+    }
+
+    @Override
     public void channelLinked(ChannelUID channelUID) {
         super.channelLinked(channelUID);
 
@@ -212,6 +238,43 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         scheduleDataRequiredCheck();
     }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        scheduler.execute(() -> {
+            if (RefreshType.REFRESH.equals(command)) {
+                scheduleDataRequiredCheck();
+                if (requiresDailyData) {
+                    if (!lastDailyResponse.isEmpty()) {
+                        logger.trace("Using cached DAILY forecast response data");
+                        pollForDataDailyData(lastDailyResponse);
+                    } else {
+                        logger.trace("Starting poll sequence for DAILY forecast data");
+                        reconfigureDailyPolling();
+                    }
+                }
+                if (requiresHourlyData) {
+                    if (!lastDailyResponse.isEmpty()) {
+                        logger.trace("Using cached HOURLY forecast response data");
+                        pollForDataHourlyData(lastHourlyResponse);
+                    } else {
+                        logger.trace("Starting poll sequence for HOURLY forecast data");
+                        reconfigureHourlyPolling();
+                    }
+                }
+            }
+        });
+    }
+
+    private @Nullable MetOfficeDataHubBridgeHandler getMetOfficeDataHubBridge() {
+        Bridge baseBridge = getBridge();
+
+        if (baseBridge != null && baseBridge.getHandler() instanceof MetOfficeDataHubBridgeHandler bridgeHandler) {
+            return bridgeHandler;
+        } else {
+            return null;
+        }
+    }
+
     public static String getLastHour() {
         long timeRoundedToLastHour = System.currentTimeMillis();
         timeRoundedToLastHour -= timeRoundedToLastHour % 3600000;
@@ -226,6 +289,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         return instant.toString().substring(0, 16) + "Z";
     }
 
+    // TODO: NOT REQUIRED NOW
     public void pollForDataHourlyData(String responseContent) {
         final SiteApiFeatureCollection response = GSON.fromJson(responseContent, SiteApiFeatureCollection.class);
 
@@ -301,6 +365,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         }
     }
 
+    // TODO: NOT REQUIRED NOW
     public void pollForDataDailyData(final String responseData) {
         final SiteApiFeatureCollection response = GSON.fromJson(responseData, SiteApiFeatureCollection.class);
 
@@ -451,6 +516,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         }
     }
 
+    // TODO: NOT REQUIRED NOW
     private void handleNon200Response(final Response resp) {
         // Handle failed credentials
         if (resp.getStatus() == HttpStatus.UNAUTHORIZED_401) {
@@ -458,16 +524,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("bridge.error.site-specific.auth-issue"));
             authFailed = true;
-        }
-    }
-
-    private @Nullable MetOfficeDataHubBridgeHandler getMetOfficeDataHubBridge() {
-        Bridge baseBridge = getBridge();
-
-        if (baseBridge != null && baseBridge.getHandler() instanceof MetOfficeDataHubBridgeHandler bridgeHandler) {
-            return bridgeHandler;
-        } else {
-            return null;
         }
     }
 
@@ -535,6 +591,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         sendAsyncSiteApiRequest(httpClient, daily, uplinkBridge.getApiKey(), location, listener);
     }
 
+    // TODO: Not required anymore
     protected static void sendAsyncSiteApiRequest(final HttpClient httpClient, final boolean daily, final String apiKey,
             final PointType location, final Response.CompleteListener listener) {
         final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
@@ -543,59 +600,10 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
 
         final Request request = httpClient.newRequest(url).method(HttpMethod.GET)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
-                .header(GET_FORECAST_API_KEY_HEADER, apiKey).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                .header(GET_FORECAST_API_KEY_HEADER, apiKey)
+                .timeout(GET_FORECAST_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         request.send(listener);
-    }
-
-    private static String calculatePrefix(final String prefix, final int plusOffset) {
-        final StringBuilder strBldr = new StringBuilder(26);
-        strBldr.append(prefix);
-        if (plusOffset > 0) {
-            strBldr.append(GROUP_POSTFIX_BOTH_FORECASTS);
-            if (plusOffset < 10) {
-                strBldr.append("0");
-            }
-            strBldr.append(plusOffset);
-        }
-        strBldr.append(GROUP_PREFIX_TO_ITEM);
-        return strBldr.toString();
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
-        config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
-
-        if (config.location.isBlank()) {
-            @Nullable
-            PointType userLocation = locationProvider.getLocation();
-            if (userLocation == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.no-user-location"));
-                return;
-            } else {
-                location = userLocation;
-            }
-        } else {
-            try {
-                location = new PointType(config.location);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.invalid-location"));
-                return;
-            }
-        }
-
-        /**
-         * Setup the initial device's status
-         */
-        initTask = scheduler.schedule(() -> {
-            updateStatus(ThingStatus.ONLINE);
-            checkDataRequired();
-            reconfigurePolling();
-        }, 1, TimeUnit.SECONDS);
     }
 
     private void reconfigurePolling() {
@@ -663,33 +671,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
         }
         scheduleNextDailyForecastPoll();
         scheduleDailyDataPoll();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        scheduler.execute(() -> {
-            if (RefreshType.REFRESH.equals(command)) {
-                scheduleDataRequiredCheck();
-                if (requiresDailyData) {
-                    if (!lastDailyResponse.isEmpty()) {
-                        logger.trace("Using cached DAILY forecast response data");
-                        pollForDataDailyData(lastDailyResponse);
-                    } else {
-                        logger.trace("Starting poll sequence for DAILY forecast data");
-                        reconfigureDailyPolling();
-                    }
-                }
-                if (requiresHourlyData) {
-                    if (!lastDailyResponse.isEmpty()) {
-                        logger.trace("Using cached HOURLY forecast response data");
-                        pollForDataHourlyData(lastHourlyResponse);
-                    } else {
-                        logger.trace("Starting poll sequence for HOURLY forecast data");
-                        reconfigureHourlyPolling();
-                    }
-                }
-            }
-        });
     }
 
     /**
@@ -834,5 +815,278 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements IFo
                 scheduleNextDailyForecastPoll();
             });
         }
+    }
+
+    // Localization functionality
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
+    }
+
+    // Implementation of IConnectionStatusListener
+
+    @Override
+    public void processAuthenticationResult(boolean authenticated) {
+        final ThingStatus currentStatus = getThing().getStatus();
+        if (!authenticated && ThingStatus.OFFLINE != currentStatus) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    getLocalizedText("bridge.error.site-specific.auth-issue"));
+        } else if (authenticated && ThingStatus.ONLINE != currentStatus) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    // Implementation of ISiteResponseListener
+
+    @Override
+    public void processDailyResponse(final String responseData) {
+        final SiteApiFeatureCollection response = GSON.fromJson(responseData, SiteApiFeatureCollection.class);
+
+        if (response == null) {
+            return;
+        }
+
+        final SiteApiFeatureProperties props = response.getFirstProperties();
+        if (props == null) {
+            return;
+        }
+
+        final String startOfHour = MetOfficeDataHubSiteHandler.getStartOfDay();
+        final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
+
+        for (int dayOffset = 0; dayOffset <= 6; ++dayOffset) {
+            // Calculate the correct array position for the data
+            final int dataIdx = forecastForthisHour + dayOffset;
+
+            final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_DAILY_FORECAST,
+                    dayOffset);
+
+            final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
+
+            updateState(channelPrefix + SITE_TIMESTAMP, new DateTimeType(data.getTime()).toLocaleZone());
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_WIND_SPEED_10M,
+                    getQuantityTypeState(data.getMidday10MWindSpeed(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_WIND_SPEED_10M,
+                    getQuantityTypeState(data.getMidnight10MWindSpeed(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_WIND_DIRECTION_10M,
+                    getQuantityTypeState(data.getMidday10MWindDirection(), Units.DEGREE_ANGLE));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_WIND_DIRECTION_10M,
+                    getQuantityTypeState(data.getMidnight10MWindDirection(), Units.DEGREE_ANGLE));
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_WIND_GUST_10M,
+                    getQuantityTypeState(data.getMidday10MWindGust(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_WIND_GUST_10M,
+                    getQuantityTypeState(data.getMidnight10MWindGust(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_VISIBILITY,
+                    getQuantityTypeState(data.getMiddayVisibility(), METRE));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_VISIBILITY,
+                    getQuantityTypeState(data.getMidnightVisibility(), METRE));
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_REL_HUMIDITY,
+                    getQuantityTypeState(data.getMiddayRelativeHumidity(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_REL_HUMIDITY,
+                    getQuantityTypeState(data.getMidnightRelativeHumidity(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_MIDDAY_PRESSURE,
+                    getQuantityTypeState(data.getMiddayPressure(), SIUnits.PASCAL));
+
+            updateState(channelPrefix + SITE_DAILY_MIDNIGHT_PRESSURE,
+                    getQuantityTypeState(data.getMidnightPressure(), SIUnits.PASCAL));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_MAX_UV_INDEX, getDecimalTypeState(data.getMaxUvIndex()));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_UPPER_BOUND_MAX_TEMP,
+                    getQuantityTypeState(data.getDayUpperBoundMaxTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_LOWER_BOUND_MAX_TEMP,
+                    getQuantityTypeState(data.getDayLowerBoundMaxTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_UPPER_BOUND_MAX_TEMP,
+                    getQuantityTypeState(data.getNightUpperBoundMinTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_LOWER_BOUND_MAX_TEMP,
+                    getQuantityTypeState(data.getNightLowerBoundMinTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_FEELS_LIKE_MIN_TEMP,
+                    getQuantityTypeState(data.getNightMinFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_FEELS_LIKE_MAX_TEMP,
+                    getQuantityTypeState(data.getDayMaxFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_LOWER_BOUND_MIN_TEMP,
+                    getQuantityTypeState(data.getNightLowerBoundMinTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_MAX_FEELS_LIKE_TEMP,
+                    getQuantityTypeState(data.getDayMaxFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_LOWER_BOUND_MIN_FEELS_LIKE_TEMP,
+                    getQuantityTypeState(data.getNightLowerBoundMinFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_LOWER_BOUND_MAX_FEELS_LIKE_TEMP,
+                    getQuantityTypeState(data.getDayLowerBoundMaxFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_UPPER_BOUND_MAX_FEELS_LIKE_TEMP,
+                    getQuantityTypeState(data.getDayUpperBoundMaxFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_UPPER_BOUND_MIN_FEELS_LIKE_TEMP,
+                    getQuantityTypeState(data.getNightUpperBoundMinFeelsLikeTemp(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_MAX_SCREEN_TEMPERATURE,
+                    getQuantityTypeState(data.getDayMaxScreenTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_MIN_SCREEN_TEMPERATURE,
+                    getQuantityTypeState(data.getNightMinScreenTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_PRECIPITATION,
+                    getQuantityTypeState(data.getDayProbabilityOfPrecipitation(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_PRECIPITATION,
+                    getQuantityTypeState(data.getNightProbabilityOfPrecipitation(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_SNOW,
+                    getQuantityTypeState(data.getDayProbabilityOfSnow(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_SNOW,
+                    getQuantityTypeState(data.getNightProbabilityOfSnow(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_HEAVY_SNOW,
+                    getQuantityTypeState(data.getDayProbabilityOfHeavySnow(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_HEAVY_SNOW,
+                    getQuantityTypeState(data.getNightProbabilityOfHeavySnow(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_RAIN,
+                    getQuantityTypeState(data.getDayProbabilityOfRain(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_RAIN,
+                    getQuantityTypeState(data.getNightProbabilityOfRain(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_HEAVY_RAIN,
+                    getQuantityTypeState(data.getDayProbabilityOfHeavyRain(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_HEAVY_RAIN,
+                    getQuantityTypeState(data.getNightProbabilityOfHeavyRain(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_HAIL,
+                    getQuantityTypeState(data.getDayProbabilityOfHail(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_HAIL,
+                    getQuantityTypeState(data.getNightProbabilityOfHail(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_DAY_PROBABILITY_OF_SFERICS,
+                    getQuantityTypeState(data.getDayProbabilityOfSferics(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_SFERICS,
+                    getQuantityTypeState(data.getNightProbabilityOfSferics(), Units.PERCENT));
+        }
+    }
+
+    @Override
+    public void processHourlyResponse(final String responseData) {
+        final SiteApiFeatureCollection response = GSON.fromJson(responseData, SiteApiFeatureCollection.class);
+
+        if (response == null) {
+            return;
+        }
+
+        final SiteApiFeatureProperties props = response.getFirstProperties();
+        if (props == null) {
+            return;
+        }
+
+        final String startOfHour = MetOfficeDataHubSiteHandler.getLastHour();
+        final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
+
+        for (int hrOffset = 0; hrOffset <= 24; ++hrOffset) {
+            // Calculate the correct array position for the data
+            final int dataIdx = forecastForthisHour + hrOffset;
+            final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
+
+            final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_HOURS_FORECAST,
+                    hrOffset);
+
+            updateState(channelPrefix + SITE_TIMESTAMP, new DateTimeType(data.getTime()).toLocaleZone());
+
+            updateState(channelPrefix + SITE_HOURLY_FORECAST_SCREEN_TEMPERATURE,
+                    getQuantityTypeState(data.getScreenTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_HOURLY_FORECAST_MIN_SCREEN_TEMPERATURE,
+                    getQuantityTypeState(data.getMinScreenTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_HOURLY_FORECAST_MAX_SCREEN_TEMPERATURE,
+                    getQuantityTypeState(data.getMaxScreenTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_HOURLY_FEELS_LIKE_TEMPERATURE,
+                    getQuantityTypeState(data.getFeelsLikeTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_HOURLY_SCREEN_RELATIVE_HUMIDITY,
+                    getQuantityTypeState(data.getScreenRelativeHumidity(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_HOURLY_VISIBILITY, getQuantityTypeState(data.getVisibility(), METRE));
+
+            updateState(channelPrefix + SITE_HOURLY_PROBABILITY_OF_PRECIPITATION,
+                    getQuantityTypeState(data.getProbOfPrecipitation(), Units.PERCENT));
+
+            updateState(channelPrefix + SITE_HOURLY_PRECIPITATION_RATE,
+                    getQuantityTypeState(data.getPrecipitationRate(), Units.MILLIMETRE_PER_HOUR));
+
+            updateState(channelPrefix + SITE_HOURLY_TOTAL_PRECIPITATION_AMOUNT,
+                    getQuantityTypeState(data.getTotalPrecipAmount(), MILLI(METRE)));
+
+            updateState(channelPrefix + SITE_HOURLY_TOTAL_SNOW_AMOUNT,
+                    getQuantityTypeState(data.getTotalSnowAmount(), MILLI(METRE)));
+
+            updateState(channelPrefix + SITE_HOURLY_PRESSURE, getQuantityTypeState(data.getPressure(), SIUnits.PASCAL));
+
+            updateState(channelPrefix + SITE_HOURLY_WIND_SPEED_10M,
+                    getQuantityTypeState(data.getWindSpeed10m(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_HOURLY_MAX_10M_WIND_GUST,
+                    getQuantityTypeState(data.getMax10mWindGust(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_HOURLY_WIND_GUST_SPEED_10M,
+                    getQuantityTypeState(data.getWindGustSpeed10m(), Units.METRE_PER_SECOND));
+
+            updateState(channelPrefix + SITE_HOURLY_SCREEN_DEW_POINT_TEMPERATURE,
+                    getQuantityTypeState(data.getScreenDewPointTemperature(), SIUnits.CELSIUS));
+
+            updateState(channelPrefix + SITE_HOURLY_UV_INDEX, getDecimalTypeState(data.getUvIndex()));
+
+            updateState(channelPrefix + SITE_HOURLY_WIND_DIRECTION_FROM_10M,
+                    getQuantityTypeState(data.getWindDirectionFrom10m(), Units.DEGREE_ANGLE));
+        }
+    }
+
+    // Helpers for updating channels support
+
+    private static String calculatePrefix(final String prefix, final int plusOffset) {
+        final StringBuilder strBldr = new StringBuilder(26);
+        strBldr.append(prefix);
+        if (plusOffset > 0) {
+            strBldr.append(GROUP_POSTFIX_BOTH_FORECASTS);
+            if (plusOffset < 10) {
+                strBldr.append("0");
+            }
+            strBldr.append(plusOffset);
+        }
+        strBldr.append(GROUP_PREFIX_TO_ITEM);
+        return strBldr.toString();
+    }
+
+    protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {
+        return (value == null) ? UnDefType.UNDEF : new QuantityType<>(value, unit);
+    }
+
+    protected State getDecimalTypeState(@Nullable Number value) {
+        return (value == null) ? UnDefType.UNDEF : new DecimalType(value);
     }
 }

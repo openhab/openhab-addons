@@ -24,6 +24,7 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -52,16 +53,19 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private final StorageService storageService;
 
     @Activate
     public MetOfficeDataHubHandlerFactory(@Reference LocationProvider locationProvider,
             @Reference HttpClientFactory httpClientFactory, @Reference TranslationProvider translationProvider,
-            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider,
+            @Reference StorageService storageService) {
         this.locationProvider = locationProvider;
         this.httpClientFactory = httpClientFactory;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -74,7 +78,8 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new MetOfficeDataHubBridgeHandler((Bridge) thing, this, translationProvider, localeProvider);
+            return new MetOfficeDataHubBridgeHandler((Bridge) thing, this, translationProvider, localeProvider,
+                    storageService, timeZoneProvider);
         } else if (THING_TYPE_SITE_SPEC_API.equals(thingTypeUID)) {
             return new MetOfficeDataHubSiteHandler(thing, this, locationProvider, translationProvider, localeProvider,
                     timeZoneProvider);

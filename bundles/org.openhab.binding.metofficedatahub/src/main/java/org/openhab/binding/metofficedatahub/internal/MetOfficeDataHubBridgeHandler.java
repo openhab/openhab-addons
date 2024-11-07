@@ -30,9 +30,12 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.openhab.binding.metofficedatahub.internal.api.RequestLimiter;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -60,6 +63,8 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
     private final HttpClient httpClient;
+    private final StorageService storageService;
+    private final TimeZoneProvider timeZoneProvider;
 
     private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
     private final Object timerResetSchedulerLock = new Object();
@@ -67,15 +72,20 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> timerResetScheduler = null;
     private @Nullable ScheduledFuture initTask;
 
-    protected final RequestLimiter forecastDataLimiter = new RequestLimiter();
+    protected final RequestLimiter forecastDataLimiter;
 
     public MetOfficeDataHubBridgeHandler(final Bridge bridge, IHttpClientProvider httpClientProvider,
-            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
+            @Reference StorageService storageService, @Reference TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.httpClient = httpClientProvider.getHttpClient();
+        this.storageService = storageService;
+        this.timeZoneProvider = timeZoneProvider;
+        this.forecastDataLimiter = new RequestLimiter(getThing().getUID().getId(), storageService, timeZoneProvider,
+                scheduler, translationProvider, localeProvider, bundle);
     }
 
     protected String getApiKey() {
