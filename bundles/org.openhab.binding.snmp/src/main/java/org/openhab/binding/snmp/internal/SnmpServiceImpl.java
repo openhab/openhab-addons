@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -90,7 +91,6 @@ public class SnmpServiceImpl implements SnmpService, NetworkAddressChangeListene
         this.networkAddressService = networkAddressService;
         networkAddressService.addNetworkAddressChangeListener(this);
         modified(config);
-        this.config = config;
     }
 
     @Modified
@@ -103,8 +103,9 @@ public class SnmpServiceImpl implements SnmpService, NetworkAddressChangeListene
             final DefaultUdpTransportMapping transport;
 
             if (snmpCfg.port > 0) {
-                InetAddress inetAddress = InetAddress.getByName(networkAddressService.getPrimaryIpv4HostAddress());
-                inetAddress = inetAddress != null ? inetAddress : InetAddress.getLocalHost();
+                InetAddress inetAddress = Objects.requireNonNullElse(
+                        InetAddress.getByName(networkAddressService.getPrimaryIpv4HostAddress()),
+                        InetAddress.getLocalHost());
                 transport = new DefaultUdpTransportMapping(new UdpAddress(inetAddress, snmpCfg.port), true);
             } else {
                 transport = new DefaultUdpTransportMapping();
@@ -122,7 +123,7 @@ public class SnmpServiceImpl implements SnmpService, NetworkAddressChangeListene
             this.snmp = snmp;
             this.transport = transport;
 
-            logger.info("initialized SNMP at {}", transport.getAddress());
+            logger.info("Initialized SNMP service at {}", transport.getAddress());
         } catch (IOException e) {
             logger.warn("could not open SNMP instance on port {}: {}", snmpCfg.port, e.getMessage());
         }
@@ -134,7 +135,7 @@ public class SnmpServiceImpl implements SnmpService, NetworkAddressChangeListene
         try {
             shutdownSnmp();
         } catch (IOException e) {
-            logger.warn("could not end SNMP: {}", e.getMessage());
+            logger.warn("Could not end SNMP service: {}", e.getMessage());
         }
     }
 
