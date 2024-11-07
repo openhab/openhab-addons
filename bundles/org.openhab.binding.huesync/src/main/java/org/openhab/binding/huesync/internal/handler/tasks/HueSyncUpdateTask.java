@@ -31,10 +31,10 @@ public class HueSyncUpdateTask implements Runnable {
 
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncUpdateTask.class);
 
-    private HueSyncDeviceConnection connection;
-    private HueSyncDevice deviceInfo;
+    private final HueSyncDeviceConnection connection;
+    private final HueSyncDevice deviceInfo;
 
-    private Consumer<@Nullable HueSyncUpdateTaskResultDto> action;
+    private final Consumer<@Nullable HueSyncUpdateTaskResultDto> action;
 
     public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
             Consumer<@Nullable HueSyncUpdateTaskResultDto> action) {

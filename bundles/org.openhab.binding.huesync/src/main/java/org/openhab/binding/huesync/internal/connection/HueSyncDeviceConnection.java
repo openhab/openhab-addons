@@ -53,9 +53,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class HueSyncDeviceConnection {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
 
-    private HueSyncConnection connection;
+    private final HueSyncConnection connection;
 
-    private Map<String, Consumer<Command>> deviceCommandExecutors = new HashMap<>();
+    private final Map<String, Consumer<Command>> deviceCommandExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
@@ -88,28 +88,26 @@ public class HueSyncDeviceConnection {
     private void execute(String key, Command command) {
         this.logger.info("Command executor: {} - {}", key, command);
 
-        String value = "";
-
-        if (command instanceof QuantityType) {
-            value = Integer.toString(((QuantityType<?>) command).intValue());
-        if (command instanceof QuantityType quantityCommand) {
-            value = Integer.toString(quantityCommand.intValue());
-            value = ((OnOffType) command).name().equals("ON") ? "true" : "false";
-        } else if (command instanceof OnOffType onOffCommand) {
-            value = OnOffType.ON.equals(onOffCommand) ? "true" : "false";
-            value = "\"" + ((StringType) command).toString() + "\"";
-        } else if (command instanceof StringType stringCommand) {
-            value = "\"" + stringCommand.toString() + "\"";
-            this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
-            return;
-        }
-
         if (!this.connection.isRegistered()) {
             this.logger.warn("Device is not registered - ignoring command: {}", command);
             return;
         }
 
+        String value;
+
+        if (command instanceof QuantityType) {
+            value = Integer.toString(((QuantityType<?>) command).intValue());
+        } else if (command instanceof OnOffType) {
+            value = command == OnOffType.ON ? "true" : "false";
+        } else if (command instanceof StringType) {
+            value = '"' + command.toString() + '"';
+        } else {
+            this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
+            return;
+        }
+
         String json = String.format("{ \"%s\": %s }", key, value);
+
         this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
     }
 

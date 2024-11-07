@@ -93,8 +93,8 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     properties.put(HueSyncConstants.PARAMETER_HOST, service.getHostAddresses()[0]);
                     properties.put(HueSyncConstants.PARAMETER_PORT, service.getPort());
 
-                    return DiscoveryResultBuilder.create(uid).withLabel(service.getName())
-                            .withProperties(properties).build();
+                    return DiscoveryResultBuilder.create(uid).withLabel(service.getName()).withProperties(properties)
+                            .build();
                 } catch (Exception e) {
                     logger.error("Unable to query device information for {}: {}", service.getQualifiedName(),
                             e.getMessage());
