@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dirigera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="color-light">
+		<label>Color Light</label>
+		<description>Light with color support</description>
+
+		<channels>
+			<channel id="on" typeId="switch">
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+			</channel>
+			<channel id="hsb" typeId="color">
+				<label>Hue Saturation Brightness</label>
+				<description>Control light with color, saturation and brightness</description>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="thing-type:dirigera:base-device"/>
+	</thing-type>
+</thing:thing-descriptions>

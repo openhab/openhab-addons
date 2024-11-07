@@ -36,6 +36,12 @@ import org.slf4j.LoggerFactory;
 public class Model {
     private final Logger logger = LoggerFactory.getLogger(Model.class);
 
+    public final static String REACHABLE = "isReachable";
+    public final static String ATTRIBUTES = "attributes";
+    public final static String CUSTOM_NAME = "customName";
+    public final static String DEVICE_MODEL = "model";
+    public final static String DEVICE_TYPE = "deviceType";
+
     private JSONObject model = new JSONObject();
     private Gateway gateway;
 
@@ -43,20 +49,18 @@ public class Model {
         this.gateway = gateway;
     }
 
-    public void update() {
+    public synchronized void update() {
         RestAPI api = gateway.api();
         try {
             JSONObject home = api.readHome();
-            if (home.isEmpty()) {
-                logger.warn("DIRIGERA MODEL received empty model - don't take it");
+            if (home.has(PROPERTY_HTTP_ERROR_STATUS)) {
+                logger.warn("DIRIGERA MODEL received model with error code {} - don't take it",
+                        home.get(PROPERTY_HTTP_ERROR_STATUS));
             } else {
-                List<Object> currentDevices = getAllIds().toList();
                 model = home;
                 List<Object> newDevices = getAllIds().toList();
                 newDevices.forEach(deviceId -> {
-                    if (!currentDevices.contains(deviceId)) {
-                        gateway.newDevice(deviceId.toString());
-                    }
+                    gateway.newDevice(deviceId.toString());
                 });
             }
         } catch (Throwable t) {
@@ -64,7 +68,7 @@ public class Model {
         }
     }
 
-    public JSONArray getAllIds() {
+    public synchronized JSONArray getAllIds() {
         JSONArray returnArray = new JSONArray();
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray("devices");
@@ -77,7 +81,7 @@ public class Model {
         return returnArray;
     }
 
-    public JSONArray getIdsForType(String type) {
+    public synchronized JSONArray getIdsForType(String type) {
         JSONArray returnArray = new JSONArray();
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
@@ -101,7 +105,7 @@ public class Model {
      * @param DIRIGERA Id
      * @return ThingTypeUID
      */
-    public ThingTypeUID identifyDevice(String id) {
+    public synchronized ThingTypeUID identifyDevice(String id) {
         logger.info("DIRIGERA MODEL identify thingtype for {}", id);
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
@@ -117,11 +121,13 @@ public class Model {
                             case PROPERTY_LIGHT:
                                 if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
                                     ThingTypeUID ttUID = new ThingTypeUID(BINDING_ID,
-                                            deviceType + "-" + attributes.getString(ATTRIBUTE_COLOR_MODE));
+                                            attributes.getString(ATTRIBUTE_COLOR_MODE) + "-" + deviceType);
                                     logger.info("DIRIGERA MODEL identified {} for {}", ttUID.toString(), id);
                                     if (SUPPORTED_THING_TYPES_UIDS.contains(ttUID)) {
                                         logger.info("DIRIGERA MODEL {} is suppoerted", ttUID);
                                         return ttUID;
+                                    } else {
+                                        logger.warn("DIRIGERA MODEL {} is not suppoerted - adapt code please", ttUID);
                                     }
                                 }
                                 break;
@@ -136,7 +142,7 @@ public class Model {
         return THING_TYPE_UNKNNOWN;
     }
 
-    public JSONObject getAllFor(String id) {
+    public synchronized JSONObject getAllFor(String id) {
         JSONObject returnObject = new JSONObject();
         if (!model.isNull(PROPERTY_DEVICES)) {
             JSONArray devices = model.getJSONArray(PROPERTY_DEVICES);
@@ -149,5 +155,21 @@ public class Model {
             }
         }
         return returnObject;
+    }
+
+    public String getCustonNameFor(String id) {
+        JSONObject deviceObject = getAllFor(id);
+        if (deviceObject.has(ATTRIBUTES)) {
+            JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
+            if (attributes.has(CUSTOM_NAME)) {
+                return attributes.getString(CUSTOM_NAME);
+            } else if (attributes.has(DEVICE_MODEL)) {
+                return attributes.getString(DEVICE_MODEL);
+            } else if (deviceObject.has(DEVICE_TYPE)) {
+                return deviceObject.getString(DEVICE_TYPE);
+            }
+            // 3 fallback options}
+        }
+        return PROPERTY_EMPTY;
     }
 }
