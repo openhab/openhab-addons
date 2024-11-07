@@ -94,6 +94,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             throw new IllegalStateException("Could not create HttpClient", e);
         }
         String ip = networkService.getPrimaryIpv4HostAddress();
+        logger.info("IP Network Address: {}", ip);
         if (ip == null) {
             logger.warn("Cannot find host IP");
             ip = "";
