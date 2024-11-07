@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,13 +34,13 @@ public class Constants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
-    public static final ThingTypeUID THING_TYPE_LIGHT_COLOR = new ThingTypeUID(BINDING_ID, "light-color");
+    public static final ThingTypeUID THING_TYPE_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "color-light");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
-            THING_TYPE_LIGHT_COLOR);
+            THING_TYPE_COLOR_LIGHT);
 
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY, THING_TYPE_LIGHT_COLOR).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_GATEWAY, THING_TYPE_COLOR_LIGHT).collect(Collectors.toSet()));
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -56,10 +57,18 @@ public class Constants {
     public static final String PROPERTY_EMPTY = "";
     public static final String PROPERTY_LIGHT = "light";
     public static final String PROPERTY_ATTRIBUTES = "attributes";
+    public static final String PROPERTY_HTTP_ERROR_STATUS = "http-error-status";
 
     public static final String ATTRIBUTE_COLOR_MODE = "colorMode";
 
     public static final String DEVICE_TYPE_GATEWAY = "gateway";
 
     public static final String CHANNEL_STATISTICS = "statistics";
+    public static final String CHANNEL_LIGHT_HSB = "hsb";
+
+    public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
+
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of("isOn", "on", "lightLevel", CHANNEL_LIGHT_HSB,
+            "colorHue", CHANNEL_LIGHT_HSB, "colorSaturation", CHANNEL_LIGHT_HSB, "colorTemperature",
+            "color-temperature");
 }

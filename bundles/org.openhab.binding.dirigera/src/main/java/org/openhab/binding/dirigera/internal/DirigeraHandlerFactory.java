@@ -21,6 +21,7 @@ import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
+import org.openhab.binding.dirigera.internal.handler.LightHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
@@ -86,11 +87,10 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.info("create thing {} e.g type {} equals {}", thingTypeUID, THING_TYPE_GATEWAY,
-                THING_TYPE_GATEWAY.equals(thingTypeUID));
-
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryManager);
+        } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
+            return new LightHandler(thing, COLOR_LIGHT_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
         }
