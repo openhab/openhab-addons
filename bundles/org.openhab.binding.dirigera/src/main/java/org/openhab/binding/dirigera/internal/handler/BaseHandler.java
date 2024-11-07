@@ -96,11 +96,6 @@ public class BaseHandler extends BaseThingHandler {
         property2ChannelMap = mapping;
         channel2PropertyMap = reverse(mapping);
         channelStateMap = initializeCache(mapping);
-
-        // Scenes don't have links
-        if (THING_TYPE_SCENE.equals(thing.getThingTypeUID())) {
-            hardLinks = Arrays.asList();
-        }
     }
 
     protected void setChildHandler(BaseHandler child) {
@@ -409,12 +404,12 @@ public class BaseHandler extends BaseThingHandler {
     }
 
     /**
-     * Get real links from device updates
+     * Get real links from device updates. Delivers a copy due to concurrent access.
      *
      * @return links attached to this device
      */
     public List<String> getLinks() {
-        return hardLinks;
+        return new ArrayList<String>(hardLinks);
     }
 
     private void linkUpdate(String linkedDeviceId, boolean add) {
@@ -483,10 +478,10 @@ public class BaseHandler extends BaseThingHandler {
     public void addSoftlink(String id) {
         if (!softLinks.contains(id) && !config.id.equals(id)) {
             softLinks.add(id);
-            logger.debug("DIRIGERA BASE_HANDLER {} softlink added for {}", thing.getLabel(),
+            logger.trace("DIRIGERA BASE_HANDLER {} softlink added for {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         } else {
-            logger.debug("DIRIGERA BASE_HANDLER {} softlink already established to {}", thing.getLabel(),
+            logger.trace("DIRIGERA BASE_HANDLER {} softlink already established to {}", thing.getLabel(),
                     gateway().model().getCustonNameFor(id));
         }
     }
@@ -529,7 +524,7 @@ public class BaseHandler extends BaseThingHandler {
         });
         ChannelUID channelUUID = new ChannelUID(thing.getUID(), CHANNEL_LINKS);
         gateway().getCommandProvider().setCommandOptions(channelUUID, linkCommandOptions);
-        logger.debug("DIRIGERA BASE_HANDLER {} links {}", thing.getLabel(), display);
+        logger.trace("DIRIGERA BASE_HANDLER {} links {}", thing.getLabel(), display);
         updateState(channelUUID, StringType.valueOf(display.toString()));
     }
 

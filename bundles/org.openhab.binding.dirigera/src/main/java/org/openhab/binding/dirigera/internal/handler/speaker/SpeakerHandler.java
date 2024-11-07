@@ -189,6 +189,7 @@ public class SpeakerHandler extends BaseHandler {
                             case "playbackPlaying":
                                 updateState(new ChannelUID(thing.getUID(), targetChannel), PlayPauseType.PLAY);
                                 break;
+                            case "playbackIdle":
                             case "playbackPaused":
                                 updateState(new ChannelUID(thing.getUID(), targetChannel), PlayPauseType.PAUSE);
                                 break;
@@ -232,41 +233,28 @@ public class SpeakerHandler extends BaseHandler {
                         }
 
                     } else if (CHANNEL_TRACK.equals(targetChannel)) {
-                        // track is nested into attributes playItem:id
+                        // track is nested into attributes playItem
+                        State track = UnDefType.UNDEF;
+                        State image = UnDefType.UNDEF;
                         JSONObject audio = attributes.getJSONObject(key);
                         if (audio.has("playItem")) {
                             JSONObject playItem = audio.getJSONObject("playItem");
                             if (playItem.has("title")) {
-                                updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                        new StringType(playItem.getString("title")));
-                                continue;
+                                track = new StringType(playItem.getString("title"));
+                            }
+                            if (playItem.has("imageURL")) {
+                                String imageURL = playItem.getString("imageURL");
+                                image = gateway().api().getImage(imageURL);
                             }
                         } else if (audio.has("playlist")) {
                             JSONObject playlist = audio.getJSONObject("playlist");
                             if (playlist.has("title")) {
-                                updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                        new StringType(playlist.getString("title")));
-                                continue;
+                                track = new StringType(playlist.getString("title"));
                             }
                         }
-                        updateState(new ChannelUID(thing.getUID(), targetChannel), UnDefType.UNDEF);
+                        updateState(new ChannelUID(thing.getUID(), targetChannel), track);
+                        updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE), image);
                     }
-                }
-            }
-            // outside of channel mapping - image
-            if (attributes.has("playbackAudio")) {
-                JSONObject playbackAudio = attributes.getJSONObject("playbackAudio");
-                if (playbackAudio.has("playItem")) {
-                    // only change picture if update changes playItem
-                    // in this case change picture to imageUrl or Undef if playItem doesn't contain a picture
-                    State imageState = UnDefType.UNDEF;
-                    JSONObject playItem = playbackAudio.getJSONObject("playItem");
-                    if (playItem.has("imageURL")) {
-                        String imageURL = playItem.getString("imageURL");
-                        imageState = gateway().api().getImage(imageURL);
-                        logger.trace("DIRIGERA SPEAKER_DEVICE image received");
-                    }
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_IMAGE), imageState);
                 }
             }
         }
