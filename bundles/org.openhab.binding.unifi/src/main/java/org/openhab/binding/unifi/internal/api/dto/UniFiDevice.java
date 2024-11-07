@@ -69,6 +69,8 @@ public class UniFiDevice implements HasId {
 
     private Boolean disabled;
 
+    private String ledOverride;
+
     public UniFiDevice(final UniFiControllerCache cache) {
         this.cache = cache;
     }
@@ -138,10 +140,14 @@ public class UniFiDevice implements HasId {
         return disabled;
     }
 
+    public String getLedOverride() {
+        return ledOverride;
+    }
+
     @Override
     public String toString() {
         return String.format(
-                "UniFiDevice{mac: '%s', name: '%s', type: '%s', model: '%s', version: '%s', experience: %d, disabled: %b, uptime: %d, site: %s}",
-                mac, name, type, model, version, experience, disabled, uptime, getSite());
+                "UniFiDevice{mac: '%s', name: '%s', type: '%s', model: '%s', version: '%s', experience: %d, disabled: %b, led: %s, uptime: %d, site: %s}",
+                mac, name, type, model, version, experience, disabled, ledOverride, uptime, getSite());
     }
 }

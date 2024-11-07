@@ -249,6 +249,7 @@ The `accessPoint` information that is retrieved is available as these channels:
 | uptime     | Number:Time          | Uptime of the device (in seconds)                                    | Read        |
 | lastSeen   | DateTime             | Date and Time the device was last seen                               | Read        |
 | experience | Number:Dimensionless | The average health indication of the connected clients               | Read        |
+| led        | Switch               | Switch the LED on or off                                             | Read, Write |
 
 ## Rule Actions
 

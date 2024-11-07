@@ -100,6 +100,7 @@ public final class UniFiBindingConstants {
     // List of access point device channels
     public static final String CHANNEL_AP_ENABLE = "enable";
     public static final String CHANNEL_AP_STATE = "state";
+    public static final String CHANNEL_AP_LED = "led";
 
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";
