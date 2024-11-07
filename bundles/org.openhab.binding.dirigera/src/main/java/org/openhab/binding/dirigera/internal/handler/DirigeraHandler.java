@@ -51,13 +51,15 @@ import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.binding.dirigera.internal.network.RestAPI;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.StringUtils;
@@ -82,7 +84,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private Optional<RestAPI> api = Optional.empty();
     private Optional<Model> model = Optional.empty();
     private Optional<ScheduledFuture<?>> modelUpdater = Optional.empty();
-    private Optional<ScheduledFuture<?>> socketWatcher = Optional.empty();
+    private Optional<ScheduledFuture<?>> heartbeat = Optional.empty();
 
     private final Map<String, BaseDeviceHandler> deviceTree = new HashMap<>();
     private List<Object> knownDevices = new ArrayList<>();
@@ -126,30 +128,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         } else {
             logger.info("DIRIGERA HANDLER obtained token {} from storage", token);
         }
-
-        // config = getConfigAs(DirigeraConfiguration.class);
-        // Step 1 - IP is configured or detected by discovery
-        // if (config.ipAddress.isBlank()) {
-        // Map<String, String> properties = editProperties();
-        // String ipAddress = properties.get(PROPERTY_IP_ADDRESS);
-        // if (ipAddress != null) {
-        // logger.info("DIRIGERA HANDLER update config with ip {}", ipAddress);
-        // Configuration config = editConfiguration();
-        // config.put(PROPERTY_IP_ADDRESS, ipAddress);
-        // updateConfiguration(config);
-        // } else {
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "No IP configured or detected");
-        // logger.info("DIRIGERA HANDLER no ip in properties found");
-        // return; // no IP - no running system
-        // }
-        // } else {
-        // logger.info("DIRIGERA HANDLER ip already configured {}", config.ipAddress);
-        // }
-
-        // inform discovery that Gateway with ip address was found
-        // config = getConfigAs(DirigeraConfiguration.class); // get new config in case of previous update
-        // discoveryManager.ignoreGateway(config.ipAddress);
 
         // Step 2 - check if token is available or stored
         if (token.isBlank()) {
@@ -227,8 +205,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
             // when done do:
-            socketWatcher = Optional.of(scheduler.scheduleWithFixedDelay(this::keepAlive, 5, 5, TimeUnit.MINUTES));
             modelUpdater = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 5, 5, TimeUnit.MINUTES));
+            heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE);
@@ -238,7 +216,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public void dispose() {
         super.dispose();
-        socketWatcher.ifPresent(refresher -> {
+        heartbeat.ifPresent(refresher -> {
             refresher.cancel(false);
         });
         modelUpdater.ifPresent(refresher -> {
@@ -286,8 +264,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private void getKnownDevicesFromStorage() {
         JSONObject gatewayStorageJson = getStorageJson();
         if (gatewayStorageJson.has(PROPERTY_DEVICES)) {
-            JSONArray knowDevicesJson = gatewayStorageJson.getJSONArray(PROPERTY_DEVICES);
-            knownDevices = knowDevicesJson.toList();
+            String knownDeviceString = gatewayStorageJson.getString(PROPERTY_DEVICES);
+            logger.info("DIRIGERA HANDLER storage deliverd {} known devices", knownDeviceString);
+            JSONArray arr = new JSONArray(knownDeviceString);
+            knownDevices = arr.toList();
             logger.info("DIRIGERA HANDLER storage deliverd {} known devices", knownDevices.size());
         } else {
             logger.info("DIRIGERA HANDLER no known devices stored");
@@ -299,6 +279,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONArray toStoreArray = new JSONArray(knownDevices);
         logger.info("DIRIGERA HANDLER store {} known devices", knownDevices.size());
         gatewayStorageJson.put(PROPERTY_DEVICES, toStoreArray.toString());
+        logger.info("DIRIGERA HANDLER want to write {}", gatewayStorageJson);
+        storage.put(config.id, gatewayStorageJson.toString());
     }
 
     private JSONObject getStorageJson() {
@@ -318,30 +300,31 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         return new JSONObject();
     }
 
-    private void keepAlive() {
-        websocket.ifPresentOrElse((client) -> {
-            if (!client.isRunning()) {
-                logger.info("DIRIGERA HANDLER WS restart necessary");
-                client.start();
-            } else {
-                logger.info("DIRIGERA HANDLER WS running fine");
-                client.ping();
-            }
-        }, () -> {
-            logger.info("DIRIGERA HANDLER WS creation necessary");
-            Websocket ws = new Websocket(this, httpClient);
-            ws.start();
-            websocket = Optional.of(ws);
-        });
+    private void heartbeat() {
+        JSONObject gatewayInfo = api().readDevice(config.id);
+        if (gatewayInfo.has(PROPERTY_HTTP_ERROR_STATUS)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Gateway HTTP Status " + gatewayInfo.get(PROPERTY_HTTP_ERROR_STATUS));
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+            websocket.ifPresentOrElse((client) -> {
+                if (!client.isRunning()) {
+                    logger.info("DIRIGERA HANDLER WS restart necessary");
+                    client.start();
+                } else {
+                    logger.info("DIRIGERA HANDLER WS running fine");
+                    client.ping();
+                }
+            }, () -> {
+                logger.info("DIRIGERA HANDLER WS creation necessary");
+                Websocket ws = new Websocket(this, httpClient);
+                ws.start();
+                websocket = Optional.of(ws);
+            });
+        }
     }
 
     private void update() {
-        websocket.ifPresentOrElse((socket) -> {
-            JSONObject statistics = socket.getStatistics();
-            updateState(CHANNEL_STATISTICS, StringType.valueOf(statistics.toString()));
-        }, () -> {
-            logger.info("DIRIGERA HANDLER WS not present for statistics");
-        });
         model().update();
     }
 
@@ -356,14 +339,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             baseParams.put("response_type", "code");
             baseParams.put("code_challenge", challenge);
             baseParams.put("code_challenge_method", "S256");
-            // String urlEncoded = UrlEncoded.encode(baseParams, StandardCharsets.UTF_8, false);
 
             String url = String.format(OAUTH_URL, config.ipAddress);
             Request codeRequest = httpClient.newRequest(url).param("audience", "homesmart.local")
                     .param("response_type", "code").param("code_challenge", challenge)
                     .param("code_challenge_method", "S256");
-            // codeRequest.content(
-            // new StringContentProvider("application/x-www-form-urlencoded", urlEncoded, StandardCharsets.UTF_8));
             logger.info("DIRIGERA HANDLER Call {} with params", url);
 
             ContentResponse response = codeRequest.timeout(10, TimeUnit.SECONDS).send();
@@ -386,15 +366,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             baseParams.put("code_verifier", codeVerifier);
 
             String url = String.format(TOKEN_URL, config.ipAddress);
-            // url = url + "?code=" + code + "&name=" + config.ip + "&grant_type=" + "authorization_code" +
-            // "&code_verifier="
-            // + codeVerifier;
 
             // Instant stopTime = Instant.now().plus(1, ChronoUnit.MINUTES);
             int status = 200;
-            // while (Instant.now().isBefore(stopTime)) {
-
-            // url = url + "?" + UrlEncoded.encode(baseParams, StandardCharsets.UTF_8, false);
 
             String urlEncoded = UrlEncoded.encode(baseParams, StandardCharsets.UTF_8, false);
             Request tokenRequest = httpClient.POST(url)
@@ -402,24 +376,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                     .content(new StringContentProvider("application/x-www-form-urlencoded", urlEncoded,
                             StandardCharsets.UTF_8))
                     .followRedirects(true);
-            // logger.info("DIRIGERA HANDLER Call {} with params {}", url, urlEncoded);
-            // .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
-            //
-
-            // .param("code", code).param("name", config.ip)
-            // .param("code_verifier", codeVerifier).param("grant_type", "authorization_code");
-            // .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
-
-            // Request challengeRequest = httpClient.POST(url).header(HttpHeader.CONTENT_TYPE,
-            // "application/x-www-form-urlencoded");
 
             ContentResponse response = tokenRequest.timeout(10, TimeUnit.SECONDS).send();
             logger.info("DIRIGERA HANDLER token response {} : {}", response.getStatus(), response.getContentAsString());
             status = response.getStatus();
             if (status != 200) {
-                // logger.info("DIRIGERA HANDLER press button on gateway");
-                // Thread.sleep(1000);
-                // continue;
                 return "";
             }
             TokenResponse tokenResponse = GSON.fromJson(response.getContentAsString(), TokenResponse.class);
@@ -452,13 +413,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
      */
     @Override
     public void registerDevice(BaseDeviceHandler deviceHandler) {
+        logger.info("DIRIGERA HANDLER device {} regsitered", deviceHandler.getThing().getThingTypeUID());
         String deviceId = deviceHandler.getId();
-        // if id isn't known yet - store it
-        if (!knownDevices.contains(deviceId)) {
-            knownDevices.add(deviceId);
-            storeKnownDevices();
+        if (!deviceId.isBlank()) {
+            // if id isn't known yet - store it
+            if (!knownDevices.contains(deviceId)) {
+                knownDevices.add(deviceId);
+                storeKnownDevices();
+            }
+        } else {
+            logger.info("DIRIGERA HANDLER device {} regsitered without id", deviceHandler.getThing().getThingTypeUID());
         }
-        discoveryManager.ignoreDevice(deviceId);
         deviceTree.put(deviceId, deviceHandler);
     }
 
@@ -480,7 +445,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         String deviceId = deviceHandler.getId();
         deviceTree.remove(deviceId);
         // removal of handler - store new known devices
-        if (!knownDevices.contains(deviceId)) {
+        if (knownDevices.contains(deviceId)) {
             knownDevices.remove(deviceId);
             storeKnownDevices();
         }
@@ -493,8 +458,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
+            } else {
+                String customName = model().getCustonNameFor(id);
+                logger.info("DIRIGERA HANDLER deliver result with name {}", customName);
+                DiscoveryResult result = DiscoveryResultBuilder
+                        .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
+                        .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)
+                        .withRepresentationProperty(PROPERTY_DEVICE_ID).withLabel(customName).build();
+                discoveryManager.forward(result);
             }
-            // new devices discovered - identify ThingTyoeUID
         } else {
             logger.info("DIRIGERA HANDLER received new device id from model but already known");
         }
@@ -524,5 +496,25 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     @Override
     public String getIpAddress() {
         return config.ipAddress;
+    }
+
+    @Override
+    public void websocketUpdate(JSONObject update) {
+        String type = update.getString("type");
+        logger.info("DIRIGERA HANDLER update received for type {} - {}", type, update);
+        switch (type) {
+            case EVENT_TYPE_STATE_CHANGE:
+                JSONObject data = update.getJSONObject("data");
+                String targetId = data.getString("id");
+                BaseDeviceHandler targetHandler = deviceTree.get(targetId);
+                if (targetHandler != null && targetId != null) {
+                    targetHandler.handleUpdate(data);
+                } else {
+                    logger.info("DIRIGERA HANDLER no targetHandler found for update {}", update);
+                }
+                break;
+            default:
+                logger.info("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
+        }
     }
 }

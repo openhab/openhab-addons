@@ -137,15 +137,8 @@ public class Websocket {
     @OnWebSocketMessage
     public void onTextMessage(String message) {
         increase(MESSAGES);
-        logger.info("DIRIGERA onBytes {}", message);
-        // try {
-        // Scanner s = new Scanner(inputStream).useDelimiter("\\A");
-        // String result = s.hasNext() ? s.next() : "";
-        // s.close();
-        // logger.info("DIRIGERA onBytes {}", result);
-        // } catch (Error err) {
-        // logger.trace("Error caught {}", err.getMessage());
-        // }
+        // logger.info("DIRIGERA oneMessage {}", message);
+        gateway.websocketUpdate(new JSONObject(message));
     }
 
     @OnWebSocketClose
