@@ -65,7 +65,8 @@ public class CaddxPartitionActions implements ThingActions {
         return (pin.length() == 4) ? pin + "00" : pin;
     }
 
-    @RuleAction(label = "turnOffAnySounderOrAlarm", description = "Turn off any sounder or alarm")
+    @RuleAction(label = "turnOffAnySounderOrAlarm", description = "Turn off any sounder or alarm",
+            id = "turnOffAnySounder2")
     public void turnOffAnySounderOrAlarm(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -86,7 +87,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).turnOffAnySounderOrAlarm(pin);
     }
 
-    @RuleAction(label = "disarm", description = "Dis-arm")
+    @RuleAction(label = "disarm", description = "Dis-arm", id = "disarm2")
     public void disarm(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -107,7 +108,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).disarm(pin);
     }
 
-    @RuleAction(label = "armInAwayMode", description = "Arm in away mode")
+    @RuleAction(label = "armInAwayMode", description = "Arm in away mode", id = "armInAwayMode2")
     public void armInAwayMode(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -128,7 +129,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).armInAwayMode(pin);
     }
 
-    @RuleAction(label = "armInStayMode", description = "Arm in stay mode")
+    @RuleAction(label = "armInStayMode", description = "Arm in stay mode", id = "armInStayMode2")
     public void armInStayMode(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -149,7 +150,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).armInStayMode(pin);
     }
 
-    @RuleAction(label = "cancel", description = "Cancel")
+    @RuleAction(label = "cancel", description = "Cancel", id = "cancel2")
     public void cancel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -170,7 +171,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).cancel(pin);
     }
 
-    @RuleAction(label = "initiateAutoArm", description = "Initiate auto arm")
+    @RuleAction(label = "initiateAutoArm", description = "Initiate auto arm", id = "initiateAutoArm2")
     public void initiateAutoArm(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -191,7 +192,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).initiateAutoArm(pin);
     }
 
-    @RuleAction(label = "startWalkTestMode", description = "Start walk-test mode")
+    @RuleAction(label = "startWalkTestMode", description = "Start walk-test mode", id = "startWalkTestMode2")
     public void startWalkTestMode(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -212,7 +213,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).startWalkTestMode(pin);
     }
 
-    @RuleAction(label = "stopWalkTestMode", description = "Stop walk-test mode")
+    @RuleAction(label = "stopWalkTestMode", description = "Stop walk-test mode", id = "stopWalkTestMode2")
     public void stopWalkTestMode(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPartition handler = this.handler;
@@ -233,7 +234,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).stopWalkTestMode(pin);
     }
 
-    @RuleAction(label = "stay", description = "Stay (1 button arm / toggle interiors)")
+    @RuleAction(label = "stay", description = "Stay (1 button arm / toggle interiors)", id = "stay2")
     public void stay() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -248,7 +249,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).stay();
     }
 
-    @RuleAction(label = "chime", description = "Chime (toggle chime mode)")
+    @RuleAction(label = "chime", description = "Chime (toggle chime mode)", id = "chime2")
     public void chime() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -263,7 +264,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).chime();
     }
 
-    @RuleAction(label = "exit", description = "Exit (1 button arm / toggle instant)")
+    @RuleAction(label = "exit", description = "Exit (1 button arm / toggle instant)", id = "exit2")
     public void exit() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -278,7 +279,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).exit();
     }
 
-    @RuleAction(label = "bypassInteriors", description = "Bypass Interiors")
+    @RuleAction(label = "bypassInteriors", description = "Bypass Interiors", id = "bypassInteriors2")
     public void bypassInteriors() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -293,7 +294,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).bypassInteriors();
     }
 
-    @RuleAction(label = "firePanic", description = "Fire Panic")
+    @RuleAction(label = "firePanic", description = "Fire Panic", id = "firePanic2")
     public void firePanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -308,7 +309,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).firePanic();
     }
 
-    @RuleAction(label = "medicalPanic", description = "Medical Panic")
+    @RuleAction(label = "medicalPanic", description = "Medical Panic", id = "medicalPanic2")
     public void medicalPanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -323,7 +324,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).medicalPanic();
     }
 
-    @RuleAction(label = "policePanic", description = "Police Panic")
+    @RuleAction(label = "policePanic", description = "Police Panic", id = "policePanic2")
     public void policePanic() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -338,7 +339,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).policePanic();
     }
 
-    @RuleAction(label = "smokeDetectorReset", description = "Smoke detector reset")
+    @RuleAction(label = "smokeDetectorReset", description = "Smoke detector reset", id = "smokeDetectorReset2")
     public void smokeDetectorReset() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -353,7 +354,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).smokeDetectorReset();
     }
 
-    @RuleAction(label = "autoCallbackDownload", description = "Auto callback download")
+    @RuleAction(label = "autoCallbackDownload", description = "Auto callback download", id = "autoCallbackDownload2")
     public void autoCallbackDownload() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -368,7 +369,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).autoCallbackDownload();
     }
 
-    @RuleAction(label = "manualPickupDownload", description = "Manual pickup download")
+    @RuleAction(label = "manualPickupDownload", description = "Manual pickup download", id = "manualPickupDownload2")
     public void manualPickupDownload() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -383,7 +384,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).manualPickupDownload();
     }
 
-    @RuleAction(label = "enableSilentExit", description = "Enable silent exit")
+    @RuleAction(label = "enableSilentExit", description = "Enable silent exit", id = "enableSilentExit2")
     public void enableSilentExit() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -398,7 +399,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).enableSilentExit();
     }
 
-    @RuleAction(label = "performTest", description = "Perform test")
+    @RuleAction(label = "performTest", description = "Perform test", id = "performTest2")
     public void performTest() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -413,7 +414,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).performTest();
     }
 
-    @RuleAction(label = "groupBypass", description = "Group Bypass")
+    @RuleAction(label = "groupBypass", description = "Group Bypass", id = "groupBypass2")
     public void groupBypass() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -428,7 +429,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).groupBypass();
     }
 
-    @RuleAction(label = "auxiliaryFunction1", description = "Auxiliary Function 1")
+    @RuleAction(label = "auxiliaryFunction1", description = "Auxiliary Function 1", id = "auxiliaryFunction1On2")
     public void auxiliaryFunction1() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -443,7 +444,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).auxiliaryFunction1();
     }
 
-    @RuleAction(label = "auxiliaryFunction2", description = "Auxiliary Function 2")
+    @RuleAction(label = "auxiliaryFunction2", description = "Auxiliary Function 2", id = "auxiliaryFunction2On2")
     public void auxiliaryFunction2() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {
@@ -458,7 +459,7 @@ public class CaddxPartitionActions implements ThingActions {
         ((CaddxPartitionActions) actions).auxiliaryFunction2();
     }
 
-    @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder")
+    @RuleAction(label = "startKeypadSounder", description = "Start keypad sounder", id = "startKeypadSounder2")
     public void startKeypadSounder() {
         ThingHandlerPartition handler = this.handler;
         if (handler == null) {

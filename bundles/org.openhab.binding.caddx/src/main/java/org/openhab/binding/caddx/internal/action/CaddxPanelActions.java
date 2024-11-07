@@ -70,7 +70,8 @@ public class CaddxPanelActions implements ThingActions {
         return (pin.length() == 4) ? pin + "00" : pin;
     }
 
-    @RuleAction(label = "turnOffAnySounderOrAlarmOnPanel", description = "Turn off any sounder or alarm on all partitions")
+    @RuleAction(label = "turnOffAnySounderOrAlarmOnPanel",
+            description = "Turn off any sounder or alarm on all partitions", id = "turnOffAnySounderOrAlarm")
     public void turnOffAnySounderOrAlarmOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -91,7 +92,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).turnOffAnySounderOrAlarmOnPanel(pin);
     }
 
-    @RuleAction(label = "disarmOnPanel", description = "Disarm all partitions")
+    @RuleAction(label = "disarmOnPanel", description = "Disarm all partitions", id = "disarm")
     public void disarmOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -112,7 +113,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).disarmOnPanel(pin);
     }
 
-    @RuleAction(label = "armInAwayModeOnPanel", description = "Arm in away mode on all partitions")
+    @RuleAction(label = "armInAwayModeOnPanel", description = "Arm in away mode on all partitions",
+            id = "armInAwayMode")
     public void armInAwayModeOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -133,7 +135,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).armInAwayModeOnPanel(pin);
     }
 
-    @RuleAction(label = "armInStayModeOnPanel", description = "Arm in stay mode on all partitions")
+    @RuleAction(label = "armInStayModeOnPanel", description = "Arm in stay mode on all partitions",
+            id = "armInStayMode")
     public void armInStayModeOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -154,7 +157,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).armInStayModeOnPanel(pin);
     }
 
-    @RuleAction(label = "cancelOnPanel", description = "Cancel command on all partitions")
+    @RuleAction(label = "cancelOnPanel", description = "Cancel command on all partitions",
+            id = "cancel")
     public void cancelOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -175,7 +179,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).cancelOnPanel(pin);
     }
 
-    @RuleAction(label = "initiateAutoArmOnPanel", description = "Initiate auto arm on all partitions")
+    @RuleAction(label = "initiateAutoArmOnPanel", description = "Initiate auto arm on all partitions",
+            id = "initiateAutoArm")
     public void initiateAutoArmOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -196,7 +201,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).initiateAutoArmOnPanel(pin);
     }
 
-    @RuleAction(label = "startWalkTestModeOnPanel", description = "Start walk-test mode on all partitions")
+    @RuleAction(label = "startWalkTestModeOnPanel", description = "Start walk-test mode on all partitions",
+            id = "startWalkTestMode")
     public void startWalkTestModeOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -217,7 +223,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).startWalkTestModeOnPanel(pin);
     }
 
-    @RuleAction(label = "stopWalkTestModeOnPanel", description = "Stop walk-test mode on all partitions")
+    @RuleAction(label = "stopWalkTestModeOnPanel", description = "Stop walk-test mode on all partitions",
+            id = "stopWalkTestMode")
     public void stopWalkTestModeOnPanel(
             @ActionInput(name = "pin", label = "pin", description = "The pin 4 or 6 digit pin") @Nullable String pin) {
         ThingHandlerPanel handler = this.handler;
@@ -238,7 +245,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).stopWalkTestModeOnPanel(pin);
     }
 
-    @RuleAction(label = "stayOnPanel", description = "Stay (1 button arm / toggle interiors) on all partitions")
+    @RuleAction(label = "stayOnPanel", description = "Stay (1 button arm / toggle interiors) on all partitions",
+            id = "stay")
     public void stayOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -253,7 +261,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).stayOnPanel();
     }
 
-    @RuleAction(label = "chimeOnPanel", description = "Chime (toggle chime mode) on all partitions")
+    @RuleAction(label = "chimeOnPanel", description = "Chime (toggle chime mode) on all partitions", id = "chime")
     public void chimeOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -268,7 +276,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).chimeOnPanel();
     }
 
-    @RuleAction(label = "exitOnPanel", description = "Exit (1 button arm / toggle instant) on all partitions")
+    @RuleAction(label = "exitOnPanel", description = "Exit (1 button arm / toggle instant) on all partitions",
+            id = "exit")
     public void exitOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -283,7 +292,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).exitOnPanel();
     }
 
-    @RuleAction(label = "bypassInteriorsOnPanel", description = "Bypass Interiors on all partitions")
+    @RuleAction(label = "bypassInteriorsOnPanel", description = "Bypass Interiors on all partitions",
+            id = "bypassInteriors")
     public void bypassInteriorsOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -298,7 +308,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).bypassInteriorsOnPanel();
     }
 
-    @RuleAction(label = "firePanicOnPanel", description = "Fire Panic on all partitions")
+    @RuleAction(label = "firePanicOnPanel", description = "Fire Panic on all partitions",
+            id = "firePanic")
     public void firePanicOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -313,7 +324,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).firePanicOnPanel();
     }
 
-    @RuleAction(label = "medicalPanicOnPanel", description = "Medical Panic on all partitions")
+    @RuleAction(label = "medicalPanicOnPanel", description = "Medical Panic on all partitions", id = "medicalPanic")
     public void medicalPanicOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -328,7 +339,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).medicalPanicOnPanel();
     }
 
-    @RuleAction(label = "policePanicOnPanel", description = "Police Panic on all partitions")
+    @RuleAction(label = "policePanicOnPanel", description = "Police Panic on all partitions", id = "policePanic")
     public void policePanicOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -343,7 +354,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).policePanicOnPanel();
     }
 
-    @RuleAction(label = "smokeDetectorResetOnPanel", description = "Smoke detector reset on all partitions")
+    @RuleAction(label = "smokeDetectorResetOnPanel", description = "Smoke detector reset on all partitions",
+            id = "smokeDetectorReset")
     public void smokeDetectorResetOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -358,7 +370,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).smokeDetectorResetOnPanel();
     }
 
-    @RuleAction(label = "autoCallbackDownloadOnPanel", description = "Auto callback download on all partitions")
+    @RuleAction(label = "autoCallbackDownloadOnPanel", description = "Auto callback download on all partitions",
+            id = "autoCallbackDownload")
     public void autoCallbackDownloadOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -373,7 +386,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).autoCallbackDownloadOnPanel();
     }
 
-    @RuleAction(label = "manualPickupDownloadOnPanel", description = "Manual pickup download on all partitions")
+    @RuleAction(label = "manualPickupDownloadOnPanel", description = "Manual pickup download on all partitions",
+            id = "manualPickupDownload")
     public void manualPickupDownloadOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -388,7 +402,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).manualPickupDownloadOnPanel();
     }
 
-    @RuleAction(label = "enableSilentExitOnPanel", description = "Enable silent exit on all partitions")
+    @RuleAction(label = "enableSilentExitOnPanel", description = "Enable silent exit on all partitions",
+            id = "enableSilentExit")
     public void enableSilentExitOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -403,7 +418,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).enableSilentExitOnPanel();
     }
 
-    @RuleAction(label = "performTestOnPanel", description = "Perform test on all partitions")
+    @RuleAction(label = "performTestOnPanel", description = "Perform test on all partitions", id = "performTest")
     public void performTestOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -418,7 +433,7 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).performTestOnPanel();
     }
 
-    @RuleAction(label = "groupBypassOnPanel", description = "Group Bypass on all partitions")
+    @RuleAction(label = "groupBypassOnPanel", description = "Group Bypass on all partitions", id = "groupBypass")
     public void groupBypassOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -433,7 +448,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).groupBypassOnPanel();
     }
 
-    @RuleAction(label = "auxiliaryFunction1OnPanel", description = "Auxiliary Function 1 on all partitions")
+    @RuleAction(label = "auxiliaryFunction1OnPanel", description = "Auxiliary Function 1 on all partitions",
+            id = "auxiliaryFunction1On")
     public void auxiliaryFunction1OnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -448,7 +464,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).auxiliaryFunction1OnPanel();
     }
 
-    @RuleAction(label = "auxiliaryFunction2OnPanel", description = "Auxiliary Function 2 on all partitions")
+    @RuleAction(label = "auxiliaryFunction2OnPanel", description = "Auxiliary Function 2 on all partitions",
+            id = "auxiliaryFunction2On")
     public void auxiliaryFunction2OnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
@@ -463,7 +480,8 @@ public class CaddxPanelActions implements ThingActions {
         ((CaddxPanelActions) actions).auxiliaryFunction2OnPanel();
     }
 
-    @RuleAction(label = "startKeypadSounderOnPanel", description = "Start keypad sounder on all partitions")
+    @RuleAction(label = "startKeypadSounderOnPanel", description = "Start keypad sounder on all partitions",
+            id = "startKeypadSounder")
     public void startKeypadSounderOnPanel() {
         ThingHandlerPanel handler = this.handler;
         if (handler == null) {
