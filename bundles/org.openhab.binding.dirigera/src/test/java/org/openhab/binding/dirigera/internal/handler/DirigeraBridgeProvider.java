@@ -64,7 +64,7 @@ public class DirigeraBridgeProvider {
 
         @Override
         public ZoneId getTimeZone() {
-            return ZoneId.systemDefault();
+            return ZoneId.of("Europe/Berlin");
         }
     };
 
