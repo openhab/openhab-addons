@@ -453,14 +453,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void newDevice(String id) {
-        logger.info("DIRIGERA HANDLER received new device id from model");
         if (!knownDevices.contains(id)) {
             ThingTypeUID discoveredThingTypeUID = model().identifyDevice(id);
             if (THING_TYPE_UNKNNOWN.equals(discoveredThingTypeUID)) {
                 logger.warn("DIRIGERA HANDLER cannot identify {}", model().getAllFor(id));
             } else {
                 String customName = model().getCustonNameFor(id);
-                logger.info("DIRIGERA HANDLER deliver result with name {}", customName);
+                logger.info("DIRIGERA HANDLER deliver result {} with name {} and is supported {}",
+                        discoveredThingTypeUID.getAsString(), customName,
+                        SUPPORTED_THING_TYPES_UIDS.contains(discoveredThingTypeUID));
                 DiscoveryResult result = DiscoveryResultBuilder
                         .create(new ThingUID(discoveredThingTypeUID, this.getThing().getUID(), id))
                         .withBridge(this.getThing().getUID()).withProperty(PROPERTY_DEVICE_ID, id)

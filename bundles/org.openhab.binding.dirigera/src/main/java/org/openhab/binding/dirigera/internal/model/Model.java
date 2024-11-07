@@ -145,6 +145,10 @@ public class Model {
                                 logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_LIGHT_SENSOR.toString(),
                                         id);
                                 return THING_TYPE_LIGHT_SENSOR;
+                            case DEVICE_TYPE_CONTACT_SENSOR:
+                                logger.info("DIRIGERA MODEL identified {} for {}", THING_TYPE_CONTACT_SENSOR.toString(),
+                                        id);
+                                return THING_TYPE_CONTACT_SENSOR;
                             default:
                                 logger.info("DIRIGERA MODEL Unsuppoerted Device {} with attributes {}", deviceType,
                                         attributes);
@@ -176,7 +180,6 @@ public class Model {
         JSONObject deviceObject = getAllFor(id);
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
-            System.out.println("Attributes " + attributes);
             if (attributes.has(CUSTOM_NAME)) {
                 String customName = attributes.getString(CUSTOM_NAME);
                 if (!customName.isBlank()) {
