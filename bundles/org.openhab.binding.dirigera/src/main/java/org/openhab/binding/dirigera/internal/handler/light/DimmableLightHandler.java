@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -64,10 +65,23 @@ public class DimmableLightHandler extends BaseHandler {
             switch (channel) {
                 case CHANNEL_LIGHT_BRIGHTNESS:
                     if (command instanceof PercentType percent) {
-                        JSONObject attributes = new JSONObject();
-                        attributes.put(targetProperty, percent.intValue());
-                        logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
-                        gateway().api().sendAttributes(config.id, attributes);
+                        int percentValue = percent.intValue();
+                        if (percentValue > 0) {
+                            if (!isOn()) {
+                                super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
+                                        OnOffType.ON);
+                            }
+                            JSONObject attributes = new JSONObject();
+                            attributes.put(targetProperty, percent.intValue());
+                            logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
+                            gateway().api().sendAttributes(config.id, attributes);
+                        } else {
+                            super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
+                                    OnOffType.OFF);
+                        }
+                    }
+                    if (command instanceof OnOffType onOff) {
+                        super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE), command);
                     }
                     break;
             }

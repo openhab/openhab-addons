@@ -239,6 +239,11 @@ Light with brightness support.
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device        |    X     |
 
+Channel `brightness` can receive
+
+- ON / OFF teyes
+- numbers from 0 to 100 where 0 will switch the light off
+
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
 See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
@@ -276,6 +281,11 @@ Light with color temperature support.
 | `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device        |    X     |
 
+Channel `brightness` can receive
+
+- ON / OFF teyes
+- numbers from 0 to 100 where 0 will switch the light off
+
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
 See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
@@ -296,6 +306,12 @@ Light with color support.
 | `ota-state`           | Number                | R          | Over-the-air current state                           |    X     |
 | `ota-progress`        | Number                | R          | Over-the-air current progress                        |    X     |
 | `json`                | String                | R          | JSON structure and updates of this device            |    X     |
+
+Channel `color` can receive
+
+- ON / OFF teyes
+- numbers from 0 to 100 where 0 will switch the light off
+- triple values for hue, saturation, brightness
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
@@ -584,7 +600,7 @@ Speaker with player activities.
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `player`              | Player                | RW         | Player Control                               |          |
 | `volume`              | Dimmer                | RW         | Handle volume in percent                     |          |
-| `mute`                | Switch                | RW         | Mute current audio without stop playing      |          |
+| `mute`                | Switch                | R(W)       | Mute current audio without stop playing      |          |
 | `shuffle`             | Switch                | RW         | Control shuffle mode                         |          |
 | `crossfade`           | Switch                | RW         | Cross fading between tracks                  |          |
 | `repeat`              | Number                | RW         | Over-the-air overall status                  |          |
@@ -596,7 +612,8 @@ Speaker with player activities.
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
-See current also [Known Limitations](#speaker-limitations) 
+Channel `mute` should be writable but this isnn't the case now.
+See [Known Limitations](#speaker-limitations). 
 
 ## Repeater
 
@@ -657,9 +674,6 @@ In this case it's possible not all links are shown in the UI, but the present on
 Speaker channel `mute` is not working.
 The Model is reflecting the device `canReceive` command `isMuted` but in fact sending the command is answering with http status 400.
 If mute is performed on Sonos App the channel is updating correctly, but sending the command fails!
-
-### Gateway Coordinates
-
 
 
 ## Full Example
