@@ -43,7 +43,7 @@ public class DirigeraDiscoveryService extends AbstractDiscoveryService {
 
     @Activate
     public DirigeraDiscoveryService(final @Reference DirigeraDiscoveryManager manager) {
-        super(DISCOVERABLE_DEVICE_TYPE_UIDS, 90, true);
+        super(SUPPORTED_THING_TYPES_UIDS, 90, true);
         dirigeraDiscoveryManager = manager;
         dirigeraDiscoveryManager.setDiscoverService(this);
         logger.info("DIRIGERA DISCOVERY constructor");

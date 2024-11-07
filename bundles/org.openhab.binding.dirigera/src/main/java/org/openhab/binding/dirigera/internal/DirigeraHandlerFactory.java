@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.WWWAuthenticationProtocolHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryManager;
+import org.openhab.binding.dirigera.internal.handler.ContactSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
 import org.openhab.binding.dirigera.internal.handler.LightHandler;
 import org.openhab.binding.dirigera.internal.handler.LightSensorHandler;
@@ -97,6 +98,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new MotionSensorHandler(thing, MOTION_SENSOR_MAP);
         } else if (THING_TYPE_LIGHT_SENSOR.equals(thingTypeUID)) {
             return new LightSensorHandler(thing, LIGHT_SENSOR_MAP);
+        } else if (THING_TYPE_CONTACT_SENSOR.equals(thingTypeUID)) {
+            return new ContactSensorHandler(thing, CONTACT_SENSOR_MAP);
         } else {
             logger.info("Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
         }
