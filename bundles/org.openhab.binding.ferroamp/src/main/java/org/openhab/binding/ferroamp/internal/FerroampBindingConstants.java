@@ -53,33 +53,33 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_ACECURRENTL1 = "ace-current-l1";
     public static final String CHANNEL_ACECURRENTL2 = "ace-current-l2";
     public static final String CHANNEL_ACECURRENTL3 = "ace-current-l3";
-    public static final String CHANNEL_EXTERNALVOLTAGEL1 = "external-voltage-l1";
-    public static final String CHANNEL_EXTERNALVOLTAGEL2 = "external-voltage-l2";
-    public static final String CHANNEL_EXTERNALVOLTAGEL3 = "external-voltage-l3";
+    public static final String CHANNEL_GRIDVOLTAGEL1 = "grid-voltage-l1";
+    public static final String CHANNEL_GRIDVOLTAGEL2 = "grid-voltage-l2";
+    public static final String CHANNEL_GRIDVOLTAGEL3 = "grid-voltage-l3";
     public static final String CHANNEL_INVERTERRMSCURRENTL1 = "inverter-rms-current-l1";
     public static final String CHANNEL_INVERTERRMSCURRENTL2 = "inverter-rms-current-l2";
     public static final String CHANNEL_INVERTERRMSCURRENTL3 = "inverter-rms-current-l3";
-    public static final String CHANNEL_INVERTERCURRENTREACTIVEL1 = "inverter-current-reactive-l1";
-    public static final String CHANNEL_INVERTERCURRENTREACTIVEL2 = "inverter-current-reactive-l2";
-    public static final String CHANNEL_INVERTERCURRENTREACTIVEL3 = "inverter-current-reactive-l3";
-    public static final String CHANNEL_INVERTERCURRENTACTIVEL1 = "inverter-current-active-l1";
-    public static final String CHANNEL_INVERTERCURRENTACTIVEL2 = "inverter-current-active-l2";
-    public static final String CHANNEL_INVERTERCURRENTACTIVEL3 = "inverter-current-active-l3";
-    public static final String CHANNEL_GRIDCURRENTL1 = "grid-current-l1";
-    public static final String CHANNEL_GRIDCURRENTL2 = "grid-current-l2";
-    public static final String CHANNEL_GRIDCURRENTL3 = "grid-current-l3";
-    public static final String CHANNEL_GRIDCURRENTREACTIVEL1 = "grid-current-reactive-l1";
-    public static final String CHANNEL_GRIDCURRENTREACTIVEL2 = "grid-current-reactive-l2";
-    public static final String CHANNEL_GRIDCURRENTREACTIVEL3 = "grid-current-reactive-l3";
-    public static final String CHANNEL_GRIDCURRENTACTIVEL1 = "grid-current-active-l1";
-    public static final String CHANNEL_GRIDCURRENTACTIVEL2 = "grid-current-active-l2";
-    public static final String CHANNEL_GRIDCURRENTACTIVEL3 = "grid-current-active-l3";
     public static final String CHANNEL_INVERTERREACTIVECURRENTL1 = "inverter-reactive-current-l1";
     public static final String CHANNEL_INVERTERREACTIVECURRENTL2 = "inverter-reactive-current-l2";
     public static final String CHANNEL_INVERTERREACTIVECURRENTL3 = "inverter-reactive-current-l3";
-    public static final String CHANNEL_INVERTERLOADL1 = "inverter-load-l1";
-    public static final String CHANNEL_INVERTERLOADL2 = "inverter-load-l2";
-    public static final String CHANNEL_INVERTERLOADL3 = "inverter-load-l3";
+    public static final String CHANNEL_INVERTERACTIVECURRENTL1 = "inverter-active-current-l1";
+    public static final String CHANNEL_INVERTERACTIVECURRENTL2 = "inverter-active-current-l2";
+    public static final String CHANNEL_INVERTERACTIVECURRENTL3 = "inverter-active-current-l3";
+    public static final String CHANNEL_GRIDCURRENTL1 = "grid-current-l1";
+    public static final String CHANNEL_GRIDCURRENTL2 = "grid-current-l2";
+    public static final String CHANNEL_GRIDCURRENTL3 = "grid-current-l3";
+    public static final String CHANNEL_GRIDREACTIVECURRENTL1 = "grid-reactive-current-l1";
+    public static final String CHANNEL_GRIDREACTIVECURRENTL2 = "grid-reactive-current-l2";
+    public static final String CHANNEL_GRIDREACTIVECURRENTL3 = "grid-reactive-current-l3";
+    public static final String CHANNEL_GRIDACTIVECURRENTL1 = "grid-active-current-l1";
+    public static final String CHANNEL_GRIDACTIVECURRENTL2 = "grid-active-current-l2";
+    public static final String CHANNEL_GRIDACTIVECURRENTL3 = "grid-active-current-l3";
+    public static final String CHANNEL_INVERTERLOADREACTIVECURRENTL1 = "inverter-load-reactive-current-l1";
+    public static final String CHANNEL_INVERTERLOADREACTIVECURRENTL2 = "inverter-load-reactive-current-l2";
+    public static final String CHANNEL_INVERTERLOADREACTIVECURRENTL3 = "inverter-load-reactive-current-l3";
+    public static final String CHANNEL_INVERTERLOADACTIVECURRENTL1 = "inverter-load-active-current-l1";
+    public static final String CHANNEL_INVERTERLOADACTIVECURRENTL2 = "inverter-load-active-current-l2";
+    public static final String CHANNEL_INVERTERLOADACTIVECURRENTL3 = "inverter-load-active-current-l3";
     public static final String CHANNEL_APPARENTPOWER = "apparent-power";
     public static final String CHANNEL_GRIDPOWERACTIVEL1 = "grid-power-active-l1";
     public static final String CHANNEL_GRIDPOWERACTIVEL2 = "grid-power-active-l2";
@@ -139,15 +139,6 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_TOTALCAPACITYBATTERIES = "total-capacity-batteries";
 
     // List of SSO Channel ids
-    public static final String CHANNEL_S0ID = "s0-id";
-    public static final String CHANNEL_S0PVVOLTAGE = "s0-pv-voltage";
-    public static final String CHANNEL_S0PVCURRENT = "s0-pv-current";
-    public static final String CHANNEL_S0TOTALSOLARENERGY = "s0-total-solar-energy";
-    public static final String CHANNEL_S0RELAYSTATUS = "s0-relay-status";
-    public static final String CHANNEL_S0TEMPERATURE = "s0-temperature";
-    public static final String CHANNEL_S0FAULTCODE = "s0-fault-code";
-    public static final String CHANNEL_S0DCLINKVOLTAGE = "s0-dc-link-voltage";
-    public static final String CHANNEL_S0TIMESTAMP = "s0-timestamp";
     public static final String CHANNEL_S1ID = "s1-id";
     public static final String CHANNEL_S1PVVOLTAGE = "s1-pv-voltage";
     public static final String CHANNEL_S1PVCURRENT = "s1-pv-current";
@@ -175,6 +166,15 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_S3FAULTCODE = "s3-fault-code";
     public static final String CHANNEL_S3DCLINKVOLTAGE = "s3-dc-link-voltage";
     public static final String CHANNEL_S3TIMESTAMP = "s3-timestamp";
+    public static final String CHANNEL_S4ID = "s4-id";
+    public static final String CHANNEL_S4PVVOLTAGE = "s4-pv-voltage";
+    public static final String CHANNEL_S4PVCURRENT = "s4-pv-current";
+    public static final String CHANNEL_S4TOTALSOLARENERGY = "s4-total-solar-energy";
+    public static final String CHANNEL_S4RELAYSTATUS = "s4-relay-status";
+    public static final String CHANNEL_S4TEMPERATURE = "s4-temperature";
+    public static final String CHANNEL_S4FAULTCODE = "s4-fault-code";
+    public static final String CHANNEL_S4DCLINKVOLTAGE = "s4-dc-link-voltage";
+    public static final String CHANNEL_S4TIMESTAMP = "s4-timestamp";
 
     // List of ESO Channel ids
     public static final String CHANNEL_ESOID = "eso-id";
@@ -202,7 +202,6 @@ public class FerroampBindingConstants {
     public static final String CHANNEL_REQUESTCHARGE = "request-charge";
     public static final String CHANNEL_REQUESTDISCHARGE = "request-discharge";
     public static final String CHANNEL_AUTO = "request-auto";
-    public static final String CHANNEL_REQUESTEXTAPIVERSION = "request-extapi-version";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGYHUB);
 }

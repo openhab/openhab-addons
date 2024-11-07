@@ -5,12 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="energyhub">
-		<label>Ferroamp Binding Thing</label>
+		<label>EnergyHub</label>
 		<description>Provides information from Ferroamp EnergyHub</description>
 
 		<channels>
 			<channel id="grid-frequency" typeId="frequency">
-				<label>Estimated Grid Frequency</label>
+				<label>Grid Frequency</label>
 			</channel>
 			<channel id="ace-current-l1" typeId="electric-current">
 				<label>ACE Current L1</label>
@@ -21,14 +21,14 @@
 			<channel id="ace-current-l3" typeId="electric-current">
 				<label>ACE Current L3</label>
 			</channel>
-			<channel id="external-voltage-l1" typeId="electric-potential">
-				<label>External Voltage L1</label>
+			<channel id="grid-voltage-l1" typeId="electric-potential">
+				<label>Grid Voltage L1</label>
 			</channel>
-			<channel id="external-voltage-l2" typeId="electric-potential">
-				<label>External Voltage L2</label>
+			<channel id="grid-voltage-l2" typeId="electric-potential">
+				<label>Grid Voltage L2</label>
 			</channel>
-			<channel id="external-voltage-l3" typeId="electric-potential">
-				<label>External Voltage L3</label>
+			<channel id="grid-voltage-l3" typeId="electric-potential">
+				<label>Grid Voltage L3</label>
 			</channel>
 			<channel id="inverter-rms-current-l1" typeId="electric-current">
 				<label>Inverter RMS Current L1</label>
@@ -39,22 +39,22 @@
 			<channel id="inverter-rms-current-l3" typeId="electric-current">
 				<label>Inverter RMS Current L3</label>
 			</channel>
-			<channel id="inverter-current-reactive-l1" typeId="electric-current">
+			<channel id="inverter-reactive-current-l1" typeId="electric-current">
 				<label>Inverter Reactive Current L1</label>
 			</channel>
-			<channel id="inverter-current-reactive-l2" typeId="electric-current">
+			<channel id="inverter-reactive-current-l2" typeId="electric-current">
 				<label>Inverter Reactive Current L2</label>
 			</channel>
-			<channel id="inverter-current-reactive-l3" typeId="electric-current">
+			<channel id="inverter-reactive-current-l3" typeId="electric-current">
 				<label>Inverter Reactive Current L3</label>
 			</channel>
-			<channel id="inverter-current-active-l1" typeId="electric-current">
+			<channel id="inverter-active-current-l1" typeId="electric-current">
 				<label>Inverter Active Current L1</label>
 			</channel>
-			<channel id="inverter-current-active-l2" typeId="electric-current">
+			<channel id="inverter-active-current-l2" typeId="electric-current">
 				<label>Inverter Active Current L2</label>
 			</channel>
-			<channel id="inverter-current-active-l3" typeId="electric-current">
+			<channel id="inverter-active-current-l3" typeId="electric-current">
 				<label>Inverter Active Current L3</label>
 			</channel>
 			<channel id="grid-current-l1" typeId="electric-current">
@@ -66,41 +66,41 @@
 			<channel id="grid-current-l3" typeId="electric-current">
 				<label>Grid Current L3</label>
 			</channel>
-			<channel id="grid-current-reactive-l1" typeId="electric-current">
+			<channel id="grid-reactive-current-l1" typeId="electric-current">
 				<label>Grid Reactive Current L1</label>
 			</channel>
-			<channel id="grid-current-reactive-l2" typeId="electric-current">
+			<channel id="grid-reactive-current-l2" typeId="electric-current">
 				<label>Grid Reactive Current L2</label>
 			</channel>
-			<channel id="grid-current-reactive-l3" typeId="electric-current">
+			<channel id="grid-reactive-current-l3" typeId="electric-current">
 				<label>Grid Reactive Current L3</label>
 			</channel>
-			<channel id="grid-current-active-l1" typeId="electric-current">
-				<label>Grid Current Active L1</label>
+			<channel id="grid-active-current-l1" typeId="electric-current">
+				<label>Grid Active Current L1</label>
 			</channel>
-			<channel id="grid-current-active-l2" typeId="electric-current">
-				<label>Grid Current Active L2</label>
+			<channel id="grid-active-current-l2" typeId="electric-current">
+				<label>Grid Active Current L2</label>
 			</channel>
-			<channel id="grid-current-active-l3" typeId="electric-current">
-				<label>Grid Current Active L3</label>
+			<channel id="grid-active-current-l3" typeId="electric-current">
+				<label>Grid Active Current L3</label>
 			</channel>
-			<channel id="inverter-reactive-current-l1" typeId="electric-current">
-				<label>Inverter Reactive Current L1</label>
+			<channel id="inverter-load-reactive-current-l1" typeId="electric-current">
+				<label>Inverter Load Reactive Current L1</label>
 			</channel>
-			<channel id="inverter-reactive-current-l2" typeId="electric-current">
-				<label>Inverter Reactive Current L2</label>
+			<channel id="inverter-load-reactive-current-l2" typeId="electric-current">
+				<label>Inverter Load Reactive Current L2</label>
 			</channel>
-			<channel id="inverter-reactive-current-l3" typeId="electric-current">
-				<label>Inverter Reactive Current L3</label>
+			<channel id="inverter-load-reactive-current-l3" typeId="electric-current">
+				<label>Inverter Load Reactive Current L3</label>
 			</channel>
-			<channel id="inverter-load-l1" typeId="electric-current">
-				<label>Inverter Load L1</label>
+			<channel id="inverter-load-active-current-l1" typeId="electric-current">
+				<label>Inverter Load Active Current L1</label>
 			</channel>
-			<channel id="inverter-load-l2" typeId="electric-current">
-				<label>Inverter Load L2</label>
+			<channel id="inverter-load-active-current-l2" typeId="electric-current">
+				<label>Inverter Load Active Current L2</label>
 			</channel>
-			<channel id="inverter-load-l3" typeId="electric-current">
-				<label>Inverter Load L3</label>
+			<channel id="inverter-load-active-current-l3" typeId="electric-current">
+				<label>Inverter Load Active Current L3</label>
 			</channel>
 			<channel id="apparent-power" typeId="energy">
 				<label>Apparent Power</label>
@@ -223,22 +223,22 @@
 				<label>Load Energy Consumed L3</label>
 			</channel>
 			<channel id="grid-energy-produced-total" typeId="energy">
-				<label>Total Produced Grid Energy</label>
+				<label>Grid Energy Produced Total</label>
 			</channel>
 			<channel id="grid-energy-consumed-total" typeId="energy">
-				<label>Total Consumed Grid Energy</label>
+				<label>Grid Energy Consumed Total</label>
 			</channel>
 			<channel id="inverter-energy-produced-total" typeId="energy">
-				<label>Total Produced Inverter Energy</label>
+				<label>Inverter Energy Produced Total</label>
 			</channel>
 			<channel id="inverter-energy-consumed-total" typeId="energy">
-				<label>Total Consumed Inverter Energy</label>
+				<label>Inverter Energy Consumed Total</label>
 			</channel>
 			<channel id="load-energy-produced-total" typeId="energy">
-				<label>Total Produced Load Energy</label>
+				<label>Load Energy Produced Total</label>
 			</channel>
 			<channel id="load-energy-consumed-total" typeId="energy">
-				<label>Total Consumed Load Energy</label>
+				<label>Load Energy Consumed Total</label>
 			</channel>
 			<channel id="total-solar-energy" typeId="power">
 				<label>Total Solar Energy</label>
@@ -255,10 +255,10 @@
 			<channel id="battery-energy-consumed" typeId="energy">
 				<label>Battery Energy Consumed</label>
 			</channel>
-			<channel id="soc" typeId="dimensionless">
+			<channel id="soc" typeId="percentage">
 				<label>System State of Charge</label>
 			</channel>
-			<channel id="soh" typeId="dimensionless">
+			<channel id="soh" typeId="percentage">
 				<label>System State of Health</label>
 			</channel>
 			<channel id="power-battery" typeId="power">
@@ -267,41 +267,14 @@
 			<channel id="total-capacity-batteries" typeId="energy">
 				<label>Total Rated Capacity of All Batteries</label>
 			</channel>
-			<channel id="s0-id" typeId="string">
-				<label>S0 ID</label>
-			</channel>
-			<channel id="s0-pv-voltage" typeId="electric-potential">
-				<label>S0 Measured Voltage on PV String Side</label>
-			</channel>
-			<channel id="s0-pv-current" typeId="electric-current">
-				<label>S0 Measured Current on PV String Side</label>
-			</channel>
-			<channel id="s0-total-solar-energy" typeId="energy">
-				<label>S0 Total Solar Energy</label>
-			</channel>
-			<channel id="s0-relay-status" typeId="string">
-				<label>S0 RelayStatus</label>
-			</channel>
-			<channel id="s0-temperature" typeId="temperature">
-				<label>S0 Temperature Measured on PCB</label>
-			</channel>
-			<channel id="s0-fault-code" typeId="string">
-				<label>S0 FaultCode</label>
-			</channel>
-			<channel id="s0-dc-link-voltage" typeId="electric-potential">
-				<label>S0 DC Link Voltage</label>
-			</channel>
-			<channel id="s0-timestamp" typeId="date-time">
-				<label>S0 Time Stamp When Message was Published</label>
-			</channel>
 			<channel id="s1-id" typeId="string">
 				<label>S1 ID</label>
 			</channel>
 			<channel id="s1-pv-voltage" typeId="electric-potential">
-				<label>S1 Measured Voltage on PV String Side</label>
+				<label>S1 Voltage on PV String Side</label>
 			</channel>
 			<channel id="s1-pv-current" typeId="electric-current">
-				<label>S1 Measured Current on PV String Side</label>
+				<label>S1 Current on PV String Side</label>
 			</channel>
 			<channel id="s1-total-solar-energy" typeId="energy">
 				<label>S1 Total Solar Energy</label>
@@ -310,7 +283,7 @@
 				<label>S1 RelayStatus</label>
 			</channel>
 			<channel id="s1-temperature" typeId="temperature">
-				<label>S1 Temperature Measured on PCB</label>
+				<label>S1 Temperature on PCB</label>
 			</channel>
 			<channel id="s1-fault-code" typeId="string">
 				<label>S1 FaultCode</label>
@@ -325,10 +298,10 @@
 				<label>S2 ID</label>
 			</channel>
 			<channel id="s2-pv-voltage" typeId="electric-potential">
-				<label>S2 Measured Voltage on PV String Side</label>
+				<label>S2 Voltage on PV String Side</label>
 			</channel>
 			<channel id="s2-pv-current" typeId="electric-current">
-				<label>S2 Measured Current on PV String Side</label>
+				<label>S2 Current on PV String Side</label>
 			</channel>
 			<channel id="s2-total-solar-energy" typeId="energy">
 				<label>S2 Total Solar Energy</label>
@@ -337,7 +310,7 @@
 				<label>S2 RelayStatus</label>
 			</channel>
 			<channel id="s2-temperature" typeId="temperature">
-				<label>S2 Temperature Measured on PCB</label>
+				<label>S2 Temperature on PCB</label>
 			</channel>
 			<channel id="s2-fault-code" typeId="string">
 				<label>S2 FaultCode</label>
@@ -352,10 +325,10 @@
 				<label>S3 ID</label>
 			</channel>
 			<channel id="s3-pv-voltage" typeId="electric-potential">
-				<label>S3 Measured Voltage on PV String Side</label>
+				<label>S3 Voltage on PV String Side</label>
 			</channel>
 			<channel id="s3-pv-current" typeId="electric-current">
-				<label>S3 Measured Current on PV String Side</label>
+				<label>S3 Current on PV String Side</label>
 			</channel>
 			<channel id="s3-total-solar-energy" typeId="energy">
 				<label>S3 Total Solar Energy</label>
@@ -364,7 +337,7 @@
 				<label>S3 RelayStatus</label>
 			</channel>
 			<channel id="s3-temperature" typeId="temperature">
-				<label>S3 Temperature Measured on PCB</label>
+				<label>S3 Temperature on PCB</label>
 			</channel>
 			<channel id="s3-fault-code" typeId="string">
 				<label>S3 FaultCode</label>
@@ -375,14 +348,41 @@
 			<channel id="s3-timestamp" typeId="date-time">
 				<label>S3 Time Stamp When Message was Published</label>
 			</channel>
+			<channel id="s4-id" typeId="string">
+				<label>S4 ID</label>
+			</channel>
+			<channel id="s4-pv-voltage" typeId="electric-potential">
+				<label>S4 Voltage on PV String Side</label>
+			</channel>
+			<channel id="s4-pv-current" typeId="electric-current">
+				<label>S4 Current on PV String Side</label>
+			</channel>
+			<channel id="s4-total-solar-energy" typeId="energy">
+				<label>S4 Total Solar Energy</label>
+			</channel>
+			<channel id="s4-relay-status" typeId="string">
+				<label>S4 RelayStatus</label>
+			</channel>
+			<channel id="s4-temperature" typeId="temperature">
+				<label>S4 Temperature on PCB</label>
+			</channel>
+			<channel id="s4-fault-code" typeId="string">
+				<label>S4 FaultCode</label>
+			</channel>
+			<channel id="s4-dc-link-voltage" typeId="electric-potential">
+				<label>S4 DC Link Voltage</label>
+			</channel>
+			<channel id="s4-timestamp" typeId="date-time">
+				<label>S4 Time Stamp When Message was Published</label>
+			</channel>
 			<channel id="eso-id" typeId="string">
 				<label>Eso Unique Identifier</label>
 			</channel>
 			<channel id="eso-voltage-battery" typeId="electric-potential">
-				<label>Eso Voltage Measured on Battery Side</label>
+				<label>Eso Voltage on Battery Side</label>
 			</channel>
 			<channel id="eso-current-battery" typeId="electric-current">
-				<label>Eso Current Measured on Battery Side</label>
+				<label>Eso Current on Battery Side</label>
 			</channel>
 			<channel id="eso-battery-energy-produced" typeId="energy">
 				<label>Eso Battery Energy Produced</label>
@@ -390,14 +390,14 @@
 			<channel id="eso-battery-energy-consumed" typeId="energy">
 				<label>Eso Battery Energy Consumed</label>
 			</channel>
-			<channel id="eso-soc" typeId="dimensionless">
+			<channel id="eso-soc" typeId="percentage">
 				<label>Eso State of Charge</label>
 			</channel>
 			<channel id="eso-relay-status" typeId="string">
 				<label>Eso RelayStatus</label>
 			</channel>
 			<channel id="eso-temperature" typeId="temperature">
-				<label>ESO Temperature Measured on PCB</label>
+				<label>ESO Temperature on PCB</label>
 			</channel>
 			<channel id="eso-fault-code" typeId="string">
 				<label>Eso FaultCode</label>
@@ -411,10 +411,10 @@
 			<channel id="esm-id" typeId="string">
 				<label>Esm Unique Identifier</label>
 			</channel>
-			<channel id="esm-soh" typeId="dimensionless">
+			<channel id="esm-soh" typeId="percentage">
 				<label>Esm System State of Health</label>
 			</channel>
-			<channel id="esm-soc" typeId="dimensionless">
+			<channel id="esm-soc" typeId="percentage">
 				<label>Esm System State of Charge</label>
 			</channel>
 			<channel id="esm-total-capacity" typeId="energy">
@@ -438,9 +438,6 @@
 			<channel id="request-auto" typeId="request">
 				<label>RequestAuto</label>
 			</channel>
-			<channel id="request-extapi-version" typeId="request-extapiversion">
-				<label>RequestExtapiVersion</label>
-			</channel>
 		</channels>
 
 		<config-description>
@@ -460,33 +457,19 @@
 				<description>Password to access the device</description>
 			</parameter>
 			<parameter name="hasBattery" type="boolean" required="false">
-				<label>Battery Capable</label>
-				<description>Ehub type, with/without battery</description>
+				<label>Battery Available</label>
+				<description>Has the system a battery connected?</description>
 				<default>false</default>
-			</parameter>
-			<parameter name="ssoS0" type="boolean" required="false">
-				<label>SSO String S0 Available</label>
-				<description>First SSO Unit Available </description>
-			</parameter>
-			<parameter name="ssoS1" type="boolean" required="false">
-				<label>SSO String S1 Available</label>
-				<description>Second SSO Unit Available</description>
-			</parameter>
-			<parameter name="ssoS2" type="boolean" required="false">
-				<label>SSO String S2 Available</label>
-				<description>Third SSO Unit Available</description>
-			</parameter>
-			<parameter name="ssoS3" type="boolean" required="false">
-				<label>SSO String S3 Available</label>
-				<description>Fourth SSO Unit Available</description>
 			</parameter>
 			<parameter name="eso" type="boolean" required="false">
 				<label>ESO Module Available</label>
-				<description>ESO Module Available</description>
+				<description>Has the system an Eso unit connected?</description>
+				<default>false</default>
 			</parameter>
 			<parameter name="esm" type="boolean" required="false">
 				<label>ESM Module Available</label>
-				<description>ESM Module Available</description>
+				<description>Has the system an Esm unit connected?</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -516,7 +499,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date Time</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%1$tc"/>
 	</channel-type>
 
 	<channel-type id="electric-potential">
@@ -533,9 +516,9 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="dimensionless">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Dimensionless</label>
+	<channel-type id="percentage">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Percentage</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -560,14 +543,6 @@
 		<description>Used for control of system</description>
 		<category>Energy</category>
 		<state readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="request-extapiversion">
-		<item-type>String</item-type>
-		<label>Request-ExtapiVersion</label>
-		<description>Returns Extapi Version</description>
-		<category>Energy</category>
-		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

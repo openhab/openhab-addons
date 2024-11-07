@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EhubParameters} is responsible for all parameters regarded to EHUB
+ * The {@link EhubParameters1} is responsible for all parameters regarded to EHUB
  *
  * @author Örjan Backsell - Initial contribution
  *

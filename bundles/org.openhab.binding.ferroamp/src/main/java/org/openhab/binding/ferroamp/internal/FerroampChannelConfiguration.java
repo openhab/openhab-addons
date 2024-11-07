@@ -48,11 +48,11 @@ public class FerroampChannelConfiguration {
         channelConfigurationEhub
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_ACECURRENTL3, Units.AMPERE));
         channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_EXTERNALVOLTAGEL1, Units.VOLT));
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDVOLTAGEL1, Units.VOLT));
         channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_EXTERNALVOLTAGEL2, Units.VOLT));
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDVOLTAGEL2, Units.VOLT));
         channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_EXTERNALVOLTAGEL3, Units.VOLT));
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDVOLTAGEL3, Units.VOLT));
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_INVERTERRMSCURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(
@@ -60,17 +60,17 @@ public class FerroampChannelConfiguration {
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_INVERTERRMSCURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTREACTIVEL1, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTREACTIVEL2, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTREACTIVEL3, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTACTIVEL1, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERACTIVECURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTACTIVEL2, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERCURRENTACTIVEL3, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERACTIVECURRENTL3, Units.AMPERE));
         channelConfigurationEhub
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTL1, Units.AMPERE));
         channelConfigurationEhub
@@ -78,29 +78,29 @@ public class FerroampChannelConfiguration {
         channelConfigurationEhub
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTREACTIVEL1, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDREACTIVECURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTREACTIVEL2, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDREACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTREACTIVEL3, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDREACTIVECURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTACTIVEL1, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDACTIVECURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTACTIVEL2, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDCURRENTACTIVEL3, Units.AMPERE));
+                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDACTIVECURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL1, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERLOADREACTIVECURRENTL1, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL2, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERLOADREACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
-                FerroampBindingConstants.CHANNEL_INVERTERREACTIVECURRENTL3, Units.AMPERE));
-        channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_INVERTERLOADL1, Units.AMPERE));
-        channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_INVERTERLOADL2, Units.AMPERE));
-        channelConfigurationEhub
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_INVERTERLOADL3, Units.AMPERE));
+                FerroampBindingConstants.CHANNEL_INVERTERLOADREACTIVECURRENTL3, Units.AMPERE));
+        channelConfigurationEhub.add(new FerroampChannelConfiguration(
+                FerroampBindingConstants.CHANNEL_INVERTERLOADACTIVECURRENTL1, Units.AMPERE));
+        channelConfigurationEhub.add(new FerroampChannelConfiguration(
+                FerroampBindingConstants.CHANNEL_INVERTERLOADACTIVECURRENTL2, Units.AMPERE));
+        channelConfigurationEhub.add(new FerroampChannelConfiguration(
+                FerroampBindingConstants.CHANNEL_INVERTERLOADACTIVECURRENTL3, Units.AMPERE));
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_APPARENTPOWER, Units.VOLT_AMPERE));
         channelConfigurationEhub.add(
@@ -214,29 +214,6 @@ public class FerroampChannelConfiguration {
         return channelConfigurationEhub;
     }
 
-    public static List<FerroampChannelConfiguration> getChannelConfigurationSsoS0() {
-        final List<FerroampChannelConfiguration> channelConfigurationSsoS0 = new ArrayList<>();
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0ID, Units.ONE));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0PVVOLTAGE, Units.VOLT));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0PVCURRENT, Units.AMPERE));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0TOTALSOLARENERGY, Units.WATT));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0RELAYSTATUS, Units.ONE));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0TEMPERATURE, Units.ONE));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0FAULTCODE, Units.ONE));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0DCLINKVOLTAGE, Units.VOLT));
-        channelConfigurationSsoS0
-                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S0TIMESTAMP, Units.ONE));
-        return channelConfigurationSsoS0;
-    }
-
     public static List<FerroampChannelConfiguration> getChannelConfigurationSsoS1() {
         final List<FerroampChannelConfiguration> channelConfigurationSsoS1 = new ArrayList<>();
         channelConfigurationSsoS1
@@ -306,6 +283,29 @@ public class FerroampChannelConfiguration {
         return channelConfigurationSsoS3;
     }
 
+    public static List<FerroampChannelConfiguration> getChannelConfigurationSsoS4() {
+        final List<FerroampChannelConfiguration> channelConfigurationSsoS4 = new ArrayList<>();
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4ID, Units.ONE));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4PVVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4PVCURRENT, Units.AMPERE));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4TOTALSOLARENERGY, Units.WATT));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4RELAYSTATUS, Units.ONE));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4TEMPERATURE, Units.ONE));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4FAULTCODE, Units.ONE));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4DCLINKVOLTAGE, Units.VOLT));
+        channelConfigurationSsoS4
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_S4TIMESTAMP, Units.ONE));
+        return channelConfigurationSsoS4;
+    }
+
     public static List<FerroampChannelConfiguration> getChannelConfigurationEso() {
         final List<FerroampChannelConfiguration> channelConfigurationEso = new ArrayList<>();
         channelConfigurationEso
@@ -360,8 +360,6 @@ public class FerroampChannelConfiguration {
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_REQUESTDISCHARGE, Units.ONE));
         channelConfigurationRequest
                 .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_AUTO, Units.ONE));
-        channelConfigurationRequest.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_REQUESTEXTAPIVERSION, Units.ONE));
         return channelConfigurationRequest;
     }
 }

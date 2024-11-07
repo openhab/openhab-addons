@@ -27,10 +27,6 @@ public class FerroampConfiguration {
     public String userName = "";
     public String password = "";
     public boolean hasBattery;
-    public boolean ssoS0;
-    public boolean ssoS1;
-    public boolean ssoS2;
-    public boolean ssoS3;
     public boolean eso;
     public boolean esm;
 }

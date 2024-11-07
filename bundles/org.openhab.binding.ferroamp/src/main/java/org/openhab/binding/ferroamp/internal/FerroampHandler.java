@@ -41,16 +41,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FerroampHandler extends BaseThingHandler implements MqttMessageSubscriber {
     private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
-
-    private static @Nullable FerroampConfiguration ferroampConfig;
     private @Nullable static MqttBrokerConnection ferroampConnection;
     FerroampMqttCommunication ferroampMqttCommunication = new FerroampMqttCommunication(thing);
+    final FerroampConfiguration ferroampConfig = getConfigAs(FerroampConfiguration.class);
 
     private List<FerroampChannelConfiguration> channelConfigEhub = new ArrayList<>();
-    private static List<FerroampChannelConfiguration> channelConfigSsoS0 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS1 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS2 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigSsoS3 = new ArrayList<>();
+    private static List<FerroampChannelConfiguration> channelConfigSsoS4 = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigEso = new ArrayList<>();
     private static List<FerroampChannelConfiguration> channelConfigEsm = new ArrayList<>();
 
@@ -66,77 +65,62 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     public void handleCommand(ChannelUID channelUID, Command command) {
         String transId = UUID.randomUUID().toString();
         String valueConfiguration = command.toString();
-
         if (FerroampBindingConstants.CHANNEL_REQUESTCHARGE.equals(channelUID.getId())) {
             String requestCmdJsonCharge = "{\"" + "transId" + "\":\"" + transId
                     + "\",\"cmd\":{\"name\":\"charge\",\"arg\":\"" + valueConfiguration + "\"}}";
-            sendMQTT(requestCmdJsonCharge);
+            FerroampMqttCommunication.sendMQTT(requestCmdJsonCharge, ferroampConfig);
         }
         if (FerroampBindingConstants.CHANNEL_REQUESTDISCHARGE.equals(channelUID.getId())) {
             String requestCmdJsonDisCharge = "{\"" + "transId" + "\":\"" + transId
                     + "\",\"cmd\":{\"name\":\"discharge\",\"arg\":\"" + valueConfiguration + "\"}}";
-            sendMQTT(requestCmdJsonDisCharge);
+            FerroampMqttCommunication.sendMQTT(requestCmdJsonDisCharge, ferroampConfig);
         }
         if (FerroampBindingConstants.CHANNEL_AUTO.equals(channelUID.getId())) {
             String requestCmdJsonAuto = "{\"" + "transId" + "\":\"" + transId + "\",\"cmd\":{\"name\":\"auto\"}}";
-            sendMQTT(requestCmdJsonAuto);
+            FerroampMqttCommunication.sendMQTT(requestCmdJsonAuto, ferroampConfig);
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         // Set channel configuration parameters
         channelConfigEhub = FerroampChannelConfiguration.getChannelConfigurationEhub();
-        channelConfigSsoS0 = FerroampChannelConfiguration.getChannelConfigurationSsoS0();
         channelConfigSsoS1 = FerroampChannelConfiguration.getChannelConfigurationSsoS1();
         channelConfigSsoS2 = FerroampChannelConfiguration.getChannelConfigurationSsoS2();
         channelConfigSsoS3 = FerroampChannelConfiguration.getChannelConfigurationSsoS3();
+        channelConfigSsoS4 = FerroampChannelConfiguration.getChannelConfigurationSsoS4();
         channelConfigEso = FerroampChannelConfiguration.getChannelConfigurationEso();
         channelConfigEsm = FerroampChannelConfiguration.getChannelConfigurationEsm();
 
-        ferroampConfig = getConfigAs(FerroampConfiguration.class);
-
-        @SuppressWarnings("null")
         final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
                 FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(() -> {
-            boolean thingReachable = true;
-
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-                try {
-                    startMqttConnection();
-                } catch (InterruptedException e) {
-                    logger.debug("Connection to MqttBroker disturbed during configuration");
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-                thingReachable = false;
+            try {
+                startMqttConnection();
+            } catch (InterruptedException e) {
+                logger.debug("Faulty startMqttConnection()");
             }
         });
 
-        // Start channel-update as configured
-        scheduler.scheduleWithFixedDelay(() -> {
-            if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                logger.debug("Problem connection to MqttBroker");
-            } else {
-                try {
-                    channelUpdate();
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (RuntimeException scheduleWithFixedDelayException) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            scheduleWithFixedDelayException.getClass().getName() + ":"
-                                    + scheduleWithFixedDelayException.getMessage());
-                }
-            }
-        }, 60, refreshInterval, TimeUnit.SECONDS);
-
+        scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
         this.setFerroampConnection(ferroampConnection);
+    }
+
+    private void pollTask() {
+        if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            logger.debug("Problem connection to MqttBroker");
+        } else {
+            try {
+                channelUpdate();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (RuntimeException scheduleWithFixedDelayException) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        scheduleWithFixedDelayException.getClass().getName() + ":"
+                                + scheduleWithFixedDelayException.getMessage());
+            }
+        }
     }
 
     private void startMqttConnection() throws InterruptedException {
@@ -151,7 +135,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         ferroampMqttCommunication.getMQTT("esmTopic", ferroampConfig);
     }
 
-    @SuppressWarnings("null")
     private void channelUpdate() {
         String[] ehubUpdateChannels;
         ehubUpdateChannels = FerroampMqttCommunication.getEhubChannelUpdateValues();
@@ -163,59 +146,51 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             channelValuesCounterEhub++;
         }
 
-        if (ferroampConfig.ssoS0 == true) {
-            String[] ssoS0UpdateChannels = new String[9];
-            ssoS0UpdateChannels = FerroampMqttCommunication.getSsoS0ChannelUpdateValues();
-            int channelValuesCounterSsoS0 = 0;
-            if (ssoS0UpdateChannels.length <= 9) {
-                for (FerroampChannelConfiguration cConfig : channelConfigSsoS0) {
-                    String ssoS0Channel = cConfig.id;
-                    State ssoS0State = StringType.valueOf(ssoS0UpdateChannels[channelValuesCounterSsoS0]);
-                    updateState(ssoS0Channel, ssoS0State);
-                    channelValuesCounterSsoS0++;
-                }
+        String[] ssoS1UpdateChannels = new String[9];
+        ssoS1UpdateChannels = FerroampMqttCommunication.getSsoS1ChannelUpdateValues();
+        int channelValuesCounterSsoS1 = 0;
+        if (ssoS1UpdateChannels.length <= 9) {
+            for (FerroampChannelConfiguration cConfig : channelConfigSsoS1) {
+                String ssoS1Channel = cConfig.id;
+                State ssoS1State = StringType.valueOf(ssoS1UpdateChannels[channelValuesCounterSsoS1]);
+                updateState(ssoS1Channel, ssoS1State);
+                channelValuesCounterSsoS1++;
             }
         }
 
-        if (ferroampConfig.ssoS1 == true) {
-            String[] ssoS1UpdateChannels = new String[9];
-            ssoS1UpdateChannels = FerroampMqttCommunication.getSsoS1ChannelUpdateValues();
-            int channelValuesCounterSsoS1 = 0;
-            if (ssoS1UpdateChannels.length <= 9) {
-                for (FerroampChannelConfiguration cConfig : channelConfigSsoS1) {
-                    String ssoS1Channel = cConfig.id;
-                    State ssoS1State = StringType.valueOf(ssoS1UpdateChannels[channelValuesCounterSsoS1]);
-                    updateState(ssoS1Channel, ssoS1State);
-                    channelValuesCounterSsoS1++;
-                }
+        String[] ssoS2UpdateChannels = new String[9];
+        ssoS2UpdateChannels = FerroampMqttCommunication.getSsoS2ChannelUpdateValues();
+        int channelValuesCounterSsoS2 = 0;
+        if (ssoS2UpdateChannels.length <= 9) {
+            for (FerroampChannelConfiguration cConfig : channelConfigSsoS2) {
+                String ssoS2Channel = cConfig.id;
+                State ssoS2State = StringType.valueOf(ssoS2UpdateChannels[channelValuesCounterSsoS2]);
+                updateState(ssoS2Channel, ssoS2State);
+                channelValuesCounterSsoS2++;
             }
         }
 
-        if (ferroampConfig.ssoS2 == true) {
-            String[] ssoS2UpdateChannels = new String[9];
-            ssoS2UpdateChannels = FerroampMqttCommunication.getSsoS2ChannelUpdateValues();
-            int channelValuesCounterSsoS2 = 0;
-            if (ssoS2UpdateChannels.length <= 9) {
-                for (FerroampChannelConfiguration cConfig : channelConfigSsoS2) {
-                    String ssoS2Channel = cConfig.id;
-                    State ssoS2State = StringType.valueOf(ssoS2UpdateChannels[channelValuesCounterSsoS2]);
-                    updateState(ssoS2Channel, ssoS2State);
-                    channelValuesCounterSsoS2++;
-                }
+        String[] ssoS3UpdateChannels = new String[9];
+        ssoS3UpdateChannels = FerroampMqttCommunication.getSsoS3ChannelUpdateValues();
+        int channelValuesCounterSsoS3 = 0;
+        if (ssoS3UpdateChannels.length <= 9) {
+            for (FerroampChannelConfiguration cConfig : channelConfigSsoS3) {
+                String ssoS3Channel = cConfig.id;
+                State ssoS3State = StringType.valueOf(ssoS3UpdateChannels[channelValuesCounterSsoS3]);
+                updateState(ssoS3Channel, ssoS3State);
+                channelValuesCounterSsoS3++;
             }
         }
 
-        if (ferroampConfig.ssoS3 == true) {
-            String[] ssoS3UpdateChannels = new String[9];
-            ssoS3UpdateChannels = FerroampMqttCommunication.getSsoS3ChannelUpdateValues();
-            int channelValuesCounterSsoS3 = 0;
-            if (ssoS3UpdateChannels.length <= 9) {
-                for (FerroampChannelConfiguration cConfig : channelConfigSsoS3) {
-                    String ssoS3Channel = cConfig.id;
-                    State ssoS3State = StringType.valueOf(ssoS3UpdateChannels[channelValuesCounterSsoS3]);
-                    updateState(ssoS3Channel, ssoS3State);
-                    channelValuesCounterSsoS3++;
-                }
+        String[] ssoS4UpdateChannels = new String[9];
+        ssoS4UpdateChannels = FerroampMqttCommunication.getSsoS4ChannelUpdateValues();
+        int channelValuesCounterSsoS4 = 0;
+        if (ssoS4UpdateChannels.length <= 9) {
+            for (FerroampChannelConfiguration cConfig : channelConfigSsoS4) {
+                String ssoS4Channel = cConfig.id;
+                State ssoS4State = StringType.valueOf(ssoS4UpdateChannels[channelValuesCounterSsoS4]);
+                updateState(ssoS4Channel, ssoS4State);
+                channelValuesCounterSsoS4++;
             }
         }
 
@@ -244,18 +219,6 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         }
     }
 
-    // Handles request topic
-    @SuppressWarnings("null")
-    private void sendMQTT(String payload) {
-        MqttBrokerConnection localConfigurationConnection = getFerroampConnection();
-        localConfigurationConnection.start();
-        localConfigurationConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
-
-        if (localConfigurationConnection != null) {
-            localConfigurationConnection.publish(FerroampBindingConstants.REQUEST_TOPIC, payload.getBytes(), 1, false);
-        }
-    }
-
     // Capture actual Json-topic message
     @Override
     public void processMessage(String topic, byte[] payload) {
@@ -272,15 +235,5 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     public void setFerroampConnection(@Nullable MqttBrokerConnection ferroampConnection) {
         FerroampHandler.ferroampConnection = ferroampConnection;
-    }
-
-    @SuppressWarnings({ "null" })
-    public static boolean gethasBattery() {
-        try {
-            return ferroampConfig.hasBattery;
-        } catch (Exception e) {
-            logger.debug("Failed at check of configuration-parameter, hasBattery");
-        }
-        return ferroampConfig.hasBattery;
     }
 }
