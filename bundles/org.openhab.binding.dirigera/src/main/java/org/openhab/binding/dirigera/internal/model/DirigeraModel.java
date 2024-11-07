@@ -30,7 +30,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.exception.ModelUpdateException;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
@@ -81,7 +80,7 @@ public class DirigeraModel implements Model {
             }
         } catch (Throwable t) {
             logger.error("Excpetion during model update {}", t.getMessage());
-            throw new ModelUpdateException("Excpetion during model update " + t.getMessage());
+            return 500;
         }
         logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
         return 200;
