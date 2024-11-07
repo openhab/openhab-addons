@@ -84,6 +84,7 @@ public class BaseHandler extends BaseThingHandler {
     protected List<String> linkCandidateTypes = new ArrayList<>();
 
     protected BaseDeviceConfiguration config;
+    protected State on = UnDefType.UNDEF;
     protected String customName = "";
     protected String deviceType = "";
     protected boolean disposed = true;
@@ -176,10 +177,14 @@ public class BaseHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_POWER_STATE:
                         if (command instanceof OnOffType onOff) {
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, onOff.equals(OnOffType.ON));
-                            logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
-                            gateway().api().sendAttributes(config.id, attributes);
+                            if (!on.equals(onOff)) {
+                                JSONObject attributes = new JSONObject();
+                                attributes.put(targetProperty, onOff.equals(OnOffType.ON));
+                                logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
+                                gateway().api().sendAttributes(config.id, attributes);
+                            } else {
+                                logger.trace("DIRIGERA BASE_HANDLER Dismiss {} {}", thing.getLabel(), onOff);
+                            }
                         }
                         break;
                     case CHANNEL_CUSTOM_NAME:
@@ -291,8 +296,8 @@ public class BaseHandler extends BaseThingHandler {
                 }
             }
             if (attributes.has(PROPERTY_POWER_STATE)) {
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE),
-                        OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE)));
+                on = OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), on);
             }
             if (attributes.has(PROPERTY_CUSTOM_NAME) && customName.isBlank()) {
                 customName = attributes.getString(PROPERTY_CUSTOM_NAME);
@@ -313,6 +318,10 @@ public class BaseHandler extends BaseThingHandler {
         deviceData.put("updates", new JSONArray(updates));
 
         updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
+    }
+
+    protected boolean isOn() {
+        return OnOffType.ON.equals(on);
     }
 
     /**

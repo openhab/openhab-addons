@@ -50,7 +50,7 @@ public class DoubleShortcutControllerHandler extends BaseShortcutController {
             // now register at gateway all device and scene ids
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            logger.warn("Relations {}", relations);
+            logger.debug("Relations {}", relations);
             Entry<String, String> firstEntry = relations.firstEntry();
             String firstDeviceId = firstEntry.getKey();
             super.initializeScenes(firstDeviceId, CHANNEL_BUTTON_1);
