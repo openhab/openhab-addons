@@ -867,7 +867,13 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private void modelUpdate() {
         Instant modelUpdateStartTime = Instant.now();
-        model().update();
+        int status = model().update();
+        if (status != 200) {
+            logger.error("DIRIGERA HANDLER Model update failed {}", status);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/dirigera.gateway.status.comm-error" + " [\"" + status + "\"]");
+            return;
+        }
         long durationUpdateTime = Duration.between(modelUpdateStartTime, Instant.now()).toMillis();
         websocket.get().increase(Websocket.MODEL_UPDATES);
         websocket.get().getStatistics().put(Websocket.MODEL_UPDATE_TIME, durationUpdateTime + " ms");
