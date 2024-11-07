@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -36,14 +33,11 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_COLOR_LIGHT = new ThingTypeUID(BINDING_ID, "color-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
+    public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
     public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
-            THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR);
-
-    public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPE_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_GATEWAY, THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR)
-                    .collect(Collectors.toSet()));
+            THING_TYPE_COLOR_LIGHT, THING_TYPE_MOTION_SENSOR, THING_TYPE_LIGHT_SENSOR, THING_TYPE_CONTACT_SENSOR);
 
     public static final String WS_URL = "wss://%s:8443/v1";
     public static final String BASE_URL = "https://%s:8443/v1";
@@ -67,6 +61,7 @@ public class Constants {
     public static final String DEVICE_TYPE_LIGHT = "light";
     public static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
     public static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
+    public static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
 
     // Gateway channels
     public static final String CHANNEL_STATISTICS = "statistics";
@@ -81,6 +76,7 @@ public class Constants {
     // Sensor channels
     public static final String CHANNEL_MOTION_DETECTION = "detection";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
+    public static final String CHANNEL_STATE = "state";
 
     // Websocket update types
     public static final String EVENT_TYPE_STATE_CHANGE = "deviceStateChanged";
@@ -91,5 +87,7 @@ public class Constants {
             "color-temperature");
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
             "isDetected", CHANNEL_MOTION_DETECTION);
+    public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of("batteryPercentage", CHANNEL_BATTERY_LEVEL,
+            "isOpen", CHANNEL_STATE);
     public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of("illuminance", CHANNEL_ILLUMINANCE);
 }
