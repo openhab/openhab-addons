@@ -26,6 +26,7 @@ import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -84,25 +85,45 @@ public class ColorLightHandler extends BaseHandler {
                     synchronized (lightRequestQueue) {
                         lightRequestQueue.add(new LightUpdate(colorAttributes, LightUpdate.Action.COLOR));
                     }
-                    scheduler.schedule(this::doUpdate, 0, TimeUnit.MILLISECONDS);
+                    scheduler.execute(this::doUpdate);
                     colorSendToAPI = true;
                 }
-                if (Math.abs(hsb.getBrightness().intValue() - hsbCurrent.getBrightness().intValue()) > 2) {
-                    JSONObject brightnessattributes = new JSONObject();
-                    brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                    synchronized (lightRequestQueue) {
-                        lightRequestQueue.add(new LightUpdate(brightnessattributes, LightUpdate.Action.BRIGHTNESS));
-                    }
-                    if (colorSendToAPI) {
-                        /**
-                         * IKEA lamps cannot handle consecutive calls for color and brightness due to fading activity
-                         * So first fade to color then fade brightness
-                         */
-                        scheduler.schedule(this::doUpdate, colorBrightnessDelayMS, TimeUnit.MILLISECONDS);
+                int requestedBrightness = hsb.getBrightness().intValue();
+                int currentBrightness = hsbCurrent.getBrightness().intValue();
+                if (Math.abs(requestedBrightness - currentBrightness) > 2 || requestedBrightness == 0) {
+                    if (requestedBrightness > 0) {
+                        if (!isOn()) {
+                            super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
+                                    OnOffType.ON);
+                        }
+                        JSONObject brightnessattributes = new JSONObject();
+                        brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
+                        synchronized (lightRequestQueue) {
+                            lightRequestQueue.add(new LightUpdate(brightnessattributes, LightUpdate.Action.BRIGHTNESS));
+                        }
+                        if (colorSendToAPI) {
+                            /**
+                             * IKEA lamps cannot handle consecutive calls for color and brightness due to fading
+                             * activity
+                             * So first fade to color then fade brightness
+                             */
+                            scheduler.schedule(this::doUpdate, colorBrightnessDelayMS, TimeUnit.MILLISECONDS);
+                        } else {
+                            scheduler.execute(this::doUpdate);
+                        }
                     } else {
-                        scheduler.schedule(this::doUpdate, 0, TimeUnit.MILLISECONDS);
+                        super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
+                                OnOffType.OFF);
                     }
+
                 }
+            } else if (command instanceof OnOffType) {
+                super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE), command);
+            } else if (command instanceof PercentType percent) {
+                HSBType newHsb = new HSBType(hsbCurrent.getHue(), hsbCurrent.getSaturation(), percent);
+                this.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_LIGHT_HSB), newHsb);
+            } else {
+                logger.trace("DIRIGERA LIGHT_DEVICE type not known {}", command.getClass());
             }
         }
     }
@@ -110,7 +131,11 @@ public class ColorLightHandler extends BaseHandler {
     private void doUpdate() {
         LightUpdate request = null;
         synchronized (lightRequestQueue) {
-            request = lightRequestQueue.remove(0);
+            if (!lightRequestQueue.isEmpty()) {
+                request = lightRequestQueue.remove(0);
+            } else {
+                return;
+            }
             if (lightRequestQueue.contains(request)) {
                 logger.trace("DIRIGERA LIGHT_DEVICE dismiss light request and wait for next one {}",
                         lightRequestQueue.size());

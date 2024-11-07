@@ -15,7 +15,6 @@ package org.openhab.binding.dirigera.internal.discovery;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -74,7 +73,7 @@ public class DirigeraDiscoveryManager {
                     String investigateIp = ipPart + i;
                     DirigeraDiscoveryRunnable investigator = new DirigeraDiscoveryRunnable(currentDiscoveryService,
                             investigateIp, currentInsecureClient);
-                    scheduler.schedule(investigator, 0, TimeUnit.SECONDS);
+                    scheduler.execute(investigator);
                 }
                 logger.info("DIRIGERA DISCOVERY scan finished in {} seconds",
                         Duration.between(startTime, Instant.now()).getSeconds());
