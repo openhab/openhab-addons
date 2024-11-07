@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.dirigera.internal.handler;
 
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICE_ID;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,15 +21,13 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.core.config.core.Configuration;
+import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +39,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class BaseDeviceHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseDeviceHandler.class);
-    private BaseDeviceConfiguration config;
+
+    protected BaseDeviceConfiguration config;
+
     private @Nullable Gateway gateway;
+    private @Nullable BaseDeviceHandler child;
 
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
@@ -57,15 +56,13 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         channel2PropertyMap = reverse(mapping);
     }
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    public void handleUpdate(JSONObject update) {
+    protected void setChildHandler(BaseDeviceHandler child) {
+        this.child = child;
     }
 
     @Override
     public void initialize() {
+        // first get bridge as Gateway
         Bridge bridge = getBridge();
         if (bridge != null) {
             updateStatus(ThingStatus.UNKNOWN);
@@ -73,7 +70,11 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
                     gateway = gw;
-                    gateway.registerDevice(this);
+                    BaseDeviceHandler proxy = child;
+                    if (proxy != null) {
+                        gateway().registerDevice(proxy);
+                    }
+                    logger.trace("DIRIGERA BASE_DEVICE Gateway found");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Bridgehandler isn't a Gateway");
@@ -88,28 +89,41 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        // check if thing was created by discovery and id is already present
-        config = getConfigAs(BaseDeviceConfiguration.class);
-        if (config.id.isBlank()) {
-            logger.trace("DIRIGERA BASE_DEVICE id not configured - try to evaluate");
-            Map<String, String> properties = editProperties();
-            String id = properties.get(PROPERTY_DEVICE_ID);
-            if (id != null) {
-                if (!id.isBlank()) {
-                    Configuration currentConfig = editConfiguration();
-                    currentConfig.put(PROPERTY_DEVICE_ID, id);
-                    updateConfiguration(currentConfig);
-                }
-            }
-        }
         config = getConfigAs(BaseDeviceConfiguration.class);
         if (!config.id.isBlank()) {
             gateway().registerDevice(this);
+        }
+
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void handleUpdate(JSONObject update) {
+        if (update.has(Model.REACHABLE)) {
+            logger.trace("DIRIGERA BASE_DEVICE Device switches to reachable {}", update.getBoolean(Model.REACHABLE));
+            if (update.getBoolean(Model.REACHABLE)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable");
+            }
+        } else {
+            logger.trace("DIRIGERA BASE_DEVICE no reachable found in {}", update);
         }
     }
 
     @Override
     public void dispose() {
+        BaseDeviceHandler proxy = child;
+        if (proxy != null) {
+            gateway().unregisterDevice(proxy);
+        }
+    }
+
+    @Override
+    public void handleRemoval() {
+        BaseDeviceHandler proxy = child;
+        if (proxy != null) {
+            gateway().deleteDevice(proxy);
+        }
     }
 
     public Gateway gateway() {

@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.interfaces;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseDeviceHandler;
 import org.openhab.binding.dirigera.internal.model.Model;
 import org.openhab.binding.dirigera.internal.network.RestAPI;
@@ -39,4 +40,6 @@ public interface Gateway {
     public String getIpAddress();
 
     public void newDevice(String id);
+
+    public void websocketUpdate(JSONObject update);
 }

@@ -1,0 +1,82 @@
+{
+	"deviceType": "speaker",
+	"remoteLinks": [],
+	"createdAt": "2024-10-04T17:21:49.446Z",
+	"isReachable": true,
+	"lastSeen": "2024-10-08T13:42:24.253Z",
+	"capabilities": {
+		"canReceive": [
+			"playback",
+			"playbackAudio",
+			"volume",
+			"isMuted"
+		],
+		"canSend": []
+	},
+	"attributes": {
+		"identifyPeriod": 0,
+		"playbackModes": {
+			"repeat": "off",
+			"shuffle": false,
+			"crossfade": false
+		},
+		"serialNumber": "34-7E-5C-F5-45-88:F",
+		"customName": "Loft",
+		"playbackAudio": {
+			"serviceType": "sonos",
+			"playItem": {
+				"duration": 7200000,
+				"artist": "Toolroom",
+				"imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2179044291.mp4%3fsid%3d181%26flags%3d8232%26sn%3d3",
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE3OTA0NDI5MSIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+				"title": "Toolroom Radio EP756 - Presented by Illyus & Barrientos"
+			},
+			"nextPlayItem": {
+				"duration": 3600000,
+				"artist": "DEEP HOUSE CAT SHOW",
+				"imageURL": "http://192.168.1.95:1400/getaa?s=1&u=x-sonos-http%3acloudcast%253a2179027070.mp4%3fsid%3d181%26flags%3d8232%26sn%3d3",
+				"id": "eyJhY2NvdW50VHlwZSI6InNvbm9zIiwiY29udGVudFR5cGUiOiJjb250YWluZXIiLCJjb250ZW50Ijp7ImNvbnRhaW5lciI6eyJhY2NvdW50SWQiOiJzbl8zIiwib2JqZWN0SWQiOiJjbG91ZGNhc3Q6MjE3OTAyNzA3MCIsInNlcnZpY2VJZCI6IjE4MSIsInR5cGUiOiJ0cmFjayJ9fX0=",
+				"title": "Deep House Cat Show - Lone Pine Mix - feat. DJ Tor (reloaded)"
+			},
+			"providerType": "Mixcloud"
+		},
+		"identifyStarted": "2024-10-04T17:21:49.447Z",
+		"playbackLastChangedTimestamp": "2024-10-08T12:05:47.698Z",
+		"manufacturer": "Sonos, Inc.",
+		"audioGroup": "1f386990-bb4f-4a00-befd-646b5ef52c47",
+		"volume": 20,
+		"productCode": "S21",
+		"playbackPosition": {
+			"position": 21,
+			"timestamp": "2024-10-08T13:42:24.251Z"
+		},
+		"playbackAvailableActions": {
+			"playbackNext": true,
+			"repeat": [
+				"off",
+				"playItem",
+				"playlist"
+			],
+			"playbackPrev": true,
+			"shuffle": true,
+			"seek": true,
+			"crossfade": true,
+			"pause": true
+		},
+		"model": "SYMFONISK Bookshelf S21",
+		"hardwareVersion": "1.20.3.3-2.0",
+		"playback": "playbackPlaying",
+		"firmwareVersion": "80.1-56190",
+		"isMuted": false
+	},
+	"id": "338bb721-35bb-4775-8cd0-ba70fc37ab10_1",
+	"type": "speaker",
+	"deviceSet": [],
+	"room": {
+		"color": "ikea_green_no_65",
+		"name": "Loft",
+		"icon": "rooms_sofa",
+		"id": "893d50e0-f4bb-46ba-978d-e9280c6e299d"
+	},
+	"isHidden": false
+}
