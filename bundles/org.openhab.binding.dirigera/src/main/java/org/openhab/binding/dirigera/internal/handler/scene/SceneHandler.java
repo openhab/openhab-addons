@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -51,6 +52,8 @@ public class SceneHandler extends BaseHandler {
         super(thing, mapping);
         super.setChildHandler(this);
         this.timeZoneProvider = timeZoneProvider;
+        // no link support for Scenes
+        hardLinks = Arrays.asList();
     }
 
     @Override
