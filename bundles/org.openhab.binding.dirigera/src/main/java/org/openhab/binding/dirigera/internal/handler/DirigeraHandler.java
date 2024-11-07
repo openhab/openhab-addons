@@ -923,6 +923,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 String sunRiseString = attributes.getString("nextSunRise");
                 if (sunRiseString != null) {
                     sunriseInstant = Instant.parse(sunRiseString);
+                    logger.debug("SunriseTest at Zone {} {}", timeZoneProvider.getTimeZone(),
+                            sunriseInstant.atZone(timeZoneProvider.getTimeZone()));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
                             new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
                 }
