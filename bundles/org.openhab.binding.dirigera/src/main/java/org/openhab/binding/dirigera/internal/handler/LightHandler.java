@@ -71,8 +71,9 @@ public class LightHandler extends BaseDeviceHandler {
             if (targetProperty != null) {
                 if (command instanceof HSBType hsb) {
                     boolean colorSendToAPI = false;
-                    if (hsb.getHue().intValue() == hsbCurrent.getHue().intValue()
-                            && hsb.getSaturation().intValue() == hsbCurrent.getSaturation().intValue()) {
+                    if (Math.round(hsb.getHue().doubleValue()) == Math.round(hsbCurrent.getHue().doubleValue())
+                            && Math.round(hsb.getSaturation().doubleValue()) == Math
+                                    .round(hsbCurrent.getSaturation().doubleValue())) {
                         logger.trace("DIRIGERA LIGHT_DEVICE hno need to update color, it's the same");
                     } else {
                         JSONObject colorAttributes = new JSONObject();
@@ -91,7 +92,7 @@ public class LightHandler extends BaseDeviceHandler {
                             // seems that IKEA lamps cannot handle consecutive calls it really short time frame
                             // so give it 100ms pause until next call
                             try {
-                                Thread.sleep(100);
+                                Thread.sleep(250);
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
                             }
