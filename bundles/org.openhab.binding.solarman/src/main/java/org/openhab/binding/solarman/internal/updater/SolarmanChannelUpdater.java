@@ -103,7 +103,7 @@ public class SolarmanChannelUpdater {
                             ValueType.UNSIGNED);
                     case 2, 4 -> updateChannelWithNumericValue(parameterItem, channelUID, registers, readRegistersMap,
                             ValueType.SIGNED);
-                    case 5 -> updateChannelWithStringValue(channelUID, registers, readRegistersMap);
+                    case 5 -> updateChannelWithStringValue(parameterItem, channelUID, registers, readRegistersMap);
                     case 6 -> updateChannelWithRawValue(parameterItem, channelUID, registers, readRegistersMap);
                     case 7 -> updateChannelWithVersion(channelUID, registers, readRegistersMap);
                     case 8 -> updateChannelWithDateTime(channelUID, registers, readRegistersMap);
@@ -163,15 +163,25 @@ public class SolarmanChannelUpdater {
         stateUpdater.updateState(channelUID, new StringType(stringValue));
     }
 
-    private void updateChannelWithStringValue(ChannelUID channelUID, List<Integer> registers,
-            Map<Integer, byte[]> readRegistersMap) {
-        String stringValue = registers.stream().map(readRegistersMap::get).reduce(new StringBuilder(), (acc, val) -> {
-            short shortValue = ByteBuffer.wrap(val).order(ByteOrder.BIG_ENDIAN).getShort();
-            return acc.append((char) (shortValue >> 8)).append((char) (shortValue & 0xFF));
-        }, StringBuilder::append).toString();
+    private void updateChannelWithStringValue(ParameterItem parameterItem, ChannelUID channelUID,
+            List<Integer> registers, Map<Integer, byte[]> readRegistersMap) {
+        List<Lookup> lookupList = parameterItem.getLookup();
+        if (lookupList != null && !lookupList.isEmpty()) {
+            BigInteger value = extractNumericValue(registers, readRegistersMap, ValueType.UNSIGNED);
+            String stringValue = getStringFromLookupList(value.intValue(), lookupList);
+            logger.debug("Update state: channelUID: {}, key: {}, state: {}", channelUID.getAsString(), value.intValue(),
+                    stringValue);
+            stateUpdater.updateState(channelUID, new StringType(stringValue));
+        } else {
+            String stringValue = registers.stream().map(readRegistersMap::get)
+                    .reduce(new StringBuilder(), (acc, val) -> {
+                        short shortValue = ByteBuffer.wrap(val).order(ByteOrder.BIG_ENDIAN).getShort();
+                        return acc.append((char) (shortValue >> 8)).append((char) (shortValue & 0xFF));
+                    }, StringBuilder::append).toString();
 
-        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
-        stateUpdater.updateState(channelUID, new StringType(stringValue));
+            logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), stringValue);
+            stateUpdater.updateState(channelUID, new StringType(stringValue));
+        }
     }
 
     private void updateChannelWithNumericValue(ParameterItem parameterItem, ChannelUID channelUID,
@@ -180,32 +190,24 @@ public class SolarmanChannelUpdater {
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
         String uom = Objects.requireNonNullElse(parameterItem.getUom(), "");
 
-        List<Lookup> lookupList = parameterItem.getLookup();
-        if (lookupList != null && !lookupList.isEmpty()) {
-            String stringValue = getStringFromLookupList(value.intValue(), lookupList);
-            logger.debug("Update state: channelUID: {}, key: {}, state: {}", channelUID.getAsString(), value.intValue(),
-                    stringValue);
-            stateUpdater.updateState(channelUID, new StringType(stringValue));
-        } else {
-            State state;
-            if (!uom.isBlank()) {
-                try {
-                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
-                    if (unitFromDefinition != null) {
-                        state = new QuantityType<>(convertedValue, unitFromDefinition);
-                    } else {
-                        logger.debug("Unable to parse unit: {}", uom);
-                        state = new DecimalType(convertedValue);
-                    }
-                } catch (MeasurementParseException e) {
+        State state;
+        if (!uom.isBlank()) {
+            try {
+                Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
+                if (unitFromDefinition != null) {
+                    state = new QuantityType<>(convertedValue, unitFromDefinition);
+                } else {
+                    logger.debug("Unable to parse unit: {}", uom);
                     state = new DecimalType(convertedValue);
                 }
-            } else {
+            } catch (MeasurementParseException e) {
                 state = new DecimalType(convertedValue);
             }
-            logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), state.toFullString());
-            stateUpdater.updateState(channelUID, state);
+        } else {
+            state = new DecimalType(convertedValue);
         }
+        logger.debug("Update state: channelUID: {}, state: {}", channelUID.getAsString(), state.toFullString());
+        stateUpdater.updateState(channelUID, state);
     }
 
     private String getStringFromLookupList(int key, List<Lookup> lookupList) {

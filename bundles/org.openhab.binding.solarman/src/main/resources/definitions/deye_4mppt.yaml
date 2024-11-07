@@ -150,7 +150,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x003B]
       isstr: true
       lookup:
@@ -216,7 +216,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x002F]
       isstr: true
       lookup:
@@ -240,7 +240,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0036]
       isstr: true
       lookup:

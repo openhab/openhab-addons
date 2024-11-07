@@ -593,7 +593,7 @@ parameters:
         state_class: ""
         uom: ""
         scale: 1
-        rule: 1
+        rule: 5
         registers: [0x0085]
         isstr: true
         lookup:

@@ -450,7 +450,7 @@ parameters:
       class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0200]
       isstr: true
       lookup:
@@ -574,7 +574,7 @@ parameters:
       class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x023A]
       isstr: true
       lookup:
@@ -647,7 +647,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x022B]
       isstr: true
       lookup:
@@ -802,7 +802,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0201]
       isstr: true
       lookup:
@@ -848,7 +848,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0202]
       isstr: true
       lookup:
@@ -893,7 +893,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0203]
       isstr: true
       lookup:
@@ -938,7 +938,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0204]
       isstr: true
       lookup:
@@ -983,7 +983,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0205]
       isstr: true
       lookup:

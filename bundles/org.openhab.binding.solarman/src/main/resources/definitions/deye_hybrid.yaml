@@ -135,7 +135,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x00BD]
       isstr: true
       lookup: 
@@ -382,7 +382,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x00C3]
       isstr: true
       lookup: 
@@ -399,7 +399,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x003B]
       isstr: true
       lookup: 
@@ -527,7 +527,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x00C2]
       isstr: true
       lookup: 
@@ -541,7 +541,7 @@ parameters:
       uom: ""
       state_class: ""      
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x00A6]
       isstr: true
       lookup: 
@@ -563,7 +563,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 3
+      rule: 5
       registers: [0x00F4,0x00F7]
       isstr: true
       lookup: 
@@ -818,7 +818,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       mask: 1
       registers: [0x00F8]
       icon: 'mdi:checkbox-marked-outline'

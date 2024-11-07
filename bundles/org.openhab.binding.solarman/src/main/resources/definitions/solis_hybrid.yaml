@@ -25,7 +25,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33095]
       icon: 'mdi:home-lightning-bolt'
       isstr: true
@@ -132,7 +132,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33121]
       icon: 'mdi:home-lightning-bolt'
       isstr: true
@@ -159,7 +159,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33116]
       icon: 'mdi:alert'
       isstr: true
@@ -194,7 +194,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33117]
       icon: 'mdi:alert'
       isstr: true
@@ -211,7 +211,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33118]
       icon: 'mdi:alert'
       isstr: true
@@ -230,7 +230,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33119]
       icon: 'mdi:alert'
       isstr: true
@@ -271,7 +271,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33120]
       icon: 'mdi:alert'
       isstr: true
@@ -382,7 +382,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33132]
       icon: 'mdi:battery-clock'
       isstr: true
@@ -708,7 +708,7 @@ parameters:
       state_class: "measurement"
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [33135]
       isstr: true
       lookup:

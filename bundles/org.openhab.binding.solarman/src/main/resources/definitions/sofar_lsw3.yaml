@@ -187,7 +187,7 @@ parameters:
       state_class: "measurement"      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0000]
       lookup: 
       -  key: 0
@@ -314,7 +314,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0027]
       lookup: 
       -  key: 0
@@ -386,7 +386,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0001]
       lookup: 
       -  key: 0
@@ -430,7 +430,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0002]
       lookup: 
       -  key: 0
@@ -474,7 +474,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0003]
       lookup: 
       -  key: 0
@@ -518,7 +518,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0004]
       lookup: 
       -  key: 0
@@ -562,7 +562,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 1
+      rule: 5
       registers: [0x0005]
       lookup: 
       -  key: 0
