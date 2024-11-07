@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.handler.sensor;
 
 import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_CONTACT;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class ContactSensorHandler extends BaseHandler {
     public ContactSensorHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
+        // no link support for Scenes
+        hardLinks = Arrays.asList();
     }
 
     @Override

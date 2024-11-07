@@ -17,7 +17,12 @@ import org.json.JSONObject;
 import org.openhab.core.types.State;
 
 /**
- * {@link DirigeraAPI} interface to communicate with the gateway
+ * {@link DirigeraAPI} high level interface to communicate with the gateway. These are comfort functions fitting to the
+ * needs of the handlers. Each function is synchronized so no parallel calls will be established towards gateway.
+ * Rationale:
+ * Several times seen that gateway goes into a "quite mode" during monkey testing. It's still accepting commands but no
+ * more updates were received.
+ *
  *
  * @author Bernd Weymann - Initial contribution
  */
