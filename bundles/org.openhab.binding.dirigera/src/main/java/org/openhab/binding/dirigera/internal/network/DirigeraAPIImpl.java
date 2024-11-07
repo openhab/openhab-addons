@@ -48,15 +48,6 @@ import org.slf4j.LoggerFactory;
 public class DirigeraAPIImpl implements DirigeraAPI {
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPIImpl.class);
 
-    /**
-     * Parameters
-     * 1) UUID of this scene
-     * 2) Name of this scene
-     * 3) click pattern
-     * 4) button index
-     * 5) controller id
-     */
-    private String scenePattern = "{\"id\": \"%s\",\"type\": \"customScene\",\"info\": {\"name\": \"%s\",\"icon\": \"scenes_home_filled\"},\"triggers\": [{\"type\": \"controller\",\"trigger\": {\"controllerType\": \"shortcutController\",\"clickPattern\": \"%s\",\"buttonIndex\": %s,\"deviceId\": \"%s\"}}],\"actions\": [],\"commands\": [],\"undoAllowedDuration\": 30}";
     private HttpClient httpClient;
     private Gateway gateway;
 
@@ -79,8 +70,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public JSONObject readHome() {
         String url = String.format(HOME_URL, gateway.getIpAddress());
-        startCalling(url);
         JSONObject statusObject;
+        startCalling(url);
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -101,8 +92,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public JSONObject readDevice(String deviceId) {
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
-        startCalling(url);
         JSONObject statusObject = new JSONObject();
+        startCalling(url);
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
@@ -155,8 +146,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         Request deviceRequest = httpClient.newRequest(url).method("PATCH")
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
 
-        startCalling(url);
         int responseStatus = 500;
+        startCalling(url);
         try {
             ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
             responseStatus = response.getStatus();
@@ -227,10 +218,10 @@ public class DirigeraAPIImpl implements DirigeraAPI {
         Request sceneCreateRequest = httpClient.newRequest(url).method("POST")
                 .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
 
-        startCalling(url);
         int responseStatus = 500;
         String responseUUID = "";
         int retryCounter = 3;
+        startCalling(url);
         while (retryCounter > 0 && !uuid.equals(responseUUID)) {
             try {
                 ContentResponse response = addAuthorizationHeader(sceneCreateRequest).timeout(10, TimeUnit.SECONDS)
@@ -259,9 +250,9 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     public void deleteScene(String uuid) {
         String url = String.format(SCENES_URL, gateway.getIpAddress()) + "/" + uuid;
         Request sceneDeleteRequest = httpClient.newRequest(url).method("DELETE");
-        startCalling(url);
         int responseStatus = 500;
         int retryCounter = 3;
+        startCalling(url);
         while (retryCounter > 0 && responseStatus != 200 && responseStatus != 202) {
             try {
                 ContentResponse response = addAuthorizationHeader(sceneDeleteRequest).timeout(10, TimeUnit.SECONDS)

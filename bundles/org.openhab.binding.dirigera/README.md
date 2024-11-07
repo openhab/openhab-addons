@@ -596,6 +596,7 @@ Speaker with player activities.
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
 See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
+See current also [Known Limitations](#speaker-limitations) 
 
 ## Repeater
 
@@ -648,6 +649,17 @@ If a candidate is clicked in the UI the link will be established.
 
 Candidates and links marked with `(!)` are not present in openHAB environment so no handler is created yet.
 In this case it's possible not all links are shown in the UI, but the present ones shall work.
+
+## Known Limitatios
+
+### Speaker Limitations
+
+Speaker channel `mute` is not working.
+The Model is reflecting the device `canReceive` command `isMuted` but in fact sending the command is answering with http status 400.
+If mute is performed on Sonos App the channel is updating correctly, but sending the command fails!
+
+### Gateway Coordinates
+
 
 
 ## Full Example
