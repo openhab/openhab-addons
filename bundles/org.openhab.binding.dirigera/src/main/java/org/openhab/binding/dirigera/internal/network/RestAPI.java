@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.network;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -22,8 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.slf4j.Logger;
@@ -57,30 +60,65 @@ public class RestAPI {
     }
 
     public JSONObject readHome() {
+        JSONObject statusObject = new JSONObject();
         String url = String.format(HOME_URL, gateway.getIpAddress());
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
-            if (response.getStatus() == 200) {
+            int responseStatus = response.getStatus();
+            if (responseStatus == 200) {
                 return new JSONObject(response.getContentAsString());
+            } else {
+                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, 500);
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        return new JSONObject();
+        return statusObject;
     }
 
     public JSONObject readDevice(String deviceId) {
+        JSONObject statusObject = new JSONObject();
         String url = String.format(DEVICE_URL, gateway.getIpAddress(), deviceId);
         try {
             Request homeRequest = httpClient.newRequest(url);
             ContentResponse response = addAuthorizationHeader(homeRequest).timeout(10, TimeUnit.SECONDS).send();
-            if (response.getStatus() == 200) {
+            int responseStatus = response.getStatus();
+            if (responseStatus == 200) {
                 return new JSONObject(response.getContentAsString());
+            } else {
+                statusObject.put(PROPERTY_HTTP_ERROR_STATUS, responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            statusObject.put(PROPERTY_HTTP_ERROR_STATUS, 500);
             logger.warn("DIRIGERA Exception calling  {}", url);
         }
-        return new JSONObject();
+        return statusObject;
+    }
+
+    public int sendPatch(String id, JSONObject data) {
+        String url = String.format(DEVICE_URL, gateway.getIpAddress(), id);
+        JSONArray dataArray = new JSONArray();
+        dataArray.put(data);
+        StringContentProvider stringProvider = new StringContentProvider("application/json", dataArray.toString(),
+                StandardCharsets.UTF_8);
+        logger.info("DIRIGERA API send {} to {}", dataArray, url);
+        Request deviceRequest = httpClient.newRequest(url).method("PATCH")
+                .header(HttpHeader.CONTENT_TYPE, "application/json").content(stringProvider);
+
+        try {
+            ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
+            int responseStatus = response.getStatus();
+            if (responseStatus == 200 || responseStatus == 202) {
+                logger.info("DIRIGERA API send {} to {} delivered", dataArray, url);
+            } else {
+                logger.info("DIRIGERA API send {} to {} failed with status {}", dataArray, url, response.getStatus());
+            }
+            return responseStatus;
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.info("DIRIGERA API call to {} failed {}", url, e.getMessage());
+            return 500;
+        }
     }
 }

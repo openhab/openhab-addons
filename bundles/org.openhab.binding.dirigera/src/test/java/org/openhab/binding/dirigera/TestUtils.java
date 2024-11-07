@@ -15,6 +15,9 @@ package org.openhab.binding.dirigera;
 import static org.openhab.binding.dirigera.internal.Constants.BINDING_ID;
 
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -35,5 +38,13 @@ class TestUtils {
     void testThingsTypeUID() {
         ThingTypeUID ttUID = new ThingTypeUID(BINDING_ID, "gateway");
         System.out.println(ttUID);
+    }
+
+    @Test
+    void testHSB() {
+        PercentType pt = new PercentType(50);
+        HSBType hsb = new HSBType(new DecimalType(50), pt, pt);
+        System.out.println("H " + hsb.getHue() + " S " + hsb.getSaturation().doubleValue() + " B "
+                + hsb.getBrightness().doubleValue());
     }
 }
