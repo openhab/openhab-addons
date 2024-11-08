@@ -227,7 +227,8 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             }
             ModbusCommunicationInterface localComms = connectEndpoint();
             if (localComms == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failure on initialize...");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Connection failure on initialize...");
                 return;
             }
 
@@ -272,8 +273,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             pollTasks.add(chargingCircuitPoller);
 
             ModbusReadRequestBlueprint energySourceRequest = new ModbusReadRequestBlueprint(slaveId,
-                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ENERGY_SOURCE_REG_START, ENERGY_SOURCE_REG_SIZE,
-                    3);
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ENERGY_SOURCE_REG_START, ENERGY_SOURCE_REG_SIZE, 3);
             energySourcePoller = localComms.registerRegularPoll(energySourceRequest, localConfig.refresh, 0,
                     this::handleEnergySourceResult, this::handleEnergySourceFailure);
 
@@ -281,15 +281,15 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
 
             ModbusReadRequestBlueprint powerRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START, POWER_REG_SIZE, 3);
-            powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, 0,
-                    this::handlePowerResult, this::handlePowerFailure);
+            powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, 0, this::handlePowerResult,
+                    this::handlePowerFailure);
 
             pollTasks.add(powerPoller);
 
             if (localConfig.pvEnabled) {
                 ModbusReadRequestBlueprint pvRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, PV_MODULATION_REG_START,
-                        PV_MODULATION_REG_SIZE, 3);
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, PV_MODULATION_REG_START, PV_MODULATION_REG_SIZE,
+                        3);
                 pvPoller = localComms.registerRegularPoll(pvRequest, localConfig.refresh, 0, this::handlePvResult,
                         this::handlePvFailure);
 
@@ -317,8 +317,7 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             slaveId = slaveEndpointThingHandler.getSlaveId();
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Slave Endpoint not initialized");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Slave Endpoint not initialized");
             logger.debug("Slave Endpoint not initialized, Thing is offline");
             return null;
         }

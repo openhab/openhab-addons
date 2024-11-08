@@ -23,7 +23,7 @@
 				<label>Refresh Interval</label>
 				<description>Refresh Rate of Xcenter values in Milliseconds</description>
 				<default>5000</default>
-                <advanced>true</advanced>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pvEnabled" type="boolean">
 				<label>Read PV-Modulation States</label>
