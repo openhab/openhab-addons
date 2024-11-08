@@ -36,7 +36,6 @@ public class SiteApiAuthentication {
     private final Object isAuthenticatedWriteLock = new Object();
 
     private Boolean isAuthenticated = false;
-
     private String apiKey = "";
 
     public SiteApiAuthentication() {

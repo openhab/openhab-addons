@@ -107,7 +107,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         Runnable pollForDaily = () -> {
             if (dailyForecastPollManager.getIsDataRequired()) {
                 logger.debug("Doing a POLL for the DAILY forecast");
-                sendForecastRequest(false);
+                sendForecastRequest(true);
             } else {
                 logger.debug("Skipping a POLL for the DAILY forecast");
             }
@@ -299,21 +299,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
         return Objects.nonNull(result) ? result : key;
     }
-
-    // Implementation of IConnectionStatusListener
-
-    /*
-     * @Override
-     * public void processAuthenticationResult(boolean authenticated) {
-     * final ThingStatus currentStatus = getThing().getStatus();
-     * if (!authenticated && ThingStatus.OFFLINE != currentStatus) {
-     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-     * getLocalizedText("bridge.error.site-specific.auth-issue"));
-     * } else if (authenticated && ThingStatus.ONLINE != currentStatus) {
-     * updateStatus(ThingStatus.ONLINE);
-     * }
-     * }
-     */
 
     // Implementation of ISiteResponseListener and associated methods
 

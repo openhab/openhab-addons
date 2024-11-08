@@ -56,7 +56,6 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
     private final Bundle bundle;
 
     private SiteApi siteApi;
-
     private String bridgeId = "";
 
     public MetOfficeDataHubBridgeHandler(final Bridge bridge, @Reference HttpClientFactory httpClientFactory,

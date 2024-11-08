@@ -33,7 +33,6 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.storage.StorageService;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
@@ -57,14 +56,7 @@ public class SiteApi {
     private final HttpClientFactory httpClientFactory;
 
     // Utilised for persistance of rate limiter data between reboots
-    // private final StorageService storageService;
-    // private final TimeZoneProvider timeZoneProvider;
     private final ScheduledExecutorService scheduler;
-
-    // Locale related functionality is below
-    // private final TranslationProvider translationProvider;
-    // private final LocaleProvider localeProvider;
-    private final Bundle bundle;
 
     private final SiteApiAuthentication apiAuth;
     private final RequestLimiter requestLimiter;
@@ -78,14 +70,9 @@ public class SiteApi {
             @Reference ScheduledExecutorService scheduler) {
         this.usageId = usageId;
         this.httpClientFactory = httpClientFactory;
-        // this.storageService = storageService;
-        // this.timeZoneProvider = timeZoneProvider;
-        // this.translationProvider = translationProvider;
-        // this.localeProvider = localeProvider;
-        this.bundle = FrameworkUtil.getBundle(getClass());
         this.apiAuth = new SiteApiAuthentication();
         this.requestLimiter = new RequestLimiter(usageId, storageService, timeZoneProvider, scheduler,
-                translationProvider, localeProvider, bundle);
+                translationProvider, localeProvider, FrameworkUtil.getBundle(getClass()));
         this.scheduler = scheduler;
     }
 

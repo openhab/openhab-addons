@@ -57,7 +57,6 @@ public class RequestLimiter {
     final Bundle bundle;
 
     private final Logger logger = LoggerFactory.getLogger(RequestLimiter.class);
-
     private final Object dailyResetLock = new Object();
 
     private int requestLimit = 0;
@@ -65,7 +64,6 @@ public class RequestLimiter {
     private String limiterId;
     private String storageKeyCount;
     private String storageKeyTimestamp;
-
     private @Nullable ScheduledFuture<?> dailyResetFuture = null;
 
     public int getCurrentRequestCount() {

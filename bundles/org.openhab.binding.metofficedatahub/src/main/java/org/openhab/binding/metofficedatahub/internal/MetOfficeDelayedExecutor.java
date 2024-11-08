@@ -33,8 +33,8 @@ public class MetOfficeDelayedExecutor {
     }
 
     private final ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> scheduledFutureRef = null;
     private final Object scheduledFutureRefLock = new Object();
+    private @Nullable ScheduledFuture<?> scheduledFutureRef = null;
 
     public void scheduleExecution(final long initialDelay, final Runnable task) {
         synchronized (scheduledFutureRefLock) {
