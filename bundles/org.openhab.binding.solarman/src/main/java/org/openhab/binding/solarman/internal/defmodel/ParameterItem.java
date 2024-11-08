@@ -142,7 +142,7 @@ public class ParameterItem {
         this.offset = offset;
     }
 
-    public @Nullable Boolean getIsstr() {
+    public Boolean getIsstr() {
         return isstr;
     }
 
@@ -167,6 +167,6 @@ public class ParameterItem {
     }
 
     public Boolean hasLookup() {
-        return lookup != null && !lookup.isEmpty();
+        return !lookup.isEmpty();
     }
 }

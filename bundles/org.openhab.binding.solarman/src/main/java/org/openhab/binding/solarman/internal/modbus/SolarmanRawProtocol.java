@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SolarmanRawProtocol implements SolarmanProtocol {
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
-    private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
