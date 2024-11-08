@@ -31,11 +31,11 @@ public class KermiBindingConstants {
     static final String PV_READ_ERROR = "PV Modbus Read Error";
     public static final String ALARM_GROUP = "xcenter-alarm";
     public static final String STATE_GROUP = "xcenter-state";
-    public static final String ENERGYSOURCE_GROUP = "xcenter-energysource";
-    public static final String CHARGINGCIRCUIT_GROUP = "xcenter-chargingcircuit";
+    public static final String ENERGY_SOURCE_GROUP = "xcenter-energy-source";
+    public static final String CHARGING_CIRCUIT_GROUP = "xcenter-charging-circuit";
     public static final String POWER_GROUP = "xcenter-power";
     public static final String WORKHOURS_GROUP = "xcenter-workhours";
-    public static final String PV_GROUP = "xcenter-pvmodulation";
+    public static final String PV_GROUP = "xcenter-pv-modulation";
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
 
     // Supported Thing Types

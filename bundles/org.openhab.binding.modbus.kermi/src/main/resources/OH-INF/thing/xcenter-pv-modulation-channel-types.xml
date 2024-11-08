@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="pv-state-channel">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>PV Modulation Active</label>
 		<description>State of PV-Modulation</description>
 	</channel-type>

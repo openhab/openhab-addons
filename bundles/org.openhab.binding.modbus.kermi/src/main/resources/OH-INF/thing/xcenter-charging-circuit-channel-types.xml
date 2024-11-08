@@ -18,7 +18,7 @@
 	<channel-type id="flow-speed-channel">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Flow Speed</label>
-		<description>P13 - Flow speed in l/min</description>
+		<description>P13 - Flow speed</description>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

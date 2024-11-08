@@ -6,7 +6,7 @@
 	<channel-type id="global-state-id-channel">
 		<item-type>Number</item-type>
 		<label>Global State</label>
-		<description>Current mode of your heat pump</description>
+		<description>Current state of your heat pump</description>
 		<state readOnly="true" pattern="%d">
 			<options>
 				<option value="0">Standby</option>

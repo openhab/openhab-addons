@@ -10,7 +10,7 @@
 	</channel-type>
 	<channel-type id="cop-heating-channel">
 		<item-type>Number</item-type>
-		<label>Current COP heating</label>
+		<label>Current COP Heating</label>
 		<state pattern="%d"/>
 	</channel-type>
 	<channel-type id="cop-drinkingwater-channel">
@@ -20,13 +20,13 @@
 	</channel-type>
 	<channel-type id="cop-cooling-channel">
 		<item-type>Number</item-type>
-		<label>Current COP cooling</label>
+		<label>Current COP Cooling</label>
 		<state pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="power-channel">
 		<item-type>Number:Power</item-type>
-		<label>Current power</label>
+		<label>Current Power</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-heating-channel">
@@ -36,7 +36,7 @@
 	</channel-type>
 	<channel-type id="power-drinkingwater-channel">
 		<item-type>Number:Power</item-type>
-		<label>Current power drinking water</label>
+		<label>Current Power Drinking Water</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="power-cooling-channel">
@@ -47,12 +47,12 @@
 
 	<channel-type id="electric-power-channel">
 		<item-type>Number:Power</item-type>
-		<label>Current electric power</label>
+		<label>Current Electric Power</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-heating-channel">
 		<item-type>Number:Power</item-type>
-		<label>Current electric power heating</label>
+		<label>Current Electric Power Heating</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="electric-power-drinkingwater-channel">
@@ -62,7 +62,7 @@
 	</channel-type>
 	<channel-type id="electric-power-cooling-channel">
 		<item-type>Number:Power</item-type>
-		<label>Current electric power cooling</label>
+		<label>Current Electric Power Cooling</label>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

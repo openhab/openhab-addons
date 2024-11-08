@@ -12,49 +12,8 @@
  */
 package org.openhab.binding.modbus.kermi.internal.handler;
 
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.ALARM_STATE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.COP_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.COP_COOLING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.COP_DRINKINGWATER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.COP_HEATING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.ELECTRIC_POWER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.ELECTRIC_POWER_COOLING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.ELECTRIC_POWER_DRINKINGWATER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.ELECTRIC_POWER_HEATING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.EXIT_TEMPERATURE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.FLOW_SPEED_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.FLOW_TEMPERATURE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.GLOBAL_STATE_ID_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.INCOMING_TEMPERATURE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.POWER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.POWER_COOLING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.POWER_DRINKINGWATER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.POWER_HEATING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.PV_POWER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.PV_STATE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.PV_TARGET_TEMPERATURE_DRINKINGWATER_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.PV_TARGET_TEMPERATURE_HEATING_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.RETURN_TEMPERATURE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.TEMPERATURE_SENSOR_OUTSIDE_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.WORKHOURS_COMPRESSOR_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.WORKHOURS_FAN_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.WORKHOURS_STORAGE_LOADING_PUMP_CHANNEL;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.ALARM_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.ALARM_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.CHARGING_CIRCUIT_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.CHARGING_CIRCUIT_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.ENERGY_SOURCE_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.ENERGY_SOURCE_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.POWER_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.POWER_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.PV_MODULATION_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.PV_MODULATION_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.SLOW_POLL_REFRESH_TIME_MS;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.STATE_POLL_REFRESH_TIME_MS;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.STATE_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.STATE_REG_START;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.WORK_HOURS_REG_SIZE;
-import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.WORK_HOURS_REG_START;
+import static org.openhab.binding.modbus.kermi.internal.KermiBindingConstants.*;
+import static org.openhab.binding.modbus.kermi.internal.modbus.KermiModbusConstans.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -194,18 +153,18 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         alarmStateChannel = channelUID(thing, KermiBindingConstants.ALARM_GROUP, ALARM_STATE_CHANNEL);
 
         // Energy source
-        exitTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP, EXIT_TEMPERATURE_CHANNEL);
-        incomingTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP,
+        exitTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGY_SOURCE_GROUP, EXIT_TEMPERATURE_CHANNEL);
+        incomingTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGY_SOURCE_GROUP,
                 INCOMING_TEMPERATURE_CHANNEL);
-        outsideTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGYSOURCE_GROUP,
+        outsideTemperatureChannel = channelUID(thing, KermiBindingConstants.ENERGY_SOURCE_GROUP,
                 TEMPERATURE_SENSOR_OUTSIDE_CHANNEL);
 
         // Loading circuit
-        flowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP,
+        flowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGING_CIRCUIT_GROUP,
                 FLOW_TEMPERATURE_CHANNEL);
-        returnFlowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP,
+        returnFlowTemperatureChannel = channelUID(thing, KermiBindingConstants.CHARGING_CIRCUIT_GROUP,
                 RETURN_TEMPERATURE_CHANNEL);
-        flowSpeedChannel = channelUID(thing, KermiBindingConstants.CHARGINGCIRCUIT_GROUP, FLOW_SPEED_CHANNEL);
+        flowSpeedChannel = channelUID(thing, KermiBindingConstants.CHARGING_CIRCUIT_GROUP, FLOW_SPEED_CHANNEL);
 
         // Power
         copChannel = channelUID(thing, KermiBindingConstants.POWER_GROUP, COP_CHANNEL);
@@ -267,74 +226,76 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
                 return;
             }
             ModbusCommunicationInterface localComms = connectEndpoint();
-            if (localComms != null) {
+            if (localComms == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failure on initialize...");
+                return;
+            }
 
-                /**
-                 * Before asking: i tried to create 1 "big poller" and separate the data from the received bytes.
-                 * But when polling "registers" which are not declared (from Kermi), the answer was corrupted or
-                 * invalid.
-                 * e.x. polling 100 to 150, expecting 50 registers the device returns 18 only, strange behaviour.
-                 * Maybe polling will be improved in future - to have not that "huge" amount of pollerTasks.
-                 */
+            /**
+             * Before asking: i tried to create 1 "big poller" and separate the data from the received bytes.
+             * But when polling "registers" which are not declared (from Kermi), the answer was corrupted or
+             * invalid.
+             * e.x. polling 100 to 150, expecting 50 registers the device returns 18 only, strange behaviour.
+             * Maybe polling will be improved in future - to have not that "huge" amount of pollerTasks.
+             */
 
-                // very slow requests
-                ModbusReadRequestBlueprint workHoursRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, WORK_HOURS_REG_START, WORK_HOURS_REG_SIZE, 3);
-                workHourPoller = localComms.registerRegularPoll(workHoursRequest, SLOW_POLL_REFRESH_TIME_MS, 0,
-                        this::handleWorkHoursResult, this::handleWorkHoursFailure);
+            // very slow requests
+            ModbusReadRequestBlueprint workHoursRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, WORK_HOURS_REG_START, WORK_HOURS_REG_SIZE, 3);
+            workHourPoller = localComms.registerRegularPoll(workHoursRequest, SLOW_POLL_REFRESH_TIME_MS, 0,
+                    this::handleWorkHoursResult, this::handleWorkHoursFailure);
 
-                pollTasks.add(workHourPoller);
+            pollTasks.add(workHourPoller);
 
-                // register low speed state & alarm poller
-                ModbusReadRequestBlueprint alarmRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ALARM_REG_START, ALARM_REG_SIZE, 3);
-                alarmPoller = localComms.registerRegularPoll(alarmRequest, STATE_POLL_REFRESH_TIME_MS, 0,
-                        this::handleAlarmResult, this::handleAlarmFailure);
+            // register low speed state & alarm poller
+            ModbusReadRequestBlueprint alarmRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ALARM_REG_START, ALARM_REG_SIZE, 3);
+            alarmPoller = localComms.registerRegularPoll(alarmRequest, STATE_POLL_REFRESH_TIME_MS, 0,
+                    this::handleAlarmResult, this::handleAlarmFailure);
 
-                pollTasks.add(alarmPoller);
+            pollTasks.add(alarmPoller);
 
-                ModbusReadRequestBlueprint stateRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, STATE_REG_START, STATE_REG_SIZE, 3);
-                statePoller = localComms.registerRegularPoll(stateRequest, STATE_POLL_REFRESH_TIME_MS, 0,
-                        this::handleStateResult, this::handleStateFailure);
+            ModbusReadRequestBlueprint stateRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, STATE_REG_START, STATE_REG_SIZE, 3);
+            statePoller = localComms.registerRegularPoll(stateRequest, STATE_POLL_REFRESH_TIME_MS, 0,
+                    this::handleStateResult, this::handleStateFailure);
 
-                pollTasks.add(statePoller);
+            pollTasks.add(statePoller);
 
-                // default polling speed
-                ModbusReadRequestBlueprint chargingcircuitRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, CHARGING_CIRCUIT_REG_START,
-                        CHARGING_CIRCUIT_REG_SIZE, 3);
-                chargingCircuitPoller = localComms.registerRegularPoll(chargingcircuitRequest, localConfig.refresh, 0,
-                        this::handleChargingCircuitResult, this::handleChargingCircuitFailure);
+            // default polling speed
+            ModbusReadRequestBlueprint chargingcircuitRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, CHARGING_CIRCUIT_REG_START,
+                    CHARGING_CIRCUIT_REG_SIZE, 3);
+            chargingCircuitPoller = localComms.registerRegularPoll(chargingcircuitRequest, localConfig.refresh, 0,
+                    this::handleChargingCircuitResult, this::handleChargingCircuitFailure);
 
-                pollTasks.add(chargingCircuitPoller);
+            pollTasks.add(chargingCircuitPoller);
 
-                ModbusReadRequestBlueprint energySourceRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ENERGY_SOURCE_REG_START, ENERGY_SOURCE_REG_SIZE,
-                        3);
-                energySourcePoller = localComms.registerRegularPoll(energySourceRequest, localConfig.refresh, 0,
-                        this::handleEnergySourceResult, this::handleEnergySourceFailure);
+            ModbusReadRequestBlueprint energySourceRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ENERGY_SOURCE_REG_START, ENERGY_SOURCE_REG_SIZE,
+                    3);
+            energySourcePoller = localComms.registerRegularPoll(energySourceRequest, localConfig.refresh, 0,
+                    this::handleEnergySourceResult, this::handleEnergySourceFailure);
 
-                pollTasks.add(energySourcePoller);
+            pollTasks.add(energySourcePoller);
 
-                ModbusReadRequestBlueprint powerRequest = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START, POWER_REG_SIZE, 3);
-                powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, 0,
-                        this::handlePowerResult, this::handlePowerFailure);
+            ModbusReadRequestBlueprint powerRequest = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START, POWER_REG_SIZE, 3);
+            powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, 0,
+                    this::handlePowerResult, this::handlePowerFailure);
 
-                pollTasks.add(powerPoller);
+            pollTasks.add(powerPoller);
 
-                if (localConfig.pvEnabled) {
-                    ModbusReadRequestBlueprint pvRequest = new ModbusReadRequestBlueprint(slaveId,
-                            ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, PV_MODULATION_REG_START,
-                            PV_MODULATION_REG_SIZE, 3);
-                    pvPoller = localComms.registerRegularPoll(pvRequest, localConfig.refresh, 0, this::handlePvResult,
-                            this::handlePvFailure);
+            if (localConfig.pvEnabled) {
+                ModbusReadRequestBlueprint pvRequest = new ModbusReadRequestBlueprint(slaveId,
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, PV_MODULATION_REG_START,
+                        PV_MODULATION_REG_SIZE, 3);
+                pvPoller = localComms.registerRegularPoll(pvRequest, localConfig.refresh, 0, this::handlePvResult,
+                        this::handlePvFailure);
 
-                    pollTasks.add(pvPoller);
-                }
+                pollTasks.add(pvPoller);
+            }
 
-            } // else state handling performed in connectEndPoint function
         });
     }
 
@@ -348,10 +309,8 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' is offline", label));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("SlaveEndpointThingHandler is null, Thing & Bridge are offline");
             return null;
         }
         try {
@@ -359,14 +318,13 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Slave Endpoint not initialized"));
+                    "Slave Endpoint not initialized");
+            logger.debug("Slave Endpoint not initialized, Thing is offline");
             return null;
         }
         if (comms == null) {
-            @SuppressWarnings("null")
-            String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            logger.debug("CommunicationInterface is null, Thing & Bridge are offline");
             return null;
         } else {
             return comms;
@@ -503,7 +461,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         if (dtoOpt.isPresent()) {
             PowerDTO powerDTO = (PowerDTO) dtoOpt.get();
 
-            // TODO Implement power
             updateState(copChannel, powerDTO.cop);
             updateState(copHeatingChannel, powerDTO.copHeating);
             updateState(copDrinkingWaterChannel, powerDTO.copDrinkingwater);
@@ -522,11 +479,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
         } else {
             logger.debug("Unable to get {} from provider {}", Data.DataType.POWER, powerParser.toString());
         }
-
-        // Reactivate when KermiKomponents are included / implemented
-        // listeners.forEach(l -> {
-        // l.handle(result);
-        // });
     }
 
     private void handlePowerFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> result) {
@@ -536,10 +488,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             logger.debug("Cause of failure: {}", result.getCause().getMessage());
             updateStatus();
         }
-        // Reactivate when KermiKomponents are included / implemented
-        // listeners.forEach(l -> {
-        // l.handleError(result);
-        // });
     }
 
     private void handlePvResult(AsyncModbusReadResult result) {
@@ -661,6 +609,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
                             KermiBindingConstants.DATA_READ_ERROR);
                 }
             }
-        } // else - one status isn't received yet - wait until both Modbus polls returns either success or error
+        }
     }
 }
