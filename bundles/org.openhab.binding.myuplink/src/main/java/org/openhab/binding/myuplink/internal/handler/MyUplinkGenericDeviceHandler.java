@@ -201,8 +201,13 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
             case ACCEPTED:
                 super.updateStatus(ThingStatus.ONLINE);
                 break;
-            default:
+            case BAD_REQUEST:
+            case UNAUTHORIZED:
+            case FORBIDDEN:
                 super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
     }
 
