@@ -47,7 +47,7 @@ public class RequestLimiter {
     public static final int INVALID_REQUEST_ID = -1;
     public static final int SECONDS_PER_DAY = 86400;
 
-    final static ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
+    static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
 
     final StorageService storageService;
     final ScheduledExecutorService scheduler;

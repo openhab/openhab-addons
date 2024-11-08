@@ -10,25 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.metofficedatahub.internal;
+package org.openhab.binding.metofficedatahub.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This defines the behaviours for forecast polling.
+ * Implementations of this interface, allow the responses of a SiteAPI request to
+ * be processed
  *
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public interface IForecastDataPollable {
-
-    /**
-     * When called this provides the implementation to do a poll for hourly data, and process it.
-     */
-    void pollHourlyForecast();
-
-    /**
-     * When called this provides the implementation to do a poll for daily data, and process it.
-     */
-    void pollDailyForecast();
+public abstract class ResponseDataProcessor {
+    public abstract void processResponse(final String content);
 }

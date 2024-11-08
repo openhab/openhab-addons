@@ -13,6 +13,7 @@
 package org.openhab.binding.metofficedatahub.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Implementations of this interface, allow access to a HttpClient which can be used
@@ -23,4 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface IConnectionStatusListener {
     void processAuthenticationResult(final boolean authenticated);
+
+    void processCommunicationFailure(final @Nullable Throwable e);
+
+    void processConnected();
 }

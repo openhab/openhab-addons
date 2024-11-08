@@ -170,10 +170,14 @@ public class MetOfficeDataHubBindingConstants {
     public static final String GET_FORECAST_KEY_LONGITUDE = "<LONGITUDE>";
     public static final String GET_FORECAST_API_KEY_HEADER = "apikey";
     public static final int GET_FORECAST_REQUEST_TIMEOUT_SECONDS = 3;
+    public static final String EXPECTED_TS_FORMAT = "YYYY-MM-dd HH:mm:ss.SSS";
 
     public static final long DAY_IN_MILLIS = 86400000;
 
     public static final Random RANDOM_GENERATOR = new Random();
 
     public static final String BRIDGE_PROP_FORECAST_REQUEST_COUNT = "Site Specific API Call Count";
+
+    public static final Runnable NO_OP = () -> {
+    };
 }

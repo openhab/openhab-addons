@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 public class SiteApi {
 
     protected final LookupWrapper<@Nullable IConnectionStatusListener> authenticationListeners = new LookupWrapper<>();
-    protected final LookupWrapper<@Nullable IRateLimiterListener> rateLimiterListener = new LookupWrapper<>();
+    protected final LookupWrapper<@Nullable IRateLimiterListener> rateLimiterListeners = new LookupWrapper<>();
 
     private final Logger logger = LoggerFactory.getLogger(SiteApi.class);
 
@@ -57,13 +57,13 @@ public class SiteApi {
     private final HttpClientFactory httpClientFactory;
 
     // Utilised for persistance of rate limiter data between reboots
-    private final StorageService storageService;
-    private final TimeZoneProvider timeZoneProvider;
+    // private final StorageService storageService;
+    // private final TimeZoneProvider timeZoneProvider;
     private final ScheduledExecutorService scheduler;
 
     // Locale related functionality is below
-    private final TranslationProvider translationProvider;
-    private final LocaleProvider localeProvider;
+    // private final TranslationProvider translationProvider;
+    // private final LocaleProvider localeProvider;
     private final Bundle bundle;
 
     private final SiteApiAuthentication apiAuth;
@@ -78,10 +78,10 @@ public class SiteApi {
             @Reference ScheduledExecutorService scheduler) {
         this.usageId = usageId;
         this.httpClientFactory = httpClientFactory;
-        this.storageService = storageService;
-        this.timeZoneProvider = timeZoneProvider;
-        this.translationProvider = translationProvider;
-        this.localeProvider = localeProvider;
+        // this.storageService = storageService;
+        // this.timeZoneProvider = timeZoneProvider;
+        // this.translationProvider = translationProvider;
+        // this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.apiAuth = new SiteApiAuthentication();
         this.requestLimiter = new RequestLimiter(usageId, storageService, timeZoneProvider, scheduler,
@@ -89,44 +89,102 @@ public class SiteApi {
         this.scheduler = scheduler;
     }
 
+    public void registerListeners(final String id, final Object candidateListener) {
+        if (candidateListener instanceof IConnectionStatusListener connectionStatusListener) {
+            authenticationListeners.registerItem(id, connectionStatusListener, NO_OP);
+        }
+        if (candidateListener instanceof IRateLimiterListener rateLimiterListener) {
+            rateLimiterListeners.registerItem(id, rateLimiterListener, NO_OP);
+        }
+    }
+
+    public void deregisterListeners(final String id, final Object candidateListener) {
+        if (candidateListener instanceof IConnectionStatusListener connectionStatusListener) {
+            authenticationListeners.deregisterItem(id, connectionStatusListener, NO_OP);
+        }
+        if (candidateListener instanceof IRateLimiterListener rateLimiterListener) {
+            rateLimiterListeners.deregisterItem(id, rateLimiterListener, NO_OP);
+        }
+    }
+
     public void dispose() {
         requestLimiter.dispose();
         apiAuth.dispose();
     }
 
-    public void setApiKey(final String apiKey) throws AuthTokenException {
-        apiAuth.setApiKey(apiKey);
+    public void setLimits(final int maxDailyCallLimit) {
+        requestLimiter.updateLimit(maxDailyCallLimit);
+    }
+
+    public void setApiKey(final String apiKey) {
+        try {
+            apiAuth.setApiKey(apiKey);
+        } catch (AuthTokenException ate) {
+            notifyAuthenticationListeners(false);
+        }
     }
 
     private void notifyRateLimiterListeners() {
-        scheduler.schedule(() -> {
-            rateLimiterListener.getItemlist().forEach(rateLimiterListener -> {
+        scheduler.execute(() -> {
+            rateLimiterListeners.getItemlist().forEach(rateLimiterListener -> {
                 if (rateLimiterListener != null) {
                     rateLimiterListener.processRateLimiterUpdated(requestLimiter);
                 }
             });
-        }, 1, TimeUnit.SECONDS);
+        });
     }
 
     private void notifyAuthenticationListeners(final boolean authenticated) {
-        scheduler.schedule(() -> {
+        scheduler.execute(() -> {
             authenticationListeners.getItemlist().forEach(authListener -> {
                 if (authListener != null) {
                     authListener.processAuthenticationResult(authenticated);
                 }
             });
-        }, 1, TimeUnit.SECONDS);
+        });
+    }
+
+    private void notifyCommFailureListeners(final @Nullable Throwable e) {
+        scheduler.execute(() -> {
+            authenticationListeners.getItemlist().forEach(authListener -> {
+                if (authListener != null) {
+                    authListener.processCommunicationFailure(e);
+                }
+            });
+        });
+    }
+
+    private void notifyConnectedListeners() {
+        scheduler.execute(() -> {
+            authenticationListeners.getItemlist().forEach(authListener -> {
+                if (authListener != null) {
+                    authListener.processConnected();
+                }
+            });
+        });
+    }
+
+    public void validateSiteApi() {
+        final PointType siteApiTestLocation = new PointType("51.5072,0.1276");
+        final Response.CompleteListener siteResponseListener = new BufferingResponseListener() { // 4.5kb buffer
+            @Override
+            public void onComplete(@Nullable Result result) {
+                if (result != null && !result.isFailed()) {
+                    notifyConnectedListeners();
+                } else {
+                    if (result != null) {
+                        notifyCommFailureListeners(result.getFailure());
+                    } else {
+                        notifyCommFailureListeners(new Throwable("Unknown"));
+                    }
+                }
+            }
+        };
+        sendAsyncSiteApiRequest(true, siteApiTestLocation, siteResponseListener);
     }
 
     public void sendRequest(final boolean daily, final PointType location,
             final ISiteResponseListener siteResponseListener) {
-        /*
-         * if (!getThing().getStatus().equals(ThingStatus.ONLINE) && !authFailedPreviously) {
-         * logger.debug("Disabled requesting data - this thing is not ONLINE");
-         * return;
-         * }
-         */
-
         if (requestLimiter.getCurrentRequestCount() == RequestLimiter.INVALID_REQUEST_ID) {
             logger.debug("{} - Disabled requesting data - request limit has been hit", usageId);
             return;
@@ -156,19 +214,27 @@ public class SiteApi {
                     if (result.isSucceeded()) {
                         final String response = getContentAsString();
                         if (response != null) {
-                            scheduler.schedule(() -> {
+                            notifyConnectedListeners();
+                            scheduler.execute(() -> {
                                 if (daily) {
                                     siteResponseListener.processDailyResponse(response);
                                 } else {
                                     siteResponseListener.processHourlyResponse(response);
                                 }
-                            }, 1, TimeUnit.SECONDS);
+                            });
                         }
+                    } else {
+                        notifyCommFailureListeners(result.getFailure());
                     }
                 }
             }
         };
 
+        sendAsyncSiteApiRequest(daily, location, listener);
+    }
+
+    public void sendAsyncSiteApiRequest(final boolean daily, final PointType location,
+            final Response.CompleteListener listener) {
         final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
                 .replace(GET_FORECAST_KEY_LATITUDE, location.getLongitude().toString())
                 .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString());

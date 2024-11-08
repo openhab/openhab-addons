@@ -13,13 +13,17 @@
 package org.openhab.binding.metofficedatahub.internal.api;
 
 import static org.openhab.binding.metofficedatahub.internal.MetOfficeDataHubBindingConstants.GET_FORECAST_API_KEY_HEADER;
+import static org.openhab.binding.metofficedatahub.internal.MetOfficeDataHubBindingConstants.GSON;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpStatus;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This handles the authentication aspects of the Site API
@@ -44,17 +48,28 @@ public class SiteApiAuthentication {
     public void setApiKey(final String newApiKey) throws AuthTokenException {
         this.apiKey = "";
 
-        // Perform some basic token checks.
+        // Perform some basic token checks, as data that isn't even JWT formatted will give a
+        // 500 response from the Met Office servers rather than a 401 response.
         final String[] chunks = newApiKey.split("\\.");
         if (chunks.length != 3) {
             throw new AuthTokenException();
         }
         final Base64.Decoder decoder = Base64.getUrlDecoder();
         try {
-            decoder.decode(chunks[0]); // headers
-            decoder.decode(chunks[1]); // payload
-            decoder.decode(chunks[2]); // signature
-        } catch (IllegalArgumentException iae) {
+            final JwtTokenHeader headers = GSON.fromJson(new String(decoder.decode(chunks[0]), StandardCharsets.UTF_8),
+                    JwtTokenHeader.class);
+            if (headers == null || !headers.isValid()) {
+                throw new AuthTokenException();
+            }
+
+            final JwtTokenPayload payload = GSON.fromJson(new String(decoder.decode(chunks[1]), StandardCharsets.UTF_8),
+                    JwtTokenPayload.class);
+            if (payload == null || !payload.isValid()) {
+                throw new AuthTokenException();
+            }
+
+            decoder.decode(chunks[2]); // check base64 encoding of signature
+        } catch (JsonSyntaxException | IllegalArgumentException e) {
             throw new AuthTokenException();
         }
         this.apiKey = newApiKey;
