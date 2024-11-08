@@ -17,6 +17,9 @@ import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.EMP
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.measure.MetricPrefix;
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.Request;
 import org.openhab.binding.myuplink.internal.Utils;
@@ -24,8 +27,11 @@ import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +66,22 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
     protected String getCommandValue() {
         if (command instanceof QuantityType<?> quantityCommand) {
             // this is necessary because we must not send the unit to the backend
-            return String.valueOf(quantityCommand.doubleValue());
+            Unit<?> unit = quantityCommand.getUnit();
+            QuantityType<?> convertedType;
+            if (unit.isCompatible(SIUnits.CELSIUS)) {
+                convertedType = quantityCommand.toUnit(SIUnits.CELSIUS);
+            } else if (unit.isCompatible(Units.KILOWATT_HOUR)) {
+                convertedType = quantityCommand.toUnit(Units.KILOWATT_HOUR);
+            } else if (unit.isCompatible(Units.LITRE_PER_MINUTE)) {
+                convertedType = quantityCommand.toUnit(Units.LITRE_PER_MINUTE);
+            } else if (unit.isCompatible(tech.units.indriya.unit.Units.WATT)) {
+                convertedType = quantityCommand.toUnit(MetricPrefix.KILO(tech.units.indriya.unit.Units.WATT));
+            } else {
+                logger.info("automatic conversion of unit '{}' to myUplink expected unit not supported.",
+                        unit.getName());
+                convertedType = quantityCommand;
+            }
+            return String.valueOf(convertedType != null ? convertedType.doubleValue() : UnDefType.NULL);
         } else if (command instanceof OnOffType onOffType) {
             // this is necessary because we must send 0/1 and not ON/OFF to the backend
             return OnOffType.ON.equals(onOffType) ? "1" : "0";

@@ -24,6 +24,15 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public interface ChannelProvider {
 
+    /**
+     * returns the channel with given channelId and groupId. If no channel matches, null is returned.
+     *
+     * @param groupId
+     *            group ID of the channel
+     * @param channelId
+     *            channel ID of the channel
+     * @return
+     */
     @Nullable
     Channel getChannel(String groupId, String channelId);
 }

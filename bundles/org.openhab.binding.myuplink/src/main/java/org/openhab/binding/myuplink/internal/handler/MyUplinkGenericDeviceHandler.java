@@ -143,8 +143,8 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
         var channelTypeId = Utils.getChannelTypeId(channel);
         return switch (channelTypeId) {
-            case CHANNEL_TYPE_RW_COMMAND -> new SetPointsAdvanced(this, channel, command, deviceId,
-                    this::updateOnlineStatus);
+            case CHANNEL_TYPE_RW_COMMAND ->
+                new SetPointsAdvanced(this, channel, command, deviceId, this::updateOnlineStatus);
             case CHANNEL_TYPE_RW_MODE -> {
                 if (systemId.isBlank()) {
                     throw new UnsupportedOperationException("systemId not configured");

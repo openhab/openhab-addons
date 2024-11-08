@@ -25,9 +25,27 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public interface DynamicChannelProvider {
 
+    /**
+     * registers a channel with the thing.
+     *
+     * @param channel
+     *            the channel to be registered.
+     */
     void registerChannel(Channel channel);
 
+    /**
+     * Simple Getter to retrieve the Channelfactory of this thing.
+     *
+     * @return
+     *         the ChannelFactory
+     */
     ChannelFactory getChannelFactory();
 
+    /**
+     * Simple Getter to retrieve the ThingUid
+     *
+     * @return
+     *         the ThingUid
+     */
     ThingUID getThingUid();
 }

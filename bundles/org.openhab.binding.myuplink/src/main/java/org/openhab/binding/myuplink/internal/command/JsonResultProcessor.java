@@ -18,7 +18,7 @@ import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import com.google.gson.JsonObject;
 
 /**
- * functional interface that is intended to provide a function for surther result processing of json data retrieved by a
+ * functional interface that is intended to provide a function for further result processing of json data retrieved by a
  * command.
  *
  * @author Alexander Friese - initial contribution
@@ -27,5 +27,13 @@ import com.google.gson.JsonObject;
 @FunctionalInterface
 public interface JsonResultProcessor {
 
+    /**
+     * this method processes the result of the myUplink API call.
+     *
+     * @param status
+     *            technical communication status of the http call.
+     * @param jsonObject
+     *            json response of the http call
+     */
     void processResult(CommunicationStatus status, JsonObject jsonObject);
 }
