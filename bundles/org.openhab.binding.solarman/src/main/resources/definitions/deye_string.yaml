@@ -137,7 +137,7 @@ parameters:
       state_class: ""      
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x003B]
       isstr: true
       lookup: 

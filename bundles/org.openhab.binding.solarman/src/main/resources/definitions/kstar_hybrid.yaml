@@ -267,7 +267,7 @@ parameters:
         state_class: "measurement"
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         registers: [ 3062 ]
         icon: 'mdi:battery'
         lookup:
@@ -385,7 +385,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3044]
         lookup:
         - key: 0
@@ -401,7 +401,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3045]
         lookup:
         # Single-phase models
@@ -451,7 +451,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3046]
         lookup:
         - key: 0
@@ -489,7 +489,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3047]
         lookup:
         - key: 0
@@ -509,7 +509,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3048]
         lookup:
         - key: 0
@@ -545,7 +545,7 @@ parameters:
         state_class: "measurement"
         uom: ""
         scale: 1
-        rule: 5
+        rule: 1
         registers: [3193]
         lookup:
         - key: 0

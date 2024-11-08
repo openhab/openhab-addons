@@ -132,7 +132,7 @@ parameters:
         state_class: 'measurement'
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         registers: [0x0404]
         lookup:
           - key: 0
@@ -209,7 +209,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         registers: [0x0405]
         isstr: true
         icon: 'mdi:wrench'
@@ -254,7 +254,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x0406]
@@ -299,7 +299,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x0407]
@@ -344,7 +344,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         registers: [0x0408]
         isstr: true
@@ -389,7 +389,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         registers: [0x0409]
         isstr: true
@@ -434,7 +434,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x040A]
@@ -479,7 +479,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x040B]
@@ -524,7 +524,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         registers: [0x040C]
         isstr: true
@@ -569,7 +569,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x040D]
@@ -614,7 +614,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         isstr: true
         registers: [0x040E]
@@ -659,7 +659,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         registers: [0x040F]
         isstr: true
@@ -704,7 +704,7 @@ parameters:
         state_class: ''
         uom: ''
         scale: 1
-        rule: 5
+        rule: 1
         icon: 'mdi:wrench'
         registers: [0x0410]
         isstr: true

@@ -19,7 +19,6 @@ parameters:
       scale: 0.1
       rule: 1
       registers: [0x006D]
-      isstr: true
       icon: 'mdi:solar-power'
 
     - name: "PV2 Voltage"
@@ -202,7 +201,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x002B]
       isstr: true
       lookup:
@@ -217,7 +216,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x002E]
       isstr: true
       lookup:
@@ -232,7 +231,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x0031]
       isstr: true
       lookup:
@@ -249,7 +248,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x003B]
       isstr: true
       lookup:
@@ -360,7 +359,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x002F]
       isstr: true
       lookup:
@@ -384,7 +383,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [0x0036]
       isstr: true
       lookup:

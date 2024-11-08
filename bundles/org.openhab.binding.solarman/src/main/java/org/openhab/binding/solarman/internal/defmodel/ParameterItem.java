@@ -44,17 +44,15 @@ public class ParameterItem {
     private Validation validation;
     @Nullable
     private BigDecimal offset;
-    @Nullable
-    private Boolean isstr;
-    @Nullable
-    private List<Lookup> lookup;
+    private Boolean isstr = false;
+    private List<Lookup> lookup = new ArrayList<>();
 
     public ParameterItem() {
     }
 
     public ParameterItem(String name, @Nullable String itemClass, @Nullable String stateClass, @Nullable String uom,
             @Nullable BigDecimal scale, Integer rule, List<Integer> registers, @Nullable String icon,
-            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr,
+            @Nullable Validation validation, @Nullable BigDecimal offset, Boolean isstr,
             @Nullable List<Lookup> lookup) {
         this.name = name;
         this.itemClass = itemClass;
@@ -67,7 +65,9 @@ public class ParameterItem {
         this.validation = validation;
         this.offset = offset;
         this.isstr = isstr;
-        this.lookup = lookup;
+        if (lookup != null) {
+            this.lookup = lookup;
+        }
     }
 
     public String getName() {
@@ -158,11 +158,15 @@ public class ParameterItem {
         this.itemClass = itemClass;
     }
 
-    public @Nullable List<Lookup> getLookup() {
+    public List<Lookup> getLookup() {
         return lookup;
     }
 
     public void setLookup(List<Lookup> lookup) {
         this.lookup = lookup;
+    }
+
+    public Boolean hasLookup() {
+        return lookup != null && !lookup.isEmpty();
     }
 }

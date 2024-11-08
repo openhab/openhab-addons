@@ -20,7 +20,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [3043]
       icon: 'mdi:home-lightning-bolt'
       lookup: 
@@ -126,7 +126,7 @@ parameters:
       state_class: ""
       uom: ""
       scale: 1
-      rule: 5
+      rule: 1
       registers: [3071]
       icon: 'mdi:home-lightning-bolt'
       lookup: 

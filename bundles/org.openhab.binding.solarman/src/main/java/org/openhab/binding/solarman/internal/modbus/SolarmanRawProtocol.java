@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarman.internal.modbus;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -21,9 +22,12 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
+import org.openhab.binding.solarman.internal.SolarmanLoggerHandler;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Catalin Sanda - Initial contribution
@@ -31,6 +35,7 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolEx
  */
 @NonNullByDefault
 public class SolarmanRawProtocol implements SolarmanProtocol {
+    private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerHandler.class);
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanRawProtocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
@@ -53,7 +58,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
             throws SolarmanException {
         if (responseFrame == null || responseFrame.length == 0) {
             throw new SolarmanProtocolException("No response frame");
-        } else if (responseFrame.length < 13) {
+        } else if (responseFrame.length < 11) {
             throw new SolarmanProtocolException("Response frame is too short");
         } else if (responseFrame[0] != (byte) 0x03) {
             throw new SolarmanProtocolException("Response frame has invalid starting byte");
@@ -76,6 +81,9 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
             ByteBuffer order = ByteBuffer.wrap(frame, p1, 2).order(ByteOrder.BIG_ENDIAN);
             byte[] array = new byte[] { order.get(), order.get() };
             registers.put(i + firstReg, array);
+            logger.trace("Register: {}, Value: {}",
+                    SolarmanLoggerConnection.bytesToHex(BigInteger.valueOf(firstReg).toByteArray()),
+                    SolarmanLoggerConnection.bytesToHex(array));
         }
 
         return registers;
