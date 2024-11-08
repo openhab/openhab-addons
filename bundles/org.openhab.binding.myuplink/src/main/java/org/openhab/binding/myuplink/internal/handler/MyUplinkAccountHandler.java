@@ -78,8 +78,16 @@ public class MyUplinkAccountHandler extends BaseBridgeHandler implements MyUplin
         logger.debug("myUplink Account initialized with configuration: {}", config.toString());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
-        webInterface.start();
-        startPolling();
+
+        if (config.getClientId().isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_CONFIG_ERROR_NO_CLIENT_ID);
+        } else if (config.getClientSecret().isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    STATUS_CONFIG_ERROR_NO_CLIENT_SECRET);
+        } else {
+            webInterface.start();
+            startPolling();
+        }
     }
 
     /**

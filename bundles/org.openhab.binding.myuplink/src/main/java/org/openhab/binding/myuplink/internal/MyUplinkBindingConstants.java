@@ -159,6 +159,8 @@ public class MyUplinkBindingConstants {
     public static final String STATUS_NO_VALID_DATA = "@text/status.no.valid.data";
     public static final String STATUS_NO_CONNECTION = "@text/status.no.connection";
     public static final String STATUS_DEVICE_NOT_FOUND = "@text/status.device.not.found";
+    public static final String STATUS_CONFIG_ERROR_NO_CLIENT_ID = "@text/status.config.error.no.client.id";
+    public static final String STATUS_CONFIG_ERROR_NO_CLIENT_SECRET = "@text/status.config.error.no.client.secret";
 
     // other
     public static final long POLLING_INITIAL_DELAY = 5;

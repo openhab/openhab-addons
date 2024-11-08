@@ -271,6 +271,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     private @Nullable MyUplinkBridgeHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof MyUplinkBridgeHandler handler ? handler : null;
+    }
 
     @Override
     public MyUplinkConfiguration getBridgeConfiguration() {
