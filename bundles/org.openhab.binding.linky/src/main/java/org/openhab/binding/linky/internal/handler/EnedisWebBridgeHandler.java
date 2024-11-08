@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.net.HttpCookie;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -66,6 +70,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
 
+    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
     private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
@@ -230,10 +235,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
 
             logger.debug("Add the tokenId cookie");
             enedisApi.addCookie("enedisExt", authResult.tokenId);
-            enedisApi.addCookie("personne_for_MPS172TIB",
-                    "y0h0geJCDj9T3eoUXLx_KwkT54ezal6GofjGbZ6o0bOdxGv3qAbxXx4-w4Bmrp_VMHxmU5JuX9dT3eoUXLx_K9eP5tkkcInfNyHLRhBRCDZDqRmAfdoPUbkghioAEM5aPI2kaNOAJ7I2mRSC0s36vbp_KW_3XY6IiQzoqGQdo14");
-            enedisApi.addCookie("externalProxy",
-                    "eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..HOTGmgkjHCsyx_c5.XLMvWahx76n1kXHauJRz_A4HYe5Q-qAnR7X3ucWCpDd6NS-ZB7X-Zrc-LOEFuxOSLnQTrJ-jVDAZjRaOpcJtOOFWGA0I4u0yGN2uiO27cACs4F_CgkYSZMaBzR5pC-viDRvqc0VL9zsSrLn_jopIJWBvqrKxKm4Nne84WajFGXvDhyLiuSeiSmfDfXdfnOZGcRhvAkMW9gdKTcJxc8CJlKmcmiYHDW4gnJ-__sAeU8eoCnSgRpbk9M1thEabzELE88gus2qbiZPB2O0zZQjYS7LmDFPiYpuBLTkURA-UFat70BSwciTnwTVV_Lh9eDFgr2ubwE8o0a4VCqyOEjD-SC09mgocSn50_BGgO2Ekulk8iw9XwRE0QpnCs-OWj9BlBD6djo9qfYp5sAaDYCyXG3XgP7Il4hpRKnua2-xdt02SOoGaXZHhaV0fZhLSTRVCCZ_W_TKE66vdhNIA9pLCjna4eoffoIzFlBHvFJENzBJFCPS5DxPnT5r53e6lQ4qR9t8Av0agouxYnCMORXTFieOngg9DhIk1CLgyEBIrMVdwPa9aqdHwxVA_6UCoI9wMPejizUY4OwhEKi-7sJgAu1vOMi8ODVUspESi7odjWr67onxQoz0e9TB519Uj4QupT3fUBZK2AJeFOV1qo4c9wSyPbu5fhYwxg6G0MiO7q7V9ZFTV49nKIYhDl1cmOs0AfR3FbhyTsn7xfyfXEoW9v9wV4RROt0RbSNOMC8zv6AmA6H-xtIIzfU2QiE7HzVYycU5tvBZOXlJR6D006OqnrqM7JvqHHdPcqXmUqbgspKRDISMC4TeEzWNjM_xLqJ9YSb3JcvI1JrFzUabRf7I_MTnk-MYD3tjBkhEx6at6eYP715_HBQ_ymaK08uhTj5kl0uJUr6A1ReJjElZILQCib1b5Y0O6bgfdC5wjGvj5R5InetEzNnFxKn7Y7NR7llan_LUpZLgrj8flNj8s1zV05yNNO-hqEWdCSCN84tc2DjiiGQ9kNnZPYxyYInR2wNAocv7Kwt9Zq79HJtwyuHfUOwYZGAiu7j_4vAjKMCTJafZARdlLz0aQsXVqfTSpv2KkBtjBRw.wjzjNu2wXlDM54nPfn5djQ");
 
             logger.debug("Step 5 : retrieve the SAMLresponse");
             data = enedisApi.getData(URL_MON_COMPTE + "/" + authResult.successUrl);
@@ -247,6 +248,30 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             if (result.getStatus() != 302) {
                 throw new LinkyException("Connection failed step 6");
             }
+
+            logger.debug("Step 7 : retrieve ");
+            result = httpClient.GET(USER_INFO_CONTRACT_URL);
+
+            HashMap hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
+            String cookieKey;
+            if (hashRes != null && hashRes.containsKey("cnAlex")) {
+                cookieKey = "personne_for_" + (String) hashRes.get("cnAlex");
+            } else {
+                throw new LinkyException("Connection failed step 7, missing cookieKey");
+            }
+
+            List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+            Optional<HttpCookie> cookie = lCookie.stream().filter(it -> it.getName().contains(cookieKey)).findFirst();
+
+            String cookieVal;
+            if (cookie.isPresent()) {
+                cookieVal = cookie.get().getValue();
+            } else {
+                throw new LinkyException("Connection failed step 7, missing cookieVal");
+            }
+
+            enedisApi.addCookie(cookieKey, cookieVal);
+
             connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new LinkyException(e, "Error opening connection with Enedis webservice");
