@@ -48,7 +48,7 @@ public class MeterReading {
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
 
-    public static MeterReading fromComsumptionReport(ConsumptionReport comsumptionReport) {
+    public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport) {
         MeterReading result = new MeterReading();
         result.readingType = new ReadingType();
 

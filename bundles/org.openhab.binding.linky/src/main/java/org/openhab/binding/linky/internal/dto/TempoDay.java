@@ -21,18 +21,7 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class IdentityInfo {
-    public String title;
-    public String firstname;
-    public String lastname;
-
-    public static IdentityInfo fromWebUserInfo(WebUserInfo webUserInfo) {
-        IdentityInfo result = new IdentityInfo();
-
-        result.firstname = webUserInfo.userProperties.firstName();
-        result.lastname = webUserInfo.userProperties.name();
-        result.title = "";
-
-        return result;
-    }
+public class TempoDay {
+    public String tempoDay;
+    public String tempoVal;
 }

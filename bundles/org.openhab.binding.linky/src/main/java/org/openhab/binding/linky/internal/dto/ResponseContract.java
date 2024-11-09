@@ -19,18 +19,24 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Laurent Arnal - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class AddressInfo {
-    public String street;
-    public String locality;
+public class ResponseContract {
+    public Customer customer;
 
-    @SerializedName("postal_code")
-    public String postalCode;
+    public class Customer {
+        @SerializedName("customer_id")
+        public String customerId;
 
-    @SerializedName("insee_code")
-    public String inseeCode;
-    public String city;
-    public String country;
+        @SerializedName("usage_points")
+        public UsagePoints[] usagePoint;
+    }
+
+    public class UsagePoints {
+        @SerializedName("usage_point")
+        public UsagePoint usagePoint;
+        public Contract contracts;
+    }
 }

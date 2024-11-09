@@ -29,8 +29,6 @@ import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
-import org.openhab.binding.linky.internal.dto.Contracts;
-import org.openhab.binding.linky.internal.dto.IdentityInfo;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
@@ -71,6 +69,7 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
+    private static final int RESPONSE_BUFFER_SIZE = 200000;
 
     private List<String> registeredPrmId = new ArrayList<>();
 
@@ -99,6 +98,7 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
         this.httpClient.setFollowRedirects(false);
         this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        this.httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
 
         try {
             httpClient.start();
@@ -198,7 +198,5 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
 
     public abstract DateTimeFormatter getApiDateFormatYearsFirst();
 
-    public abstract Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException;
-
-    public abstract IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException;
+    public abstract boolean supportNewApiFormat();
 }

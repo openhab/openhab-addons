@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Laurent Arnal - Initial contribution
  */
 
-public class ContractDetails {
+public class Contract {
     public String segment;
 
     @SerializedName("subscribed_power")
@@ -45,4 +45,22 @@ public class ContractDetails {
 
     @SerializedName("last_distribution_tariff_change_date")
     public String lastDistributionTariffChangeDate;
+
+    public static Contract convertFromPrmDetail(PrmDetail prmDetail) {
+        Contract result = new Contract();
+
+        result.segment = prmDetail.segment;
+        result.subscribedPower = prmDetail.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite()
+                .valeur();
+        result.lastActivationDate = "";
+        result.distributionTariff = "";
+        result.offpeakHours = "";
+        result.contractStatus = prmDetail.situationContractuelleDtos[0].informationsContractuelles().etatContractuel()
+                .code();
+        result.contractType = "";
+        result.lastDistributionTariffChangeDate = "";
+
+        return result;
+    }
+
 }
