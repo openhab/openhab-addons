@@ -233,7 +233,7 @@ public class TadoZoneStateAdapter {
     }
 
     private static DateTimeType toDateTimeType(OffsetDateTime offsetDateTime) {
-        return new DateTimeType(offsetDateTime.toZonedDateTime());
+        return new DateTimeType(offsetDateTime.toInstant());
     }
 
     private static State toTemperatureState(@Nullable TemperatureObject temperature, TemperatureUnit temperatureUnit) {
