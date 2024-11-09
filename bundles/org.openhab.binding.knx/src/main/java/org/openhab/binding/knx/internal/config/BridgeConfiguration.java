@@ -63,15 +63,15 @@ public class BridgeConfiguration {
     }
 
     public String getKeyringPassword() {
-        return keyringPassword;
+        return decrypt(keyringPassword);
     }
 
     protected String decrypt(String secret) {
-        if (secret.startsWith(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX)) {
+        if (secret.startsWith(KNXBindingConstants.ENCRYPTED_PASSWORD_SERIALIZATION_PREFIX)) {
             try {
                 logger.info("trying to access TPM module");
                 return TpmInterface.TPM.deserializeAndDecryptSecret(
-                        secret.substring(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX.length()));
+                        secret.substring(KNXBindingConstants.ENCRYPTED_PASSWORD_SERIALIZATION_PREFIX.length()));
             } catch (SecurityException e) {
                 logger.error("Unable to decode stored password using TPM: {}", e.getMessage());
                 // fall through
