@@ -17,12 +17,10 @@ import static org.openhab.binding.network.internal.utils.NetworkUtils.durationTo
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
@@ -104,8 +102,7 @@ public class NetworkHandler extends BaseThingHandler
             case CHANNEL_LASTSEEN:
                 Instant lastSeen = presenceDetection.getLastSeen();
                 if (lastSeen != null) {
-                    updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                            ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+                    updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
                 } else {
                     updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
                 }
@@ -146,8 +143,7 @@ public class NetworkHandler extends BaseThingHandler
 
         Instant lastSeen = presenceDetection.getLastSeen();
         if (value.isReachable() && lastSeen != null) {
-            updateState(CHANNEL_LASTSEEN, new DateTimeType(
-                    ZonedDateTime.ofInstant(lastSeen, TimeZone.getDefault().toZoneId()).withFixedOffsetZone()));
+            updateState(CHANNEL_LASTSEEN, new DateTimeType(lastSeen));
         } else if (!value.isReachable() && lastSeen == null) {
             updateState(CHANNEL_LASTSEEN, UnDefType.UNDEF);
         }
