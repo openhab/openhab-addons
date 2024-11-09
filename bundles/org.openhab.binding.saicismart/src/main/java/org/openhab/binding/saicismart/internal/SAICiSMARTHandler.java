@@ -21,8 +21,6 @@ import static org.openhab.binding.saicismart.internal.SAICiSMARTBindingConstants
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -70,26 +67,22 @@ public class SAICiSMARTHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SAICiSMARTHandler.class);
 
-    private final TimeZoneProvider timeZoneProvider;
-
     @Nullable
     SAICiSMARTVehicleConfiguration config;
     private @Nullable Future<?> pollingJob;
-    private ZonedDateTime lastAlarmMessage;
-    private ZonedDateTime lastCarActivity;
+    private Instant lastAlarmMessage;
+    private Instant lastCarActivity;
 
     /**
      * If the binding is initialized, treat the car as active (lastCarActivity = now) to get some first data.
      * 
      * @param httpClientFactory
-     * @param timeZoneProvider
      * @param thing
      */
-    public SAICiSMARTHandler(TimeZoneProvider timeZoneProvider, Thing thing) {
+    public SAICiSMARTHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
-        lastAlarmMessage = ZonedDateTime.now(getTimeZone());
-        lastCarActivity = ZonedDateTime.now(getTimeZone());
+        lastAlarmMessage = Instant.now();
+        lastCarActivity = Instant.now();
     }
 
     @Override
@@ -98,8 +91,8 @@ public class SAICiSMARTHandler extends BaseThingHandler {
             // reset channel to off
             updateState(CHANNEL_FORCE_REFRESH, OnOffType.from(false));
             // update internal activity date, to query the car for about a minute
-            notifyCarActivity(ZonedDateTime.now(getTimeZone()).minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS - 1,
-                    ChronoUnit.MINUTES), true);
+            notifyCarActivity(
+                    Instant.now().minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS - 1, ChronoUnit.MINUTES), true);
         } else if (channelUID.getId().equals(CHANNEL_SWITCH_AC) && command == OnOffType.ON) {
             // reset channel to off
             updateState(CHANNEL_SWITCH_AC, OnOffType.ON);
@@ -121,7 +114,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         } else if (channelUID.getId().equals(CHANNEL_LAST_ACTIVITY)
                 && command instanceof DateTimeType commnadAsDateTimeType) {
             // update internal activity date from external date
-            notifyCarActivity(commnadAsDateTimeType.getZonedDateTime(), true);
+            notifyCarActivity(commnadAsDateTimeType.getInstant(), true);
         }
     }
 
@@ -146,14 +139,14 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         }
 
         // just started, make sure we start querying
-        notifyCarActivity(ZonedDateTime.now(getTimeZone()), true);
+        notifyCarActivity(Instant.now(), true);
         pollingJob = scheduler.scheduleWithFixedDelay(this::updateStatus, 2,
                 SAICiSMARTBindingConstants.REFRESH_INTERVAL, TimeUnit.SECONDS);
     }
 
     private void updateStatus() {
-        if (lastCarActivity.isAfter(
-                ZonedDateTime.now().minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS, ChronoUnit.MINUTES))) {
+        if (lastCarActivity
+                .isAfter(Instant.now().minus(SAICiSMARTBindingConstants.POLLING_ACTIVE_MINS, ChronoUnit.MINUTES))) {
             if (this.getBridgeHandler().getUid() != null && this.getBridgeHandler().getToken() != null) {
                 try {
                     OTA_RVMVehicleStatusResp25857 otaRvmVehicleStatusResp25857 = new VehicleStateUpdater(this).call();
@@ -179,7 +172,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         MessageCoder<OTA_RVCReq> otaRvcReqMessageCoder = new MessageCoder<>(OTA_RVCReq.class);
 
         // we send a command end expect the car to wake up
-        notifyCarActivity(ZonedDateTime.now(getTimeZone()), false);
+        notifyCarActivity(Instant.now(), false);
 
         OTA_RVCReq req = new OTA_RVCReq();
         req.setRvcReqType(new byte[] { 6 });
@@ -236,7 +229,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         logger.trace("Got A/C message: {}", new GsonBuilder().setPrettyPrinting().create().toJson(enableACResponse));
     }
 
-    public void notifyCarActivity(ZonedDateTime now, boolean force) {
+    public void notifyCarActivity(Instant now, boolean force) {
         // if the car activity changed, notify the channel
         if (force || lastCarActivity.isBefore(now)) {
             lastCarActivity = now;
@@ -264,8 +257,7 @@ public class SAICiSMARTHandler extends BaseThingHandler {
     }
 
     public void handleMessage(Message message) {
-        ZonedDateTime time = ZonedDateTime.ofInstant(Instant.ofEpochSecond(message.getMessageTime().getSeconds()),
-                getTimeZone());
+        Instant time = Instant.ofEpochSecond(message.getMessageTime().getSeconds());
 
         if (time.isAfter(lastAlarmMessage)) {
             lastAlarmMessage = time;
@@ -275,9 +267,5 @@ public class SAICiSMARTHandler extends BaseThingHandler {
         }
 
         notifyCarActivity(time, false);
-    }
-
-    public ZoneId getTimeZone() {
-        return timeZoneProvider.getTimeZone();
     }
 }
