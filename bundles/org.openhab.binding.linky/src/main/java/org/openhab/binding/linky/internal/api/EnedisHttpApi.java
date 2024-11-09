@@ -16,7 +16,10 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -27,9 +30,11 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.jsoup.Jsoup;
@@ -63,6 +68,7 @@ public class EnedisHttpApi {
     private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
     private static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
+    private static final String USER_INFO_CONTRACT_URL = URL_APPS_LINCS + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
     private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
     private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms/api/private/v2/personnes/%s/prms";
@@ -161,6 +167,28 @@ public class EnedisHttpApi {
             if (result.getStatus() != HttpStatus.FOUND_302) {
                 throw new LinkyException("Connection failed step 6");
             }
+
+            logger.debug("Step 7: retrieve cookieKey");
+            result = httpClient.GET(USER_INFO_CONTRACT_URL);
+
+            @SuppressWarnings("unchecked")
+            HashMap<String, String> hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
+
+            String cookieKey;
+            if (hashRes != null && hashRes.containsKey("cnAlex")) {
+                cookieKey = "personne_for_" + hashRes.get("cnAlex");
+            } else {
+                throw new LinkyException("Connection failed step 7, missing cookieKey");
+            }
+
+            List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+            Optional<HttpCookie> cookie = lCookie.stream().filter(it -> it.getName().contains(cookieKey)).findFirst();
+
+            String cookieVal = cookie.map(HttpCookie::getValue)
+                    .orElseThrow(() -> new LinkyException("Connection failed step 7, missing cookieVal"));
+
+            addCookie(cookieKey, cookieVal);
+
             connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new LinkyException(e, "Error opening connection with Enedis webservice");
@@ -209,7 +237,10 @@ public class EnedisHttpApi {
 
     private String getContent(String url) throws LinkyException {
         try {
-            ContentResponse result = httpClient.GET(url);
+            Request request = httpClient.newRequest(url)
+                    .agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
+            request = request.method(HttpMethod.GET);
+            ContentResponse result = request.send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Error requesting '%s': %s", url, result.getContentAsString());
             }
