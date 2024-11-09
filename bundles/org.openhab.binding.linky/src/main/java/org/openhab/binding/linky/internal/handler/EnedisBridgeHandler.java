@@ -48,6 +48,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity?usage_point_id=%s";
     private static final String CONTACT_URL = BASE_URL + "customers_cd/v5/contact_data?usage_point_id=%s";
     private static final String ADDRESS_URL = BASE_URL + "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
+
     private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
             + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
@@ -181,4 +182,5 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     public DateTimeFormatter getApiDateFormatYearsFirst() {
         return API_DATE_FORMAT_YEAR_FIRST;
     }
+
 }

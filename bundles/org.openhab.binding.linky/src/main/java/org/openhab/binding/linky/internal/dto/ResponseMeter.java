@@ -12,22 +12,18 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import org.eclipse.jetty.jaas.spi.UserInfo;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link UserInfo} holds informations about the user account
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class WebUserInfo {
-
-    public record UserProperties(@SerializedName("av2_interne_id") String internId,
-            @SerializedName("av2_prenom") String firstName, @SerializedName("av2_mail") String mail,
-            @SerializedName("av2_nom") String name, @SerializedName("av2_infos_personnalisees") String personalInfo) {
-    }
-
-    public String username;
-    public boolean connected;
-    public UserProperties userProperties;
+public class ResponseMeter {
+    @SerializedName("meter_reading")
+    public MeterReading meterReading;
 }

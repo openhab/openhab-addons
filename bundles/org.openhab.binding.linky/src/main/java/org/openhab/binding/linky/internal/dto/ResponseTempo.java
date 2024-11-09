@@ -21,6 +21,6 @@ import java.util.LinkedHashMap;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class TempoResponse extends LinkedHashMap<String, String> {
+public class ResponseTempo extends LinkedHashMap<String, String> {
     private static final long serialVersionUID = 362498820763181264L;
 }

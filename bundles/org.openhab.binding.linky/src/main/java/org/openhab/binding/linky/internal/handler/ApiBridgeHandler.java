@@ -23,10 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.LinkyAuthServlet;
 import org.openhab.binding.linky.internal.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.LinkyException;
-import org.openhab.binding.linky.internal.dto.Contracts;
-import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
-import org.openhab.binding.linky.internal.dto.CustomerReponse;
-import org.openhab.binding.linky.internal.dto.IdentityInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -44,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link ApiBridgeHandler} is the base handler to access enedis data.
@@ -198,30 +193,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     }
 
     @Override
-    public Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException {
-        try {
-            CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
-            if (cResponse == null) {
-                throw new LinkyException("Invalid customer data received");
-            }
-            return cResponse.customer;
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching CustomerReponse.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
-        }
-    }
-
-    @Override
-    public IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException {
-        try {
-            CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
-            if (iResponse == null) {
-                throw new LinkyException("Invalid customer data received");
-            }
-            return iResponse.identity.naturalPerson;
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching CustomerIdResponse.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
-        }
+    public boolean supportNewApiFormat() {
+        return true;
     }
 }

@@ -22,22 +22,5 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  */
 
 public class PrmInfo {
-
-    public PrmInfo() {
-        customerId = "";
-        contractInfo = new ContractDetails();
-        identityInfo = new IdentityInfo();
-        addressInfo = new AddressInfo();
-        contactInfo = new ContactInfo();
-        usagePointInfo = new UsagePointDetails();
-    }
-
-    public String prmId;
-    public String customerId;
-
-    public ContractDetails contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
+    public String idPrm;
 }

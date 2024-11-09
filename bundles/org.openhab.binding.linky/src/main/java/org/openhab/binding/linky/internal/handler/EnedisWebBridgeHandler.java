@@ -35,10 +35,6 @@ import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
-import org.openhab.binding.linky.internal.dto.Contracts;
-import org.openhab.binding.linky.internal.dto.IdentityInfo;
-import org.openhab.binding.linky.internal.dto.WebPrmInfo;
-import org.openhab.binding.linky.internal.dto.WebUserInfo;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -73,7 +69,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
     private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
+    private static final String PRM_INFO_URL = BASE_URL + "/mes-prms/api/private/v2/personnes/%s/prms";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "undefined/prms/%s/donnees-energie?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
@@ -172,19 +168,19 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             return;
         }
 
-        logger.debug("Starting login process for user : {}", lcConfig.username);
+        logger.debug("Starting login process for user: {}", lcConfig.username);
 
         try {
             enedisApi.addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
-            logger.debug("Step 1 : getting authentification");
-            String data = enedisApi.getData(URL_ENEDIS_AUTHENTICATE);
+            logger.debug("Step 1: getting authentification");
+            String data = enedisApi.getContent(URL_ENEDIS_AUTHENTICATE);
 
             logger.debug("Reception request SAML");
             Document htmlDocument = Jsoup.parse(data);
             Element el = htmlDocument.select("form").first();
             Element samlInput = el.select("input[name=SAMLRequest]").first();
 
-            logger.debug("Step 2 : send SSO SAMLRequest");
+            logger.debug("Step 2: send SSO SAMLRequest");
             ContentResponse result = httpClient.POST(el.attr("action"))
                     .content(enedisApi.getFormContent("SAMLRequest", samlInput.attr("value"))).send();
             if (result.getStatus() != 302) {
@@ -203,11 +199,11 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
                     + reqId + "%26index%3Dnull%26acsURL%3D" + BASE_URL
                     + "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
 
-            logger.debug("Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
+            logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
             result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != 200) {
-                throw new LinkyException("Connection failed step 3 - auth1 : %s", result.getContentAsString());
+                throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
@@ -219,7 +215,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             }
 
             authData.callbacks.get(1).input.get(0).value = lcConfig.password;
-            logger.debug("Step 4 : auth2 - send the auth data");
+            logger.debug("Step 4: auth2 - send the auth data");
             result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
@@ -236,26 +232,28 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Add the tokenId cookie");
             enedisApi.addCookie("enedisExt", authResult.tokenId);
 
-            logger.debug("Step 5 : retrieve the SAMLresponse");
-            data = enedisApi.getData(URL_MON_COMPTE + "/" + authResult.successUrl);
+            logger.debug("Step 5: retrieve the SAMLresponse");
+            data = enedisApi.getContent(URL_MON_COMPTE + "/" + authResult.successUrl);
             htmlDocument = Jsoup.parse(data);
             el = htmlDocument.select("form").first();
             samlInput = el.select("input[name=SAMLResponse]").first();
 
-            logger.debug("Step 6 : post the SAMLresponse to finish the authentication");
+            logger.debug("Step 6: post the SAMLresponse to finish the authentication");
             result = httpClient.POST(el.attr("action"))
                     .content(enedisApi.getFormContent("SAMLResponse", samlInput.attr("value"))).send();
             if (result.getStatus() != 302) {
                 throw new LinkyException("Connection failed step 6");
             }
 
-            logger.debug("Step 7 : retrieve ");
+            logger.debug("Step 7: retrieve ");
             result = httpClient.GET(USER_INFO_CONTRACT_URL);
 
-            HashMap hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
+            @SuppressWarnings("unchecked")
+            HashMap<String, String> hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
+
             String cookieKey;
             if (hashRes != null && hashRes.containsKey("cnAlex")) {
-                cookieKey = "personne_for_" + (String) hashRes.get("cnAlex");
+                cookieKey = "personne_for_" + hashRes.get("cnAlex");
             } else {
                 throw new LinkyException("Connection failed step 7, missing cookieKey");
             }
@@ -263,12 +261,8 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
             Optional<HttpCookie> cookie = lCookie.stream().filter(it -> it.getName().contains(cookieKey)).findFirst();
 
-            String cookieVal;
-            if (cookie.isPresent()) {
-                cookieVal = cookie.get().getValue();
-            } else {
-                throw new LinkyException("Connection failed step 7, missing cookieVal");
-            }
+            String cookieVal = cookie.map(HttpCookie::getValue)
+                    .orElseThrow(() -> new LinkyException("Connection failed step 7, missing cookieVal"));
 
             enedisApi.addCookie(cookieKey, cookieVal);
 
@@ -279,27 +273,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     }
 
     @Override
-    public Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException {
-        try {
-            WebPrmInfo[] webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
-            if (webPrmsInfo == null || webPrmsInfo.length < 1) {
-                throw new LinkyException("Invalid prms data received");
-            }
-            return Contracts.fromWebPrmInfos(webPrmsInfo, prmId);
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
-        }
-    }
-
-    @Override
-    public IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException {
-        try {
-            WebUserInfo webUserInfo = gson.fromJson(data, WebUserInfo.class);
-            return IdentityInfo.fromWebUserInfo(webUserInfo);
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
-        }
+    public boolean supportNewApiFormat() {
+        return false;
     }
 }

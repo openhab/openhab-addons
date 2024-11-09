@@ -38,16 +38,23 @@ import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
+import org.openhab.binding.linky.internal.dto.Contact;
+import org.openhab.binding.linky.internal.dto.Contract;
+import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
+import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
-import org.openhab.binding.linky.internal.dto.TempoResponse;
+import org.openhab.binding.linky.internal.dto.ResponseTempo;
+import org.openhab.binding.linky.internal.dto.UsagePoint;
+import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -85,7 +92,7 @@ public class LinkyHandler extends BaseThingHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumption;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
-    private final ExpiringDayCache<TempoResponse> tempoInformation;
+    private final ExpiringDayCache<ResponseTempo> tempoInformation;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private LinkyConfiguration config;
@@ -140,7 +147,7 @@ public class LinkyHandler extends BaseThingHandler {
         this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
 
-            TempoResponse tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
+            ResponseTempo tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
             return tempoData;
         });
 
@@ -183,6 +190,20 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
+    public boolean supportNewApiFormat() throws LinkyException {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            throw new LinkyException("Unable to get bridge in supportNewApiFormat()");
+        }
+
+        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            throw new LinkyException("Unable to get bridgeHandler in supportNewApiFormat()");
+        }
+
+        return bridgeHandler.supportNewApiFormat();
+    }
+
     private void pollingCode() {
         try {
             EnedisHttpApi api = this.enedisApi;
@@ -195,11 +216,35 @@ public class LinkyHandler extends BaseThingHandler {
                     return;
                 }
 
-                PrmInfo prmInfo = api.getPrmInfo(this, config.prmId);
-                updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE, prmInfo.contractInfo.subscribedPower,
-                        PRM_ID, prmInfo.prmId));
+                if (supportNewApiFormat()) {
+                    Identity identity = api.getIdentity(this, config.prmId);
+                    Contact contact = api.getContact(this, config.prmId);
+                    Contract contract = api.getContract(this, config.prmId);
+                    UsagePoint usagePoint = api.getUsagePoint(this, config.prmId);
 
-                updateMetaData();
+                    updateMetaData(identity, contact, contract, usagePoint);
+
+                    updateProperties(
+                            Map.of(USER_ID, "", PUISSANCE, contract.subscribedPower, PRM_ID, usagePoint.usagePointId));
+
+                } else {
+                    UserInfo userInfo = api.getUserInfo(this);
+                    PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
+                    PrmDetail details = api.getPrmDetails(this, userInfo.userProperties.internId, prmInfo.idPrm);
+
+                    Identity identity = Identity.convertFromUserInfo(userInfo);
+                    Contact contact = Contact.convertFromUserInfo(userInfo);
+                    Contract contract = Contract.convertFromPrmDetail(details);
+                    UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(details);
+
+                    updateMetaData(identity, contact, contract, usagePoint);
+
+                    updateProperties(Map.of(USER_ID, userInfo.userProperties.internId, PUISSANCE,
+                            details.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite().valeur()
+                                    + " kVA",
+                            PRM_ID, prmInfo.idPrm));
+                }
+
                 updateData();
 
                 disconnect();
@@ -229,53 +274,44 @@ public class LinkyHandler extends BaseThingHandler {
         return config;
     }
 
-    private synchronized void updateMetaData() {
+    private synchronized void updateMetaData(Identity identity, Contact contact, Contract contract,
+            UsagePoint usagePoint) {
         EnedisHttpApi api = this.enedisApi;
 
-        if (api != null) {
-            try {
-                PrmInfo info = api.getPrmInfo(this, config.prmId);
-                String title = info.identityInfo.title;
-                String firstName = info.identityInfo.firstname;
-                String lastName = info.identityInfo.lastname;
+        String title = identity.title;
+        String firstName = identity.firstname;
+        String lastName = identity.lastname;
 
-                updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+        updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
 
-                updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS,
-                        new StringType(info.contractInfo.contractStatus));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(info.contractInfo.contractType));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF,
-                        new StringType(info.contractInfo.distributionTariff));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE,
-                        new StringType(info.contractInfo.lastActivationDate));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
-                        new StringType(info.contractInfo.lastDistributionTariffChangeDate));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(info.contractInfo.offpeakHours));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
-                updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER,
-                        new StringType(info.contractInfo.subscribedPower));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(contract.segment));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS, new StringType(contract.contractStatus));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(contract.contractType));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF, new StringType(contract.distributionTariff));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE, new StringType(contract.lastActivationDate));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                new StringType(contract.lastDistributionTariffChangeDate));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(contract.offpeakHours));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(contract.segment));
+        updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(contract.subscribedPower));
 
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(info.usagePointInfo.usagePointId));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(info.usagePointInfo.usagePointStatus));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(info.usagePointInfo.meterType));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(usagePoint.usagePointId));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(usagePoint.usagePointStatus));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(usagePoint.meterType));
 
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY, new StringType(info.addressInfo.city));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
-                        new StringType(info.addressInfo.country));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
-                        new StringType(info.addressInfo.postalCode));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
-                        new StringType(info.addressInfo.inseeCode));
-                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET, new StringType(info.addressInfo.street));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY,
+                new StringType(usagePoint.usagePointAddresses.city));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
+                new StringType(usagePoint.usagePointAddresses.country));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+                new StringType(usagePoint.usagePointAddresses.postalCode));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
+                new StringType(usagePoint.usagePointAddresses.inseeCode));
+        updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET,
+                new StringType(usagePoint.usagePointAddresses.street));
 
-                updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(info.contactInfo.email));
-                updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(info.contactInfo.phone));
-            } catch (LinkyException e) {
-                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
+        updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(contact.email));
+        updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(contact.phone));
     }
 
     /**
@@ -285,9 +321,9 @@ public class LinkyHandler extends BaseThingHandler {
         boolean connectedBefore = isConnected();
 
         updateEnergyData();
-        updatePowerData();
+        // updatePowerData();
         updateTempoTimeSeries();
-        updateLoadCurveData();
+        // updateLoadCurveData();
 
         if (!connectedBefore && isConnected()) {
             disconnect();
@@ -344,15 +380,15 @@ public class LinkyHandler extends BaseThingHandler {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
 
-            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1,
                     new DateTimeType(values.dayValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2,
                     new DateTimeType(values.dayValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value);
+            updatekVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
@@ -474,10 +510,10 @@ public class LinkyHandler extends BaseThingHandler {
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
-    private void updateVAChannel(String groupId, String channelId, double power) {
+    private void updatekVAChannel(String groupId, String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
-        updateState(groupId, channelId,
-                Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, Units.VOLT_AMPERE));
+        updateState(groupId, channelId, Double.isNaN(power) ? UnDefType.UNDEF
+                : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
     }
 
     private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
@@ -603,13 +639,13 @@ public class LinkyHandler extends BaseThingHandler {
         return null;
     }
 
-    private @Nullable TempoResponse getTempoData(LocalDate from, LocalDate to) {
+    private @Nullable ResponseTempo getTempoData(LocalDate from, LocalDate to) {
         logger.debug("getTempoData from");
 
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                TempoResponse result = api.getTempoData(this, from, to);
+                ResponseTempo result = api.getTempoData(this, from, to);
                 return result;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
@@ -658,9 +694,9 @@ public class LinkyHandler extends BaseThingHandler {
             boolean connectedBefore = isConnected();
 
             updateEnergyData();
-            updatePowerData();
+            // updatePowerData();
             updateTempoTimeSeries();
-            updateLoadCurveData();
+            // updateLoadCurveData();
 
             if (!connectedBefore && isConnected()) {
                 disconnect();
