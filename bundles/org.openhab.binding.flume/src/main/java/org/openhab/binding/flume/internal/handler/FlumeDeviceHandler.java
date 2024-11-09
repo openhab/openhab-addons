@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -193,8 +192,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
                 updateState(CHANNEL_DEVICE_LOWBATTERY, (percent <= 25) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_DEVICE_LASTSEEN:
-                updateState(CHANNEL_DEVICE_LASTSEEN,
-                        new DateTimeType(ZonedDateTime.ofInstant(apiDevice.lastSeen, ZoneId.systemDefault())));
+                updateState(CHANNEL_DEVICE_LASTSEEN, new DateTimeType(apiDevice.lastSeen));
                 break;
         }
     }
