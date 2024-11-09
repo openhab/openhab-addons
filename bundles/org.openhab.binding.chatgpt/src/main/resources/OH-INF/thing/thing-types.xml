@@ -117,7 +117,7 @@
 				<label>Use Semantic Model</label>
 				<description>Use a semantic model to determine the location of an item. Otherwise, item names must begin with a
 					"location_" e.g. "Kitchen_Light"</description>
-				<default>false</default>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
