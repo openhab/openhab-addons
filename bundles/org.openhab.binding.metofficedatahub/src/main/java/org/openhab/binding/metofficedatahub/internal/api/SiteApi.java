@@ -223,8 +223,8 @@ public class SiteApi {
     public void sendAsyncSiteApiRequest(final boolean daily, final PointType location,
             final Response.CompleteListener listener) {
         final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
-                .replace(GET_FORECAST_KEY_LATITUDE, location.getLongitude().toString())
-                .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString());
+                .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString())
+                .replace(GET_FORECAST_KEY_LATITUDE, location.getLongitude().toString());
 
         final Request request = httpClientFactory.getCommonHttpClient().newRequest(url).method(HttpMethod.GET)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
