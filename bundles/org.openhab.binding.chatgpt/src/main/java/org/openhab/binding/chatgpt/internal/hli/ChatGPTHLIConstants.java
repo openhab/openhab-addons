@@ -10,25 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.chatgpt.internal;
+package org.openhab.binding.chatgpt.internal.hli;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ChatGPTChannelConfiguration} class contains fields mapping chat channel configuration parameters.
- *
- * @author Kai Kreuzer - Initial contribution
+ * @author Artur Fedjukevits - Initial contribution
  */
 @NonNullByDefault
-public class ChatGPTChannelConfiguration {
+public class ChatGPTHLIConstants {
 
-    public String model = "gpt-4o-mini";
-
-    public Double temperature = 0.5;
-
-    public Double topP = 1.0;
-
-    public String systemMessage = "";
-
-    public int maxTokens = 500;
+    public static final String SERVICE_ID = "chatgpthli";
 }

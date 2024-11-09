@@ -14,14 +14,17 @@ package org.openhab.binding.chatgpt.internal.dto;
 
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This is a dto used for parsing the JSON response from ChatGPT.
  *
  * @author Kai Kreuzer - Initial contribution
+ * @author Artur Fedjukevits - Added fields and edited the class
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatResponse {
 
     private List<Choice> choices;
@@ -29,6 +32,7 @@ public class ChatResponse {
     private String object;
     private int created;
     private String model;
+    private Usage usage;
 
     public List<Choice> getChoices() {
         return choices;
@@ -50,15 +54,46 @@ public class ChatResponse {
         return model;
     }
 
-    public static class Choice {
-        private Message message;
+    public Usage getUsage() {
+        return usage;
+    }
 
-        @SerializedName("finish_reason")
+    public void setChoices(List<Choice> choices) {
+        this.choices = choices;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
+    }
+
+    public void setCreated(int created) {
+        this.created = created;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public void setUsage(Usage usage) {
+        this.usage = usage;
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Choice {
+
+        @JsonProperty("message")
+        private ChatMessage chatMessage;
+
+        @JsonProperty("finish_reason")
         private String finishReason;
         private int index;
 
-        public Message getMessage() {
-            return message;
+        public ChatMessage getChatMessage() {
+            return chatMessage;
         }
 
         public String getFinishReason() {
@@ -68,18 +103,54 @@ public class ChatResponse {
         public int getIndex() {
             return index;
         }
-    }
 
-    public static class Message {
-        private String role;
-        private String content;
-
-        public String getRole() {
-            return role;
+        public void setChatMessage(ChatMessage chatMessage) {
+            this.chatMessage = chatMessage;
         }
 
-        public String getContent() {
-            return content;
+        public void setFinishReason(String finishReason) {
+            this.finishReason = finishReason;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class Usage {
+
+        @JsonProperty("prompt_tokens")
+        private int promptTokens;
+
+        @JsonProperty("completion_tokens")
+        private int completionTokens;
+
+        @JsonProperty("total_tokens")
+        private int totalTokens;
+
+        public int getPromptTokens() {
+            return promptTokens;
+        }
+
+        public int getCompletionTokens() {
+            return completionTokens;
+        }
+
+        public int getTotalTokens() {
+            return totalTokens;
+        }
+
+        public void setPromptTokens(int promptTokens) {
+            this.promptTokens = promptTokens;
+        }
+
+        public void setCompletionTokens(int completionTokens) {
+            this.completionTokens = completionTokens;
+        }
+
+        public void setTotalTokens(int totalTokens) {
+            this.totalTokens = totalTokens;
         }
     }
 }
