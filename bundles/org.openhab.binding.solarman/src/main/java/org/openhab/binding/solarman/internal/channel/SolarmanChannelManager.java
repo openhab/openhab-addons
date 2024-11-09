@@ -80,7 +80,7 @@ public class SolarmanChannelManager {
             baseChannelConfig.scale = scale;
         }
 
-        if (item.hasLookup() || item.getIsstr()) {
+        if (item.hasLookup() || Boolean.TRUE.equals(item.getIsstr())) {
             // Set 5 for Text (String), when isstr is true or Lookup is present
             baseChannelConfig.rule = 5;
         } else {
