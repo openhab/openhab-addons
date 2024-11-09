@@ -208,7 +208,7 @@ public class SolarmanChannelUpdater {
         }
     }
 
-    private String getStringFromLookupList(int key, List<Lookup> lookupList) {
+    private @Nullable String getStringFromLookupList(int key, List<Lookup> lookupList) {
         return lookupList.stream().filter(lookup -> key == lookup.getKey()).map(Lookup::getValue).findFirst()
                 .orElse("");
     }
