@@ -38,7 +38,7 @@ import com.google.gson.annotations.Expose;
 public class SystemConfigResult {
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    public String mac = MISSING_INVALID_MAC_ADDRESS;
+    public String mac = "";
     // Home ID of the bulb
     @Expose(serialize = true, deserialize = true)
     public int homeId;

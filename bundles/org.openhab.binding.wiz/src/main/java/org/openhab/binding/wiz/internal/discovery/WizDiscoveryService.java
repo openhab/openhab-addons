@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the {@link DiscoveryService} for the WiZ Items.
+ * This is the {@link DiscoveryService} for the WiZ Things.
  *
  * @author Sriram Balakrishnan - Initial contribution
  * @author Joshua Freeman - use configured Broadcast address instead of guessing, discovery of plugs

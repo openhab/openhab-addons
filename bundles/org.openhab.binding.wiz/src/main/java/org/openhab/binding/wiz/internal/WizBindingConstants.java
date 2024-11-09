@@ -13,8 +13,6 @@
 package org.openhab.binding.wiz.internal;
 
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -48,10 +46,8 @@ public class WizBindingConstants {
     /**
      * The supported thing types.
      */
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(THING_TYPE_COLOR_BULB, THING_TYPE_TUNABLE_BULB, THING_TYPE_DIMMABLE_BULB, THING_TYPE_SMART_PLUG,
-                    THING_TYPE_FAN, THING_TYPE_FAN_WITH_DIMMABLE_BULB)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_COLOR_BULB, THING_TYPE_TUNABLE_BULB,
+            THING_TYPE_DIMMABLE_BULB, THING_TYPE_SMART_PLUG, THING_TYPE_FAN, THING_TYPE_FAN_WITH_DIMMABLE_BULB);
 
     /**
      * List of all Channel ids
@@ -76,7 +72,6 @@ public class WizBindingConstants {
      * Mac address configuration argument key.
      */
     public static final String CONFIG_MAC_ADDRESS = "macAddress";
-    public static final String MISSING_INVALID_MAC_ADDRESS = "bulbMacAddress";
 
     /**
      * Host address configuration argument key.

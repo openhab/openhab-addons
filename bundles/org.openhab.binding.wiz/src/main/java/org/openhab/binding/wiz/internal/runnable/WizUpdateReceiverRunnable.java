@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This Thread is responsible to receive all sync messages and redirect them to
+ * This Thread is responsible for receiving all sync messages and redirecting them to
  * {@link WizMediator}.
  *
  * @author Sriram Balakrishnan - Initial contribution

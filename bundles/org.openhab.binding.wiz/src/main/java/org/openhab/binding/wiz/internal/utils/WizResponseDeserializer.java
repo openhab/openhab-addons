@@ -39,10 +39,8 @@ import com.google.gson.JsonParseException;
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
-
 @NonNullByDefault
 public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
-    // We can't do too much logging, can we?
     private final Logger logger = LoggerFactory.getLogger(WizResponseDeserializer.class);
 
     @Override
@@ -140,7 +138,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     }
                     SystemConfigResult parsedFBParams = context.deserialize(jobject.getAsJsonObject("params"),
                             SystemConfigResult.class);
-                    if (parsedFBParams.mac == MISSING_INVALID_MAC_ADDRESS) {
+                    if (parsedFBParams.mac.isEmpty()) {
                         throw new JsonParseException("firstBeat received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedFBParams.mac);
@@ -169,7 +167,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     }
                     SystemConfigResult parsedCResult = context.deserialize(jobject.getAsJsonObject("result"),
                             SystemConfigResult.class);
-                    if (parsedCResult.mac == MISSING_INVALID_MAC_ADDRESS) {
+                    if (parsedCResult.mac.isEmpty()) {
                         throw new JsonParseException("getSystemConfig received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedCResult.mac);
@@ -187,7 +185,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     }
                     WizSyncState parsedPResult = context.deserialize(jobject.getAsJsonObject("result"),
                             WizSyncState.class);
-                    if (parsedPResult.mac == MISSING_INVALID_MAC_ADDRESS) {
+                    if (parsedPResult.mac.isEmpty()) {
                         throw new JsonParseException("getPilot received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedPResult.mac);
@@ -205,7 +203,7 @@ public class WizResponseDeserializer implements JsonDeserializer<WizResponse> {
                     }
                     WizSyncState parsedPParam = context.deserialize(jobject.getAsJsonObject("params"),
                             WizSyncState.class);
-                    if (parsedPParam.mac == MISSING_INVALID_MAC_ADDRESS) {
+                    if (parsedPParam.mac.isEmpty()) {
                         throw new JsonParseException("syncPilot received, but no MAC address present");
                     }
                     deserializedResponse.setWizResponseMacAddress(parsedPParam.mac);

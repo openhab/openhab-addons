@@ -10,7 +10,7 @@ They are sold under the Philips brand name.
 
 This binding operates completely within the local network - the discovery, control, and status monitoring is entirely over UDP in the local network.
 The binding never attempts to contact the WiZ servers in any way but does not stop them from doing so independently.
-It should not interfere in any way with control of the bulbs via the WiZ app or any other service integrated with the WiZ app (ie: Alexa, IFTTT, SmartThings).
+It should not interfere in any way with control of the bulbs via the WiZ app or any other service integrated with the WiZ app (e.g. Alexa, IFTTT, SmartThings).
 Any changes made to the bulb state outside of openHAB should be detected by the binding and vice-versa.
 Before using the binding, the bulbs must be set up using the WiZ iOS or Android app.
 Local control must also be enabled with-in the WiZ app in the app settings.
@@ -18,19 +18,22 @@ Local control must also be enabled with-in the WiZ app in the app settings.
 
 ## Supported Things
 
-* WiZ Full Color with Tunable White Bulbs
-* WiZ Tunable White Bulbs
-* WiZ Dimmable single-color bulbs
-* Wiz Smart Plugs
+- WiZ Full Color with Tunable White Bulbs
+- WiZ Tunable White Bulbs
+- WiZ Dimmable single-color bulbs
+- WiZ Smart Plugs
+- Smart fans (with or without a dimmable light)
 
 _Note_ This binding was created for and tested on the full color with tunable white bulbs, however, users have reported success with other bulb types and plugs.
 
 ## Discovery
 
 New devices can be discovered by scanning and may also be discovered by background discovery.
-All discovered devices will default to 'Full Color' bulbs if unable to automatically detect the specific device type. You may need to create devices manually if desired.
+All discovered devices will default to 'Full Color' bulbs if unable to automatically detect the specific device type.
+You may need to create devices manually if desired.
 
-Devices must first have been set up using the WiZ iOS or Android app. If the binding cannot discover your device, try unplugging it, wait several seconds, and plug it back in.
+Devices must first have been set up using the WiZ iOS or Android app.
+If the binding cannot discover your device, try unplugging it, wait several seconds, and plug it back in.
 
 ## Binding Configuration
 
@@ -40,13 +43,13 @@ You can optionally manually set the IP and MAC address of the openHAB instance; 
 ## Thing Configuration
 
 To create or configure a device manually you need its IP address and MAC address.
-These can be quickly found in the ios or android app by entering the settings for device in question and clicking on the model name.
+These can be quickly found in the iOS or Android app by entering the settings for device in question and clicking on the model name.
 The refresh interval may also be set; if unset it defaults to 30 seconds.
 If you desire instant updates, you may also enable "heart-beat" synchronization with the bulbs.
 Heart-beats are not used by default.
 When heart-beats are enabled, the binding will continuously re-register with the bulbs to receive sync packets on every state change and on every 5 seconds.
 Enabling heart-beats causes the refresh-interval to be ignored.
-If heart-beats are not enabled, the channels are only updated when polled at the set interval and thus will be slightly delayed wrt changes made to the bulb state outside of the binding (ie, via the WiZ app).
+If heart-beats are not enabled, the channels are only updated when polled at the set interval and thus will be slightly delayed with regard to changes made to the bulb state outside of the binding (e.g. via the WiZ app).
 
 **NOTE:** While the bulb's IP address is needed for initial manual configuration, this binding _does not_ require you to use a static IP for each bulb.
 After initial discovery or setup, the binding will automatically search for and re-match bulbs with changed IP addresses by MAC address once every hour.
@@ -59,19 +62,19 @@ Thing parameters:
 | ipAddress         | text           | true      | The IP of the bulb                                                                                                                                                                                                                                                                            |         |
 | updateInterval    | integer        | false     | Update time interval in seconds to request the status of the bulb.                                                                                                                                                                                                                            | 60      |
 | useHeartBeats     | boolean        | false     | Whether to register for continuous 5s heart-beats                                                                                                                                                                                                                                             | false   |
-| reconnectInterval | integer        | false     | Interval in minutes between attempts to reconnect with a bulb that is no longer responding to status queries.  When the bulb first connects to the network, it should send out a firstBeat message allowing OpenHab to immediately detect it.  This is only as a back-up to re-find the bulb. | 15      |
+| reconnectInterval | integer        | false     | Interval in minutes between attempts to reconnect with a bulb that is no longer responding to status queries.  When the bulb first connects to the network, it should send out a firstBeat message allowing openHAB to immediately detect it.  This is only as a back-up to re-find the bulb. | 15      |
 
 Example Thing:
 
-```
+```java
 Thing wiz:bulb:lamp "My Lamp" @ "Living Room" [ macAddress="accf23343cxx", ipAddress="192.168.0.xx" ]
 ```
 
 ## Channels
 
-The Binding supports the following channels:
+The binding supports the following channels:
 
-| Channel Type ID | Item Type          | Description                                           | Access |
+| Channel ID      | Item Type          | Description                                           | Access |
 |-----------------|--------------------|-------------------------------------------------------|--------|
 | color           | Color              | State, intensity, and color of the LEDs               | R/W    |
 | temperature     | Dimmer             | Color temperature of the bulb                         | R/W    |
@@ -80,12 +83,12 @@ The Binding supports the following channels:
 | state           | Switch             | Whether the bulb is on or off                         | R/W    |
 | light-mode      | Number             | Preset light mode name to run                         | R/W    |
 | speed           | Dimmer             | Speed of the color changes in dynamic light modes     | R/W    |
-| signal-strength | system             | Quality of the bulb's WiFi connection                 | R      |
+| signal-strength | Number             | Quality of the bulb's WiFi connection                 | R      |
 | last-update     | Time               | The last time an an update was received from the bulb | R      |
 
 ## Light Modes
 
-The Binding supports the following Light Modes
+The binding supports the following Light Modes
 
 | ID | Scene Name    |
 |----|---------------|
@@ -136,6 +139,6 @@ Sending a command on the color channel or the temperature channel will cause the
 
 ## Example item linked to a channel
 
-```
+```java
 Color LivingRoom_Light_Color "Living Room Lamp" (gLivingroom) {channel="wiz:color-bulb:accf23343cxx:color"}
 ```

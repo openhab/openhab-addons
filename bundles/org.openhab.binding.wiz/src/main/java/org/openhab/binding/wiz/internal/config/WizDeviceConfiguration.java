@@ -28,7 +28,7 @@ public class WizDeviceConfiguration {
     /**
      * Configuration for a WiZ Device
      */
-    public String macAddress = MISSING_INVALID_MAC_ADDRESS;
+    public String macAddress = "";
     public String ipAddress = "";
     public long updateInterval = DEFAULT_REFRESH_INTERVAL_SEC;
     public boolean useHeartBeats = false; // true: register to get 5s heart-beats

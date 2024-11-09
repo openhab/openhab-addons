@@ -97,7 +97,7 @@ public class WizMediatorImpl implements WizMediator {
         String bulbIp = receivedMessage.getWizResponseIpAddress();
         String bulbMac = receivedMessage.getWizResponseMacAddress();
 
-        if (!bulbMac.equals(MISSING_INVALID_MAC_ADDRESS)) {
+        if (!bulbMac.isEmpty()) {
             @Nullable
             WizHandler handler = this.getHandlerRegisteredByMac(bulbMac);
 
@@ -211,7 +211,7 @@ public class WizMediatorImpl implements WizMediator {
         try {
             myMacAddress = NetworkUtils.getMyMacAddress(getMyIpAddress());
             if (myMacAddress == null) {
-                logger.warn("No network interface could be found.  MAC of OpenHab device is unknown.");
+                logger.warn("No network interface could be found.  MAC of openHAB device is unknown.");
                 return "OHMACAddress";
             }
         } catch (Exception e) {
@@ -222,7 +222,7 @@ public class WizMediatorImpl implements WizMediator {
     }
 
     /**
-     * Returns a {@link RegistrationRequestParam} based on the current OpenHAB
+     * Returns a {@link RegistrationRequestParam} based on the current openHAB
      * connection.
      *
      */

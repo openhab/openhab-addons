@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Sara Geleskie Damiano - Initial contribution
  *
  */
-
 @NonNullByDefault
 public class WizColorConverter {
 
@@ -145,10 +144,11 @@ public class WizColorConverter {
      * @param int green - the value of the green component (0-255)
      * @param int blue - the value of the blue component (0-255)
      * @param int white - the value of the white component (0-255)
+     * @param int dimming - the brightness of the bulb, independent of the RGB color (0-100)
      *
      *            Totally made this up.
      *
-     * @return a {@link ColorRequestParam} with the color components
+     * @return a {@link HSBType} with the color components
      */
     public HSBType rgbwDimmingToHSB(int red, int green, int blue, int white, int dimming) {
         // Can get hue from the ratios of the colors.

@@ -32,7 +32,7 @@ import com.google.gson.annotations.Expose;
 public class FirstBeatResponseParam {
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    public String mac = MISSING_INVALID_MAC_ADDRESS;
+    public String mac = "";
     // Home ID of the bulb
     @Expose(serialize = false, deserialize = true)
     public int homeId;

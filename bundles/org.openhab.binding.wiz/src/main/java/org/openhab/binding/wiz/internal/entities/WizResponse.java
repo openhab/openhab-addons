@@ -53,7 +53,7 @@ public class WizResponse {
 
     // The MAC address the response is coming from
     @Expose(serialize = true, deserialize = true)
-    private String mac = MISSING_INVALID_MAC_ADDRESS;
+    private String mac = "";
 
     // Whether or not a command succeeded (if the response is from a command)
     @Expose(serialize = true, deserialize = true)
