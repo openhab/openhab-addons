@@ -70,7 +70,7 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         String host = service.getHostAddresses()[0];
         try {
             if (InetAddress.getByName(host).getAddress().length != 4) {
-                logger.info("Ignoring IPv6 address for nanoleaf controllers: {}", host);
+                logger.debug("Ignoring IPv6 address for nanoleaf controllers: {}", host);
                 return null;
             }
         } catch (UnknownHostException e) {
