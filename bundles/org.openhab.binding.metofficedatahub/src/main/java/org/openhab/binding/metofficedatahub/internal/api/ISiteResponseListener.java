@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface ISiteResponseListener {
-    void processDailyResponse(final String content);
+    void processDailyResponse(final String content, final String pollId);
 
-    void processHourlyResponse(final String content);
+    void processHourlyResponse(final String content, final String pollId);
 }

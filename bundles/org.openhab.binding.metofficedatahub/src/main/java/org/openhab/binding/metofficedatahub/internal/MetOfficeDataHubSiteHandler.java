@@ -86,6 +86,9 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private PollManager dailyForecastPollManager;
     private PollManager hourlyForecastPollManager;
 
+    private String dailyPollKey = "";
+    private String hourlyPollKey = "";
+
     public MetOfficeDataHubSiteHandler(Thing thing, @Reference LocationProvider locationProvider,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
             @Reference TimeZoneProvider timeZoneProvider) {
@@ -172,6 +175,10 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
                 return;
             }
         }
+
+        dailyPollKey = location + "_daily";
+        hourlyPollKey = location + "_hourly";
+
         if (config.hourlyForecastPollRate > 0) {
             hourlyForecastPollManager.setPollDuration(Duration.ofHours(config.hourlyForecastPollRate));
         }
@@ -256,9 +263,10 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
                     getLocalizedText("site.error.no-bridge"));
             return;
         }
+        final String pollId = (daily) ? dailyPollKey : hourlyPollKey;
         final MetOfficeDataHubBridgeHandler metOfficeBridgeHandler = getMetOfficeDataHubBridge();
         if (metOfficeBridgeHandler != null) {
-            metOfficeBridgeHandler.getSiteApi().sendRequest(daily, location, this);
+            metOfficeBridgeHandler.getSiteApi().sendRequest(daily, location, this, pollId);
         }
     }
 
@@ -303,9 +311,11 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     // Implementation of ISiteResponseListener and associated methods
 
     @Override
-    public void processDailyResponse(final String responseData) {
-        dailyForecastPollManager.setDataContentReceived(responseData);
-        processDailyContent(responseData);
+    public void processDailyResponse(final String responseData, final String pollId) {
+        if (dailyPollKey.equals(pollId)) {
+            dailyForecastPollManager.setDataContentReceived(responseData);
+            processDailyContent(responseData);
+        }
     }
 
     public void processDailyContent(final String responseData) {
@@ -459,9 +469,11 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     }
 
     @Override
-    public void processHourlyResponse(final String responseData) {
-        hourlyForecastPollManager.setDataContentReceived(responseData);
-        processHourlyContent(responseData);
+    public void processHourlyResponse(final String responseData, final String pollId) {
+        if (hourlyPollKey.equals(pollId)) {
+            hourlyForecastPollManager.setDataContentReceived(responseData);
+            processHourlyContent(responseData);
+        }
     }
 
     public void processHourlyContent(final String responseData) {

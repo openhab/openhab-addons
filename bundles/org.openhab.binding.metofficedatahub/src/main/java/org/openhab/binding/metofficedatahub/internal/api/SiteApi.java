@@ -171,7 +171,7 @@ public class SiteApi {
     }
 
     public void sendRequest(final boolean daily, final PointType location,
-            final ISiteResponseListener siteResponseListener) {
+            final ISiteResponseListener siteResponseListener, final String pollId) {
         if (requestLimiter.getCurrentRequestCount() == RequestLimiter.INVALID_REQUEST_ID) {
             logger.debug("{} - Disabled requesting data - request limit has been hit", usageId);
             return;
@@ -204,9 +204,9 @@ public class SiteApi {
                             notifyConnectedListeners();
                             scheduler.execute(() -> {
                                 if (daily) {
-                                    siteResponseListener.processDailyResponse(response);
+                                    siteResponseListener.processDailyResponse(response, pollId);
                                 } else {
-                                    siteResponseListener.processHourlyResponse(response);
+                                    siteResponseListener.processHourlyResponse(response, pollId);
                                 }
                             });
                         }
