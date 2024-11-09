@@ -112,7 +112,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
         if (enedisApi == null) {
             return "";
         }
-        String token = enedisApi.getData(url);
+        String token = enedisApi.getContent(url);
 
         logger.debug("token: {}", token);
 

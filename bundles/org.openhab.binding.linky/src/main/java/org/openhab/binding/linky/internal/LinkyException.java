@@ -36,10 +36,10 @@ public class LinkyException extends Exception {
     }
 
     public LinkyException(String message, Object... params) {
-        this(String.format(message, params));
+        this(message.formatted(params));
     }
 
     public LinkyException(Exception e, String message, Object... params) {
-        this(e, String.format(message, params));
+        this(e, message.formatted(params));
     }
 }

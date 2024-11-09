@@ -24,7 +24,47 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class UsagePoint {
-    @SerializedName("usage_point")
-    public UsagePointDetails usagePoint;
-    public ContractDetails contracts;
+    @SerializedName("usage_point_id")
+    public String usagePointId;
+
+    @SerializedName("usage_point_status")
+    public String usagePointStatus;
+
+    @SerializedName("meter_type")
+    public String meterType;
+
+    @SerializedName("usage_point_addresses")
+    public AddressInfo usagePointAddresses;
+
+    public class AddressInfo {
+        public String street;
+        public String locality;
+
+        @SerializedName("postal_code")
+        public String postalCode;
+
+        @SerializedName("insee_code")
+        public String inseeCode;
+        public String city;
+        public String country;
+    }
+
+    public static UsagePoint convertFromPrmDetail(PrmDetail prmDetail) {
+        UsagePoint result = new UsagePoint();
+
+        result.usagePointId = "";
+        result.usagePointStatus = "";
+        result.meterType = prmDetail.situationComptageDto.dispositifComptage().typeComptage().code();
+        result.usagePointAddresses = result.new AddressInfo();
+
+        result.usagePointAddresses.street = prmDetail.adresse.ligne4();
+        result.usagePointAddresses.locality = prmDetail.adresse.ligne6();
+        result.usagePointAddresses.city = prmDetail.adresse.ligne6();
+        result.usagePointAddresses.postalCode = prmDetail.adresse.ligne6();
+        result.usagePointAddresses.inseeCode = "";
+        result.usagePointAddresses.country = "";
+
+        return result;
+    }
+
 }

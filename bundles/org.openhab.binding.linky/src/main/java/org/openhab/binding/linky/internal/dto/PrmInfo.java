@@ -15,29 +15,12 @@ package org.openhab.binding.linky.internal.dto;
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link UserInfo} holds ids of existing Prms
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
 public class PrmInfo {
-
-    public PrmInfo() {
-        customerId = "";
-        contractInfo = new ContractDetails();
-        identityInfo = new IdentityInfo();
-        addressInfo = new AddressInfo();
-        contactInfo = new ContactInfo();
-        usagePointInfo = new UsagePointDetails();
-    }
-
-    public String prmId;
-    public String customerId;
-
-    public ContractDetails contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
+    public String idPrm;
 }

@@ -144,6 +144,8 @@ The thing has the following configuration parameters:
 | prmId          | The prmId link to the linky Handler.                                                        |
 | token          | Optional : need if a token necessary to access this Linky thing (use for MyElectricaldata)  |
 
+Thing linky:linky:local "Compteur Linky" [ prmId="xxxx", token="yyyyyyyyyyyyyyyyyyyyyyy" ]
+
 
 ## Channels
 

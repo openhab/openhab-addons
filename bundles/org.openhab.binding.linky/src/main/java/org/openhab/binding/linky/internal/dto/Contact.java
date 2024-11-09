@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import org.eclipse.jetty.jaas.spi.UserInfo;
-
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
-public class TempoDayInfo {
-    public String tempoDay;
-    public String tempoVal;
+public class Contact {
+    public String phone;
+    public String email;
+
+    public static Contact convertFromUserInfo(UserInfo userInfo) {
+        Contact result = new Contact();
+
+        result.email = userInfo.userProperties.mail;
+
+        return result;
+    }
 }
