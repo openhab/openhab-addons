@@ -81,7 +81,7 @@ public class EnergiDataServiceActions implements ThingActions {
                 .collect(Collectors.toSet()));
     }
 
-    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", id = "getPricesForComponents", visibility = Visibility.HIDDEN)
+    @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description", visibility = Visibility.HIDDEN)
     public @ActionOutput(type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices(
             @ActionInput(name = "priceComponents", label = "@text/action.get-prices.priceComponents.label", description = "@text/action.get-prices.priceComponents.description") @Nullable String priceComponents) {
         if (priceComponents == null) {
@@ -146,7 +146,7 @@ public class EnergiDataServiceActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description", id = "calculateCheapestPeriod2")
+    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
     public @ActionOutputs({
             @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
             @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
@@ -166,7 +166,7 @@ public class EnergiDataServiceActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description", id = "calculateCheapestPeriod3")
+    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
     public @ActionOutputs({
             @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
             @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
@@ -188,7 +188,7 @@ public class EnergiDataServiceActions implements ThingActions {
         }
     }
 
-    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description", id = "calculateCheapestPeriod4")
+    @RuleAction(label = "@text/action.calculate-cheapest-period.label", description = "@text/action.calculate-cheapest-period.description")
     public @ActionOutputs({
             @ActionOutput(name = "CheapestStart", label = "@text/action.calculate-cheapest-period.output.cheapest-start.label", type = "java.time.Instant"),
             @ActionOutput(name = "LowestPrice", label = "@text/action.calculate-cheapest-period.output.lowest-price.label", type = "java.math.BigDecimal"),
