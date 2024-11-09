@@ -13,35 +13,11 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link UserInfo} holds informations about energy delivery point
+ * The {@link UserInfo} holds ids of existing Prms
  *
  * @author Gaël L'hopital - Initial contribution
  */
 
 public class PrmInfo {
-    public class Adresse {
-        public Object adresseLigneUn;
-        public String adresseLigneDeux;
-        public Object adresseLigneTrois;
-        public String adresseLigneQuatre;
-        public Object adresseLigneCinq;
-        public String adresseLigneSix;
-        public String adresseLigneSept;
-    }
-
-    public String prmId;
-    public String dateFinRole;
-    public String segment;
-    public Adresse adresse;
-    public String typeCompteur;
-    public String niveauOuvertureServices;
-    public String communiquant;
-    public long dateSoutirage;
-    public String dateInjection;
-    public int departement;
-    public int puissanceSouscrite;
-    public String codeCalendrier;
-    public String codeTitulaire;
-    public boolean collecteActivee;
-    public boolean multiTitulaire;
+    public String idPrm;
 }
