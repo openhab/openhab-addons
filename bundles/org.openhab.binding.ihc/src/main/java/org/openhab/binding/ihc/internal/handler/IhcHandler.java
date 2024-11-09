@@ -17,9 +17,9 @@ import static org.openhab.binding.ihc.internal.IhcBindingConstants.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -343,8 +343,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
             WSTimeManagerSettings timeSettings = ihc.getTimeSettings();
             logger.debug("Controller time settings: {}", timeSettings);
 
-            ZonedDateTime time = timeSettings.getTimeAndDateInUTC().getAsZonedDateTime(ZoneId.of("Z"))
-                    .withZoneSameInstant(ZoneId.systemDefault());
+            Instant time = timeSettings.getTimeAndDateInUTC().getAsInstant(ZoneId.of("Z"));
+
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_TIME), new DateTimeType(time));
         } catch (IhcExecption e) {
             logger.warn("Controller uptime information fetch failed, reason: {}.", e.getMessage(), e);
