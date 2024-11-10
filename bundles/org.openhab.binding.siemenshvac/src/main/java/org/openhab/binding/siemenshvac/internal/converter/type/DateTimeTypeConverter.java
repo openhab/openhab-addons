@@ -70,7 +70,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     protected DateTimeType fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         if ("----".equals(value.getAsString())) {
-            return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
+            return new DateTimeType();
         } else {
             String[] formats = { "EEEE, d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy HH:mm[:ss]", "d. LLLL yyyy",
                     "d. LLLL" };
