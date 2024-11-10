@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.awattar.internal.handler.TimeRange;
 
@@ -37,7 +36,7 @@ import org.openhab.binding.awattar.internal.handler.TimeRange;
  */
 public class AwattarBestPriceTest {
 
-    private ZoneId zoneId;
+    private ZoneId zoneId = ZoneId.of("GMT");
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
         return ZonedDateTime.ofInstant(Instant.ofEpochSecond(1731283200L), zone).truncatedTo(ChronoUnit.HOURS)
@@ -73,11 +72,6 @@ public class AwattarBestPriceTest {
         prices.add(new AwattarPrice(107.89, 107.89, 107.89, 107.89, new TimeRange(1731366000000L, 1731369600000L)));
 
         return prices;
-    }
-
-    @BeforeEach
-    public void setUp() {
-        zoneId = ZoneId.of("GMT");
     }
 
     @Test
