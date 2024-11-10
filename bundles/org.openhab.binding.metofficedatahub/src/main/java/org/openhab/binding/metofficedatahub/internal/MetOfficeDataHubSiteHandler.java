@@ -198,7 +198,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO: We want to coalesce these call's so only one poll is run ideally
         scheduler.execute(() -> {
             if (RefreshType.REFRESH.equals(command)) {
                 scheduleDataRequiredCheck();
