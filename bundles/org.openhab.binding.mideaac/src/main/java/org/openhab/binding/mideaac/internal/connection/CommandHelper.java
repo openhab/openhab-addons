@@ -135,7 +135,7 @@ public class CommandHelper {
         if (command instanceof DecimalType decimalCommand) {
             logger.debug("Handle Target Temperature as DecimalType in degrees C");
             commandSet.setTargetTemperature(limitTargetTemperatureToRange(decimalCommand.floatValue()));
-        } else if (command instanceof QuantityType quantityCommand) {
+        } else if (command instanceof QuantityType<?> quantityCommand) {
             if (quantityCommand.getUnit().equals(ImperialUnits.FAHRENHEIT)) {
                 quantityCommand = Objects.requireNonNull(quantityCommand.toUnit(SIUnits.CELSIUS));
             }

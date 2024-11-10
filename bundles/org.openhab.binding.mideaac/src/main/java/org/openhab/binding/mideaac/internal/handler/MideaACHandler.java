@@ -14,6 +14,7 @@ package org.openhab.binding.mideaac.internal.handler;
 
 import static org.openhab.binding.mideaac.internal.MideaACBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -75,11 +76,13 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private final Logger logger = LoggerFactory.getLogger(MideaACHandler.class);
     private final CloudsDTO clouds;
     private final boolean imperialUnits;
+    private boolean isPollRunning = false;
     private final HttpClient httpClient;
 
     private MideaACConfiguration config = new MideaACConfiguration();
     private Map<String, String> properties = new HashMap<>();
-    private @Nullable ConnectionManager connectionManager;
+    // Default parameters are the same as in the MideaACConfiguration class
+    private ConnectionManager connectionManager = new ConnectionManager("", 6444, 4, "", "", "", "", "", "", 0, false);
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private @Nullable ScheduledFuture<?> scheduledTask = null;
 
@@ -113,27 +116,22 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     /**
-     * This method handles the Channels that can be set (non-read only)
-     * First the Routine polling is stopped so there is no conflict
-     * Then connects and authorizes (if necessary) and returns here to
-     * create the command set which is then sent to the device.
+     * This method handles the AC Channels that can be set (non-read only)
+     * The command set is formed using the previous command to only
+     * change the item requested and leave the others the same.
+     * The command set which is then sent to the device via the connectionManager.
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handling channelUID {} with command {}", channelUID.getId(), command.toString());
         ConnectionManager connectionManager = this.connectionManager;
-        if (connectionManager == null) {
-            logger.warn("The connection manager was unexpectedly null, please report a bug");
-            return;
-        }
+
         if (command instanceof RefreshType) {
             try {
                 connectionManager.getStatus(callbackLambda);
             } catch (MideaAuthenticationException e) {
-                logger.warn("Unable to proces command: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (MideaConnectionException | MideaException e) {
-                logger.warn("Unable to proces command: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             return;
@@ -178,12 +176,14 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * Initialize is called on first pass or when a device parameter is changed
      * The basic check is if the information from Discovery (or the user update)
      * is valid. Because V2 devices do not require a cloud provider (or token/key)
-     * The check is for the IP, port and deviceID. This method also resets the dropped
-     * commands, disconnects the socket and stops the connection monitor (if these were
-     * running)
+     * The first check is for the IP, port and deviceID. The second part
+     * checks the security configuration if required (V3 device).
      */
     @Override
     public void initialize() {
+        if (isPollRunning) {
+            stopScheduler();
+        }
         config = getConfigAs(MideaACConfiguration.class);
 
         if (!config.isValid()) {
@@ -196,10 +196,13 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                 try {
                     discoveryService.discoverThing(config.ipAddress, this);
+                    return;
                 } catch (Exception e) {
                     logger.error("Discovery failure for {}: {}", thing.getUID(), e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Discovery failure. Check configuration.");
+                    return;
                 }
-                return;
             } else {
                 logger.debug("MideaACHandler config of {} is invalid. Check configuration", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -215,8 +218,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 logger.info("Retrieving Token and/or Key from cloud");
                 CloudProviderDTO cloudProvider = CloudProviderDTO.getCloudProvider(config.cloud);
                 getTokenKeyCloud(cloudProvider);
+                return;
             } else {
-                logger.warn("Configuration invalid for {}", thing.getUID());
+                logger.warn("Configuration invalid for {} and no account info to retrieve from cloud", thing.getUID());
+                return;
             }
         } else {
             logger.debug("Security Configuration (V3 Device) valid for {}", thing.getUID());
@@ -228,21 +233,29 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
-        // startScheduler(2, config.pollingTime, TimeUnit.SECONDS);
-        scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
+        startScheduler(2, config.pollingTime, TimeUnit.SECONDS);
     }
 
-    public void startScheduler(long initialDelay, long delay, TimeUnit unit) {
-        scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, initialDelay, delay, unit);
-        logger.debug("Scheduled task started");
+    /**
+     * Starts the Scheduler for the Polling
+     * 
+     * @param initialDelay Seconds before first Poll
+     * @param delay Seconds between Polls
+     * @param unit Seconds
+     */
+    private void startScheduler(long initialDelay, long delay, TimeUnit unit) {
+        if (scheduledTask == null) {
+            isPollRunning = true;
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, initialDelay, delay, unit);
+            logger.debug("Scheduled task started");
+        } else {
+            logger.debug("Scheduler already running");
+        }
     }
 
     private void pollJob() {
         ConnectionManager connectionManager = this.connectionManager;
-        if (connectionManager == null) {
-            logger.warn("The connection manager was unexpectedly null, please report a bug");
-            return;
-        }
+
         try {
             connectionManager.getStatus(callbackLambda);
             updateStatus(ThingStatus.ONLINE);
@@ -315,12 +328,14 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         Object propertyIpPort = Objects.requireNonNull(discoveryProps.get(CONFIG_IP_PORT));
         configuration.put(CONFIG_IP_PORT, propertyIpPort.toString());
 
+        Object propertyVersion = Objects.requireNonNull(discoveryProps.get(CONFIG_VERSION));
+        BigDecimal bigDecimalVersion = new BigDecimal((String) propertyVersion);
+        logger.trace("Property Version in Handler {}", bigDecimalVersion.intValue());
+        configuration.put(CONFIG_VERSION, bigDecimalVersion.intValue());
+
         updateConfiguration(configuration);
 
         properties = editProperties();
-
-        Object propertyVersion = Objects.requireNonNull(discoveryProps.get(PROPERTY_VERSION));
-        properties.put(PROPERTY_VERSION, propertyVersion.toString());
 
         Object propertySN = Objects.requireNonNull(discoveryProps.get(PROPERTY_SN));
         properties.put(PROPERTY_SN, propertySN.toString());
@@ -332,10 +347,14 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         properties.put(PROPERTY_TYPE, propertyType.toString());
 
         updateProperties(properties);
-
         initialize();
     }
 
+    /**
+     * Gets the token and key from the Cloud
+     * 
+     * @param cloudProvider Cloud Provider account
+     */
     public void getTokenKeyCloud(CloudProviderDTO cloudProvider) {
         CloudDTO cloud = getClouds().get(config.email, config.password, cloudProvider);
         if (cloud != null) {
@@ -350,7 +369,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                 logger.trace("Token: {}", tk.token());
                 logger.trace("Key: {}", tk.key());
-                logger.info("Token and Key obtained from cloud, saving, initializing");
+                logger.info("Token and Key obtained from cloud, saving, back to initialize");
                 initialize();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
@@ -360,22 +379,20 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         }
     }
 
-    public void stopScheduler() {
+    private void stopScheduler() {
         ScheduledFuture<?> localScheduledTask = this.scheduledTask;
 
         if (localScheduledTask != null && !localScheduledTask.isCancelled()) {
             localScheduledTask.cancel(true);
             logger.debug("Scheduled task cancelled.");
+            isPollRunning = false;
             scheduledTask = null;
-        }
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-            logger.debug("Scheduler service shut down.");
         }
     }
 
     @Override
     public void dispose() {
-        // stopScheduler();
+        stopScheduler();
+        connectionManager.dispose(true);
     }
 }

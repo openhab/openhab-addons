@@ -27,7 +27,7 @@ public class MideaACConfiguration {
 
     public int ipPort = 6444;
 
-    public String deviceId = "";
+    public String deviceId = "0";
 
     public String email = "";
 
@@ -43,7 +43,7 @@ public class MideaACConfiguration {
 
     public int timeout = 4;
 
-    public boolean promptTone;
+    public boolean promptTone = false;
 
     public int version = 0;
 
@@ -53,7 +53,8 @@ public class MideaACConfiguration {
      * @return true(valid), false (not valid)
      */
     public boolean isValid() {
-        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank());
+        return !("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
+                || version <= 1);
     }
 
     /**
@@ -63,7 +64,7 @@ public class MideaACConfiguration {
      */
     public boolean isDiscoveryNeeded() {
         return ("0".equalsIgnoreCase(deviceId) || deviceId.isBlank() || ipPort <= 0 || ipAddress.isBlank()
-                || !Utils.validateIP(ipAddress));
+                || !Utils.validateIP(ipAddress) || version <= 1);
     }
 
     /**

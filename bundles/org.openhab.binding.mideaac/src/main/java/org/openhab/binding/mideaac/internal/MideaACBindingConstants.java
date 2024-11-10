@@ -85,8 +85,8 @@ public class MideaACBindingConstants {
     public static final String CONFIG_POLLING_TIME = "pollingTime";
     public static final String CONFIG_CONNECTING_TIMEOUT = "timeout";
     public static final String CONFIG_PROMPT_TONE = "promptTone";
+    public static final String CONFIG_VERSION = "version";
 
-    public static final String PROPERTY_VERSION = "version";
     public static final String PROPERTY_SN = "sn";
     public static final String PROPERTY_SSID = "ssid";
     public static final String PROPERTY_TYPE = "type";

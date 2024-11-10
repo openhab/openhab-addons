@@ -41,6 +41,19 @@ public class MideaACDiscoveryServiceTest {
             mSmartType = "";
 
     /**
+     * Test Version
+     */
+    @Test
+    public void testVersion() {
+        if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("8370")) {
+            mSmartVersion = "3";
+        } else {
+            mSmartVersion = "2";
+        }
+        assertEquals("3", mSmartVersion);
+    }
+
+    /**
      * Test Id
      */
     @Test
