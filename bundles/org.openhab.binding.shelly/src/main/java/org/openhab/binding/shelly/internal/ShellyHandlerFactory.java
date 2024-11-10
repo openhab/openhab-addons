@@ -126,7 +126,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_COLOR_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR)
                 || thingType.equals(THING_TYPE_SHELLYRGBW2_WHITE_STR) || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR)
-                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)) {
+                || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSRGBWPM_STR)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);

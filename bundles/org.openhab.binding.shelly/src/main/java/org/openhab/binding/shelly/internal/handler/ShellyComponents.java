@@ -569,6 +569,27 @@ public class ShellyComponents {
         return updated;
     }
 
+    public static boolean updateRGBW(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
+            throws ShellyApiException {
+        boolean updated = false;
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (profile.isRGBW2) {
+            if (!thingHandler.areChannelsCreated()) {
+                return false;
+            }
+            ShellySettingsLight light = orgStatus.lights.get(0);
+            ShellyColorUtils col = new ShellyColorUtils();
+            col.setRGBW(light.red, light.green, light.blue, light.white);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.percentRed);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.percentGreen);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.percentBlue);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.percentWhite);
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSB());
+
+        }
+        return updated;
+    }
+
     public static boolean updateDimmers(ShellyThingInterface thingHandler, ShellySettingsStatus orgStatus)
             throws ShellyApiException {
         boolean updated = false;
