@@ -44,7 +44,7 @@ public class ConverterFactory {
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC, new NumericTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_RADIO, new RadioTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_STRING, new StringTypeConverter());
-        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY, new TimeOfDayTypeConverter(timeZoneProvider));
+        registerConverter(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY, new TimeOfDayTypeConverter());
 
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_CHECKBOX, new CheckboxTypeConverter());
         registerConverter(SiemensHvacBindingConstants.DPT_TYPE_SCHEDULER, new SchedulerTypeConverter());
