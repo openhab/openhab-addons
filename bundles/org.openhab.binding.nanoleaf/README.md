@@ -40,8 +40,6 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 
 ## Discovery
 
-Note that the discovery is based upon IP V4 addresses as the binding does not support IP V6 addresses.
-
 ### Adding the Controller as a Thing
 
 To add a nanoleaf controller, go to your inbox and start a scan.
@@ -134,22 +132,8 @@ The controller thing has the following parameters:
 **Important note on the topic of IPV6 ip addresses:**
 
 With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.
-This is due to the fact that if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices.
-It is therefore recommended to disable IPv6 on the openHAB server.
-
-This can e.g. be achieved on openHABian the following way:
-
-```shell
-sudo nano /etc/sysctl.conf`
-```
-
-Add the following at the bottom of the file:
-
-```ini
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-```
+This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to an unstable behaviour.
+To avoid this, the binding will only discover devices based on their IPv4 address.
 
 Reboot your server after the change.
 
