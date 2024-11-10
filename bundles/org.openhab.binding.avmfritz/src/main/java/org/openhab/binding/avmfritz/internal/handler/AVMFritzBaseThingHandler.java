@@ -126,6 +126,7 @@ import org.slf4j.LoggerFactory;
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
  * @author Tobias Lange - Added abs color temperature and fixed on/off behavior of light blub
+ * @author Fabian Girgert - Fixed incorrect state of dimmable bulb when switched off
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implements FritzAhaStatusListener {
@@ -207,7 +208,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
                             deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
-                    updateDimmableLight(deviceModel.getLevelControlModel());
+                    updateDimmableLight(deviceModel.getLevelControlModel(), deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
                     updateSimpleOnOffUnit(deviceModel.getSimpleOnOffUnit());
                 }
@@ -255,9 +256,16 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel) {
+    private void updateDimmableLight(@Nullable LevelControlModel levelControlModel,
+            @Nullable SimpleOnOffModel simpleOnOff) {
         if (levelControlModel != null) {
-            updateThingChannelState(CHANNEL_BRIGHTNESS, new PercentType(levelControlModel.getLevelPercentage()));
+            PercentType brightness;
+            if (simpleOnOff == null || simpleOnOff.state) {
+                brightness = new PercentType(levelControlModel.getLevelPercentage());
+            } else {
+                brightness = PercentType.ZERO;
+            }
+            updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
         }
     }
 
