@@ -106,7 +106,7 @@ public class GreeException extends Exception {
 
     private Class<?> getCauseClass() {
         Throwable cause = getCause();
-        if (getCause() != null) {
+        if (cause != null) {
             return cause.getClass();
         }
         return GreeException.class;

@@ -10,13 +10,29 @@
 	</channel-type>
 	<channel-type id="temperature-hvac">
 		<item-type>Number:Temperature</item-type>
-		<label>AC Temperature</label>
+		<label>AC Setpoint Temperature</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="active-hvac">
 		<item-type>Switch</item-type>
-		<label>AC Control</label>
+		<label>AC Precondition Control</label>
+		<description>Switch on/off precondition air conditioning</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="ac-status">
+		<item-type>Number</item-type>
+		<label>AC Precondition Status</label>
+		<description>Status of precondition air conditioning</description>
+		<state>
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L235 -->
+			<options>
+				<option value="0">No Request</option>
+				<option value="1">Battery or Fuel Low</option>
+				<option value="2">Available after Restart Engine</option>
+				<option value="3">Not Possible, Charging not Finished</option>
+				<option value="4">General Error</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="front-left-hvac">
 		<item-type>Switch</item-type>
@@ -41,6 +57,27 @@
 	<channel-type id="aux-heat">
 		<item-type>Switch</item-type>
 		<label>Auxiliary Heating Control</label>
+		<description>Switch on/off auxiliary heating</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="aux-status">
+		<item-type>Number</item-type>
+		<label>Auxiliary Heating Status</label>
+		<description>Auxiliary heating status</description>
+		<state>
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/AuxheatTypes.swift#L66 -->
+			<options>
+				<option value="0">None</option>
+				<option value="1">No Budget</option>
+				<option value="2">Budget Empty</option>
+				<option value="4">System Error</option>
+				<option value="8">Running Error</option>
+				<option value="16">Fuel on Reserve</option>
+				<option value="32">Reserve Reached</option>
+				<option value="64">Low Voltage</option>
+				<option value="128">Low Voltage Operation</option>
+				<option value="256">Communication Error</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

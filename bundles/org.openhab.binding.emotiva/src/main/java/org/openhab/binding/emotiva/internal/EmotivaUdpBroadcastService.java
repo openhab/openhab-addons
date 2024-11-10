@@ -73,7 +73,7 @@ public class EmotivaUdpBroadcastService {
      */
     public Optional<DiscoveryResult> discoverThings() {
         try {
-            final DatagramPacket receivePacket = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
+            final var receivePacket = new DatagramPacket(new byte[MAX_PACKET_SIZE], MAX_PACKET_SIZE);
             // No need to call close first, because the caller of this method already has done it.
 
             discoverSocket = new DatagramSocket(
@@ -82,7 +82,7 @@ public class EmotivaUdpBroadcastService {
 
             byte[] emotivaPingDTO = xmlUtils.marshallEmotivaDTO(new EmotivaPingDTO(PROTOCOL_V3.name()))
                     .getBytes(Charset.defaultCharset());
-            final DatagramPacket discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
+            final var discoverPacket = new DatagramPacket(emotivaPingDTO, emotivaPingDTO.length, broadcast,
                     EmotivaBindingConstants.DEFAULT_PING_PORT);
 
             DatagramSocket localDatagramSocket = discoverSocket;
@@ -146,7 +146,7 @@ public class EmotivaUdpBroadcastService {
      */
     private Optional<DiscoveryResult> thingDiscovered(DatagramPacket packet) {
         final String ipAddress = packet.getAddress().getHostAddress();
-        String udpResponse = new String(packet.getData(), 0, packet.getLength() - 1, StandardCharsets.UTF_8);
+        final var udpResponse = new String(packet.getData(), 0, packet.getLength() - 1, StandardCharsets.UTF_8);
 
         Object object;
         try {
@@ -159,8 +159,7 @@ public class EmotivaUdpBroadcastService {
         if (object instanceof EmotivaTransponderDTO answerDto) {
             logger.trace("Processing Received '{}' with '{}' ", EmotivaTransponderDTO.class.getSimpleName(),
                     udpResponse);
-            final ThingUID thingUid = new ThingUID(
-                    THING_PROCESSOR + AbstractUID.SEPARATOR + ipAddress.replace(".", ""));
+            final var thingUid = new ThingUID(THING_PROCESSOR + AbstractUID.SEPARATOR + ipAddress.replace(".", ""));
             final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUid)
                     .withThingType(THING_PROCESSOR).withProperty("ipAddress", ipAddress)
                     .withProperty("controlPort", answerDto.getControl().getControlPort())

@@ -1,0 +1,1807 @@
+<xml>
+
+	<!-- Generalized Controllers (0x00) -->
+
+	<product devCat="0x00">
+		<description>Generalized Controller</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x04">
+		<description>ControLinc</description>
+		<model>2430</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_ControLinc</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x05" productKey="0x000034">
+		<description>RemoteLinc</description>
+		<model>2440</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_RemoteLinc</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x06">
+		<description>ICON Tabletop Controller</description>
+		<model>2830</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_ControLinc</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x08" productKey="0x00003D">
+		<description>Ethernet to X10/Insteon Controller</description>
+		<model>EZBridge</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x09">
+		<description>SignaLinc RF Signal Enhancer</description>
+		<model>2442</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x0A" productKey="0x000007">
+		<description>Poolux LCD Controller</description>
+		<vendor>Balboa</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x0B" productKey="0x000022">
+		<description>Access Point</description>
+		<model>2443</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x0C" productKey="0x000028">
+		<description>Color Touchscreen</description>
+		<model>12005</model>
+		<vendor>IES</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x0D" productKey="0x00004D">
+		<description>SmartLabs KeyFOB</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x0E">
+		<description>RemoteLinc EZ</description>
+		<model>2440EZ</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x10">
+		<description>RemoteLinc 2 Keypad 4-Scene</description>
+		<model>2444A2WH4</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene4</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x11">
+		<description>RemoteLinc 2 Switch</description>
+		<model>2444A3</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteSwitch</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x12">
+		<description>RemoteLinc 2 Keypad 8-Scene</description>
+		<model>2444A2WH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene8</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x13">
+		<description>Diagnostics Keypad</description>
+		<model>2993-222</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x00" subCat="0x14">
+		<description>Mini Remote Keypad 4-Scene</description>
+		<model>2342-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene4</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x15">
+		<description>Mini Remote Switch</description>
+		<model>2342-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteSwitch</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x16">
+		<description>Mini Remote Keypad 8-Scene</description>
+		<model>2342-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene8</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x17">
+		<description>Mini Remote Keypad 4-Scene</description>
+		<model>2342-532</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene4</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x18">
+		<description>Mini Remote Keypad 8-Scene</description>
+		<model>2342-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene8</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x19">
+		<description>Mini Remote Switch</description>
+		<model>2342-542</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteSwitch</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x1A">
+		<description>Mini Remote Keypad 8-Scene</description>
+		<model>2342-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene8</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x1B">
+		<description>Mini Remote Keypad 4-Scene</description>
+		<model>2342-232</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteScene4</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x1C">
+		<description>Mini Remote Switch</description>
+		<model>2342-242</model>
+		<vendor>Insteon</vendor>
+		<device-type>GeneralizedController_MiniRemoteSwitch</device-type>
+	</product>
+	<product devCat="0x00" subCat="0x1D" productKey="0x000022">
+		<description>Range Extender</description>
+		<model>2992-222</model>
+		<vendor>Insteon</vendor>
+	</product>
+
+	<!-- Dimmable Lighting Control (0x01) -->
+
+	<product devCat="0x01">
+		<description>Dimmable Lighting Control</description>
+		<vendor>Generic</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x00">
+		<description>LampLinc 3-Pin Dimmer</description>
+		<model>2456D3</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x01">
+		<description>SwitchLinc Dimmer</description>
+		<model>2476D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x02">
+		<description>In-LineLinc Dimmer</description>
+		<model>2475D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x03" firstRecord="0x00FF">
+		<description>ICON Dimmer Switch</description>
+		<model>2876DB</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x04">
+		<description>SwitchLinc Dimmer (High Wattage)</description>
+		<model>2476DH</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x05" productKey="0x000041">
+		<description>KeypadLinc Dimmer Countdown Timer</description>
+		<model>2484DWH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x06">
+		<description>LampLinc Dimmer</description>
+		<model>2456D2</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x07" firstRecord="0x00FF">
+		<description>ICON LampLinc</description>
+		<model>2856D2B</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x08" productKey="0x000040">
+		<description>SwitchLinc Dimmer Countdown Timer</description>
+		<model>2476DT</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x09" productKey="0x000037">
+		<description>KeypadLinc Dimmer 6-Button</description>
+		<model>2486DWH6</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0A" firstRecord="0x00FF">
+		<description>ICON In-Wall Controller</description>
+		<model>2886D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0B" productKey="0x00001C">
+		<description>Dimmer Module</description>
+		<model>2632-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0C" productKey="0x00001D">
+		<description>KeypadLinc Dimmer 8-Button</description>
+		<model>2486DWH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton8</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0D" productKey="0x00001E">
+		<description>SocketLinc</description>
+		<model>2454D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0E" productKey="0x00004B">
+		<description>LampLinc Dimmer</description>
+		<model>2457D2</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x0F">
+		<description>Dimmer Module</description>
+		<model>2632-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x11">
+		<description>Dimmer Module</description>
+		<model>2632-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x12">
+		<description>Dimmer Module</description>
+		<model>2632-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x13" productKey="0x000032">
+		<description>ICON SwitchLinc Dimmer (Lixar)</description>
+		<model>2676D-B</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x17">
+		<description>ToggleLinc Dimmer</description>
+		<model>2466D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_ToggleLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x18" productKey="0x00003F" firstRecord="0x00FF">
+		<description>ICON SwitchLinc Dimmer In-Line Companion</description>
+		<model>2474D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x19" productKey="0x00004E">
+		<description>SwitchLinc Dimmer</description>
+		<model>2476D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1A" productKey="0x00004F">
+		<description>In-LineLinc Dimmer</description>
+		<model>2475D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1B" productKey="0x000050">
+		<description>KeypadLinc Dimmer 6-Button</description>
+		<model>2486DWH6</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1C" productKey="0x000051">
+		<description>KeypadLinc Dimmer 8-Button</description>
+		<model>2486DWH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton8</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1D" productKey="0x000052">
+		<description>SwitchLinc Dimmer (High Wattage)</description>
+		<model>2476DH</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1E" firstRecord="0x00FF">
+		<description>ICON Dimmer Switch</description>
+		<model>2876DB</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x1F">
+		<description>ToggleLinc Dimmer</description>
+		<model>2466DW</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_ToggleLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x20" productKey="0x00006B">
+		<description>SwitchLinc Dimmer</description>
+		<model>2477D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x21">
+		<description>OutletLinc Dimmer</description>
+		<model>2472DWH</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_OutletLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x22">
+		<description>LampLinc Dimmer</description>
+		<model>2457D2X</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x23">
+		<description>LampLinc EZ</description>
+		<model>2457D2</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LampLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x24">
+		<description>SwitchLinc 2-Wire Dimmer</description>
+		<model>2474DWH</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x25">
+		<description>Ballast Dimmer</description>
+		<model>2475DA2</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x27" productKey="0x000087">
+		<description>Wall Dimmer</description>
+		<model>4701</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x29" productKey="0x000089">
+		<description>Wall Keypad Dimmer</description>
+		<model>4703</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2A" productKey="0x00008B">
+		<description>Plug-in Dimmer</description>
+		<model>4705</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2B" productKey="0x000091">
+		<description>Wall Dimmer (High Wattage)</description>
+		<model>4711</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2C" productKey="0x000092">
+		<description>In-Line Dimmer</description>
+		<model>4712</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2D" productKey="0x00009E">
+		<description>SwitchLinc Dimmer (High Wattage)</description>
+		<model>2477DH</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2E">
+		<description>FanLinc</description>
+		<model>2475F</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_FanLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x2F">
+		<description>KeypadLinc Dimmer Schedule Timer</description>
+		<model>2484DST6</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x30">
+		<description>SwitchLinc Dimmer</description>
+		<model>2476D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x31">
+		<description>SwitchLinc Dimmer</description>
+		<model>2478D</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x32">
+		<description>In-LineLinc Dimmer</description>
+		<model>2475DA1</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x34">
+		<description>DIN Rail Dimmer</description>
+		<model>2452-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x35">
+		<description>Micro Dimmer</description>
+		<model>2442-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x36">
+		<description>DIN Rail Dimmer</description>
+		<model>2452-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x37">
+		<description>DIN Rail Dimmer</description>
+		<model>2452-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x38">
+		<description>Micro Dimmer</description>
+		<model>2442-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x39">
+		<description>Micro Dimmer</description>
+		<model>2442-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3A">
+		<description>LED Bulb (A19)</description>
+		<model>2672-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3B">
+		<description>LED Bulb (E27)</description>
+		<model>2672-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3C">
+		<description>LED Bulb (E27)</description>
+		<model>2672-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3D">
+		<description>Ballast Dimmer</description>
+		<model>2446-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3E">
+		<description>Ballast Dimmer</description>
+		<model>2446-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x3F">
+		<description>Fixture Dimmer</description>
+		<model>2447-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x40">
+		<description>Fixture Dimmer</description>
+		<model>2447-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x41">
+		<description>Keypad Dimmer 8-Button</description>
+		<model>2334-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton8</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x42">
+		<description>Keypad Dimmer 6-Button</description>
+		<model>2334-232</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x49">
+		<description>LED Bulb (PAR38)</description>
+		<model>2674-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4A">
+		<description>LED Bulb (PAR38)</description>
+		<model>2674-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4B">
+		<description>LED Bulb (PAR38)</description>
+		<model>2674-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4C">
+		<description>LED Bulb (E27)</description>
+		<model>2672-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4D">
+		<description>LED Bulb (E27)</description>
+		<model>2672-532</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4E">
+		<description>LED Bulb (PAR38)</description>
+		<model>2674-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x4F">
+		<description>LED Bulb (PAR38)</description>
+		<model>2674-532</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x50">
+		<description>Dimmer Module</description>
+		<model>2632-452</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x51">
+		<description>LED Bulb (E27)</description>
+		<model>2672-452</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_LEDBulb</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x57">
+		<description>i3 Paddle</description>
+		<model>PS01</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x58">
+		<description>i3 Dial</description>
+		<model>DS01</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x01" subCat="0x59">
+		<description>i3 Keypad</description>
+		<model>KP014</model>
+		<vendor>Insteon</vendor>
+		<device-type>DimmableLightingControl_SwitchLinc</device-type>
+	</product>
+
+	<!-- Switched Lighting Control (0x02) -->
+
+	<product devCat="0x02">
+		<description>Switched Lighting Control</description>
+		<vendor>Generic</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x05" productKey="0x000042">
+		<description>KeypadLinc On/Off Switch 8-Button</description>
+		<model>2486SWH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_KeypadButton8</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x06" productKey="0x000048">
+		<description>Outdoor ApplianceLinc</description>
+		<model>2456S3E</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ApplianceLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x07" productKey="0x000029">
+		<description>TimerLinc</description>
+		<model>2456S3T</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x08" productKey="0x000023">
+		<description>OutletLinc</description>
+		<model>2473S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_OutletLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x09">
+		<description>ApplianceLinc</description>
+		<model>2456S3</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ApplianceLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0A">
+		<description>SwitchLinc Relay</description>
+		<model>2476S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0B" firstRecord="0x00FF">
+		<description>ICON On/Off Switch</description>
+		<model>2876SB</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0C" firstRecord="0x00FF">
+		<description>ICON Appliance Module</description>
+		<model>2856S3B</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ApplianceLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0D">
+		<description>ToggleLinc Relay</description>
+		<model>2466S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ToggleLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0E">
+		<description>SwitchLinc Relay Countdown Timer</description>
+		<model>2476ST</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x0F" productKey="0x000036">
+		<description>KeypadLinc On/Off Switch 6-Button</description>
+		<model>2486SWH6</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x10" productKey="0x00001B">
+		<description>In-LineLinc Relay</description>
+		<model>2475S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x11" productKey="0x00003C">
+		<description>240V 30A Switch</description>
+		<model>EZSwitch30</model>
+		<vendor>Compacta</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x12" productKey="0x00003E">
+		<description>ICON In-LineLinc Relay</description>
+		<model>2474S/D</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x13" productKey="0x000033">
+		<description>Icon SwitchLinc Relay (Lixar)</description>
+		<model>2676R-B</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x14" productKey="0x000045">
+		<description>In-LineLinc Relay with Sense</description>
+		<model>2475S2</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x15" productKey="0x000047">
+		<description>SwitchLinc Relay with Sense</description>
+		<model>2476SS</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x16" firstRecord="0x00FF">
+		<description>ICON On/Off Switch</description>
+		<model>2876SB</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x17" firstRecord="0x00FF">
+		<description>ICON Appliance Module</description>
+		<model>2856S3B</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ApplianceLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x18" productKey="0x000060">
+		<description>SwitchLinc 220V Relay</description>
+		<model>2494S220</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x19">
+		<description>SwitchLinc 220V Relay</description>
+		<model>2494S220</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x1A">
+		<description>ToggleLinc Relay</description>
+		<model>2466S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ToggleLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x1C">
+		<description>SwitchLinc Relay</description>
+		<model>2476S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x1E">
+		<description>KeypadLinc On/Off Switch 6-Button</description>
+		<model>2487S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x1F">
+		<description>In-LineLinc Relay</description>
+		<model>2475SDB</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x20" productKey="0x00008A">
+		<description>Wall Keypad Switch</description>
+		<model>4704</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x21" productKey="0x00008C">
+		<description>Outlet Switch</description>
+		<model>4707</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x22" productKey="0x000093">
+		<description>In-Line Switch</description>
+		<model>4713</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x23" productKey="0x000088">
+		<description>Wall Switch</description>
+		<model>4702</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x24" productKey="0x0000A1">
+		<description>Wall Keypad Switch 277V</description>
+		<model>4102</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x25">
+		<description>KeypadLinc On/Off Switch Countdown Timer</description>
+		<model>2484SWH8</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x26">
+		<description>KeypadLinc On/Off Switch Schedule Timer</description>
+		<model>2485SWH6</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x29">
+		<description>SwitchLinc Relay Countdown Timer</description>
+		<model>2476ST</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2A">
+		<description>SwitchLinc Relay</description>
+		<model>2477S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2B">
+		<description>In-LineLinc Relay</description>
+		<model>2475SDB-50</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_InLineLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2C">
+		<description>KeypadLinc On/Off Switch 6-Button</description>
+		<model>2487S</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_KeypadButton6</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2D">
+		<description>On/Off Module</description>
+		<model>2633-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2E">
+		<description>DIN Rail On/Off</description>
+		<model>2453-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x2F">
+		<description>Micro On/Off</description>
+		<model>2443-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x30">
+		<description>On/Off Module</description>
+		<model>2633-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x31">
+		<description>Micro On/Off</description>
+		<model>2443-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x32">
+		<description>Micro On/Off</description>
+		<model>2443-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x33">
+		<description>DIN Rail On/Off</description>
+		<model>2453-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x34">
+		<description>DIN Rail On/Off</description>
+		<model>2453-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_MicroModule</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x35">
+		<description>On/Off Module</description>
+		<model>2633-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x36">
+		<description>On/Off Module</description>
+		<model>2633-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x37">
+		<description>On/Off Module</description>
+		<model>2635-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x38">
+		<description>On/Off Outdoor Module</description>
+		<model>2634-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_ApplianceLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x39">
+		<description>On/Off Outlet</description>
+		<model>2663-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_OnOffOutlet</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x3A">
+		<description>On/Off Module</description>
+		<model>2633-452</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
+	</product>
+	<product devCat="0x02" subCat="0x3F">
+		<description>i3 Outlet</description>
+		<model>WR01</model>
+		<vendor>Insteon</vendor>
+		<device-type>SwitchedLightingControl_OnOffOutlet</device-type>
+	</product>
+
+	<!-- Network Bridges (0x03) -->
+
+	<product devCat="0x03">
+		<description>Network Bridge</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x01">
+		<description>PowerLinc Serial Controller</description>
+		<model>2414S</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x02">
+		<description>PowerLinc USB Controller</description>
+		<model>2414U</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x03">
+		<description>ICON PowerLinc Serial</description>
+		<model>2814S</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x04">
+		<description>ICON PowerLinc USB</description>
+		<model>2814U</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x05" productKey="0x00000C">
+		<description>PowerLinc Serial Modem</description>
+		<model>2412S</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x06" productKey="0x000016">
+		<description>IRLinc Receiver</description>
+		<model>2411R</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x07" productKey="0x000017">
+		<description>IRLinc Transmitter</description>
+		<model>2411T</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x08" productKey="0x000018">
+		<description>Bi-Directional IR</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x09" productKey="0x000019">
+		<description>RF Developer Board</description>
+		<model>2600RF</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x0A" productKey="0x00000D">
+		<description>SeriaLinc</description>
+		<model>2410S</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x0B" productKey="0x000030">
+		<description>PowerLinc USB Modem</description>
+		<model>2412U</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x0C" productKey="0x000031">
+		<description>PLM Alert Serial</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x0D" productKey="0x000035">
+		<description>X10 RF Transceiver</description>
+		<model>EZX10RF</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x0E" productKey="0x00002C">
+		<description>X10 Translator</description>
+		<model>TW-523/PSC05</model>
+		<vendor>X10</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x0F" productKey="0x00003B">
+		<description>X10 IR Receiver</description>
+		<model>EZX10IR</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x10" productKey="0x000044">
+		<description>SmartLinc</description>
+		<model>2412N</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x11" productKey="0x000045">
+		<description>PowerLinc Serial Modem</description>
+		<model>2413S</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x12" productKey="0x00004C">
+		<description>RF Modem Card</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x13" productKey="0x000053">
+		<description>PowerLinc USB Modem (HouseLinc)</description>
+		<model>2412UH</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x14" productKey="0x000054">
+		<description>PowerLinc Serial Modem (HouseLinc)</description>
+		<model>2412SH</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x15">
+		<description>PowerLinc USB Modem</description>
+		<model>2413U</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x18">
+		<description>Central Controller</description>
+		<model>2243-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x19">
+		<description>PowerLinc Serial Modem (HouseLinc)</description>
+		<model>2413SH</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x1A">
+		<description>PowerLinc USB Modem (HouseLinc)</description>
+		<model>2413UH</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x1B">
+		<description>iGateway</description>
+		<model>2423A4</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x1C">
+		<description>iGateway 2.0</description>
+		<model>2423A7</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x1E">
+		<description>PowerLinc Serial Modem</description>
+		<model>2412S</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x1F" productKey="0x00007E">
+		<description>USB Adapter</description>
+		<model>2448A7</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x20" productKey="0x00007E">
+		<description>USB Adapter</description>
+		<model>2448A7</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x21" productKey="0x00008E">
+		<description>USB Adapter (HouseLinc)</description>
+		<model>2448A7H</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x22" productKey="0x00008F">
+		<description>Central Controller Interface</description>
+		<model>4706A</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x23" productKey="0x00008E">
+		<description>USB Adapter (HouseLinc)</description>
+		<model>2448A7H</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x24" productKey="0x0000A2">
+		<description>TouchLinc</description>
+		<model>2448A7T</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x27" productKey="0x0000A2">
+		<description>TouchLinc</description>
+		<model>2448A7T</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x03" subCat="0x2B">
+		<description>Hub</description>
+		<model>2242-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x2C">
+		<description>Central Controller</description>
+		<model>2243-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x2D">
+		<description>Central Controller</description>
+		<model>2243-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x2E">
+		<description>Hub</description>
+		<model>2242-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x2F">
+		<description>Hub</description>
+		<model>2242-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x30">
+		<description>Hub</description>
+		<model>2242-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x31">
+		<description>Hub</description>
+		<model>2242-232</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x32">
+		<description>Hub</description>
+		<model>2242-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x33">
+		<description>Hub</description>
+		<model>2245-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x34">
+		<description>Hub</description>
+		<model>2245-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x35">
+		<description>Hub</description>
+		<model>2245-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x36">
+		<description>Hub</description>
+		<model>2245-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+	<product devCat="0x03" subCat="0x37">
+		<description>Hub</description>
+		<model>2242-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_Hub</device-type>
+	</product>
+
+	<!-- Irrigation Control (0x04) -->
+
+	<product devCat="0x04">
+		<description>Irrigation Control</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x04" subCat="0x00" productKey="0x000001" firstRecord="0x00FF">
+		<description>Sprinkler Controller</description>
+		<model>EZRain</model>
+		<vendor>Compacta</vendor>
+		<device-type>IrrigationControl_Sprinkler</device-type>
+	</product>
+
+	<!-- Climate Control (0x05) -->
+
+	<product devCat="0x05">
+		<description>Climate Control</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x00">
+		<description>SMSC080 Exhaust Fan</description>
+		<model>2670IAQ-80</model>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x01" productKey="0x000002">
+		<description>Thermostat</description>
+		<model>EZTherm</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x02">
+		<description>SMSC110 Exhaust Fan</description>
+		<model>2670IAQ-110</model>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x03" productKey="0x00001F">
+		<description>Venstar Thermostat Adapter</description>
+		<model>2441V</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_VenstarThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x04" productKey="0x000024">
+		<description>Thermostat</description>
+		<model>EZThermx</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x05" productKey="0x000038">
+		<description>Venmar BEST Rangehoods</description>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x06" productKey="0x000043">
+		<description>SmartSense Make-up Damper</description>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x07" firstRecord="0x1FFF">
+		<description>Wireless Thermostat</description>
+		<model>2441ZTH</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_WirelessThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x08" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2441TH</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x09" productKey="0x000094">
+		<description>7 Day Thermostat</description>
+		<model>4715</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x0A" firstRecord="0x1FFF">
+		<description>Wireless Thermostat</description>
+		<model>2441ZTH</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_WirelessThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x0B" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2441TH</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x0C">
+		<description>SMSC080 Exhaust Fan</description>
+		<model>2670IAQ-80</model>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x0D">
+		<description>SMSC110 Exhaust Fan</description>
+		<model>2670IAQ-110</model>
+		<vendor>Broan</vendor>
+	</product>
+	<product devCat="0x05" subCat="0x0E">
+		<description>Venstar Integrated Thermostat</description>
+		<model>2491T1E</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_VenstarThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x0F" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2732-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x10" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2732-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x11" firstRecord="0x1FFF">
+		<description>Wireless Thermostat</description>
+		<model>2732-432</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_WirelessThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x12" firstRecord="0x1FFF">
+		<description>Wireless Thermostat</description>
+		<model>2732-532</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_WirelessThermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x13" firstRecord="0x1FFF">
+		<description>Thermostat (Heat Pump)</description>
+		<model>2732-242</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x14" firstRecord="0x1FFF">
+		<description>Thermostat (Heat Pump)</description>
+		<model>2732-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x15" firstRecord="0x1FFF">
+		<description>Thermostat (Heat Pump)</description>
+		<model>2732-542</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x16" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2441TH</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x17" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2732-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+	<product devCat="0x05" subCat="0x18" firstRecord="0x1FFF">
+		<description>Thermostat</description>
+		<model>2732-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>ClimateControl_Thermostat</device-type>
+	</product>
+
+	<!-- Pool and Spa Control (0x06) -->
+
+	<product devCat="0x06">
+		<description>Pool Spa Control</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x06" subCat="0x00" productKey="0x000003">
+		<description>Pool Controller</description>
+		<model>EZPool</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x06" subCat="0x01" productKey="0x000008">
+		<description>Low-End Pool Controller</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x06" subCat="0x02" productKey="0x000009">
+		<description>Mid-Range Pool Controller</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x06" subCat="0x03" productKey="0x00000A">
+		<description>Next Generation Pool Controller</description>
+		<vendor>Insteon</vendor>
+	</product>
+
+	<!-- Sensors and Actuators (0x07) -->
+
+	<product devCat="0x07">
+		<description>Sensor Actuator</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x00" productKey="0x00001A">
+		<description>I/O Linc</description>
+		<model>2450</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x01" productKey="0x000004">
+		<description>Sensor Interface Module</description>
+		<model>EZSns1W</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x02" productKey="0x000012">
+		<description>I/O Module</description>
+		<model>EZIO8T</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x03" productKey="0x000005">
+		<description>I/O Module</description>
+		<model>EZIO2X4</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x04" productKey="0x000013">
+		<description>I/O Module</description>
+		<model>EZIO8SA</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x05" productKey="0x000014">
+		<description>RF Receiver Interface Module</description>
+		<model>EZSnsRF</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x06" productKey="0x000015">
+		<description>Sensor Interface Module</description>
+		<model>EZISnsRf</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x07" productKey="0x000039">
+		<description>I/O Module (6 Inputs)</description>
+		<model>EZIO6I</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x08" productKey="0x00003A">
+		<description>I/O Module (4 Relay Outputs)</description>
+		<model>EZIO4O</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x09">
+		<description>SynchroLinc</description>
+		<model>2423A5</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x0C">
+		<description>Lumistat</description>
+		<model>2448A5</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x07" subCat="0x0D">
+		<description>I/O Linc</description>
+		<model>2450</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x0E">
+		<description>I/O Module</description>
+		<model>2248-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x0F">
+		<description>I/O Module</description>
+		<model>2248-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x10">
+		<description>I/O Module</description>
+		<model>2248-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x11">
+		<description>I/O Module</description>
+		<model>2248-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x12">
+		<description>I/O Module</description>
+		<model>2822-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x13">
+		<description>I/O Module</description>
+		<model>2822-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x14">
+		<description>I/O Module</description>
+		<model>2822-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x15">
+		<description>I/O Module</description>
+		<model>2822-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x16">
+		<description>I/O Module</description>
+		<model>2822-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x17">
+		<description>I/O Module</description>
+		<model>2822-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x18">
+		<description>I/O Module</description>
+		<model>2822-442</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x19">
+		<description>I/O Module</description>
+		<model>2822-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_IOLinc</device-type>
+	</product>
+	<product devCat="0x07" subCat="0x1E" firstRecord="0x00FF">
+		<description>Siren Module</description>
+		<model>2868-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SensorsActuators_Siren</device-type>
+	</product>
+
+	<!-- Home Entertainment (0x08) -->
+
+	<!-- Energy Management (0x09) -->
+
+	<product devCat="0x09">
+		<description>Energy Management</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x00" productKey="0x000006">
+		<description>Energy Management</description>
+		<model>EZEnergy</model>
+		<vendor>Compacta</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x01" productKey="0x000020">
+		<description>Leak Detector</description>
+		<vendor>OnSitePro</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x02" productKey="0x000021">
+		<description>Control Valve</description>
+		<vendor>OnSitePro</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x03" productKey="0x000025">
+		<description>TED 5000 Single Phase MTU</description>
+		<vendor>Energy Inc.</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x04" productKey="0x000026">
+		<description>TED 5000 Gateway USB</description>
+		<vendor>Energy Inc.</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x05" productKey="0x00002A">
+		<description>TED 5000 Gateway Ethernet</description>
+		<vendor>Energy Inc.</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x06" productKey="0x00002B">
+		<description>TED 3000 Three Phase MTU</description>
+		<vendor>Energy Inc.</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x07" productKey="0x00006C">
+		<description>iMeter Solo</description>
+		<model>2423A1</model>
+		<vendor>Insteon</vendor>
+		<device-type>EnergyManagement_PowerMeter</device-type>
+	</product>
+	<product devCat="0x09" subCat="0x08">
+		<description>iMeter Home (Breaker Panel)</description>
+		<model>2423A2</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x09">
+		<description>iMeter Home (Meter)</description>
+		<model>2423A3</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x0A">
+		<description>220V/240V 30 AMP Load Controller Normally Open</description>
+		<model>2477SA1</model>
+		<vendor>Insteon</vendor>
+		<device-type>EnergyManagement_LoadController</device-type>
+	</product>
+	<product devCat="0x09" subCat="0x0B">
+		<description>220V/240V 30 AMP Load Controller Normally Closed</description>
+		<model>2477SA2</model>
+		<vendor>Insteon</vendor>
+		<device-type>EnergyManagement_LoadController</device-type>
+	</product>
+	<product devCat="0x09" subCat="0x0C">
+		<description>GE Water Heater U-SNAP Module</description>
+		<model>2630A1</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x0D">
+		<description>Energy Display</description>
+		<model>2448A2</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x0E">
+		<description>Power Strip with iMeter and SynchroLinc</description>
+		<model>2423A6</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x10" productKey="0x000090">
+		<description>Network Hub</description>
+		<model>4700</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x09" subCat="0x11">
+		<description>Digital Meter Reader</description>
+		<model>2423A8</model>
+		<vendor>Insteon</vendor>
+	</product>
+
+	<!-- Built-In Appliance Control (0x0A) -->
+
+	<!-- Plumbing (0x0B) -->
+
+	<!-- Communication (0x0C) -->
+
+	<!-- Computer Control (0x0D) -->
+
+	<!-- Window Coverings (0x0E) -->
+
+	<product devCat="0x0E">
+		<description>Window Coverings</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x0E" subCat="0x00" productKey="0x00000B">
+		<description>Drape Controller RF Bridge</description>
+		<model>318276I</model>
+		<vendor>Somfy</vendor>
+	</product>
+	<product devCat="0x0E" subCat="0x01">
+		<description>Micro Open/Close</description>
+		<model>2444-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>WindowCovering_MicroModule</device-type>
+	</product>
+	<product devCat="0x0E" subCat="0x02">
+		<description>Micro Open/Close</description>
+		<model>2444-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>WindowCovering_MicroModule</device-type>
+	</product>
+	<product devCat="0x0E" subCat="0x03">
+		<description>Micro Open/Close</description>
+		<model>2444-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>WindowCovering_MicroModule</device-type>
+	</product>
+	<product devCat="0x0E" subCat="0x04">
+		<description>Window Shade Kit</description>
+		<model>2772-222</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x0E" subCat="0x05">
+		<description>Window Shade Kit</description>
+		<model>2772-422</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x0E" subCat="0x06">
+		<description>Window Shade Kit</description>
+		<model>2772-522</model>
+		<vendor>Insteon</vendor>
+	</product>
+
+	<!-- Access Control (0x0F) -->
+
+	<product devCat="0x0F">
+		<description>Access Control</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x00" productKey="0x00000E">
+		<description>Central Drive and Controller</description>
+		<vendor>Weiland Doors</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x01" productKey="0x00000F">
+		<description>Secondary Central Drive</description>
+		<vendor>Weiland Doors</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x02" productKey="0x000010">
+		<description>Assist Drive</description>
+		<vendor>Weiland Doors</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x03" productKey="0x000011">
+		<description>Elevation Drive</description>
+		<vendor>Weiland Doors</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x04">
+		<description>Garage Unit</description>
+		<vendor>GarageHawk</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x05">
+		<description>Remote Unit</description>
+		<vendor>GarageHawk</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x06">
+		<description>MorningLinc</description>
+		<model>2458A1</model>
+		<vendor>Insteon</vendor>
+		<device-type>AccessControl_LockController</device-type>
+	</product>
+	<product devCat="0x0F" subCat="0x07">
+		<description>Deadbolt</description>
+		<model>2863-222</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x08">
+		<description>Deadbolt</description>
+		<model>2863-422</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x09">
+		<description>Deadbolt</description>
+		<model>2863-522</model>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x0F" subCat="0x0A">
+		<description>Lock Controller</description>
+		<model>2862-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>AccessControl_LockController</device-type>
+	</product>
+
+	<!-- Security, Health, Safety (0x10) -->
+
+	<product devCat="0x10">
+		<description>Security Heath Safety Device</description>
+		<vendor>Generic</vendor>
+	</product>
+	<product devCat="0x10" subCat="0x00" productKey="0x000027">
+		<description>First Alert ONELink RF Bridge</description>
+		<vendor>Insteon</vendor>
+	</product>
+	<product devCat="0x10" subCat="0x01" productKey="0x00004A">
+		<description>Motion Sensor</description>
+		<model>2842-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_MotionSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x02" productKey="0x000049">
+		<description>Open/Close Sensor</description>
+		<model>2843-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_OpenCloseSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x03">
+		<description>Motion Sensor</description>
+		<model>4716</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_MotionSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x04">
+		<description>Motion Sensor</description>
+		<model>2842-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_MotionSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x05">
+		<description>Motion Sensor</description>
+		<model>2842-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_MotionSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x06">
+		<description>Open/Close Sensor</description>
+		<model>2843-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_OpenCloseSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x07">
+		<description>Open/Close Sensor</description>
+		<model>2843-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_OpenCloseSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x08">
+		<description>Leak Sensor</description>
+		<model>2852-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_LeakSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x09">
+		<description>Door Sensor</description>
+		<model>2843-232</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_OpenCloseSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x0A">
+		<description>Smoke Bridge</description>
+		<model>2982-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_SmokeBridge</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x11">
+		<description>Hidden Door Sensor</description>
+		<model>2845-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_DoorSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x14">
+		<description>Hidden Door Sensor</description>
+		<model>2845-422</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_DoorSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x15">
+		<description>Hidden Door Sensor</description>
+		<model>2845-522</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_DoorSensor</device-type>
+	</product>
+	<product devCat="0x10" subCat="0x16">
+		<description>Motion Sensor II</description>
+		<model>2844-222</model>
+		<vendor>Insteon</vendor>
+		<device-type>SecurityHealthSafety_MotionSensor2</device-type>
+	</product>
+
+	<!-- Surveillance (0x11) -->
+
+	<!-- Automotive (0x12) -->
+
+	<!-- Pet Care (0x13) -->
+
+	<!-- Toys (0x14) -->
+
+	<!-- Timekeeping (0x15) -->
+
+	<!-- Holiday (0x16) -->
+
+	<!-- Unassigned (0xFF) -->
+
+</xml>

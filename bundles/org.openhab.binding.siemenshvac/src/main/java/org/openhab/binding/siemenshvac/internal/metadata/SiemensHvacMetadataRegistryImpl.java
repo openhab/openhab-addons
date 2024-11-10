@@ -431,9 +431,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         for (SiemensHvacMetadata child : childs) {
                             generateThingsType(child, groupTypes, menu);
                         }
-
                     }
-
                 }
 
                 tt = createThingType(device, groupTypes);
@@ -511,7 +509,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     groupTypes.add(groupType);
                 }
             }
-
         }
     }
 
@@ -819,7 +816,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                         }
 
                         idx++;
-
                     }
                 }
             }
@@ -839,10 +835,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 lcHvacConnector.resetSessionId(null, false);
                 lcHvacConnector.resetSessionId(null, true);
             }
-
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
         }
@@ -933,7 +926,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
                 lcDevices.add(deviceObj);
             }
-
         } catch (Exception e) {
             logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error
@@ -1161,14 +1153,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                                             child.setDptId(dptId);
                                         }
                                     }
-
                                 }
                             }
                         }
                     }
                 });
             }
-
         }
     }
 
@@ -1213,7 +1203,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             }
         } catch (IOException ioe) {
             logger.warn("Couldn't read Siemens MetaData information from file '{}'.", file.getAbsolutePath());
-
         }
     }
 
@@ -1238,10 +1227,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                     os.flush();
                 }
             }
-
         } catch (IOException ioe) {
             logger.warn("Couldn't write Siemens MetaData information to file '{}'.", file.getAbsolutePath());
-
         }
     }
 

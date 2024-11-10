@@ -123,7 +123,6 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
                             bridgePending("Waiting for Qbus client to come online");
                             return;
                         }
-
                     }
                 }
             }

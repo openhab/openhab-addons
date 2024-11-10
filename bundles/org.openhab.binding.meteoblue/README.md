@@ -114,7 +114,6 @@ Group weatherDay4 "Weather in 4 days"
 Group weatherDay5 "Weather in 5 days"
 Group weatherDay6 "Weather in 6 days"
 
-
 // ----------------- meteoblue ITEMS -------------------------------------------
 DateTime todayForecastDate  "Forecast for [%1$tY/%1$tm/%1$td]"  <calendar>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#forecastDate"}
 String todayPCode    "Pictocode [%d]"  <iday>  (weatherDay0)  {channel="meteoblue:weather:metBridge:A51:forecastToday#condition"}

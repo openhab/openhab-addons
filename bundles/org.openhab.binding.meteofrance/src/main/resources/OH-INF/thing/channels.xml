@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="rain-intensity">
+		<item-type>Number</item-type>
+		<label>Intensity</label>
+		<description>Rain intensity level</description>
+		<category>oh:meteofrance:intensity</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Dry Weather</option>
+				<option value="1">Light Rain</option>
+				<option value="2">Moderate Rain</option>
+				<option value="3">Heavy Rain</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="vent">
+		<item-type>Number</item-type>
+		<label>Wind</label>
+		<description>Wind event alert level</description>
+		<category>oh:meteofrance:vent</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="orage">
+		<item-type>Number</item-type>
+		<label>Storm</label>
+		<description>Storm alert level</description>
+		<category>oh:meteofrance:orage</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="inondation">
+		<item-type>Number</item-type>
+		<label>Flood</label>
+		<description>Flood alert level</description>
+		<category>oh:meteofrance:inondation</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="neige">
+		<item-type>Number</item-type>
+		<label>Snow</label>
+		<description>Snow event alert level</description>
+		<category>oh:meteofrance:neige</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="canicule">
+		<item-type>Number</item-type>
+		<label>Heat Wave</label>
+		<description>High temperature alert level</description>
+		<category>oh:meteofrance:canicule</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="grand-froid">
+		<item-type>Number</item-type>
+		<label>Extreme Cold</label>
+		<description>Negative temperature alert level</description>
+		<category>oh:meteofrance:grand-froid</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="avalanches">
+		<item-type>Number</item-type>
+		<label>Avalanches</label>
+		<description>Avalanche alert level</description>
+		<category>oh:meteofrance:avalanches</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="vague-submersion">
+		<item-type>Number</item-type>
+		<label>Wave Submersion</label>
+		<description>Submersion wave alert level</description>
+		<category>oh:meteofrance:vague-submersion</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pluie-inondation">
+		<item-type>Number</item-type>
+		<label>Rain Flood</label>
+		<description>Flood caused by rainfall alert level</description>
+		<category>oh:meteofrance:pluie-inondation</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">No special vigilance</option>
+				<option value="1">Be attentive</option>
+				<option value="2">Be very vigilant</option>
+				<option value="3">Absolute vigilance</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="comment">
+		<item-type>String</item-type>
+		<label>Comment</label>
+		<category>text</category>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="timestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Observation Timestamp</label>
+		<category>time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="condition-icon">
+		<item-type>Image</item-type>
+		<label>Icon</label>
+		<description>Pictogram associated with the alert level.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -241,32 +241,34 @@ public class ValueDecoder {
 
     private static Type handleDpt1(String subType, DPTXlator translator, Class<? extends Type> preferredType) {
         DPTXlatorBoolean translatorBoolean = (DPTXlatorBoolean) translator;
-        switch (subType) {
-            case "008":
-                return translatorBoolean.getValueBoolean() ? UpDownType.DOWN : UpDownType.UP;
-            case "009":
-            case "019":
+        return switch (subType) {
+            case "008" -> translatorBoolean.getValueBoolean() ? UpDownType.DOWN : UpDownType.UP;
+            case "009", "019" -> {
                 // default is OpenClosedType (Contact), but it may be mapped to OnOffType as well
                 if (OnOffType.class.equals(preferredType)) {
-                    return OnOffType.from(translatorBoolean.getValueBoolean());
+                    yield OnOffType.from(translatorBoolean.getValueBoolean());
                 }
 
                 // This is wrong for DPT 1.009. It should be true -> CLOSE, false -> OPEN, but unfortunately
                 // can't be fixed without breaking a lot of working installations.
                 // The documentation has been updated to reflect that. / @J-N-K
-                return translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-            case "010":
-                return translatorBoolean.getValueBoolean() ? StopMoveType.MOVE : StopMoveType.STOP;
-            case "022":
-                return DecimalType.valueOf(translatorBoolean.getValueBoolean() ? "1" : "0");
-            default:
+                yield translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+
+                // This is wrong for DPT 1.009. It should be true -> CLOSE, false -> OPEN, but unfortunately
+                // can't be fixed without breaking a lot of working installations.
+                // The documentation has been updated to reflect that. / @J-N-K
+            }
+            case "010" -> translatorBoolean.getValueBoolean() ? StopMoveType.MOVE : StopMoveType.STOP;
+            case "022" -> DecimalType.valueOf(translatorBoolean.getValueBoolean() ? "1" : "0");
+            default -> {
                 // default is OnOffType (Switch), but it may be mapped to OpenClosedType as well
                 if (OpenClosedType.class.equals(preferredType)) {
-                    return translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                    yield translatorBoolean.getValueBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 }
 
-                return OnOffType.from(translatorBoolean.getValueBoolean());
-        }
+                yield OnOffType.from(translatorBoolean.getValueBoolean());
+            }
+        };
     }
 
     private static @Nullable Type handleDpt3(String subType, DPTXlator translator) {
@@ -275,17 +277,16 @@ public class ValueDecoder {
             LOGGER.debug("convertRawDataToType: KNX DPT_Control_Dimming: break received.");
             return UnDefType.NULL;
         }
-        switch (subType) {
-            case "007":
-                return translator3BitControlled.getControlBit() ? IncreaseDecreaseType.INCREASE
-                        : IncreaseDecreaseType.DECREASE;
-            case "008":
-                return translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
-            default:
+        return switch (subType) {
+            case "007" -> translator3BitControlled.getControlBit() ? IncreaseDecreaseType.INCREASE
+                    : IncreaseDecreaseType.DECREASE;
+            case "008" -> translator3BitControlled.getControlBit() ? UpDownType.DOWN : UpDownType.UP;
+            default -> {
                 // should never happen unless Calimero introduces new subtypes
                 LOGGER.warn("DPT3, subtype '{}' is unknown. Please open an issue.", subType);
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     private static Type handleDpt10(String value) throws ParseException {

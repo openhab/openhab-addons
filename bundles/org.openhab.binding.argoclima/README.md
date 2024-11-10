@@ -115,7 +115,6 @@ Thing argoclima:remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Livin
     password="<yourArgoPassword>"
 ]
 
-
 Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
     hostname="192.168.0.3"
 ]
@@ -123,23 +122,23 @@ Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Liv
 Thing argoclima:local:argoHvacLocalDirectEx "Argo HVAC (connected locally) - extended example (with explicit options)" [
     hostname="192.168.0.3",
     connectionMode="LOCAL_CONNECTION",
-    refreshInterval=30,    
+    refreshInterval=30,
     hvacListenPort=1001,
 
     // Schedule options (these are valid for all thing types)
-    schedule1DayOfWeek="[FRI, SAT, SUN, MON]", 
-    schedule1OnTime="7:35", 
+    schedule1DayOfWeek="[FRI, SAT, SUN, MON]",
+    schedule1OnTime="7:35",
     schedule1OffTime="18:00",
-    schedule2DayOfWeek="[MON, TUE, WED, THU, FRI]", 
+    schedule2DayOfWeek="[MON, TUE, WED, THU, FRI]",
     schedule2OnTime="15:00",
     schedule2OffTime="22:00",
     schedule3DayOfWeek="SUN","SAT", //Alternative syntax for the weekdays list
-    schedule3OnTime="11:00", 
-    schedule3OffTime="22:00"   
+    schedule3OnTime="11:00",
+    schedule3OffTime="22:00"
     //,resetToFactoryDefaults=true  //This triggers a one-shot command each time the thing
-                                    //  definition is (re)loaded from file.  
+                                    //  definition is (re)loaded from file.
                                     // Use only intermittently - it is not designed with prolonged
-                                    //  usage via Things text file in mind (mostly a MainUI feature!) 
+                                    //  usage via Things text file in mind (mostly a MainUI feature!)
 ]
 
 //ADVANCED MODES examples
@@ -149,32 +148,30 @@ Thing argoclima:local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessibl
     useLocalConnection=false
 ]
 
-
 Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
     hostname="192.168.0.3",             // Direct address of the device (reachable from openHAB)
     connectionMode="REMOTE_API_PROXY",
-        
+
     hvacListenPort=1001,
     refreshInterval=30,
     useLocalConnection=true,
-    
+
     // Stub server-specific
-    stubServerPort=8240, 
-    stubServerListenAddresses="7d47:86bd:0bfe:0413:4688:4523:4284:5936","192.168.0.195",    
-    includeDeviceSidePasswordsInProperties="MASKED", 
-    matchAnyIncomingDeviceIp=false, 
+    stubServerPort=8240,
+    stubServerListenAddresses="7d47:86bd:0bfe:0413:4688:4523:4284:5936","192.168.0.195",
+    includeDeviceSidePasswordsInProperties="MASKED",
+    matchAnyIncomingDeviceIp=false,
     deviceCpuId="deadbeefdeadbeef",     // For direct match to a concrete device (optional)
     localDeviceIP="192.168.4.2",        // Address in local subnet (used for indirect request matching)
-    
+
     // Pass-through-specific
     oemServerAddress="uisetup.ddns.net",
     oemServerPort=80
 ]
 
-
 Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
     hostname="192.168.0.3",           // Has to be reachable, since useLocalConnection is true (default)
-    connectionMode="REMOTE_API_STUB",    
+    connectionMode="REMOTE_API_STUB",
     localDeviceIP="192.168.4.2"       // Or use matchAnyIncomingDeviceIp=true
 ]
 ```
@@ -185,11 +182,11 @@ Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirect
 Group GArgoClimaHVACRemote "Ulisse 13 DCI ECO - remote mode" ["HVAC"]
 
 Switch  ArgoClimaHVACRemote_Power   "Power" <switch>   (GArgoClimaHVACRemote)  {
-    channel="argoclima:remote:argoHvacRemote:ac-controls#power"    
+    channel="argoclima:remote:argoHvacRemote:ac-controls#power"
 }
 
 String  ArgoClimaHVACRemote_Mode    "Mode"  <climate>  (GArgoClimaHVACRemote)  ["Control"] {
-    channel="argoclima:remote:argoHvacRemote:ac-controls#mode"    
+    channel="argoclima:remote:argoHvacRemote:ac-controls#mode"
 }
 
 Number:Temperature  ArgoClimaHVACRemote_SetTemperature  "Set Temperature"  <temperature> (GArgoClimaHVACRemote)  ["Temperature", "Setpoint"] {
@@ -201,27 +198,27 @@ Number:Temperature  ArgoClimaHVACRemote_SetTemperature  "Set Temperature"  <temp
 }
 
 Number:Temperature  ArgoClimaHVACRemote_CurrentTemperature  "Current Temperature" <temperature>   (GArgoClimaHVACRemote) ["Temperature", "Measurement"] {
-    channel="argoclima:remote:argoHvacRemote:ac-controls#current-temperature"    
+    channel="argoclima:remote:argoHvacRemote:ac-controls#current-temperature"
 }
 
 String  ArgoClimaHVACRemote_FanSpeed    "Fan Speed" <fan> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:ac-controls#fan-speed"    
+    channel="argoclima:remote:argoHvacRemote:ac-controls#fan-speed"
 }
 
 Switch  ArgoClimaHVACRemote_EcoMode "Eco Mode"   <vacation> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:modes#eco-mode"    
+    channel="argoclima:remote:argoHvacRemote:modes#eco-mode"
 }
 
 Switch  ArgoClimaHVACRemote_TurboMode   "Turbo Mode"  <party> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:modes#turbo-mode"    
+    channel="argoclima:remote:argoHvacRemote:modes#turbo-mode"
 }
 
 Switch  ArgoClimaHVACRemote_NightMode       "Night Mode"  <moon> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:modes#night-mode"    
+    channel="argoclima:remote:argoHvacRemote:modes#night-mode"
 }
 
 String  ArgoClimaHVACRemote_ActiveTimer "Active timer"  <calendar> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:timers#active-timer"    
+    channel="argoclima:remote:argoHvacRemote:timers#active-timer"
 }
 
 Number:Time ArgoClimaHVACRemote_DelayTimer  "Delay timer value"  <time> (GArgoClimaHVACRemote) ["Setpoint"] {
@@ -233,17 +230,17 @@ Number:Time ArgoClimaHVACRemote_DelayTimer  "Delay timer value"  <time> (GArgoCl
 }
 
 Switch  ArgoClimaHVACRemote_IFeelEnabled    "Use iFeel Temperature"  <network>  (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:settings#ifeel-enabled"    
+    channel="argoclima:remote:argoHvacRemote:settings#ifeel-enabled"
 }
 
 Switch  ArgoClimaHVACRemote_DeviceLights    "Device Lights" <light> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:settings#device-lights"    
+    channel="argoclima:remote:argoHvacRemote:settings#device-lights"
 }
 
 String  ArgoClimaHVACRemote_TemperatureDisplayUnit  "Temperature Display Unit []"   <settings>  (GArgoClimaHVACRemote) {
     stateDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
     commandDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
-    channel="argoclima:remote:argoHvacRemote:settings#temperature-display-unit"    
+    channel="argoclima:remote:argoHvacRemote:settings#temperature-display-unit"
 }
 
 Number:Dimensionless    ArgoClimaHVACRemote_EcoPowerLimit    "Power limit in eco mode"  <price>   (GArgoClimaHVACRemote) ["Setpoint"] {
@@ -255,21 +252,21 @@ Number:Dimensionless    ArgoClimaHVACRemote_EcoPowerLimit    "Power limit in eco
 }
 
 String  ArgoClimaHVACRemote_ModeEx  "Extended Mode"   <heating>  (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:unsupported#mode-ex"    
+    channel="argoclima:remote:argoHvacRemote:unsupported#mode-ex"
 }
 
 String  ArgoClimaHVACRemote_SwingMode   "Airflow Direction"   <flow>  (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:unsupported#swing-mode"    
+    channel="argoclima:remote:argoHvacRemote:unsupported#swing-mode"
 }
 
 Switch  ArgoClimaHVACRemote_FilterMode  "Filter Mode"    <switch> (GArgoClimaHVACRemote) {
-    channel="argoclima:remote:argoHvacRemote:unsupported#filter-mode"    
+    channel="argoclima:remote:argoHvacRemote:unsupported#filter-mode"
 }
 ```
 
 ### argoclima.sitemap
 
-```java
+```perl
 // All things in all modes expose the same channels
 Frame label="❄ HVAC Control" {
     Switch item=ArgoClimaHVACRemote_Power
@@ -284,7 +281,7 @@ Frame label="❄ HVAC Control" {
     Default item=GArgoClimaHVACRemote label="All settings"
 }
 Frame label="⛄ HVAC Modes"
-{        
+{
     Switch item=ArgoClimaHVACRemote_TurboMode
     Switch item=ArgoClimaHVACRemote_NightMode
     Switch item=ArgoClimaHVACRemote_EcoMode
@@ -294,7 +291,7 @@ Frame label="⛄ HVAC Modes"
 }
 Frame label="⏲ HVAC timers" {
     Selection item=ArgoClimaHVACRemote_ActiveTimer mappings=[
-        NO_TIMER="No Timer", DELAY_TIMER="Delay Timer", 
+        NO_TIMER="No Timer", DELAY_TIMER="Delay Timer",
         SCHEDULE_TIMER_1="Schedule 1", SCHEDULE_TIMER_2="Schedule 2", SCHEDULE_TIMER_3="Schedule 3"
     ]
     Setpoint item=ArgoClimaHVACRemote_DelayTimer minValue=10 maxValue=1190 step=10

@@ -27,8 +27,8 @@ public class PortalIotCommandJsonResponse extends AbstractPortalIotCommandRespon
     @SerializedName("resp")
     public final JsonElement response;
 
-    public PortalIotCommandJsonResponse(String result, JsonElement response, int errorCode, String errorMessage) {
-        super(result, errorCode, errorMessage);
+    public PortalIotCommandJsonResponse(String result, JsonElement response, int errorCode, Object errorObject) {
+        super(result, errorCode, errorObject);
         this.response = response;
     }
 

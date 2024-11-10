@@ -1,6 +1,6 @@
 # Salus Binding
 
-The Salus Binding facilitates seamless integration between OpenHAB and [Salus Cloud](https://eu.salusconnect.io/).
+The Salus Binding facilitates seamless integration between openHAB and [Salus Cloud](https://eu.salusconnect.io/).
 
 For years, SALUS Controls has been at the forefront of designing building automation solutions for the heating industry.
 Our commitment to innovation has resulted in modern, efficient solutions to control various heating systems. With

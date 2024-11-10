@@ -52,6 +52,39 @@
 		<label>Charge Active</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="status-charge">
+		<item-type>Number</item-type>
+		<label>Charge Status</label>
+		<description>Actual charging status</description>
+		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L92 -->
+			<options>
+				<option value="0">Charging</option>
+				<option value="1">End of Charge</option>
+				<option value="2">Charge Break</option>
+				<option value="3">Charge Cable Unplugged</option>
+				<option value="4">Charging Failure</option>
+				<option value="5">Slow Charging</option>
+				<option value="6">Fast Charging</option>
+				<option value="7">Discharging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="error-charge">
+		<item-type>Number</item-type>
+		<label>Charge Error</label>
+		<description>Actual charging error if available</description>
+		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L19 -->
+			<options>
+				<option value="0">None</option>
+				<option value="1">Cable</option>
+				<option value="2">Charging Disorder</option>
+				<option value="3">Charging Station</option>
+				<option value="4">Charging Type</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Charge Power</label>

@@ -35,6 +35,7 @@ package org.openhab.binding.lgwebos.internal.handler.command;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
 
@@ -47,9 +48,10 @@ import com.google.gson.JsonObject;
  * @author Hyun Kook Khang - Connect SDK initial contribution
  * @author Sebastian Prehn - Adoption for openHAB
  */
+@NonNullByDefault
 public class ServiceSubscription<T> extends ServiceCommand<T> {
 
-    public ServiceSubscription(String uri, JsonObject payload, Function<JsonObject, @Nullable T> converter,
+    public ServiceSubscription(String uri, @Nullable JsonObject payload, Function<JsonObject, @Nullable T> converter,
             ResponseListener<T> listener) {
         super(uri, payload, converter, listener);
         type = Type.subscribe;

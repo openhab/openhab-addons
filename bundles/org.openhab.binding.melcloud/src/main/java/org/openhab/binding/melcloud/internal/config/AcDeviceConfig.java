@@ -12,17 +12,21 @@
  */
 package org.openhab.binding.melcloud.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Config class for an A.C. device.
  *
  * @author Pauli Anttila - Initial Contribution
  *
  */
+@NonNullByDefault
 public class AcDeviceConfig {
 
-    public Integer deviceID;
-    public Integer buildingID;
-    public Integer pollingInterval;
+    public Integer deviceID = 0;
+    public @Nullable Integer buildingID;
+    public Integer pollingInterval = 360;
 
     @Override
     public String toString() {

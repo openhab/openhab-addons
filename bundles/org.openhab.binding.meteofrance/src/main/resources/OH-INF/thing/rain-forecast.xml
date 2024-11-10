@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meteofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="rain-forecast">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+		<label>Precipitation Forecast</label>
+		<description>Provides precipitation forecast for the next hour</description>
+
+		<channels>
+			<channel id="update-time" typeId="timestamp"/>
+			<channel id="intensity" typeId="rain-intensity"/>
+		</channels>
+
+		<representation-property>location</representation-property>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location</label>
+				<context>location</context>
+				<description>Your geo coordinates separated with comma (e.g. "37.8,-122.4,177").</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -2,9 +2,9 @@
 
 This binding provides support for the Siemens HVAC controller ecosystem, and the Web Gateway interface OZW672.
 A typical system is composed of:
-         
-![Diagram](doc/Diagram.png)                 
- 
+
+![Diagram](doc/Diagram.png)
+
 There's a lot of different HVAC controllers depending on model in lot of different PAC constructors.
 Siemens RVS41.813/327 inside a Atlantic Hybrid Duo was used for the development, and is fully supported and tested.
 
@@ -14,7 +14,7 @@ You can also find this device in other types of heating systems: boiler or solar
 
 ![](doc/Albatros.jpg)
 
-You will find some information about the OZW672.01 gateway on the Siemens web site: 
+You will find some information about the OZW672.01 gateway on the Siemens web site:
 
 [OZW 672 Page](https://hit.sbt.siemens.com/RWD/app.aspx?rc=FR&lang=fr&module=Catalog&action=ShowProduct&key=BPZ:OZW672.01)
 
@@ -24,7 +24,7 @@ With this binding, you will be able to:
 - Modify the functioning mode of your device: temperature set point, heating mode, and others.
 
 The OZW672 gateway supports many different languages (about 16).
-The binding should work with all language choices, but is currently tested more thoroughly with French and English as configured language.  
+The binding should work with all language choices, but is currently tested more thoroughly with French and English as configured language.
 If you use another language, and find some issues, you can report them on the openHAB forum.
 
 ## Discovery
@@ -58,41 +58,40 @@ Channels are auto-discovered, you will find them on the RVS things.
 They are organized the same way as the LCD screen of your PAC device, by top level menu functionality, and sub-functionalities.
 Each channel is strongly typed, so for example, for heating mode, openHAB will provide you with a list of choices supported by the device.
 
-Channel                         | Description                                                                                       | Type                          | Unit     | Security Access Level   |  ReadOnly | Advanced   
+Channel                         | Description                                                                                       | Type                          | Unit     | Security Access Level   |  ReadOnly | Advanced
 --------------------------------|---------------------------------------------------------------------------------------------------|-------------------------------|----------|-------------------------|-----------|----------
 1724#1725-optgmode-hc1          | Set Operating mode heat circuit 1 (`Automatic`, `Comfort`, `Reduced`, `Protection`)               | operating-mode-hc             |          |                         |  R/W      | true
 1724#1726-roomtemp-comfsetp-hc1 | Romm temperature comfort setpoint HC1                                                             | room-temp-comfort-setpoint-hc |          |                         |  R/W      | true
-   
+
 ## Full Example
 
 Things file `.things`
 
 ```java
-Bridge siemenshvac:ozw:ozw672_FF00F445 "Ozw672" [ baseUrl="https://192.168.254.42/", userName="Administrator", userPassword="mypass"  ] 
+Bridge siemenshvac:ozw:ozw672_FF00F445 "Ozw672" [ baseUrl="https://192.168.254.42/", userName="Administrator", userPassword="mypass"  ]
 {
     Thing rvs41-813-327 00770000756A "RVS41.813/327"  [  ]
     {
         Type room-temp-comfort-setpoint-hc : testChannelTemperature                  "TestChannelTemperature"  [ id="1726" ]
-        Type operating-mode-hc : testChannelCC1                                      "TestChannelCC1"          [ id="1725" ] 
+        Type operating-mode-hc : testChannelCC1                                      "TestChannelCC1"          [ id="1725" ]
     }
-}    
+}
 ```
-
 
 Items file `.items`
 
 ```java
-Contact             Boiler_State_Pump_HWSb      "HWS Pump State [%s]"                   { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2259-ppechargeecs"              } 
+Contact             Boiler_State_Pump_HWSb      "HWS Pump State [%s]"                   { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2259-ppechargeecs"              }
 Number              Boiler_State_HWS            "HWS State [%s]"                        { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2032#2035-etat-ecs"                  }
-Number:Temperature  Flow_Temperature_Real       "Flow Temparature Real [%.1f °C]"       { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2248-valreelletempdep-cc1"      }   
-Number:Temperature  Flow_Temperature_Setpoint   "Flow Temperature Setpoint [%.1f °C]"   { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2249-constdepresultcc1"         }   
-Number              Hour_fct_HWS                "HWS Hour function"                     { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2263-heuresfoncpompeecs"        }   
+Number:Temperature  Flow_Temperature_Real       "Flow Temparature Real [%.1f °C]"       { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2248-valreelletempdep-cc1"      }
+Number:Temperature  Flow_Temperature_Setpoint   "Flow Temperature Setpoint [%.1f °C]"   { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2249-constdepresultcc1"         }
+Number              Hour_fct_HWS                "HWS Hour function"                     { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2263-heuresfoncpompeecs"        }
 Number              Nb_Start_HWS                "HWS Number of start [%.1f]"            { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2266-comptdemarresel-ecs"       }
 Number:Temperature  Thermostat_Temperature      "Thermostat tempeature [%.1f °C]"       { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:2237#2246-tambact-cc1"               }
 Number:Temperature  Thermostat_Setpoint         "Thermostat setpoint [%.1f °C]"         { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:1724#1726-consconfort-ta-cc1"        }
 Number              Heat_Mode                   "Heat mode [%s]"                        { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:1724#1725-regime-cc1"                }
 
-Number:Temperature  Thermostat_Setpoint_bis     "Temperature [%.1f °C]"                 { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:testChannelTemperature "             }   
+Number:Temperature  Thermostat_Setpoint_bis     "Temperature [%.1f °C]"                 { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:testChannelTemperature "             }
 Number              Heat_Mode_bis               "Heat mode [%s]"                        { channel = "siemenshvac:rvs41-813-327:ozw672_FF00F445:00770000756A:testChannelCC1"                      }
 
-``` 
+```

@@ -31,14 +31,15 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
             {
                 sn:XYZ,
                 ver:3.005.01,
-                type:14,Data:[
+                type:14,
+                Data:[
                     2316,2329,2315,18,18,18,372,363,365,1100,
                     12,23,34,45,56,67,4996,4996,4996,2,
                     0,0,0,0,0,0,0,0,0,0,
                     0,0,0,1,65494,65535,0,0,0,31330,
                     320,1034,3078,1,44,1100,256,1294,0,0,
                     7445,5895,100,0,38,0,0,0,0,0,
-                    0,0,0,0,0,0,0,0,505,0,
+                    0,0,0,0,0,0,0,0,588,1,
                     396,0,0,0,102,0,142,0,62,110,
                     570,0,463,0,0,0,1925,0,369,0,
                     506,1925,304,309,0,0,0,0,0,0,
@@ -46,6 +47,24 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
                     3504,2400,300,300,295,276,33,33,2,1620,779,15163,15163,14906,0,0,0,3270,3264,45581,0,20564,12339,18753,12353,18742,12356,13625,20564,12339,18754,12866,18743,14151,13104,20564,12339,18754,12866,18743,14151,12592,20564,12339,18754,12865,18738,12871,13620,0,0,0,0,0,0,0,1025,8195,769,259,0,31460,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                 Information:[12.000,14,XY,8,1.23,0.00,1.24,1.09,0.00,1]
              }
+            """;
+    private static final String RAW_DATA_X3_RUEPERT = """
+            {
+                "sn":"SRABCDEFGH",
+                "ver":"3.009.03",
+                "type":14,
+                "Data":[
+                    2367,2360,2375,10,10,10,48,48,58,154,
+                    6077,5297,19,19,1177,1058,5003,5003,5003,2,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,32310,
+                    600,1971,3213,61,1959,1,46,154,256,10528,
+                    3083,6154,100,0,34,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,2380,1,
+                    52,77,0,0,6253,0,7500,0,37,46,
+                    6854,1,64,4,0,0,2662,8,10050,0,
+                    30,0,518,0,0,0,0,0,0,0,
+                    0,0,1,51,1,23,47,256,3504,2400,300,300,249,227,34,33,74,1620,1024,16448,16448,16448,0,0,0,3352,3344,57729,21,20564,12339,18753,12354,16694,13124,12848,20564,12339,19010,12857,16690,13124,13368,20564,12339,19010,12601,16691,12356,12597,20564,12339,19010,12601,16691,12356,14387,0,0,0,0,0,0,0,515,257,1281,1027,0,32310,0,0,0,0,0,0,0,0,0,0,0,0,0,161,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"Information":[10.000,14,"H34A10IA999999",8,1.41,0.00,1.40,1.09,0.00,1]}
             """;
 
     @Override
@@ -86,9 +105,9 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
         assertEquals(2, data.getInverterWorkModeCode()); // [19]
         assertEquals("2", data.getInverterWorkMode()); // [19]
 
-        assertEquals(-41, data.getFeedInPower()); // [34] - [35]
+        assertEquals(-42, data.getFeedInPower()); // [34][35]
 
-        assertEquals(313.3, data.getBatteryVoltage()); // [39]
+        assertEquals(2.59, data.getBatteryVoltage()); // [39]
         assertEquals(3.2, data.getBatteryCurrent()); // [40]
         assertEquals(1034, data.getBatteryPower()); // [41]
         assertEquals(45, data.getBatteryLevel()); // [103]
@@ -96,15 +115,15 @@ public class TestX3HybridG4Parser extends AbstractParserTest {
 
         // Totals
         assertEquals(1294, data.getPowerUsage()); // [47]
-        assertEquals(50.5, data.getTotalEnergy()); // [68]
-        assertEquals(102, data.getTotalBatteryDischargeEnergy()); // [74]
-        assertEquals(142, data.getTotalBatteryChargeEnergy()); // [76]
-        assertEquals(57, data.getTotalPVEnergy()); // [80]
-        assertEquals(1925, data.getTotalFeedInEnergy()); // [86]
+        assertEquals(6612.4, data.getTotalEnergy()); // [68][69]
+        assertEquals(10.2, data.getTotalBatteryDischargeEnergy()); // [74][75]
+        assertEquals(14.2, data.getTotalBatteryChargeEnergy()); // [76][77]
+        assertEquals(57, data.getTotalPVEnergy()); // [80][81]
+        assertEquals(19.25, data.getTotalFeedInEnergy()); // [86][87]
         assertEquals(36.9, data.getTotalConsumption()); // [88]
-        assertEquals(46.3, data.getTodayEnergy()); // [82] / 10
-        assertEquals(5.06, data.getTodayFeedInEnergy()); // [90] / 100
-        assertEquals(3.04, data.getTodayConsumption()); // [92] / 100
+        assertEquals(39.6, data.getTodayEnergy()); // [82] / 10
+        assertEquals(1261573.06, data.getTodayFeedInEnergy()); // [90][91] / 100
+        assertEquals(202509.28, data.getTodayConsumption()); // [92][93] / 100
         assertEquals(6.2, data.getTodayBatteryDischargeEnergy()); // [78] / 100
         assertEquals(11, data.getTodayBatteryChargeEnergy()); // [79] / 100
     }

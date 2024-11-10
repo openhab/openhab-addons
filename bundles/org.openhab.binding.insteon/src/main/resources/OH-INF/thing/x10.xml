@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="insteon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="x10">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub1"/>
+			<bridge-type-ref id="hub2"/>
+			<bridge-type-ref id="plm"/>
+		</supported-bridge-type-refs>
+
+		<label>X10 Device</label>
+		<description>An X10 device such as a switch, dimmer or sensor.</description>
+
+		<config-description>
+			<parameter name="houseCode" type="text" pattern="[A-P]" required="true">
+				<label>House Code</label>
+				<description>X10 house code of the device. Example: A</description>
+			</parameter>
+
+			<parameter name="unitCode" type="integer" min="1" max="16" required="true">
+				<label>Unit Code</label>
+				<description>X10 unit code of the device. Example: 1</description>
+			</parameter>
+
+			<parameter name="deviceType" type="text" required="true">
+				<label>Device Type</label>
+				<description>X10 device type.</description>
+				<options>
+					<option value="X10_Switch">Switch</option>
+					<option value="X10_Dimmer">Dimmer</option>
+					<option value="X10_Sensor">Sensor</option>
+				</options>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

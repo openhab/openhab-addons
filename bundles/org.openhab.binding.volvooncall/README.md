@@ -122,7 +122,7 @@ Bridge volvooncall:vocapi:glh "VoC Gaël" @ "System" [username="mail@address.org
 demo.items:
 
 ```java
-Group gVoc "Volvo On Call" 
+Group gVoc "Volvo On Call"
 
 Group:Contact:OR(OPEN,CLOSED) gDoorsOpening "Portes"     (gVoc)
 Contact Voc_DoorsTailgate           "Tailgate"                              (gDoorsOpening)         {channel="volvooncall:vehicle:glh:XC60:doors#tailgate"}
@@ -153,7 +153,7 @@ voc.sitemap:
 
 ```perl
 sitemap voc label="Volvo On Call" {
-    
+
     Frame label="Etat Véhicule" {
         Switch item=Voc_DoorsCarLocked
         Switch item=Voc_Location_LUD mappings=[REFRESH='MAJ !']
@@ -167,7 +167,7 @@ sitemap voc label="Volvo On Call" {
     Frame label="" {
         Mapview item=Voc_Location label="" height=10
     }
-        
+
     Frame label="Opening Status" {
         Group item=gDoorsOpening
         Group item=gWindowsOpening

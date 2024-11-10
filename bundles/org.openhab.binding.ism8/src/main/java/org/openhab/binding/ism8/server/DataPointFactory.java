@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link DataPointFactory} creates the data points depending on the types
  *
  * @author Hans-Reiner Hoffmann - Initial contribution
+ * @author Holger Friedrich - Extend to new data types (fw 1.80 and 1.90)
  */
 @NonNullByDefault
 public class DataPointFactory {
@@ -40,14 +41,22 @@ public class DataPointFactory {
             case "5.001":
                 dataPoint = new DataPointScaling(id, knxType, description);
                 break;
+            case "7.001":
+                dataPoint = new DataPointIntegerValue(id, knxType, description);
+                break;
             case "9.001":
             case "9.002":
             case "9.006":
+            case "9.024":
+            case "9.025":
                 dataPoint = new DataPointValue(id, knxType, description);
                 break;
+            // TODO 10.001 (Time, CWL)
+            // TODO 11.001 (Date, CWL)
             case "13.002":
                 dataPoint = new DataPointLongValue(id, knxType, description);
                 break;
+            case "5.010":
             case "20.102":
             case "20.103":
             case "20.105":

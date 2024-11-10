@@ -14,26 +14,18 @@ package org.openhab.persistence.jdbc.internal.db;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.measure.Quantity;
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
-import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
-import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
-import org.openhab.persistence.jdbc.internal.dto.JdbcHistoricItem;
 import org.openhab.persistence.jdbc.internal.exceptions.JdbcSQLException;
 import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -121,24 +113,11 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     @Override
     public boolean doIfTableExists(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlIfTableExists, new String[] { "#searchTable#" },
-                new String[] { vo.getItemsManageTable().toUpperCase() });
+                new String[] { formattedIdentifier(vo.getItemsManageTable()) });
         logger.debug("JDBC::doIfTableExists sql={}", sql);
         try {
             final @Nullable String result = Yank.queryScalar(sql, String.class, null);
             return Objects.nonNull(result);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
-    public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
-                new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable().toUpperCase(), vo.getItemName() });
-        logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
-        try {
-            return Yank.insert(sql, null);
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
@@ -150,7 +129,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         if (!tableExists) {
             String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                     new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
-                    new String[] { vo.getItemsManageTable().toUpperCase(), vo.getColname(), vo.getColtype() });
+                    new String[] { formattedIdentifier(vo.getItemsManageTable()), vo.getColname(), vo.getColtype() });
             logger.debug("JDBC::doCreateItemsTableIfNot tableExists={} therefore sql={}", tableExists, sql);
             try {
                 Yank.execute(sql, null);
@@ -167,23 +146,11 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doCreateItemTable(ItemVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemTable,
-                new String[] { "#tableName#", "#dbType#", "#tablePrimaryKey#" },
-                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryKey") });
-        try {
-            Yank.execute(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(),
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
                         sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
@@ -199,7 +166,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(), "?" });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
@@ -208,26 +175,6 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         } catch (YankSQLException e) {
             throw new JdbcSQLException(e);
         }
-    }
-
-    @Override
-    public List<HistoricItem> doGetHistItemFilterQuery(Item item, FilterCriteria filter, int numberDecimalcount,
-            String table, String name, ZoneId timeZone) throws JdbcSQLException {
-        String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
-        List<Object[]> m;
-        try {
-            m = Yank.queryObjectArrays(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-        logger.debug("JDBC::doGetHistItemFilterQuery got Array length={}", m.size());
-        // we already retrieve the unit here once as it is a very costly operation
-        String itemName = item.getName();
-        Unit<? extends Quantity<?>> unit = item instanceof NumberItem ni ? ni.getUnit() : null;
-        return m.stream().map(o -> {
-            logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
-            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsZonedDateTime(o[0]));
-        }).collect(Collectors.<HistoricItem> toList());
     }
 
     /****************************
@@ -280,7 +227,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
             queryString += "5 AS DECIMAL(31," + numberDecimalcount + "))"; // 31 is DECIMAL max precision
                                                                            // https://db.apache.org/derby/docs/10.0/manuals/develop/develop151.html
         } else {
-            queryString += " value FROM " + table.toUpperCase();
+            queryString += " value FROM " + formattedIdentifier(table);
         }
 
         if (!filterString.isEmpty()) {
@@ -293,6 +240,10 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     /*****************
      * H E L P E R S *
      *****************/
+    @Override
+    protected String formattedIdentifier(String identifier) {
+        return identifier.toUpperCase();
+    }
 
     /******************************
      * public Getters and Setters *

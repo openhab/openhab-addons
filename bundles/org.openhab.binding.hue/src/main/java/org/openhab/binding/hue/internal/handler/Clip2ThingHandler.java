@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
@@ -945,6 +946,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 if (fullUpdate) {
                     updateEffectChannel(resource);
+                    updateColorTemperatureAbsoluteChannel(resource);
                 }
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
@@ -1115,6 +1117,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Process the incoming Resource to initialize the colour temperature absolute channel's state description based on
+     * the minimum and maximum values supported by the lamp's Mirek schema.
+     *
+     * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
+     */
+    private void updateColorTemperatureAbsoluteChannel(Resource resource) {
+        ColorTemperature colorTemperature = resource.getColorTemperature();
+        if (colorTemperature != null) {
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema != null) {
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
+                        1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
+                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
+            }
+        }
+    }
+
+    /**
      * Update the light properties.
      *
      * @param resource a Resource object containing the property data.
@@ -1170,6 +1190,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             Map<String, String> properties = new HashMap<>(thing.getProperties());
 
             // resource data
+            properties.put(PROPERTY_RESOURCE_ID, resourceId);
             properties.put(PROPERTY_RESOURCE_TYPE, thisResource.getType().toString());
             properties.put(PROPERTY_RESOURCE_NAME, thisResource.getName());
 
@@ -1196,7 +1217,6 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 String modelId = productData.getModelId();
 
                 // standard properties
-                properties.put(PROPERTY_RESOURCE_ID, resourceId);
                 properties.put(Thing.PROPERTY_MODEL_ID, modelId);
                 properties.put(Thing.PROPERTY_VENDOR, productData.getManufacturerName());
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, productData.getSoftwareVersion());

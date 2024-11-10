@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.SmartMeterBindingConstants;
 import org.openhab.core.library.CoreItemFactory;
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 @Component(service = { ChannelTypeProvider.class, SmartMeterChannelTypeProvider.class })
 public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, MeterValueListener {
 
@@ -68,14 +69,14 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     }
 
     @Override
-    public <Q extends @NonNull Quantity<Q>> void valueChanged(MeterValue<Q> value) {
+    public <Q extends Quantity<Q>> void valueChanged(MeterValue<Q> value) {
         if (!obisChannelMap.containsKey(value.getObisCode())) {
             logger.debug("Creating ChannelType for OBIS {}", value.getObisCode());
             obisChannelMap.put(value.getObisCode(), getChannelType(value.getUnit(), value.getObisCode()));
         }
     }
 
-    private ChannelType getChannelType(Unit<?> unit, String obis) {
+    private ChannelType getChannelType(@Nullable Unit<?> unit, String obis) {
         String obisChannelId = SmartMeterBindingConstants.getObisChannelId(obis);
         StateChannelTypeBuilder stateDescriptionBuilder;
         if (unit != null) {
@@ -96,7 +97,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
     }
 
     @Override
-    public <Q extends @NonNull Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
+    public <Q extends Quantity<Q>> void valueRemoved(MeterValue<Q> value) {
         obisChannelMap.remove(value.getObisCode());
     }
 
@@ -106,7 +107,7 @@ public class SmartMeterChannelTypeProvider implements ChannelTypeProvider, Meter
      * @param obis The obis code.
      * @return The {@link ChannelTypeUID} or null.
      */
-    public ChannelTypeUID getChannelTypeIdForObis(String obis) {
+    public @Nullable ChannelTypeUID getChannelTypeIdForObis(String obis) {
         ChannelType channeltype = obisChannelMap.get(obis);
         return channeltype != null ? channeltype.getUID() : null;
     }

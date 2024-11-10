@@ -110,7 +110,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostedState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
 
             if (firstChannel.getOverrideTimeoutUnixTime() != null
@@ -125,7 +125,7 @@ public class HotWaterHandler extends DraytonWiserThingHandler<HotWaterData> {
     }
 
     private State getBoostRemainingState() {
-        if (getData().hotWater.size() >= 1) {
+        if (!getData().hotWater.isEmpty()) {
             final HotWaterDTO firstChannel = getData().hotWater.get(0);
             final Integer overrideTimeout = firstChannel.getOverrideTimeoutUnixTime();
 

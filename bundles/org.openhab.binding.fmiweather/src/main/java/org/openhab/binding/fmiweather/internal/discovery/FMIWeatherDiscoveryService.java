@@ -15,6 +15,7 @@ package org.openhab.binding.fmiweather.internal.discovery;
 import static org.openhab.binding.fmiweather.internal.BindingConstants.*;
 import static org.openhab.binding.fmiweather.internal.discovery.CitiesOfFinland.CITIES_OF_FINLAND;
 
+import java.text.Normalizer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fmiweather.internal.BindingConstants;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Location;
@@ -39,10 +41,12 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -65,35 +69,45 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private static final int LOCATION_CHANGED_CHECK_INTERVAL_SECONDS = 60;
     private static final int FIND_STATION_METERS = 80_000;
 
+    private final LocationProvider locationProvider;
+    private final HttpClient httpClient;
+    private final ExpiringCache<Set<Location>> stationsCache;
+
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable PointType previousLocation;
-    private @NonNullByDefault({}) LocationProvider locationProvider;
-
-    private ExpiringCache<Set<Location>> stationsCache = new ExpiringCache<>(STATIONS_CACHE_MILLIS, () -> {
-        try {
-            return new Client().queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
-        } catch (FMIUnexpectedResponseException e) {
-            logger.warn("Unexpected error with the response, potentially API format has changed. Printing out details",
-                    e);
-        } catch (FMIResponseException e) {
-            logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
-        }
-        // Return empty set on errors
-        return Collections.emptySet();
-    });
 
     /**
      * Creates a {@link FMIWeatherDiscoveryService} with immediately enabled background discovery.
      */
-    public FMIWeatherDiscoveryService() {
+    @Activate
+    public FMIWeatherDiscoveryService(final @Reference LocationProvider locationProvider,
+            final @Reference HttpClientFactory httpClientFactory) {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+        this.locationProvider = locationProvider;
+        httpClient = httpClientFactory.getCommonHttpClient();
+
+        stationsCache = new ExpiringCache<>(STATIONS_CACHE_MILLIS, () -> {
+            try {
+                return new Client(httpClient).queryWeatherStations(STATIONS_TIMEOUT_MILLIS);
+            } catch (FMIUnexpectedResponseException e) {
+                logger.warn(
+                        "Unexpected error with the response, potentially API format has changed. Printing out details",
+                        e);
+            } catch (FMIResponseException e) {
+                logger.warn("Error when querying stations, {}: {}", e.getClass().getSimpleName(), e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Interrupted");
+            }
+            // Return empty set on errors
+            return Collections.emptySet();
+        });
     }
 
     @Override
     protected void startScan() {
         PointType location = null;
         logger.debug("Starting FMI Weather discovery scan");
-        LocationProvider locationProvider = getLocationProvider();
         location = locationProvider.getLocation();
         if (location == null) {
             logger.debug("LocationProvider.getLocation() is not set -> Will discover all stations");
@@ -127,9 +141,9 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private void createForecastForCurrentLocation(@Nullable PointType currentLocation) {
         if (currentLocation != null) {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(UID_LOCAL_FORECAST)
-                    .withLabel(String.format("FMI local weather forecast"))
+                    .withLabel("FMI local weather forecast")
                     .withProperty(LOCATION,
-                            String.format("%s,%s", currentLocation.getLatitude(), currentLocation.getLongitude()))
+                            "%s,%s".formatted(currentLocation.getLatitude(), currentLocation.getLongitude()))
                     .withRepresentationProperty(LOCATION).build();
             thingDiscovered(discoveryResult);
         }
@@ -138,11 +152,11 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
     private void createForecastsForCities(@Nullable PointType currentLocation) {
         CITIES_OF_FINLAND.stream().filter(location2 -> isClose(currentLocation, location2)).forEach(city -> {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_FORECAST, cleanId(String.format("city_%s", city.name))))
+                    .create(new ThingUID(THING_TYPE_FORECAST, cleanId("city_%s".formatted(city.name))))
                     .withProperty(LOCATION,
-                            String.format("%s,%s", city.latitude.toPlainString(), city.longitude.toPlainString()))
-                    .withLabel(String.format("FMI weather forecast for %s", city.name))
-                    .withRepresentationProperty(LOCATION).build();
+                            "%s,%s".formatted(city.latitude.toPlainString(), city.longitude.toPlainString()))
+                    .withLabel("FMI weather forecast for %s".formatted(city.name)).withRepresentationProperty(LOCATION)
+                    .build();
             thingDiscovered(discoveryResult);
         });
     }
@@ -161,25 +175,24 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
         }).forEach(station -> {
             DiscoveryResult discoveryResult = DiscoveryResultBuilder
                     .create(new ThingUID(THING_TYPE_OBSERVATION,
-                            cleanId(String.format("station_%s_%s", station.id, station.name))))
-                    .withLabel(String.format("FMI weather observation for %s", station.name))
+                            cleanId("station_%s_%s".formatted(station.id, station.name))))
+                    .withLabel("FMI weather observation for %s".formatted(station.name))
                     .withProperty(BindingConstants.FMISID, station.id)
                     .withRepresentationProperty(BindingConstants.FMISID).build();
             thingDiscovered(discoveryResult);
         });
         if (logger.isDebugEnabled()) {
             logger.debug("Candidate stations: {}",
-                    candidateStations.stream().map(station -> String.format("%s (%s)", station.name, station.id))
+                    candidateStations.stream().map(station -> "%s (%s)".formatted(station.name, station.id))
                             .collect(Collectors.toCollection(TreeSet<String>::new)));
             logger.debug("Filtered stations: {}",
-                    filteredStations.stream().map(station -> String.format("%s (%s)", station.name, station.id))
+                    filteredStations.stream().map(station -> "%s (%s)".formatted(station.name, station.id))
                             .collect(Collectors.toCollection(TreeSet<String>::new)));
         }
     }
 
     private static String cleanId(String id) {
-        return id.replace("ä", "a").replace("ö", "o").replace("å", "a").replace("Ä", "A").replace("Ö", "O")
-                .replace("Å", "a").replaceAll("[^a-zA-Z0-9_]", "_");
+        return Normalizer.normalize(id, Normalizer.Form.NFKD).replaceAll("\\p{M}", "").replaceAll("[^a-zA-Z0-9_]", "_");
     }
 
     private static boolean isClose(@Nullable PointType location, Location location2) {
@@ -207,18 +220,5 @@ public class FMIWeatherDiscoveryService extends AbstractDiscoveryService {
                 logger.debug("Stopped FMI Weather background discovery");
             }
         }
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider provider) {
-        this.locationProvider = null;
-    }
-
-    protected LocationProvider getLocationProvider() {
-        return locationProvider;
     }
 }

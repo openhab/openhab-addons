@@ -1,27 +1,36 @@
 # Panasonic Blu-ray Player Binding
 
-This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray players from 2018 to openHAB.  
-**Supported Blu-ray models:** DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.  
-**Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.  
+This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray players from 2018 to openHAB.
+
+**Supported Blu-ray models:** DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.
+
+**Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.
 
 **Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
 If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
 
-To enable network remote control of the Blu-ray model players, configure the following settings:  
-**Player Settings/Network/Network Settings/Remote Device Settings**  
-Then make sure you have the following values set:  
-**Remote Device Operation: On**  
-**Registration Type: Automatic**  
+To enable network remote control of the Blu-ray model players, configure the following settings:
+
+- **Player Settings/Network/Network Settings/Remote Device Settings**
+
+Then make sure you have the following values set:
+
+- **Remote Device Operation: On**
+- **Registration Type: Automatic**
 
 For the UHD models, Voice Control must be enabled for the player's http interface to be active:
-**Player Settings/Network/Voice Control: On**
 
-To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:  
-**Player Settings/System/Quick Start: On**  
+- **Player Settings/Network/Voice Control: On**
 
-**UHD Model Command Authentication:**  
+To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:
+
+- **Player Settings/System/Quick Start: On**
+
+**UHD Model Command Authentication:**
+
 The UHD models require authentication to use the control API.
 A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
+
 UHD model players that are patched do not require a player key.
 See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
@@ -52,11 +61,11 @@ The Thing has a few configuration parameters:
 
 Some notes:
 
-* The control protocol of these players is undocumented and may not work consistently in all situations
-* The UHD models only support playback elapsed time (not title total time or chapter information) reporting
-* The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
-* There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
-* Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- The control protocol of these players is undocumented and may not work consistently in all situations
+- The UHD models only support playback elapsed time (not title total time or chapter information) reporting
+- The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
+- There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
+- Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
 
 ## Channels
 
@@ -87,7 +96,7 @@ panasonicbdp.items:
 ```java
 // BD Player
 Switch Player_Power            "Power"                     { channel="panasonicbdp:bd-player:mybdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button", autoupdate="false" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:bd-player:mybdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:bd-player:mybdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:bd-player:mybdplayer:player-status" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:bd-player:mybdplayer:time-elapsed" }
@@ -97,7 +106,7 @@ Number Player_ChapterTotal     "Total Chapters: [%d]"      { channel="panasonicb
 
 // UHD Player
 Switch Player_Power            "Power"                     { channel="panasonicbdp:uhd-player:myuhdplayer:power" }
-String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button", autoupdate="false" }
+String Player_Button           "Send Command"              { channel="panasonicbdp:uhd-player:myuhdplayer:button" }
 Player Player_Control          "Control"                   { channel="panasonicbdp:uhd-player:myuhdplayer:control" }
 String Player_PlayerStatus     "Status: [%s]"              { channel="panasonicbdp:uhd-player:myuhdplayer:player-status" }
 Number:Time Player_TimeElapsed "Elapsed Time: [%d %unit%]" { channel="panasonicbdp:uhd-player:myuhdplayer:time-elapsed" }
@@ -123,9 +132,9 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 }
 ```
 
-### Appendix A - 'button' channel command codes:
+### Appendix A - 'button' channel command codes
 
-**List of available button commands for BD players:**  
+**List of available button commands for BD players:**
 
 | Function                 | Command  |
 |--------------------------|----------|
@@ -180,9 +189,9 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 | OSD (DISPLAY)            | OSDONOFF |
 | Shuttle(BD) View (buttons not in other views)||
 | Swipe in CW circle       | SHFWD2   |
-| Swipe in CCW circle      | SHREV2   | 
+| Swipe in CCW circle      | SHREV2   |
 
-**List of available button commands for UHD players:**  
+**List of available button commands for UHD players:**
 
 | Function         | Command          |
 |------------------|------------------|

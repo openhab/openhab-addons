@@ -65,6 +65,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private final ThingRegistry thingRegistry;
     private final ComponentContext componentContext;
 
+  private static final int REQUEST_BUFFER_SIZE = 8000;
+    private static final int RESPONSE_BUFFER_SIZE = 200000;
+
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ZonedDateTime.class,
                     (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> ZonedDateTime
@@ -92,12 +95,27 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
             final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
             ComponentContext componentContext) {
         this.localeProvider = localeProvider;
-
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
         this.componentContext = componentContext;
+
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        try {
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
+            sslContextFactory.setSslContext(sslContext);
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
+                    e);
+        } catch (KeyManagementException e) {
+            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
+        }
+        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
+        httpClient.setFollowRedirects(false);
+        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+        httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
     }
 
     @Override

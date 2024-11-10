@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -76,12 +77,14 @@ public interface CommonInterface {
     void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
             @Nullable String thingStatusReason);
 
-    void triggerChannel(String channelID, String event);
+    void triggerChannel(String groupID, String channelID, String event);
 
     void updateThing(Thing thing);
 
     @Nullable
     Bridge getBridge();
+
+    ZoneId getSystemTimeZone();
 
     default @Nullable CommonInterface getBridgeHandler() {
         Bridge bridge = getBridge();

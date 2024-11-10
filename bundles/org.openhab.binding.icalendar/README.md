@@ -10,7 +10,8 @@ The primary thing type is the calendar.
 It is based on a single iCalendar file and implemented as bridge.
 There can be multiple things having different properties representing different calendars.
 
-Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria. Time based filtering is done by each event's start.
+Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria.
+Standard time-based filtering is done by each event's start, but it can also be configured to match other aspects.
 
 ## Thing Configuration
 
@@ -26,6 +27,7 @@ Each `calendar` thing requires the following configuration parameters:
 | `password`          | The password for pulling the calendar. If set, the binding pulls the calendar using basic auth. Only valid in combination with `username`.                                                | optional                      |
 | `maxSize`           | The maximum size of the iCal-file in Mebibytes.                                                                                                                                           | mandatory (default available) |
 | `authorizationCode` | The authorization code to permit the execution of embedded command tags. If set, the binding checks that the authorization code in the command tag matches before executing any commands. | optional                      |
+| `userAgent`         | Some providers require a specific user agent header. If left empty, the default Jetty header is used.                                                                                     | optional                      |
 
 ### Configuration for `eventfilter`
 
@@ -39,6 +41,7 @@ Each `eventfilter` thing requires a bridge of type `calendar` and has following 
 | `datetimeStart`  | The start of the time frame where to search for events relative to current time. Combined with `datetimeUnit`.                                                                                 | optional                                   |
 | `datetimeEnd`    | The end of the time frame where to search for events relative to current time. Combined with `datetimeUnit`. The value must be greater than `datetimeStart` to get results.                    | optional                                   |
 | `datetimeRound`  | Whether to round the datetimes of start and end down to the earlier time unit. Example if set: current time is 13:00, timeunit is set to `DAY`. Resulting search will start and end at 0:00.   | optional                                   |
+| `datetimeMode`   | Defines which part of an event must fall within the search period between start and end. Valid values: `START`, `ACTIVE` and `END`.                                                            | optional (default is `START`)              |
 | `textEventField` | A field to filter the events text-based. Valid values: `SUMMARY`, `DESCRIPTION`, `COMMENT`, `CONTACT` and `LOCATION` (as described in RFC 5545).                                               | optional/required for text-based filtering |
 | `textEventValue` | The text to filter events with.                                                                                                                                                                | optional                                   |
 | `textValueType`  | The type of the text to filter with. Valid values: `TEXT` (field must contain value, case insensitive), `REGEX` (field must match value, completely, dot matches all, usually case sensitive). | optional/required for text-based filtering |

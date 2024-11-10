@@ -27,19 +27,19 @@ Thing orvibo:s20:mysocket [ deviceId="AABBCCDDEEFF"]
 
 ## Channels
 
-### S20:
+### S20
 
 | Channel | Description                   | Example                   |
 |---------|-------------------------------|---------------------------|
 | power   | Current power state of switch | orvibo:s20:mysocket:power |
 
-## Items:
+## `orvibo.items` Example
 
 ```java
 Switch MySwitch              "Switch state [%s]"  { channel="orvibo:s20:mysocket:power" }
 ```
 
-## Example Sitemap
+## `orbivo.sitemap` Example
 
 Using the above things channels and items
 Sitemap:

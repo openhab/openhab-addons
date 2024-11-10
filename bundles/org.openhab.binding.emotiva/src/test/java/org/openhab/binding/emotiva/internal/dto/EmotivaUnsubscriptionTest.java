@@ -16,8 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.CHANNEL_TUNER_RDS;
 
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,9 +37,10 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
 
     @Test
     void marshalFromChannelUID() {
-        EmotivaSubscriptionTags subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
-        EmotivaUnsubscribeDTO emotivaSubscriptionRequest = new EmotivaUnsubscribeDTO(subscriptionChannel);
+        var subscriptionChannel = EmotivaSubscriptionTags.fromChannelUID(CHANNEL_TUNER_RDS);
+        var emotivaSubscriptionRequest = new EmotivaUnsubscribeDTO(subscriptionChannel);
         String xmlString = xmlUtils.marshallJAXBElementObjects(emotivaSubscriptionRequest);
+
         assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
         assertThat(xmlString, containsString("<tuner_RDS />"));
         assertThat(xmlString, containsString("</emotivaUnsubscribe>"));
@@ -49,17 +48,13 @@ class EmotivaUnsubscriptionTest extends AbstractDTOTestBase {
 
     @Test
     void marshallWithTwoUnsubscriptions() {
-        EmotivaCommandDTO command1 = new EmotivaCommandDTO(EmotivaControlCommands.volume);
-        EmotivaCommandDTO command2 = new EmotivaCommandDTO(EmotivaControlCommands.power_off);
-
-        EmotivaUnsubscribeDTO dto = new EmotivaUnsubscribeDTO(List.of(command1, command2));
-
+        var command1 = new EmotivaCommandDTO(EmotivaControlCommands.volume);
+        var dto = new EmotivaUnsubscribeDTO(command1);
         String xmlString = xmlUtils.marshallJAXBElementObjects(dto);
+
         assertThat(xmlString, containsString("<emotivaUnsubscribe>"));
         assertThat(xmlString, containsString("<volume />"));
-        assertThat(xmlString, containsString("<power_off />"));
         assertThat(xmlString, containsString("</emotivaUnsubscribe>"));
         assertThat(xmlString, not(containsString("<volume>")));
-        assertThat(xmlString, not(containsString("<command>")));
     }
 }

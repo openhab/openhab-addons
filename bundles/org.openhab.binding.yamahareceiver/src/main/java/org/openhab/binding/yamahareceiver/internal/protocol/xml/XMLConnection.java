@@ -93,7 +93,6 @@ public class XMLConnection extends AbstractConnection {
             }
 
             return responseConsumer.apply(connection);
-
         } finally {
             if (connection != null) {
                 connection.disconnect();

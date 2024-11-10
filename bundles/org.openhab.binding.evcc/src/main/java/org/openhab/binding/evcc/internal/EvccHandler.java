@@ -33,6 +33,7 @@ import org.openhab.binding.evcc.internal.api.dto.PV;
 import org.openhab.binding.evcc.internal.api.dto.Plan;
 import org.openhab.binding.evcc.internal.api.dto.Result;
 import org.openhab.binding.evcc.internal.api.dto.Vehicle;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -66,6 +67,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EvccHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(EvccHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
     private @Nullable EvccAPI evccAPI;
     private @Nullable ScheduledFuture<?> statePollingJob;
 
@@ -79,8 +81,9 @@ public class EvccHandler extends BaseThingHandler {
 
     Map<String, Triple<Boolean, Float, ZonedDateTime>> vehiclePlans = new HashMap<>();
 
-    public EvccHandler(Thing thing) {
+    public EvccHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -376,7 +379,7 @@ public class EvccHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.no-host");
         } else {
-            this.evccAPI = new EvccAPI(url);
+            this.evccAPI = new EvccAPI(url, timeZoneProvider);
             logger.debug("Setting up refresh job ...");
             statePollingJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
@@ -758,7 +761,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long chargeDuration = loadpoint.getChargeDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_DURATION);
-        updateState(channel, new QuantityType<>(chargeDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(chargeDuration, Units.SECOND));
 
         float chargePower = loadpoint.getChargePower();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_POWER);
@@ -766,7 +769,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long chargeRemainingDuration = loadpoint.getChargeRemainingDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
-        updateState(channel, new QuantityType<>(chargeRemainingDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(chargeRemainingDuration, Units.SECOND));
 
         float chargeRemainingEnergy = loadpoint.getChargeRemainingEnergy();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
@@ -786,7 +789,7 @@ public class EvccHandler extends BaseThingHandler {
 
         long connectedDuration = loadpoint.getConnectedDuration();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_CONNECTED_DURATION);
-        updateState(channel, new QuantityType<>(connectedDuration, MetricPrefix.NANO(Units.SECOND)));
+        updateState(channel, new QuantityType<>(connectedDuration, Units.SECOND));
 
         boolean enabled = loadpoint.getEnabled();
         channel = new ChannelUID(uid, channelGroup, CHANNEL_LOADPOINT_ENABLED);
@@ -961,7 +964,7 @@ public class EvccHandler extends BaseThingHandler {
 
         Plan plan = null;
         if (vehicle != null) {
-            vehicle.getPlan();
+            plan = vehicle.getPlan();
         }
         if (plan == null && vehiclePlans.get(vehicleName) == null) {
             vehiclePlans.put(vehicleName, new Triple<>(false, 100f, ZonedDateTime.now().plusHours(12)));

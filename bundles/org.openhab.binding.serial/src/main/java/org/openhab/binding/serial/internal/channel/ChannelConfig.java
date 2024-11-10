@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.serial.internal.channel;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -25,12 +27,12 @@ public class ChannelConfig {
     /**
      * Transform for received data
      */
-    public @Nullable String stateTransformation;
+    public @Nullable List<String> stateTransformation;
 
     /**
      * Transform for command
      */
-    public @Nullable String commandTransformation;
+    public @Nullable List<String> commandTransformation;
 
     /**
      * Format string for command

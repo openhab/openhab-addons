@@ -15,8 +15,11 @@ package org.openhab.binding.linky.internal.api;
 import java.net.HttpCookie;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -25,6 +28,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
@@ -32,6 +36,7 @@ import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.MeterReading;
+import org.openhab.binding.linky.internal.dto.ConsumptionReport.Consumption;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.ResponseContract;
@@ -58,7 +63,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class EnedisHttpApi {
-
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
@@ -82,7 +86,6 @@ public class EnedisHttpApi {
         cookie.setPath("/");
         httpClient.getCookieStore().add(EnedisWebBridgeHandler.COOKIE_URI, cookie);
     }
-
     public String getLocation(ContentResponse response) {
         return response.getHeaders().get(HttpHeader.LOCATION);
     }

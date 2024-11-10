@@ -73,7 +73,7 @@ There can be following reasons why Miniserver status is `OFFLINE`:
   - _Internal error_
     - Probably a code defect, collect debug data and submit an issue. Binding will try to reconnect, but with unknown chance for success.
   - _Other_
-    - An exception occured and its details will be displayed
+    - An exception occurred and its details will be displayed
 - **Communication Error**
   - _Error communicating with Miniserver_
     - I/O error occurred during established communication with the Miniserver, most likely due to network connectivity issues, Miniserver going offline or Loxone Config is uploading a new configuration. A reconnect attempt will be made soon. Please consult detailed message against one of the following:
@@ -84,7 +84,7 @@ There can be following reasons why Miniserver status is `OFFLINE`:
   - _Timeout due to no activity_
     - Miniserver closed connection because there was no activity from binding. It should not occur under normal conditions, as it is prevented by sending keep-alive messages from the binding to the Miniserver. By default Miniserver's timeout is 5 minutes and period between binding's keep-alive messages is 4 minutes. If you see this error, try changing the keep-alive period in binding's configuration to a smaller value.
   - _Other_
-    - An exception occured and its details will be displayed
+    - An exception occurred and its details will be displayed
 
 ### Security
 
@@ -93,7 +93,7 @@ The binding supports the following authentication methods, which are selected au
 | Method      | Miniserver Firmware | Authentication                                                                 | Encryption | Requirements                                          |
 |-------------|---------------------|--------------------------------------------------------------------------------|------------|-------------------------------------------------------|
 | Hash-based  | 8.x                 | HMAC-SHA1 hash on user and password                                            | None       | None                                                  |
-| Token-based | From 9.x                 | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
+| Token-based | From 9.x            | Token acquired on the first connection and used later instead of the password. | AES-256    | JRE must have unrestricted security policy configured |
 
 For the token-based authentication, the password is required only for the first login and acquiring the token. After the token is acquired, the password is cleared in the binding configuration.
 
@@ -112,7 +112,7 @@ A method to enable unrestricted security policy depends on the JRE version and v
 This binding creates channels for controls that are [used in Loxone's user interface](https://www.loxone.com/enen/kb/user-interface-configuration/).
 Currently supported controls are presented in the table below.
 
-| ﻿[Loxone API Control](https://www.loxone.com/enen/kb/api/) | Loxone Block-Functions                                                                                                                                                                                                                                                                                                    | [Item Types](https://www.openhab.org/docs/concepts/items.html) | Supported Commands                                                                                                                                                                                   |
+| [Loxone API Control](https://www.loxone.com/enen/kb/api/) | Loxone Block-Functions                                                                                                                                                                                                                                                                                                    | [Item Types](https://www.openhab.org/docs/concepts/items.html) | Supported Commands                                                                                                                                                                                   |
 |-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Alarm                                                     | [Burglar Alarm](https://www.loxone.com/enen/kb/burglar-alarm/)                                                                                                                                                                                                                                                            | `Switch` - arm the alarm                                       | `OnOffType.*`                                                                                                                                                                                        |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - arm with delay - pushbuton                          | `OnOffType.ON` - armes the alarm with delay                                                                                                                                                          |
@@ -123,7 +123,7 @@ Currently supported controls are presented in the table below.
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `DateTime` - time when alarm started                           | Read-only channel                                                                                                                                                                                    |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - delay of the alarm being armed                      | Read-only channel                                                                                                                                                                                    |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Number` - total delay of the alarm being armed                | Read-only channel                                                                                                                                                                                    |
-|                                                           |                                                                                                                                                                                                                                                                                                                           | `String` - list of alarm sensors separated with `|`            | Read-only channel                                                                                                                                                                                    |
+|                                                           |                                                                                                                                                                                                                                                                                                                           | `String` - list of alarm sensors separated with `\|`            | Read-only channel                                                                                                                                                                                   |
 |                                                           |                                                                                                                                                                                                                                                                                                                           | `Switch` - acknowledge the alarm - pushbutton                  | `OnOffType.ON` - acknowledge alarm                                                                                                                                                                   |
 | ColorPickerV2                                             | [RGBW 24v Dimmer Tree](https://www.loxone.com/enen/kb/rgbw-24v-dimmer-tree/)                                                                                                                                                                                                                                              | `Color`                                                        | `HSBType` - sets the color of the light, `DecimalType` and `PercentType` - sets the brightness, `IncreaseDecreaseType.*` - increases/decreases the brightness, `OnOffType.*` - switches light on/off |
 | Dimmer                                                    | [Dimmer](https://www.loxone.com/enen/kb/dimmer/)                                                                                                                                                                                                                                                                          | `Dimmer`                                                       | `OnOffType.*`, `PercentType`, `IncreaseDecreaseType.*`                                                                                                                                               |
@@ -200,7 +200,7 @@ If a parameter is not explicitly defined, binding will use its default value.
 
 To define a parameter value in a .things file, please refer to it by parameter's ID, for example:
 
-```text
+```ini
 keepAlivePeriod=120
 ```
 
@@ -267,13 +267,13 @@ In this example we will manually configure:
   - Output valve selection for garden watering - 8x Radio Button functional block, where only one valve can be open at a time
   - A text displaying current alarm's state - a State functional block
 
-### things/loxone.things:
+### `loxone.things` Example
 
 ```java
 loxone:miniserver:504F2414780F [ user="kryten", password="jmc2017", host="192.168.0.220", port=80 ]
 ```
 
-### items/loxone.items:
+### `loxone.items` Example
 
 ```java
 // Type       ID              Label                                  Icon          Tags         Settings
@@ -295,7 +295,7 @@ Number        Garden_Valve    "Garden watering section"              <garden>   
 String        Alarm_State     "Alarm state [%s]"                     <alarm>                    {channel="loxone:miniserver:504F2414780F:0F2E2134-017D-3E82-FFFF433FB4A34B9E"}
 ```
 
-### sitemaps/loxone.sitemap:
+### `loxone.sitemap` Example
 
 ```perl
 sitemap loxone label="Loxone Example Menu"
@@ -320,7 +320,7 @@ sitemap loxone label="Loxone Example Menu"
 }
 ```
 
-### transform/garagedoor.map:
+### `garagedoor.map` Example
 
 ```text
 OFF=Closed

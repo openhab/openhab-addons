@@ -415,7 +415,7 @@ Here is an example sitemap:
                     Text item=PANEL_ZONE_FAULT label="Zone Fault"
                     Text item=PANEL_ZONE_TAMPER label="Zone Tamper"
                     Text item=PANEL_ZONE_LOW_BATTERY label="Zone Low Battery"
-                    Text item=PANEL_TIME_LOSS label="Panel Time Loss"                   
+                    Text item=PANEL_TIME_LOSS label="Panel Time Loss"
                 }
             }
 
@@ -602,16 +602,16 @@ Sample Rules for Sending a DSC Alarm Command
 
 ```javascript
 rule "SendKeystrokeStringCommand"
-when   
+when
     Item SwitchItemName received command ON
-then   
+then
     SEND_DSC_ALARM_COMMAND.sendCommand("071,1*101#")
 end
 
 rule "SendPollingCommand"
-when   
+when
     Item SwitchItemName received command ON
-then   
+then
     SEND_DSC_ALARM_COMMAND.sendCommand("000")
 end
 ```

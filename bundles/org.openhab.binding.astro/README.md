@@ -137,7 +137,6 @@ e.g `sun#astroDawn earliest=6:00, latest=20:00 forceEvent=true`
 
 astronomic dawn start is null but `earliest` is set to 06:00 so the event/datetime value is set to 06:00.
 
-
 ## Full Example
 
 Things:

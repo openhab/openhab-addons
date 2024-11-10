@@ -38,6 +38,7 @@ import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
+
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
@@ -327,6 +328,7 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
+
     private synchronized void updateTempoTimeSeries() {
         tempoInformation.getValue().ifPresentOrElse(values -> {
             TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
@@ -404,6 +406,19 @@ public class LinkyHandler extends BaseThingHandler {
             updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, Double.NaN);
             updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
         });
+    }
+
+    private void setCurrentAndPrevious(Aggregate periods, String currentChannel, String previousChannel) {
+        double currentValue = 0.0;
+        double previousValue = 0.0;
+        if (!periods.datas.isEmpty()) {
+            currentValue = periods.datas.get(periods.datas.size() - 1);
+            if (periods.datas.size() > 1) {
+                previousValue = periods.datas.get(periods.datas.size() - 2);
+            }
+        }
+        updateKwhChannel(currentChannel, currentValue);
+        updateKwhChannel(previousChannel, previousValue);
     }
 
     /**

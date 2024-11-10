@@ -34,14 +34,14 @@ public class RadoneyeDataParser {
     private static final int EXPECTED_DATA_LEN_V2 = 12;
     private static final int EXPECTED_VER_PLUS = 1;
 
-    private static final Logger logger = LoggerFactory.getLogger(RadoneyeDataParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RadoneyeDataParser.class);
 
     private RadoneyeDataParser() {
     }
 
     public static Map<String, Number> parseRd200Data(int fwVersion, int[] data) throws RadoneyeParserException {
-        logger.debug("Parsed data length: {}", data.length);
-        logger.debug("Parsed data: {}", data);
+        LOGGER.debug("Parsed data length: {}", data.length);
+        LOGGER.debug("Parsed data: {}", data);
 
         final Map<String, Number> result = new HashMap<>();
 

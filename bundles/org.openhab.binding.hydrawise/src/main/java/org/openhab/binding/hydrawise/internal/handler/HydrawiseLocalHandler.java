@@ -214,7 +214,8 @@ public class HydrawiseLocalHandler extends BaseThingHandler {
                 updateGroupState(group, CHANNEL_ZONE_TIME_LEFT, new QuantityType<>(0, Units.SECOND));
             }
 
-            updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, OnOffType.from(!status.running.isEmpty()));
+            updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN,
+                    !status.running.isEmpty() ? OnOffType.ON : OnOffType.OFF);
         });
     }
 

@@ -7,9 +7,9 @@ This voice service allows you to use the open source library [Piper](https://git
 
 The add-on is compatible with the following platforms:
 
-* linux (armv7l, aarch64, x86_64, min GLIBC version 2.31)
-* macOS (x86_64 min version 11.0, aarch64 min version 13.0)
-* win64 (x86_64 min version Windows 10).
+- linux (armv7l, aarch64, x86_64, min GLIBC version 2.31)
+- macOS (x86_64 min version 11.0, aarch64 min version 13.0)
+- win64 (x86_64 min version Windows 10).
 
 ## Configuration
 
@@ -37,7 +37,7 @@ Models that support multiples speakers are shown as multiple voices in openHAB.
 
 Use your favorite configuration UI to edit **Settings / Other Services - Piper Text-to-Speech**:
 
-* **Preload model** - Keep last voice model used loaded in memory, these way it can be reused on next execution if the voice option matches.
+- **Preload model** - Keep last voice model used loaded in memory, these way it can be reused on next execution if the voice option matches.
 
 ### Configuration via a text file
 
@@ -45,7 +45,7 @@ In case you would like to setup the service via a text file, create a new file i
 
 Its contents should look similar to:
 
-```text
+```ini
 org.openhab.voice.pipertts:preloadModel=true
 ```
 
@@ -53,13 +53,13 @@ org.openhab.voice.pipertts:preloadModel=true
 
 You can setup your preferred default Speech-to-Text in the UI:
 
-* Go to **Settings**.
-* Edit **System Services - Voice**.
-* Set **Piper** as **Text-to-Speech**.
-* Set your **Default Voice**.
+- Go to **Settings**.
+- Edit **System Services - Voice**.
+- Set **Piper** as **Text-to-Speech**.
+- Set your **Default Voice**.
 
 In case you would like to set up these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```text
+```ini
 org.openhab.voice:defaultTTS=pipertts
 ```

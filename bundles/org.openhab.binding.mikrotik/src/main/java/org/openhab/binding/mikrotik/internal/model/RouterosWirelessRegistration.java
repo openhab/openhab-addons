@@ -27,12 +27,29 @@ import org.openhab.binding.mikrotik.internal.util.Converter;
  */
 @NonNullByDefault
 public class RouterosWirelessRegistration extends RouterosRegistrationBase {
+
     public RouterosWirelessRegistration(Map<String, String> props) {
         super(props);
     }
 
     public int getRxSignal() {
-        String signalValue = getProp("signal-strength", "0@hz").split("@")[0];
+        String signalValue = getProp("signal", "0");
+        if (signalValue.isEmpty()) {
+            signalValue = getProp("signal-strength", "0@hz").split("@")[0];
+        } else {
+            int value = Integer.parseInt(signalValue);
+            if (value < -80) {
+                return 0;
+            } else if (value < -75) {
+                return 1;
+            } else if (value < -68) {
+                return 2;
+            } else if (value < -55) {
+                return 3;
+            } else {
+                return 4;
+            }
+        }
         return Integer.parseInt(signalValue);
     }
 

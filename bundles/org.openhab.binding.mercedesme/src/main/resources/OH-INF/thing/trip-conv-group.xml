@@ -13,7 +13,7 @@
 			<channel id="distance-reset" typeId="distance-reset"/>
 			<channel id="time-reset" typeId="driven-time-reset"/>
 			<channel id="avg-speed-reset" typeId="avg-speed-reset"/>
-			<channel id="cons-conv-reset" typeId="consumption-conv-resetchannel"/>
+			<channel id="cons-conv-reset" typeId="consumption-conv-reset"/>
 			<channel id="cons-conv-unit" typeId="consumption-conv-unit"/>
 		</channels>
 	</channel-group-type>

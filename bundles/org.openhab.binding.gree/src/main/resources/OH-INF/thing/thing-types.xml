@@ -41,6 +41,13 @@
 				<unitLabel>Degrees Celsius</unitLabel>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="encryptionType" type="text">
+				<options>
+					<option value="ECB">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.ECB</option>
+					<option value="GCM">@text/thing-type.config.gree.airconditioner.encryptionType.state.option.GCM</option>
+				</options>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>

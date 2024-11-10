@@ -84,7 +84,7 @@ Thing upnpcontrol:upnprenderer:<rendererId> [udn="<udn of media renderer>", refr
 The `upnpserver` has the following channels (item type and access mode indicated in brackets):
 
 - `upnprenderer` (String, RW): The renderer to receive media content for playback.
-  
+
   The channel allows selecting from all discovered media renderers.
   This list is dynamically adjusted as media renderers are being added/removed.
 
@@ -94,25 +94,25 @@ The `upnpserver` has the following channels (item type and access mode indicated
 
   The browsing will start at the top of the content directory tree and allows you to go down and up (represented by ..) in the tree.
   The list of containers (directories) and media entries for selection in the content hierarchy is updated dynamically when selecting a container or entry.
-  
+
   This channel can also be used to skip to a specific container or entry in the content directory.
   Setting it to 0 will reposition to the top of the content hierarchy.
-  
+
   All media in the selection list, playable on the currently selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
-  
+
   The `browseDown` configuration parameter influences the result in such a way that, for `browseDown = true`, if the result only contains exactly one container entry, the result will be the content of the container and not the container itself.
 
 - `search` (String, W): Search for media content on the server.
 
   Search criteria are defined in UPnP search criteria format.
   Examples: `dc:title contains "song"`, `dc:creator contains "SpringSteen"`, `unp:class = "object.item.audioItem"`, `upnp:album contains "Born in"`.
-  
+
   The search, by default, starts at the value of the `currentid` and searches down from there unless the `searchfromroot` thing configuration parameter is set to `true`.
   The result (media and containers) will be available in the `browse` command option list.
   The `currentid` channel will be put to the id of the top container where the search started.
-  
+
   All media in the search result list, playable on the current selected `upnprenderer` channel, are automatically queued to the renderer as next media for playback.
-  
+
   The `browseDown` configuration parameter influences the result in such a way that, for `browseDown = true`, if the result only contains exactly one container entry, the result   will be the content of the container and not the container itself.
 
 - `playlistselect` (String, W): Select a playlist from the available playlists currently saved on disk.
@@ -217,10 +217,10 @@ There are multiple ways to serve content to a renderer for playback.
   Playback does not start automatically if not yet playing.
   When already playing a queue, the first entry of the new queue will be playing as the next entry.
   When playing an URI or media provided through an action, playback will immediately switch to the new queue.
-  
+
   The `upnprenderer` will use that queue until it is replaced by another queue from the same or another `upnpserver`.
   Note that querying the content hierarchy on the `upnpserver` will update the `upnpserver browse` option list each time, and therefore the queue on the `upnprenderer` will be updated each time as long as `upnprenderer` is selected on `upnpserver`.
-  
+
 - Selecting a favorite or playlist on the renderer.
 
   Playback of the favorite or playlist will start immediately.

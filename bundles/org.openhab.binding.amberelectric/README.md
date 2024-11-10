@@ -4,7 +4,7 @@ A binding that supports the Australian energy retailer Amber's API (<https://www
 
 ## Supported Things
 
-- `service` Amber Electric API 
+- `service` Amber Electric API
 
 ## Discovery
 
@@ -20,27 +20,27 @@ As a minimum, the IP address is needed:
 
 ## Channels
 
-| channel id             | type                 | description                                                                     |
-|------------------------|----------------------|---------------------------------------------------------------------------------|
-| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid
-| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load
-| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid
-| electricity-status     | String               | Current price status of grid import 
-| controlled-load-status | String               | Current price status of controlled load import
-| feed-in-status         | String               | Current price status of Feed-In
-| nem-time               | String               | NEM time of last pricing update
-| renewables             | Number:Dimensionless | Current level of renewables in the grid
-| spike                  | Switch               | Report if the grid has a current price spike
+| channel id             | type                 | description                                       |
+|------------------------|----------------------|---------------------------------------------------|
+| electricity-price      | Number:EnergyPrice   | Current price to import power from the grid       |
+| controlled-load-price  | Number:EnergyPrice   | Current price to import power for Controlled Load |
+| feed-in-price          | Number:EnergyPrice   | Current price to export power to the grid         |
+| electricity-status     | String               | Current price status of grid import               |
+| controlled-load-status | String               | Current price status of controlled load import    |
+| feed-in-status         | String               | Current price status of Feed-In                   |
+| nem-time               | String               | NEM time of last pricing update                   |
+| renewables             | Number:Dimensionless | Current level of renewables in the grid           |
+| spike                  | Switch               | Report if the grid has a current price spike      |
 
 ## Full Example
 
-### `amberelectric.things`:
+### `amberelectric.things`
 
 ```java
 amberelectric:service:AmberElectric [ apiKey="psk_xxxxxxxxxxxxxxxxxxxx" ]
 ```
 
-### `amberelectric.items`:
+### `amberelectric.items`
 
 ```java
 Number:EnergyPrice AmberElectric_ElectricityPrice { channel="amberelectric:service:AmberElectric:electricity-price" }
@@ -53,8 +53,8 @@ String AmberElectric_nemtime { channel="amberelectric:service:AmberElectric:nem-
 Number AmberElectric_Renewables { channel="amberelectric:service:AmberElectric:renewables" }
 Switch AmberElectric_Spike { channel="amberelectric:service:AmberElectric:spike" }
 ```
-    
-### `amberelectric.sitemap`:
+
+### `amberelectric.sitemap`
 
 ```perl
 Text item=AmberElectric_ElectricityPrice label="Electricity Price"

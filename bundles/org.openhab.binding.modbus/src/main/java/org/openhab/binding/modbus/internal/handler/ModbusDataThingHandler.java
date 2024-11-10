@@ -32,11 +32,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.CascadedValueTransformationImpl;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
-import org.openhab.binding.modbus.internal.SingleValueTransformation;
-import org.openhab.binding.modbus.internal.ValueTransformation;
+import org.openhab.binding.modbus.internal.ModbusTransformation;
 import org.openhab.binding.modbus.internal.config.ModbusDataConfiguration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
@@ -80,8 +78,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.HexUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,8 +96,6 @@ import org.slf4j.LoggerFactory;
 public class ModbusDataThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusDataThingHandler.class);
-
-    private final BundleContext bundleContext;
 
     private static final Duration MIN_STATUS_INFO_UPDATE_INTERVAL = Duration.ofSeconds(1);
     private static final Map<String, List<Class<? extends State>>> CHANNEL_ID_TO_ACCEPTED_TYPES = new HashMap<>();
@@ -131,8 +125,8 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private volatile @Nullable ModbusDataConfiguration config;
     private volatile @Nullable ValueType readValueType;
     private volatile @Nullable ValueType writeValueType;
-    private volatile @Nullable CascadedValueTransformationImpl readTransformation;
-    private volatile @Nullable CascadedValueTransformationImpl writeTransformation;
+    private volatile @Nullable ModbusTransformation readTransformation;
+    private volatile @Nullable ModbusTransformation writeTransformation;
     private volatile Optional<Integer> readIndex = Optional.empty();
     private volatile Optional<Integer> readSubIndex = Optional.empty();
     private volatile Optional<Integer> writeStart = Optional.empty();
@@ -158,7 +152,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
     public ModbusDataThingHandler(Thing thing) {
         super(thing);
-        this.bundleContext = FrameworkUtil.getBundle(ModbusDataThingHandler.class).getBundleContext();
     }
 
     @Override
@@ -242,11 +235,11 @@ public class ModbusDataThingHandler extends BaseThingHandler {
     private @Nullable Optional<Command> transformCommandAndProcessJSON(ChannelUID channelUID, Command command) {
         String transformOutput;
         Optional<Command> transformedCommand;
-        ValueTransformation writeTransformation = this.writeTransformation;
+        ModbusTransformation writeTransformation = this.writeTransformation;
         if (writeTransformation == null || writeTransformation.isIdentityTransform()) {
             transformedCommand = Optional.of(command);
         } else {
-            transformOutput = writeTransformation.transform(bundleContext, command.toString());
+            transformOutput = writeTransformation.transform(command.toString());
             if (transformOutput.contains("[")) {
                 processJsonTransform(command, transformOutput);
                 return null;
@@ -256,10 +249,12 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                         command, channelUID));
                 return null;
             } else {
-                transformedCommand = SingleValueTransformation.tryConvertToCommand(transformOutput);
-                logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
-                        transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
-                        transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
+                transformedCommand = ModbusTransformation.tryConvertToCommand(transformOutput);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Converted transform output '{}' to command '{}' (type {})", transformOutput,
+                            transformedCommand.map(c -> c.toString()).orElse("<conversion failed>"),
+                            transformedCommand.map(c -> c.getClass().getName()).orElse("<conversion failed>"));
+                }
             }
         }
         return transformedCommand;
@@ -328,7 +323,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 int writeStartRelative = writeStart - pollStart;
                 data = new ModbusRegisterArray(allMutatedBytes[writeStartRelative * 2],
                         allMutatedBytes[writeStartRelative * 2 + 1]);
-
             } else {
                 data = ModbusBitUtilities.commandToRegisters(transformedCommand, writeValueType);
             }
@@ -576,7 +570,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 throw new ModbusConfigurationException(errmsg);
             }
         }
-        readTransformation = new CascadedValueTransformationImpl(config.getReadTransform());
+        readTransformation = new ModbusTransformation(config.getReadTransform());
         validateReadIndex();
     }
 
@@ -584,8 +578,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         boolean writeTypeMissing = config.getWriteType() == null || config.getWriteType().isBlank();
         boolean writeStartMissing = config.getWriteStart() == null || config.getWriteStart().isBlank();
         boolean writeValueTypeMissing = config.getWriteValueType() == null || config.getWriteValueType().isBlank();
-        boolean writeTransformationMissing = config.getWriteTransform() == null || config.getWriteTransform().isBlank();
-        writeTransformation = new CascadedValueTransformationImpl(config.getWriteTransform());
+        boolean writeTransformationMissing = config.getWriteTransform() == null
+                || String.join("", Objects.requireNonNull(config.getWriteTransform())).isBlank();
+
+        writeTransformation = new ModbusTransformation(config.getWriteTransform());
         boolean writingCoil = WRITE_TYPE_COIL.equals(config.getWriteType());
         writeParametersHavingTransformationOnly = (writeTypeMissing && writeStartMissing && writeValueTypeMissing
                 && !writeTransformationMissing);
@@ -957,7 +953,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
      * @return updated channel data
      */
     private Map<ChannelUID, State> processUpdatedValue(State numericState, boolean boolValue) {
-        ValueTransformation localReadTransformation = readTransformation;
+        ModbusTransformation localReadTransformation = readTransformation;
         if (localReadTransformation == null) {
             // We should always have transformation available if thing is initalized properly
             logger.trace("No transformation available, aborting processUpdatedValue");
@@ -992,20 +988,20 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                     // Numeric states always go through transformation. This allows value of 17.5 to be
                     // converted to
                     // 17.5% with percent types (instead of raising error)
-                    transformedState = localReadTransformation.transformState(bundleContext, acceptedDataTypes,
-                            numericState);
+                    transformedState = localReadTransformation.transformState(acceptedDataTypes, numericState);
                 }
             } else {
-                transformedState = localReadTransformation.transformState(bundleContext, acceptedDataTypes,
-                        numericState);
+                transformedState = localReadTransformation.transformState(acceptedDataTypes, numericState);
             }
 
             if (transformedState != null) {
-                logger.trace(
-                        "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
-                        channelId, transformedState, transformedState.getClass().getSimpleName(), numericState,
-                        readValueType, boolValue,
-                        localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Channel {} will be updated to '{}' (type {}). Input data: number value {} (value type '{}' taken into account) and bool value {}. Transformation: {}",
+                            channelId, transformedState, transformedState.getClass().getSimpleName(), numericState,
+                            readValueType, boolValue,
+                            localReadTransformation.isIdentityTransform() ? "<identity>" : localReadTransformation);
+                }
                 states.put(channelUID, transformedState);
             } else {
                 String types = String.join(", ",

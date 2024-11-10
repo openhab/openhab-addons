@@ -87,17 +87,17 @@ Thing sensorcommunity:noise:noise_sensor      "Noise Sensor"      [ sensorid=397
 sensorcommunity.items
 
 ```java
-Number:Density PM_25                "PM2.5"                 { channel="sensorcommunity:particulate:pm_sensor:pm25" } 
-Number:Density PM_100               "PM10"                  { channel="sensorcommunity:particulate:pm_sensor:pm100" } 
+Number:Density PM_25                "PM2.5"                 { channel="sensorcommunity:particulate:pm_sensor:pm25" }
+Number:Density PM_100               "PM10"                  { channel="sensorcommunity:particulate:pm_sensor:pm100" }
 
-Number:Temperature LDI_Temperature  "Temperature"           { channel="sensorcommunity:conditions:cond_sensor:temperature" } 
-Number:Dimensionless LDI_Humidity   "Humidity"              { channel="sensorcommunity:conditions:cond_sensor:humidity" } 
-Number:Pressure LDI_Pressure        "Atmospheric Pressure"  { channel="sensorcommunity:conditions:cond_sensor:pressure" } 
-Number:Pressure LDI_PressureSea     "Pressure sea level"    { channel="sensorcommunity:conditions:cond_sensor:pressure-sea" } 
+Number:Temperature LDI_Temperature  "Temperature"           { channel="sensorcommunity:conditions:cond_sensor:temperature" }
+Number:Dimensionless LDI_Humidity   "Humidity"              { channel="sensorcommunity:conditions:cond_sensor:humidity" }
+Number:Pressure LDI_Pressure        "Atmospheric Pressure"  { channel="sensorcommunity:conditions:cond_sensor:pressure" }
+Number:Pressure LDI_PressureSea     "Pressure sea level"    { channel="sensorcommunity:conditions:cond_sensor:pressure-sea" }
 
-Number:Dimensionless LDI_NoiseEQ    "Noise EQ"              { channel="sensorcommunity:noise:noise_sensor:noise-eq" } 
-Number:Dimensionless LDI_NoiseMin   "Noise min"             { channel="sensorcommunity:noise:noise_sensor:noise-min" } 
-Number:Dimensionless LDI_NoiseMax   "Noise max"             { channel="sensorcommunity:noise:noise_sensor:noise-max" } 
+Number:Dimensionless LDI_NoiseEQ    "Noise EQ"              { channel="sensorcommunity:noise:noise_sensor:noise-eq" }
+Number:Dimensionless LDI_NoiseMin   "Noise min"             { channel="sensorcommunity:noise:noise_sensor:noise-min" }
+Number:Dimensionless LDI_NoiseMax   "Noise max"             { channel="sensorcommunity:noise:noise_sensor:noise-max" }
 ```
 
 ### Sitemap
@@ -106,16 +106,16 @@ SensorCommunity.sitemap
 
 ```perl
 sitemap SensorCommunity label="SensorCommunity" {
-        Text item=PM_25                     label="Particulate Matter 2.5 [%.1f %unit%]"    
-        Text item=PM_100                    label="Particulate Matter 10 [%.1f %unit%]"     
+        Text item=PM_25                     label="Particulate Matter 2.5 [%.1f %unit%]"
+        Text item=PM_100                    label="Particulate Matter 10 [%.1f %unit%]"
 
-        Text item=LDI_Temperature           label="Temperature [%d %unit%]"     
-        Text item=LDI_Humidity              label="Humidity [%d %unit%]"    
-        Text item=LDI_Pressure              label="Atmospheric Pressure [%d %unit%]"    
-        Text item=LDI_PressureSea           label="Atmospheric Pressure sea [%d %unit%]"    
-                                            
-        Text item=LDI_NoiseEQ               label="Noise avg [%.1f %unit%]"     
-        Text item=LDI_NoiseMin              label="Noise min [%.1f %unit%]"     
-        Text item=LDI_NoiseMax              label="Noise max [%.1f %unit%]"     
+        Text item=LDI_Temperature           label="Temperature [%d %unit%]"
+        Text item=LDI_Humidity              label="Humidity [%d %unit%]"
+        Text item=LDI_Pressure              label="Atmospheric Pressure [%d %unit%]"
+        Text item=LDI_PressureSea           label="Atmospheric Pressure sea [%d %unit%]"
+
+        Text item=LDI_NoiseEQ               label="Noise avg [%.1f %unit%]"
+        Text item=LDI_NoiseMin              label="Noise min [%.1f %unit%]"
+        Text item=LDI_NoiseMax              label="Noise max [%.1f %unit%]"
 }
 ```

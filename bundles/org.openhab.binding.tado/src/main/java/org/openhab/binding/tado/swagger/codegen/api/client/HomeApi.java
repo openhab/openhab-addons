@@ -61,7 +61,6 @@ public class HomeApi {
     }
 
     public void deleteZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling deleteZoneOverlay");
@@ -103,7 +102,6 @@ public class HomeApi {
     }
 
     public HomeState homeState(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling homeState");
@@ -142,7 +140,6 @@ public class HomeApi {
     }
 
     public List<MobileDevice> listMobileDevices(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling listMobileDevices");
@@ -181,7 +178,6 @@ public class HomeApi {
     }
 
     public List<Zone> listZones(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling listZones");
@@ -220,7 +216,6 @@ public class HomeApi {
     }
 
     public HomeInfo showHome(Long homeId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showHome");
@@ -259,7 +254,6 @@ public class HomeApi {
     }
 
     public User showUser() throws IOException, ApiException {
-
         startHttpClient(CLIENT);
 
         // create path and map variables
@@ -293,7 +287,6 @@ public class HomeApi {
     }
 
     public GenericZoneCapabilities showZoneCapabilities(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneCapabilities");
@@ -339,7 +332,6 @@ public class HomeApi {
     }
 
     public OverlayTemplate showZoneDefaultOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneDefaultOverlay");
@@ -385,7 +377,6 @@ public class HomeApi {
     }
 
     public Zone showZoneDetails(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneDetails");
@@ -431,7 +422,6 @@ public class HomeApi {
     }
 
     public Overlay showZoneOverlay(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneOverlay");
@@ -477,7 +467,6 @@ public class HomeApi {
     }
 
     public ZoneState showZoneState(Long homeId, Long zoneId) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling showZoneState");
@@ -522,7 +511,6 @@ public class HomeApi {
     }
 
     public void updatePresenceLock(Long homeId, HomePresence json) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updatePresenceLock");
@@ -565,7 +553,6 @@ public class HomeApi {
     }
 
     public Overlay updateZoneOverlay(Long homeId, Long zoneId, Overlay json) throws IOException, ApiException {
-
         // verify the required parameter 'homeId' is set
         if (homeId == null) {
             throw new ApiException(400, "Missing the required parameter 'homeId' when calling updateZoneOverlay");

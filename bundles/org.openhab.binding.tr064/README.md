@@ -184,7 +184,7 @@ They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`)
 | `wanPhysicalLinkStatus`    | `String`                  |    x     | Link Status                                                    |
 | `wanTotalBytesReceived`    | `Number:DataAmount`       |    x     | Total Bytes Received                                           |
 | `wanTotalBytesSent`        | `Number:DataAmount`       |    x     | Total Bytes Sent                                               |
- 
+
 **Note:** AVM FritzBox devices use 4-byte-unsigned-integers for `wanTotalBytesReceived` and `wanTotalBytesSent`, because of that the counters are reset after around 4GB data.
 
 ## `PHONEBOOK` Profile
@@ -258,8 +258,8 @@ The definition of the bridge and of the subdevices things is the following
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
                                                          phonebookInterval="0"]{
     Thing subdeviceLan LAN "label LAN"   [ uuid="uuid:xxxxxxxx-xxxx-xxxx-yyyy-xxxxxxxxxxxx",
-                                                macOnline="XX:XX:XX:XX:XX:XX",  
-                                                          "YY:YY:YY:YY:YY:YY"]  
+                                                macOnline="XX:XX:XX:XX:XX:XX",
+                                                          "YY:YY:YY:YY:YY:YY"]
     Thing subdevice WAN "label WAN"               [ uuid="uuid:xxxxxxxx-xxxx-xxxx-zzzz-xxxxxxxxxxxx"]
     Thing subdevice WANCon "label WANConnection"  [ uuid="uuid:xxxxxxxx-xxxx-xxxx-wwww-xxxxxxxxxxxx"]
     }

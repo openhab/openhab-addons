@@ -1,0 +1,1092 @@
+<xml>
+	<feature-type name="GenericDimmer" link="both">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">DimmerOnMsgHandler</message-handler>
+		<message-handler command="0x12" group="1" mode="FAST">DimmerOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">DimmerOffMsgHandler</message-handler>
+		<message-handler command="0x14" group="1" mode="FAST">DimmerOffMsgHandler</message-handler>
+		<message-handler command="0x17" group="1">NoOpMsgHandler</message-handler>
+		<message-handler command="0x18" group="1">TriggerPollMsgHandler</message-handler>
+		<message-handler command="0x19">DimmerRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">DimmerOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">DimmerPercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">DimmerIncreaseDecreaseCommandHandler</command-handler>
+		<command-handler command="UpDownType">RollershutterUpDownCommandHandler</command-handler>
+		<command-handler command="StopMoveType">RollershutterStopCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GenericSwitch" link="both">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">SwitchOnMsgHandler</message-handler>
+		<message-handler command="0x12" group="1" mode="FAST">SwitchOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">SwitchOffMsgHandler</message-handler>
+		<message-handler command="0x14" group="1" mode="FAST">SwitchOffMsgHandler</message-handler>
+		<message-handler command="0x17" group="1">NoOpMsgHandler</message-handler>
+		<message-handler command="0x18" group="1">TriggerPollMsgHandler</message-handler>
+		<message-handler command="0x19">SwitchRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">SwitchOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">SwitchPercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">SwitchIncrementCommandHandler</command-handler>
+		<command-handler command="UpDownType">SwitchIncrementCommandHandler</command-handler>
+		<command-handler command="StopMoveType">NoOpCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GenericLastTime" status="true">
+		<message-dispatcher>PassThroughDispatcher</message-dispatcher>
+		<message-handler default="true">LastTimeMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GenericButtonEvent" event="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x12" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x14" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x17" group="1" duplicate="false">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x18" group="1" duplicate="false">ButtonEventMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="KeypadButtonStatusGroup"> <!-- does the polling for keypad button status -->
+		<message-dispatcher>DefaultGroupDispatcher</message-dispatcher>
+		<message-handler command="0x19">StatusRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="KeypadButton" link="both">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">KeypadButtonOnMsgHandler</message-handler>
+		<message-handler command="0x12" group="1" mode="FAST">KeypadButtonOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">KeypadButtonOffMsgHandler</message-handler>
+		<message-handler command="0x14" group="1" mode="FAST">KeypadButtonOffMsgHandler</message-handler>
+		<message-handler command="0x17" group="1">NoOpMsgHandler</message-handler>
+		<message-handler command="0x18" group="1">TriggerPollMsgHandler</message-handler>
+		<message-handler command="0x19">KeypadButtonReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" ext="1" cmd1="0x2E" d1="0x01" d2="0x09" field="userData3">KeypadButtonOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType" ext="1" cmd1="0x2E" d1="0x01" d2="0x09" field="userData3">KeypadButtonPercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType" ext="1" cmd1="0x2E" d1="0x01" d2="0x09"
+			field="userData3">KeypadButtonIncrementCommandHandler</command-handler>
+		<command-handler command="UpDownType" ext="1" cmd1="0x2E" d1="0x01" d2="0x09" field="userData3">KeypadButtonIncrementCommandHandler</command-handler>
+		<command-handler command="StopMoveType">NoOpCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by KeypadButtonStatusGroup -->
+	</feature-type>
+
+	<feature-type name="GroupBroadcastOnOff" link="controller" hidden="true">
+		<message-dispatcher>NoOpDispatcher</message-dispatcher>
+		<command-handler command="OnOffType">BroadcastOnOffCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<command-handler command="RefreshType">BroadcastRefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GroupBroadcastFastOnOff" link="controller" hidden="true">
+		<message-dispatcher>NoOpDispatcher</message-dispatcher>
+		<command-handler command="OnOffType">BroadcastFastOnOffCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GroupBroadcastManualChange" link="controller" hidden="true">
+		<message-dispatcher>NoOpDispatcher</message-dispatcher>
+		<command-handler command="UpDownType">BroadcastManualChangeUpDownCommandHandler</command-handler>
+		<command-handler command="StopMoveType">BroadcastManualChangeStopCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="InsteonEngine" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">InsteonEngineReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x0D" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="Ping" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">PingReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x0F" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="DatabaseDelta" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">DatabaseDeltaReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x1F" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="OpFlagsGroup"> <!-- does the polling for operating flags -->
+		<message-dispatcher>DefaultGroupDispatcher</message-dispatcher>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x1F" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="OpFlags">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">OpFlagsReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">OpFlagsCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="LinkOpFlags">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">LinkOpFlagsReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">OpFlagsCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="HeartbeatOnOff">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">HeartbeatOnOffReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">OpFlagsCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="KeypadButtonConfig">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">KeypadButtonConfigReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x20" field="command2">KeypadButtonConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+
+	<feature-type name="ExtDataGroup" group="1"> <!-- does the polling for extended data -->
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="RampRate">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData7"
+			mask="0x1F">RampRateMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType">RampRateCommandHandler</command-handler>
+		<command-handler command="QuantityType">RampRateCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="OnLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData8">CustomPercentMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" ext="1" cmd1="0x2E" d2="0x06" field="userData3">CustomOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType" ext="1" cmd1="0x2E" d2="0x06" field="userData3">CustomPercentCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="LEDBrightness">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData9"
+			mask="0x7F">LEDBrightnessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" d2="0x07">LEDBrightnessCommandHandler</command-handler>
+		<command-handler command="PercentType" d2="0x07">LEDBrightnessCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="KeypadButtonOnMask" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" delay="2000">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData3">CustomCacheMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d2="0x02" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="KeypadButtonOffMask" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" delay="2000">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData4">CustomCacheMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d2="0x03" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="KeypadButtonToggleMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" delay="2000">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01">KeypadButtonToggleModeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType">KeypadButtonToggleModeCommandHandler</command-handler>
+		<command-handler command="StringType">KeypadButtonToggleModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+
+	<feature-type name="Beep">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" cmd1="0x30">MomentaryOnCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="IOLincRelayMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">IOLincRelayModeReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType">IOLincRelayModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="IOLincMomentaryDuration">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" delay="3000">TriggerPollMsgHandler</message-handler> <!-- poll after cmd requests reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData3"
+			num_bytes="2">IOLincMomentaryDurationMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType">IOLincMomentaryDurationCommandHandler</command-handler>
+		<command-handler command="QuantityType">IOLincMomentaryDurationCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+
+	<!-- sensor notifications -->
+	<feature-type name="GenericSensorContact" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">ContactOpenMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">ContactClosedMsgHandler</message-handler>
+		<message-handler command="0x19">ContactRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="GenericSensorState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">SwitchOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">SwitchOffMsgHandler</message-handler>
+		<message-handler command="0x19">SwitchRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="WirelessSensorContact" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- all-link broadcast standard open event -->
+		<message-handler command="0x11" group="1">WirelessSensorContactOpenMsgHandler</message-handler>
+		<!-- all-link broadcast standard closed event -->
+		<message-handler command="0x13" group="1">WirelessSensorContactClosedMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="WirelessSensorState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- all-link broadcast standard on event -->
+		<message-handler command="0x11" group="1">WirelessSensorOnMsgHandler</message-handler>
+		<!-- all-link broadcast standard off event -->
+		<message-handler command="0x13" group="1">WirelessSensorOffMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="OpenClosedSensorContact" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- all-link broadcast standard open event -->
+		<message-handler command="0x11" group="1">WirelessSensorOpenMsgHandler</message-handler>
+		<!-- all-link broadcast standard closed event (2-groups: off) -->
+		<message-handler command="0x13" group="1">WirelessSensorClosedMsgHandler</message-handler>
+		<!-- all-link broadcast standard closed event (2-groups: on) -->
+		<message-handler command="0x11" group="2">WirelessSensorClosedMsgHandler</message-handler>
+		<!-- all-link broadcast heartbeat open event -->
+		<message-handler command="0x11" group="4">WirelessSensorOpenMsgHandler</message-handler>
+		<!-- all-link broadcast heartbeat closed event -->
+		<message-handler command="0x13" group="4">WirelessSensorClosedMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="LeakSensorState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- all-link broadcast standard dry event -->
+		<message-handler command="0x11" group="1">WirelessSensorOffMsgHandler</message-handler>
+		<!-- all-link broadcast standard wet event (2-groups: off) -->
+		<message-handler command="0x13" group="1">WirelessSensorOnMsgHandler</message-handler>
+		<!-- all-link broadcast standard wet event (2-groups: on) -->
+		<message-handler command="0x11" group="2">WirelessSensorOnMsgHandler</message-handler>
+		<!-- all-link broadcast heartbeat dry event -->
+		<message-handler command="0x11" group="4">WirelessSensorOffMsgHandler</message-handler>
+		<!-- all-link broadcast heartbeat wet event -->
+		<message-handler command="0x13" group="4">WirelessSensorOnMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="SmokeSensorState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- all-link broadcast set event -->
+		<message-handler command="0x11" group="1">WirelessSensorOnMsgHandler</message-handler>
+		<!-- all-link broadcast clear event -->
+		<message-handler command="0x11" group="5">WirelessSensorOffMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="HeartbeatMonitor" hidden="true" status="true">
+		<message-dispatcher>PassThroughDispatcher</message-dispatcher>
+		<message-handler default="true">HeartbeatMonitorMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<!-- sensor data -->
+	<feature-type name="WirelessSensorLEDBrightness">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData3">CustomPercentMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" d2="0x02">LEDBrightnessCommandHandler</command-handler>
+		<command-handler command="PercentType" d2="0x02">LEDBrightnessCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="DoorSensorBatteryLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- battery level range 0x3A => 0x5A (typical); 0x27 => 0x61 (documented) -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData4" min="0x3A"
+			max="0x5A">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="DoorSensorHeartbeatInterval">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- heartbeat interval increment 5 min; preset 24 hr -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData6"
+			increment="5" preset="1440">HeartbeatIntervalMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d2="0x02" field="userData3" increment="5"
+			preset="1440">HeartbeatIntervalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d2="0x02" field="userData3" increment="5"
+			preset="1440">HeartbeatIntervalCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="MotionSensorBatteryLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- battery level range 0x3A => 0x5A (typical); 0x27 => 0x61 (documented) -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData12"
+			min="0x3A" max="0x5A">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="MotionSensorLightLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- light level range 0x00 => 0xFF -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData11"
+			min="0x00" max="0xFF">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<!-- motion sensor 2 data -->
+	<feature-type name="MotionSensor2Data1Group"> <!-- does the polling for motion sensor 2 data 1 -->
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="MotionSensor2Data3Group"> <!-- does the polling for motion sensor 2 data 3 -->
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x03">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="MotionSensor2BatteryLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- battery level range 0x70 => 0xD2 -->
+		<!-- all-link broadcast low battery alert event -->
+		<message-handler command="0x11" group="3" field="addressHighByte" min="0x70" max="0xD2">CustomDimensionlessMsgHandler</message-handler>
+		<!-- all-link broadcast low battery clear event -->
+		<message-handler command="0x13" group="3" field="addressHighByte" min="0x70" max="0xD2">CustomDimensionlessMsgHandler</message-handler>
+		<!-- all-link broadcast standard heartbeat event -->
+		<message-handler command="0x11" group="4" field="addressHighByte" min="0x70" max="0xD2">CustomDimensionlessMsgHandler</message-handler>
+		<!-- all-link broadcast alternate heartbeat event -->
+		<message-handler command="0x11" group="11" field="addressHighByte" min="0x70" max="0xD2">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x03" d2="0x01" field="userData6" min="0x70"
+			max="0xD2">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2Data3Group -->
+	</feature-type>
+	<feature-type name="MotionSensor2LightLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- light level range 0x00 => 0xFF -->
+		<!-- all-link broadcast alternate heartbeat event -->
+		<message-handler command="0x11" group="11" field="addressMiddleByte" min="0x00" max="0xFF">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x03" d2="0x01" field="userData7" min="0x00"
+			max="0xFF">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2Data3Group -->
+	</feature-type>
+	<feature-type name="MotionSensor2Temperature">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- temperature (°F) = 0.73 * value - 20.53 (battery powered); 0.72 * value - 24.61 (usb powered) -->
+		<!-- all-link broadcast alternate heartbeat event -->
+		<message-handler command="0x11" group="11" field="command2">MotionSensor2TemperatureMsgHandler</message-handler>
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x03" d2="0x01" field="userData8">MotionSensor2TemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2Data3Group -->
+	</feature-type>
+	<feature-type name="MotionSensor2LowBatteryThreshold" hidden="true">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData12">CustomCacheMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2Data1Group -->
+	</feature-type>
+	<feature-type name="MotionSensor2HeartbeatInterval">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- heartbeat interval increment 23 min -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData13"
+			increment="23">HeartbeatIntervalMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" increment="23">MotionSensor2HeartbeatIntervalCommandHandler</command-handler>
+		<command-handler command="QuantityType" increment="23">MotionSensor2HeartbeatIntervalCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2Data1Group -->
+	</feature-type>
+	<!-- motion sensor 2 status -->
+	<feature-type name="MotionSensor2StatusGroup"> <!-- does the polling for motion sensor 2 status -->
+		<message-dispatcher>DefaultGroupDispatcher</message-dispatcher>
+		<message-handler command="0x19">StatusRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="MotionSensor2BatteryPowered">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">MotionSensor2BatteryPoweredReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MotionSensor2StatusGroup -->
+	</feature-type>
+
+	<feature-type name="FanLincFan" link="responder" group="2">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">FanLincFanReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">FanLincFanOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">FanLincFanPercentCommandHandler</command-handler>
+		<command-handler command="StringType">FanLincFanSpeedCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x03">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="MicroModuleOpFlagsGroup"> <!-- does the polling for micro module operating flags -->
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="0" cmd1="0x1F" cmd2="0x06">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="MicroModuleOpMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">MicroModuleOpModeReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">MicroModuleOpModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by MicroModuleOpFlagsGroup -->
+	</feature-type>
+
+	<feature-type name="OutletStatusGroup">
+		<message-dispatcher>DefaultGroupDispatcher</message-dispatcher>
+		<message-handler command="0x19">StatusRequestReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="OutletSwitch" link="both">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x11" group="1">SwitchOnMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">SwitchOffMsgHandler</message-handler>
+		<message-handler command="0x19">OutletSwitchReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">SwitchOnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">SwitchPercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">SwitchIncrementCommandHandler</command-handler>
+		<command-handler command="UpDownType">SwitchIncrementCommandHandler</command-handler>
+		<command-handler command="StopMoveType">NoOpCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OutletStatusGroup -->
+	</feature-type>
+
+	<feature-type name="RemoteBatteryLevel">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- battery level range 0xA0 => 0xB4 (undocumented) -->
+		<!-- message field data1 0x01 (documented); 0x00 (observed) -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d1="0x00" d2="0x01" field="userData10"
+			min="0xA0" max="0xB4">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="RemoteSceneButtonConfig">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">RemoteSceneButtonConfigReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType">RemoteSceneButtonConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+	<feature-type name="RemoteSwitchButtonConfig">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">RemoteSwitchButtonConfigReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType">RemoteSwitchButtonConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by OpFlagsGroup -->
+	</feature-type>
+
+	<feature-type name="PowerMeterDataGroup">
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="0" cmd1="0x82" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="PowerMeterEnergy">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x82" ext="2" cmd1="0x82" cmd2="0x00" field="userData9" num_bytes="4">PowerMeterEnergyMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by PowerMeterDataGroup -->
+	</feature-type>
+	<feature-type name="PowerMeterPower">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x82" ext="2" cmd1="0x82" cmd2="0x00" field="userData7" num_bytes="2">PowerMeterPowerMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by PowerMeterDataGroup -->
+	</feature-type>
+	<feature-type name="PowerMeterReset">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" cmd1="0x80">MomentaryOnCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="SirenOnOff" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x12" group="1">SwitchOnMsgHandler</message-handler>
+		<message-handler command="0x14" group="1">SwitchOffMsgHandler</message-handler>
+		<message-handler command="0x19">SirenRequesteplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">SirenOnOffCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="SirenArmed">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">SirenArmedReplyHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" on="0x05" off="0x04">SirenArmedCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0x19" cmd2="0x03">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="SirenAlertType">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData7">SirenAlertTypeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x2E" d1="0x01" d2="0x05" field="userData3">SirenAlertTypeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="SirenAlertDelay">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData8" bit="7">CustomBitmaskMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" ext="1" cmd1="0x2E" d1="0x01" d2="0x06" field="userData3" bit="7">CustomBitmaskCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+	<feature-type name="SirenAlertDuration">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler> <!-- poll after cmd request reply ack -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData8"
+			mask="0x7F" scale="second">CustomTimeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x06" field="userData3">SirenAlertDurationCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x06" field="userData3">SirenAlertDurationCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ExtDataGroup -->
+	</feature-type>
+
+	<feature-type name="SprinklerStatusGroup">
+		<message-dispatcher>DefaultGroupDispatcher</message-dispatcher>
+		<poll-handler ext="0" cmd1="0x44" cmd2="0x02">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="SprinklerValve">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" ext="0" field="command2">SprinklerValveMsgHandler</message-handler>
+		<message-handler command="0x27" ext="0" field="command2">SprinklerValveMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">SprinklerValveOnOffCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by SprinklerStatusGroup -->
+	</feature-type>
+	<feature-type name="SprinklerProgram">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" ext="0" field="command2">SprinklerProgramMsgHandler</message-handler>
+		<message-handler command="0x27" ext="0" field="command2">SprinklerProgramMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="PlayPauseType">SprinklerProgramOnOffCommandHandler</command-handler>
+		<command-handler command="NextPreviousType">SprinklerProgramNextPreviousCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by SprinklerStatusGroup -->
+	</feature-type>
+	<feature-type name="SprinklerPump">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" ext="0" field="command2" bit="6">CustomBitmaskMsgHandler</message-handler>
+		<message-handler command="0x27" ext="0" field="command2" bit="6">CustomBitmaskMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" cmd1="0x44" on="0x07" off="0x08">CustomOnOffCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by SprinklerStatusGroup -->
+	</feature-type>
+
+	<feature-type name="ThermostatData1Group">
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x00">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="ThermostatData1bGroup">
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="1" cmd1="0x2E" cmd2="0x00" d3="0x01">FlexPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="ThermostatData2Group">
+		<message-dispatcher>PollGroupDispatcher</message-dispatcher>
+		<poll-handler ext="2" cmd1="0x2E" cmd2="0x02">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="ThermostatCoolSetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6C" field="command2" factor="0.5" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData7"
+			scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x71" ext="0" cmd1="0x71" field="command2" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6C" factor="2" field="command2">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x6C" factor="2" field="command2"
+			scale="fahrenheit">CustomTemperatureCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatHeatSetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6D" field="command2" factor="0.5" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData12"
+			scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x72" ext="0" cmd1="0x72" field="command2" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6D" factor="2" field="command2">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x6D" factor="2" field="command2"
+			scale="fahrenheit">CustomTemperatureCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatSystemMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after system mode has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6B" field="command2">ThermostatSystemModeReplyHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData6"
+			mask="0xF0" rshift="4">ThermostatSystemModeMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x70" ext="0" cmd1="0x70" field="command2" mask="0x0F">ThermostatSystemModeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x6B" field="command2">ThermostatSystemModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatEnergySaving">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData11" bit="2">CustomBitmaskMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatFanMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after fan mode has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6B" field="command2">ThermostatFanModeReplyHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData6"
+			mask="0x0F">ThermostatFanModeMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x70" ext="0" cmd1="0x70" field="command2" mask="0xF0" rshift="4">ThermostatFanModeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x6B" field="command2">ThermostatFanModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatTemperature">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData9"
+			num_bytes="2" factor="0.1" scale="celsius">CustomTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x6E" ext="0" cmd1="0x6E" field="command2" factor="0.5" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatHumidity">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="2" cmd1="0x2E" cmd2="0x02" d1="0x01" field="userData8">CustomDimensionlessMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x6F" ext="0" cmd1="0x6F" field="command2">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
+	</feature-type>
+	<feature-type name="ThermostatBackLightDuration">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after backlight duration has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData10"
+			scale="second">CustomTimeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x05" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x05" field="userData3"
+			scale="second">CustomTimeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatACDelay">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after backlight duration has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData11"
+			scale="minute">CustomTimeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x06" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x06" field="userData3"
+			scale="minute">CustomTimeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatEnergyOffset">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after energy offset has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d1="0x01" field="userData12"
+			scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x07" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x07" field="userData3"
+			scale="fahrenheit">CustomTemperatureMsgHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatOpFlags">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after op flags has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData13">CustomBitmaskMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType" ext="1" cmd1="0x2E" d2="0x04" field="userData4">CustomBitmaskCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatTemperatureScale">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after temperature scale has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData13" bit="3">ThermostatTemperatureScaleMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x2E" d2="0x04" field="userData4" bit="3">ThermostatTemperatureScaleCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatTimeFormat">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after time format has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData13" bit="4">ThermostatTimeFormatMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x2E" d2="0x04" field="userData4" bit="4">ThermostatTimeFormatCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="ThermostatDehumidifySetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" d3="0x01" field="userData4">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0B" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0B" field="userData3">CustomDimensionlessCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1bGroup -->
+	</feature-type>
+	<feature-type name="ThermostatHumidifySetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" d3="0x01" field="userData5">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0C" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0C" field="userData3">CustomDimensionlessCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1bGroup -->
+	</feature-type>
+	<feature-type name="ThermostatStage1Duration">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after value has been changed -->
+		<message-handler command="0x19">TriggerPollMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" d3="0x01" field="userData11"
+			scale="minute">CustomTimeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0A" field="userData3">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x2E" d1="0x01" d2="0x0A" field="userData3"
+			scale="minute">CustomTimeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1bGroup -->
+	</feature-type>
+	<feature-type name="ThermostatHumidifierState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles all-link broadcast message DEHUMIDIFYING ON -->
+		<message-handler command="0x11" group="3">ThermostatHumidifierDehumidifyingMsgHandler</message-handler>
+		<!-- handles all-link broadcast message DEHUMIDIFYING OFF -->
+		<message-handler command="0x13" group="3">ThermostatHumidifierOffMsgHandler</message-handler>
+		<!-- handles all-link broadcast message HUMIDIFYING ON -->
+		<message-handler command="0x11" group="4">ThermostatHumidifierHumidifyingMsgHandler</message-handler>
+		<!-- handles all-link broadcast message HUMIDIFYING OFF -->
+		<message-handler command="0x13" group="4">ThermostatHumidifierOffMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="ThermostatSystemState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles all-link broadcast message COOLING ON -->
+		<message-handler command="0x11" group="1">ThermostatSystemCoolingMsgHandler</message-handler>
+		<!-- handles all-link broadcast message COOLING OFF -->
+		<message-handler command="0x13" group="1">ThermostatSystemOffMsgHandler</message-handler>
+		<!-- handles all-link broadcast message HEATING ON -->
+		<message-handler command="0x11" group="2">ThermostatSystemHeatingMsgHandler</message-handler>
+		<!-- handles all-link broadcast message HEATING OFF -->
+		<message-handler command="0x13" group="2">ThermostatSystemOffMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="ThermostatSyncTime">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">ThermostatSyncTimeCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="VenstarCoolSetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6C" field="command2" factor="0.5">VenstarTemperatureMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData6">VenstarTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x71" ext="0" cmd1="0x71" field="command2">VenstarTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6C" field="command2" factor="2">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x6C" field="command2" factor="2"
+			scale="fahrenheit">CustomTemperatureCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarHeatSetpoint">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after set point has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6D" field="command2" factor="0.5">VenstarTemperatureMsgHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData7">VenstarTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x72" ext="0" cmd1="0x72" field="command2">VenstarTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="DecimalType" ext="1" cmd1="0x6D" field="command2" factor="2">CustomDecimalCommandHandler</command-handler>
+		<command-handler command="QuantityType" ext="1" cmd1="0x6D" field="command2" factor="2"
+			scale="fahrenheit">CustomTemperatureCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarSystemMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after system mode has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6B" field="command2">VenstarSystemModeReplyHandler</message-handler>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData3">VenstarSystemModeMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x70" ext="0" cmd1="0x70" field="command2" mask="0x0F">VenstarSystemModeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x6B" field="command2">VenstarSystemModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarFanMode">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct ack after fan mode has been changed -->
+		<message-handler command="0x19" ext="0" cmd1="0x6B" field="command2">ThermostatFanModeReplyHandler</message-handler>
+		<!-- handles direct extended message after query mask for second bit -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData9"
+			mask="0x10" rshift="4">ThermostatFanModeMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x70" ext="0" cmd1="0x70" field="command2" mask="0x10" rshift="4">ThermostatFanModeMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0x6B" field="command2">ThermostatFanModeCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarTemperature">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData5">VenstarTemperatureMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x6E" ext="0" cmd1="0x6E" field="command2" factor="0.5">VenstarTemperatureMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarHumidity">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles direct extended message after query -->
+		<message-handler command="0x2E" ext="1" cmd1="0x2E" cmd2="0x00" d2="0x01" field="userData4">CustomDimensionlessMsgHandler</message-handler>
+		<!-- handles out-of band status messages -->
+		<message-handler command="0x6F" ext="0" cmd1="0x6F" field="command2">CustomDimensionlessMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
+	</feature-type>
+	<feature-type name="VenstarFanState" link="controller">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<!-- handles all-link broadcast message FAN ON -->
+		<message-handler command="0x11" group="3">SwitchOnMsgHandler</message-handler>
+		<!-- handles all-link broadcast message FAN OFF -->
+		<message-handler command="0x13" group="3">SwitchOffMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="VenstarTemperatureScale">
+		<message-dispatcher>DefaultDispatcher</message-dispatcher>
+		<message-handler command="0x19" ext="0" cmd1="0xF0" field="command2" bit="0">ThermostatTemperatureScaleMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="StringType" ext="1" cmd1="0xF1" field="command2" bit="0">ThermostatTemperatureScaleCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler ext="0" cmd1="0xF0" cmd2="0x49">FlexPollHandler</poll-handler>
+	</feature-type>
+
+	<feature-type name="IMButtonEvent" event="true">
+		<message-dispatcher>IMDispatcher</message-dispatcher>
+		<message-handler command="0x54">IMButtonEventMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="IMLEDOnOff">
+		<message-dispatcher>IMDispatcher</message-dispatcher>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">IMLEDOnOffCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="IMBeep">
+		<message-dispatcher>IMDispatcher</message-dispatcher>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">IMBeepCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="IMConfigGroup"> <!-- does the polling for im config -->
+		<message-dispatcher>IMGroupDispatcher</message-dispatcher>
+		<poll-handler cmd="0x73">IMPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="IMConfigFlags">
+		<message-dispatcher>IMDispatcher</message-dispatcher>
+		<message-handler command="0x6B">IMConfigMsgHandler</message-handler>
+		<message-handler command="0x73">IMConfigMsgHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">IMConfigCommandHandler</command-handler>
+		<command-handler command="RefreshType">RefreshCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler> <!-- polled by IMConfigGroup -->
+	</feature-type>
+
+	<feature-type name="X10Dimmer">
+		<message-dispatcher>X10Dispatcher</message-dispatcher>
+		<message-handler command="0x02">X10OnHandler</message-handler>
+		<message-handler command="0x03">X10OffHandler</message-handler>
+		<message-handler command="0x05">X10BrightHandler</message-handler>
+		<message-handler command="0x04">X10DimHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">X10PercentCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">X10IncreaseDecreaseCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="X10Switch">
+		<message-dispatcher>X10Dispatcher</message-dispatcher>
+		<message-handler command="0x02">X10OnHandler</message-handler>
+		<message-handler command="0x03">X10OffHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler command="OnOffType">X10OnOffCommandHandler</command-handler>
+		<command-handler command="PercentType">NoOpCommandHandler</command-handler>
+		<command-handler command="IncreaseDecreaseType">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+	<feature-type name="X10Contact">
+		<message-dispatcher>X10Dispatcher</message-dispatcher>
+		<message-handler command="0x02">X10OpenHandler</message-handler>
+		<message-handler command="0x03">X10ClosedHandler</message-handler>
+		<message-handler default="true">NoOpMsgHandler</message-handler>
+		<command-handler default="true">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature-type>
+</xml>

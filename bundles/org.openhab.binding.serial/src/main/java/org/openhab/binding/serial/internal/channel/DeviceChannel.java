@@ -16,8 +16,7 @@ import java.util.IllegalFormatException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.serial.internal.transform.ValueTransformation;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +33,14 @@ public abstract class DeviceChannel {
 
     protected final ChannelConfig config;
 
-    private final ValueTransformation stateTransform;
-    private final ValueTransformation commandTransform;
+    private final ChannelTransformation stateTransform;
+    private final ChannelTransformation commandTransform;
 
-    protected DeviceChannel(final ValueTransformationProvider valueTransformationProvider, final ChannelConfig config) {
+    protected DeviceChannel(final ChannelConfig config) {
         this.config = config;
-        stateTransform = valueTransformationProvider.getValueTransformation(config.stateTransformation);
-        commandTransform = valueTransformationProvider.getValueTransformation(config.commandTransformation);
+
+        stateTransform = new ChannelTransformation(config.stateTransformation);
+        commandTransform = new ChannelTransformation(config.commandTransformation);
     }
 
     /**

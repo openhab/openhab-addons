@@ -47,6 +47,8 @@ public class TACmiBindingConstants {
             "schema-switch-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_SWITCH_RW_UID = new ChannelTypeUID(BINDING_ID,
             "schema-switch-rw");
+    public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_DATE_TIME_RO_UID = new ChannelTypeUID(BINDING_ID,
+            "schema-date-time-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID = new ChannelTypeUID(BINDING_ID,
             "schema-numeric-ro");
     public static final ChannelTypeUID CHANNEL_TYPE_SCHEME_STATE_RO_UID = new ChannelTypeUID(BINDING_ID,

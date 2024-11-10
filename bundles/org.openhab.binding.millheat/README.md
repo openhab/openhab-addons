@@ -37,11 +37,11 @@ See full example below for how to configure using thing files.
 
 ### Heater
 
-- `macAddress` = network mac address of device in UPPERCASE.  
+- `macAddress` = network mac address of device in UPPERCASE.
   Can be found in the app by viewing devices. Or you can find it during discovery. Used for heaters connected to a room.
 - `heaterId` = id of device/heater, type number (not string)
   Use auto discovery to find this value. Used to identify independent heaters or heaters connected to a room.
-- `power` = number of watts this heater is consuming when active.  
+- `power` = number of watts this heater is consuming when active.
   Used to provide data for the currentPower channel.
 
 Either `macAddres` or `heaterId` must be specified.
@@ -93,7 +93,7 @@ Bridge millheat:account:home "Millheat account" [username="email@address.com",pa
     Thing home monaco "Penthouse Monaco" [ homeId=100000000000000 ] // Note: numeric value
     Thing room office "Office room" [ roomId=200000000000000 ] Note: numeric value
     Thing heater office "Office panel heater" [ macAddress="F0XXXXXXXXX", power=900, heaterId=12345 ] Note: heaterId is a numeric value, macAddress in UPPERCASE
-} 
+}
 ```
 
 millheat.items:

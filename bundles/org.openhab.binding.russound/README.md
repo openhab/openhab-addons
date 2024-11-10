@@ -179,7 +179,7 @@ The following channels are supported for each bridge/thing
 | mminit             | W          | Switch**** | Whether to initial a media management session (ON) or close an existing one (OFF)         |
 | mmcontextmenu      | W          | Switch**** | Whether to initial a media management context session (ON) or close an existing one (OFF) |
 
-#### Notes:
+#### Notes
 
 1. As of the time of this document, rating ON (like) produced an error in the firmware from the related command.
     This has been reported to Russound.

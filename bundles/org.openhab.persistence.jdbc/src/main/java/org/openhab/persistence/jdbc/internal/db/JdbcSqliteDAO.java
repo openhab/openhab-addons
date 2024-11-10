@@ -96,7 +96,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
                 new String[] { "#itemsManageTable#", "#colname#", "#coltype#" },
-                new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype() });
+                new String[] { formattedIdentifier(vo.getItemsManageTable()), vo.getColname(), vo.getColtype() });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
         try {
             Yank.execute(sql, null);
@@ -114,7 +114,8 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -129,7 +130,7 @@ public class JdbcSqliteDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());

@@ -1,6 +1,6 @@
 # Vizio Binding
 
-This binding connects Vizio TVs to openHAB.  
+This binding connects Vizio TVs to openHAB.
 The TV must support the Vizio SmartCast API that is found on 2016 and later models.
 
 ## Supported Things
@@ -25,7 +25,7 @@ The thing has a few configuration parameters:
 | authToken   | The token that is used to authenticate all commands sent to the TV. See below for instructions to obtain via the openHAB console.    |
 | appListJson | A JSON string that defines the apps that are available in the `activeApp` channel drop down. See below for instructions for editing. |
 
-### Console Commands for Pairing:
+### Console Commands for Pairing
 
 To obtain an authorization token that enables openHAB to authenticate with the TV, the following console commands must be used while the TV is turned on.
 The first command will send a pairing start request to the TV. This triggers the TV to display a 4-digit pairing code on screen that must be sent with the second command.
@@ -36,8 +36,8 @@ Start Pairing:
 openhab:vizio <thingUID> start_pairing <deviceName>
 ```
 
-Substitute `<thingUID>` with thing's id, ie: `vizio_tv:00bc3e711660`  
-Substitute `<deviceName>` the desired device name that will appear in the TV's settings, under Mobile Devices, ie: `Vizio-openHAB`  
+Substitute `<thingUID>` with thing's id, ie: `vizio_tv:00bc3e711660`
+Substitute `<deviceName>` the desired device name that will appear in the TV's settings, under Mobile Devices, ie: `Vizio-openHAB`
 
 Submit Pairing Code:
 
@@ -45,12 +45,12 @@ Submit Pairing Code:
 openhab:vizio <thingUID> submit_code <pairingCode>
 ```
 
-Substitute `<thingUID>` with the same thing id used above  
-Substitute `<pairingCode>` with the 4-digit pairing code displayed on the TV, ie: `1234`  
+Substitute `<thingUID>` with the same thing id used above
+Substitute `<pairingCode>` with the 4-digit pairing code displayed on the TV, ie: `1234`
 
 The console should then indicate that pairing was successful (token will be displayed) and that the token was saved to the thing configuration.
 If using file-based provisioning of the thing, the authorization token must be added to the thing configuration manually.
-With an authorization token in place, the binding can now control the TV.  
+With an authorization token in place, the binding can now control the TV.
 
 The authorization token text can be re-used in the event that it becomes necessary to setup the binding again.
 By simply adding the token that is already recognized by the TV to the thing configuration, the pairing process can be bypassed.
@@ -67,46 +67,46 @@ The following channels are available:
 | source      | String    | Select the source input on the TV. The dropdown list is automatically populated from the TV.                                                                                                |
 | activeApp   | String    | A dropdown containing a list of streaming apps defined by the `appListJson` config option that can be launched by the binding. An app started via remote control is automatically selected. |
 | control     | Player    | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind                                                                                                                              |
-| button      | String    | Sends a remote control command the TV. See list of available commands below.                                                                                                                |
+| button      | String    | Sends a remote control command the TV. See list of available commands below. (WriteOnly)                                                                                                    |
 
-### List of available button commands for Vizio TVs:
+### List of available button commands for Vizio TVs
 
-PowerOn  
-PowerOff  
-PowerToggle  
-VolumeUp  
-VolumeDown  
-MuteOn **(may only work as a toggle)**  
-MuteOff **(may only work as a toggle)**  
-MuteToggle  
-ChannelUp  
-ChannelDown  
-PreviousCh  
-InputToggle  
-SeekFwd  
-SeekBack  
-Play  
-Pause  
-Up  
-Down  
-Left  
-Right  
-Ok  
-Back  
-Info  
-Menu  
-Home  
-Exit  
-Smartcast  
-ccToggle  
-PictureMode  
-WideMode  
-WideToggle
+- PowerOn
+- PowerOff
+- PowerToggle
+- VolumeUp
+- VolumeDown
+- MuteOn **(may only work as a toggle)**
+- MuteOff **(may only work as a toggle)**
+- MuteToggle
+- ChannelUp
+- ChannelDown
+- PreviousCh
+- InputToggle
+- SeekFwd
+- SeekBack
+- Play
+- Pause
+- Up
+- Down
+- Left
+- Right
+- Ok
+- Back
+- Info
+- Menu
+- Home
+- Exit
+- Smartcast
+- ccToggle
+- PictureMode
+- WideMode
+- WideToggle
 
-### App List Configuration:
+### App List Configuration
 
 The Vizio API to launch and identify currently running apps on the TV is very complex.
-To handle this, the binding maintains a JSON database of applications and their associated metadata in order to populate the `activeApp` dropdown with available apps.  
+To handle this, the binding maintains a JSON database of applications and their associated metadata in order to populate the `activeApp` dropdown with available apps.
 
 When the thing is started for the first time, this JSON database is saved into the `appListJson` configuration parameter.
 This list of apps can be edited via the script editor on the thing configuration.

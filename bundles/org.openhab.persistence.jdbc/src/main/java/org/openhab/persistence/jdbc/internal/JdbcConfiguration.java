@@ -127,8 +127,8 @@ public class JdbcConfiguration {
 
         // set database type and database type class
         setDBDAOClass(Objects.requireNonNull(parsedURL.getProperty("dbShortcut"))); // derby, h2, hsqldb, mariadb,
-                                                                                    // mysql, postgresql,
-        // sqlite, timescaledb
+                                                                                    // mysql, postgresql, sqlite,
+                                                                                    // timescaledb, oracle
         // set user
         if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
@@ -231,6 +231,7 @@ public class JdbcConfiguration {
         String dn = dBDAO.databaseProps.getProperty("driverClassName");
         if (dn == null) {
             dn = dBDAO.databaseProps.getProperty("dataSourceClassName");
+            dBDAO.databaseProps.setProperty("dataSource.url", url);
         } else {
             dBDAO.databaseProps.setProperty("jdbcUrl", url);
         }
@@ -339,6 +340,9 @@ public class JdbcConfiguration {
                         break;
                     case "sqlite":
                         warn += "\tSQLite:    version >= 3.42.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        break;
+                    case "oracle":
+                        warn += "\tOracle:    version >= 23.5.0.0 from           https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11\n";
                         break;
                 }
             }

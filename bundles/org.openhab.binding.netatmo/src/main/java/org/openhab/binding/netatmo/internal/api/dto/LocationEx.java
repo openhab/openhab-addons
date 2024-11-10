@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link LocationEx} is the common interface for dto holding an extra location data
@@ -26,5 +29,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface LocationEx extends Location {
     Optional<String> getCountry();
 
-    Optional<String> getTimezone();
+    @Nullable
+    String getTimezone();
+
+    public default ZoneId getZoneId(ZoneId fallback) {
+        String local = getTimezone();
+        if (local != null) {
+            try {
+                return ZoneId.of(local);
+            } catch (DateTimeException ignore) {
+            }
+        }
+        return fallback;
+    }
 }

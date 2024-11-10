@@ -13,11 +13,10 @@
 package org.openhab.binding.openweathermap.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler;
 
 /**
  * The {@link OpenWeatherMapWeatherAndForecastConfiguration} is the class used to match the
- * {@link OpenWeatherMapWeatherAndForecastHandler}s configuration.
+ * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler}s configuration.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

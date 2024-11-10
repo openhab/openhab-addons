@@ -165,7 +165,7 @@ Number Studer_BSP_batteryVoltage     "Battery Voltage: [%s]"                {cha
 Text item=Studer_Xtender_Phase1_InputVoltage
 Text item=Studer_Xtender_Phase1_InputCurrent
 Text item=Studer_Xtender_Phase1_StateInverter
-            
+
 Chart item=Studer_Xtender_Phase1_InputVoltage period=D refresh=600000
 Chart item=Studer_Xtender_Phase1_InputCurrent period=D refresh=30000
 

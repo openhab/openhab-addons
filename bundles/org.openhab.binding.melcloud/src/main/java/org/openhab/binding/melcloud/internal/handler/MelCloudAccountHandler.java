@@ -15,15 +15,16 @@ package org.openhab.binding.melcloud.internal.handler;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.api.MelCloudConnection;
-import org.openhab.binding.melcloud.internal.api.json.Device;
-import org.openhab.binding.melcloud.internal.api.json.DeviceStatus;
-import org.openhab.binding.melcloud.internal.api.json.HeatpumpDeviceStatus;
+import org.openhab.binding.melcloud.internal.api.dto.Device;
+import org.openhab.binding.melcloud.internal.api.dto.DeviceStatus;
+import org.openhab.binding.melcloud.internal.api.dto.HeatpumpDeviceStatus;
 import org.openhab.binding.melcloud.internal.config.AccountConfig;
 import org.openhab.binding.melcloud.internal.discovery.MelCloudDiscoveryService;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
@@ -47,14 +48,15 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Refactoring
  * @author Wietse van Buitenen - Return all devices, added heatpump device
  */
+@NonNullByDefault
 public class MelCloudAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MelCloudAccountHandler.class);
 
-    private MelCloudConnection connection;
-    private List<Device> devices;
-    private ScheduledFuture<?> connectionCheckTask;
-    private AccountConfig config;
-    private boolean loginCredentialError;
+    private MelCloudConnection connection = new MelCloudConnection();
+    private List<Device> devices = Collections.emptyList();
+    private @Nullable ScheduledFuture<?> connectionCheckTask;
+    private AccountConfig config = new AccountConfig();
+    private boolean loginCredentialError = false;
 
     public MelCloudAccountHandler(Bridge bridge) {
         super(bridge);
@@ -69,8 +71,6 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing MELCloud account handler.");
         config = getConfigAs(AccountConfig.class);
-        connection = new MelCloudConnection();
-        devices = Collections.emptyList();
         loginCredentialError = false;
         startConnectionCheck();
     }
@@ -79,9 +79,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Running dispose()");
         stopConnectionCheck();
-        connection = null;
         devices = Collections.emptyList();
-        config = null;
     }
 
     @Override
@@ -102,6 +100,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
             throw new MelCloudLoginException("Connection to MELCloud can't be opened because of wrong credentials");
         }
         logger.debug("Initializing connection to MELCloud");
+
         updateStatus(ThingStatus.OFFLINE);
         try {
             connection.login(config.username, config.password, config.language);
@@ -139,10 +138,10 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public DeviceStatus fetchDeviceStatus(int deviceId, Optional<Integer> buildingId)
+    public DeviceStatus fetchDeviceStatus(int deviceId, @Nullable Integer buildingId)
             throws MelCloudCommException, MelCloudLoginException {
         connectIfNotConnected();
-        int bid = buildingId.orElse(findBuildingId(deviceId));
+        int bid = buildingId != null ? buildingId : findBuildingId(deviceId);
 
         try {
             return connection.fetchDeviceStatus(deviceId, bid);
@@ -165,10 +164,10 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public HeatpumpDeviceStatus fetchHeatpumpDeviceStatus(int deviceId, Optional<Integer> buildingId)
+    public HeatpumpDeviceStatus fetchHeatpumpDeviceStatus(int deviceId, @Nullable Integer buildingId)
             throws MelCloudCommException, MelCloudLoginException {
         connectIfNotConnected();
-        int bid = buildingId.orElse(findBuildingId(deviceId));
+        int bid = buildingId != null ? buildingId : findBuildingId(deviceId);
 
         try {
             return connection.fetchHeatpumpDeviceStatus(deviceId, bid);
@@ -180,15 +179,13 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
     }
 
     private int findBuildingId(int deviceId) throws MelCloudCommException {
-        if (devices != null) {
-            return devices.stream().filter(d -> d.getDeviceID() == deviceId).findFirst().orElseThrow(
-                    () -> new MelCloudCommException(String.format("Can't find building id for device id %s", deviceId)))
-                    .getBuildingID();
-        }
-        throw new MelCloudCommException(String.format("Can't find building id for device id %s", deviceId));
+        return devices.stream().filter(d -> d.getDeviceID() == deviceId).findFirst().orElseThrow(
+                () -> new MelCloudCommException(String.format("Can't find building id for device id %s", deviceId)))
+                .getBuildingID();
     }
 
     private void startConnectionCheck() {
+        ScheduledFuture<?> connectionCheckTask = this.connectionCheckTask;
         if (connectionCheckTask == null || connectionCheckTask.isCancelled()) {
             logger.debug("Start periodic connection check");
             Runnable runnable = () -> {
@@ -207,17 +204,18 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                     }
                 }
             };
-            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 300, TimeUnit.SECONDS);
+            this.connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 300, TimeUnit.SECONDS);
         } else {
             logger.debug("Connection check task already running");
         }
     }
 
     private void stopConnectionCheck() {
+        ScheduledFuture<?> connectionCheckTask = this.connectionCheckTask;
         if (connectionCheckTask != null) {
             logger.debug("Stop periodic connection check");
             connectionCheckTask.cancel(true);
-            connectionCheckTask = null;
+            this.connectionCheckTask = null;
         }
     }
 }

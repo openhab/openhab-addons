@@ -10,11 +10,11 @@
 			<label>Publish Online Status</label>
 			<default>true</default>
 			<description><![CDATA[
-         Publish <tt>online</tt> to <tt>homeassistant/status</tt> when discovering Home Assistant
-         things in order to trigger devices to publish up-to-date discovery information.
-				 If you also run Home Assistant <i>and</i> other services that depend on knowing if Home
-				 Assistant is not running, then it's possible for those services to be out-of-sync with
-				 the actual status of Home Assistant, and you may want to disable this.
+				Publish <tt>online</tt> to <tt>homeassistant/status</tt> when discovering Home Assistant
+				things in order to trigger devices to publish up-to-date discovery information.
+				If you also run Home Assistant <i>and</i> other services that depend on knowing if Home
+				Assistant is not running, then it's possible for those services to be out-of-sync with
+				the actual status of Home Assistant, and you may want to disable this.
 				]]></description>
 		</parameter>
 

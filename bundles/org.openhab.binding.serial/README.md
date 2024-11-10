@@ -83,8 +83,8 @@ The configuration for the `serialBridge` channels consists of the following para
 
 | Parameter               | Description                                                                                                                     | Supported Channels                            |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX:.*?STATE=(.*?);.*` | string, number, dimmer, switch, rollershutter |
-| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS:device.js`                  | string, number, dimmer, switch, rollershutter |
+| `stateTransformation`   | One or more transformation (concatenated with `∩`) used to convert device data to channel state, e.g. `REGEX(.*?STATE=(.*?);.*)` | string, number, dimmer, switch, rollershutter |
+| `commandTransformation` | One or more transformation (concatenated with `∩`) used to convert command to device data, e.g. `JS(device.js)`                  | string, number, dimmer, switch, rollershutter |
 | `commandFormat`         | Format string applied to the command before transform, e.g. `ID=671;COMMAND=%s`                                                 | string, number, dimmer, rollershutter         |
 | `onValue`               | Send this value when receiving an ON command                                                                                    | switch, dimmer                                |
 | `offValue`              | Send this value when receiving an OFF command                                                                                   | switch, dimmer                                |
@@ -93,6 +93,11 @@ The configuration for the `serialBridge` channels consists of the following para
 | `upValue`               | Send this value when receiving an UP command                                                                                    | rollershutter                                 |
 | `downValue`             | Send this value when receiving a DOWN command                                                                                   | rollershutter                                 |
 | `stopValue`             | Send this value when receiving a STOP command                                                                                   | rollershutter                                 |
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
 ## Full Example
 
@@ -106,13 +111,13 @@ demo.things:
 Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] {
     Thing serialDevice temperatureSensor [patternMatch="20;05;Cresta;ID=2801;.*"] {
         Channels:
-            Type number : temperature [stateTransformation="REGEX:.*?TEMP=(.*?);.*"]
-            Type number : humidity [stateTransformation="REGEX:.*?HUM=(.*?);.*"]
+            Type number : temperature [stateTransformation="REGEX(.*?TEMP=(.*?);.*)"]
+            Type number : humidity [stateTransformation="REGEX(.*?HUM=(.*?);.*)"]
     }
     Thing serialDevice rollershutter [patternMatch=".*"] {
         Channels:
-            Type rollershutter : serialRollo [stateTransformation="REGEX:Position:([0-9.]*)", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
-            Type switch : roloAt100 [stateTransformation="REGEX:s/Position:100/ON/"]
+            Type rollershutter : serialRollo [stateTransformation="REGEX(Position:([0-9.]*))", upValue="Rollo_UP\n", downValue="Rollo_DOWN\n", stopValue="Rollo_STOP\n"]
+            Type switch : roloAt100 [stateTransformation="REGEX(s/Position:100/ON/)"]
     }
     Thing serialDevice relay [patternMatch=".*"] {
         Channels:
@@ -120,7 +125,7 @@ Bridge serial:serialBridge:sensors [serialPort="/dev/ttyUSB01", baudRate=57600] 
     }
     Thing serialDevice myDevice [patternMatch="ID=2341;.*"] {
         Channels:
-            Type string : control [commandTransformation="JS:addCheckSum.js", commandFormat="ID=2341;COMMAND=%s;"]
+            Type string : control [commandTransformation="JS(addCheckSum.js)", commandFormat="ID=2341;COMMAND=%s;"]
     }
 }
 

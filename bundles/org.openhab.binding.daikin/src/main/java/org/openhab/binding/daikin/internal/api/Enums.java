@@ -129,7 +129,6 @@ public class Enums {
         HEAT("heat"),
         OFF("off");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(HomekitMode.class);
         private final String value;
 
         HomekitMode(String value) {

@@ -130,7 +130,6 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                     }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error processing data: " + e.getMessage());
-
                 } catch (RuntimeException e) {
                     // we catch runtime exceptions here to prevent the receiving thread to stop accidentally if
                     // something like an IllegalStateException or NumberFormatExceptions are thrown. This indicates a

@@ -17,11 +17,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.measure.MetricPrefix;
+import javax.measure.Unit;
 
 import org.attoparser.ParseException;
 import org.attoparser.config.ParseConfiguration;
@@ -38,8 +43,11 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -73,6 +81,17 @@ public class TACmiSchemaHandler extends BaseThingHandler {
     private @Nullable String authHeader;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private final ParseConfiguration noRestrictions;
+
+    // entry of the units lookup cache
+    record UnitAndType(Unit<?> unit, String channelType) {
+    }
+
+    // this is the units lookup cache.
+    protected final Map<String, UnitAndType> unitsCache = new ConcurrentHashMap<>();
+    // marks an entry with known un-resolveable unit
+    protected final UnitAndType NULL_MARKER = new UnitAndType(Units.ONE, "");
+    // marks an entry with special handling - i.e. 'Imp'
+    protected final UnitAndType SPECIAL_MARKER = new UnitAndType(Units.ONE, "s");
 
     public TACmiSchemaHandler(final Thing thing, final HttpClient httpClient,
             final TACmiChannelTypeProvider channelTypeProvider) {
@@ -253,8 +272,82 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             case NUMERIC_FORM:
                 ChangerX2Entry cx2en = e.changerX2Entry;
                 if (cx2en != null) {
-                    reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address
-                            + "&changetox2=" + command.format("%.2f")));
+                    String val;
+                    if (command instanceof QuantityType qt) {
+                        float value;
+                        var taUnit = e.unit;
+                        if (taUnit != null) {
+                            // we try to convert to the unit TA expects for this channel
+                            @SuppressWarnings("unchecked")
+                            @Nullable
+                            QuantityType<?> qtConverted = qt.toUnit(taUnit);
+                            if (qtConverted == null) {
+                                logger.debug("Faild to convert unit {} to unit {} for command on channel {}",
+                                        qt.getUnit(), taUnit, channelUID);
+                                value = qt.floatValue();
+                            } else {
+                                value = qtConverted.floatValue();
+                            }
+
+                        } else {
+                            // send raw value when there is no unit for this channel
+                            value = qt.floatValue();
+                        }
+                        val = String.format(Locale.US, "%.2f", value);
+                    } else if (command instanceof Number qt) {
+                        val = String.format(Locale.US, "%.2f", qt.floatValue());
+                    } else if (command instanceof DateTimeType dtt) {
+                        // time is transferred as minutes since midnight...
+                        var zdt = dtt.getZonedDateTime();
+                        val = Integer.toString(zdt.getHour() * 60 + zdt.getMinute());
+                    } else {
+                        val = command.format("%.2f");
+                    }
+                    reqUpdate = prepareRequest(
+                            buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2en.address + "&changetox2=" + val));
+                    reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
+                } else {
+                    logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
+                    return;
+                }
+                break;
+            case TIME_PERIOD:
+                ChangerX2Entry cx2enTime = e.changerX2Entry;
+                if (cx2enTime != null) {
+                    long timeValMSec;
+                    if (command instanceof QuantityType qt) {
+                        @SuppressWarnings("unchecked")
+                        QuantityType<?> seconds = qt.toUnit(MetricPrefix.MILLI(Units.SECOND));
+                        if (seconds != null) {
+                            timeValMSec = seconds.longValue();
+                        } else {
+                            // fallback - assume we have a time in milliseconds
+                            timeValMSec = qt.longValue();
+                        }
+                    } else if (command instanceof Number qt) {
+                        // fallback - assume we have a time in milliseconds
+                        timeValMSec = qt.longValue();
+                    } else {
+                        throw new IllegalArgumentException(
+                                "Command " + command + " cannot be converted to a proper Timespan!");
+                    }
+                    String val;
+                    // TA has three different time periods. One is based on full seconds, the second on tenths of
+                    // seconds and the third on minutes. We decide on the basis of the form fields provided during the
+                    // ChangerX2 scan.
+                    String parts = cx2enTime.options.get(ChangerX2Entry.TIME_PERIOD_PARTS);
+                    if (parts == null || parts.indexOf('z') >= 0) {
+                        // tenths of seconds
+                        val = String.format(Locale.US, "%.1f", timeValMSec / 1000d);
+                    } else if (parts.indexOf('s') >= 0) {
+                        // seconds
+                        val = String.format(Locale.US, "%d", timeValMSec / 1000);
+                    } else {
+                        // minutes
+                        val = String.format(Locale.US, "%d", timeValMSec / 60000);
+                    }
+                    reqUpdate = prepareRequest(
+                            buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2enTime.address + "&changetox2=" + val));
                     reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
                 } else {
                     logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);

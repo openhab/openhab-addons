@@ -286,7 +286,7 @@ demo.items:
 ```java
 Number:Power                GridOutputPower             "Grid Output Power"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:gridOutputPower" }
 Number:Energy               YieldDaySecondGen           "PV Output Power Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldDaySecondGen" }
-Number:Energy               YieldTotalSecondGen         "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotalSecondgen" }  
+Number:Energy               YieldTotalSecondGen         "PV Output Power Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:yieldTotalSecondgen" }
 Number:Dimensionless        OperatingStatus             "Operating Status"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingStatus" }
 Number:ElectricPotential    GridVoltageL1               "Grid Voltage L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridVoltageL1" }
 Number:ElectricCurrent      GridCurrentL1               "Grid Current L1"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:gridCurrentL1" }
@@ -315,12 +315,12 @@ Number:Power                PhaseSelHomeConsumpL2       "Phase Sel Home Consump 
 Number:Power                PhaseSelHomeConsumpL3       "Phase Sel Home Consump L3"                 <energy> { channel="kostalinverter:piko1020:mypiko1020:phaseSelHomeConsumpL3" }
 Number:Frequency            GridFreq                    "Grid Freq"                                 <energy> { channel="kostalinverter:piko1020:mypiko1020:gridFreq" }
 Number:Angle                GridCosPhi                  "Grid Cos Phi"                              <energy> { channel="kostalinverter:piko1020:mypiko1020:gridCosPhi" }
-Number:Energy               HomeConsumptionDay          "Home Consumption Day"                      <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionDay" } 
-Number:Energy               OwnConsumptionDay           "Own Consumption Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionDay" } 
-Number:Dimensionless        OwnConsRateDay              "Own Cons Rate Day"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateDay" } 
+Number:Energy               HomeConsumptionDay          "Home Consumption Day"                      <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionDay" }
+Number:Energy               OwnConsumptionDay           "Own Consumption Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionDay" }
+Number:Dimensionless        OwnConsRateDay              "Own Cons Rate Day"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateDay" }
 Number:Dimensionless        AutonomyDegreeDay           "Autonomy Degree Day"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:autonomyDegreeDay" }
-Number:Energy               HomeConsumptionTotal        "Home Consumption Total"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionTotal" } 
-Number:Energy               OwnConsumptionTotal         "Own Consumption Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionTotal" } 
+Number:Energy               HomeConsumptionTotal        "Home Consumption Total"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:homeConsumptionTotal" }
+Number:Energy               OwnConsumptionTotal         "Own Consumption Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsumptionTotal" }
 Number:Time                 OperatingTimeTotal          "Operating Time Total"                      <energy> { channel="kostalinverter:piko1020:mypiko1020:operatingTimeTotal" }
 Number:ElectricCurrent      Current                     "Current"                                   <energy> { channel="kostalinverter:piko1020:mypiko1020:current" }
 Number:Dimensionless        CurrentDir                  "Current Dir"                               <energy> { channel="kostalinverter:piko1020:mypiko1020:currentDir" }
@@ -328,8 +328,8 @@ Number:Dimensionless        ChargeCycles                "Charge Cycles"         
 Number:Temperature          BatteryTemperature          "BatteryTemperature"                        <energy> { channel="kostalinverter:piko1020:mypiko1020:batteryTemperature" }
 Number:Time                 Loginterval                 "Log Interval"                              <energy> { channel="kostalinverter:piko1020:mypiko1020:loginterval" }
 Number:Dimensionless        S0InPulseCnt                "S0 InPulse Cnt"                            <energy> { channel="kostalinverter:piko1020:mypiko1020:s0InPulseCnt" }
-Number:Dimensionless        OwnConsRateTotal            "Own Cons Rate Total"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateTotal" } 
-Number:Dimensionless        AutonomyDegreeTotal         "Autonomy Degree Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:autonomyDegreeTotal" } 
+Number:Dimensionless        OwnConsRateTotal            "Own Cons Rate Total"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:ownConsRateTotal" }
+Number:Dimensionless        AutonomyDegreeTotal         "Autonomy Degree Total"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:autonomyDegreeTotal" }
 Number:ElectricPotential    BatteryVoltage              "Battery Voltage"                           <energy> { channel="kostalinverter:piko1020:mypiko1020:batteryVoltage" }
 Number:Dimensionless        BatStateOfCharge            "Bat State Of Charge"                       <energy> { channel="kostalinverter:piko1020:mypiko1020:batStateOfCharge" }
 Number:Power                SelfConsumption             "Self Consumption"                          <energy> { channel="kostalinverter:piko1020:mypiko1020:selfConsumption" }
@@ -337,9 +337,7 @@ Number:Dimensionless        BatteryUsageConsumption     "Battery Usage Consumpti
 Switch                      SmartBatteryControl         "Smart Battery Control"                     <energy> { channel="kostalinverter:piko1020:mypiko1020:smartBatteryControl" }
 Number:Dimensionless        MaxDepthOfDischarge         "Max Depth Of Discharge"                    <energy> { channel="kostalinverter:piko1020:mypiko1020:maxDepthOfDischarge" }
 Number:Dimensionless        ShadowManagement            "Shadow Management"                         <energy> { channel="kostalinverter:piko1020:mypiko1020:shadowManagement" }
-Number:Dimensionless        ExternalModuleControl       "External Module Control"                   <energy> { channel="kostalinverter:piko1020:mypiko1020:externalModuleControl" }           
-
-
+Number:Dimensionless        ExternalModuleControl       "External Module Control"                   <energy> { channel="kostalinverter:piko1020:mypiko1020:externalModuleControl" }
 ```
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)

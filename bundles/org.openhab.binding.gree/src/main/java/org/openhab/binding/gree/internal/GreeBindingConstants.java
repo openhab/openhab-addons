@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.gree.internal;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -38,6 +42,8 @@ public class GreeBindingConstants {
     // Thing configuration items
     public static final String PROPERTY_IP = "ipAddress";
     public static final String PROPERTY_BROADCAST = "broadcastAddress";
+
+    public static final String PROPERTY_ENCRYPTION_TYPE = "encryptionType";
 
     // List of all Channel ids
     public static final String POWER_CHANNEL = "power";
@@ -174,4 +180,17 @@ public class GreeBindingConstants {
      *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;
+
+    public enum EncryptionTypes {
+        UNKNOWN,
+        ECB,
+        GCM;
+
+        private static final Map<String, EncryptionTypes> MAP = Stream.of(EncryptionTypes.values())
+                .collect(Collectors.toMap(Enum::name, Function.identity()));
+
+        public static EncryptionTypes of(final String name) {
+            return MAP.getOrDefault(name, UNKNOWN);
+        }
+    };
 }

@@ -1,4 +1,3 @@
-
 # Velux Binding
 
 This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>Velux Bridge KLF200</B>, which is able to control 200 actuators.
@@ -51,7 +50,7 @@ The binding will automatically discover Velux Bridges within the local network, 
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, you need to check your Inbox for discovered scenes and actuators.
 If nothing shows up you need to trigger discovering scenes and actuators (like windows and rollershutters) of the Velux Bridge.
-For this log into the OpenHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
+For this log into the openHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
 Then select the Velux Binding and click Scan.
 After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
 
@@ -240,7 +239,6 @@ However, the 'limitMinimum' channel can provide information about rainy weather.
 The rain sensor, when triggered, overrides the window position so it cannot open more than the ventilation position.
 (Normally 5% .. 10% depending on the window type, resp. 90% .. 95% inverted).
 So if 'limitMinimum' changes from its normal value (usually 100% resp. 0% inverted) to this ventilation position value, it is an indication that the rain sensor has probably been triggered.
-
 
 ## Properties of the "bridge" Thing
 
@@ -439,21 +437,21 @@ For those who are interested in more detailed insight of the processing of this 
 
 With Karaf you can use the following command sequence:
 
-```text
+```shell
 log:set TRACE org.openhab.binding.velux
 log:tail
 ```
 
 This, of course, is possible on command line with the commands:
 
-```text
+```shell
 % openhab-cli console log:set TRACE org.openhab.binding.velux
 % openhab-cli console log:tail org.openhab.binding.velux
 ```
 
 On the other hand, if you prefer a textual configuration, you can append the logging definition with:
 
-```text
+```xml
     <logger name="org.openhab.binding.velux" level="TRACE">
         <appender-ref ref="FILE" />
     </logger>

@@ -46,14 +46,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class EEPFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(EEPFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EEPFactory.class);
 
     public static EEP createEEP(EEPType eepType) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (cl == null) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
@@ -64,13 +61,10 @@ public class EEPFactory {
     public static EEP buildEEP(EEPType eepType, ERP1Message packet) {
         try {
             Class<? extends EEP> cl = eepType.getEEPClass();
-            if (cl == null) {
-                throw new IllegalArgumentException("Message " + eepType + " not implemented");
-            }
             return cl.getConstructor(ERP1Message.class).newInstance(packet);
         } catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            logger.error("Cannot instantiate EEP {}-{}-{}: {}",
+            LOGGER.error("Cannot instantiate EEP {}-{}-{}: {}",
                     HexUtils.bytesToHex(new byte[] { eepType.getRORG().getValue() }),
                     HexUtils.bytesToHex(new byte[] { (byte) eepType.getFunc() }),
                     HexUtils.bytesToHex(new byte[] { (byte) eepType.getType() }), e.getMessage());
@@ -80,16 +74,16 @@ public class EEPFactory {
     }
 
     private static @Nullable EEPType getGenericEEPTypeFor(byte rorg) {
-        logger.info("Received unsupported EEP teach in, trying to fallback to generic thing");
+        LOGGER.info("Received unsupported EEP teach in, trying to fallback to generic thing");
         RORG r = RORG.getRORG(rorg);
         if (r == RORG._4BS) {
-            logger.info("Fallback to 4BS generic thing");
+            LOGGER.info("Fallback to 4BS generic thing");
             return EEPType.Generic4BS;
         } else if (r == RORG.VLD) {
-            logger.info("Fallback to VLD generic thing");
+            LOGGER.info("Fallback to VLD generic thing");
             return EEPType.GenericVLD;
         } else {
-            logger.info("Fallback not possible");
+            LOGGER.info("Fallback not possible");
             return null;
         }
     }
@@ -155,7 +149,7 @@ public class EEPFactory {
             case _4BS: {
                 int db0 = msg.getPayload()[4];
                 if ((db0 & _4BSMessage.LRN_TYPE_MASK) == 0) { // Variation 1
-                    logger.info("Received 4BS Teach In variation 1 without EEP, fallback to generic thing");
+                    LOGGER.info("Received 4BS Teach In variation 1 without EEP, fallback to generic thing");
                     return buildEEP(EEPType.Generic4BS, msg);
                 }
 
@@ -167,7 +161,7 @@ public class EEPFactory {
                 int type = ((db3 & 0b11) << 5) + ((db2 & 0xFF) >>> 3);
                 int manufId = ((db2 & 0b111) << 8) + (db1 & 0xff);
 
-                logger.debug("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
+                LOGGER.debug("Received 4BS Teach In with EEP A5-{}-{} and manufacturerID {}",
                         HexUtils.bytesToHex(new byte[] { (byte) func }),
                         HexUtils.bytesToHex(new byte[] { (byte) type }),
                         HexUtils.bytesToHex(new byte[] { (byte) manufId }));
@@ -229,7 +223,7 @@ public class EEPFactory {
 
         byte[] senderId = Arrays.copyOfRange(payload, 12, 12 + 4);
 
-        logger.debug("Received SMACK Teach In with EEP {}-{}-{} and manufacturerID {}",
+        LOGGER.debug("Received SMACK Teach In with EEP {}-{}-{} and manufacturerID {}",
                 HexUtils.bytesToHex(new byte[] { (byte) rorg }), HexUtils.bytesToHex(new byte[] { (byte) func }),
                 HexUtils.bytesToHex(new byte[] { (byte) type }), HexUtils.bytesToHex(new byte[] { (byte) manufId }));
 
@@ -238,7 +232,7 @@ public class EEPFactory {
             eepType = getGenericEEPTypeFor(rorg);
         }
 
-        return (eepType == null) ? null : createEEP(eepType).setSenderId(senderId);
+        return eepType == null ? null : createEEP(eepType).setSenderId(senderId);
     }
 
     public static @Nullable EEP buildResponseEEPFromTeachInERP1(ERP1Message msg, byte[] senderId, boolean teachIn) {
@@ -263,22 +257,22 @@ public class EEPFactory {
 
         byte priority = event.getPayload()[1];
         if ((priority & 0b1001) == 0b1001) {
-            logger.debug("gtw is already postmaster");
+            LOGGER.debug("gtw is already postmaster");
             if (sendTeachOuts) {
-                logger.debug("Repeated learn is not allow hence send teach out");
+                LOGGER.debug("Repeated learn is not allow hence send teach out");
                 response.setTeachOutResponse();
             } else {
-                logger.debug("Send a repeated learn in");
+                LOGGER.debug("Send a repeated learn in");
                 response.setRepeatedTeachInResponse();
             }
         } else if ((priority & 0b100) == 0) {
-            logger.debug("no place for further mailbox");
+            LOGGER.debug("no place for further mailbox");
             response.setNoPlaceForFurtherMailbox();
         } else if ((priority & 0b10) == 0) {
-            logger.debug("rssi is not good enough");
+            LOGGER.debug("rssi is not good enough");
             response.setBadRSSI();
         } else if ((priority & 0b1) == 0b1) {
-            logger.debug("gtw is candidate for postmaster => teach in");
+            LOGGER.debug("gtw is candidate for postmaster => teach in");
             response.setTeachIn();
         }
 

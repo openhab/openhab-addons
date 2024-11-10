@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.ZoneId;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -39,10 +41,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DeviceHandler extends BaseBridgeHandler implements CommonInterface {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
-    private CapabilityMap capabilities = new CapabilityMap();
+    private final CapabilityMap capabilities = new CapabilityMap();
+    private final TimeZoneProvider timeZoneProvider;
 
-    public DeviceHandler(Bridge bridge) {
+    public DeviceHandler(Bridge bridge, TimeZoneProvider timeZoneProvider) {
         super(bridge);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -105,8 +109,8 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     }
 
     @Override
-    public void triggerChannel(String channelID, String event) {
-        super.triggerChannel(channelID, event);
+    public void triggerChannel(String groupID, String channelID, String event) {
+        super.triggerChannel(new ChannelUID(this.getThing().getUID(), groupID, channelID), event);
     }
 
     @Override
@@ -117,5 +121,10 @@ public class DeviceHandler extends BaseBridgeHandler implements CommonInterface 
     @Override
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    @Override
+    public ZoneId getSystemTimeZone() {
+        return timeZoneProvider.getTimeZone();
     }
 }

@@ -22,19 +22,19 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 ## Supported Things
 
 Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
-Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.  
+Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.
 
-***The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***  
+***The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***
 
-Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.  
+Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 
-Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.  
+Monoprice 31028 or OSD Audio PAM1270 70 volt amplifiers use the `monoprice70` thing id. 6 zones per amp (not linkable) and 2 source inputs are supported.
 
-Dayton Audio DAX88 amplifiers use the `dax88` thing id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.  
+Dayton Audio DAX88 amplifiers use the `dax88` thing id. 8 zones (2 un-amplified) per amp (not linkable) and 8 source inputs are supported.
 
 Xantech MRC88, MX88, MRAUDIO8X8 or CM8X8 amplifiers use the `xantech` thing id. Up to 16 zones with 2 linked amps and 8 source inputs are supported.
-Some Xantech amps provide unsolicited zone updates for keypad actions and may work with the `disableKeypadPolling` option set to true which will prevent un-necessary polling of the amplifier. 
-Note: MRC44 amps do not support serial control.  
+Some Xantech amps provide unsolicited zone updates for keypad actions and may work with the `disableKeypadPolling` option set to true which will prevent un-necessary polling of the amplifier.
+Note: MRC44 amps do not support serial control.
 
 ## Discovery
 

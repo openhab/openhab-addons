@@ -79,7 +79,6 @@ public class EnvoyEntrezConnector extends EnvoyConnector {
                             check(configuration.password, "Password parameter is empty"),
                             check(configuration.siteName, "siteName parameter is empty"))
                     .filter(s -> !s.isEmpty()).collect(Collectors.joining(", "));
-
         }
         if (!message.isEmpty()) {
             return message;

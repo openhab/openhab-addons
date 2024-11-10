@@ -128,9 +128,11 @@
 		<channels>
 			<channel id="brightness" typeId="system.brightness">
 				<description>Controls the brightness and switches on/off the group of lights in the room.</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="switch" typeId="system.power">
 				<description>Switch on/off the group of lights in the room.</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="scene" typeId="scene-v2">
 				<description>Activate the scene for the group of lights in the room.</description>
@@ -171,9 +173,11 @@
 		<channels>
 			<channel id="brightness" typeId="system.brightness">
 				<description>Controls the brightness and switches on/off the group of lights in the zone.</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="switch" typeId="system.power">
 				<description>Switch on/off the group of lights in the zone.</description>
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="scene" typeId="scene-v2">
 				<description>Activate the scene for the group of lights in the zone.</description>

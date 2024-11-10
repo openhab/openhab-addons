@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 /**
  * Tests for {@link Number}
@@ -62,7 +63,7 @@ public class NumberTests extends AbstractComponentTests {
         assertThat(component.getName(), is("BWA Link Hot Tub Pump 1"));
 
         assertChannel(component, Number.NUMBER_CHANNEL_ID, "homie/bwa/spa/pump1", "homie/bwa/spa/pump1/set",
-                "BWA Link Hot Tub Pump 1", NumberValue.class);
+                "BWA Link Hot Tub Pump 1", NumberValue.class, null);
 
         publishMessage("homie/bwa/spa/pump1", "1");
         assertState(component, Number.NUMBER_CHANNEL_ID, new DecimalType(1));
@@ -71,6 +72,74 @@ public class NumberTests extends AbstractComponentTests {
 
         component.getChannel(Number.NUMBER_CHANNEL_ID).getState().publishValue(new DecimalType(1.1));
         assertPublished("homie/bwa/spa/pump1/set", "1");
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testInferredOptimistic() throws InterruptedException {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                    {
+                        "name": "BWA Link Hot Tub Pump 1",
+                        "availability_topic": "homie/bwa/$state",
+                        "payload_available": "ready",
+                        "payload_not_available": "lost",
+                        "qos": 1,
+                        "icon": "mdi:chart-bubble",
+                        "device": {
+                            "manufacturer": "Balboa Water Group",
+                            "sw_version": "2.1.3",
+                            "model": "BFBP20",
+                            "name": "BWA Link",
+                            "identifiers": "bwa"
+                        },
+                        "command_topic": "homie/bwa/spa/pump1/set",
+                        "command_template": "{{ value | round(0) }}",
+                        "min": 0,
+                        "max": 2,
+                        "unique_id": "bwa_spa_pump1"
+                    }
+                """);
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("BWA Link Hot Tub Pump 1"));
+
+        assertChannel(component, Number.NUMBER_CHANNEL_ID, "", "homie/bwa/spa/pump1/set", "BWA Link Hot Tub Pump 1",
+                NumberValue.class, AutoUpdatePolicy.RECOMMEND);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testForcedOptimistic() throws InterruptedException {
+        var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
+                    {
+                        "name": "BWA Link Hot Tub Pump 1",
+                        "availability_topic": "homie/bwa/$state",
+                        "payload_available": "ready",
+                        "payload_not_available": "lost",
+                        "qos": 1,
+                        "icon": "mdi:chart-bubble",
+                        "device": {
+                            "manufacturer": "Balboa Water Group",
+                            "sw_version": "2.1.3",
+                            "model": "BFBP20",
+                            "name": "BWA Link",
+                            "identifiers": "bwa"
+                        },
+                        "state_topic": "homie/bwa/spa/pump1",
+                        "command_topic": "homie/bwa/spa/pump1/set",
+                        "command_template": "{{ value | round(0) }}",
+                        "min": 0,
+                        "max": 2,
+                        "unique_id": "bwa_spa_pump1",
+                        "optimistic": true
+                    }
+                """);
+
+        assertThat(component.channels.size(), is(1));
+        assertThat(component.getName(), is("BWA Link Hot Tub Pump 1"));
+
+        assertChannel(component, Number.NUMBER_CHANNEL_ID, "homie/bwa/spa/pump1", "homie/bwa/spa/pump1/set",
+                "BWA Link Hot Tub Pump 1", NumberValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
     @Override

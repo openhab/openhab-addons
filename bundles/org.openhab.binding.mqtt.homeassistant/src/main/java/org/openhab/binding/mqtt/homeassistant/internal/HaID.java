@@ -91,11 +91,11 @@ public class HaID {
 
     private static String createTopic(HaID id) {
         StringBuilder str = new StringBuilder();
-        str.append(id.baseTopic).append('/').append(id.component).append('/');
+        str.append(id.component).append('/');
         if (!id.nodeID.isBlank()) {
             str.append(id.nodeID).append('/');
         }
-        str.append(id.objectID).append('/');
+        str.append(id.objectID);
         return str.toString();
     }
 
@@ -215,6 +215,13 @@ public class HaID {
     }
 
     /**
+     * Return the topic for this component, without /config
+     */
+    public String getTopic() {
+        return topic;
+    }
+
+    /**
      * Return a topic, which can be used for a mqtt subscription.
      * Defined values for suffix are:
      * <ul>
@@ -225,7 +232,7 @@ public class HaID {
      * @return fallback group id
      */
     public String getTopic(String suffix) {
-        return topic + suffix;
+        return baseTopic + "/" + topic + "/" + suffix;
     }
 
     @Override

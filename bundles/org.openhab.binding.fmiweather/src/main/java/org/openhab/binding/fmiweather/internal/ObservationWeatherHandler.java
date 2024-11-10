@@ -32,12 +32,13 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fmiweather.internal.client.Data;
+import org.openhab.binding.fmiweather.internal.client.FMIRequest;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.FMISID;
 import org.openhab.binding.fmiweather.internal.client.Location;
 import org.openhab.binding.fmiweather.internal.client.ObservationRequest;
-import org.openhab.binding.fmiweather.internal.client.Request;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIUnexpectedResponseException;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.thing.Channel;
@@ -62,10 +63,17 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     private static final long OBSERVATION_LOOK_BACK_SECONDS = TimeUnit.MINUTES.toSeconds(30);
     private static final int STEP_MINUTES = 10;
     private static final int POLL_INTERVAL_SECONDS = 600;
-    private static BigDecimal HUNDRED = BigDecimal.valueOf(100);
-    private static BigDecimal NA_CLOUD_MAX = BigDecimal.valueOf(8); // API value when having full clouds (overcast)
-    private static BigDecimal NA_CLOUD_COVERAGE = BigDecimal.valueOf(9); // API value when cloud coverage could not be
-                                                                         // determined.
+    private static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
+
+    /**
+     * API value when having full clouds (overcast)
+     */
+    private static final BigDecimal NA_CLOUD_MAX = BigDecimal.valueOf(8);
+
+    /**
+     * API value when cloud coverage could not be determined.
+     */
+    private static final BigDecimal NA_CLOUD_COVERAGE = BigDecimal.valueOf(9);
 
     public static final Unit<Length> MILLIMETRE = MetricPrefix.MILLI(METRE);
     public static final Unit<Length> CENTIMETRE = MetricPrefix.CENTI(METRE);
@@ -100,8 +108,8 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
 
     private @NonNullByDefault({}) String fmisid;
 
-    public ObservationWeatherHandler(Thing thing) {
-        super(thing);
+    public ObservationWeatherHandler(final Thing thing, final HttpClient httpClient) {
+        super(thing, httpClient);
         pollIntervalSeconds = POLL_INTERVAL_SECONDS;
     }
 
@@ -117,7 +125,7 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
     }
 
     @Override
-    protected Request getRequest() {
+    protected FMIRequest getRequest() {
         long now = Instant.now().getEpochSecond();
         return new ObservationRequest(new FMISID(fmisid),
                 floorToEvenMinutes(now - OBSERVATION_LOOK_BACK_SECONDS, STEP_MINUTES),
@@ -175,7 +183,6 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private static @Nullable String getDataField(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());
@@ -185,7 +192,6 @@ public class ObservationWeatherHandler extends AbstractWeatherHandler {
         return entry.getKey();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     private static @Nullable Unit<?> getUnit(ChannelUID channelUID) {
         Entry<String, @Nullable Unit<?>> entry = CHANNEL_TO_OBSERVATION_FIELD_NAME_AND_UNIT
                 .get(channelUID.getIdWithoutGroup());

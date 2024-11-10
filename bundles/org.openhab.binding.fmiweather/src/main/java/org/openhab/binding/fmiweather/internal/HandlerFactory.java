@@ -18,12 +18,17 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HandlerFactory} is responsible for creating things and thing
@@ -38,6 +43,14 @@ public class HandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OBSERVATION,
             THING_TYPE_FORECAST);
 
+    private final HttpClient httpClient;
+
+    @Activate
+    public HandlerFactory(final @Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -48,9 +61,9 @@ public class HandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_OBSERVATION.equals(thingTypeUID)) {
-            return new ObservationWeatherHandler(thing);
+            return new ObservationWeatherHandler(thing, httpClient);
         } else if (THING_TYPE_FORECAST.equals(thingTypeUID)) {
-            return new ForecastWeatherHandler(thing);
+            return new ForecastWeatherHandler(thing, httpClient);
         }
 
         return null;

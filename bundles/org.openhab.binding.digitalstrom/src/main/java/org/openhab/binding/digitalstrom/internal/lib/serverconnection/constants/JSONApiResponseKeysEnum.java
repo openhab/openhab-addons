@@ -16,8 +16,8 @@ package org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants
  * The {@link JSONApiResponseKeysEnum} contains digitalSTROM-JSON response keys.
  *
  * @author Alexander Betker - Initial contribution
- * @author Michael Ochel completely changed and updated only methods remained
- * @author Matthias Siegele completely changed and updated only methods remained
+ * @author Michael Ochel - completely changed and updated only methods remained
+ * @author Matthias Siegele - completely changed and updated only methods remained
  */
 public enum JSONApiResponseKeysEnum {
 

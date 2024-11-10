@@ -24,6 +24,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemensrds.points.BasePoint;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -312,16 +313,21 @@ public class RdsHandler extends BaseThingHandler {
                 if (channelId.equals(channel.id)) {
                     switch (channel.id) {
                         case CHA_TARGET_TEMP: {
-                            Command doCommand = command;
+                            double targetTemperature = Double.NaN;
                             if (command instanceof QuantityType<?> quantityCommand) {
                                 Unit<?> unit = points.getPointByClass(channel.clazz).getUnit();
                                 QuantityType<?> temp = quantityCommand.toUnit(unit);
                                 if (temp != null) {
-                                    doCommand = temp;
+                                    targetTemperature = temp.doubleValue();
                                 }
+                            } else if (command instanceof DecimalType decimalCommand) {
+                                targetTemperature = decimalCommand.doubleValue();
                             }
-                            points.setValue(apiKey, token, channel.clazz, doCommand.format("%s"));
-                            debouncer.initialize(channelId);
+                            if (targetTemperature != Double.NaN) {
+                                points.setValue(apiKey, token, channel.clazz,
+                                        String.format("%.1f", Math.round(targetTemperature * 2) / 2.0));
+                                debouncer.initialize(channelId);
+                            }
                             break;
                         }
                         case CHA_STAT_AUTO_MODE: {

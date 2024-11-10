@@ -76,16 +76,15 @@ Thing mystrom:mystromplug:d6217a31 "Plug" [hostname="hostname|ip"]
 
 ```java
 Switch              PlugSwitch                      "Plug"                      {channel="mystrom:mystromplug:d6217a31:switch"}
-Number:Temperature  PlugTemperature                 "Temperature: [%.1f °C]"    {channel="mystrom:mystromplug:d6217a31:temperature"}  
+Number:Temperature  PlugTemperature                 "Temperature: [%.1f °C]"    {channel="mystrom:mystromplug:d6217a31:temperature"}
 Number:Power        PlugPower                       "Power: [%.1f W]"           {channel="mystrom:mystromplug:d6217a31:power"}
-Number:Energy       PlugEnergyConsumedSinceLastCall "Ws: [%.1f Ws]"             {channel="mystrom:mystromplug:d6217a31:energy-consumed-since-last-call"} 
+Number:Energy       PlugEnergyConsumedSinceLastCall "Ws: [%.1f Ws]"             {channel="mystrom:mystromplug:d6217a31:energy-consumed-since-last-call"}
 ```
-
 
 ### Sitemap Configuration
 
 ```perl
-Frame label="myStrom Plug" { 
+Frame label="myStrom Plug" {
     Switch item=PlugSwitch
     Text item=PlugTemperature
     Text item=PlugPower

@@ -186,7 +186,6 @@ public class SiemensHvacMetadataDataPoint extends SiemensHvacMetadata {
                 detailsResolved = true;
                 return;
             }
-
         }
 
         if (desc != null) {

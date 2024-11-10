@@ -14,10 +14,10 @@ package org.openhab.binding.emotiva.internal.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 
 /**
@@ -34,10 +34,6 @@ public class EmotivaUnsubscribeDTO extends AbstractJAXBElementDTO {
     public EmotivaUnsubscribeDTO() {
     }
 
-    public EmotivaUnsubscribeDTO(List<EmotivaCommandDTO> commands) {
-        this.commands = commands;
-    }
-
     public EmotivaUnsubscribeDTO(EmotivaSubscriptionTags[] emotivaCommandTypes) {
         List<EmotivaCommandDTO> list = new ArrayList<>();
         for (EmotivaSubscriptionTags commandType : emotivaCommandTypes) {
@@ -50,7 +46,11 @@ public class EmotivaUnsubscribeDTO extends AbstractJAXBElementDTO {
         this.commands = List.of(EmotivaCommandDTO.fromType(tag));
     }
 
-    public EmotivaUnsubscribeDTO(EmotivaControlCommands commandType) {
-        this.commands = List.of(EmotivaCommandDTO.fromType(commandType));
+    public EmotivaUnsubscribeDTO(EmotivaCommandDTO commandType) {
+        this.commands = List.of(commandType);
+    }
+
+    public EmotivaUnsubscribeDTO(List<EmotivaSubscriptionTags> commandType) {
+        this.commands = commandType.stream().map(EmotivaCommandDTO::fromTypeWithAck).collect(Collectors.toList());
     }
 }

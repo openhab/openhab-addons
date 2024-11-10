@@ -140,6 +140,12 @@
 			maximum 5.</description>
 	</channel-type>
 
+	<channel-type id="artworkorientation">
+		<item-type>Switch</item-type>
+		<label>Artwork Orientation</label>
+		<description>TV orientation, Landcape or Portrait</description>
+	</channel-type>
+
 	<channel-type id="sourceapp" advanced="true">
 		<item-type>String</item-type>
 		<label>Application</label>

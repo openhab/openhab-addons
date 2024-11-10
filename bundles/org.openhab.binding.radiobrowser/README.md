@@ -36,7 +36,7 @@ The countries need to be the country code not the full name, for example `US` an
 The binding will auto select your country based on openHAB's settings that you made when setting up openHAB.
 It makes sense to do this for languages if the built in way of `languageCount` does not work for your use case.
 Genres are a good example for using the metadata, only show the styles of music and other tags that you like.
-If in doubt you can use the [Event Monitor in the Developer Sidebar](https://www.openhab.org/docs/tutorial/tips-and-tricks.html#event-monitor) to watch what commands are sent to the bindings channels. 
+If in doubt you can use the [Event Monitor in the Developer Sidebar](https://www.openhab.org/docs/tutorial/tips-and-tricks.html#event-monitor) to watch what commands are sent to the bindings channels.
 
 ## Channels
 
@@ -64,21 +64,20 @@ Searches can be done in a few different ways and since the binding will auto sel
 
 Examples on how to do searches from rules, or you can also change an item to take input by using `oh-input-item` using metadata called `Default list item widget`.
 
-
 Search for all stations that contain `hit` in their name, and auto select the first result.
 
-```
+```java
 Radio_Station.sendCommand("hit")
 ```
 
 Search and auto select the station if you know the UUID from the website.
 
-```
+```java
 Radio_Station.sendCommand("b6a490e8-f498-4a7c-b024-607b3d997614")
 ```
 
 Clear any manual search results using the above two methods, and `REFRESH` back to using the normal filter channels.
 
-```
+```java
 Radio_Station.sendCommand(REFRESH)
 ```

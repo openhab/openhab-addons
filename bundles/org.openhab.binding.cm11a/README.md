@@ -5,7 +5,7 @@ The cm11a is a serial computer interface that allows a computer to control attac
 ## Hardware - cm11a
 
 The cm11a is an older device that communicates over a serial interface.
-Most people connect it to a computer using a serial to USB adapter.  
+Most people connect it to a computer using a serial to USB adapter.
 This binding has been tested with serial port and a serial to USB adapter.
 
 X10 (and thus the cm11a) supports two types of modules.
@@ -17,8 +17,8 @@ In addition to controlling X10 modules the cm11a listens on the powerline and re
 ### Use of serial port
 
 The binding opens the serial port when it starts and keeps it open until the binding is terminated.
-If the serial port is disconnected a reconnect will be attempted the next time it is needed.  
-Therefore, other applications should not attempt to use the port when OpneHAB is running.
+If the serial port is disconnected a reconnect will be attempted the next time it is needed.
+Therefore, other applications should not attempt to use the port when openHAB is running.
 However, another program could load macros into the cm11a before openHAB starts.
 
 ### cm11a macros

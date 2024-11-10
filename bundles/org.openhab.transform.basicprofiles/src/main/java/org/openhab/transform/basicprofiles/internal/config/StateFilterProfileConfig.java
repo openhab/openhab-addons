@@ -12,8 +12,10 @@
  */
 package org.openhab.transform.basicprofiles.internal.config;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.types.UnDefType;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
 
 /**
@@ -24,9 +26,9 @@ import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
 @NonNullByDefault
 public class StateFilterProfileConfig {
 
-    public String conditions = "";
+    public List<String> conditions = List.of();
 
-    public String mismatchState = UnDefType.UNDEF.toString();
+    public @Nullable String mismatchState;
 
     public String separator = ",";
 }

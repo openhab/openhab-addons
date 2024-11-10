@@ -4,7 +4,9 @@ Extracts values from a JSON string using a [JsonPath](https://github.com/jayway/
 
 Given the following JSON string:
 
-`[{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]`
+```json
+[{ "device": { "location": "Outside", "status": { "temperature": 23.2 }}}]
+```
 
 The expression `$.device.location` extracts the string `Outside`.
 The JsonPath expression `$.device.status.temperature` extracts the string `23.2`.
@@ -13,28 +15,27 @@ The JsonPath expression `$.device.status.temperature` extracts the string `23.2`
 
 ### Items
 
-```
+```java
 String  Temperature_json "Temperature [JSONPATH($.device.status.temperature):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
 
 ### Rules
 
-```php
+```java
 rule "Convert JSON to Item Type Number"
-  when
+when
     Item Temperature_json changed
- then
+then
     // use the transformation service to retrieve the value
     val newValue = transform("JSONPATH", "$.device.status.temperature", Temperature_json.state.toString)
 
     // post the new value to the Number Item
     Temperature.postUpdate( newValue )
- end
+end
 ```
 
 Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as a value to compare.
-
 
 ## Differences to standard JsonPath
 
@@ -62,5 +63,5 @@ This profile is a one-way transformation; only values from a device toward the i
 
 ## Further Reading
 
-* An extended [introduction](https://www.w3schools.com/js/js_json_intro.asp) can be found at W3School.
-* As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath), using an [online validator](https://jsonpath.herokuapp.com/) which also uses Jayway will give the most similar results. 
+- An extended [introduction](https://www.w3schools.com/js/js_json_intro.asp) can be found at W3School.
+- As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath), using an [online validator](https://jsonpath.fly.dev/) which also uses Jayway will give the most similar results.

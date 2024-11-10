@@ -129,7 +129,6 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
                     return df.format(dt);
                 }
             }
-
         } catch (Exception ex) {
         }
         return "unknown";

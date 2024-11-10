@@ -54,6 +54,11 @@
 				<label>Command Authorization Code</label>
 				<description>Authorization Code to allow the execution of Command Tags (may be empty)</description>
 			</parameter>
+			<parameter name="userAgent" type="text" required="false">
+				<label>User Agent</label>
+				<description>Some providers require a specific user agent header. If left empty, the default Jetty header is used.</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
@@ -187,6 +192,17 @@
 				<label>Round to Date/Time unit</label>
 				<description>Setting this will round start and end date/time to the unit down (e.g. if unit is day: start and end
 					will be rounded to 0:00 day time)</description>
+			</parameter>
+			<parameter name="datetimeMode" type="text" groupName="datetime_based">
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="START">Events that begin in the period</option>
+					<option value="ACTIVE">Events that are active at any phase in the period</option>
+					<option value="END">Events that end in the period</option>
+				</options>
+				<default>START</default>
+				<label>Search Mode</label>
+				<description>Defines which part of an event must fall within the search period between start and end</description>
 			</parameter>
 			<parameter name="textEventField" type="text" groupName="text_based">
 				<label>Event Field</label>

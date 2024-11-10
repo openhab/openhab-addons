@@ -126,7 +126,7 @@ To do so
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
 
-```text
+```ini
 discovery.avmfritz:background=false
 ```
 
@@ -226,7 +226,7 @@ You will find entries like the attached one.
 The `identifyer 'tmpFC0F2C-3960B7EE6'` contains the templates AINs you need for using them in rules.
 
 ```text
-Name 'Demo Template', identifyer 'tmpFC0F2C-3960B7EE6', firmware version '0.1' 
+Name 'Demo Template', identifyer 'tmpFC0F2C-3960B7EE6', firmware version '0.1'
     [aktive] ID 60013, emc 0x0, model 0x0, grouphash=0x0, devicetype 'avm_home_device_type_template', functionbitmask 0x4000, sortid 0, batt perc 255 low 255, pollinterval 0, polltimeout 0, validchangetime: 0
     --------------------
 ```
@@ -276,7 +276,7 @@ demo.items:
 
 ```java
 String CallState     "Call State [%s]"               { channel="avmfritz:fritzbox:1:call_state" }
-Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:incoming_call" } 
+Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:incoming_call" }
 Call   OutgoingCall  "Outgoing call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:outgoing_call" }
 Call   ActiveCall    "Call established [%1$s]"       { channel="avmfritz:fritzbox:1:active_call" }
 String ApplyTemplate "Apply template"                { channel="avmfritz:fritzbox:1:apply_template" }
@@ -346,7 +346,7 @@ sitemap demo label="Main Menu" {
         Text item=COMETDECTBattery icon="battery"
         Switch item=COMETDECTBatteryLow icon="lowbattery"
     }
- 
+
     Frame label="HAN-FUN Contact" {
         Text item=HANFUNContactState
     }

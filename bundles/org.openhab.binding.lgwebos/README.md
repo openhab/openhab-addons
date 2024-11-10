@@ -174,7 +174,7 @@ then
         logInfo("actions", "Actions not found, check thing ID")
         return
     }
-                
+
     switch receivedCommand{
                     case 0: actions.decreaseChannel()
                     case 1: actions.increaseChannel()

@@ -20,9 +20,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
@@ -58,11 +60,14 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicBridgeHandler extends BaseBridgeHandler implements HomematicGatewayAdapter {
+
+    protected ScheduledExecutorService executorService = scheduler;
+
     private final Logger logger = LoggerFactory.getLogger(HomematicBridgeHandler.class);
     private static final long REINITIALIZE_DELAY_SECONDS = 10;
     private static final int DUTY_CYCLE_RATIO_LIMIT = 99;
     private static final int DUTY_CYCLE_DISCONNECTED = -1;
-    private static SimplePortPool portPool = new SimplePortPool();
+    private static final SimplePortPool portPool = new SimplePortPool();
 
     private final Object dutyCycleRatioUpdateLock = new Object();
     private final Object initDisposeLock = new Object();
@@ -93,7 +98,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     public void initialize() {
         synchronized (initDisposeLock) {
             isDisposed = false;
-            initializeFuture = scheduler.submit(this::initializeInternal);
+            initializeFuture = executorService.submit(this::initializeInternal);
         }
     }
 
@@ -106,6 +111,8 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
             config = createHomematicConfig();
 
             try {
+                this.checkForConfigurationErrors();
+
                 String id = getThing().getUID().getId();
                 gateway = HomematicGatewayFactory.createGateway(id, config, this, httpClient);
                 configureThingProperties();
@@ -140,6 +147,15 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
         }
     }
 
+    /**
+     * Validates, if the configuration contains errors.
+     */
+    private void checkForConfigurationErrors() {
+        if (this.config.getCallbackHost().contains(" ")) {
+            throw new ConfigurationException("The callback host mut not contain white spaces.");
+        }
+    }
+
     private void configureThingProperties() {
         final HmGatewayInfo info = config.getGatewayInfo();
         final Map<String, String> properties = getThing().getProperties();
@@ -160,7 +176,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      */
     private void scheduleReinitialize() {
         if (!isDisposed) {
-            initializeFuture = scheduler.schedule(this::initializeInternal, REINITIALIZE_DELAY_SECONDS,
+            initializeFuture = executorService.schedule(this::initializeInternal, REINITIALIZE_DELAY_SECONDS,
                     TimeUnit.SECONDS);
         }
     }
@@ -252,8 +268,11 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
     }
 
     /**
-     * Returns the HomematicGateway.
+     * Returns the {@link HomematicGateway}.
+     *
+     * @return The gateway or null if gateway has not yet been initialized.
      */
+    @Nullable
     public HomematicGateway getGateway() {
         return gateway;
     }
@@ -434,7 +453,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
      * @param defer <i>true</i> will delete the device once it becomes available.
      */
     public void deleteFromGateway(String address, boolean reset, boolean force, boolean defer) {
-        scheduler.submit(() -> {
+        executorService.submit(() -> {
             logger.debug("Deleting the device '{}' from gateway '{}'", address, getBridge());
             getGateway().deleteDevice(address, reset, force, defer);
         });

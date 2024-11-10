@@ -419,6 +419,9 @@ Import-Package: \\
             </argLine>
             <systemPropertyVariables>
               <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
+              <openhab.conf>${project.build.directory}/openhab/conf</openhab.conf>
+              <openhab.runtime>${project.build.directory}/openhab/runtime</openhab.runtime>
+              <openhab.userdata>${project.build.directory}/openhab/userdata</openhab.userdata>
             </systemPropertyVariables>
           </configuration>
         </plugin>

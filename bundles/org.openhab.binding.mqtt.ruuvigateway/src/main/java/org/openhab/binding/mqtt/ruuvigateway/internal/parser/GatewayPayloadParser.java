@@ -41,7 +41,7 @@ import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
 @NonNullByDefault
 public class GatewayPayloadParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(GatewayPayloadParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GatewayPayloadParser.class);
     private static final Gson GSON = new GsonBuilder().create();
     private static final AnyDataFormatParser parser = new AnyDataFormatParser();
     private static final Predicate<String> HEX_PATTERN_CHECKER = Pattern.compile("^([0-9A-Fa-f]{2})+$")
@@ -80,19 +80,19 @@ public class GatewayPayloadParser {
         private GatewayPayload(GatewayPayloadIntermediate intermediate) throws IllegalArgumentException {
             String gwMac = intermediate.gw_mac;
             if (gwMac == null) {
-                logger.trace("Missing mandatory field 'gw_mac', ignoring");
+                LOGGER.trace("Missing mandatory field 'gw_mac', ignoring");
             }
             this.gwMac = Optional.ofNullable(gwMac);
             rssi = intermediate.rssi;
             try {
                 gwts = Optional.of(Instant.ofEpochSecond(intermediate.gwts));
             } catch (DateTimeException e) {
-                logger.debug("Field 'gwts' is a not valid time (epoch second), ignoring: {}", intermediate.gwts);
+                LOGGER.debug("Field 'gwts' is a not valid time (epoch second), ignoring: {}", intermediate.gwts);
             }
             try {
                 ts = Optional.of(Instant.ofEpochSecond(intermediate.ts));
             } catch (DateTimeException e) {
-                logger.debug("Field 'ts' is a not valid time (epoch second), ignoring: {}", intermediate.ts);
+                LOGGER.debug("Field 'ts' is a not valid time (epoch second), ignoring: {}", intermediate.ts);
             }
 
             String localData = intermediate.data;
@@ -101,7 +101,7 @@ public class GatewayPayloadParser {
             }
 
             if (!HEX_PATTERN_CHECKER.test(localData)) {
-                logger.debug(
+                LOGGER.debug(
                         "Data is not representing manufacturer specific bluetooth advertisement, it is not valid hex: {}",
                         localData);
                 throw new IllegalArgumentException(
@@ -114,10 +114,9 @@ public class GatewayPayloadParser {
                 // below
                 // The payload length (might depend on format version ) is validated by parser.parse call
                 throw new IllegalArgumentException("Manufacturerer data is too short");
-
             }
             if ((bytes[4] & 0xff) != 0xff) {
-                logger.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",
+                LOGGER.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",
                         HexUtils.bytesToHex(bytes));
                 throw new IllegalArgumentException(
                         "Data is not representing manufacturer specific bluetooth advertisement");
@@ -126,7 +125,7 @@ public class GatewayPayloadParser {
             byte[] manufacturerData = Arrays.copyOfRange(bytes, 5, bytes.length);
             RuuviMeasurement localManufacturerData = parser.parse(manufacturerData);
             if (localManufacturerData == null) {
-                logger.trace("Manufacturer data is not valid: {}", HexUtils.bytesToHex(manufacturerData));
+                LOGGER.trace("Manufacturer data is not valid: {}", HexUtils.bytesToHex(manufacturerData));
                 throw new IllegalArgumentException("Manufacturer data is not valid");
             }
             measurement = localManufacturerData;

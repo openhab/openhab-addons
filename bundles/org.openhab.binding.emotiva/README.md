@@ -30,7 +30,6 @@ There are more parameters which all have defaults set.
 | keepAlive             | Time between notification update from device, in milliseconds | 7500    |
 | retryConnectInMinutes | Time between connection retry, in minutes                     | 2       |
 
-
 ## Channels
 
 The Emotiva Processor supports the following channels (some channels are model specific):
@@ -38,15 +37,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 | Channel Type ID                    | Item Type          | Description                                                |
 |------------------------------------|--------------------|------------------------------------------------------------|
 | _Main zone_                        |                    |                                                            |
-| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |      
-| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |             
-| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         | 
-| main-zone#mute                     | Switch (RW)        | Main zone mute                                             | 
-| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   | 
+| main-zone#power                    | Switch (RW)        | Main zone power on/off                                     |
+| main-zone#volume                   | Dimmer (RW)        | Main zone volume in percentage (0 to 100)                  |
+| main-zone#volume-db                | Number (RW)        | Main zone volume in dB (-96 to 15)                         |
+| main-zone#mute                     | Switch (RW)        | Main zone mute                                             |
+| main-zone#source                   | String (RW)        | Main zone input (HDMI1, TUNER, ARC, ...)                   |
 | _Zone 2_                           |                    |                                                            |
-| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        | 
-| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     | 
-| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           | 
+| zone2#power                        | Switch (RW)        | Zone 2 power on/off                                        |
+| zone2#volume                       | Dimmer (RW)        | Zone 2 volume in percentage (0 to 100)                     |
+| zone2#volume-db                    | Number (RW)        | Zone 2 volume in dB (-80 offset)                           |
 | zone2#mute                         | Switch (RW)        | Zone 2 mute                                                |
 | zone2#input                        | String (RW)        | Zone 2 input                                               |
 | _General_                          |                    |                                                            |
@@ -117,15 +116,15 @@ The Emotiva Processor supports the following channels (some channels are model s
 
 ## Full Example
 
-### `.things` file:
+### `.things` file
 
-```perl
+```java
 Thing emotiva:processor:1 "XMC-2" @ "Living room" [ipAddress="10.0.0.100", protocolVersion="3.0"]
 ```
 
-### `.items` file:
+### `.items` file
 
-```perl
+```java
 Switch                  emotiva-power               "Processor"                     {channel="emotiva:processor:1:general#power"}
 Dimmer                  emotiva-volume              "Volume [%d %%]"                {channel="emotiva:processor:1:main-zone#volume"}
 Number:Dimensionless    emotiva-volume-db           "Volume [%d dB]"                {channel="emotiva:processor:1:main-zone#volume-db"}
@@ -148,16 +147,16 @@ String                  emotiva-menu-tottom-center  ""                      <non
 String                  emotiva-menu-tottom-end     ""                      <none>  {channel="emotiva:processor:1:general#menu-display-bottom-end"}
 ```
 
-### `.sitemap` file:
+### `.sitemap` file
 
 ```perl
 Group item=emotiva-input label="Processor" icon="receiver" {
     Default   item=emotiva-power
-    Default   item=emotiva-mute             
-    Setpoint  item=emotiva-volume           
-    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0 
-    Selection item=emotiva-source           
-    Text      item=emotiva-mode-surround    
+    Default   item=emotiva-mute
+    Setpoint  item=emotiva-volume
+    Default   item=emotiva-volume-db        step=2 minValue=-96.0 maxValue=15.0
+    Selection item=emotiva-source
+    Text      item=emotiva-mode-surround
     Setpoint  item=emotiva-speakers-center  step=0.5 minValue=-12.0 maxValue=12.0
     Default   item=emotiva-zone2power
 }

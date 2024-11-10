@@ -85,7 +85,8 @@ public class JdbcH2DAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -100,7 +101,7 @@ public class JdbcH2DAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());

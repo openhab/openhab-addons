@@ -65,7 +65,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
     public @Nullable StateDescription getStateDescription(Channel channel, @Nullable StateDescription original,
             @Nullable Locale locale) {
         ChannelTypeUID typeUID = channel.getChannelTypeUID();
-        if (typeUID == null || !BINDING_ID.equals(typeUID.getBindingId()) || original == null) {
+        if (typeUID == null || !BINDING_ID.equals(typeUID.getBindingId())) {
             return null;
         }
 
@@ -82,7 +82,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 for (EmotivaSubscriptionTags modeKey : modeKeys) {
                     options.add(new StateOption(modeKey.name(), modes.get(modeKey)));
                 }
-                logger.debug("Updated '{}' with '{}'", CHANNEL_MODE, options);
+                logger.trace("Updating OH channel '{}' with state options '{}'", CHANNEL_MODE, options);
                 setStateOptions(channel.getUID(), options);
             }
         }
@@ -100,7 +100,7 @@ public class InputStateOptionProvider extends BaseDynamicStateDescriptionProvide
                 options.add(new StateOption(sourceKey.name(), sourceKey.getLabel()));
             }
         }
-        logger.debug("Updated '{}' with '{}'", channel.getUID().getId(), options);
+        logger.trace("Updating OH channel '{}' with state options '{}'", channel.getUID().getId(), options);
         setStateOptions(channel.getUID(), options);
     }
 }

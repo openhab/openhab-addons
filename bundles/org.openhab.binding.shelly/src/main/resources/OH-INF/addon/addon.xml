@@ -44,7 +44,7 @@
 			<match-properties>
 				<match-property>
 					<name>name</name>
-					<regex>.*Shelly.*</regex>
+					<regex>(?i).*SHELLY.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>

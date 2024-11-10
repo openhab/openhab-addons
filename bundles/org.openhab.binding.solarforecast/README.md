@@ -1,6 +1,6 @@
 # SolarForecast Binding
 
-This binding provides data from Solar Forecast services. 
+This binding provides data from Solar Forecast services.
 Use it to estimate your daily production, plan electric consumers like Electric Vehicle charging, heating or HVAC.
 Look ahead the next days in order to identify surplus / shortages in your energy planning.
 
@@ -9,7 +9,7 @@ Supported Services
 - [Solcast](https://solcast.com/)
     - Free [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist) with registration
 - [Forecast.Solar](https://forecast.solar/)
-    - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available 
+    - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available
 
 Display Power values of Forecast and PV Inverter items
 
@@ -22,7 +22,7 @@ Yellow line shows *Daily Total Forecast*.
 
 ## Supported Things
 
-Each service needs one `xx-site` for your location and at least one photovoltaic `xx-plane`.  
+Each service needs one `xx-site` for your location and at least one photovoltaic `xx-plane`.
 
 | Name                              | Thing Type ID |
 |-----------------------------------|---------------|
@@ -39,7 +39,7 @@ You need to configure your home photovoltaic system within the web interface.
 The `resourceId` for each PV plane is provided afterwards.
 
 In order to receive proper timestamps double check your time zone in *openHAB - Settings - Regional Settings*.
-Correct time zone is necessary to show correct forecast times in UI. 
+Correct time zone is necessary to show correct forecast times in UI.
 
 ### Solcast Bridge Configuration
 
@@ -50,32 +50,39 @@ Correct time zone is necessary to show correct forecast times in UI.
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
-`timeZone` can be left empty to evaluate Regional Settings of your openHAB installation. 
+`timeZone` can be left empty to evaluate Regional Settings of your openHAB installation.
 See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 
-| Name            | Type    | Description                                            | Default         | Required | Advanced |
-|-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
-| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
+| Name            | Type    | Description                                                              | Default         | Required | Advanced |
+|-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
+| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 120             | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
-`refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
+`refreshInterval` of forecast data needs to respect the throttling of the Solcast service.
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
+
+With `refreshInterval = 0` the forecast data will not be updated by binding.
+This gives the user the possibility to define an own update strategy in rules.
+See [manual update rule example](#solcast-manual-update) to update Solcast forecast data
+
+- after startup
+- every 2 hours only during daytime using [Astro Binding](https://www.openhab.org/addons/bindings/astro/)
 
 ## Solcast Channels
 
 Each `sc-plane` reports its own values including a `json` channel holding JSON content.
-The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.  
+The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.
 
 Channels are covering today's actual data with current, remaining and today's total prediction.
 Forecasts are delivered up to 6 days in advance.
-Scenarios are clustered in groups: 
+Scenarios are clustered in groups:
 
 - `average` scenario
-- `pessimistic` scenario: 10th percentile 
+- `pessimistic` scenario: 10th percentile
 - `optimistic` scenario: 90th percentile
 
 | Channel                 | Type          | Unit | Description                                     | Advanced |
@@ -117,7 +124,7 @@ In case of empty the location configured in openHAB is obtained.
 | dampPM          | decimal | Damping factor of evening hours                                              | 0       | no       | true     |
 | horizon         | text    | Horizon definition as comma separated integer values                         | N/A     | no       | true     |
 
-`refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service. 
+`refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service.
 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
 
 #### Advanced Configuration
@@ -139,7 +146,7 @@ So you need to know what you're doing.
 ## ForecastSolar Channels
 
 Each `fs-plane` reports its own values including a `json` channel holding JSON content.
-The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.  
+The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.
 
 Channels are covering today's actual data with current, remaining and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
@@ -190,7 +197,7 @@ Check log or catch exceptions for error handling
 - `IllegalArgumentException` thrown in case of problems with call arguments
 - `SolarForecastException` thrown in case of problems with timestamp and available forecast data
 
-### `getDay`
+### `getEnergyOfDay`
 
 | Parameter | Type          | Description                                                                                |
 |-----------|---------------|--------------------------------------------------------------------------------------------|
@@ -226,7 +233,7 @@ Check log or catch exceptions for error handling
 Each forecast is bound to a certain location which automatically defines the time zone.
 Most common use case is forecast and your location are matching the same time zone.
 Action interface is using `Instant` as timestamps which enables you translating to any time zone.
-This allows you with an easy conversion to query also foreign forecast locations.  
+This allows you with an easy conversion to query also foreign forecast locations.
 
 Examples are showing
 
@@ -251,29 +258,29 @@ Bridge solarforecast:fs-site:homeSite   "ForecastSolar Home" [ location="54.321,
 
 ```java
 // channel items
-Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              { channel="solarforecast:fs-site:homeSite:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
-Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     { channel="solarforecast:fs-site:homeSite:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        { channel="solarforecast:fs-site:homeSite:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 { channel="solarforecast:fs-site:homeSite:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }   
-// calculated by rule                                                                        
-Number:Energy           ForecastSolarHome_Tomorrow          "Tomorrow's total energy forecast"              { stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power      "Power prediction for this moment"              { channel="solarforecast:fs-site:homeSite:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual            "Today's forecast till now"                     { channel="solarforecast:fs-site:homeSite:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining         "Today's remaining forecast till sunset"        { channel="solarforecast:fs-site:homeSite:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today             "Today's total energy forecast"                 { channel="solarforecast:fs-site:homeSite:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
+// calculated by rule
+Number:Energy           ForecastSolarHome_Tomorrow          "Tomorrow's total energy forecast"              { stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
 
-Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeNorthEast:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }   
-Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_NE   "NE Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeNorthEast:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual_NE         "NE Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining_NE      "NE Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today_NE          "NE Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeNorthEast:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
 
-Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
-Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }                                                                           
+Number:Power            ForecastSolarHome_Actual_Power_SW   "SW Power prediction for this moment"           { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-actual", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Actual_SW         "SW Today's forecast till now"                  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-actual", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Remaining_SW      "SW Today's remaining forecast till sunset"     { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-remain", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Energy           ForecastSolarHome_Today_SW          "SW Today's total energy forecast"              { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh" }
 
 // estimation items
 Group influxdb
-Number:Power            ForecastSolarHome_Power_Estimate        "Power estimations"                         (influxdb)  { channel="solarforecast:fs-site:homeSite:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
-Number:Energy           ForecastSolarHome_Energy_Estimate       "Energy estimations"                        (influxdb)  { channel="solarforecast:fs-site:homeSite:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
-Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estimations"                      (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }                                                                           
-Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }                                                                           
+Number:Power            ForecastSolarHome_Power_Estimate        "Power estimations"                         (influxdb)  { channel="solarforecast:fs-site:homeSite:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Energy_Estimate       "Energy estimations"                        (influxdb)  { channel="solarforecast:fs-site:homeSite:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
+Number:Power            ForecastSolarHome_Power_Estimate_SW     "SW Power estimations"                      (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W" }
+Number:Energy           ForecastSolarHome_Energy_Estimate_SW    "SW Energy estimations"                     (influxdb)  { channel="solarforecast:fs-plane:homeSite:homeSouthWest:energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh" }
 ```
 
 ### Persistence file
@@ -301,11 +308,11 @@ Items {
 rule "Tomorrow Forecast Calculation"
     when
         Item ForecastSolarHome_Today received update
-    then 
+    then
         val solarforecastActions = getActions("solarforecast","solarforecast:fs-site:homeSite")
-        val energyState = solarforecastActions.getDay(LocalDate.now.plusDays(1))
+        val energyState = solarforecastActions.getEnergyOfDay(LocalDate.now.plusDays(1))
         logInfo("SF Tests","{}",energyState)
-        ForecastSolarHome_Tomorrow.postUpdate(energyState) 
+        ForecastSolarHome_Tomorrow.postUpdate(energyState)
 end
 ```
 
@@ -317,7 +324,7 @@ import java.time.temporal.ChronoUnit
 rule "Exception Handling"
     when
         System started
-    then 
+    then
         val solcastActions = getActions("solarforecast","solarforecast:sc-site:3cadcde4dc")
         try {
             val forecast = solcastActions.getPower(solcastActions.getForecastEnd.plus(30,ChronoUnit.MINUTES))
@@ -335,7 +342,7 @@ import java.time.temporal.ChronoUnit
 rule "Solcast Actions"
     when
         Time cron "0 0 23 * * ?" // trigger whatever you like
-    then 
+    then
         // Query forecast via Actions
         val solarforecastActions = getActions("solarforecast","solarforecast:sc-site:homeSite")
         val startTimestamp = Instant.now
@@ -354,3 +361,33 @@ rule "Solcast Actions"
         logInfo("SF Tests","Optimist energy {}",energyOptimistic)
 end
 ```
+
+### Solcast manual update
+
+```java
+rule "Daylight End"
+    when
+        Channel "astro:sun:local:daylight#event" triggered END
+    then
+        PV_Daytime.postUpdate(OFF) // switch item holding daytime state
+end
+
+rule "Daylight Start"
+    when
+        Channel "astro:sun:local:daylight#event" triggered START
+    then
+        PV_Daytime.postUpdate(ON)
+end
+
+rule "Solacast Updates"
+    when
+        Thing "solarforecast:sc-plane:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
+        Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30
+    then
+        if(PV_Daytime.state == ON) {
+            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSouthWest")
+            solarforecastActions.triggerUpdate
+        } // reject updates during night
+end
+```
+

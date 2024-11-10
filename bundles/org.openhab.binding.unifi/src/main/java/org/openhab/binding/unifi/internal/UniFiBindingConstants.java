@@ -38,10 +38,12 @@ public final class UniFiBindingConstants {
     public static final ThingTypeUID THING_TYPE_WIRED_CLIENT = new ThingTypeUID(BINDING_ID, "wiredClient");
     public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wirelessClient");
     public static final ThingTypeUID THING_TYPE_POE_PORT = new ThingTypeUID(BINDING_ID, "poePort");
+    public static final ThingTypeUID THING_TYPE_ACCESS_POINT = new ThingTypeUID(BINDING_ID, "accessPoint");
     public static final Set<ThingTypeUID> ALL_THING_TYPE_SUPPORTED = Set.of(THING_TYPE_CONTROLLER, THING_TYPE_SITE,
-            THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT);
+            THING_TYPE_WLAN, THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT,
+            THING_TYPE_ACCESS_POINT);
     public static final Set<ThingTypeUID> THING_TYPE_SUPPORTED = Set.of(THING_TYPE_SITE, THING_TYPE_WLAN,
-            THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT);
+            THING_TYPE_WIRED_CLIENT, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_POE_PORT, THING_TYPE_ACCESS_POINT);
 
     // List of site channels
     public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
@@ -59,21 +61,23 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_PASSPHRASE = "passphrase";
     public static final String CHANNEL_QRCODE_ENCODING = "qrcodeEncoding";
 
-    // List of common wired + wireless client channels
+    // List of common wired + wireless client + device channels
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_NAME = "name";
-    public static final String CHANNEL_HOSTNAME = "hostname";
     public static final String CHANNEL_SITE = "site";
-    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_LAST_SEEN = "lastSeen";
+    public static final String CHANNEL_EXPERIENCE = "experience";
+
+    // List of common wired + wireless client channels
+    public static final String CHANNEL_HOSTNAME = "hostname";
+    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_GUEST = "guest";
     public static final String CHANNEL_BLOCKED = "blocked";
     public static final String CHANNEL_RECONNECT = "reconnect";
     public static final String CHANNEL_CMD = "cmd";
     public static final String CHANNEL_CMD_RECONNECT = "reconnect";
-    public static final String CHANNEL_EXPERIENCE = "experience";
 
     // List of additional wireless client channels
     public static final String CHANNEL_AP = "ap";
@@ -93,6 +97,11 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_PORT_POE_VOLTAGE = "voltage";
     public static final String CHANNEL_PORT_POE_CURRENT = "current";
 
+    // List of access point device channels
+    public static final String CHANNEL_AP_ENABLE = "enable";
+    public static final String CHANNEL_AP_STATE = "state";
+    public static final String CHANNEL_AP_LED = "led";
+
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";
@@ -111,7 +120,9 @@ public final class UniFiBindingConstants {
     public static final String PARAMETER_VOUCHER_DATA_QUOTA = "voucherDataQuota";
     public static final String PARAMETER_PORT_NUMBER = "portNumber";
     public static final String PARAMETER_MAC_ADDRESS = "macAddress";
-    public static final String PARAMETER_WIFI_NAME = "wifi";
+
+    // UniFi device types
+    public static final String DEVICE_TYPE_UAP = "uap";
 
     private UniFiBindingConstants() {
         // Constants class

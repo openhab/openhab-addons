@@ -2,7 +2,9 @@
 <features name="org.openhab.persistence.jdbc-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-	<!-- JDBC Persistence for: Apache Derby, H2, HSQLDB, MariaDB, MySQL, PostgreSQL, SQLite -->
+	<!-- JDBC Persistence for: Apache Derby, H2, HSQLDB, MariaDB, MySQL, PostgreSQL, SQLite, Oracle -->
+	<!-- Keep DB driver version numbers explicit, don't use variables from pom as this will break distro build -->
+
 	<feature name="openhab-persistence-jdbc-derby" description="JDBC Persistence Apache Derby" version="${project.version}">
 		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
 		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
@@ -52,4 +54,10 @@
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
 	</feature>
 
+	<feature name="openhab-persistence-jdbc-oracle" description="JDBC Persistence Oracle" version="${project.version}">
+		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
+		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11/23.5.0.2407</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
+	</feature>
 </features>

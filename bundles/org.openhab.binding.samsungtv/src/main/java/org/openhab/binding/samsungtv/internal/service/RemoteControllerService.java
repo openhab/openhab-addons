@@ -63,9 +63,9 @@ public class RemoteControllerService implements SamsungTvService {
     private final List<String> supportedCommandsNonUpnp = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL,
             BROWSER_URL, STOP_BROWSER, SOURCE_APP);
     private final List<String> supportedCommandsArt = Arrays.asList(ART_MODE, ART_JSON, ART_LABEL, ART_IMAGE,
-            ART_BRIGHTNESS, ART_COLOR_TEMPERATURE);
+            ART_BRIGHTNESS, ART_COLOR_TEMPERATURE, ART_ORIENTATION);
     private static final List<String> REFRESH_CHANNELS = Arrays.asList();
-    private static final List<String> refreshArt = Arrays.asList(ART_BRIGHTNESS);
+    private static final List<String> refreshArt = Arrays.asList(ART_BRIGHTNESS, ART_ORIENTATION);
     private static final List<String> refreshApps = Arrays.asList(SOURCE_APP);
     private static final List<String> art2022 = Arrays.asList(ART_MODE, SET_ART_MODE);
 
@@ -201,6 +201,9 @@ public class RemoteControllerService implements SamsungTvService {
                     break;
                 case ART_COLOR_TEMPERATURE:
                     remoteController.getArtmodeStatus("get_color_temperature");
+                    break;
+                case ART_ORIENTATION:
+                    remoteController.getArtmodeStatus("get_current_rotation");
                     break;
             }
             return true;
@@ -348,6 +351,16 @@ public class RemoteControllerService implements SamsungTvService {
                     int value = Math.max(-5, Math.min(decimalCommand.intValue(), 5));
                     remoteController.getArtmodeStatus("set_color_temperature", String.valueOf(value));
                     result = true;
+                }
+                break;
+
+            case ART_ORIENTATION:
+                if (command instanceof OnOffType) {
+                    String key = handler.configuration.getOrientationKey();
+                    if (!key.isBlank()) {
+                        sendKeys(KeyCode.valueOf(key), 4000);
+                        result = true;
+                    }
                 }
                 break;
 

@@ -188,7 +188,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
             getGrowattCloud().setupBatteryProgram(deviceId, programMode, powerLevel, stopSOC, enableAcCharging,
                     startTime, stopTime, enableProgram);
         } catch (GrowattApiException e) {
-            logger.warn("setupBatteryProgram() error", e);
+            logger.warn("setupBatteryProgram() error '{}'", e.getMessage(), logger.isDebugEnabled() ? e : null);
         }
     }
 }

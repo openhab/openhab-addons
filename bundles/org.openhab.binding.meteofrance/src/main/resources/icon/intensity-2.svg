@@ -1,0 +1,66 @@
+<svg width="46" height="63" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="prefix__d">
+            <feMorphology radius="2" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1" />
+            <feOffset dy="1" in="shadowSpreadOuter1" result="shadowOffsetOuter1" />
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1" />
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1" />
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" in="shadowBlurOuter1" />
+        </filter>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="prefix__f">
+            <feMorphology radius="1.08" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1" />
+            <feOffset dy="1" in="shadowSpreadOuter1" result="shadowOffsetOuter1" />
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1" />
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1" />
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" in="shadowBlurOuter1" />
+        </filter>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="prefix__h">
+            <feMorphology radius="1.44" operator="dilate" in="SourceAlpha" result="shadowSpreadOuter1" />
+            <feOffset dy="1" in="shadowSpreadOuter1" result="shadowOffsetOuter1" />
+            <feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1" />
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1" />
+            <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0" in="shadowBlurOuter1" />
+        </filter>
+        <path
+            d="M18.528 23C16.887 23 7 38.241 7 44.803c0 5.174 2.987 10.572 11.528 10.572 7.82 0 11.528-5.346 11.528-10.572C30.056 38.158 20.169 23 18.528 23z"
+            id="prefix__a" />
+        <path
+            d="M6.125 5C5.253 5 0 13.238 0 16.785 0 19.582 1.587 22.5 6.125 22.5c4.155 0 6.125-2.89 6.125-5.715C12.25 13.193 6.997 5 6.125 5z"
+            id="prefix__b" />
+        <path
+            d="M31.313 0C30.128 0 23 11.122 23 15.91c0 3.776 2.154 7.715 8.313 7.715 5.64 0 8.312-3.901 8.312-7.715 0-4.849-7.129-15.91-8.313-15.91z"
+            id="prefix__c" />
+        <mask id="prefix__e" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-2" y="-2"
+            width="27.056" height="36.375">
+            <path fill="#fff" d="M5 21h27.056v36.375H5z" />
+            <use xlink:href="#prefix__a" />
+        </mask>
+        <mask id="prefix__g" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1.08" y="-1.08"
+            width="14.41" height="19.66">
+            <path fill="#fff" d="M-1.08 3.92h14.41v19.66H-1.08z" />
+            <use xlink:href="#prefix__b" />
+        </mask>
+        <mask id="prefix__i" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1.44" y="-1.44"
+            width="19.505" height="26.505">
+            <path fill="#fff" d="M21.56-1.44h19.505v26.505H21.56z" />
+            <use xlink:href="#prefix__c" />
+        </mask>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g transform="translate(3 2)">
+            <use fill="#000" filter="url(#prefix__d)" xlink:href="#prefix__a" />
+            <use fill-opacity=".3" fill="#55A4FF" xlink:href="#prefix__a" />
+            <use stroke="#FFF" mask="url(#prefix__e)" stroke-width="4" xlink:href="#prefix__a" />
+        </g>
+        <g transform="translate(3 2)">
+            <use fill="#000" filter="url(#prefix__f)" xlink:href="#prefix__b" />
+            <use fill="#55A4FF" xlink:href="#prefix__b" />
+            <use stroke="#FFF" mask="url(#prefix__g)" stroke-width="2.16" xlink:href="#prefix__b" />
+        </g>
+        <g transform="translate(3 2)">
+            <use fill="#000" filter="url(#prefix__h)" xlink:href="#prefix__c" />
+            <use fill="#55A4FF" xlink:href="#prefix__c" />
+            <use stroke="#FFF" mask="url(#prefix__i)" stroke-width="2.88" xlink:href="#prefix__c" />
+        </g>
+    </g>
+</svg>

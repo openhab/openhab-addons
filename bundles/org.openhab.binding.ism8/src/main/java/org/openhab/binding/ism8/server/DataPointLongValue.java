@@ -38,6 +38,14 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
             this.setUnit(Units.CUBICMETRE_PER_HOUR);
             this.factor = 0.0001f;
             this.outputFormat = "%.1f";
+        } else if ("13.010".equals(knxDataType)) {
+            this.setUnit(Units.WATT_HOUR);
+            this.factor = 1.0f;
+            this.outputFormat = "%.1f";
+        } else if ("13.013".equals(knxDataType)) {
+            this.setUnit(Units.WATT_HOUR);
+            this.factor = 1000.0f;
+            this.outputFormat = "%.1f";
         } else {
             this.setUnit(Units.ONE);
             this.factor = 1.0f;

@@ -52,5 +52,5 @@ demo.items:
 ```java
 Switch DemoSwitch  "Switch"         { channel="leapmotion:controller:1:gesture" }
 Color  RGBLight    "RGB Light"      { channel="leapmotion:controller:1:gesture" }
-Dimmer DimmedLight "Dimmer [%d %%]" { channel="leapmotion:controller:1:gesture"[profile="leapmotion:dimmer", mode="fingers"] } 
+Dimmer DimmedLight "Dimmer [%d %%]" { channel="leapmotion:controller:1:gesture"[profile="leapmotion:dimmer", mode="fingers"] }
 ```

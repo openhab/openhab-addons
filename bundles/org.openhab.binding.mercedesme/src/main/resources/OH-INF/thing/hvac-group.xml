@@ -13,7 +13,9 @@
 			<channel id="zone" typeId="zone-hvac"/>
 			<channel id="temperature" typeId="temperature-hvac"/>
 			<channel id="active" typeId="active-hvac"/>
+			<channel id="ac-status" typeId="ac-status"/>
 			<channel id="aux-heat" typeId="aux-heat"/>
+			<channel id="aux-status" typeId="aux-status"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -10,11 +10,11 @@ The Rego heat pump binding supports:
 The Rego 6xx controllers family is used in many heat pumps such as IVT/Bosch/Autotherm/Carrier and others.
 
 Rego 6xx unit contain an interface marked as service.
-Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:  
+Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:
 
-2 - RxD  
-3 - TxD  
-4 - +5V  
+2 - RxD
+3 - TxD
+4 - +5V
 5 - GND
 
 Serial communication is using 19200 bps, 8 bit, no parity, 1 stop bit.

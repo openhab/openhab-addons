@@ -66,7 +66,7 @@ The following windmill names are supported:
 
 ## Example
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Bridge windcentrale:account:demo-account [ username="johndoe@acme.com", password="Mf!BU45LTF6X2Cf36zxt" ] {
@@ -75,7 +75,7 @@ Bridge windcentrale:account:demo-account [ username="johndoe@acme.com", password
 }
 ```
 
-### demo.items
+### `demo.items` Example
 
 ```java
 Group                 gReiger                "Windcentrale Reiger"

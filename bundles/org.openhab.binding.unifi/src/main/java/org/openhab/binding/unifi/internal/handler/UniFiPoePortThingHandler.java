@@ -89,7 +89,8 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
         } else {
             final String channelConfigPoeEnableMode = (String) channel.getConfiguration()
                     .get(CHANNEL_ENABLE_PARAMETER_MODE);
-            poeEnableMode = channelConfigPoeEnableMode.isBlank() ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
+            poeEnableMode = channelConfigPoeEnableMode == null || channelConfigPoeEnableMode.isBlank()
+                    ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
                     : channelConfigPoeEnableMode;
             return true;
         }
@@ -139,7 +140,7 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
         return state;
     }
 
-    private <Q extends Quantity<Q>> State safeDouble(final String value, final Unit<Q> unit) {
+    private <Q extends Quantity<Q>> State safeDouble(@Nullable final String value, final Unit<Q> unit) {
         try {
             return value == null ? UnDefType.UNDEF : QuantityType.valueOf(Double.parseDouble(value), unit);
         } catch (final NumberFormatException e) {

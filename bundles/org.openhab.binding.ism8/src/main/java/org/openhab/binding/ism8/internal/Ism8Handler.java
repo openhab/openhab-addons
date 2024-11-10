@@ -177,7 +177,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     return true;
                 }
             } else {
-                logger.debug("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}", channel.getUID(), id,
+                logger.trace("Ism8 channel: {} and DataPoint do not have a matching Id: {} vs {}", channel.getUID(), id,
                         dataPoint.getId());
             }
         } catch (NumberFormatException e) {
@@ -193,7 +193,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         for (Channel channel : getThing().getChannels()) {
             if (channel.getConfiguration().containsKey(CHANNEL_CONFIG_ID)) {
                 if (updateChannel(channel, dataPoint)) {
-                    break;
+                    return;
                 }
             }
         }

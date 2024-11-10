@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * Abstract WiFi LED driver.
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
- * @author Ries van Twisk
+ * @author Stefan Endrullis - Improvements
+ * @author Ries van Twisk - Improvements
  */
 public abstract class AbstractWiFiLEDDriver {
 
@@ -44,6 +44,18 @@ public abstract class AbstractWiFiLEDDriver {
     public enum Driver {
         CLASSIC,
         FADING
+    }
+
+    public enum LevelWriteMode {
+        ALL((byte) 0x00),
+        COLORS((byte) 0xF0),
+        WHITES((byte) 0x0F);
+
+        public final byte byteValue;
+
+        private LevelWriteMode(byte byteValue) {
+            this.byteValue = byteValue;
+        }
     }
 
     public static final Integer DEFAULT_PORT = 5577;
@@ -199,11 +211,15 @@ public abstract class AbstractWiFiLEDDriver {
     }
 
     protected byte[] getBytesForColor(byte r, byte g, byte b, byte w, byte w2) {
+        return getBytesForColor(r, g, b, w, w2, LevelWriteMode.ALL);
+    }
+
+    protected byte[] getBytesForColor(byte r, byte g, byte b, byte w, byte w2, LevelWriteMode writeMode) {
         byte[] bytes;
         if (protocol == Protocol.LD382 || protocol == Protocol.LD382A) {
-            bytes = new byte[] { 0x31, r, g, b, w, 0x00 };
+            bytes = new byte[] { 0x31, r, g, b, w, writeMode.byteValue };
         } else if (protocol == Protocol.LD686) {
-            bytes = new byte[] { 0x31, r, g, b, w, w2, 0x00 };
+            bytes = new byte[] { 0x31, r, g, b, w, w2, writeMode.byteValue };
         } else {
             throw new UnsupportedOperationException("Protocol " + protocol + " not yet implemented");
         }

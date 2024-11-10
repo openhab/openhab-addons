@@ -1,4 +1,4 @@
-# LG TV control using serial protocol
+# LG TV Serial Binding
 
 This binding can send some commands typically used by LG LCD TVs (and some used by projectors).
 

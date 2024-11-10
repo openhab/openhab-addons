@@ -66,11 +66,15 @@ public class MeterValue<Q extends Quantity<Q>> {
     @Override
     public int hashCode() {
         final int prime = 31;
+        final String status = this.status;
+        final Unit<? extends Q> unit = this.unit;
+        final String value = this.value;
+
         int result = 1;
-        result = prime * result + ((obis == null) ? 0 : obis.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        result = prime * result + obis.hashCode();
+        result = prime * result + (status == null ? 0 : status.hashCode());
+        result = prime * result + (unit == null ? 0 : unit.hashCode());
+        result = prime * result + value.hashCode();
         return result;
     }
 
@@ -90,6 +94,7 @@ public class MeterValue<Q extends Quantity<Q>> {
         if (!obis.equals(other.obis)) {
             return false;
         }
+        String status = this.status;
         if (status == null) {
             if (other.status != null) {
                 return false;
@@ -97,6 +102,7 @@ public class MeterValue<Q extends Quantity<Q>> {
         } else if (!status.equals(other.status)) {
             return false;
         }
+        Unit<? extends Q> unit = this.unit;
         if (unit == null) {
             if (other.unit != null) {
                 return false;

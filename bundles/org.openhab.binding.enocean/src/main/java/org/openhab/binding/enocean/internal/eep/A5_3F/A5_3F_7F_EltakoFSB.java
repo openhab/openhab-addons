@@ -67,7 +67,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
             } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
                 setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => move completely down
-            } else if (channelState != null) {
+            } else {
                 PercentType current = channelState.as(PercentType.class);
                 if (current != null) {
                     if (current.intValue() != percentCommand.intValue()) {

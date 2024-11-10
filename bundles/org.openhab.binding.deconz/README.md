@@ -288,7 +288,7 @@ Number:Dimensionless    Livingroom_Thermostat_ValvePosition      "Thermostat Val
 Contact                 Livingroom_Thermostat_WindowOpen         "Thermostat Window Open [%s]"                        { channel="deconz:thermostat:homeserver:livingroom-thermostat:windowopen" }
 Switch                  Livingroom_Thermostat_Locked             "Thermostat Locked [%s]"                             { channel="deconz:thermostat:homeserver:livingroom-thermostat:locked" }
 String                  Livingroom_Thermostat_Mode               "Thermostat Mode [%s]"                               { channel="deconz:thermostat:homeserver:livingroom-thermostat:mode" }
-Dimmer                  Livingroom_Ceiling                       "Livingroom Ceiling [%d]"            <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }                 
+Dimmer                  Livingroom_Ceiling                       "Livingroom Ceiling [%d]"            <light>         { channel="deconz:dimmablelight:homeserver:livingroom-ceiling:brightness" }
 Color                   Livingroom                               "Livingroom Light Control"                           { channel="deconz:lightgroup:homeserver:livingroom:color" }
 Switch                  Entrance_Door                            "Doorlock"                                           { channel="deconz:doorlock:homeserver:entrance-door:lock" }
 String                  Entrance_Siren                           "Siren [%s]"                         <alarm>         { channel="deconz:warningdevice:homeserver:entrance-siren:alert" }

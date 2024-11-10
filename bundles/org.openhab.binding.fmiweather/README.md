@@ -2,8 +2,12 @@
 
 This binding integrates to [the Finnish Meteorological Institute (FMI) Open Data API](https://en.ilmatieteenlaitos.fi/open-data).
 
-Binding provides access to weather observations from FMI weather stations and [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models) forecasts.
+The binding provides access to weather observations from FMI weather stations and FMI weather forecasts.
 Forecast covers "northern Europe" (Finland, Baltics, Scandinavia, some parts of surrounding countries), see [coverage map in the documentation](https://en.ilmatieteenlaitos.fi/weather-forecast-models).
+The binding supports two different forecast queries:
+
+- [HARMONIE weather forecast model](https://en.ilmatieteenlaitos.fi/weather-forecast-models), which is one of the weather models that meteorologists use in their work.
+- An edited query providing the official FMI forecast, which is often more accurate since it's edited by meteorologists who combine several different weather models and their experience to produce the official forecast.
 
 ![example of things](doc/images/fmi-example-things.png)
 
@@ -28,23 +32,24 @@ The binding automatically discovers weather stations and forecasts for nearby pl
 
 ## Thing Configuration
 
-### `observation` thing configuration
+### `observation` Thing Configuration
 
 | Parameter | Type | Required | Description                                                                                                                                                                                                                                                                                                                                                         | Example                              |
 | --------- | ---- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `fmisid`  | text | ✓        | FMI Station ID. You can FMISID of see all weathers stations at [FMI web site](https://en.ilmatieteenlaitos.fi/observation-stations?p_p_id=stationlistingportlet_WAR_fmiwwwweatherportlets&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-4&p_p_col_count=1&_stationlistingportlet_WAR_fmiwwwweatherportlets_stationGroup=WEATHER#station-listing) | `"852678"` for Espoo Nuuksio station |
 
-### `forecast` thing configuration
+### `forecast` Thing Configuration
 
-| Parameter  | Type | Required | Description                                                                                          | Example                           |
-| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | --------------------------------- |
+| Parameter  | Type | Required | Description                                                                                          | Example                               |
+| ---------- | ---- | -------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `location` | text | ✓        | Latitude longitude location for the forecast. The parameter is given in format `LATITUDE,LONGITUDE`. | `"60.192059, 24.945831"` for Helsinki |
+| `query`    | text |          | Stored query for official FMI forecast, either `harmonie` or `edited`.                               |                                       |
 
 ## Channels
 
 Observation and forecast things provide slightly different details on weather.
 
-### `observation` thing channels
+### `observation` Thing Channels
 
 Observation channels are grouped in single group, `current`.
 
@@ -67,11 +72,12 @@ You can check the exact observation time by using the `time` channel.
 
 To refer to certain channel, use the normal convention `THING_ID:GROUP_ID#CHANNEL_ID`, e.g. `fmiweather:observation:station_874863_Espoo_Tapiola:current#temperature`.
 
-### `forecast` thing channels
+### `forecast` Thing Channels
 
 Forecast has multiple channel groups, one for each forecasted time. The groups are named as follows:
 
-- `forecastNow`: Forecasted weather for the current time
+- `forecast`: Forecasted weather (with time series support)
+- `forecastNow`: Forecasted weather for the current time (deprecated, please use `forecast` instead)
 - `forecastHours01`: Forecasted weather for 1 hours from now
 - `forecastHours02`: Forecasted weather for 2 hours from now
 - etc.
@@ -115,7 +121,7 @@ Thing fmiweather:forecast:forecast_Helsinki "Helsinki Forecast" [location="60.19
 
 `observation.items`:
 
-<!-- 
+<!--
 # Generated mostly with following ugly python snippet.
 # fmiweather:observation:station_Helsinki_Kumpula here is thing with all channels linked
 
@@ -125,7 +131,7 @@ with open(fname) as f: j = json.load(f)
 observation = j['fmiweather:observation:station_Helsinki_Kumpula']
 for channel in observation['value']['channels']:
     channel_id = ':'.join(channel['uid']['segments'])
-    label = channel['label']    
+    label = channel['label']
     item_type = channel['acceptedItemType']
     if 'clouds' in channel_id:
         unit = '%.0f %unit%'
@@ -138,9 +144,9 @@ for channel in observation['value']['channels']:
     for item_name_part in channel_name.split('-'):
         item_name += item_name_part[0].upper()
         item_name += item_name_part[1:]
-    
+
     print(('{item_type} {item_name} ' +
-     '"{label} [{unit}]" {{ channel="{channel_id}" }}').format(**locals()))    
+     '"{label} [{unit}]" {{ channel="{channel_id}" }}').format(**locals()))
 -->
 
 ```java
@@ -160,7 +166,7 @@ Number HelsinkiPresentWeatherCode "Prevailing weather [%d]" <sun_clouds> { chann
 
 `forecast.items`:
 
-<!-- 
+<!--
 # Generated mostly with following ugly python snippet.
 # fmiweather:forecast:forecast_Helsinki here is thing with channels linked in 'simple mode'
 # on OH3, authentication can be disabled by running "bundle:stop org.openhab.core.io.rest.auth" in the Karaf console
@@ -177,13 +183,13 @@ for forecast in j:
         break
 else:
     raise ValueError('thing not found!')
-    
+
 prev_group = 'None'
 for channel in forecast['channels']:
-    group_name, channel_name = channel['uid'].rsplit(':', 1)[-1].split('#')    
+    group_name, channel_name = channel['uid'].rsplit(':', 1)[-1].split('#')
     channel_id = channel['uid']
     label = channel['label'] + group_name.replace('forecast', ' ').replace('Hours', 'hour ')
-    
+
     item_type = channel['itemType']
     if 'cloud' in channel_id:
         unit = '%.0f %unit%'
@@ -191,13 +197,13 @@ for channel in forecast['channels']:
         unit = '%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS'
     else:
         unit = '%.1f %unit%'
-    
+
     item_name = 'Helsinki'
     item_name += group_name[0].upper() + group_name[1:]
     for item_name_part in channel_name.split('-'):
         item_name += item_name_part[0].upper()
-        item_name += item_name_part[1:]        
-    
+        item_name += item_name_part[1:]
+
     icon = ''
     if icon == '': icon = '<wind>' if 'wind' in item_name.lower() else ''
     if icon == '': icon = '<humidity>' if 'humidity' in item_name.lower() else ''
@@ -206,14 +212,13 @@ for channel in forecast['channels']:
     if icon == '': icon = '<time>' if 'time' in item_name.lower() else ''
     if icon == '': icon = '<temperature>' if 'tempe' in item_name.lower() else ''
     if icon == '': icon = '<rain>' if 'precipi' in item_name.lower() else ''
-    
+
     if prev_group != group_name:
         print('')
     prev_group = group_name
-        
-    
+
     print(('{item_type} {item_name} ' +
-     '"{label} [{unit}]" {icon} {{ channel="{channel_id}" }}').format(**locals()))       
+     '"{label} [{unit}]" {icon} {{ channel="{channel_id}" }}').format(**locals()))
 -->
 
 ```java
@@ -811,7 +816,7 @@ sitemap fmi_weather label="FMI Weather" {
         Text item=HelsinkiForecastNowTotalCloudCover
         Text item=HelsinkiForecastNowWeatherId
     }
-    
+
     Frame label="Forecast 01 hours" {
         Text item=HelsinkiForecastHours01Time
         Text item=HelsinkiForecastHours01Temperature

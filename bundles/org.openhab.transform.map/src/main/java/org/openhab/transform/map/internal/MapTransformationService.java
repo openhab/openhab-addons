@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +62,9 @@ public class MapTransformationService
     private static final String PROFILE_CONFIG_URI = "profile:transform:MAP";
     private static final String CONFIG_PARAM_FUNCTION = "function";
     private static final Set<String> SUPPORTED_CONFIGURATION_TYPES = Set.of("map");
-    private static final Pattern INLINE_MAP_CONFIG_PATTERN = Pattern.compile("\\s*\\|(?<map>.+)", Pattern.DOTALL);
+    private static final String INLINE_MAP_DEFAULT_DELIMITER = ";";
+    private static final Pattern INLINE_MAP_CONFIG_PATTERN = Pattern
+            .compile("\\s*\\|(?:\\?delimiter=(?<delimiter>\\W+?))?(?<map>.+)", Pattern.DOTALL);
 
     private final Logger logger = LoggerFactory.getLogger(MapTransformationService.class);
     private final TransformationRegistry transformationRegistry;
@@ -87,9 +91,9 @@ public class MapTransformationService
             properties = cachedInlineMap.computeIfAbsent(function, f -> {
                 Properties props = new Properties();
                 String map = matcher.group("map").trim();
-                if (!map.contains("\n")) {
-                    map = map.replace(";", "\n");
-                }
+                String delimiter = Objects.requireNonNull(Optional.ofNullable(matcher.group("delimiter"))
+                        .map(String::trim).orElse(INLINE_MAP_DEFAULT_DELIMITER));
+                map = map.replace(delimiter, "\n");
                 try {
                     props.load(new StringReader(map));
                     logger.trace("Parsed inline map configuration '{}'", props);

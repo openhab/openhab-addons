@@ -62,13 +62,15 @@ class EmotivaXmlUtilsTest extends AbstractDTOTestBase {
     @Test
     void testMarshallObjectWithoutXmlElements() {
         String commands = xmlUtils.marshallEmotivaDTO("");
+
         assertThat(commands, is(""));
     }
 
     @Test
     void testMarshallNoValueDTO() {
-        EmotivaNotifyWrapper dto = new EmotivaNotifyWrapper();
+        var dto = new EmotivaNotifyWrapper();
         String xmlAsString = xmlUtils.marshallEmotivaDTO(dto);
+
         assertThat(xmlAsString, not(containsString("<emotivaNotify>")));
         assertThat(xmlAsString, containsString("<emotivaNotify/>"));
     }

@@ -39,7 +39,7 @@ the regex transformation can be used to extract the value to display it on the l
 
 **.items**
 
-```csv
+```java
 String  Temperature_str "Temperature [REGEX(.*=(\\d*\\.\\d*).*):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
@@ -62,17 +62,17 @@ Thus the value `44.0` would be saved as a number.
 
 **.rules**
 
-```php
+```java
 rule "Convert String to Item Number"
-  when
+when
     Item Temperature_str changed
- then
+then
     // use the transformation service to retrieve the value
     val newValue = transform("REGEX", ".*=(\\d*\\.\\d*).*", Temperature_str.state.toString)
 
     // post the new value to the Number Item
     Temperature.postUpdate( newValue )
- end
+end
 ```
 
 Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as value for comparison.

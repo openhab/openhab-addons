@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.gree.internal;
 
+import static org.openhab.binding.gree.internal.GreeBindingConstants.*;
+
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,10 +34,11 @@ public class GreeConfiguration {
      * of the temperature sensor.
      */
     public BigDecimal currentTemperatureOffset = new BigDecimal(0.0);
+    public EncryptionTypes encryptionType = EncryptionTypes.UNKNOWN;
 
     @Override
     public String toString() {
         return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh
-                + ", currentTemperatureOffset=" + currentTemperatureOffset;
+                + ", currentTemperatureOffset=" + currentTemperatureOffset + ", encryptionType=" + encryptionType;
     }
 }

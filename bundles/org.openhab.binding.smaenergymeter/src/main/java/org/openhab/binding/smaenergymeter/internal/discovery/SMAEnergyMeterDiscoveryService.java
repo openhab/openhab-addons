@@ -79,7 +79,12 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService imp
             return;
         }
 
-        packetListener.addPayloadHandler(this);
+        try {
+            packetListener.addPayloadHandler(this);
+        } catch (IOException e) {
+            logger.warn("Could not start background discovery, unable to add PayloadHandler", e);
+            return;
+        }
         this.packetListener = packetListener;
     }
 

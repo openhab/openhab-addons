@@ -113,7 +113,6 @@ public class DeviceInformationXML implements DeviceInformation {
 
             XMLConstants.FEATURE_BY_YNC_TAG
                     .forEach((name, feature) -> checkFeature(featureNode, name, feature, state.features));
-
         } else {
             // on older models (RX-V3900) the Feature_Existence element does not exist
 

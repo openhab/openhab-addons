@@ -57,7 +57,7 @@ After the ojcloud bridge is successfully initialized all thermostats will be dis
 
 This example shows how to configure the OJElecttronics binding.
 
-### demo.things
+### `demo.things` Example
 
 ```java
 Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {

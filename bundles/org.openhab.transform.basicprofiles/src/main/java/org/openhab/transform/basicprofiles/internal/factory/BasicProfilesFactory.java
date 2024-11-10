@@ -106,7 +106,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             .withSupportedChannelTypeUIDs(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_MOTION) //
             .build();
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
-            .newState(STATE_FILTER_UID, "Filter handler state updates based on any item state").build();
+            .newState(STATE_FILTER_UID, "State Filter").build();
 
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,

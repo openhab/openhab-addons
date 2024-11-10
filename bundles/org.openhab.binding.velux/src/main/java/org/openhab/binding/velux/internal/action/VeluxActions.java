@@ -55,7 +55,7 @@ public class VeluxActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.reboot.label", description = "@text/action.reboot.descr")
-    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean rebootBridge()
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean rebootBridge()
             throws IllegalStateException {
         logger.trace("rebootBridge(): action called");
         VeluxBridgeHandler bridgeHandler = this.bridgeHandler;
@@ -66,7 +66,7 @@ public class VeluxActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.moveRelative.label", description = "@text/action.moveRelative.descr")
-    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveRelative(
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveRelative(
             @ActionInput(name = "nodeId", label = "@text/action.node.label", description = "@text/action.node.descr") @Nullable String nodeId,
             @ActionInput(name = "relativePercent", label = "@text/action.relative.label", description = "@text/action.relative.descr") @Nullable String relativePercent)
             throws NumberFormatException, IllegalStateException, IllegalArgumentException {
@@ -130,7 +130,7 @@ public class VeluxActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.moveMainAndVane.label", description = "@text/action.moveMainAndVane.descr")
-    public @ActionOutput(name = "running", type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveMainAndVane(
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/action.run.label", description = "@text/action.run.descr") Boolean moveMainAndVane(
             @ActionInput(name = "thingName", label = "@text/action.thing.label", description = "@text/action.thing.descr") @Nullable String thingName,
             @ActionInput(name = "mainPercent", label = "@text/action.main.label", description = "@text/action.main.descr") @Nullable Integer mainPercent,
             @ActionInput(name = "vanePercent", label = "@text/action.vane.label", description = "@text/action.vane.descr") @Nullable Integer vanePercent)

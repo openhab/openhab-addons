@@ -28,7 +28,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -89,7 +88,8 @@ public enum Conformity {
                                     }
                                 }
                             } catch (Exception e) {
-                                logger.warn("Failed to check negate status for obis {}", obis, e);
+                                LoggerFactory.getLogger(Conformity.class)
+                                        .warn("Failed to check negate status for obis {}", obis, e);
                             }
                         }
                     }
@@ -98,8 +98,6 @@ public enum Conformity {
             });
         }
     };
-
-    private static final Logger logger = LoggerFactory.getLogger(Conformity.class);
 
     /**
      * Applies the overwritten negation setting for the channel.

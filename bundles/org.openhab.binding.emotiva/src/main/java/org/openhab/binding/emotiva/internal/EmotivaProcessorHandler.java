@@ -20,17 +20,13 @@ import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.getMenuP
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.updateProgress;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumeDecibelToPercentage;
 import static org.openhab.binding.emotiva.internal.EmotivaCommandHelper.volumePercentageToDecibel;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.band_am;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.band_fm;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.channel_1;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.none;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.power_on;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.STRING;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaPropertyStatus.NOT_VALID;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersion.protocolFromConfig;
+import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.keepAlive;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.noSubscriptionToChannel;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_band;
-import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_channel;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -38,15 +34,14 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -60,7 +55,9 @@ import org.openhab.binding.emotiva.internal.dto.EmotivaAckDTO;
 import org.openhab.binding.emotiva.internal.dto.EmotivaBarNotifyDTO;
 import org.openhab.binding.emotiva.internal.dto.EmotivaBarNotifyWrapper;
 import org.openhab.binding.emotiva.internal.dto.EmotivaControlDTO;
+import org.openhab.binding.emotiva.internal.dto.EmotivaMenuCol;
 import org.openhab.binding.emotiva.internal.dto.EmotivaMenuNotifyDTO;
+import org.openhab.binding.emotiva.internal.dto.EmotivaMenuRow;
 import org.openhab.binding.emotiva.internal.dto.EmotivaNotifyDTO;
 import org.openhab.binding.emotiva.internal.dto.EmotivaNotifyWrapper;
 import org.openhab.binding.emotiva.internal.dto.EmotivaPropertyDTO;
@@ -74,6 +71,7 @@ import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaUdpResponse;
 import org.openhab.binding.emotiva.internal.protocol.EmotivaXmlUtils;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -88,6 +86,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,21 +101,17 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EmotivaProcessorHandler.class);
 
-    private final Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
-
     private final EmotivaConfiguration config;
 
     /**
      * Emotiva devices have trouble with too many subscriptions in same request, so subscriptions are dividing into
-     * those general group channels, and the rest.
+     * groups.
      */
-    private final EmotivaSubscriptionTags[] generalSubscription = EmotivaSubscriptionTags.generalChannels();
-    private final EmotivaSubscriptionTags[] nonGeneralSubscriptions = EmotivaSubscriptionTags.nonGeneralChannels();
+    private final List<EmotivaSubscriptionTags> generalSubscription = EmotivaSubscriptionTags.channels("general");
+    private final List<EmotivaSubscriptionTags> mainZoneSubscriptions = EmotivaSubscriptionTags.channels("main-zone");
+    private final List<EmotivaSubscriptionTags> zone2Subscriptions = EmotivaSubscriptionTags.channels("zone2");
 
-    private final EnumMap<EmotivaControlCommands, String> sourcesMainZone;
-    private final EnumMap<EmotivaControlCommands, String> sourcesZone2;
-    private final EnumMap<EmotivaSubscriptionTags, String> modes;
-    private final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
+    private final EmotivaProcessorState state = new EmotivaProcessorState();
     private final EmotivaTranslationProvider i18nProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -141,46 +136,11 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         this.i18nProvider = i18nProvider;
         this.config = getConfigAs(EmotivaConfiguration.class);
         this.retryConnectInMinutes = config.retryConnectInMinutes;
-
-        sourcesMainZone = new EnumMap<>(EmotivaControlCommands.class);
-        commandMaps.put(MAP_SOURCES_MAIN_ZONE, sourcesMainZone);
-
-        sourcesZone2 = new EnumMap<>(EmotivaControlCommands.class);
-        commandMaps.put(MAP_SOURCES_ZONE_2, sourcesZone2);
-
-        EnumMap<EmotivaControlCommands, String> channels = new EnumMap<>(
-                Map.ofEntries(Map.entry(channel_1, channel_1.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_2, EmotivaControlCommands.channel_2.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_3, EmotivaControlCommands.channel_3.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_4, EmotivaControlCommands.channel_4.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_5, EmotivaControlCommands.channel_5.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_6, EmotivaControlCommands.channel_6.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_7, EmotivaControlCommands.channel_7.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_8, EmotivaControlCommands.channel_8.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_9, EmotivaControlCommands.channel_9.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_10, EmotivaControlCommands.channel_10.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_11, EmotivaControlCommands.channel_11.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_12, EmotivaControlCommands.channel_12.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_13, EmotivaControlCommands.channel_13.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_14, EmotivaControlCommands.channel_14.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_15, EmotivaControlCommands.channel_15.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_16, EmotivaControlCommands.channel_16.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_17, EmotivaControlCommands.channel_17.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_18, EmotivaControlCommands.channel_18.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_19, EmotivaControlCommands.channel_19.getLabel()),
-                        Map.entry(EmotivaControlCommands.channel_20, EmotivaControlCommands.channel_20.getLabel())));
-        commandMaps.put(tuner_channel.getEmotivaName(), channels);
-
-        EnumMap<EmotivaControlCommands, String> bands = new EnumMap<>(
-                Map.of(band_am, band_am.getLabel(), band_fm, band_fm.getLabel()));
-        commandMaps.put(tuner_band.getEmotivaName(), bands);
-
-        modes = new EnumMap<>(EmotivaSubscriptionTags.class);
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initialize: '{}'", getThing().getUID());
+        logger.debug("Initialize: '{}'", thing.getUID());
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/message.processor.connecting");
         if (config.controlPort < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -208,12 +168,11 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private synchronized void connect() {
         final EmotivaConfiguration localConfig = config;
         try {
-            final EmotivaUdpReceivingService notifyListener = new EmotivaUdpReceivingService(localConfig.notifyPort,
-                    localConfig, scheduler);
+            final var notifyListener = new EmotivaUdpReceivingService(localConfig.notifyPort, localConfig, scheduler);
             this.notifyListener = notifyListener;
             notifyListener.connect(this::handleStatusUpdate, true);
 
-            final EmotivaUdpSendingService sendConnector = new EmotivaUdpSendingService(localConfig, scheduler);
+            final var sendConnector = new EmotivaUdpSendingService(localConfig, scheduler);
             sendingService = sendConnector;
             sendConnector.connect(this::handleStatusUpdate, true);
 
@@ -222,7 +181,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 try {
                     logger.debug("Connection attempt '{}'", attempt);
                     sendConnector.sendSubscription(generalSubscription, config);
-                    sendConnector.sendSubscription(nonGeneralSubscriptions, config);
+                    sendConnector.sendSubscription(mainZoneSubscriptions, config);
+                    sendConnector.sendSubscription(zone2Subscriptions, config);
                 } catch (IOException e) {
                     // network or socket failure, also wait 2 sec and try again
                 }
@@ -234,13 +194,13 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
             if (udpSenderActive) {
                 updateStatus(ThingStatus.ONLINE);
+                state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
+                startPollingKeepAlive();
 
-                final EmotivaUdpReceivingService menuListenerConnector = new EmotivaUdpReceivingService(
-                        localConfig.menuNotifyPort, localConfig, scheduler);
+                final var menuListenerConnector = new EmotivaUdpReceivingService(localConfig.menuNotifyPort,
+                        localConfig, scheduler);
                 this.menuNotifyListener = menuListenerConnector;
                 menuListenerConnector.connect(this::handleStatusUpdate, true);
-
-                startPollingKeepAlive();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/message.processor.connection.failed");
@@ -264,55 +224,86 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     /**
-     * Starts a polling job for connection to th device, adds the
+     * Starts a polling job for connection to the device, adds the
      * {@link EmotivaBindingConstants#DEFAULT_KEEP_ALIVE_IN_MILLISECONDS} as a time buffer for checking, to avoid
      * flapping state or minor network issues.
      */
     private void startPollingKeepAlive() {
         final ScheduledFuture<?> localRefreshJob = this.pollingJob;
         if (localRefreshJob == null || localRefreshJob.isCancelled()) {
-            logger.debug("Start polling");
+            Number keepAliveConfig = state.getChannel(EmotivaSubscriptionTags.keepAlive)
+                    .filter(channel -> channel instanceof Number).map(keepAlive -> (Number) keepAlive)
+                    .orElse(new DecimalType(config.keepAlive));
 
-            int delay = stateMap.get(EmotivaSubscriptionTags.keepAlive.name()) != null
-                    && stateMap.get(EmotivaSubscriptionTags.keepAlive.name()) instanceof Number keepAlive
-                            ? keepAlive.intValue()
-                            : config.keepAlive;
-            pollingJob = scheduler.scheduleWithFixedDelay(this::checkKeepAliveTimestamp,
-                    delay + DEFAULT_KEEP_ALIVE_IN_MILLISECONDS, delay + DEFAULT_KEEP_ALIVE_IN_MILLISECONDS,
+            // noinspection ConstantConditions
+            long delay = keepAliveConfig == null
+                    ? DEFAULT_KEEP_ALIVE_IN_MILLISECONDS + DEFAULT_KEEP_ALIVE_IN_MILLISECONDS
+                    : keepAliveConfig.longValue() + DEFAULT_KEEP_ALIVE_IN_MILLISECONDS;
+            pollingJob = scheduler.scheduleWithFixedDelay(this::checkKeepAliveTimestamp, delay, delay,
                     TimeUnit.MILLISECONDS);
+            logger.debug("Started scheduled job to check connection to device, with an {}ms internal", delay);
         }
     }
 
     private void checkKeepAliveTimestamp() {
-        if (ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
-            State state = stateMap.get(LAST_SEEN_STATE_NAME);
-            if (state instanceof Number value) {
-                Instant lastKeepAliveMessageTimestamp = Instant.ofEpochSecond(value.longValue());
-                Instant deviceGoneGracePeriod = Instant.now().minus(config.keepAlive, ChronoUnit.MILLIS)
-                        .minus(DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS, ChronoUnit.MILLIS);
-                if (lastKeepAliveMessageTimestamp.isBefore(deviceGoneGracePeriod)) {
-                    logger.debug(
-                            "Last KeepAlive message received '{}', over grace-period by '{}', consider '{}' gone, setting OFFLINE and disposing",
-                            lastKeepAliveMessageTimestamp,
-                            Duration.between(lastKeepAliveMessageTimestamp, deviceGoneGracePeriod),
-                            thing.getThingTypeUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/message.processor.connection.error.keep-alive");
-                    // Connection lost, avoid sending unsubscription messages
-                    udpSenderActive = false;
-                    disconnect();
-                    scheduleConnectRetry(retryConnectInMinutes);
-                }
+        Instant lastKeepAliveTimestamp = state.getLastSeen();
+
+        Instant deviceGoneGracePeriod = Instant.now().minus(config.keepAlive, ChronoUnit.MILLIS)
+                .minus(DEFAULT_KEEP_ALIVE_CONSIDERED_LOST_IN_MILLISECONDS, ChronoUnit.MILLIS);
+        boolean isPastGradePeriod = lastKeepAliveTimestamp.isBefore(deviceGoneGracePeriod);
+
+        if (ThingStatus.ONLINE.equals(thing.getStatusInfo().getStatus())) {
+            if (isPastGradePeriod) {
+                logger.debug(
+                        "Keep-alive job for '{}': status={}, last-seen was '{}', past grace-period by '{}', scheduling connection retry",
+                        thing.getUID(), thing.getStatusInfo().getStatus(), lastKeepAliveTimestamp,
+                        Duration.between(lastKeepAliveTimestamp, deviceGoneGracePeriod));
+                setOfflineAndScheduleConnectRetry();
             }
-        } else if (ThingStatus.OFFLINE.equals(getThing().getStatusInfo().getStatus())) {
-            logger.debug("Keep alive pool job, '{}' is '{}'", getThing().getThingTypeUID(),
-                    getThing().getStatusInfo().getStatus());
+        } else {
+            try {
+                ScheduledFuture<?> localConnectRetryJob = connectRetryJob;
+                if (localConnectRetryJob == null || localConnectRetryJob.isCancelled()) {
+                    logger.debug(
+                            "Keep-alive job for '{}': status={}, no active retry job, scheduling new connection retry",
+                            thing.getUID(), thing.getStatusInfo().getStatus());
+                    setOfflineAndScheduleConnectRetry();
+                } else {
+                    Duration currentJobDelay = Duration.of(localConnectRetryJob.getDelay(TimeUnit.SECONDS),
+                            ChronoUnit.SECONDS);
+                    Duration defaultJobDelay = Duration.of(DEFAULT_RETRY_INTERVAL_MINUTES, ChronoUnit.MINUTES);
+                    if (defaultJobDelay.minus(currentJobDelay).isNegative()) {
+                        logger.debug(
+                                "Keep-alive job for '{}': status={}, retry job not working, canceling and scheduling new connection retry",
+                                thing.getUID(), thing.getStatusInfo().getStatus());
+
+                        // Kill current connection retry job and schedule a new one
+                        localConnectRetryJob.cancel(true);
+                        setOfflineAndScheduleConnectRetry();
+                    } else {
+                        logger.debug("Keep-alive job for '{}': status={}, retry job still scheduled, nothing to do",
+                                thing.getUID(), thing.getStatusInfo().getStatus());
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Keep-alive job for '{}': status={}, failed checking connection retry job with '{}'",
+                        thing.getUID(), thing.getStatusInfo().getStatus(), e.getMessage());
+            }
         }
+    }
+
+    private void setOfflineAndScheduleConnectRetry() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/message.processor.connection.error.keep-alive");
+        // Connection lost, avoid sending unsubscription messages
+        udpSenderActive = false;
+        disconnect();
+        scheduleConnectRetry(retryConnectInMinutes);
     }
 
     private void handleStatusUpdate(EmotivaUdpResponse emotivaUdpResponse) {
         udpSenderActive = true;
-        logger.debug("Received data from '{}' with length '{}'", emotivaUdpResponse.ipAddress(),
+        logger.trace("Received data from '{}' with length '{}'", emotivaUdpResponse.ipAddress(),
                 emotivaUdpResponse.answer().length());
 
         Object object;
@@ -325,10 +316,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             return;
         }
 
-        if (object instanceof EmotivaAckDTO answerDto) {
+        if (object instanceof EmotivaAckDTO) {
             // Currently not supported to revert a failed command update, just used for logging for now.
-            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(), answerDto);
-
+            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(),
+                    emotivaUdpResponse.answer());
         } else if (object instanceof EmotivaBarNotifyWrapper answerDto) {
             logger.trace("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
                     emotivaUdpResponse.answer());
@@ -365,13 +356,15 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             logger.trace("Processing received '{}' with '{}'", EmotivaSubscriptionResponse.class.getSimpleName(),
                     emotivaUdpResponse.answer());
             // Populates static input sources, except input
-            sourcesMainZone.putAll(EmotivaControlCommands.getCommandsFromType(EmotivaCommandType.SOURCE_MAIN_ZONE));
-            sourcesMainZone.remove(EmotivaControlCommands.input);
-            commandMaps.put(MAP_SOURCES_MAIN_ZONE, sourcesMainZone);
+            EnumMap<EmotivaControlCommands, String> sourceMainZone = EmotivaControlCommands
+                    .getCommandsFromType(EmotivaCommandType.SOURCE_MAIN_ZONE);
+            sourceMainZone.remove(EmotivaControlCommands.input);
+            state.setSourcesMainZone(sourceMainZone);
 
-            sourcesZone2.putAll(EmotivaControlCommands.getCommandsFromType(EmotivaCommandType.SOURCE_ZONE2));
-            sourcesZone2.remove(EmotivaControlCommands.zone2_input);
-            commandMaps.put(MAP_SOURCES_ZONE_2, sourcesZone2);
+            EnumMap<EmotivaControlCommands, String> sourcesZone2 = EmotivaControlCommands
+                    .getCommandsFromType(EmotivaCommandType.SOURCE_ZONE2);
+            sourcesZone2.remove(EmotivaControlCommands.input);
+            state.setSourcesZone2(sourcesZone2);
 
             if (answerDto.getProperties() == null) {
                 for (EmotivaNotifyDTO dto : xmlUtils.unmarshallToNotification(answerDto.getTags())) {
@@ -390,10 +383,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         String highlightValue = "";
 
         for (var row = 4; row <= 6; row++) {
-            var emotivaMenuRow = answerDto.getRow().get(row);
+            EmotivaMenuRow emotivaMenuRow = answerDto.getRow().get(row);
             logger.debug("Checking row '{}' with '{}' columns", row, emotivaMenuRow.getCol().size());
             for (var column = 0; column <= 2; column++) {
-                var emotivaMenuCol = emotivaMenuRow.getCol().get(column);
+                EmotivaMenuCol emotivaMenuCol = emotivaMenuRow.getCol().get(column);
                 String cellValue = "";
                 if (emotivaMenuCol.getValue() != null) {
                     cellValue = emotivaMenuCol.getValue();
@@ -410,7 +403,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                     highlightValue = cellValue;
                 }
 
-                var channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
+                String channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
                         getMenuPanelColumnLabel(column));
                 updateChannelState(channelName, new StringType(cellValue));
             }
@@ -420,7 +413,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     private void handleMenuNotifyProgressMessage(String progressBarTimeInSeconds) {
         try {
-            var seconds = Integer.parseInt(progressBarTimeInSeconds);
+            int seconds = Integer.parseInt(progressBarTimeInSeconds);
             for (var count = 0; seconds >= count; count++) {
                 updateChannelState(CHANNEL_MENU_DISPLAY_HIGHLIGHT,
                         new StringType(updateProgress(EmotivaCommandHelper.integerToPercentage(count))));
@@ -434,7 +427,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         logger.debug("Resetting Menu Panel Display");
         for (var row = 4; row <= 6; row++) {
             for (var column = 0; column <= 2; column++) {
-                var channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
+                String channelName = format("%s-%s-%s", CHANNEL_MENU_DISPLAY_PREFIX, getMenuPanelRowLabel(row),
                         getMenuPanelColumnLabel(column));
                 updateChannelState(channelName, new StringType(""));
             }
@@ -448,11 +441,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             try {
                 localSendingService.sendUpdate(tags, config);
             } catch (InterruptedIOException e) {
-                logger.debug("Interrupted during sending of EmotivaUpdate message to device '{}'",
-                        this.getThing().getThingTypeUID(), e);
+                logger.debug("Interrupted during sending of EmotivaUpdate message to device '{}'", thing.getUID(), e);
             } catch (IOException e) {
-                logger.error("Failed to send EmotivaUpdate message to device '{}'", this.getThing().getThingTypeUID(),
-                        e);
+                logger.error("Failed to send EmotivaUpdate message to device '{}'", thing.getUID(), e);
             }
         }
     }
@@ -479,7 +470,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     private void handleChannelUpdate(String emotivaSubscriptionName, String value, String visible, String status) {
-        logger.debug("Handling channel update for '{}' with value '{}'", emotivaSubscriptionName, value);
+        logger.trace("Subscription property '{}' with raw value '{}' received, start processing",
+                emotivaSubscriptionName, value);
 
         if (status.equals(NOT_VALID.name())) {
             logger.debug("Subscription property '{}' not present in device, skipping", emotivaSubscriptionName);
@@ -487,8 +479,17 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
 
         if ("None".equals(value)) {
-            logger.debug("No value present for channel {}, usually means a speaker is not enabled",
+            logger.debug(
+                    "Subscription property '{}' has no value, no update needed, usually means a speaker is not enabled",
                     emotivaSubscriptionName);
+            return;
+        }
+
+        if (keepAlive.name().equals(emotivaSubscriptionName)) {
+            state.updateLastSeen(ZonedDateTime.now(ZoneId.systemDefault()).toInstant());
+            logger.trace(
+                    "Subscription property '{}' with value '{}' mapped to last-seen for device '{}', value updated",
+                    keepAlive.name(), value.trim(), thing.getUID());
             return;
         }
 
@@ -501,7 +502,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
 
         if (noSubscriptionToChannel().contains(EmotivaSubscriptionTags.valueOf(emotivaSubscriptionName))) {
-            logger.debug("Initial subscription status update for {}, skipping, only want notifications",
+            logger.debug(
+                    "Subscription property '{}' is not mapped to a OH channel, no update needed, only used for logging",
                     emotivaSubscriptionName);
             return;
         }
@@ -511,38 +513,36 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             try {
                 subscriptionTag = EmotivaSubscriptionTags.valueOf(emotivaSubscriptionName);
             } catch (IllegalArgumentException e) {
-                logger.debug("Property '{}' could not be mapped subscription tag, skipping", emotivaSubscriptionName);
+                logger.debug("Subscription property '{}' could not be mapped to Emotiva property tag, skipping",
+                        emotivaSubscriptionName);
                 return;
             }
 
             if (subscriptionTag.getChannel().isEmpty()) {
-                logger.debug("Subscription property '{}' does not have a corresponding channel, skipping",
+                logger.debug("Subscription property '{}' does not have a corresponding OH channel, skipping",
                         emotivaSubscriptionName);
                 return;
             }
 
             String trimmedValue = value.trim();
-
-            logger.debug("Found subscription '{}' for '{}' and value '{}'", subscriptionTag, emotivaSubscriptionName,
-                    trimmedValue);
+            logger.trace("Subscription property '{}' with value '{}' mapped to OH channel '{}'", subscriptionTag,
+                    trimmedValue, subscriptionTag.getChannel());
 
             // Add/Update user assigned name for inputs
             if (subscriptionTag.getChannel().startsWith(CHANNEL_INPUT1.substring(0, CHANNEL_INPUT1.indexOf("-") + 1))
                     && "true".equals(visible)) {
-                logger.debug("Adding '{}' to dynamic source input list", trimmedValue);
-                sourcesMainZone.put(EmotivaControlCommands.matchToInput(subscriptionTag.name()), trimmedValue);
-                commandMaps.put(MAP_SOURCES_MAIN_ZONE, sourcesMainZone);
-
-                logger.debug("sources list is now {}", sourcesMainZone.size());
+                state.updateSourcesMainZone(EmotivaControlCommands.matchToInput(subscriptionTag.name()), trimmedValue);
+                logger.trace("Adding/Updating '{}' to OH channel '{}' state options, all options are now {}",
+                        trimmedValue, CHANNEL_SOURCE, state.getSourcesMainZone());
             }
 
             // Add/Update audio modes
             if (subscriptionTag.getChannel().startsWith(CHANNEL_MODE + "-") && "true".equals(visible)) {
                 String modeName = i18nProvider.getText("channel-type.emotiva.selected-mode.option."
                         + subscriptionTag.getChannel().substring(subscriptionTag.getChannel().indexOf("_") + 1));
-                logger.debug("Adding '{} ({})' from channel '{}' to dynamic mode list", trimmedValue, modeName,
-                        subscriptionTag.getChannel());
-                modes.put(EmotivaSubscriptionTags.fromChannelUID(subscriptionTag.getChannel()), trimmedValue);
+                logger.trace("Adding/Updating '{} ({})' from property '{}' to OH channel '{}' state options",
+                        trimmedValue, modeName, subscriptionTag.getName(), CHANNEL_MODE);
+                state.updateModes(EmotivaSubscriptionTags.fromChannelUID(subscriptionTag.getChannel()), trimmedValue);
             }
 
             findChannelDatatypeAndUpdateChannel(subscriptionTag.getChannel(), trimmedValue,
@@ -555,15 +555,15 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     private void findChannelDatatypeAndUpdateChannel(String channelName, String value, EmotivaDataType dataType) {
         switch (dataType) {
             case DIMENSIONLESS_DECIBEL -> {
-                var trimmedString = value.replaceAll("[ +]", "");
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, QuantityType.class.getSimpleName(),
-                        trimmedString);
+                String trimmedString = value.replaceAll("[ +]", "");
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, trimmedString,
+                        QuantityType.class.getSimpleName());
                 if (channelName.equals(CHANNEL_MAIN_VOLUME)) {
                     updateVolumeChannels(trimmedString, CHANNEL_MUTE, channelName, CHANNEL_MAIN_VOLUME_DB);
                 } else if (channelName.equals(CHANNEL_ZONE2_VOLUME)) {
                     updateVolumeChannels(trimmedString, CHANNEL_ZONE2_MUTE, channelName, CHANNEL_ZONE2_VOLUME_DB);
                 } else {
-                    if (trimmedString.equals("None")) {
+                    if ("None".equals(trimmedString)) {
                         updateChannelState(channelName, QuantityType.valueOf(0, Units.DECIBEL));
                     } else {
                         updateChannelState(channelName,
@@ -572,13 +572,14 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             }
             case DIMENSIONLESS_PERCENT -> {
-                var trimmedString = value.replaceAll("[ +]", "");
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, PercentType.class.getSimpleName(), value);
+                String trimmedString = value.replaceAll("[ +]", "");
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                        PercentType.class.getSimpleName());
                 updateChannelState(channelName, PercentType.valueOf(trimmedString));
             }
             case FREQUENCY_HERTZ -> {
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, Units.HERTZ.getClass().getSimpleName(),
-                        value);
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                        Units.HERTZ.getClass().getSimpleName());
                 if (!value.isEmpty()) {
                     // Getting rid of characters and empty space leaves us with the raw frequency
                     try {
@@ -598,21 +599,18 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             case GOODBYE -> {
                 logger.info(
                         "Received goodbye notification from '{}'; disconnecting and scheduling av connection retry in '{}' minutes",
-                        getThing().getUID(), DEFAULT_RETRY_INTERVAL_MINUTES);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/message.processor.goodbye");
-
-                // Device gone, sending unsubscription messages not needed
-                udpSenderActive = false;
-                disconnect();
-                scheduleConnectRetry(retryConnectInMinutes);
+                        thing.getUID(), DEFAULT_RETRY_INTERVAL_MINUTES);
+                setOfflineAndScheduleConnectRetry();
             }
             case NUMBER_TIME -> {
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, Number.class.getSimpleName(), value);
-                long nowEpochSecond = Instant.now().getEpochSecond();
-                updateChannelState(channelName, new QuantityType<>(nowEpochSecond, Units.SECOND));
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                        Number.class.getSimpleName());
+                updateChannelState(channelName,
+                        new QuantityType<>(ZonedDateTime.now(ZoneId.systemDefault()).toEpochSecond(), Units.SECOND));
             }
             case ON_OFF -> {
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, OnOffType.class.getSimpleName(), value);
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                        OnOffType.class.getSimpleName());
                 OnOffType switchValue = OnOffType.from(value.trim().toUpperCase());
                 updateChannelState(channelName, switchValue);
                 if (switchValue.equals(OnOffType.OFF) && CHANNEL_MENU.equals(channelName)) {
@@ -620,7 +618,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             }
             case STRING -> {
-                logger.debug("Update channel '{}' to '{}:{}'", channelName, StringType.class.getSimpleName(), value);
+                logger.debug("Preparing to update OH channel '{}' with value:type '{}:{}'", channelName, value,
+                        StringType.class.getSimpleName());
                 updateChannelState(channelName, StringType.valueOf(value));
             }
             case UNKNOWN -> // Do nothing, types not connect to channels
@@ -631,10 +630,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannelState(String channelID, State state) {
-        stateMap.put(channelID, state);
-        logger.trace("Updating channel '{}' with '{}'", channelID, state);
-        updateState(channelID, state);
+    private void updateChannelState(String channelID, State channelState) {
+        state.updateChannel(channelID, channelState);
+        logger.trace("Updating OH channel '{}' with value '{}'", channelID, channelState);
+        updateState(channelID, channelState);
     }
 
     private void updateVolumeChannels(String value, String muteChannel, String volumeChannel, String volumeDbChannel) {
@@ -652,10 +651,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         EmotivaUdpSendingService localSendingService = sendingService;
 
         if (localSendingService != null) {
-            EmotivaControlRequest emotivaRequest = channelToControlRequest(channelUID.getId(), commandMaps,
+            EmotivaControlRequest emotivaRequest = channelToControlRequest(channelUID.getId(), state,
                     protocolFromConfig(config.protocolVersion));
             if (ohCommand instanceof RefreshType) {
-                stateMap.remove(channelUID.getId());
+                state.removeChannel(channelUID.getId());
 
                 if (emotivaRequest.getDefaultCommand().equals(none)) {
                     logger.debug("Found controlCommand 'none' for request '{}' from channel '{}' with RefreshType",
@@ -666,17 +665,23 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 }
             } else {
                 try {
-                    EmotivaControlDTO dto = emotivaRequest.createDTO(ohCommand, stateMap.get(channelUID.getId()));
-                    localSendingService.send(dto);
+                    Optional<EmotivaControlDTO> dto = state.getChannel(channelUID.getId())
+                            .map(previousState -> emotivaRequest.createDTO(ohCommand, previousState))
+                            .or(() -> Optional.of(emotivaRequest.createDTO(ohCommand, UnDefType.UNDEF)));
+                    localSendingService.send(dto.get());
 
-                    if (emotivaRequest.getName().equals(EmotivaControlCommands.volume.name())) {
+                    if (emotivaRequest.getName().equals(EmotivaControlCommands.volume.name())
+                            || emotivaRequest.getName().equals(EmotivaControlCommands.set_volume.name())) {
+                        logger.debug("OhCommand '{}:{}' is of type main zone volume", channelUID.getId(), ohCommand);
                         if (ohCommand instanceof PercentType value) {
                             updateChannelState(CHANNEL_MAIN_VOLUME_DB,
                                     QuantityType.valueOf(volumePercentageToDecibel(value.intValue()), Units.DECIBEL));
                         } else if (ohCommand instanceof QuantityType<?> value) {
                             updateChannelState(CHANNEL_MAIN_VOLUME, volumeDecibelToPercentage(value.toString()));
                         }
-                    } else if (emotivaRequest.getName().equals(EmotivaControlCommands.zone2_volume.name())) {
+                    } else if (emotivaRequest.getName().equals(EmotivaControlCommands.zone2_volume.name())
+                            || emotivaRequest.getName().equals(EmotivaControlCommands.zone2_set_volume.name())) {
+                        logger.debug("OhCommand '{}:{}' is of type zone 2 volume", channelUID.getId(), ohCommand);
                         if (ohCommand instanceof PercentType value) {
                             updateChannelState(CHANNEL_ZONE2_VOLUME_DB,
                                     QuantityType.valueOf(volumePercentageToDecibel(value.intValue()), Units.DECIBEL));
@@ -684,6 +689,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                             updateChannelState(CHANNEL_ZONE2_VOLUME, volumeDecibelToPercentage(value.toString()));
                         }
                     } else if (ohCommand instanceof OnOffType value) {
+                        logger.debug("OhCommand '{}:{}' is of type switch", channelUID.getId(), ohCommand);
                         if (value.equals(OnOffType.ON) && emotivaRequest.getOnCommand().equals(power_on)) {
                             localSendingService.sendUpdate(EmotivaSubscriptionTags.speakerChannels(), config);
                         }
@@ -701,7 +707,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing '{}'", getThing().getUID());
+        logger.debug("Disposing '{}'", thing.getUID());
 
         disconnect();
         super.dispose();
@@ -715,7 +721,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 try {
                     // Unsubscribe before disconnect
                     localSendingService.sendUnsubscribe(generalSubscription);
-                    localSendingService.sendUnsubscribe(nonGeneralSubscriptions);
+                    localSendingService.sendUnsubscribe(mainZoneSubscriptions);
+                    localSendingService.sendUnsubscribe(zone2Subscriptions);
                 } catch (IOException e) {
                     logger.debug("Failed to unsubscribe for '{}'", config.ipAddress, e);
                 }
@@ -773,14 +780,14 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     public EnumMap<EmotivaControlCommands, String> getSourcesMainZone() {
-        return sourcesMainZone;
+        return state.getSourcesMainZone();
     }
 
     public EnumMap<EmotivaControlCommands, String> getSourcesZone2() {
-        return sourcesZone2;
+        return state.getSourcesZone2();
     }
 
     public EnumMap<EmotivaSubscriptionTags, String> getModes() {
-        return modes;
+        return state.getModes();
     }
 }

@@ -60,7 +60,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Channels
 
-### Channels for `powerinverter` Thing
+### `powerinverter` Thing Channels
 
 | Channel ID                           | Item Type                | Description                                                                                                       |
 | ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
@@ -93,7 +93,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
 | `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
 
-### Channels for `meter` Thing
+### `meter` Thing Channels
 
 | Channel ID              | Item Type                | Description                                                                                                                                                                                                              |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -115,7 +115,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `energyrealsumproduced` | Number:Energy            | Real Energy produced                                                                                                                                                                                                     |
 
-### Channels for `ohmpilot` Thing
+### `ohmpilot` Thing Channels
 
 | Channel ID              | Item Type          | Description                                                                                                                                                              |
 | ----------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -127,14 +127,14 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Properties
 
-### The `meter` Thing has the following properties:
+### `meter` Thing Properties
 
 | Property       | Description                    |
 | -------------- | ------------------------------ |
 | `modelId`      | The model name of the meter    |
 | `serialNumber` | The serial number of the meter |
 
-### The `ohmpilot` Thing has the following properties:
+### `ohmpilot` Thing Properties
 
 | Property       | Description                       |
 | -------------- | --------------------------------- |
@@ -143,9 +143,9 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Actions
 
-:::tip Warning
+:::warning
 Battery control uses the battery management's time-dependent battery control settings of the inverter settings and therefore overrides user-specified time of use settings.
-Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings. 
+Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings.
 :::
 
 The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
@@ -159,6 +159,7 @@ You can retrieve the actions as follows:
 ```java
 val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybridge:myinverter")
 ```
+
 :::
 
 ::: tab JS
@@ -185,6 +186,8 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 
+All methods return a boolean value indicating whether the action was successful.
+
 ### Examples
 
 ```javascript
@@ -208,7 +211,7 @@ demo.things:
 Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
-    Thing ohmpilot myohmpilot [deviceId=0]    
+    Thing ohmpilot myohmpilot [deviceId=0]
 }
 ```
 

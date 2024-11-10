@@ -23,7 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class PushoverBindingConstants {
 
-    private static final String BINDING_ID = "pushover";
+    public static final String BINDING_ID = "pushover";
 
     public static final ThingTypeUID PUSHOVER_ACCOUNT = new ThingTypeUID(BINDING_ID, "pushover-account");
 

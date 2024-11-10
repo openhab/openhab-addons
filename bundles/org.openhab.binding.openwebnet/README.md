@@ -13,7 +13,6 @@ The binding supports:
 ![NT4695](doc/BTI_NT4695.jpg)
 ![MyHOME Radio USB Gateway](doc/USB_gateway.jpg)
 
-
 ## Supported Things
 
 In order for this binding to work, a **BTicino/Legrand OpenWebNet gateway** is needed in your home system to talk to devices.
@@ -103,10 +102,10 @@ sudo usermod -a -G dialout openhab
 
 Configuration parameters are:
 
-- `host` : IP address / hostname of the BUS/SCS gateway (`String`, _mandatory_)
+- `host`: IP address / hostname of the BUS/SCS gateway (`String`, _mandatory_)
   - Example: `192.168.1.35`
-- `port` : port (`int`, _optional_, default: `20000`)
-- `passwd` : gateway password (`String`, _required_ for gateways that have a password. Default: `12345`)
+- `port`: port (`int`, _optional_, default: `20000`)
+- `passwd`: gateway password (`String`, _required_ for gateways that have a password. Default: `12345`)
   - Example: `abcde` or `12345`
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
@@ -119,7 +118,7 @@ Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.t
 
 Configuration parameters are:
 
-- `serialPort` : the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
+- `serialPort`: the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
 Alternatively the MyHOME Radio - Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
@@ -142,7 +141,7 @@ For any manually added device, you must configure:
     - dry Contact or IR Interface `99`: add `3` before --> `where="399"`
     - energy meter F520/F521 numbered `1`: add `5` before  --> `where="51"`
     - energy meter F522/F523 numbered `4`: add `7` before and `#0` after --> `where="74#0"`
-    - energy meter F520/F521 the `energyRefreshPeriod` configuration parameter sets the number of minutes (the minimum value is 30, the maximum value is 1440) between refreshes for energy totalizers (default: 30 minutes) --> `energyRefreshPeriod` = 35  
+    - energy meter F520/F521 the `energyRefreshPeriod` configuration parameter sets the number of minutes (the minimum value is 30, the maximum value is 1440) between refreshes for energy totalizers (default: 30 minutes) --> `energyRefreshPeriod` = 35
     - alarm zone `2` --> `where="2"`
   - example for Zigbee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
 
@@ -340,7 +339,7 @@ Example: to activate SCENARIO number 9 on the thermo Central Unit then set chann
 
 ## Rule Actions
 
-The following Rule actions can be used to send arbitrary OpenWebNet messages on the MyHOME BUS. 
+The following Rule actions can be used to send arbitrary OpenWebNet messages on the MyHOME BUS.
 Actions can be used for example to send commands to the BUS for a WHOs not yet supported by the binding.
 
 - `Boolean sendMessage(String message)` returns a `Boolean` = `true` if the `message` (OpenWebNet frame) was successfully sent via the gateway, `false` otherwise.
@@ -418,11 +417,11 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
 
       bus_scenario_control          BR_scenario          "Bedroom Scenario Module"  [ where="95" ]
-            
+
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
-      
+
       bus_aux                       Alarm_Control        "Alarm control"            [ where="4" ]
 
       bus_alarm_system              Alarm_Sys            "Alarm System"             [ where="0"  ]
@@ -490,7 +489,6 @@ Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (g
 
 String              iCENPlusProxyItem           "CEN+ Proxy Item"
 
-
 Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
 // alarm aux, alarm unit and a zone
@@ -539,7 +537,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
 
     Frame label="Living Room Thermo"
     {
-          Default   item=iLR_zone_temp          label="Temperature" icon="fire" valuecolor=[<20="red"] 
+          Default   item=iLR_zone_temp          label="Temperature" icon="fire" valuecolor=[<20="red"]
           Setpoint  item=iLR_zone_setTemp       label="Setpoint [%.1f °C]" step=0.5 minValue=15 maxValue=30
           Selection item=iLR_zone_fanSpeed      label="Fan Speed" icon="fan" mappings=[AUTO="AUTO", SPEED_1="Low", SPEED_2="Medium", SPEED_3="High"]
           Switch    item=iLR_zone_mode          label="Mode" icon="settings"
@@ -548,12 +546,12 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default   item=iLR_zone_hv            label="Heating valves status"
           Default   item=iLR_zone_cv            label="Conditioning valves status"
     }
-    
+
     Frame label="CEN+ Scenario activation"
     {
           Switch    item=iCENPlusProxyItem      label="My CEN+ scenario" icon="movecontrol"  mappings=[ON="Activate"]
     }
-    
+
     Frame label="Alarm"
     {
          Switch  item=iAlarm_System_State       label="Alarm state"
@@ -575,15 +573,15 @@ rule "Basic scenario WHO=0"
 when
     Channel "openwebnet:bus_scenario_control:mybridge:BR_scenario:scenario" triggered SCENARIO_02
 then
-    sendCommand(iLR_switch, ON)  
+    sendCommand(iLR_switch, ON)
 end
 
 
 rule "CEN+ virtual press from OH button"
 /* This rule triggers when the proxy item iCENPlusProxyItem is activated, for example from a button on WebUI/sitemap.
-When activated it sends a "virtual short press" event (where=212, button=5) on the BUS 
+When activated it sends a "virtual short press" event (where=212, button=5) on the BUS
 */
-when 
+when
     Item iCENPlusProxyItem received command
 then
     val actions = getActions("openwebnet","openwebnet:bus_cenplus_scenario_control:mybridge:212")
@@ -596,7 +594,7 @@ rule "CEN dimmer increase"
 when
     Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered START_PRESS
 then
-    sendCommand(iLR_dimmer, INCREASE)  
+    sendCommand(iLR_dimmer, INCREASE)
 end
 
 
@@ -605,7 +603,7 @@ rule "CEN dimmer decrease"
 when
     Channel "openwebnet:bus_cen_scenario_control:mybridge:51:button#4" triggered RELEASE_EXTENDED_PRESS
 then
-    sendCommand(iLR_dimmer, DECREASE)  
+    sendCommand(iLR_dimmer, DECREASE)
 end
 
 ```

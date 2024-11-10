@@ -27,6 +27,7 @@ import org.openhab.binding.mikrotik.internal.model.RouterosRegistrationBase;
 import org.openhab.binding.mikrotik.internal.model.RouterosWirelessRegistration;
 import org.openhab.binding.mikrotik.internal.util.RateCalculator;
 import org.openhab.binding.mikrotik.internal.util.StateUtil;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -214,11 +215,10 @@ public class MikrotikWirelessClientThingHandler extends MikrotikBaseThingHandler
         if (this.wifiReg == null) {
             return UnDefType.UNDEF;
         }
-
         RouterosWirelessRegistration wirelessReg = (RouterosWirelessRegistration) this.wifiReg;
         switch (channelID) {
             case CHANNEL_SIGNAL:
-                return StateUtil.intOrNull(wirelessReg.getRxSignal());
+                return new DecimalType(wirelessReg.getRxSignal());
             default:
                 return UnDefType.UNDEF;
         }

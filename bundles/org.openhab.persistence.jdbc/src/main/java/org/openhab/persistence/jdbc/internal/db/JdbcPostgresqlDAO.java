@@ -61,7 +61,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         // System Information Functions: https://www.postgresql.org/docs/9.2/static/functions-info.html
         sqlGetDB = "SELECT CURRENT_DATABASE()";
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
-        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
+        sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #tablePrimaryKey# PRIMARY KEY (itemid))";
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
         sqlGetItemTables = """
                 SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema \
@@ -142,8 +142,9 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     @Override
     public ItemsVO doCreateItemsTableIfNot(ItemsVO vo) throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlCreateItemsTableIfNot,
-                new String[] { "#itemsManageTable#", "#colname#", "#coltype#", "#itemsManageTable#" },
-                new String[] { vo.getItemsManageTable(), vo.getColname(), vo.getColtype(), vo.getItemsManageTable() });
+                new String[] { "#itemsManageTable#", "#colname#", "#coltype#", "#tablePrimaryKey#" },
+                new String[] { formattedIdentifier(vo.getItemsManageTable()), vo.getColname(), vo.getColtype(),
+                        vo.getItemsManageTable() + "_pkey" });
         logger.debug("JDBC::doCreateItemsTableIfNot sql={}", sql);
         try {
             Yank.execute(sql, null);
@@ -154,24 +155,11 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     }
 
     @Override
-    public Long doCreateNewEntryInItemsTable(ItemsVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlCreateNewEntryInItemsTable,
-                new String[] { "#itemsManageTable#", "#itemname#" },
-                new String[] { vo.getItemsManageTable(), vo.getItemName() });
-        logger.debug("JDBC::doCreateNewEntryInItemsTable sql={}", sql);
-        try {
-            return Yank.insert(sql, null);
-        } catch (YankSQLException e) {
-            throw new JdbcSQLException(e);
-        }
-    }
-
-    @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) throws JdbcSQLException {
-        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables,
+        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables,
                 new String[] { "#itemsManageTable#", "#itemsManageTable#" },
                 new String[] { vo.getItemsManageTable(), vo.getItemsManageTable() });
-        this.logger.debug("JDBC::doGetItemTables sql={}", sql);
+        logger.debug("JDBC::doGetItemTables sql={}", sql);
         try {
             return Yank.queryBeanList(sql, ItemsVO.class, null);
         } catch (YankSQLException e) {
@@ -207,15 +195,16 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
             throws JdbcSQLException {
         String sql = StringUtilsExt.replaceArrayMerge(sqlAlterTableColumn,
                 new String[] { "#tableName#", "#columnName#", "#columnType#" },
-                new String[] { tableName, columnName, columnType });
-        logger.info("JDBC::doAlterTableColumn sql={}", sql);
+                new String[] { formattedIdentifier(tableName), columnName, columnType });
+        logger.debug("JDBC::doAlterTableColumn sql={}", sql);
         try {
             Yank.execute(sql, null);
             if (!nullable) {
                 String sql2 = StringUtilsExt.replaceArrayMerge(
                         "ALTER TABLE #tableName# ALTER COLUMN #columnName# SET NOT NULL",
-                        new String[] { "#tableName#", "#columnName#" }, new String[] { tableName, columnName });
-                logger.info("JDBC::doAlterTableColumn sql={}", sql2);
+                        new String[] { "#tableName#", "#columnName#" },
+                        new String[] { formattedIdentifier(tableName), columnName });
+                logger.debug("JDBC::doAlterTableColumn sql={}", sql2);
                 Yank.execute(sql2, null);
             }
         } catch (YankSQLException e) {
@@ -228,7 +217,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValue") });
         Object[] params = { storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         try {
@@ -243,7 +233,7 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { storedVO.getTableName(), storedVO.getDbType(), "?" });
+                new String[] { formattedIdentifier(storedVO.getTableName()), storedVO.getDbType(), "?" });
         java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = { timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
@@ -284,8 +274,9 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
                     + filter.getPageSize();
         }
         String queryString = "NUMBERITEM".equalsIgnoreCase(simpleName) && numberDecimalcount > -1
-                ? "SELECT time, ROUND(CAST (value AS numeric)," + numberDecimalcount + ") FROM " + table
-                : "SELECT time, value FROM " + table;
+                ? "SELECT time, ROUND(CAST (value AS numeric)," + numberDecimalcount + ") FROM "
+                        + formattedIdentifier(table)
+                : "SELECT time, value FROM " + formattedIdentifier(table);
         if (!filterString.isEmpty()) {
             queryString += filterString;
         }
@@ -296,6 +287,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
     /*****************
      * H E L P E R S *
      *****************/
+    @Override
+    protected String formattedIdentifier(String identifier) {
+        return "\"" + identifier + "\"";
+    }
 
     /******************************
      * public Getters and Setters *

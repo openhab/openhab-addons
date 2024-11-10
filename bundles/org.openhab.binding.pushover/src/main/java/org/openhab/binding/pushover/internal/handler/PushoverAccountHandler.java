@@ -83,7 +83,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
 
         if (configValid) {
             updateStatus(ThingStatus.UNKNOWN);
-
+            httpClient.setIdleTimeout(config.idleTimeout * 1000);
             connection = new PushoverAPIConnection(httpClient, config);
             scheduler.submit(this::asyncValidateUser);
         }

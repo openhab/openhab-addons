@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Osman Basha - Initial contribution
- * @author Ries van Twisk
+ * @author Ries van Twisk - Improvements
  */
 public class WiFiLEDHandler extends BaseThingHandler {
 

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="flume"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="meter-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud"/>
+		</supported-bridge-type-refs>
+
+		<label>Flume Meter Device</label>
+		<description>Flume water meter device.</description>
+
+		<channels>
+			<channel id="instant-usage" typeId="instant-usage"/>
+			<channel id="cumulative-usage" typeId="cumulative-usage"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="usage-alert" typeId="usage-alert"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>Device ID</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="cumulative-usage">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative Used</label>
+		<description>Cumulative water used (volume)</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="instant-usage">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Instant Water Usage</label>
+		<description>Instantaneous water flow rate (volume / minute)</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="last-seen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Date/Time when device was last seen</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usage-alert">
+		<kind>trigger</kind>
+		<label>Usage Alert</label>
+		<description>Trigger of a usage alert</description>
+		<event></event>
+	</channel-type>
+</thing:thing-descriptions>

@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.satel.internal.handler.SatelEventLogHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -57,8 +58,13 @@ public class SatelEventLogActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actionReadEventLabel", description = "@text/actionReadEventDesc")
-    public @ActionOutput(name = "index", type = "java.lang.Integer", label = "@text/actionOutputIndexLabel", description = "@text/actionOutputIndexDesc") @ActionOutput(name = "prev_index", type = "java.lang.Integer", label = "@text/actionOutputPrevIndexLabel", description = "@text/actionOutputPrevIndexDesc") @ActionOutput(name = "timestamp", type = "java.time.ZonedDateTime", label = "@text/actionOutputTimestampLabel", description = "@text/actionOutputTimestampDesc") @ActionOutput(name = "description", type = "java.lang.String", label = "@text/actionOutputDescriptionLabel", description = "@text/actionOutputDescriptionDesc") @ActionOutput(name = "details", type = "java.lang.String", label = "@text/actionOutputDetailsLabel", description = "@text/actionOutputDetailsDesc") Map<String, Object> readEvent(
-            @ActionInput(name = "index", label = "@text/actionInputIndexLabel", description = "@text/actionInputIndexDesc") @Nullable Number index) {
+    public @ActionOutputs({
+            @ActionOutput(name = "index", type = "java.lang.Integer", label = "@text/actionOutputIndexLabel", description = "@text/actionOutputIndexDesc"),
+            @ActionOutput(name = "prev_index", type = "java.lang.Integer", label = "@text/actionOutputPrevIndexLabel", description = "@text/actionOutputPrevIndexDesc"),
+            @ActionOutput(name = "timestamp", type = "java.time.ZonedDateTime", label = "@text/actionOutputTimestampLabel", description = "@text/actionOutputTimestampDesc"),
+            @ActionOutput(name = "description", type = "java.lang.String", label = "@text/actionOutputDescriptionLabel", description = "@text/actionOutputDescriptionDesc"),
+            @ActionOutput(name = "details", type = "java.lang.String", label = "@text/actionOutputDetailsLabel", description = "@text/actionOutputDetailsDesc") }) Map<String, Object> readEvent(
+                    @ActionInput(name = "index", label = "@text/actionInputIndexLabel", description = "@text/actionInputIndexDesc") @Nullable Number index) {
         logger.debug("satel.readEvent called with input: index={}", index);
 
         Map<String, Object> result = new HashMap<>();

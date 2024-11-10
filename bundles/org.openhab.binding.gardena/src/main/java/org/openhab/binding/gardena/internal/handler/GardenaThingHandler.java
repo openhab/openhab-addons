@@ -128,7 +128,7 @@ public class GardenaThingHandler extends BaseThingHandler {
         } catch (GardenaDeviceNotFoundException | AccountHandlerNotAvailableException ex) {
             logger.debug("{}", ex.getMessage(), ex);
         } catch (GardenaException ex) {
-            logger.error("{}", ex.getMessage(), ex);
+            logger.warn("{}", ex.getMessage(), ex);
         }
     }
 

@@ -76,44 +76,63 @@ public class KaleidescapeStatusCodes {
 
     static {
         VIDEO_MODE.put("00", "No output");
-        VIDEO_MODE.put("01", "480i60 4:3");
-        VIDEO_MODE.put("02", "480i60 16:9");
-        VIDEO_MODE.put("03", "480p60 4:3");
-        VIDEO_MODE.put("04", "480p60 16:9");
-        VIDEO_MODE.put("05", "576i50 4:3");
-        VIDEO_MODE.put("06", "576i50 16:9");
-        VIDEO_MODE.put("07", "576p50 4:3");
-        VIDEO_MODE.put("08", "576p50 16:9");
-        VIDEO_MODE.put("09", "720p60 NTSC HD");
-        VIDEO_MODE.put("10", "720p50 PAL HD");
-        VIDEO_MODE.put("11", "1080i60 16:9");
-        VIDEO_MODE.put("12", "1080i50 16:9");
-        VIDEO_MODE.put("13", "1080p60 16:9");
-        VIDEO_MODE.put("14", "1080p50 16:9");
-        VIDEO_MODE.put("15", RESERVED);
-        VIDEO_MODE.put("16", RESERVED);
-        VIDEO_MODE.put("17", "1080p24 16:9");
-        VIDEO_MODE.put("18", RESERVED);
-        VIDEO_MODE.put("19", "480i60 64:27");
-        VIDEO_MODE.put("20", "576i50 64:27");
-        VIDEO_MODE.put("21", "1080i60 64:27");
-        VIDEO_MODE.put("22", "1080i50 64:27");
-        VIDEO_MODE.put("23", "1080p60 64:27");
-        VIDEO_MODE.put("24", "1080p50 64:27");
-        VIDEO_MODE.put("25", "1080p24 64:27");
-        VIDEO_MODE.put("26", "1080p24 64:27");
-        VIDEO_MODE.put("27", "3840x 2160p24 16:9");
-        VIDEO_MODE.put("28", "3840x 2160p24 64:27");
-        VIDEO_MODE.put("29", "3840x 2160p30 16:9");
-        VIDEO_MODE.put("30", "3840x 2160p30 64:27");
-        VIDEO_MODE.put("31", "3840x 2160p60 16:9");
-        VIDEO_MODE.put("32", "3840x 2160p60 64:27");
-        VIDEO_MODE.put("33", "3840x 2160p25 16:9");
-        VIDEO_MODE.put("34", "3840x 2160p25 64:27");
-        VIDEO_MODE.put("35", "3840x 2160p50 16:9");
-        VIDEO_MODE.put("36", "3840x 2160p50 64:27");
-        VIDEO_MODE.put("37", "3840x 2160p24 16:9");
-        VIDEO_MODE.put("38", "3840x 2160p24 64:27");
+        VIDEO_MODE.put("01", "720x480i59.94 4:3");
+        VIDEO_MODE.put("02", "720x480i59.94 16:9");
+        VIDEO_MODE.put("03", "720x480p59.94 4:3");
+        VIDEO_MODE.put("04", "720x480p59.94 16:9");
+        VIDEO_MODE.put("05", "720x576i50 4:3");
+        VIDEO_MODE.put("06", "720x576i50 16:9");
+        VIDEO_MODE.put("07", "720x576p50 4:3");
+        VIDEO_MODE.put("08", "720x576p50 16:9");
+        VIDEO_MODE.put("09", "1280x720p59.94 NTSC HD");
+        VIDEO_MODE.put("10", "1280x720p50 PAL HD");
+        VIDEO_MODE.put("11", "1920x1080i59.94 16:9");
+        VIDEO_MODE.put("12", "1920x1080i50 16:9");
+        VIDEO_MODE.put("13", "1920x1080p59.94 16:9");
+        VIDEO_MODE.put("14", "1920x1080p50 16:9");
+        VIDEO_MODE.put("15", "1280x720p23.976 16:9");
+        VIDEO_MODE.put("16", "1280x720p24 16:9");
+        VIDEO_MODE.put("17", "1920x1080p23.976 16:9");
+        VIDEO_MODE.put("18", "1920x1080p24 16:9");
+        VIDEO_MODE.put("19", "720x480i59.94 64:27");
+        VIDEO_MODE.put("20", "720x576i50 64:27");
+        VIDEO_MODE.put("21", "1920x1080i59.94 64:27");
+        VIDEO_MODE.put("22", "1920x1080i50 64:27");
+        VIDEO_MODE.put("23", "1920x1080p59.94 64:27");
+        VIDEO_MODE.put("24", "1920x1080p50 64:27");
+        VIDEO_MODE.put("25", "1920x1080p23.976 64:27");
+        VIDEO_MODE.put("26", "1920x1080p24 64:27");
+        VIDEO_MODE.put("27", "3840x2160p23.976 16:9");
+        VIDEO_MODE.put("28", "3840x2160p23.976 64:27");
+        VIDEO_MODE.put("29", "3840x2160p29.97 16:9");
+        VIDEO_MODE.put("30", "3840x2160p29.97 64:27");
+        VIDEO_MODE.put("31", "3840x2160p59.94 16:9");
+        VIDEO_MODE.put("32", "3840x2160p59.94 64:27");
+        VIDEO_MODE.put("33", "3840x2160p25 16:9");
+        VIDEO_MODE.put("34", "3840x2160p25 64:27");
+        VIDEO_MODE.put("35", "3840x2160p50 16:9");
+        VIDEO_MODE.put("36", "3840x2160p50 64:27");
+        VIDEO_MODE.put("37", "3840x2160p24 16:9");
+        VIDEO_MODE.put("38", "3840x2160p24 64:27");
+        VIDEO_MODE.put("39", "1280x720p60 16:9");
+        VIDEO_MODE.put("40", "1920x1080i60 16:9");
+        VIDEO_MODE.put("41", "1920x1080i60 64:27");
+        VIDEO_MODE.put("42", "1920x1080p60 16:9");
+        VIDEO_MODE.put("43", "1920x1080p60 64:27");
+        VIDEO_MODE.put("44", "3840x2160p 16:9");
+        VIDEO_MODE.put("45", "3840x2160p 64:27");
+        VIDEO_MODE.put("46", "1280x720p25 16:9");
+        VIDEO_MODE.put("47", "1920x1080p25 16:9");
+        VIDEO_MODE.put("48", "1920x1080p25 64:27");
+        VIDEO_MODE.put("49", RESERVED);
+        VIDEO_MODE.put("50", "1280x720p29.97 16:9");
+        VIDEO_MODE.put("51", "1920x1080p29.97 16:9");
+        VIDEO_MODE.put("52", "1920x1080p29.97 64:27");
+        VIDEO_MODE.put("53", "1280x720p30 16:9");
+        VIDEO_MODE.put("54", "1920x1080p30 16:9");
+        VIDEO_MODE.put("55", "1920x1080p30 64:27");
+        VIDEO_MODE.put("56", "3840x2160p30 16:9");
+        VIDEO_MODE.put("57", "3840x2160p30 64:27");
     }
 
     // map to lookup eotf
@@ -121,8 +140,11 @@ public class KaleidescapeStatusCodes {
     static {
         EOTF.put("00", UNKNOWN);
         EOTF.put("01", "SDR");
-        EOTF.put("02", "HDR");
-        EOTF.put("03", "SMTPE ST 2048");
+        EOTF.put("02", RESERVED);
+        EOTF.put("03", "HDR10");
+        EOTF.put("04", RESERVED);
+        EOTF.put("05", "Dolby Vision - standard");
+        EOTF.put("03", "Dolby Vision - low-latency");
     }
 
     // map to lookup readiness state

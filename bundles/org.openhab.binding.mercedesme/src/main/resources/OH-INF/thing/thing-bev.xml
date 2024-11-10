@@ -22,10 +22,15 @@
 			<channel-group id="range" typeId="range-ev-values"/>
 			<channel-group id="charge" typeId="charge-values"/>
 			<channel-group id="trip" typeId="trip-ev-values"/>
+			<channel-group id="eco" typeId="eco-values"/>
 			<channel-group id="position" typeId="position-values"/>
 			<channel-group id="tires" typeId="tires-values"/>
 			<channel-group id="command" typeId="command-values"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:mercedesme:bev"/>
 	</thing-type>

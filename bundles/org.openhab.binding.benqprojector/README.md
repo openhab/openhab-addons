@@ -1,7 +1,7 @@
 # BenQ Projector Binding
 
 This binding is compatible with BenQ projectors that support the control protocol via the built-in Ethernet port, serial port or USB to serial adapter.
-If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.  
+If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.
 
 The manufacturer's guide for connecting to the projector and the control protocol can be found in this document: [LX9215_RS232 Control Guide_0_Windows7_Windows8_WinXP.pdf](https://esupportdownload.benq.com/esupport/Projector/Control%20Protocols/LX9215/LX9215_RS232%20Control%20Guide_0_Windows7_Windows8_WinXP.pdf)
 
@@ -88,7 +88,7 @@ String benqPictureMode  "Picture Mode [%s]"           { channel="benqprojector:p
 String benqAspectRatio  "Aspect Ratio [%s]"           { channel="benqprojector:projector-serial:hometheater:aspectratio" }
 Switch benqFreeze                                     { channel="benqprojector:projector-serial:hometheater:freeze" }
 Switch benqBlank                                      { channel="benqprojector:projector-serial:hometheater:blank" }
-String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd", autoupdate="false" }
+String benqDirect                                     { channel="benqprojector:projector-serial:hometheater:directcmd" }
 Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:projector-serial:hometheater:lamptime" }
 ```
 

@@ -14,7 +14,7 @@ parameters:
  - group: solar
    items:
     - name: "PV Instant Generated PW"
-      class: "energy"
+      class: "power"
       state_class: "measurement"
       uom: "kW"
       scale: 0.01
@@ -143,16 +143,16 @@ parameters:
     - name: "Total Grid Return"
       class: "energy"
       state_class: "total"
-      uom: "KWh"
+      uom: "kWh"
       scale: 1
       rule: 3
       registers: [0x021F,0x021E]
       icon: 'mdi:transmission-tower-export'
 
     - name: "Total Grid Consumption"
-      class: "Energy"
+      class: "energy"
       state_class: "total"
-      uom: "KWh"
+      uom: "kWh"
       scale: 1
       rule: 3
       registers: [0x0221,0x0220]
@@ -161,7 +161,7 @@ parameters:
     - name: "Total Power Consumption"
       class: "energy"
       state_class: "total"
-      uom: "KWh"
+      uom: "kWh"
       scale: 1
       rule: 3
       registers: [0x0223,0x0222]
@@ -173,7 +173,7 @@ parameters:
     - name: "Power Consumption"
       class: ""
       state_class: ""
-      uom: "KW"
+      uom: "kW"
       scale: 0.01
       rule: 1
       registers: [0x0213]
@@ -303,7 +303,7 @@ parameters:
     - name: "Battery Power"
       class: "power"
       state_class: "measurement"
-      uom: "KW"
+      uom: "kW"
       scale: 0.01
       rule: 2
       registers: [0x0237]
@@ -327,7 +327,7 @@ parameters:
       registers: [0x10B1]
       icon: 'mdi:battery'
 
-    - name: "Battery daily Discharge"
+    - name: "Battery Daily Discharge"
       class: "energy"
       state_class: "total_increasing"
       uom: "kWh"
@@ -339,7 +339,7 @@ parameters:
     - name: "Battery Total Charge"
       class: "energy"
       state_class: "total"
-      uom: "KWh"
+      uom: "kWh"
       scale: 1
       rule: 3
       registers: [0x0227,0x0226]
@@ -348,7 +348,7 @@ parameters:
     - name: "Battery Total Discharge"
       class: "energy"
       state_class: "total"
-      uom: "KWh"
+      uom: "kWh"
       scale: 1
       rule: 3
       registers: [0x0229,0x0228]
@@ -448,11 +448,11 @@ parameters:
    items:
     - name: "Inverter status"
       class: ""
-      state_class: "measurement"
       uom: ""
       scale: 1
       rule: 1
       registers: [0x0200]
+      isstr: true
       lookup:
       -  key: 0
          value: "Stand-by"
@@ -572,11 +572,11 @@ parameters:
 
     - name: "Country"
       class: ""
-      state_class: ""
       uom: ""
       scale: 1
       rule: 1
       registers: [0x023A]
+      isstr: true
       lookup:
       -  key: 0
          value: "Germany"
@@ -649,6 +649,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x022B]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -803,6 +804,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x0201]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -848,6 +850,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x0202]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -892,6 +895,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x0203]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -936,6 +940,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x0204]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -980,6 +985,7 @@ parameters:
       scale: 1
       rule: 1
       registers: [0x0205]
+      isstr: true
       lookup:
       -  key: 0
          value: "No error"
@@ -1059,7 +1065,7 @@ parameters:
     - name: "Charge / Discharge Power"
       class: ""
       state_class: ""
-      uom: "KW"
+      uom: "kW"
       scale: 0.01
       rule: 2
       registers: [0x020D]
@@ -1068,7 +1074,7 @@ parameters:
     - name: "Feed in / out power"
       class: ""
       state_class: ""
-      uom: "KW"
+      uom: "kW"
       scale: 0.01
       rule: 2
       registers: [0x0212]
@@ -1077,7 +1083,7 @@ parameters:
     - name: "Input/Output Power"
       class: "power"
       state_class: "measurement"
-      uom: "KW"
+      uom: "kW"
       scale: 0.01
       rule: 2
       registers: [0x0214]

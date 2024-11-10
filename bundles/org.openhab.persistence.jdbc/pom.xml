@@ -15,8 +15,8 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: JDBC</name>
 
   <properties>
-    <bnd.importpackage>!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
-    <dep.noembedding>derby,h2,hsqldb,mariadb-java-client,mysql-connector-j,postgresql,sqlite-jdbc</dep.noembedding>
+    <bnd.importpackage>!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,oracle.*;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
+    <dep.noembedding>derby,h2,hsqldb,mariadb-java-client,mysql-connector-j,postgresql,sqlite-jdbc,com.oracle.database.jdbc.ojdbc11</dep.noembedding>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -32,6 +32,7 @@
     <mysql.version>8.2.0</mysql.version>
     <postgresql.version>42.4.4</postgresql.version>
     <sqlite.version>3.42.0.0</sqlite.version>
+    <oracle.version>23.5.0.2407</oracle.version>
   </properties>
 
   <dependencies>
@@ -93,7 +94,10 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>${sqlite.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.oracle.database.jdbc.ojdbc11</artifactId>
+      <version>${oracle.version}</version>
+    </dependency>
   </dependencies>
-
 </project>

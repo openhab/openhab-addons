@@ -29,7 +29,7 @@ import org.openhab.core.types.Type;
  * RFXCOM data class for energy message.
  *
  * @author Unknown - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Migrated to OH2
  */
 public class RFXComEnergyMessage extends RFXComBatteryDeviceMessage<RFXComEnergyMessage.SubType> {
 

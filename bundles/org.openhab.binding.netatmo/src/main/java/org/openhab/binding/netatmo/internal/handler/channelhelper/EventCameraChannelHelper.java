@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.handler.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import java.util.Set;
 
@@ -43,10 +43,10 @@ public class EventCameraChannelHelper extends EventChannelHelper {
                 case CHANNEL_EVENT_TYPE -> toStringType(event.getEventType());
                 case CHANNEL_EVENT_TIME -> new DateTimeType(event.getTime());
                 case CHANNEL_EVENT_MESSAGE -> toStringType(event.getName());
-                case CHANNEL_EVENT_SNAPSHOT -> toRawType(event.getSnapshotUrl());
-                case CHANNEL_EVENT_SNAPSHOT_URL -> toStringType(event.getSnapshotUrl());
-                case CHANNEL_EVENT_VIGNETTE -> toRawType(event.getVignetteUrl());
-                case CHANNEL_EVENT_VIGNETTE_URL -> toStringType(event.getVignetteUrl());
+                case CHANNEL_EVENT_SNAPSHOT -> checkUrlPresence(event.getSnapshotUrl(), true);
+                case CHANNEL_EVENT_SNAPSHOT_URL -> checkUrlPresence(event.getSnapshotUrl(), false);
+                case CHANNEL_EVENT_VIGNETTE -> checkUrlPresence(event.getVignetteUrl(), true);
+                case CHANNEL_EVENT_VIGNETTE_URL -> checkUrlPresence(event.getVignetteUrl(), false);
                 default -> super.internalGetHomeEvent(channelId, groupId, event);
             };
         }

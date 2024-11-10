@@ -44,7 +44,6 @@ public enum WindDirections {
      * Returns the wind direction based on degree.
      */
     public static WindDirections getWindDirection(int degree) {
-
         double b = Math.floor((degree + (STEP / 2.0)) / STEP);
         return values()[(int) (b % values().length)];
     }

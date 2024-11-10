@@ -38,4 +38,6 @@ public class ICalendarConfiguration {
     public String url;
     @Nullable
     public String username;
+    @Nullable
+    public String userAgent;
 }

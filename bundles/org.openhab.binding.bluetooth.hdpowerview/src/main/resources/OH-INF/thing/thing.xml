@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Shade Thing Type -->
+	<thing-type id="shade">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>PowerView Shade</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Gen3 Shade</description>
+
+		<channels>
+			<channel id="primary" typeId="primary"/>
+			<channel id="secondary" typeId="secondary"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="pollingDelay" type="integer" min="60">
+				<label>Polling Interval</label>
+				<advanced>true</advanced>
+				<description>Interval in seconds for polling the battery state</description>
+				<default>300</default>
+			</parameter>
+			<parameter name="heartbeatDelay" type="integer" min="5">
+				<label>Heartbeat Interval</label>
+				<advanced>true</advanced>
+				<description>Interval in seconds for Bluetooth device heart beat checks</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="bleTimeout" type="integer" min="1">
+				<label>BLE Timeout</label>
+				<advanced>true</advanced>
+				<description>Timeout in seconds for Bluetooth Low Energy operations</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="encryptionKey" type="text">
+				<label>Encryption Key</label>
+				<description>Encryption key to be used on position commands</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="primary">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<description>The vertical position of the shade</description>
+		<category>Blinds</category>
+		<state min="0" max="100" step="1" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="secondary">
+		<item-type>Rollershutter</item-type>
+		<label>Secondary Position</label>
+		<description>The secondary vertical position (on top-down/bottom-up shades)</description>
+		<category>Blinds</category>
+		<state min="0" max="100" step="1" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="tilt">
+		<item-type>Dimmer</item-type>
+		<label>Tilt</label>
+		<description>The tilt of the slats in the shade</description>
+		<category>Blinds</category>
+		<state min="0" max="100" step="1" pattern="%.1f %%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

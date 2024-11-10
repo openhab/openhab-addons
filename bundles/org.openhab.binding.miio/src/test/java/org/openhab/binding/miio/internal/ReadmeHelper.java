@@ -19,7 +19,6 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -82,12 +81,12 @@ public class ReadmeHelper {
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
         LOGGER.info("## Creating device list");
-        StringWriter deviceList = rm.deviceList();
+        StringBuilder deviceList = rm.deviceList();
         rm.checkDatabaseEntrys();
         LOGGER.info("## Creating channel list for json database driven devices");
-        StringWriter channelList = rm.channelList();
+        StringBuilder channelList = rm.channelList();
         LOGGER.info("## Creating Item Files for json database driven devices");
-        StringWriter itemFileExamples = rm.itemFileExamples();
+        StringBuilder itemFileExamples = rm.itemFileExamples();
         try {
             String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
             String newDoc = baseDoc.replaceAll("!!!devices", deviceList.toString())
@@ -125,18 +124,18 @@ public class ReadmeHelper {
         LOGGER.info("## Done");
     }
 
-    private StringWriter deviceList() {
+    private StringBuilder deviceList() {
         long items = Arrays.asList(MiIoDevices.values()).stream()
                 .filter(device -> !device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED)).count();
         String devicesCount = String.format("Currently the miio binding supports more than %d different models.",
                 (items / 10) * 10);
         LOGGER.info(devicesCount);
-        StringWriter sw = new StringWriter();
-        sw.write(devicesCount);
-        sw.write("\n\n");
-        sw.write(
+        StringBuilder sw = new StringBuilder();
+        sw.append(devicesCount);
+        sw.append("\n\n");
+        sw.append(
                 "| Device                             | ThingType        | Device Model           | Supported    | Remark     |\n");
-        sw.write(
+        sw.append(
                 "|------------------------------------|------------------|------------------------|--------------|------------|\n");
 
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
@@ -159,35 +158,35 @@ public class ReadmeHelper {
                         }
                     }
                 }
-                sw.write("| ");
-                sw.write(minLengthString(device.getDescription(), 34));
-                sw.write(" | ");
-                sw.write(minLengthString(device.getThingType().toString(), 16));
-                sw.write(" | ");
+                sw.append("| ");
+                sw.append(minLengthString(device.getDescription(), 34));
+                sw.append(" | ");
+                sw.append(minLengthString(device.getThingType().toString(), 16));
+                sw.append(" | ");
                 String model = isSupported ? device.getModel() : "[" + device.getModel() + "](#" + link + ")";
-                sw.write(minLengthString(model, 22));
-                sw.write(" | ");
-                sw.write(isSupported ? "No          " : (experimental ? "Experimental" : "Yes         "));
-                sw.write(" | ");
-                sw.write(minLengthString(remark, 10));
-                sw.write(" |\n");
+                sw.append(minLengthString(model, 22));
+                sw.append(" | ");
+                sw.append(isSupported ? "No          " : (experimental ? "Experimental" : "Yes         "));
+                sw.append(" | ");
+                sw.append(minLengthString(remark, 10));
+                sw.append(" |\n");
             }
         });
         return sw;
     }
 
-    private StringWriter channelList() {
-        StringWriter sw = new StringWriter();
+    private StringBuilder channelList() {
+        StringBuilder sw = new StringBuilder();
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                 if (dev != null) {
                     String link = device.getModel().replace(".", "-");
-                    sw.write("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
+                    sw.append("### " + device.getDescription() + " (" + "<a name=\"" + link + "\">" + device.getModel()
                             + "</a>" + ") Channels\n" + "\n");
-                    sw.write(
+                    sw.append(
                             "| Channel                    | Type                 | Description                              | Comment    |\n");
-                    sw.write(
+                    sw.append(
                             "|----------------------------|----------------------|------------------------------------------|------------|\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
@@ -195,16 +194,21 @@ public class ReadmeHelper {
                                 && ch.getReadmeComment().startsWith("Value mapping")) {
                             ch.setReadmeComment(readmeOptionMapping(ch, device.getModel()));
                         }
-                        sw.write("| " + minLengthString(ch.getChannel(), 26) + " | " + minLengthString(ch.getType(), 20)
-                                + " | " + minLengthString(ch.getFriendlyName(), 40) + " | "
-                                + minLengthString(ch.getReadmeComment(), 10) + " |\n");
+                        sw.append("| " + minLengthString(ch.getChannel(), 26) + " | "
+                                + minLengthString(ch.getType(), 20) + " | " + minLengthString(ch.getFriendlyName(), 40)
+                                + " | " + minLengthString(ch.getReadmeComment(), 10) + " |\n");
                     }
-                    sw.write("\n");
+                    sw.append("\n");
                 } else {
                     LOGGER.info("Pls check: Device not found in db: {}", device);
                 }
             }
         });
+
+        // Remove excess newline
+        if (sw.length() > 1) {
+            sw.setLength(sw.length() - 2);
+        }
         return sw;
     }
 
@@ -228,30 +232,35 @@ public class ReadmeHelper {
         return channel.getReadmeComment();
     }
 
-    private StringWriter itemFileExamples() {
-        StringWriter sw = new StringWriter();
+    private StringBuilder itemFileExamples() {
+        StringBuilder sw = new StringBuilder();
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                 MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                 if (dev != null) {
-                    sw.write("### " + device.getDescription() + " (" + device.getModel() + ") item file lines\n\n");
+                    sw.append("### " + device.getDescription() + " (" + device.getModel() + ") item file lines\n\n");
                     String[] ids = device.getModel().split("\\.");
                     String id = ids[ids.length - 2];
                     String gr = "G_" + id;
-                    sw.write("note: Autogenerated example. Replace the id (" + id
+                    sw.append("note: Autogenerated example. Replace the id (" + id
                             + ") in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.\n");
-                    sw.write("\n```java\n");
-                    sw.write("Group " + gr + " \"" + device.getDescription() + "\" <status>\n");
+                    sw.append("\n```java\n");
+                    sw.append("Group " + gr + " \"" + device.getDescription() + "\" <status>\n");
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
-                        sw.write(ch.getType() + " " + ch.getChannel().replace("-", "_") + " \"" + ch.getFriendlyName()
+                        sw.append(ch.getType() + " " + ch.getChannel().replace("-", "_") + " \"" + ch.getFriendlyName()
                                 + "\" (" + gr + ") {channel=\"" + device.getThingType().toString() + ":" + id + ":"
                                 + ch.getChannel() + "\"}\n");
                     }
-                    sw.write("```\n\n");
+                    sw.append("```\n\n");
                 }
             }
         });
+
+        // Remove excess newline
+        if (sw.length() > 0) {
+            sw.setLength(sw.length() - 1);
+        }
         return sw;
     }
 

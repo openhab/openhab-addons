@@ -34,7 +34,7 @@ The device IDs can be found be enabling TRACE logging in the Karaf console.
 
 You must define a Plugwise Home Automation gateway (Bridge) before defining zones or appliances (Things) for this binding to work.
 
-### Plugwise Home Automation gateway (Bridge):
+### Plugwise Home Automation gateway (Bridge)
 
 | Parameter | Description                                                             | Config   | Default |
 |-----------|-------------------------------------------------------------------------|----------|---------|
@@ -43,33 +43,33 @@ You must define a Plugwise Home Automation gateway (Bridge) before defining zone
 | smileID   | The 8 letter code on the sticker on the back of the Adam boiler gateway | Required | -       |
 | refresh   | The refresh interval in seconds                                         | Optional | 15      |
 
-### Plugwise Home Automation zone (`zone`):
+### Plugwise Home Automation zone (`zone`)
 
 | Parameter | Description               | Config   | Default |
 | --------- | ------------------------- | -------- | ------- |
 | id        | The unique ID of the zone | Required | -       |
 
-### Plugwise Home Automation appliance (`appliance_valve`):
+### Plugwise Home Automation appliance (`appliance_valve`)
 
 | Parameter            | Description                                                                                                        | Config   | Default |
 |----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the radiator valve appliance                                                                      | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
 
-### Plugwise Home Automation appliance (`appliance_thermostat`):
+### Plugwise Home Automation appliance (`appliance_thermostat`)
 
 | Parameter            | Description                                                                                                        | Config   | Default |
 |----------------------|--------------------------------------------------------------------------------------------------------------------|----------|---------|
 | id                   | The unique ID of the room thermostat appliance                                                                     | Required | -       |
 | lowBatteryPercentage | Battery charge remaining at which to trigger battery low warning. (_Only applicable for battery operated devices_) | Optional | 15      |
 
-### Plugwise Home Automation appliance (`appliance_pump`):
+### Plugwise Home Automation appliance (`appliance_pump`)
 
 | Parameter | Description                         | Config   | Default |
 | --------- | ----------------------------------- | -------- | ------- |
 | id        | The unique ID of the pump appliance | Required | -       |
 
-### Plugwise Home Automation boiler (`appliance_boiler`):
+### Plugwise Home Automation boiler (`appliance_boiler`)
 
 | Parameter | Description                 | Config   | Default |
 |-----------|-----------------------------|----------|---------|

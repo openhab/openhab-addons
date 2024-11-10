@@ -20,9 +20,10 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.melcloud.internal.MelCloudBindingConstants;
-import org.openhab.binding.melcloud.internal.api.json.Device;
+import org.openhab.binding.melcloud.internal.api.dto.Device;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudLoginException;
 import org.openhab.binding.melcloud.internal.handler.MelCloudAccountHandler;
@@ -43,14 +44,15 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Refactoring
  * @author Wietse van Buitenen - Check device type, added heatpump device
  */
+@NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = MelCloudDiscoveryService.class)
-public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryService<@NonNull MelCloudAccountHandler> {
+public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryService<MelCloudAccountHandler> {
     private final Logger logger = LoggerFactory.getLogger(MelCloudDiscoveryService.class);
 
     private static final String PROPERTY_DEVICE_ID = "deviceID";
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
 
-    private ScheduledFuture<?> scanTask;
+    private @Nullable ScheduledFuture<?> scanTask;
 
     /**
      * Creates a MelCloudDiscoveryService with enabled autostart.
@@ -67,7 +69,8 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
 
     @Override
     protected void startScan() {
-        if (this.scanTask != null) {
+        ScheduledFuture<?> scanTask = this.scanTask;
+        if (scanTask != null) {
             scanTask.cancel(true);
         }
         this.scanTask = scheduler.schedule(() -> discoverDevices(), 0, TimeUnit.SECONDS);
@@ -77,8 +80,9 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
     protected void stopScan() {
         super.stopScan();
 
-        if (this.scanTask != null) {
-            this.scanTask.cancel(true);
+        ScheduledFuture<?> scanTask = this.scanTask;
+        if (scanTask != null) {
+            scanTask.cancel(true);
             this.scanTask = null;
         }
     }
@@ -88,7 +92,7 @@ public class MelCloudDiscoveryService extends AbstractThingHandlerDiscoveryServi
         try {
             List<Device> deviceList = thingHandler.getDeviceList();
 
-            if (deviceList == null) {
+            if (deviceList.isEmpty()) {
                 logger.debug("No devices found");
             } else {
                 ThingUID bridgeUID = thingHandler.getThing().getUID();

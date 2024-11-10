@@ -53,6 +53,9 @@ logger.info "Price incl. VAT: #{price_incl_vat}"
 
 The functionality of this `TransformationService` can also be used in a `Profile` on an `ItemChannelLink`.
 This is the most powerful usage since VAT will be added without providing any explicit country code, percentage or configuration.
+Time series are supported when using this Profile, including applying VAT rates accurately based on the specific date and time of each state, even as new VAT rates come into effect.
+This ensures that the correct VAT rate is applied for historical, current, or future data points, reflecting any changes in VAT regulations that occur over time.
+
 To use this, an `.items` file can be configured as follows:
 
 ```java

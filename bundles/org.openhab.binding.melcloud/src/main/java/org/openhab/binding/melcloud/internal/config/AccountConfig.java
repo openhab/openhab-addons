@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.melcloud.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Config class for MELCloud account parameters.
  *
  * @author Pauli Anttila - Initial Contribution
  *
  */
+@NonNullByDefault
 public class AccountConfig {
 
-    public String username;
-    public String password;
-    public int language;
+    public String username = "";
+    public String password = "";
+    public int language = 0;
 
     @Override
     public String toString() {
@@ -30,9 +33,6 @@ public class AccountConfig {
     }
 
     private String getPasswordForPrinting() {
-        if (password != null) {
-            return password.isEmpty() ? "<empty>" : "*********";
-        }
-        return "<null>";
+        return password.isEmpty() ? "<empty>" : "*********";
     }
 }

@@ -392,6 +392,7 @@
 		<item-type>Switch</item-type>
 		<label>All Off</label>
 		<description>Turn All Zones Off</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="page">
@@ -404,6 +405,7 @@
 		<item-type>String</item-type>
 		<label>Send Command</label>
 		<description>Send a command to the amplifier</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="source">
@@ -416,6 +418,7 @@
 		<item-type>Number</item-type>
 		<label>Favorite</label>
 		<description>Select a Preset Favorite for the Zone</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="control">
@@ -532,6 +535,7 @@
 		<item-type>String</item-type>
 		<label>Album Art URL</label>
 		<description>The URL of the Album Art JPG for this source that is displayed on a CTP-36</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="album_art">
@@ -545,6 +549,7 @@
 		<item-type>String</item-type>
 		<label>Source Menu</label>
 		<description>A selection containing the custom menu tree options for this source</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -3268,13 +3268,13 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     @Override
     public void onStatusChanged(boolean status) {
         if (status) {
-            logger.info("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is present (thing {})", getUDN(), getThing().getUID());
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.execute(this::poll);
             }
         } else {
-            logger.info("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
+            logger.debug("UPnP device {} is absent (thing {})", getUDN(), getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
     }

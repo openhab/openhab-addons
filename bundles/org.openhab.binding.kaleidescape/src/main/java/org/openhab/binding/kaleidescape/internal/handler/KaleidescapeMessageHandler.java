@@ -17,6 +17,7 @@ import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -29,6 +30,7 @@ import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeFormatter;
 import org.openhab.binding.kaleidescape.internal.communication.KaleidescapeStatusCodes;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -116,11 +118,15 @@ public enum KaleidescapeMessageHandler {
 
                 handler.updateChannel(TITLE_NUM, new DecimalType(Integer.parseInt(matcher.group(3))));
 
-                handler.updateChannel(TITLE_LENGTH,
-                        new QuantityType<>(Integer.parseInt(matcher.group(4)), handler.apiSecondUnit));
+                final int titleLength = Integer.parseInt(matcher.group(4));
+                final int titleLoc = Integer.parseInt(matcher.group(5));
 
-                handler.updateChannel(TITLE_LOC,
-                        new QuantityType<>(Integer.parseInt(matcher.group(5)), handler.apiSecondUnit));
+                handler.updateChannel(TITLE_LENGTH, new QuantityType<>(titleLength, handler.apiSecondUnit));
+
+                handler.updateChannel(TITLE_LOC, new QuantityType<>(titleLoc, handler.apiSecondUnit));
+
+                handler.updateChannel(ENDTIME, titleLength < 1 ? UnDefType.UNDEF
+                        : new DateTimeType(ZonedDateTime.now().plusSeconds(titleLength - titleLoc)));
 
                 handler.updateChannel(CHAPTER_NUM, new DecimalType(Integer.parseInt(matcher.group(6))));
 
@@ -270,6 +276,10 @@ public enum KaleidescapeMessageHandler {
             // first replace delimited : in track/artist/album name with ||, fix it later in formatString()
             Matcher matcher = p.matcher(message.replace("\\:", "||"));
             if (matcher.find()) {
+                // if not an empty message, the colon delimiters in raw MUSIC_TITLE message are changed to pipe
+                handler.updateChannel(MUSIC_TITLE_RAW, ":::::".equals(matcher.group(0)) ? UnDefType.NULL
+                        : new StringType(KaleidescapeFormatter.formatString(matcher.group(0).replace(":", "|"))));
+
                 handler.updateChannel(MUSIC_TRACK,
                         new StringType(KaleidescapeFormatter.formatString(matcher.group(1))));
 
@@ -478,6 +488,10 @@ public enum KaleidescapeMessageHandler {
                                 handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
                                 handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
                             }
+                        } else if (handler.volumeBasicEnabled) {
+                            synchronized (handler.sequenceLock) {
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_CAPABILITIES_3);
+                            }
                         }
                         break;
                     case "VOLUME_UP":
@@ -514,10 +528,8 @@ public enum KaleidescapeMessageHandler {
                             }
                         }
                         break;
-                    // the default is to just publish all other USER_DEFINED_EVENTs
-                    default:
-                        handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
                 }
+                handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
             } catch (KaleidescapeException e) {
                 logger.debug("USER_DEFINED_EVENT - exception on message: {}", message);
             }

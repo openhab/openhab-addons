@@ -41,7 +41,8 @@ import org.w3c.dom.Node;
  * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
  * instead.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution, [yamaha] Tuner band selection and preset feature for dual band models
+ *         (RX-S601D)
  */
 public class InputWithTunerDABControlXML extends AbstractInputControlXML
         implements InputWithTunerBandControl, InputWithPresetControl {

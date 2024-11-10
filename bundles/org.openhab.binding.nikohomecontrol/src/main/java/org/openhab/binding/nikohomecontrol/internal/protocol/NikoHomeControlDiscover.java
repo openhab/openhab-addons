@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +51,7 @@ public final class NikoHomeControlDiscover {
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private List<String> nhcBridgeIds = new ArrayList<>();
-    private Map<String, InetAddress> inetAdresses = new HashMap<>();
+    private Map<String, InetAddress> inetAddresses = new HashMap<>();
     private Map<String, Boolean> isNhcII = new HashMap<>();
 
     /**
@@ -104,7 +105,16 @@ public final class NikoHomeControlDiscover {
      * @return the addr, null if not in the list of discovered bridgeId's
      */
     public @Nullable InetAddress getAddr(String bridgeId) {
-        return inetAdresses.get(bridgeId);
+        return inetAddresses.get(bridgeId);
+    }
+
+    /**
+     * @param inetAddress inetAddress of the controller
+     * @return the bridgeId, null if not found
+     */
+    public @Nullable String getBridgeId(InetAddress inetAddress) {
+        return inetAddresses.entrySet().stream().filter(entry -> inetAddress.equals(entry.getValue()))
+                .map(Entry::getKey).findAny().get();
     }
 
     /**
@@ -168,7 +178,7 @@ public final class NikoHomeControlDiscover {
      */
     private InetAddress setAddr(String bridgeId, DatagramPacket packet) {
         InetAddress address = packet.getAddress();
-        inetAdresses.put(bridgeId, address);
+        inetAddresses.put(bridgeId, address);
         return address;
     }
 

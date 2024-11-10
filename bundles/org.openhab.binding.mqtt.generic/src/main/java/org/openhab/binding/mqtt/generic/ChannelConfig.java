@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,8 +48,8 @@ public class ChannelConfig {
     public boolean trigger = false;
     public String unit = "";
 
-    public String transformationPattern = "";
-    public String transformationPatternOut = "";
+    public List<String> transformationPattern = List.of();
+    public List<String> transformationPatternOut = List.of();
     public String formatBeforePublish = "%s";
     public String allowedStates = "";
 

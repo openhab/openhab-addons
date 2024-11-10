@@ -12,6 +12,21 @@
 		<item-type>Location</item-type>
 		<label>Position GPS</label>
 	</channel-type>
+	<channel-type id="status-pos">
+		<item-type>Number</item-type>
+		<label>Status Positioning</label>
+		<state>
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/PositionErrorState.swift#L8 -->
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Service Inactive</option>
+				<option value="2">Tracking Inactive</option>
+				<option value="3">Parked</option>
+				<option value="4">Ignition On</option>
+				<option value="5">Ok</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="signal">
 		<item-type>Number</item-type>
 		<label>Position Signal</label>

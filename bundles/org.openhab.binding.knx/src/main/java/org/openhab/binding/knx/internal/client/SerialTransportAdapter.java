@@ -42,7 +42,7 @@ import tuwien.auto.calimero.serial.spi.SerialCom;
  * {@literal @}ServiceProvider annotation (biz.aQute.bnd.annotation) automatically creates the file
  * /META-INF/services/tuwien.auto.calimero.serial.spi.SerialCom
  * to register SerialTransportAdapter to the service loader.
- * Additional attributes for SerialTansportAdapter can be specified as well, e.g.
+ * Additional attributes for SerialTransportAdapter can be specified as well, e.g.
  * attribute = { "position=1" }
  * and will be part of MANIFEST.MF
  * 

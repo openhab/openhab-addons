@@ -32,6 +32,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -69,9 +71,9 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  *         {@link Lock} for multi-thread synchronization; globals and openhab-js injection code caching
  */
 public class OpenhabGraalJSScriptEngine
-        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine>
+        implements Lock {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final Source GLOBAL_SOURCE;
     static {
         try {
@@ -129,6 +131,8 @@ public class OpenhabGraalJSScriptEngine
                     v -> v.getMember("rawQtyType").as(QuantityType.class), HostAccess.TargetMappingPrecedence.LOW)
             .build();
 
+    private final Logger logger = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
+
     /** {@link Lock} synchronization of multi-thread access */
     private final Lock lock = new ReentrantLock();
     private final JSRuntimeFeatures jsRuntimeFeatures;
@@ -151,8 +155,6 @@ public class OpenhabGraalJSScriptEngine
         this.injectionEnabled = injectionEnabled;
         this.injectionCachingEnabled = injectionCachingEnabled;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
-
-        LOGGER.debug("Initializing GraalJS script engine...");
 
         delegate = GraalJSScriptEngine.create(ENGINE,
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
@@ -227,7 +229,10 @@ public class OpenhabGraalJSScriptEngine
     protected void beforeInvocation() {
         super.beforeInvocation();
 
+        logger.debug("Initializing GraalJS script engine...");
+
         lock.lock();
+        logger.debug("Lock acquired before invocation.");
 
         if (initialized) {
             return;
@@ -254,7 +259,7 @@ public class OpenhabGraalJSScriptEngine
         Consumer<String> localScriptDependencyListener = (Consumer<String>) ctx
                 .getAttribute(CONTEXT_KEY_DEPENDENCY_LISTENER);
         if (localScriptDependencyListener == null) {
-            LOGGER.warn(
+            logger.warn(
                     "Failed to retrieve script script dependency listener from engine bindings. Script dependency tracking will be disabled.");
         }
         scriptDependencyListener = localScriptDependencyListener;
@@ -271,33 +276,34 @@ public class OpenhabGraalJSScriptEngine
 
         // Injections into the JS runtime
         jsRuntimeFeatures.getFeatures().forEach((key, obj) -> {
-            LOGGER.debug("Injecting {} into the JS runtime...", key);
+            logger.debug("Injecting {} into the JS runtime...", key);
             delegate.put(key, obj);
         });
 
         initialized = true;
 
         try {
-            LOGGER.debug("Evaluating cached global script...");
+            logger.debug("Evaluating cached global script...");
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
             if (this.injectionEnabled) {
                 if (this.injectionCachingEnabled) {
-                    LOGGER.debug("Evaluating cached openhab-js injection...");
+                    logger.debug("Evaluating cached openhab-js injection...");
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
                 } else {
-                    LOGGER.debug("Evaluating openhab-js injection from the file system...");
+                    logger.debug("Evaluating openhab-js injection from the file system...");
                     eval(OPENHAB_JS_INJECTION_CODE);
                 }
             }
-            LOGGER.debug("Successfully initialized GraalJS script engine.");
+            logger.debug("Successfully initialized GraalJS script engine.");
         } catch (ScriptException e) {
-            LOGGER.error("Could not inject global script", e);
+            logger.error("Could not inject global script", e);
         }
     }
 
     @Override
     protected Object afterInvocation(Object obj) {
         lock.unlock();
+        logger.debug("Lock released after invocation.");
         return super.afterInvocation(obj);
     }
 
@@ -345,5 +351,37 @@ public class OpenhabGraalJSScriptEngine
         }
 
         return new InputStreamReader(ioStream);
+    }
+
+    @Override
+    public void lock() {
+        lock.lock();
+        logger.debug("Lock acquired.");
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        lock.lockInterruptibly();
+    }
+
+    @Override
+    public boolean tryLock() {
+        return lock.tryLock();
+    }
+
+    @Override
+    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
+        return lock.tryLock(l, timeUnit);
+    }
+
+    @Override
+    public void unlock() {
+        lock.unlock();
+        logger.debug("Lock released.");
+    }
+
+    @Override
+    public Condition newCondition() {
+        return lock.newCondition();
     }
 }

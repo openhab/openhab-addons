@@ -15,15 +15,23 @@ package org.openhab.binding.tacmi.internal.schema;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+
+import javax.measure.Unit;
 
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
@@ -33,11 +41,13 @@ import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
 import org.openhab.binding.tacmi.internal.schema.ApiPageEntry.Type;
+import org.openhab.binding.tacmi.internal.schema.TACmiSchemaHandler.UnitAndType;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +58,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +107,10 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     // Time stamp when status request was started.
     private final long statusRequestStartTS;
     private static @Nullable URI configDescriptionUriAPISchemaDefaults;
+    private final Pattern timePattern = Pattern.compile("[0-9]{2}:[0-9]{2}");
+    private final Pattern durationPattern = Pattern.compile("([0-9\\.]{1,4}[dhms] ?)+");
 
+    // needed for unit rewrite. it seems OHM is not registered as symbol in the units.
     public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, ApiPageEntry> entries,
             TACmiChannelTypeProvider channelTypeProvider) {
         super();
@@ -196,7 +210,18 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     sb = sb.delete(0, 0);
                 }
                 if (this.fieldType == FieldType.READ_ONLY || this.fieldType == FieldType.FORM_VALUE) {
+                    int len = sb.length();
                     int lids = sb.lastIndexOf(":");
+                    if (len - lids == 3) {
+                        int lids2 = sb.lastIndexOf(":", lids - 1);
+                        if (lids2 > 0 && (lids - lids2 >= 3 && lids - lids2 <= 7)) {
+                            // the given value might be a time. validate it
+                            String timeCandidate = sb.substring(lids2 + 1).trim();
+                            if (timeCandidate.length() == 5 && timePattern.matcher(timeCandidate).matches()) {
+                                lids = lids2;
+                            }
+                        }
+                    }
                     int fsp = sb.indexOf(" ");
                     if (fsp < 0 || lids < 0 || fsp > lids) {
                         logger.debug("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
@@ -317,6 +342,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             return; // special state to indicate value currently cannot be retrieved..
         }
         ApiPageEntry.Type type;
+        Unit<?> unit;
         State state;
         String channelType;
         ChannelTypeUID ctuid;
@@ -326,6 +352,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 state = OnOffType.from(this.buttonValue == ButtonValue.ON);
                 ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RW_UID;
                 channelType = "Switch";
+                unit = null;
                 break;
             case READ_ONLY:
             case FORM_VALUE:
@@ -334,6 +361,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 if (isOn || "OFF".equals(vs) || "AUS".equals(vs)) {
                     channelType = "Switch";
                     state = OnOffType.from(isOn);
+                    unit = null;
                     if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                         ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RO_UID;
                         type = Type.READ_ONLY_SWITCH;
@@ -350,48 +378,72 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         // for the older pre-X2 devices (i.e. the UVR 1611) we get a comma. So we
                         // we replace all ',' with '.' to check if it's a valid number...
                         String val = valParts[0].replace(',', '.');
-                        BigDecimal bd = new BigDecimal(val);
+                        float bd = Float.parseFloat(val);
                         if (valParts.length == 2) {
-                            if ("°C".equals(valParts[1])) {
-                                channelType = "Number:Temperature";
-                                state = new QuantityType<>(bd, SIUnits.CELSIUS);
-                            } else if ("%".equals(valParts[1])) {
-                                // channelType = "Number:Percent"; Number:Percent is currently not handled...
-                                channelType = "Number:Dimensionless";
-                                state = new QuantityType<>(bd, Units.PERCENT);
-                            } else if ("Imp".equals(valParts[1])) {
-                                // impulses - no idea how to map this to something useful here?
+                            var unitStr = valParts[1];
+                            var unitData = taCmiSchemaHandler.unitsCache.get(unitStr);
+                            if (unitData == null) {
+                                // we try to lookup the unit given by TA.
+                                try {
+                                    // Special rewrite for electrical resistance measurements
+                                    // U+2126 is the 'real' OHM sign, but it seems to be registered as Greek Omega
+                                    // (U+03A9) in the units
+                                    String unitStrRepl = unitStr.replace((char) 0x2126, (char) 0x03A9);
+                                    // we build a 'normalized' value for parsing in QuantityType.
+                                    var qt = new QuantityType<>(val + " " + unitStrRepl, Locale.US);
+                                    // Just use the unit. We need to remember the unit in the channel data because we
+                                    // need to send data to the C.M.I. in the same unit
+                                    unit = qt.getUnit();
+                                    channelType = "Number:" + UnitUtils.getDimensionName(unit);
+                                    unitData = new UnitAndType(unit, channelType);
+                                } catch (IllegalArgumentException iae) {
+                                    // failed to get unit...
+                                    if ("Imp".equals(unitStr) || "€$".contains(unitStr)) {
+                                        // special case
+                                        unitData = taCmiSchemaHandler.SPECIAL_MARKER;
+                                    } else {
+                                        unitData = taCmiSchemaHandler.NULL_MARKER;
+                                        logger.warn(
+                                                "Unhandled UoM '{}' - seen on channel {} '{}'; Message from QuantityType: {}",
+                                                valParts[1], shortName, description, iae.getMessage());
+                                    }
+                                }
+                                taCmiSchemaHandler.unitsCache.put(unitStr, unitData);
+                            }
+                            if (unitData == taCmiSchemaHandler.NULL_MARKER) {
+                                // no UoM mappable - just send value
                                 channelType = "Number";
+                                unit = null;
                                 state = new DecimalType(bd);
-                            } else if ("V".equals(valParts[1])) {
-                                channelType = "Number:Voltage";
-                                state = new QuantityType<>(bd, Units.VOLT);
-                            } else if ("A".equals(valParts[1])) {
-                                channelType = "Number:Current";
-                                state = new QuantityType<>(bd, Units.AMPERE);
-                            } else if ("Hz".equals(valParts[1])) {
-                                channelType = "Number:Frequency";
-                                state = new QuantityType<>(bd, Units.HERTZ);
-                            } else if ("kW".equals(valParts[1])) {
-                                channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
-                                state = new QuantityType<>(bd, Units.WATT);
-                            } else if ("kWh".equals(valParts[1])) {
-                                channelType = "Number:Power";
-                                bd = bd.multiply(new BigDecimal(1000));
-                                state = new QuantityType<>(bd, Units.KILOWATT_HOUR);
-                            } else if ("l/h".equals(valParts[1])) {
-                                channelType = "Number:Volume";
-                                bd = bd.divide(new BigDecimal(60));
-                                state = new QuantityType<>(bd, Units.LITRE_PER_MINUTE);
+                            } else if (unitData == taCmiSchemaHandler.SPECIAL_MARKER) {
+                                // special handling for unknown UoM
+                                if ("Imp".equals(unitStr)) { // Number of Pulses
+                                    // impulses - no idea how to map this to something useful here?
+                                    channelType = "Number";
+                                    unit = null;
+                                    state = new DecimalType(bd);
+                                } else if ("€$".contains(unitStr)) { // Currency's
+                                    var currency = "€".equals(valParts[1]) ? "EUR" : "USD";
+                                    unit = CurrencyUnits.getInstance().getUnit(currency);
+                                    if (unit == null) {
+                                        logger.trace("Currency {} is unknown, falling back to DecimalType", currency);
+                                        state = new DecimalType(bd);
+                                        channelType = "Number:Dimensionless";
+                                    } else {
+                                        state = new QuantityType<>(bd, unit);
+                                        channelType = "Number:" + UnitUtils.getDimensionName(unit);
+                                    }
+                                } else {
+                                    throw new IllegalStateException("BUG: " + unitStr + " is not mapped!");
+                                }
                             } else {
-                                channelType = "Number";
-                                state = new DecimalType(bd);
-                                logger.debug("Unhandled UoM for channel {} of type {} for '{}': {}", shortName,
-                                        channelType, description, valParts[1]);
+                                channelType = unitData.channelType();
+                                unit = unitData.unit();
+                                state = new QuantityType<>(bd, unit);
                             }
                         } else {
                             channelType = "Number";
+                            unit = null;
                             state = new DecimalType(bd);
                         }
                         if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
@@ -402,16 +454,64 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             type = Type.NUMERIC_FORM;
                         }
                     } catch (NumberFormatException nfe) {
-                        // not a number...
-                        channelType = "String";
-                        if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
-                            ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
-                            type = Type.READ_ONLY_STATE;
+                        ctuid = null;
+                        unit = null;
+                        // check for time - 'Time' field
+                        String[] valParts = vs.split(":");
+                        if (valParts.length == 2) {
+                            // convert it to zonedDateTime with today as date and the
+                            // default timezone.
+                            var zdt = LocalTime.parse(vs, DateTimeFormatter.ofPattern("HH:mm")).atDate(LocalDate.now())
+                                    .atZone(ZoneId.systemDefault());
+                            state = new DateTimeType(zdt);
+                            channelType = "DateTime";
+                            type = Type.NUMERIC_FORM;
+                            if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
+                                ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_DATE_TIME_RO_UID;
+                                type = Type.READ_ONLY_NUMERIC;
+                            }
                         } else {
-                            ctuid = null;
-                            type = Type.STATE_FORM;
+                            // durations are a set of '000d 00h 00m 00.0s` fields
+                            var durMatcher = durationPattern.matcher(vs);
+                            if (durMatcher.matches()) {
+                                // we have a duration
+                                var parts = vs.split(" ");
+                                float time = 0;
+                                // sum up parts to a time
+                                for (var timePart : parts) {
+                                    // last char is time unit, part before is time.
+                                    // for seconds it could be a fraction;
+                                    var pl = timePart.length();
+                                    var tu = timePart.charAt(pl - 1);
+                                    var tv = Float.parseFloat(timePart.substring(0, pl - 1));
+
+                                    time += switch (tu) {
+                                        case 'd' -> tv * 86400; // days - 24h*60m*60s
+                                        case 'h' -> tv * 3600; // hours - 60m*60s
+                                        case 'm' -> tv * 60; // minutes - 60s
+                                        case 's' -> tv; // seconds - pass value
+                                        default -> throw new IllegalArgumentException(
+                                                "Unexpected time unit " + tu + " in " + vs);
+                                    };
+                                }
+                                state = new QuantityType<>(time, Units.SECOND);
+                                channelType = "Number:Time";
+                                type = Type.TIME_PERIOD;
+                                if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
+                                    ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID;
+                                    type = Type.READ_ONLY_NUMERIC;
+                                }
+                            } else {
+                                // not a number and not time or duration
+                                channelType = "String";
+                                state = new StringType(vs);
+                                type = Type.STATE_FORM;
+                                if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
+                                    ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
+                                    type = Type.READ_ONLY_STATE;
+                                }
+                            }
                         }
-                        state = new StringType(vs);
                     }
                 }
                 break;
@@ -424,7 +524,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         }
         ApiPageEntry e = this.entries.get(shortName);
         boolean isNewEntry;
-        if (e == null || e.type != type || !channelType.equals(e.channel.getAcceptedItemType())) {
+        if (e == null || e.type != type || !channelType.equals(e.channel.getAcceptedItemType())
+                || !Objects.equals(e.unit, unit)) {
             @Nullable
             Channel channel = this.taCmiSchemaHandler.getThing().getChannel(shortName);
             @Nullable
@@ -439,8 +540,46 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
                     logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
+                if (cx2e == null) {
+                    // switch channel to readOnly
+                    this.fieldType = FieldType.READ_ONLY;
+                    if (type == Type.NUMERIC_FORM || type == Type.TIME_PERIOD) {
+                        if ("DateTime".equals(channelType)) {
+                            ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_DATE_TIME_RO_UID;
+                        } else {
+                            ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID;
+                        }
+                        type = Type.READ_ONLY_NUMERIC;
+                    } else {
+                        ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
+                        type = Type.READ_ONLY_STATE;
+                    }
+
+                }
             }
-            if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
+            if (e != null && !channelType.equals(e.channel.getAcceptedItemType())) {
+                // channel type has changed. we have to rebuild the channel.
+                this.channels.remove(channel);
+                channel = null;
+            }
+            if (channel != null && ctuid == null && cx2e != null) {
+                // custom channel type - check if it already exists and recreate when needed...
+                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
+                if (curCtuid == null) {
+                    // we have to re-create and re-register the channel uuid
+                    logger.debug("Re-Registering channel type UUID for: {} ", shortName);
+                    var ct = buildAndRegisterChannelType(shortName, type, cx2e);
+                    var channelBuilder = ChannelBuilder.create(channel);
+                    channelBuilder.withType(ct.getUID());
+                    channel = channelBuilder.build(); // update channel
+                } else {
+                    // check if channel uuid still exists and re-carete when needed
+                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
+                    if (ct == null) {
+                        buildAndRegisterChannelType(shortName, type, cx2e);
+                    }
+                }
+            } else if (channel == null || !Objects.equals(ctuid, channel.getChannelTypeUID())) {
                 logger.debug("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
                 this.configChanged = true;
                 ChannelUID channelUID = new ChannelUID(this.taCmiSchemaHandler.getThing().getUID(), shortName);
@@ -456,18 +595,9 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     logger.warn("Error configurating channel for {}: channeltype cannot be determined!", shortName);
                 }
                 channel = channelBuilder.build(); // add configuration property...
-            } else if (ctuid == null && cx2e != null) {
-                // custom channel type - check if it already exists and recreate when needed...
-                ChannelTypeUID curCtuid = channel.getChannelTypeUID();
-                if (curCtuid != null) {
-                    ChannelType ct = channelTypeProvider.getChannelType(curCtuid, null);
-                    if (ct == null) {
-                        buildAndRegisterChannelType(shortName, type, cx2e);
-                    }
-                }
             }
             this.configChanged = true;
-            e = new ApiPageEntry(type, channel, address, cx2e, state);
+            e = new ApiPageEntry(type, channel, unit, address, cx2e, state);
             this.entries.put(shortName, e);
             isNewEntry = true;
         } else {
@@ -485,6 +615,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     // we do 'On-Fetch' update when channel is changeable, otherwise 'On-Change'
                     switch (e.type) {
                         case NUMERIC_FORM:
+                        case TIME_PERIOD:
                         case STATE_FORM:
                         case SWITCH_BUTTON:
                         case SWITCH_FORM:
@@ -543,8 +674,15 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     }
                 }
                 break;
+            case TIME:
+                if (type == Type.TIME_PERIOD) {
+                    itemType = "Number";
+                } else {
+                    itemType = "DateTime";
+                }
+                break;
             default:
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unhandled OptionType: " + cx2e.optionType);
         }
         ChannelTypeBuilder<?> ctb = ChannelTypeBuilder
                 .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)

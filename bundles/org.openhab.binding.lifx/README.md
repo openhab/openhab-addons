@@ -143,7 +143,7 @@ Finally, **kitchen** is a White 800 (Low Voltage) light that has a _whitelight_ 
 Either create a single _Color_ item linked to the _color_ channel and define _Switch_, _Slider_ and _Colorpicker_ entries with this item in the sitemap.
 Or create items for each type (_Color_, _Switch_, _Dimmer_) and define the correspondent entries in the sitemap.
 
-### demo.things:
+### `demo.things` Example
 
 ```java
 Thing lifx:colorlight:living [ deviceId="D073D5A1A1A1" ]
@@ -178,7 +178,7 @@ Thing lifx:colormzlight:ceiling [ host="10.120.130.5" ]
 Thing lifx:whitelight:kitchen [ deviceId="D073D5D4D4D4", fadetime=150 ]
 ```
 
-### demo.items:
+### `demo.items` Example
 
 ```java
 // Living
@@ -224,7 +224,7 @@ Dimmer Kitchen_Temperature { channel="lifx:whitelight:kitchen:temperature" }
 Number:Temperature Kitchen_Abs_Temperature "Kitchen Light Color Temperature [%d K]" { channel="lifx:whitelight:kitchen:abstemperature" }
 ```
 
-### demo.sitemap:
+### `demo.sitemap` Example
 
 ```perl
 sitemap demo label="Main Menu"

@@ -24,4 +24,5 @@ public class OmnikInverterConfiguration {
     public String hostname = "";
     public int port;
     public int serial;
+    public int refreshInterval = 10;
 }

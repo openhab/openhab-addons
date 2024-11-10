@@ -34,7 +34,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -46,9 +45,12 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * Abstract class for components tests.
@@ -78,8 +80,11 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
+        if (useNewStyleChannels()) {
+            haThing.setProperty("newStyleChannels", "true");
+        }
         thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, transformationServiceProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+                channelTypeRegistry, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
@@ -101,6 +106,13 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
      * @return config topics
      */
     protected abstract Set<String> getConfigTopics();
+
+    /**
+     * If new style channels should be used for this test.
+     */
+    protected boolean useNewStyleChannels() {
+        return false;
+    }
 
     /**
      * Process payload to discover and configure component. Topic should be added to {@link #getConfigTopics()}
@@ -167,6 +179,43 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     /**
+     * Assert channel topics, label and value class
+     *
+     * @param component component
+     * @param channelId channel
+     * @param stateTopic state topic or empty string
+     * @param commandTopic command topic or empty string
+     * @param label label
+     * @param valueClass value class
+     * @param autoUpdatePolicy Auto Update Policy
+     */
+    protected static void assertChannel(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String stateTopic, String commandTopic, String label, Class<? extends Value> valueClass,
+            @Nullable AutoUpdatePolicy autoUpdatePolicy) {
+        var stateChannel = Objects.requireNonNull(component.getChannel(channelId));
+        assertChannel(stateChannel, stateTopic, commandTopic, label, valueClass);
+    }
+
+    /**
+     * Assert channel topics, label and value class
+     *
+     * @param stateChannel channel
+     * @param stateTopic state topic or empty string
+     * @param commandTopic command topic or empty string
+     * @param label label
+     * @param valueClass value class
+     * @param autoUpdatePolicy Auto Update Policy
+     */
+    protected static void assertChannel(ComponentChannel stateChannel, String stateTopic, String commandTopic,
+            String label, Class<? extends Value> valueClass, @Nullable AutoUpdatePolicy autoUpdatePolicy) {
+        assertThat(stateChannel.getChannel().getLabel(), is(label));
+        assertThat(stateChannel.getState().getStateTopic(), is(stateTopic));
+        assertThat(stateChannel.getState().getCommandTopic(), is(commandTopic));
+        assertThat(stateChannel.getState().getCache(), is(instanceOf(valueClass)));
+        assertThat(stateChannel.getChannel().getAutoUpdatePolicy(), is(autoUpdatePolicy));
+    }
+
+    /**
      * Assert channel state
      *
      * @param component component
@@ -184,18 +233,22 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         }
     }
 
-    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
-            String channelId) {
-        // It's already thingHandler, but not the spy version
-        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
-    }
-
     /**
      * Assert a channel triggers
      */
     protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, String trigger) {
-        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
+        verify(callbackMock).channelTriggered(eq(haThing), eq(component.getChannel(channelId).getChannel().getUID()),
+                eq(trigger));
+    }
+
+    /**
+     * Assert a channel does not triggers=
+     */
+    protected void assertNotTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(callbackMock, never()).channelTriggered(eq(haThing),
+                eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
     }
 
     /**
@@ -288,10 +341,9 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-                TransformationServiceProvider transformationServiceProvider, int subscribeTimeout,
-                int attributeReceiveTimeout) {
-            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    transformationServiceProvider, subscribeTimeout, attributeReceiveTimeout);
+                int subscribeTimeout, int attributeReceiveTimeout) {
+            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, new Jinjava(),
+                    subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override

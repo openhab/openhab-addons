@@ -165,6 +165,7 @@
 				<option value="enter">Enter</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>

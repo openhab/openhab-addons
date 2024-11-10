@@ -274,16 +274,16 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state",
-                "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, "zigbee2mqtt/light/state",
+                "zigbee2mqtt/light/set/state", "On/Off State", OnOffValue.class);
         assertThat(component.brightnessChannel, is(nullValue()));
 
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON_\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"OFF_\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
 
-        sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        sendCommand(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "OFF_");
     }
 
@@ -305,17 +305,17 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(2));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state",
-                "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, "zigbee2mqtt/light/state",
+                "zigbee2mqtt/light/set/state", "On/Off State", OnOffValue.class);
         assertChannel(component, Light.EFFECT_CHANNEL_ID, "zigbee2mqtt/light/effect", "zigbee2mqtt/light/set/effect",
                 "Lighting Effect", TextValue.class);
 
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.ON);
         publishMessage("zigbee2mqtt/light/effect", "party");
         assertState(component, Light.EFFECT_CHANNEL_ID, new StringType("party"));
         publishMessage("zigbee2mqtt/light/state", "{\"power\": \"OFF\"}");
-        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+        assertState(component, Light.SWITCH_CHANNEL_ID_DEPRECATED, OnOffType.OFF);
 
         sendCommand(component, Light.EFFECT_CHANNEL_ID, new StringType("rainbow"));
         assertPublished("zigbee2mqtt/light/set/effect", "rainbow");

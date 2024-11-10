@@ -15,8 +15,10 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
 import org.openhab.binding.smaenergymeter.internal.packet.FilteringPayloadHandler;
@@ -40,13 +42,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
     private final PacketListenerRegistry listenerRegistry;
     private @Nullable PacketListener listener;
     private @Nullable PayloadHandler handler;
-    private String serialNumber;
+    private String serialNumber = "";
 
     public SMAEnergyMeterHandler(Thing thing, PacketListenerRegistry listenerRegistry) {
         super(thing);
@@ -73,8 +76,8 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         EnergyMeterConfig config = getConfigAs(EnergyMeterConfig.class);
 
         try {
-            serialNumber = config.getSerialNumber();
-            if (serialNumber == null) {
+            serialNumber = Objects.requireNonNullElse(config.getSerialNumber(), "");
+            if (serialNumber.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Meter serial number missing");
                 return;

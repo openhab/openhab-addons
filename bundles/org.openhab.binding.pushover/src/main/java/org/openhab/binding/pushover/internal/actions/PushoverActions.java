@@ -50,7 +50,7 @@ public class PushoverActions implements ThingActions {
     private @NonNullByDefault({}) PushoverAccountHandler accountHandler;
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "sound", label = "@text/sendMessageActionInputSoundLabel", description = "@text/sendMessageActionInputSoundDescription", type = "java.lang.String", defaultValue = DEFAULT_SOUND) @Nullable String sound,
@@ -71,7 +71,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "sound", label = "@text/sendMessageActionInputSoundLabel", description = "@text/sendMessageActionInputSoundDescription", type = "java.lang.String", defaultValue = DEFAULT_SOUND) @Nullable String sound,
@@ -123,7 +123,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message) {
         logger.trace("ThingAction 'sendMessage' called with value(s): message='{}'", message);
         return send(getDefaultPushoverMessageBuilder(message), null);
@@ -134,7 +134,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
         logger.trace("ThingAction 'sendMessage' called with value(s): message='{}', title='{}'", message, title);
@@ -146,7 +146,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "ttl", label = "@text/sendMessageActionInputTTLLabel", description = "@text/sendMessageActionInputTTLDescription", type = "java.time.Duration") @Nullable Duration ttl) {
@@ -165,7 +165,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendURLMessageActionLabel", description = "@text/sendURLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendURLMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendURLMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "url", label = "@text/sendMessageActionInputURLLabel", description = "@text/sendMessageActionInputURLDescription", type = "java.lang.String", required = true) @Nullable String url,
@@ -190,7 +190,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendURLMessageActionLabel", description = "@text/sendURLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendURLMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendURLMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "url", label = "@text/sendMessageActionInputURLLabel", description = "@text/sendMessageActionInputURLDescription", type = "java.lang.String", required = true) @Nullable String url,
@@ -219,7 +219,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendHtmlMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendHtmlMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
         logger.trace("ThingAction 'sendHtmlMessage' called with value(s): message='{}', title='{}'", message, title);
@@ -231,7 +231,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendHtmlMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendHtmlMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "ttl", label = "@text/sendMessageActionInputTTLLabel", description = "@text/sendMessageActionInputTTLDescription", type = "java.time.Duration") @Nullable Duration ttl) {
@@ -250,7 +250,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMonospaceMessageActionLabel", description = "@text/sendMonospaceMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMonospaceMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMonospaceMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
         logger.trace("ThingAction 'sendMonospaceMessage' called with value(s): message='{}', title='{}'", message,
@@ -263,7 +263,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMonospaceMessageActionLabel", description = "@text/sendMonospaceMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMonospaceMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMonospaceMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "ttl", label = "@text/sendMessageActionInputTTLLabel", description = "@text/sendMessageActionInputTTLDescription", type = "java.time.Duration") @Nullable Duration ttl) {
@@ -282,7 +282,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendAttachmentMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendAttachmentMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String", required = true) @Nullable String attachment,
@@ -307,7 +307,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendAttachmentMessage(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendAttachmentMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "attachment", label = "@text/sendMessageActionInputAttachmentLabel", description = "@text/sendMessageActionInputAttachmentDescription", type = "java.lang.String", required = true) @Nullable String attachment,
@@ -336,7 +336,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendPriorityMessageActionLabel", description = "@text/sendPriorityMessageActionDescription")
-    public @ActionOutput(name = "receipt", label = "@text/sendPriorityMessageActionOutputLabel", description = "@text/sendPriorityMessageActionOutputDescription", type = "java.lang.String") String sendPriorityMessage(
+    public @ActionOutput(label = "@text/sendPriorityMessageActionOutputLabel", description = "@text/sendPriorityMessageActionOutputDescription", type = "java.lang.String") String sendPriorityMessage(
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,
             @ActionInput(name = "priority", label = "@text/sendMessageActionInputPriorityLabel", description = "@text/sendMessageActionInputPriorityDescription", type = "java.lang.Integer", defaultValue = DEFAULT_EMERGENCY_PRIORITY) @Nullable Integer priority) {
@@ -357,7 +357,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/cancelPriorityMessageActionLabel", description = "@text/cancelPriorityMessageActionDescription")
-    public @ActionOutput(name = "canceled", label = "@text/cancelPriorityMessageActionOutputLabel", description = "@text/cancelPriorityMessageActionOutputDescription", type = "java.lang.Boolean") Boolean cancelPriorityMessage(
+    public @ActionOutput(label = "@text/cancelPriorityMessageActionOutputLabel", description = "@text/cancelPriorityMessageActionOutputDescription", type = "java.lang.Boolean") Boolean cancelPriorityMessage(
             @ActionInput(name = "receipt", label = "@text/cancelPriorityMessageActionInputReceiptLabel", description = "@text/cancelPriorityMessageActionInputReceiptDescription", type = "java.lang.String", required = true) @Nullable String receipt) {
         logger.trace("ThingAction 'cancelPriorityMessage' called with value(s): '{}'", receipt);
         if (accountHandler == null) {
@@ -376,7 +376,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageToDeviceActionLabel", description = "@text/sendMessageToDeviceActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessageToDevice(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessageToDevice(
             @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String", required = true) @Nullable String device,
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title) {
@@ -395,7 +395,7 @@ public class PushoverActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/sendMessageToDeviceActionLabel", description = "@text/sendMessageToDeviceActionDescription")
-    public @ActionOutput(name = "sent", label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessageToDevice(
+    public @ActionOutput(label = "@text/sendMessageActionOutputLabel", description = "@text/sendMessageActionOutputDescription", type = "java.lang.Boolean") Boolean sendMessageToDevice(
             @ActionInput(name = "device", label = "@text/sendMessageActionInputDeviceLabel", description = "@text/sendMessageActionInputDeviceDescription", type = "java.lang.String", required = true) @Nullable String device,
             @ActionInput(name = "message", label = "@text/sendMessageActionInputMessageLabel", description = "@text/sendMessageActionInputMessageDescription", type = "java.lang.String", required = true) String message,
             @ActionInput(name = "title", label = "@text/sendMessageActionInputTitleLabel", description = "@text/sendMessageActionInputTitleDescription", type = "java.lang.String", defaultValue = DEFAULT_TITLE) @Nullable String title,

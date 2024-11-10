@@ -30,7 +30,7 @@ import org.openhab.core.util.HexUtils;
 /**
  * Test for RFXCom-binding
  *
- * @author James Hewitt-Thomas - New addition to the PRO RFXCom firmware
+ * @author James Hewitt-Thomas - Initial contribution, new addition to the PRO RFXCom firmware
  */
 @NonNullByDefault
 public class RFXComRawMessageTest {

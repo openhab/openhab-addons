@@ -63,7 +63,7 @@ parameters:
 
     - name: "Daily Production"
       class: "energy"
-      state_class: "total"      
+      state_class: "total_increasing"      
       uom: "kWh"
       scale: 0.01
       rule: 1

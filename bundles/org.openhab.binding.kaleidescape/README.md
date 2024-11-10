@@ -10,39 +10,41 @@ See [Kaleidescape-System-Control-Protocol-Reference-Manual.pdf](https://support.
 ## Supported Things
 
 All movie player components including the original K-Player series, M Class Players, Cinema One, Alto, and Strato are supported.
-It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
+It is important to choose the correct thing type to ensure the available channels are correct for the component being used.
 
-The supported thing types are:  
-`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
-`cinemaone` Cinema One (2nd Gen)  
-`alto`  
-`strato` Includes Strato, Strato S, or Strato C  
+The supported thing types are:
 
-The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.  
+- `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player
+- `cinemaone` Cinema One (2nd Gen)
+- `alto`
+- `strato` Includes Strato, Strato S, Strato C or Strato V
+
+The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.
 
 ## Discovery
 
-Manually initiated Auto-discovery will locate all supported Kaleidescape components if they are on the same IP subnet of the openHAB server.
+Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using SDDP.
+Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
 ## Thing Configuration
 
 The thing has the following configuration parameters:
 
-| Parameter Label          | Parameter ID           | Description                                                                                                                          | Accepted values                                      |
-|--------------------------|------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| Address                  | host                   | Host name or IP address of the Kaleidescape component                                                                                | A host name or IP address                            |
-| Port                     | port                   | Communication port of the IP connection                                                                                              | 10000 (default - should not need to change)          |
-| Serial Port              | serialPort             | Serial port for connecting directly a component                                                                                      | Serial port name (optional)                          |
-| Update Period            | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                   | 0 or 1 are the currently accepted values (default 0) |
-| Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps                                                                       | Boolean (default false)                              |
-| Initial Volume Setting   | initialVolume          | Initial volume level set when the binding starts up                                                                                  | 0 to 75 (default 25)                                 |
-| Load Highlighted Details | loadHighlightedDetails | When enabled the binding will automatically load the the metadata channels when the selected item in the UI (Movie or Album) changes | Boolean (default false)                              |
-| Load Album Details       | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                               | Boolean (default false) N/A for Alto and Strato      |
+| Parameter Label                   | Parameter ID           | Description                                                                                                                             | Accepted values                                      |
+|-----------------------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| Address                           | host                   | Host name or IP address of the Kaleidescape component                                                                                   | A host name or IP address                            |
+| Port                              | port                   | Communication port of the IP connection                                                                                                 | 10000 (default - should not need to change)          |
+| Serial Port                       | serialPort             | Serial port for connecting directly a component                                                                                         | Serial port name (optional)                          |
+| Update Period                     | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                      | 0 or 1 are the currently accepted values (default 0) |
+| Advanced Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps; when enabled the volume and mute channels described below are active    | Boolean (default false)                              |
+| Initial Volume Setting            | initialVolume          | Initial volume level set when the binding starts up                                                                                     | 0 to 75 (default 25)                                 |
+| Basic Volume Control Enabled      | volumeBasicEnabled     | Enables stateless volume up/down and mute controls in the K apps; cannot be used when `volumeEnabled` is true (see rules example below) | Boolean (default false)                              |
+| Load Highlighted Details          | loadHighlightedDetails | When enabled the binding will automatically load the the metadata channels when the selected item in the UI (Movie or Album) changes    | Boolean (default false)                              |
+| Load Album Details                | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                                  | Boolean (default false) N/A for Alto and Strato      |
 
 Some notes:
 
-- Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
 - The only caveat of note about this binding is the updatePeriod configuration parameter.
 - When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
 - In this case, the running time channels will also only sporadically update.
@@ -58,90 +60,92 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID                 | Item Type   | Description                                                                                                      |
-|----------------------------|-------------|------------------------------------------------------------------------------------------------------------------|
-| ui#power                   | Switch      | Turn the zone On or Off (system standby)                                                                         |
-| ui#volume                  | Dimmer      | A virtual volume that tracks the volume in K control apps, use as a proxy to adjust a real volume item via rules |
-| ui#mute                    | Switch      | A virtual mute switch that tracks the mute status in K control apps, use as a proxy to control a real mute item  |
-| ui#control                 | Player      | Control Movie Playback e.g. play/pause/next/previous/ffward/rewind                                               |
-| ui#title_name              | String      | The title of the movie currently playing                                                                         |
-| ui#play_mode               | String      | The current playback mode of the movie                                                                           |
-| ui#play_speed              | String      | The speed of playback scanning                                                                                   |
-| ui#title_num               | Number      | The current movie title number that is playing                                                                   |
-| ui#title_length            | Number:Time | The total running time of the currently playing movie (seconds)                                                  |
-| ui#title_loc               | Number:Time | The running time elapsed of the currently playing movie (seconds)                                                |
-| ui#chapter_num             | Number      | The current chapter number of the movie that is playing                                                          |
-| ui#chapter_length          | Number:Time | The total running time of the current chapter (seconds)                                                          |
-| ui#chapter_loc             | Number:Time | The running time elapsed of the current chapter                                                                  |
-| ui#movie_media_type        | String      | The type of media that is currently playing                                                                      |
-| ui#movie_location          | String      | Identifies the location in the movie, ie: Main content, Intermission, or End Credits                             |
-| ui#aspect_ratio            | String      | Identifies the aspect ratio of the movie                                                                         |
-| ui#video_mode              | String      | Raw output of video mode data from the component, format: 00:00:00                                               |
-| ui#video_mode_composite    | String      | Identifies the video mode currently active on the composite video output                                         |
-| ui#video_mode_component    | String      | Identifies the video mode currently active on the component video output                                         |
-| ui#video_mode_hdmi         | String      | Identifies the video mode currently active on the HDMI video output                                              |
-| ui#video_color             | String      | Provides color information about the current video output (Strato Only)                                          |
-| ui#video_color_eotf        | String      | Identifies the Electro-Optical Transfer Function standard of the current video output (Strato Only)              |
-| ui#content_color           | String      | Provides color information about the currently playing content (Strato Only)                                     |
-| ui#content_color_eotf      | String      | Identifies the Electro-Optical Transfer Function standard of the currently playing content (Strato Only)         |
-| ui#scale_mode              | String      | Identifies whether the image from the player requires scaling                                                    |
-| ui#screen_mask             | String      | Provides aspect ratio and masking information for the current video image                                        |
-| ui#screen_mask2            | String      | Provides masking information based on aspect ratio and overscan area                                             |
-| ui#cinemascape_mask        | String      | When in CinemaScape mode, provides information about the frame aspect ratio                                      |
-| ui#cinemascape_mode        | String      | Identifies the CinemaScape mode currently active                                                                 |
-| ui#ui_state                | String      | Provides information about which screen is visible in the Kaleidescape user interface                            |
-| ui#child_mode_state        | String      | Indicates if the onscreen display is displaying the child user interface                                         |
-| ui#readiness_state         | String      | Indicates the system's current idle mode (Not available on Premiere system players)                              |
-| ui#highlighted_selection   | String      | Specifies the handle of the movie or album currently selected on the user interface                              |
-| ui#user_defined_event      | String      | Will contain custom event messages generated by scripts, sent from another component, or system events           |
-| ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters      |
-| ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                        |
-| ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                       |
-| -- music channels (not available on Alto and Strato) --                                                                                                     |
-| music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                               |
-| music#repeat               | Switch      | Controls repeat playback for music                                                                               |
-| music#random               | Switch      | Controls random playback for music                                                                               |
-| music#track                | String      | The name of the currently playing track                                                                          |
-| music#artist               | String      | The name of the currently playing artist                                                                         |
-| music#album                | String      | The name of the currently playing album                                                                          |
-| music#play_mode            | String      | The current playback mode of the music                                                                           |
-| music#play_speed           | String      | The speed of playback scanning                                                                                   |
-| music#track_length         | Number:Time | The total running time of the current playing track (seconds)                                                    |
-| music#track_position       | Number:Time | The running time elapsed of the current playing track (seconds)                                                  |
-| music#track_progress       | Number      | The percentage complete of the current playing track                                                             |
-| music#track_handle         | String      | The handle of the currently playing track                                                                        |
-| music#album_handle         | String      | The handle of the currently playing album                                                                        |
-| music#nowplay_handle       | String      | The handle of the current now playing list                                                                       |
-| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                   |
-| detail#type                | String      | Indicates if the currently selected item is a Movie or Album                                                     |
-| detail#title               | String      | The title of the selected movie                                                                                  |
-| detail#album_title         | String      | The title of the selected album                                                                                  |
-| detail#cover_art           | Image       | Cover art image of the currently selected item                                                                   |
-| detail#cover_url           | String      | The url of the cover art                                                                                         |
-| detail#hires_cover_url     | String      | The url of the high resolution cover art                                                                         |
-| detail#rating              | String      | The MPAA rating of the selected movie                                                                            |
-| detail#year                | String      | The release year of the selected item                                                                            |
-| detail#running_time        | Number:Time | The total running time of the selected item (seconds)                                                            |
-| detail#actors              | String      | A list of actors appearing in the selected movie                                                                 |
-| detail#artist              | String      | The artist of the selected album                                                                                 |
-| detail#directors           | String      | A list of directors of the selected movie                                                                        |
-| detail#genres              | String      | A list of genres of the selected item                                                                            |
-| detail#rating_reason       | String      | An explaination of why the selected movie received its rating                                                    |
-| detail#synopsis            | String      | A synopsis of the selected movie                                                                                 |
-| detail#review              | String      | A review of the selected album                                                                                   |
-| detail#color_description   | String      | Indicates if the selected movie is in Color, Black and White, etc.                                               |
-| detail#country             | String      | The country that the selected movie originates from                                                              |
-| detail#aspect_ratio        | String      | The aspect ratio of the selected movie                                                                           |
-| detail#disc_location       | String      | Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)        |
+| Channel ID                 | Item Type   | Description                                                                                                                     |
+|----------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------|
+| ui#power                   | Switch      | Turn the zone On or Off (system standby)                                                                                        |
+| ui#volume                  | Dimmer      | A virtual volume that tracks the volume control from the K app, use as a proxy to adjust a real volume item via follow or rules |
+| ui#mute                    | Switch      | A virtual mute switch that tracks the mute status from the K app, use as a proxy to control a real mute item                    |
+| ui#control                 | Player      | Control Movie Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
+| ui#title_name              | String      | The title of the movie currently playing                                                                                        |
+| ui#play_mode               | String      | The current playback mode of the movie                                                                                          |
+| ui#play_speed              | String      | The speed of playback scanning                                                                                                  |
+| ui#title_num               | Number      | The current movie title number that is playing                                                                                  |
+| ui#title_length            | Number:Time | The total running time of the currently playing movie (seconds)                                                                 |
+| ui#title_loc               | Number:Time | The running time elapsed of the currently playing movie (seconds)                                                               |
+| ui#endtime                 | DateTime    | The date/time when the currently playing movie will end (timestamp)                                                             |
+| ui#chapter_num             | Number      | The current chapter number of the movie that is playing                                                                         |
+| ui#chapter_length          | Number:Time | The total running time of the current chapter (seconds)                                                                         |
+| ui#chapter_loc             | Number:Time | The running time elapsed of the current chapter                                                                                 |
+| ui#movie_media_type        | String      | The type of media that is currently playing                                                                                     |
+| ui#movie_location          | String      | Identifies the location in the movie, ie: Main content, Intermission, or End Credits                                            |
+| ui#aspect_ratio            | String      | Identifies the aspect ratio of the movie                                                                                        |
+| ui#video_mode              | String      | Raw output of video mode data from the component, format: 00:00:00                                                              |
+| ui#video_mode_composite    | String      | Identifies the video mode currently active on the composite video output                                                        |
+| ui#video_mode_component    | String      | Identifies the video mode currently active on the component video output                                                        |
+| ui#video_mode_hdmi         | String      | Identifies the video mode currently active on the HDMI video output                                                             |
+| ui#video_color             | String      | Provides color information about the current video output (Strato Only)                                                         |
+| ui#video_color_eotf        | String      | Identifies the Electro-Optical Transfer Function standard of the current video output (Strato Only)                             |
+| ui#content_color           | String      | Provides color information about the currently playing content (Strato Only)                                                    |
+| ui#content_color_eotf      | String      | Identifies the Electro-Optical Transfer Function standard of the currently playing content (Strato Only)                        |
+| ui#scale_mode              | String      | Identifies whether the image from the player requires scaling                                                                   |
+| ui#screen_mask             | String      | Provides aspect ratio and masking information for the current video image                                                       |
+| ui#screen_mask2            | String      | Provides masking information based on aspect ratio and overscan area                                                            |
+| ui#cinemascape_mask        | String      | When in CinemaScape mode, provides information about the frame aspect ratio                                                     |
+| ui#cinemascape_mode        | String      | Identifies the CinemaScape mode currently active                                                                                |
+| ui#ui_state                | String      | Provides information about which screen is visible in the Kaleidescape user interface                                           |
+| ui#child_mode_state        | String      | Indicates if the onscreen display is displaying the child user interface                                                        |
+| ui#readiness_state         | String      | Indicates the system's current idle mode (Not available on Premiere system players)                                             |
+| ui#highlighted_selection   | String      | Specifies the handle of the movie or album currently selected on the user interface                                             |
+| ui#user_defined_event      | String      | Will contain custom event messages generated by scripts, sent from another component, or system events                          |
+| ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters                     |
+| ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                                       |
+| ui#sendcmd                 | String      | Sends a raw command to the Kaleidescape player (WriteOnly)                                                                      |
+| -- music channels (not available on Alto and Strato) --                                                                                                                    |
+| music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                                              |
+| music#repeat               | Switch      | Controls repeat playback for music                                                                                              |
+| music#random               | Switch      | Controls random playback for music                                                                                              |
+| music#track                | String      | The name of the currently playing track                                                                                         |
+| music#artist               | String      | The name of the currently playing artist                                                                                        |
+| music#album                | String      | The name of the currently playing album                                                                                         |
+| music#title                | String      | The raw output from the MUSIC_TITLE api response for use in rules that require track, artist and album changes in one update    |
+| music#play_mode            | String      | The current playback mode of the music                                                                                          |
+| music#play_speed           | String      | The speed of playback scanning                                                                                                  |
+| music#track_length         | Number:Time | The total running time of the current playing track (seconds)                                                                   |
+| music#track_position       | Number:Time | The running time elapsed of the current playing track (seconds)                                                                 |
+| music#track_progress       | Number      | The percentage complete of the current playing track                                                                            |
+| music#track_handle         | String      | The handle of the currently playing track                                                                                       |
+| music#album_handle         | String      | The handle of the currently playing album                                                                                       |
+| music#nowplay_handle       | String      | The handle of the current now playing list                                                                                      |
+| -- metadata display channels (music related channels not available on Alto and Strato) --                                                                                  |
+| detail#type                | String      | Indicates if the currently selected item is a Movie or Album                                                                    |
+| detail#title               | String      | The title of the selected movie                                                                                                 |
+| detail#album_title         | String      | The title of the selected album                                                                                                 |
+| detail#cover_art           | Image       | Cover art image of the currently selected item                                                                                  |
+| detail#cover_url           | String      | The url of the cover art                                                                                                        |
+| detail#hires_cover_url     | String      | The url of the high resolution cover art                                                                                        |
+| detail#rating              | String      | The MPAA rating of the selected movie                                                                                           |
+| detail#year                | String      | The release year of the selected item                                                                                           |
+| detail#running_time        | Number:Time | The total running time of the selected item (seconds)                                                                           |
+| detail#actors              | String      | A list of actors appearing in the selected movie                                                                                |
+| detail#artist              | String      | The artist of the selected album                                                                                                |
+| detail#directors           | String      | A list of directors of the selected movie                                                                                       |
+| detail#genres              | String      | A list of genres of the selected item                                                                                           |
+| detail#rating_reason       | String      | An explaination of why the selected movie received its rating                                                                   |
+| detail#synopsis            | String      | A synopsis of the selected movie                                                                                                |
+| detail#review              | String      | A review of the selected album                                                                                                  |
+| detail#color_description   | String      | Indicates if the selected movie is in Color, Black and White, etc.                                                              |
+| detail#country             | String      | The country that the selected movie originates from                                                                             |
+| detail#aspect_ratio        | String      | The aspect ratio of the selected movie                                                                                          |
+| detail#disc_location       | String      | Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)                       |
 
 ## Full Example
 
 kaleidescape.things:
 
 ```java
-kaleidescape:player:myzone1 "M500 Living Rm" [ host="192.168.1.10", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
-kaleidescape:cinemaone:myzone2 "My Cinema One" [ host="192.168.1.11", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
-kaleidescape:strato:myzone3 "Strato Theater Rm" [ host="192.168.1.12", updatePeriod=0, loadHighlightedDetails=true ]
+kaleidescape:strato:myzone1 "Strato Theater Rm" [ host="192.168.1.10", updatePeriod=0, loadHighlightedDetails=true ]
+kaleidescape:player:myzone2 "M500 Living Rm" [ host="192.168.1.11", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
+kaleidescape:cinemaone:myzone3 "My Cinema One" [ host="192.168.1.12", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
 ```
 
 kaleidescape.items:
@@ -161,6 +165,7 @@ String z1_Ui_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzone1
 Number z1_Ui_TitleNum "Title Number: [%s]" { channel="kaleidescape:player:myzone1:ui#title_num" }
 Number:Time z1_Ui_TitleLength "Title Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_length" }
 Number:Time z1_Ui_TitleLoc "Title Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#title_loc" }
+DateTime z1_Ui_TitleEndTime "Title End Time: [%s]" { channel="kaleidescape:player:myzone1:ui#endtime" }
 Number z1_Ui_ChapterNum "Chapter Number: [%s]" { channel="kaleidescape:player:myzone1:ui#chapter_num" }
 Number:Time z1_Ui_ChapterLength "Chapter Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_length" }
 Number:Time z1_Ui_ChapterLoc "Chapter Location: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:ui#chapter_loc" }
@@ -202,6 +207,7 @@ String z1_Music_PlaySpeed "Play Speed: [%s]" { channel="kaleidescape:player:myzo
 Number:Time z1_Music_TrackLength "Track Length: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_length" }
 Number:Time z1_Music_TrackPosition "Track Position: [JS(ksecondsformat.js):%s]" { channel="kaleidescape:player:myzone1:music#track_position" }
 Number z1_Music_TrackProgress "Track Progress: [%s %%]" { channel="kaleidescape:player:myzone1:music#track_progress" }
+String z1_Music_Title "Music Title Raw: [%s]" { channel="kaleidescape:player:myzone1:music#title" }
 String z1_Music_TrackHandle "Track Handle: [%s]" { channel="kaleidescape:player:myzone1:music#track_handle" }
 String z1_Music_AlbumHandle "Album Handle: [%s]" { channel="kaleidescape:player:myzone1:music#album_handle" }
 String z1_Music_NowplayHandle "Now Playing Handle: [%s]" { channel="kaleidescape:player:myzone1:music#nowplay_handle" }
@@ -290,6 +296,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Ui_TitleNum icon="video"
             Text item=z1_Ui_TitleLength icon="time"
             Text item=z1_Ui_TitleLoc icon="time"
+            Text item=z1_Ui_TitleEndTime icon="time"
             Text item=z1_Ui_MovieMediaType icon="colorwheel"
             Text item=z1_Ui_ChapterNum icon="video"
             Text item=z1_Ui_ChapterLength icon="time"
@@ -333,6 +340,7 @@ sitemap kaleidescape label="Kaleidescape" {
             Text item=z1_Music_TrackLength icon="time"
             Text item=z1_Music_TrackPosition icon="time"
             Text item=z1_Music_TrackProgress icon="time"
+            Text item=z1_Music_Title icon="zoom"
             Text item=z1_Music_TrackHandle icon="zoom"
             Text item=z1_Music_AlbumHandle icon="zoom"
             Text item=z1_Music_NowplayHandle icon="zoom"
@@ -346,18 +354,13 @@ kaleidescape.rules:
 
 ```java
 var int lightPercent
-val kactions = getActions("kaleidescape","kaleidescape:player:myzone1")
 
 // send command to go to movie covers when button pressed
 rule "Go to Movie Covers"
 when
     Item z1_GoMovieCovers received command
 then
-    if (null === kactions) {
-      logInfo("kactions", "Actions not found, check thing ID")
-      return
-    }
-    kactions.sendKCommand("GO_MOVIE_COVERS")
+    z1_Ui_Sendcmd.sendCommand("GO_MOVIE_COVERS")
 end
 
 // send command to play a script
@@ -365,14 +368,36 @@ rule "Play Script - Great Vistas"
 when
     Item z1_PlayScript received command
 then
-    if (null === kactions) {
-      logInfo("kactions", "Actions not found, check thing ID")
-      return
-    }
-    kactions.sendKCommand("PLAY_SCRIPT:Great Vistas")
+    z1_Ui_Sendcmd.sendCommand("PLAY_SCRIPT:Great Vistas")
 end
 
-// handle a control system command sent from a script
+// handle volume events from K apps or IR remote
+// the events can be used to send a command to another item that controls volume
+rule "Handle volume events"
+when
+    Item z1_Ui_UserDefinedEvent received update
+then
+    var volEvt = newState.toString()
+
+    // When `volumeBasicEnabled` is true for the thing, VOLUME_UP, VOLUME_DOWN and TOGGLE_MUTE are received from the iPad and phone apps
+    // VOLUME_UP_PRESS/RELEASE, VOLUME_DOWN_PRESS/RELEASE, TOGGLE_MUTE events will always be received from the IR remote
+    // *RELEASE events are not used in this example
+
+    if (volEvt == "VOLUME_UP" || volEvt == "VOLUME_UP_PRESS") {
+        logInfo("k rules", "Volumne Up received")
+    }
+
+    if (volEvt == "VOLUME_DOWN" || volEvt == "VOLUME_DOWN_PRESS") {
+        logInfo("k rules", "Volumne Down received")
+    }
+
+    if (volEvt == "TOGGLE_MUTE") {
+        logInfo("k rules", "Mute Toggle received")
+    }
+end
+
+// handle a control system command sent from a kaleidescape script
+// the command string is specified in a "Send command to control system" script step
 rule "Handle script commands"
 when
     Item z1_Ui_UserDefinedEvent received update
@@ -386,13 +411,13 @@ rule "Bring up Lights when movie is over"
 when
     Item z1_Ui_MovieLocation changed from "Main content" to "End Credits"
 then
-    // fade the lights up slowly while the credits are rolling 
+    // fade the lights up slowly while the credits are rolling
     lightPercent = 0
     while (lightPercent < 100) {
         lightPercent = lightPercent + 5
         logInfo("k rules", "lights at " + lightPercent.toString + " percent")
         // myLightItem.sendCommand(lightPercent)
-        Thread::sleep(5000) 
+        Thread::sleep(5000)
     }
 end
 
@@ -412,6 +437,28 @@ then
     logInfo("k rules", "intermission over")
 end
 
+rule "Movie Search"
+when
+    Item z1_MovieSearch received update
+then
+    if (newState != NULL && newState.toString.length > 0) {
+        z1_Ui_Sendcmd.sendCommand("GO_MOVIE_LIST")
+        Thread::sleep(1000)
+        z1_Ui_Sendcmd.sendCommand("FILTER_LIST")
+        Thread::sleep(300)
+
+        var i = 0
+        var srch = newState.toString.toUpperCase
+        logInfo("k rules","Searching for: " + srch)
+
+        while (i < (srch.length)) {
+            z1_Ui_Sendcmd.sendCommand("KEYBOARD_CHARACTER:" + srch.charAt(i).toString)
+            Thread::sleep(100)
+            i++
+        }
+    }
+end
+
 // The following are no longer required since the thing configuration will enable automatic loading of metatdata.
 // However the examples are still valid for advanced use cases where retrieving metadata from an arbitrary content handle is desired.
 
@@ -419,43 +466,13 @@ rule "Load selected item Metadata"
 when
     Item z1_Ui_HighlightedSelection changed
 then
-    if (null === kactions) {
-      logInfo("kactions", "Actions not found, check thing ID")
-      return
-    }
-    kactions.sendKCommand("GET_CONTENT_DETAILS:" + z1_Ui_HighlightedSelection.state.toString + ":")
+    z1_Ui_Sendcmd.sendCommand("GET_CONTENT_DETAILS:" + z1_Ui_HighlightedSelection.state.toString + ":")
 end
 
 rule "Load Metadata for currently playing album"
 when
     Item z1_Music_AlbumHandle changed
 then
-    if (null === kactions) {
-      logInfo("kactions", "Actions not found, check thing ID")
-      return
-    }
-    kactions.sendKCommand("GET_CONTENT_DETAILS:" + z1_Music_AlbumHandle.state.toString + ":")
-end
-
-rule "Movie Search"
-when
-    Item z1_MovieSearch received update
-then
-    if (newState != NULL && newState.toString.length > 0) {
-        kactions.sendKCommand("GO_MOVIE_LIST")
-        Thread::sleep(1000)
-        kactions.sendKCommand("FILTER_LIST")
-        Thread::sleep(300)
-
-        var i = 0
-        var srch = newState.toString.toUpperCase
-        logInfo("kaleidescape.search","Searching for: " + srch)
-
-        while (i < (srch.length)) {
-            kactions.sendKCommand("KEYBOARD_CHARACTER:" + srch.charAt(i).toString)
-            Thread::sleep(100)
-            i++
-        }
-    }
+    z1_Ui_Sendcmd.sendCommand("GET_CONTENT_DETAILS:" + z1_Music_AlbumHandle.state.toString + ":")
 end
 ```

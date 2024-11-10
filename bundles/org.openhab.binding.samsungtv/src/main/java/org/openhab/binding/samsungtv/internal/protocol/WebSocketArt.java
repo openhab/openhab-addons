@@ -45,6 +45,7 @@ import javax.net.ssl.X509TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -111,6 +112,7 @@ class WebSocketArt extends WebSocketBase {
             String current_content_id;
             String content_id;
             String category_id;
+            int current_rotation_status;
             String is_shown;
             String type;
             String file_type;
@@ -147,6 +149,10 @@ class WebSocketArt extends WebSocketBase {
 
             public String getCurrentContentId() {
                 return Optional.ofNullable(current_content_id).orElse("");
+            }
+
+            public int getRotationStatus() {
+                return Optional.ofNullable(Integer.valueOf(current_rotation_status)).orElse(0);
             }
 
             public String getType() {
@@ -357,6 +363,7 @@ class WebSocketArt extends WebSocketBase {
                     getArtmodeStatus("get_auto_rotation_status");
                     getArtmodeStatus("get_current_artwork");
                     getArtmodeStatus("get_color_temperature");
+                    getArtmodeStatus("get_current_rotation");
                     break;
                 case "ms.channel.clientConnect":
                     logger.debug("{}: Another Art client has connected", host);
@@ -433,6 +440,11 @@ class WebSocketArt extends WebSocketBase {
                             }
                         }
                     }
+                    break;
+                case "current_rotation_status":
+                case "get_current_rotation":
+                    // Landscape = 1, Portrait = 2
+                    valueReceived(ART_ORIENTATION, OnOffType.from(data.getRotationStatus() == 2));
                     break;
                 case "set_brightness":
                 case "brightness_changed":

@@ -4,60 +4,33 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="channel-type:insteon:button">
-		<parameter name="related" type="text">
-			<label>Related Devices</label>
-			<description>List of related Insteon devices separated by a '+' sign.</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="channel-type:insteon:contact">
-		<parameter name="related" type="text">
-			<label>Related Devices</label>
-			<description>List of related Insteon devices separated by a '+' sign.</description>
-		</parameter>
-	</config-description>
-
 	<config-description uri="channel-type:insteon:dimmer">
-		<parameter name="dimmermax" type="integer" min="1" max="99">
-			<label>Maximum Brightness</label>
-			<description>Maximum brightness of the dimmer in percentage.</description>
+		<parameter name="onLevel" type="integer" min="0" max="100">
+			<label>On Level</label>
+			<description>Override the dimmer on level local setting.</description>
 		</parameter>
-		<parameter name="related" type="text">
-			<label>Related Devices</label>
-			<description>List of related Insteon devices separated by a '+' sign.</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="channel-type:insteon:keypad-button">
-		<parameter name="group" type="text">
-			<label>Group</label>
-			<description>Insteon broadcast group configured for this button.</description>
-		</parameter>
-		<parameter name="related" type="text">
-			<label>Related Devices</label>
-			<description>List of related Insteon devices separated by a '+' sign.</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="channel-type:insteon:keypad-button-fastonoff">
-		<parameter name="group" type="text">
-			<label>Group</label>
-			<description>Insteon broadcast group configured for this button.</description>
-		</parameter>
-	</config-description>
-
-	<config-description uri="channel-type:insteon:keypad-button-manualchange">
-		<parameter name="group" type="text">
-			<label>Group</label>
-			<description>Insteon broadcast group configured for this button.</description>
+		<parameter name="rampRate" type="decimal">
+			<label>Ramp Rate</label>
+			<description>Override the dimmer ramp rate local setting.</description>
+			<options>
+				<option value="0.1">0.1 Seconds (Instant)</option>
+				<option value="0.3">0.3 Seconds (Fast)</option>
+				<option value="2">2 Seconds (Medium)</option>
+				<option value="6.5">6.5 Seconds (Slow)</option>
+				<option value="19">19 Seconds</option>
+				<option value="23.5">23.5 Seconds</option>
+				<option value="28">28 Seconds</option>
+				<option value="32">32 Seconds</option>
+				<option value="38.5">38.5 Seconds</option>
+				<option value="47">47 Seconds</option>
+				<option value="90">1.5 Minutes</option>
+				<option value="150">2.5 Minutes</option>
+				<option value="210">3.5 Minutes</option>
+				<option value="270">4.5 Minutes</option>
+				<option value="360">6 Minutes</option>
+				<option value="480">8 Minutes</option>
+			</options>
 		</parameter>
 	</config-description>
 
-	<config-description uri="channel-type:insteon:switch">
-		<parameter name="related" type="text">
-			<label>Related Devices</label>
-			<description>List of related Insteon devices separated by a '+' sign.</description>
-		</parameter>
-	</config-description>
 </config-description:config-descriptions>

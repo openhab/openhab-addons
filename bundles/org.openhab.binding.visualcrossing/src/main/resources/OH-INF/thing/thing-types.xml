@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="visualcrossing"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="weather">
+		<label>Total Weather Data</label>
+		<description>Historical Weather Data &amp; Weather Forecast Data</description>
+
+		<channel-groups>
+			<channel-group id="basic" typeId="basic-channel-group"/>
+			<channel-group id="current-conditions" typeId="current-conditions-channel-group"/>
+			<channel-group id="day01" typeId="day-channel-group">
+				<label>Day T+1</label>
+			</channel-group>
+			<channel-group id="day02" typeId="day-channel-group">
+				<label>Day T+2</label>
+			</channel-group>
+			<channel-group id="day03" typeId="day-channel-group">
+				<label>Day T+3</label>
+			</channel-group>
+			<channel-group id="day04" typeId="day-channel-group">
+				<label>Day T+4</label>
+			</channel-group>
+			<channel-group id="day05" typeId="day-channel-group">
+				<label>Day T+5</label>
+			</channel-group>
+			<channel-group id="day06" typeId="day-channel-group">
+				<label>Day T+6</label>
+			</channel-group>
+			<channel-group id="day07" typeId="day-channel-group">
+				<label>Day T+7</label>
+			</channel-group>
+			<channel-group id="day08" typeId="day-channel-group">
+				<label>Day T+8</label>
+			</channel-group>
+			<channel-group id="day09" typeId="day-channel-group">
+				<label>Day T+9</label>
+			</channel-group>
+			<channel-group id="day10" typeId="day-channel-group">
+				<label>Day T+10</label>
+			</channel-group>
+			<channel-group id="day11" typeId="day-channel-group">
+				<label>Day T+11</label>
+			</channel-group>
+			<channel-group id="day12" typeId="day-channel-group">
+				<label>Day T+12</label>
+			</channel-group>
+			<channel-group id="day13" typeId="day-channel-group">
+				<label>Day T+13</label>
+			</channel-group>
+			<channel-group id="day14" typeId="day-channel-group">
+				<label>Day T+14</label>
+			</channel-group>
+			<channel-group id="day15" typeId="day-channel-group">
+				<label>Day T+15</label>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>API Key to connect to the cloud.</description>
+			</parameter>
+			<parameter name="location" type="text">
+				<label>Location</label>
+				<description>Is the address, partial address or latitude,longitude location for which to retrieve weather data. You
+					can also use US ZIP Codes.</description>
+			</parameter>
+			<parameter name="lang" type="text">
+				<label>Language</label>
+				<description>Sets the language of the translatable parts of the output such as the conditions field.</description>
+				<options>
+					<option value="ar">Arabic</option>
+					<option value="bg">Bulgarian</option>
+					<option value="cs">Czech</option>
+					<option value="da">Danish</option>
+					<option value="de">German</option>
+					<option value="el">Greek</option>
+					<option value="en">English</option>
+					<option value="es">Spanish</option>
+					<option value="fa">Persian</option>
+					<option value="fi">Farsi</option>
+					<option value="fr">French</option>
+					<option value="he">Hebrew</option>
+					<option value="hu">Hungarian</option>
+					<option value="it">Italian</option>
+					<option value="ja">Japanese</option>
+					<option value="ko">Korean</option>
+					<option value="nl">Dutch</option>
+					<option value="pl">Polish</option>
+					<option value="pt">Portuguese</option>
+					<option value="ru">Russian</option>
+					<option value="sk">Slovakian</option>
+					<option value="sr">Serbian</option>
+					<option value="sv">Swedish</option>
+					<option value="tr">Turkish</option>
+					<option value="uk">Ukrainian</option>
+					<option value="vi">Vietnamese</option>
+					<option value="zh">Chinese</option>
+				</options>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the server</description>
+				<advanced>true</advanced>
+				<default>https://weather.visualcrossing.com</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec (default 1h).</description>
+				<default>3600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="httpRetries" type="integer" min="0">
+				<label>HTTP Retries</label>
+				<description>How many times retry requests. </description>
+				<default>3</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

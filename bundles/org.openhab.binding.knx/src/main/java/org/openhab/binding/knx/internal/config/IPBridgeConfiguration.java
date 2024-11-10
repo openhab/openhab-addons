@@ -33,6 +33,7 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
     private String tunnelUserId = "";
     private String tunnelUserPassword = "";
     private String tunnelDeviceAuthentication = "";
+    private String tunnelSourceAddress = "";
 
     public Boolean getUseNAT() {
         return useNAT;
@@ -72,5 +73,9 @@ public class IPBridgeConfiguration extends BridgeConfiguration {
 
     public String getTunnelDeviceAuthentication() {
         return tunnelDeviceAuthentication;
+    }
+
+    public String getTunnelSourceAddress() {
+        return tunnelSourceAddress;
     }
 }

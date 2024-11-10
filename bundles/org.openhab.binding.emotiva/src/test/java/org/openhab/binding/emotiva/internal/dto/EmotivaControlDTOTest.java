@@ -38,8 +38,9 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
 
     @Test
     void marshalWithNoCommand() {
-        EmotivaControlDTO control = new EmotivaControlDTO(null);
+        var control = new EmotivaControlDTO(null);
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
+
         assertThat(xmlString, containsString("<emotivaControl/>"));
         assertThat(xmlString, not(containsString("<property")));
         assertThat(xmlString, not(containsString("</emotivaControl>")));
@@ -47,16 +48,18 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
 
     @Test
     void marshalNoCommand() {
-        EmotivaControlDTO control = new EmotivaControlDTO(Collections.emptyList());
+        var control = new EmotivaControlDTO(Collections.emptyList());
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
+
         assertThat(xmlString, containsString("<emotivaControl/>"));
     }
 
     @Test
     void marshalCommand() {
         EmotivaCommandDTO command = EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.set_volume, "10");
-        EmotivaControlDTO control = new EmotivaControlDTO(List.of(command));
+        var control = new EmotivaControlDTO(List.of(command));
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
+
         assertThat(xmlString, containsString("<emotivaControl>"));
         assertThat(xmlString, containsString("<set_volume value=\"10\" ack=\"yes\" />"));
         assertThat(xmlString, endsWith("</emotivaControl>\n"));
@@ -64,10 +67,10 @@ class EmotivaControlDTOTest extends AbstractDTOTestBase {
 
     @Test
     void marshalWithTwoCommands() {
-        EmotivaControlDTO control = new EmotivaControlDTO(
-                List.of(EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.power_on),
-                        EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.hdmi1)));
+        var control = new EmotivaControlDTO(List.of(EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.power_on),
+                EmotivaCommandDTO.fromTypeWithAck(EmotivaControlCommands.hdmi1)));
         String xmlString = xmlUtils.marshallJAXBElementObjects(control);
+
         assertThat(xmlString, containsString("<emotivaControl>"));
         assertThat(xmlString, containsString("<power_on ack=\"yes\" />"));
         assertThat(xmlString, containsString("<hdmi1 ack=\"yes\" />"));

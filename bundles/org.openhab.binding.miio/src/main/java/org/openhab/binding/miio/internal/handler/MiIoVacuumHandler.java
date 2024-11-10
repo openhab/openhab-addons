@@ -98,6 +98,7 @@ import com.google.gson.JsonObject;
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    private static final DateTimeFormatter PARSER_TZ = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
@@ -504,6 +505,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
 
     private void updateHistoryRecordLegacy(JsonArray historyData) {
         HistoryRecordDTO historyRecord = new HistoryRecordDTO();
+
         for (int i = 0; i < historyData.size(); ++i) {
             try {
                 BigInteger value = historyData.get(i).getAsBigInteger();
@@ -511,12 +513,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     case 0:
                         historyRecord.setStart(ZonedDateTime
                                 .ofInstant(Instant.ofEpochSecond(value.longValue()), ZoneId.systemDefault())
-                                .toString());
+                                .format(PARSER_TZ));
                         break;
                     case 1:
                         historyRecord.setEnd(ZonedDateTime
                                 .ofInstant(Instant.ofEpochSecond(value.longValue()), ZoneId.systemDefault())
-                                .toString());
+                                .format(PARSER_TZ));
                         break;
                     case 2:
                         historyRecord.setDuration(value.intValue());
@@ -549,14 +551,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private void updateHistoryRecord(HistoryRecordDTO historyRecordDTO) {
         JsonObject historyRecord = GSON.toJsonTree(historyRecordDTO).getAsJsonObject();
         if (historyRecordDTO.getStart() != null) {
-            historyRecord.addProperty("start", historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]);
-            updateState(CHANNEL_HISTORY_START_TIME,
-                    new DateTimeType(historyRecordDTO.getStart().split("\\+")[0].split("\\-")[0]));
+            DateTimeType start = new DateTimeType(historyRecordDTO.getStart());
+            historyRecord.addProperty("start", start.toLocaleZone().format(null));
+            updateState(CHANNEL_HISTORY_START_TIME, start);
         }
         if (historyRecordDTO.getEnd() != null) {
-            historyRecord.addProperty("end", historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]);
-            updateState(CHANNEL_HISTORY_END_TIME,
-                    new DateTimeType(historyRecordDTO.getEnd().split("\\+")[0].split("\\-")[0]));
+            DateTimeType end = new DateTimeType(historyRecordDTO.getEnd());
+            historyRecord.addProperty("end", end.toLocaleZone().format(null));
+            updateState(CHANNEL_HISTORY_END_TIME, end);
         }
         if (historyRecordDTO.getDuration() != null) {
             long duration = TimeUnit.SECONDS.toMinutes(historyRecordDTO.getDuration().longValue());

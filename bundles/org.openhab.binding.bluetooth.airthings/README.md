@@ -54,7 +54,7 @@ The `Airthings Wave Gen 1` and `Airthings Wave Radon / Wave 2` thing has the fol
 | temperature        | Number:Temperature               | The measured temperature                    |
 | humidity           | Number:Dimensionless             | The measured humidity                       |
 
-Note: For the `Airthings Wave Gen 1`, only one channel can be updated at each refreshInterval, so it will take refreshInterval x 4 cycles to sequentially update all 4 channels  
+Note: For the `Airthings Wave Gen 1`, only one channel can be updated at each refreshInterval, so it will take refreshInterval x 4 cycles to sequentially update all 4 channels
 
 ## Example
 

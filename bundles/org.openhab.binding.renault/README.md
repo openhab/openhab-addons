@@ -61,7 +61,7 @@ The "externaltemperature" only works on a few cars.
 The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car.
 This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
-The 'pause' and 'chargingmode' may not work on some cars. 
+The 'pause' and 'chargingmode' may not work on some cars.
 As an example, 'chargingmode' does not work on Dacia Spring cars.
 
 The Kamereon API Key changes periodically, which causes a communication error.

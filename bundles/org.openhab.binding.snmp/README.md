@@ -11,7 +11,7 @@ There are two supported things:
  - `target` for SNMP v1/v2c agents
  - `target3` for SNMP v3 agents
 
-Both represent a single network device. 
+Both represent a single network device.
 Things can be extended with `number`, `string` and `switch` channels.
 
 ## Binding Configuration
@@ -46,7 +46,7 @@ port=8162
 
 ### Common parameters for all thing-types
 
-The `hostname` is mandatory and can be set as FQDN or IP address. 
+The `hostname` is mandatory and can be set as FQDN or IP address.
 
 An optional configuration parameter is `refresh`.
 By using the `refresh` parameter the time between two subsequent GET requests to the target can be set.
@@ -85,7 +85,7 @@ Optional configuration parameters are: `securityModel`, `authProtocol`, `authPas
 The `securityModel` can be set to
 
 - `NO_AUTH_NO_PRIV` (default) - no encryption on authentication data, no encryption on transmitted data
-- `AUTH_NO_PRIV` - encryption on authentication data, no encryption on transmitted data 
+- `AUTH_NO_PRIV` - encryption on authentication data, no encryption on transmitted data
 - `AUTH_PRIV` - encryption on authentication data, encryption on transmitted data
 
 Depending on the `securityModel` some of the other parameters are also mandatory.
@@ -130,14 +130,13 @@ The `datatype` parameter is used to convert the configuration strings to the nee
 
 `number`-type channels have a `unit` parameter.
 The unit is added to the received value before it is passed to the channel.
-For commands (i.e. sending), the value is first converted to the configured unit. 
+For commands (i.e. sending), the value is first converted to the configured unit.
 
 | type     | item   | description                     |
 |----------|--------|---------------------------------|
 | number   | Number | a channel with a numeric value  |
 | string   | String | a channel with a string value   |
 | switch   | Switch | a channel that has two states   |
-
 
 ### SNMP Exception (Error) Handling
 
@@ -155,7 +154,7 @@ Valid values are all valid values for that channel (i.e. `ON`/`OFF` for a switch
 
 demo.things:
 
-```
+```java
 Thing snmp:target:router [ hostname="192.168.0.1", protocol="v2c" ] {
     Channels:
         Type number : inBytes [ oid=".1.3.6.1.2.1.31.1.1.1.6.2", mode="READ" ]
