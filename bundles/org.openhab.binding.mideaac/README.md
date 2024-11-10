@@ -41,7 +41,7 @@ No binding configuration is required.
 | pollingTime | Yes         | Polling time in seconds. Minimum time is 30 seconds.              | 60      |
 | timeout     | Yes         | Connecting timeout. Minimum time is 2 second, maximum 10 seconds. | 4       |
 | promptTone  | Yes         | "Ding" tone when command is received and executed.                | False   |
-| version     | Yes         | Version 3 has token, key and cloud requirements.                  | 3       |
+| version     | Yes         | Version 3 has token, key and cloud requirements.                  | 0       |
 
 ## Channels
 

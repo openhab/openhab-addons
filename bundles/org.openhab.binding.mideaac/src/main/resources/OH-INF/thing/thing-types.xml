@@ -41,10 +41,10 @@
 				<label>IP Address</label>
 				<description>IP Address of the device.</description>
 			</parameter>
-			<parameter name="ipPort" type="text" required="true">
+			<parameter name="ipPort" type="decimal" required="true">
 				<context>ipPort</context>
 				<label>IP Port</label>
-				<description>IP port of the device (for V2: 6444).</description>
+				<description>IP port of the device.</description>
 				<default>6444</default>
 			</parameter>
 			<parameter name="deviceId" type="text" required="true">
@@ -106,11 +106,11 @@
 				<description>After sending a command device will play "ding" tone when command is received and executed.</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="version" type="text" required="true">
+			<parameter name="version" type="decimal" required="true">
 				<context>version</context>
 				<label>AC Version</label>
-				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't. Leave blank to discover</description>
-				<default>3</default>
+				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 

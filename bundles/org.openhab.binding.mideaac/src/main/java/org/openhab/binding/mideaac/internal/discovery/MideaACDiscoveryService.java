@@ -70,7 +70,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     private Security security;
 
     /**
-     * Discovery Service
+     * Discovery Service Uses the default decryption for all devices
      */
     public MideaACDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, discoveryTimeoutSeconds, false);
@@ -152,7 +152,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (SocketTimeoutException e) {
-            logger.debug("Discovering poller timeout...");
+            logger.trace("Discovering poller timeout...");
         } catch (IOException e) {
             logger.debug("Error during discovery: {}", e.getMessage());
         } finally {
@@ -243,13 +243,14 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         final String ipAddress = packet.getAddress().getHostAddress();
         byte[] data = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 
-        logger.debug("Midea AC discover data ({}) from {}: '{}'", data.length, ipAddress, Utils.bytesToHex(data));
+        logger.trace("Midea AC discover data ({}) from {}: '{}'", data.length, ipAddress, Utils.bytesToHex(data));
 
         if (data.length >= 104 && (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")
                 || Utils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A"))) {
             logger.trace("Device supported");
-            String mSmartId, mSmartVersion = "", mSmartip = "", mSmartPort = "", mSmartSN = "", mSmartSSID = "",
-                    mSmartType = "";
+            String mSmartId, mSmartip = "", mSmartSN = "", mSmartSSID = "", mSmartType = "", mSmartPort = "",
+                    mSmartVersion = "";
+
             if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")) {
                 mSmartVersion = "2";
             }
@@ -260,7 +261,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
                 data = Arrays.copyOfRange(data, 8, data.length - 16);
             }
 
-            logger.trace("Version: {}", mSmartVersion);
+            logger.debug("Version: {}", mSmartVersion);
 
             byte[] id = Arrays.copyOfRange(data, 20, 26);
             logger.trace("Id Bytes: {}", Utils.bytesToHex(id));
@@ -273,10 +274,10 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Id: '{}'", mSmartId);
 
             byte[] encryptData = Arrays.copyOfRange(data, 40, data.length - 16);
-            logger.debug("Encrypt data: '{}'", Utils.bytesToHex(encryptData));
+            logger.trace("Encrypt data: '{}'", Utils.bytesToHex(encryptData));
 
             byte[] reply = security.aesDecrypt(encryptData);
-            logger.debug("Length: {}, Reply: '{}'", reply.length, Utils.bytesToHex(reply));
+            logger.trace("Length: {}, Reply: '{}'", reply.length, Utils.bytesToHex(reply));
 
             mSmartip = Byte.toUnsignedInt(reply[3]) + "." + Byte.toUnsignedInt(reply[2]) + "."
                     + Byte.toUnsignedInt(reply[1]) + "." + Byte.toUnsignedInt(reply[0]);
@@ -343,7 +344,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_IP_ADDRESS, ipAddress);
         properties.put(CONFIG_IP_PORT, port);
         properties.put(CONFIG_DEVICEID, id);
-        properties.put(PROPERTY_VERSION, version);
+        properties.put(CONFIG_VERSION, version);
         properties.put(PROPERTY_SN, sn);
         properties.put(PROPERTY_SSID, ssid);
         properties.put(PROPERTY_TYPE, type);
