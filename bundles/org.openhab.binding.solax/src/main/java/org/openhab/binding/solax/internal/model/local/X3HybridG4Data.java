@@ -194,7 +194,7 @@ public class X3HybridG4Data extends CommonLocalDeviceData {
 
     @Override
     public double getTotalConsumption() {
-        return ((double) ByteUtil.read32BitSigned(getFromRawData(88), getFromRawData(89))) / 10;
+        return ((double) ByteUtil.read32BitSigned(getFromRawData(88), getFromRawData(89))) / 100;
     }
 
     @Override
