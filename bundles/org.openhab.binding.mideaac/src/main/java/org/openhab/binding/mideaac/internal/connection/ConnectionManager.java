@@ -422,8 +422,8 @@ public class ConnectionManager {
                         }
                     } else {
                         droppedCommands = droppedCommands + 1;
-                        logger.debug("Problem with reading V2 response, skipping {} skipped count since startup {}", command,
-                                droppedCommands);
+                        logger.debug("Problem with reading V2 response, skipping {} skipped count since startup {}",
+                                command, droppedCommands);
                     }
                 }
                 return;
@@ -435,13 +435,13 @@ public class ConnectionManager {
             }
         } catch (SocketException e) {
             droppedCommands = droppedCommands + 1;
-            logger.debug("Socket exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress, command,
-                    droppedCommands);
+            logger.debug("Socket exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress,
+                    command, droppedCommands);
             throw new MideaConnectionException(e);
         } catch (IOException e) {
             droppedCommands = droppedCommands + 1;
-            logger.debug("IO exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress, command,
-                    droppedCommands);
+            logger.debug("IO exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress,
+                    command, droppedCommands);
             throw new MideaConnectionException(e);
         }
     }
