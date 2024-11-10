@@ -178,9 +178,10 @@ public class RequestLimiter {
 
     public synchronized int getRequestCountIfAvailable() {
         final int requestId = currentRequestCount;
-        ++currentRequestCount;
-        scheduler.schedule(this::saveLimiterData, 1, TimeUnit.SECONDS);
-        if (currentRequestCount > requestLimit) {
+        if (currentRequestCount < requestLimit) {
+            ++currentRequestCount;
+            scheduler.schedule(this::saveLimiterData, 1, TimeUnit.SECONDS);
+        } else {
             return INVALID_REQUEST_ID;
         }
         return requestId;

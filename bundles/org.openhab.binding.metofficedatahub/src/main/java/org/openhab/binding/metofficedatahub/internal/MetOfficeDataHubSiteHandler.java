@@ -56,8 +56,6 @@ import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MetOfficeDataHubSiteHandler} is responsible for handling commands, which are
@@ -68,7 +66,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISiteResponseListener {
 
-    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteHandler.class);
     private final Object checkDataRequiredSchedulerLock = new Object();
     private final Object checkDailySchedulerLock = new Object();
     private final TranslationProvider translationProvider;
@@ -98,24 +95,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
 
-        Runnable pollForHourly = () -> {
-            if (hourlyForecastPollManager.getIsDataRequired()) {
-                logger.debug("Doing a POLL for the HOURLY forecast");
-                sendForecastRequest(false);
-            } else {
-                logger.debug("Skipping a POLL for the HOURLY forecast");
-            }
-        };
-
-        Runnable pollForDaily = () -> {
-            if (dailyForecastPollManager.getIsDataRequired()) {
-                logger.debug("Doing a POLL for the DAILY forecast");
-                sendForecastRequest(true);
-            } else {
-                logger.debug("Skipping a POLL for the DAILY forecast");
-            }
-        };
-
         final ResponseDataProcessor updateHourlyFromCache = new ResponseDataProcessor() {
             @Override
             public void processResponse(final String content) {
@@ -131,9 +110,13 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         };
 
         this.hourlyForecastPollManager = new PollManager("Hourly", timeZoneProvider, scheduler, Duration.ofHours(1),
-                updateHourlyFromCache, pollForHourly);
+                updateHourlyFromCache, () -> {
+                    sendForecastRequest(false);
+                });
         this.dailyForecastPollManager = new PollManager("Daily", timeZoneProvider, scheduler, Duration.ofHours(3),
-                updateDailyFromCache, pollForDaily);
+                updateDailyFromCache, () -> {
+                    sendForecastRequest(true);
+                });
     }
 
     @Override
@@ -195,8 +178,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
                 updateStatus(metBridge.getThing().getStatus());
             }
             checkDataRequired();
-            hourlyForecastPollManager.reconfigurePolling();
-            dailyForecastPollManager.reconfigurePolling();
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -206,9 +187,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
         scheduleDataRequiredCheck();
 
-        // can be overridden by subclasses
-        // standard behavior is to refresh the linked channel,
-        // so the newly linked items will receive a state update.
         handleCommand(channelUID, RefreshType.REFRESH);
     }
 
@@ -220,11 +198,10 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // TODO: We want to coalesce these call's so only one poll is run ideally
         scheduler.execute(() -> {
             if (RefreshType.REFRESH.equals(command)) {
                 scheduleDataRequiredCheck();
-                dailyForecastPollManager.cachedPollOrLiveStart();
-                hourlyForecastPollManager.cachedPollOrLiveStart();
             }
         });
     }
@@ -266,7 +243,13 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         final String pollId = (daily) ? dailyPollKey : hourlyPollKey;
         final MetOfficeDataHubBridgeHandler metOfficeBridgeHandler = getMetOfficeDataHubBridge();
         if (metOfficeBridgeHandler != null) {
-            metOfficeBridgeHandler.getSiteApi().sendRequest(daily, location, this, pollId);
+            if (!metOfficeBridgeHandler.getSiteApi().sendRequest(daily, location, this, pollId)) {
+                if (daily) {
+                    dailyForecastPollManager.cachedPollOrLiveStart(false);
+                } else {
+                    hourlyForecastPollManager.cachedPollOrLiveStart(false);
+                }
+            }
         }
     }
 
@@ -277,7 +260,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private void scheduleDataRequiredCheck() {
         synchronized (checkDataRequiredSchedulerLock) {
             cancelDataRequiredCheck();
-            checkDataRequiredScheduler = scheduler.schedule(this::checkDataRequired, 0, TimeUnit.SECONDS);
+            checkDataRequiredScheduler = scheduler.schedule(this::checkDataRequired, 2, TimeUnit.SECONDS);
         }
     }
 
@@ -335,7 +318,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
         for (int dayOffset = 0; dayOffset <= 6; ++dayOffset) {
             // Calculate the correct array position for the data
-            final int dataIdx = forecastForthisHour + dayOffset;
+            final int dataIdx = (forecastForthisHour != -1) ? forecastForthisHour + dayOffset : -1;
 
             final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_DAILY_FORECAST,
                     dayOffset);
@@ -493,7 +476,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
         for (int hrOffset = 0; hrOffset <= 24; ++hrOffset) {
             // Calculate the correct array position for the data
-            final int dataIdx = forecastForthisHour + hrOffset;
+            final int dataIdx = (forecastForthisHour != -1) ? forecastForthisHour + hrOffset : -1;
             final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
 
             final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_HOURS_FORECAST,

@@ -38,6 +38,8 @@ import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MetOfficeDataHubBridgeHandler} models the account(s) to the MetOfficeDataHub services.
@@ -47,6 +49,8 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
         implements IRateLimiterListener, IConnectionStatusListener {
+
+    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
 
     private volatile MetOfficeDataHubBridgeConfiguration config = getConfigAs(
             MetOfficeDataHubBridgeConfiguration.class);
@@ -72,7 +76,8 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        bridgeId = getThing().getUID().getId();
+
+        bridgeId = getThing().getUID().toString();
         siteApi.registerListeners(bridgeId, this);
 
         config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
@@ -85,6 +90,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         siteApi.deregisterListeners(bridgeId, this);
+        siteApi.dispose();
     }
 
     @Override

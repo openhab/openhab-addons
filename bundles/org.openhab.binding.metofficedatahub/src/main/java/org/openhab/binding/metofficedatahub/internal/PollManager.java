@@ -83,14 +83,16 @@ public class PollManager {
         forecastJob.cancelScheduledTask(true);
     }
 
-    public void cachedPollOrLiveStart() {
+    public void cachedPollOrLiveStart(final boolean attemptLivePollIfRequired) {
         if (dataRequired) {
             if (!lastRepsonse.isEmpty()) {
                 logger.trace("Using cached {} forecast response data", pollName);
                 runCachedDataPoll.processResponse(lastRepsonse);
             } else {
                 logger.trace("Starting poll sequence for {} forecast data", pollName);
-                reconfigurePolling();
+                if (attemptLivePollIfRequired) {
+                    reconfigurePolling();
+                }
             }
         } else {
             logger.trace("Skipping refresh on non-required data for {} forecast", pollName);
@@ -114,6 +116,9 @@ public class PollManager {
         if (reconfigureIfRequired && !previousValue && dataRequired) {
             reconfigurePolling();
         }
+        if (dataRequired) {
+            cachedPollOrLiveStart(true);
+        }
     }
 
     public boolean getIsDataRequired() {
@@ -134,7 +139,7 @@ public class PollManager {
         // Poll if a poll hasn't been done before, or if the previous poll was before what would be now the new
         // poll intervals last poll time then a poll should be run now.
         if (lastForecastPoll == -1 || lastPollExpectedTime > lastForecastPoll) {
-            runLiveDataPoll.run();
+            liveDataPoll();
         } else {
             if (dataRequired && !lastRepsonse.isEmpty()) {
                 runCachedDataPoll.processResponse(lastRepsonse);
@@ -181,9 +186,18 @@ public class PollManager {
             initialDelayTimeToFirstCycle += RANDOM_GENERATOR.nextInt(60000);
             // Schedule the first poll to occur after the given delay
             forecastJob.scheduleExecution(initialDelayTimeToFirstCycle, () -> {
-                runLiveDataPoll.run();
+                liveDataPoll();
                 scheduleNextPoll();
             });
         }
     }
+
+    public void liveDataPoll() {
+        if (getIsDataRequired()) {
+            logger.debug("Doing a POLL for the {} forecast", pollName);
+            runLiveDataPoll.run();
+        } else {
+            logger.debug("Skipping a POLL for the {} forecast", pollName);
+        }
+    };
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.metofficedatahub.internal.api;
 
 import static org.openhab.binding.metofficedatahub.internal.MetOfficeDataHubBindingConstants.*;
 
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +34,7 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.storage.StorageService;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
@@ -63,6 +65,10 @@ public class SiteApi {
 
     private final String usageId;
 
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+
     @Activate
     public SiteApi(String usageId, @Reference HttpClientFactory httpClientFactory,
             @Reference StorageService storageService, @Reference TranslationProvider translationProvider,
@@ -71,8 +77,11 @@ public class SiteApi {
         this.usageId = usageId;
         this.httpClientFactory = httpClientFactory;
         this.apiAuth = new SiteApiAuthentication();
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
         this.requestLimiter = new RequestLimiter(usageId, storageService, timeZoneProvider, scheduler,
-                translationProvider, localeProvider, FrameworkUtil.getBundle(getClass()));
+                translationProvider, localeProvider, bundle);
         this.scheduler = scheduler;
     }
 
@@ -167,14 +176,21 @@ public class SiteApi {
                 }
             }
         };
-        sendAsyncSiteApiRequest(true, siteApiTestLocation, siteResponseListener);
+
+        if (requestLimiter.getRequestCountIfAvailable() == RequestLimiter.INVALID_REQUEST_ID) {
+            logger.warn("{}", getLocalizedText("comm.comm-check.no-quota-left"));
+            notifyConnectedListeners();
+            return;
+        }
+
+        sendAsyncSiteApiRequest(true, siteApiTestLocation, siteResponseListener, "validateSiteApiCheck");
     }
 
-    public void sendRequest(final boolean daily, final PointType location,
+    public boolean sendRequest(final boolean daily, final PointType location,
             final ISiteResponseListener siteResponseListener, final String pollId) {
-        if (requestLimiter.getCurrentRequestCount() == RequestLimiter.INVALID_REQUEST_ID) {
+        if (requestLimiter.getRequestCountIfAvailable() == RequestLimiter.INVALID_REQUEST_ID) {
             logger.debug("{} - Disabled requesting data - request limit has been hit", usageId);
-            return;
+            return false;
         }
 
         notifyRateLimiterListeners();
@@ -201,6 +217,7 @@ public class SiteApi {
                     if (result.isSucceeded()) {
                         final String response = getContentAsString();
                         if (response != null) {
+                            logger.trace("Got response for poll ID: \"{}\"", pollId);
                             notifyConnectedListeners();
                             scheduler.execute(() -> {
                                 if (daily) {
@@ -217,23 +234,33 @@ public class SiteApi {
             }
         };
 
-        sendAsyncSiteApiRequest(daily, location, listener);
+        sendAsyncSiteApiRequest(daily, location, listener, pollId);
+        return true;
     }
 
     public void sendAsyncSiteApiRequest(final boolean daily, final PointType location,
-            final Response.CompleteListener listener) {
+            final Response.CompleteListener listener, final String pollId) {
         final String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
-                .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString())
-                .replace(GET_FORECAST_KEY_LATITUDE, location.getLongitude().toString());
+                .replace(GET_FORECAST_KEY_LATITUDE, location.getLatitude().toString())
+                .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString());
 
         final Request request = httpClientFactory.getCommonHttpClient().newRequest(url).method(HttpMethod.GET)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
                 .timeout(GET_FORECAST_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+        logger.trace("Requesting using Poll ID {} URL: \"{}\"", pollId, url);
 
         try {
             apiAuth.addAuthentication(request).send(listener);
         } catch (AuthTokenException ate) {
             notifyAuthenticationListeners(false);
         }
+    }
+
+    // Localization functionality
+
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
     }
 }
