@@ -36,6 +36,10 @@
 			<channel id="lastUpdatedTime" typeId="lastUpdatedTime"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
