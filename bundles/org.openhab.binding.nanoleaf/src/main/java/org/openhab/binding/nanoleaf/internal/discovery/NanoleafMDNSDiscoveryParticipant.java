@@ -74,7 +74,7 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                 return null;
             }
         } catch (UnknownHostException e) {
-            logger.error("Error while checking IP address for nanoleaf controller: {}", host);
+            logger.warn("Error while checking IP address for nanoleaf controller: {}", host);
             return null;
         }
         properties.put(CONFIG_ADDRESS, host);
