@@ -40,6 +40,8 @@ You can set the **color** for each panel and in the case of a Nanoleaf Canvas or
 
 ## Discovery
 
+Note that the discovery is based upon IP V4 addresses as the binding does not support IP V6 addresses.
+
 ### Adding the Controller as a Thing
 
 To add a nanoleaf controller, go to your inbox and start a scan.
