@@ -146,16 +146,21 @@ These channels hold the different Work Area configurations. Right now a maximum 
 
 ## Actions
 
-The following actions are available for `automower`things:
+The following actions are available for `automower` things:
 
-| action name            | arguments      | description                                                                                     |
-|------------------------|----------------|-------------------------------------------------------------------------------------------------|
-| start                  | duration (int) | Starts the Automower® for the given duration (minutes), overriding the schedule                 |
-| pause                  | -              | Pauses the Automower® wherever it is currently located                                          |
-| parkUntilNextSchedule  | -              | Parks the Automower®, fully charges it and starts afterwards according to the schedule          |
-| parkUntilFurtherNotice | -              | Parks the Automower® until it is started again by the start action or the schedule gets resumed |
-| park                   | duration (int) | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
-| resumeSchedule         | -              | Resumes the schedule for the Automower®                                                         |
+| action name            | arguments        | description                                                                                     |
+|------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| start                  | `duration (int)` | Starts the Automower® for the given duration (minutes), overriding the schedule                 |
+| pause                  | -                | Pauses the Automower® wherever it is currently located                                          |
+| parkUntilNextSchedule  | -                | Parks the Automower®, fully charges it and starts afterwards according to the schedule          |
+| parkUntilFurtherNotice | -                | Parks the Automower® until it is started again by the start action or the schedule gets resumed |
+| park                   | `duration (int)` | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
+| resumeSchedule         | -                | Resumes the schedule for the Automower®                                                         |
+| confirmError           | -                | Confirm current non fatal error                                                                 |
+| setSettings            | `byte cuttingHeight, String headlightMode`            | Update Automower® settings                                 |
+| setWorkArea            | `long workAreaId, boolean enable, byte cuttingHeight` | Update work area settings                                  |
+| setStayOutZone         | `String zoneId, boolean enable`                       | Enable or disable stay-out zone                            |
+| setCalendarTask        | `Long workAreaId, short[] start, short[] duration, boolean[] monday, boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday, boolean[] saturday, boolean[] sunday`                           | Update calendar task settings                                                                   |
 
 ## Full Example
 
@@ -171,25 +176,25 @@ Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", user
 ### automower.items
 
 ```java
-String Automower_Mode               "Mode [%s]"                   { channel="automower:automower:mybridge:myAutomower:mode" }
-String Automower_Activity           "Activity [%s]"               { channel="automower:automower:mybridge:myAutomower:activity" }
-String Automower_State              "State [%s]"                  { channel="automower:automower:mybridge:myAutomower:state" }
-DateTime Automower_Last_Update      "Last Update"          { channel="automower:automower:mybridge:myAutomower:last-update" }
-Number Automower_Battery            "Battery [%d %%]"                { channel="automower:automower:mybridge:myAutomower:battery" }
-Number Automower_Error_Code         "Error Code [%d]"             { channel="automower:automower:mybridge:myAutomower:error-code" }
-DateTime Automower_Error_Time       "Error Time"             { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
-String Automower_Override_Action    "Override Action [%s]"        { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
-DateTime Automower_Next_Start_Time  "Next Start Time"        { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
-String Automower_Calendar_Tasks     "Planned Tasks [%s]"          { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
+String      Automower_Mode                          "Mode [%s]"                             { channel="automower:automower:mybridge:myAutomower:mode" }
+String      Automower_Activity                      "Activity [%s]"                         { channel="automower:automower:mybridge:myAutomower:activity" }
+String      Automower_State                         "State [%s]"                            { channel="automower:automower:mybridge:myAutomower:state" }
+DateTime    Automower_Last_Update                   "Last Update"                           { channel="automower:automower:mybridge:myAutomower:last-update" }
+Number      Automower_Battery                       "Battery [%d %%]"                       { channel="automower:automower:mybridge:myAutomower:battery" }
+Number      Automower_Error_Code                    "Error Code [%d]"                       { channel="automower:automower:mybridge:myAutomower:error-code" }
+DateTime    Automower_Error_Time                    "Error Time"                            { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
+String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
+DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
+String      Automower_Calendar_Tasks                "Planned Tasks [%s]"                    { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
 
-Number Automower_Command_Start               "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
-Switch Automower_Command_Resume              "Resume the schedule"          { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
-Switch Automower_Command_Pause               "Pause the automower"          { channel="automower:automower:mybridge:myAutomower:pause" }
-Number Automower_Command_Park                "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
-Switch Automower_Command_Park_Next_Schedule  "Park until next schedule"     { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
-Switch Automower_Command_Park_Notice         "Park until further notice"    { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
+Number      Automower_Command_Start                 "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
+Switch      Automower_Command_Resume                "Resume the schedule"                   { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
+Switch      Automower_Command_Pause                 "Pause the automower"                   { channel="automower:automower:mybridge:myAutomower:pause" }
+Number      Automower_Command_Park                  "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
+Switch      Automower_Command_Park_Next_Schedule    "Park until next schedule"              { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
+Switch      Automower_Command_Park_Notice           "Park until further notice"             { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
 
-Location Automower_Last_Position    "Last Position" { channel="automower:automower:mybridge:myAutomower:last-position" }
+Location    Automower_Last_Position                 "Last Position"                         { channel="automower:automower:mybridge:myAutomower:last-position" }
 ```
 
 ### automower.sitemap
