@@ -96,6 +96,7 @@
 /bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
 /bundles/org.openhab.binding.ekey/ @hmerk
+/bundles/org.openhab.binding.electroluxappliance/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
 /bundles/org.openhab.binding.emotiva/ @espenaf
