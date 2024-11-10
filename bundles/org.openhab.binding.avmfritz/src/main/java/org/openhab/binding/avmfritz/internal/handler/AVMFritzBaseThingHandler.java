@@ -258,9 +258,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
     private void updateDimmableLight(@Nullable LevelControlModel levelControlModel,
             @Nullable SimpleOnOffModel simpleOnOff) {
-        if (levelControlModel != null && simpleOnOff != null) {
+        if (levelControlModel != null) {
             PercentType brightness;
-            if (simpleOnOff.state) {
+            if (simpleOnOff == null || simpleOnOff.state) {
                 brightness = new PercentType(levelControlModel.getLevelPercentage());
             } else {
                 brightness = PercentType.ZERO;
