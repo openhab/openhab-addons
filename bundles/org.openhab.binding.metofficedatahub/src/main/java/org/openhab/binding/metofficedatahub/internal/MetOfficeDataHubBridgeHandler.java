@@ -66,18 +66,18 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
             @Reference StorageService storageService, @Reference TimeZoneProvider timeZoneProvider) {
         super(bridge);
+        bridgeId = getThing().getUID().getAsString();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
-        this.siteApi = new SiteApi(getThing().getThingTypeUID().toString(), httpClientFactory, storageService,
-                translationProvider, localeProvider, timeZoneProvider, scheduler);
+        this.siteApi = new SiteApi(bridgeId, httpClientFactory, storageService, translationProvider, localeProvider,
+                timeZoneProvider, scheduler);
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        bridgeId = getThing().getUID().toString();
         siteApi.registerListeners(bridgeId, this);
 
         config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);

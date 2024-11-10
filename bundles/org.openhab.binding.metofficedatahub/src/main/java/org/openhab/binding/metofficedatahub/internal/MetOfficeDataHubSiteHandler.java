@@ -72,6 +72,8 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private final LocaleProvider localeProvider;
     private final Bundle bundle;
     private final LocationProvider locationProvider;
+    private final PollManager dailyForecastPollManager;
+    private final PollManager hourlyForecastPollManager;
 
     private volatile MetOfficeDataHubSiteConfiguration config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
 
@@ -79,9 +81,6 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
     private @Nullable ScheduledFuture<?> dailyScheduler = null;
     private @Nullable ScheduledFuture<?> initTask = null;
-
-    private PollManager dailyForecastPollManager;
-    private PollManager hourlyForecastPollManager;
 
     private String dailyPollKey = "";
     private String hourlyPollKey = "";
