@@ -208,7 +208,8 @@ public class ShellyDeviceProfile {
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
-        isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX);
+        isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)
+                || thingType.equals(THING_TYPE_SHELLYPLUSRGBWPM_STR);
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;

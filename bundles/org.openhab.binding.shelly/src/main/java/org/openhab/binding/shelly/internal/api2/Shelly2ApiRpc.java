@@ -68,6 +68,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceC
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys.Shelly2DeviceStatusSysAvlUpdate;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
@@ -306,6 +307,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             fillDimmerSettings(profile, dc);
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
+        if (profile.isRGBW2) {
+            ArrayList<ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
+            rgbwLights.add(new ShellySettingsRgbwLight());
+            profile.settings.lights = rgbwLights;
+            profile.status.lights = new ArrayList<>();
+            profile.status.lights.add(new ShellySettingsLight());
+            fillRgbwSettings(profile, dc);
+        }
         profile.status.thermostats = profile.isTRV ? new ArrayList<>() : null;
 
         if (profile.hasBattery) {
@@ -920,6 +929,26 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
+        ShellyDeviceProfile profile = getProfile();
+        if (profile.isRGBW2) {
+            Shelly2RGBWStatus ls = apiRequest(
+                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(0),
+                    Shelly2RGBWStatus.class);
+            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
+            lightChannel.red = ls.rgb[0];
+            lightChannel.green = ls.rgb[1];
+            lightChannel.blue = ls.rgb[2];
+            lightChannel.white = ls.white;
+            lightChannel.brightness = ls.brightness.intValue();
+
+            ShellyStatusLight status = new ShellyStatusLight();
+            status.lights = new ArrayList<>();
+            status.lights.add(lightChannel);
+            status.ison = ls.output;
+
+            return status;
+        }
+
         throw new ShellyApiException("API call not implemented");
     }
 
@@ -1122,6 +1151,29 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+        Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        if (getProfile().isRGBW2) {
+            String brightness = parameters.get(SHELLY_COLOR_BRIGHTNESS);
+            if (brightness != null) {
+                params.brightness = Integer.parseInt(brightness);
+            }
+            String red = parameters.get(SHELLY_COLOR_RED);
+            String green = parameters.get(SHELLY_COLOR_GREEN);
+            String blue = parameters.get(SHELLY_COLOR_BLUE);
+            if (red != null && green != null && blue != null) {
+                params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+            }
+            String white = parameters.get(SHELLY_COLOR_WHITE);
+            if (white != null) {
+                params.white = Integer.parseInt(white);
+            }
+            if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
+                params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
+            }
+            params.id = lightIndex;
+
+            apiRequest(SHELLYRPC_METHOD_RGBW_SET, params, String.class);
+        }
         throw new ShellyApiException("API call not implemented");
     }
 
