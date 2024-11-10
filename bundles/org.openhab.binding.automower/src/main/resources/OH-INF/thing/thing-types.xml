@@ -532,7 +532,7 @@
 	<channel-type id="plannerRestrictedReasonType">
 		<item-type>String</item-type>
 		<label>Restricted Reason</label>
-		<description>The channel providing an reason that restrics current planner operation.</description>
+		<description>The channel providing a reason that restrics current planner operation.</description>
 		<state readOnly="true">
 			<options>
 				<option value="NONE">No restricted reason</option>
@@ -707,7 +707,7 @@
 	</channel-type>
 
 	<!-- Stayout Zones -->
-	<channel-type id="zoneDirtyType">
+	<channel-type id="zoneDirtyType" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Stayout zones Dirty Flag</label>
 		<description>If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable
@@ -733,7 +733,6 @@
 		<item-type>Switch</item-type>
 		<label>Stayout Zone Enabled</label>
 		<description>If the Stayout zone is enabled, the Automower® will not access the zone</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Work Areas -->
@@ -755,24 +754,23 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting height in percent</label>
 		<description>Cutting height in percent. 0-100</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<state pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="workareaEnabledType">
 		<item-type>Switch</item-type>
 		<label>Work Area Enabled</label>
 		<description>If the work area is enabled or disabled</description>
-		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="workareaProgressType">
+	<channel-type id="workareaProgressType" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Work Area Progress</label>
 		<description>The progress on a work area. EPOS mowers and systematic mowing work areas only.</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="workareaLastTimeCompletedType">
+	<channel-type id="workareaLastTimeCompletedType" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Time Completed</label>
 		<description>Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only.</description>
