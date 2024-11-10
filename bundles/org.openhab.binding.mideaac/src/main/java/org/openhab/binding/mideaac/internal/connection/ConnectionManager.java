@@ -66,16 +66,13 @@ public class ConnectionManager {
     private Security security;
     private final int version;
     private final boolean promptTone;
+    private boolean deviceIsConnected;
+    private int droppedCommands = 0;
 
     /**
      * True allows one short retry after connection problem
      */
     private boolean retry = true;
-
-    /**
-     * Suppresses the connection message if was online before
-     */
-    private boolean connectionMessage = true;
 
     public ConnectionManager(String ipAddress, int ipPort, int timeout, String key, String token, String cloud,
             String email, String password, String deviceId, int version, boolean promptTone) {
@@ -94,9 +91,6 @@ public class ConnectionManager {
         this.cloudProvider = CloudProviderDTO.getCloudProvider(cloud);
         this.security = new Security(cloudProvider);
     }
-
-    private boolean deviceIsConnected;
-    private int droppedCommands = 0;
 
     private Socket socket = new Socket();
     private InputStream inputStream = new ByteArrayInputStream(new byte[0]);
@@ -122,25 +116,6 @@ public class ConnectionManager {
     }
 
     /**
-     * Reset dropped commands from initialization in MideaACHandler
-     * Channel created for easy observation
-     * Dropped commands when no bytes to read after two tries or other
-     * byte reading problem. Device not responding.
-     */
-    public void resetDroppedCommands() {
-        droppedCommands = 0;
-    }
-
-    /**
-     * Resets Dropped command
-     * 
-     * @return dropped commands
-     */
-    public int getDroppedCommands() {
-        return droppedCommands = 0;
-    }
-
-    /**
      * After checking if the key and token need to be updated (Default = 0 Never)
      * The socket is established with the writer and inputStream (for reading responses)
      * The device is considered connected. V2 devices will proceed to send the poll or the
@@ -155,17 +130,28 @@ public class ConnectionManager {
             socket.setSoTimeout(timeout * 1000);
             socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
         } catch (IOException e) {
-            logger.debug("IOException connecting to {}: {}", ipAddress, e.getMessage());
-            deviceIsConnected = false;
+            // Retry addresses most common wifi connection problems- wait 5 seconds and try again
             if (retry) {
+                logger.debug("Retrying Socket, IOException connecting to {}: {}", ipAddress, e.getMessage());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {
-                    logger.debug("An interupted error (pause) has occured {}", ex.getMessage());
+                    logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
                 }
-                connect();
+                retry = false;
+                try {
+                    socket = new Socket();
+                    socket.setSoTimeout(timeout * 1000);
+                    socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
+                } catch (IOException e2) {
+                    deviceIsConnected = false;
+                    logger.debug("Second try IOException connecting to {}: {}", ipAddress, e2.getMessage());
+                    throw new MideaConnectionException(e2);
+                }
+            } else {
+                deviceIsConnected = false;
+                throw new MideaConnectionException(e);
             }
-            throw new MideaConnectionException(e);
         }
 
         // Create streams
@@ -177,16 +163,9 @@ public class ConnectionManager {
             deviceIsConnected = false;
             throw new MideaConnectionException(e);
         }
-        if (!deviceIsConnected || !connectionMessage) {
-            logger.info("Connected to IP {}", ipAddress);
-            resetConnectionMessage();
-        }
-        logger.debug("Connected to IP {}", ipAddress);
-        deviceIsConnected = true;
-        resetRetry();
 
         if (version == 3) {
-            logger.debug("Device {} require authentication, going to authenticate", ipAddress);
+            logger.debug("Device at IP: {} requires authentication, going to authenticate", ipAddress);
             try {
                 authenticate();
             } catch (MideaAuthenticationException | MideaConnectionException e) {
@@ -194,8 +173,13 @@ public class ConnectionManager {
                 throw e;
             }
         }
-        // requestStatus(getDoPoll());
+
+        if (!deviceIsConnected) {
+            logger.info("Connected to IP {}", ipAddress);
+        }
+        logger.debug("Connected to IP {}", ipAddress);
         deviceIsConnected = true;
+        retry = true;
     }
 
     /**
@@ -212,7 +196,7 @@ public class ConnectionManager {
         logger.trace("Cloud {}", cloud);
 
         if (!isBlank(token) && !isBlank(key) && !"".equals(cloud)) {
-            logger.debug("Device {} authenticating", ipAddress);
+            logger.debug("Device at IP: {} authenticating", ipAddress);
             doV3Handshake();
         } else {
             throw new MideaAuthenticationException("Token, Key and / or cloud provider missing");
@@ -228,13 +212,13 @@ public class ConnectionManager {
     private void doV3Handshake() throws MideaConnectionException, MideaAuthenticationException {
         byte[] request = security.encode8370(Utils.hexStringToByteArray(token), MsgType.MSGTYPE_HANDSHAKE_REQUEST);
         try {
-            logger.trace("Device {} writing handshake_request: {}", ipAddress, Utils.bytesToHex(request));
+            logger.trace("Device at IP: {} writing handshake_request: {}", ipAddress, Utils.bytesToHex(request));
 
             write(request);
             byte[] response = read();
 
             if (response != null && response.length > 0) {
-                logger.trace("Device {} response for handshake_request length: {}", ipAddress, response.length);
+                logger.trace("Device at IP: {} response for handshake_request length:{}", ipAddress, response.length);
                 if (response.length == 72) {
                     boolean success = security.tcpKey(Arrays.copyOfRange(response, 8, 72),
                             Utils.hexStringToByteArray(key));
@@ -247,7 +231,6 @@ public class ConnectionManager {
                         } catch (InterruptedException e) {
                             logger.debug("An interupted error (success) has occured {}", e.getMessage());
                         }
-                        // requestStatus(getDoPoll()); need to handle
                     } else {
                         throw new MideaAuthenticationException("Invalid Key. Correct Key in configuration.");
                     }
@@ -255,7 +238,7 @@ public class ConnectionManager {
                     throw new MideaAuthenticationException("Authentication failed!");
                 } else {
                     logger.warn("Authentication reponse unexpected data length ({} instead of 72)!", response.length);
-                    throw new MideaAuthenticationException("Invalid Key. Correct Key in configuration.");
+                    throw new MideaAuthenticationException("Unexpected authentication response length");
                 }
             }
         } catch (IOException e) {
@@ -290,7 +273,7 @@ public class ConnectionManager {
      * Normal device response in 0.75 - 1 second range
      * If still empty, send the bytes again. If there are bytes, the read method is called.
      * If the socket times out with no response the command is dropped. There will be another poll
-     * in the time set by the user (30 seconds min) or the set command can be retried
+     * in the time set by the user (30 seconds min). A Set command will need to be resent.
      * 
      * @param command either the set or polling command
      * @throws MideaAuthenticationException
@@ -325,7 +308,7 @@ public class ConnectionManager {
             } catch (InterruptedException e) {
                 logger.debug("An interupted error (retrycommand2) has occured {}", e.getMessage());
                 Thread.currentThread().interrupt();
-                // Note, but continue anyway. Command will be dropped
+                // Note, but continue anyway for second write.
             }
 
             if (inputStream.available() == 0) {
@@ -340,7 +323,7 @@ public class ConnectionManager {
                 if (version == 3) {
                     Decryption8370Result result = security.decode8370(responseBytes);
                     for (byte[] response : result.getResponses()) {
-                        logger.debug("Response length:{} IP address:{} ", response.length, ipAddress);
+                        logger.debug("Response length: {} IP address: {} ", response.length, ipAddress);
                         if (response.length > 40 + 16) {
                             byte[] data = security.aesDecrypt(Arrays.copyOfRange(response, 40, response.length - 16));
 
@@ -383,12 +366,12 @@ public class ConnectionManager {
                                 default:
                                     logger.debug("Invalid response type: {}", data[0x9]);
                             }
-                            logger.trace("Response Type: {} and bodyType:{}", responseType, bodyType2);
+                            logger.trace("Response Type: {} and bodyType: {}", responseType, bodyType2);
 
                             // The response data from the appliance includes a packet header which we don't want
                             data = Arrays.copyOfRange(data, 10, data.length);
                             byte bodyType = data[0x0];
-                            logger.trace("Response Type expected: {} and bodyType:{}", responseType, bodyType);
+                            logger.trace("Response Type expected: {} and bodyType: {}", responseType, bodyType);
                             logger.trace("Bytes in HEX, decoded and stripped without header: length: {}, data: {}",
                                     data.length, Utils.bytesToHex(data));
                             logger.debug("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}",
@@ -401,7 +384,7 @@ public class ConnectionManager {
                                 }
                                 if (bodyType != -64) {
                                     if (bodyType == 30) {
-                                        logger.warn("Error response 0x1E received {} from IP Address {}", bodyType,
+                                        logger.warn("Error response 0x1E received {} from IP Address:{}", bodyType,
                                                 ipAddress);
                                         return;
                                     }
@@ -410,7 +393,7 @@ public class ConnectionManager {
                                 }
                                 lastResponse = new Response(data, version, responseType, bodyType);
                                 try {
-                                    logger.trace("data length is {} version is {} IP address is {}", data.length,
+                                    logger.trace("Data length is {}, version is {}, IP address is {}", data.length,
                                             version, ipAddress);
                                     if (callback != null) {
                                         callback.updateChannels(lastResponse);
@@ -432,42 +415,42 @@ public class ConnectionManager {
                                 Utils.bytesToHex(data));
 
                         lastResponse = new Response(data, version, "", (byte) 0x00);
-                        logger.debug("V2 data length is {} version is {} Ip Address is {}", data.length, version,
+                        logger.debug("Data length is {}, version is {}, Ip Address is {}", data.length, version,
                                 ipAddress);
                         if (callback != null) {
                             callback.updateChannels(lastResponse);
                         }
                     } else {
                         droppedCommands = droppedCommands + 1;
-                        logger.debug("Problem with reading V2 response, skipping command {} dropped count{}", command,
+                        logger.debug("Problem with reading V2 response, skipping {} skipped count since startup {}", command,
                                 droppedCommands);
                     }
                 }
                 return;
             } else {
                 droppedCommands = droppedCommands + 1;
-                logger.debug("Problem with reading response, skipping command {} dropped count{}", command,
+                logger.debug("Problem with reading response, skipping {} skipped count since startup {}", command,
                         droppedCommands);
                 return;
             }
         } catch (SocketException e) {
-            logger.debug("SocketException writing to {}: {}", ipAddress, e.getMessage());
             droppedCommands = droppedCommands + 1;
-            logger.debug("Socket exception, skipping command {} dropped count{}", command, droppedCommands);
+            logger.debug("Socket exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress, command,
+                    droppedCommands);
             throw new MideaConnectionException(e);
         } catch (IOException e) {
-            logger.debug(" Send IOException writing to  {}: {}", ipAddress, e.getMessage());
             droppedCommands = droppedCommands + 1;
-            logger.debug("Socket exception, skipping command {} dropped count{}", command, droppedCommands);
+            logger.debug("IO exception on IP: {}, skipping command {} skipped count since startup {}", ipAddress, command,
+                    droppedCommands);
             throw new MideaConnectionException(e);
         }
     }
 
     /**
      * Closes all elements of the connection before starting a new one
+     * Makes sure writer, inputStream and socket are closed before each command is started
      */
     public synchronized void disconnect() {
-        // Make sure writer, inputStream and socket are closed before each command is started
         logger.debug("Disconnecting from device at {}", ipAddress);
 
         InputStream inputStream = this.inputStream;
@@ -498,7 +481,7 @@ public class ConnectionManager {
         try {
             int len = inputStream.read(bytes);
             if (len > 0) {
-                logger.debug("Response received length: {} Device IP {}", len, ipAddress);
+                logger.debug("Response received length: {} from device at IP: {}", len, ipAddress);
                 bytes = Arrays.copyOfRange(bytes, 0, len);
                 return bytes;
             }
@@ -527,25 +510,7 @@ public class ConnectionManager {
     }
 
     /**
-     * Reset Retry controls the short 5 second delay
-     * Before starting 30 second delays. (More severe Wifi issue)
-     * It is reset after a successful connection
-     */
-    private void resetRetry() {
-        retry = true;
-    }
-
-    /**
-     * Limit logging of INFO connection messages to
-     * only when the device was Offline in its prior
-     * state
-     */
-    private void resetConnectionMessage() {
-        connectionMessage = true;
-    }
-
-    /**
-     * Disconnects from the device
+     * Disconnects from the AC device
      * 
      * @param force
      */
