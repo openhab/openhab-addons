@@ -37,4 +37,13 @@ public enum DateQueryParameterType {
     public String toString() {
         return name;
     }
+
+    public static DateQueryParameterType of(String name) {
+        for (DateQueryParameterType type : values()) {
+            if (type.name.equals(name)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown date query parameter: " + name);
+    }
 }
