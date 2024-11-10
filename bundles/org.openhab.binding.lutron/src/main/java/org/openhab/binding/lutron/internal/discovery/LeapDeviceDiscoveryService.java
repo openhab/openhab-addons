@@ -120,7 +120,7 @@ public class LeapDeviceDiscoveryService extends AbstractThingHandlerDiscoverySer
                             // Don't discover sensors. Using occupancy groups instead.
                             break;
                         default:
-                            logger.info("Unrecognized device type: {} ({})", device.deviceType, deviceId);
+                            logger.info("Unrecognized device type: {} id: {}", device.deviceType, deviceId);
                             break;
                     }
                 }
