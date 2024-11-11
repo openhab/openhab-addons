@@ -239,8 +239,20 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     public boolean containsPriceFor(long timestamp) {
         SortedSet<AwattarPrice> localPrices = getPrices();
-        return localPrices != null && localPrices.first().timerange().start() <= timestamp
-                && localPrices.last().timerange().end() > timestamp;
+        if (localPrices == null) {
+            return false;
+        }
+        return new TimeRange(localPrices.first().timerange().start(), localPrices.last().timerange().end())
+                .contains(timestamp);
+    }
+
+    public boolean containsPriceFor(TimeRange timeRange) {
+        SortedSet<AwattarPrice> localPrices = getPrices();
+        if (localPrices == null) {
+            return false;
+        }
+        return new TimeRange(localPrices.first().timerange().start(), localPrices.last().timerange().end())
+                .contains(timeRange);
     }
 
     @Override
