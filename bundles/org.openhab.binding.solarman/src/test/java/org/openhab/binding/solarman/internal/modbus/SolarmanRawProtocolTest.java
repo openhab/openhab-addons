@@ -35,24 +35,21 @@ import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
  */
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
-class SolarmanV5ProtocolTest {
+class SolarmanRawProtocolTest {
     SolarmanLoggerConnection solarmanLoggerConnection = (@NotNull SolarmanLoggerConnection) mock(
             SolarmanLoggerConnection.class);
 
     private SolarmanLoggerConfiguration loggerConfiguration = new SolarmanLoggerConfiguration("192.168.1.1", 8899,
-            "1234567890", "sg04lp3", 60, SolarmanLoggerMode.V5MODBUS.toString(), null);
+            "1234567890", "sg04lp3", 60, SolarmanLoggerMode.RAWMODBUS.toString(), null);
 
-    private SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(loggerConfiguration);
+    private SolarmanRawProtocol solarmanRawProtocol = new SolarmanRawProtocol(loggerConfiguration);
 
     @Test
-    void testbuildSolarmanV5Frame() {
-        byte[] requestFrame = solarmanV5Protocol.buildSolarmanV5Frame((byte) 0x03, 0x0000, 0x0020);
-
-        byte[] expectedFrame = { (byte) 0xA5, (byte) 0x17, (byte) 0x00, (byte) 0x10, (byte) 0x45, (byte) 0x00,
-                (byte) 0x00, (byte) 0xD2, (byte) 0x02, (byte) 0x96, (byte) 0x49, (byte) 0x02, (byte) 0x00, (byte) 0x00,
-                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-                (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x03, (byte) 0x00, (byte) 0x00,
-                (byte) 0x00, (byte) 0x21, (byte) 0x85, (byte) 0xD2, (byte) 0x9D, (byte) 0x15 };
+    void testbuildSolarmanRawFrame() {
+        byte[] requestFrame = solarmanRawProtocol.buildSolarmanRawFrame((byte) 0x03, 0x0063, 0x006D);
+        byte[] expectedFrame = { (byte) 0x03, (byte) 0xE8, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x08,
+                (byte) 0x01, (byte) 0x03, (byte) 0x00, (byte) 0x63, (byte) 0x00, (byte) 0x0B, (byte) 0xF4,
+                (byte) 0x13 };
 
         assertArrayEquals(requestFrame, expectedFrame);
     }
@@ -60,69 +57,69 @@ class SolarmanV5ProtocolTest {
     @Test
     void testReadRegister0x01() throws SolarmanException {
         // given
-        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
-                hexStringToByteArray("a5000000000000000000000000000000000000000000000000010301000ac84300000015"));
+        when(solarmanLoggerConnection.sendRequest(any()))
+                .thenReturn(hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
 
         // when
-        Map<Integer, byte[]> regValues = solarmanV5Protocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 1, 1);
+        Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 1, 1);
 
         // then
         assertEquals(1, regValues.size());
         assertTrue(regValues.containsKey(1));
-        assertEquals("000A", bytesToHex(regValues.get(1)));
+        assertEquals("1680", bytesToHex(regValues.get(1)));
     }
 
     @Test
     void testReadRegisters0x02to0x03() throws SolarmanException {
         // given
-        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
-                hexStringToByteArray("a5000000000000000000000000000000000000000000000000010302000a000b13f600000015"));
+        when(solarmanLoggerConnection.sendRequest(any()))
+                .thenReturn(hexStringToByteArray("03E800000019010316168016801590012C11940014005A000000050096007D"));
 
         // when
-        Map<Integer, byte[]> regValues = solarmanV5Protocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 2, 3);
+        Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 2, 3);
 
         // then
         assertEquals(2, regValues.size());
         assertTrue(regValues.containsKey(2));
         assertTrue(regValues.containsKey(3));
-        assertEquals("000A", bytesToHex(regValues.get(2)));
-        assertEquals("000B", bytesToHex(regValues.get(3)));
+        assertEquals("1680", bytesToHex(regValues.get(2)));
+        assertEquals("1680", bytesToHex(regValues.get(3)));
     }
 
     @Test
     void testReadRegisterSUN10KSG04LP3EUPart1() throws SolarmanException {
         // given
         when(solarmanLoggerConnection.sendRequest(any())).thenReturn(hexStringToByteArray(
-                "a53b0010150007482ee38d020121d0060091010000403e486301032800ffffff160a12162420ffffffffffffffffffffffffffffffffffff0001ffff0001ffff000003e81fa45115"));
+                "03E80000005101034E091A08FD092700000000000000020003000000050000138800800037002800A5004A003D000600010003000A00000000000600010003000A0000091B08F6091C006E00500014010E00C9003E0215"));
 
         // when
-        Map<Integer, byte[]> regValues = solarmanV5Protocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 0x3c,
+        Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 0x3c,
                 0x4f);
 
         // then
         assertEquals(20, regValues.size());
         assertTrue(regValues.containsKey(0x3c));
         assertTrue(regValues.containsKey(0x4f));
-        assertEquals("00FF", bytesToHex(regValues.get(0x3c)));
-        assertEquals("03E8", bytesToHex(regValues.get(0x4f)));
+        assertEquals("091A", bytesToHex(regValues.get(0x3c)));
+        assertEquals("0001", bytesToHex(regValues.get(0x4f)));
     }
 
     @Test
     void testReadRegisterSUN10KSG04LP3EUPart2() throws SolarmanException {
         // given
         when(solarmanLoggerConnection.sendRequest(any())).thenReturn(hexStringToByteArray(
-                "a5330010150008482ee38d020122d0060091010000403e486301032000010000ffffffffffff0001ffffffffffffffffffff0000ffff0011ffffffff3a005715"));
+                "03E80000005101034E091A08FD092700000000000000020003000000050000138800800037002800A5004A003D000600010003000A00000000000600010003000A0000091B08F6091C006E00500014010E00C9003E0215"));
 
         // when
-        Map<Integer, byte[]> regValues = solarmanV5Protocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 0x50,
+        Map<Integer, byte[]> regValues = solarmanRawProtocol.readRegisters(solarmanLoggerConnection, (byte) 0x03, 0x50,
                 0x5f);
 
         // then
         assertEquals(16, regValues.size());
         assertTrue(regValues.containsKey(0x50));
         assertTrue(regValues.containsKey(0x5f));
-        assertEquals("0001", bytesToHex(regValues.get(0x50)));
-        assertEquals("FFFF", bytesToHex(regValues.get(0x5f)));
+        assertEquals("091A", bytesToHex(regValues.get(0x50)));
+        assertEquals("00A5", bytesToHex(regValues.get(0x5f)));
     }
 
     private static byte[] hexStringToByteArray(String s) {

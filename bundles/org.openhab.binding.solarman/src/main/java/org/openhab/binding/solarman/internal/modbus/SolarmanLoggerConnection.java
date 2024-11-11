@@ -92,7 +92,7 @@ public class SolarmanLoggerConnection implements AutoCloseable {
         return new byte[0];
     }
 
-    private static String bytesToHex(byte[] bytes) {
+    protected static String bytesToHex(byte[] bytes) {
         return IntStream.range(0, bytes.length).mapToObj(i -> String.format("%02X", bytes[i]))
                 .collect(Collectors.joining());
     }
