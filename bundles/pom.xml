@@ -486,6 +486,7 @@
     <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
     <module>org.openhab.voice.whisperstt</module>
+    <module>org.openhab.voice.openaitts</module>
   </modules>
 
   <properties>
