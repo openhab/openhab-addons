@@ -548,6 +548,21 @@
 				<default>0</default>
 			</parameter>
 
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
+			</parameter>
+
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -2570,6 +2585,21 @@
 					be used.
 				</description>
 				<default>0</default>
+			</parameter>
+
+			<parameter name="onvifEventServiceType" type="integer" groupName="Settings" multiple="false">
+				<label>ONVIF event method:</label>
+				<description>ONVIF event method to use. If camera does not report event capabilities, the event method can be forced
+					here.
+				</description>
+				<default>0</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="0">Auto detect (0)</option>
+					<option value="1">Disabled (1)</option>
+					<option value="2">Force PullMessages (2)</option>
+					<option value="3">Force WSBaseSubscription (3)</option>
+				</options>
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">

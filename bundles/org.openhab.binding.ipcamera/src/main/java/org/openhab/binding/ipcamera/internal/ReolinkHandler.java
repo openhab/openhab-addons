@@ -106,7 +106,11 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                     getAbilityResponse[0].error.detail);
                             return;
                         }
-                        ipCameraHandler.reolinkScheduleVersion = getAbilityResponse[0].value.ability.scheduleVersion.ver;
+                        if (getAbilityResponse[0].value.ability.scheduleVersion == null) {
+                            ipCameraHandler.logger.debug("Camera has no Schedule support.");
+                        } else {
+                            ipCameraHandler.reolinkScheduleVersion = getAbilityResponse[0].value.ability.scheduleVersion.ver;
+                        }
                         if (getAbilityResponse[0].value.ability.supportFtpEnable == null
                                 || getAbilityResponse[0].value.ability.supportFtpEnable.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no Enable FTP support.");
