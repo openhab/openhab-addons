@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -167,8 +168,7 @@ public class PollManager {
     }
 
     private String millisToLocalDateTime(final long milliseconds) {
-        LocalDateTime cvDate = Instant.ofEpochMilli(milliseconds).atZone(timeZoneProvider.getTimeZone())
-                .toLocalDateTime();
+        ZonedDateTime cvDate = Instant.ofEpochMilli(milliseconds).atZone(timeZoneProvider.getTimeZone());
         return cvDate.format(DateTimeFormatter.ofPattern(EXPECTED_TS_FORMAT));
     }
 
