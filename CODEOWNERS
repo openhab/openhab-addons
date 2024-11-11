@@ -463,6 +463,7 @@
 /bundles/org.openhab.voice.voskstt/ @GiviMAD
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /bundles/org.openhab.voice.whisperstt/ @GiviMAD
+/bundles/org.openhab.voice.openaitts/ @Artur-Fedjukevits
 /itests/org.openhab.automation.groovyscripting.tests/ @wborn
 /itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
 /itests/org.openhab.binding.astro.tests/ @gerrieg
