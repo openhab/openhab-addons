@@ -53,6 +53,10 @@ public class OnvifCodec extends ChannelDuplexHandler {
                 switch (response.status().code()) {
                     case 200:
                         break;
+                    case 400:
+                        onvifConnection.processBadRequest(requestType);
+                        ctx.close();
+                        return;
                     case 401:
                         if (!response.headers().isEmpty()) {
                             for (CharSequence name : response.headers().names()) {
@@ -111,6 +115,7 @@ public class OnvifCodec extends ChannelDuplexHandler {
     @Override
     public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
         if (requestType == RequestType.PullMessages) {
+            onvifConnection.lastPullMessageReceivedTimestamp = System.currentTimeMillis();
             onvifConnection.pullMessageRequests.decrementAndGet();
         }
     }

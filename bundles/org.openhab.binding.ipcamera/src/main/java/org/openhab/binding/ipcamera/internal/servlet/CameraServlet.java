@@ -79,7 +79,9 @@ public class CameraServlet extends IpCameraServlet {
                 snapshotData.close();
                 break;
             case "/OnvifEvent":
-                handler.onvifCamera.eventRecieved(req.getReader().toString());
+                ServletInputStream inputStream = req.getInputStream();
+                String xmlData = new String(inputStream.readAllBytes(), "UTF-8");
+                handler.onvifCamera.eventRecieved(xmlData);
                 break;
             default:
                 logger.debug("Recieved unknown request \tPOST:{}", pathInfo);
