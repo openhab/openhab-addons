@@ -15,15 +15,18 @@ package org.openhab.binding.plugwiseha.internal.api.model.dto;
 import java.util.Map;
 import java.util.Optional;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /**
- * The {@link Logs} class is an object model class that
+ * The {@link PointLogs} class is an object model class that
  * mirrors the XML structure provided by the Plugwise Home Automation
  * controller for the collection of logs.
  * It extends the {@link PlugwiseHACollection} class.
  * 
  * @author B. van Wetten - Initial contribution
  */
-public class Logs extends PlugwiseHACollection<Log> {
+@XStreamAlias("logs")
+public class PointLogs extends PlugwiseHACollection<PointLog> {
 
     private static final String THERMOSTAT = "thermostat";
     private static final String TEMPERATURE = "temperature";
@@ -35,13 +38,6 @@ public class Logs extends PlugwiseHACollection<Log> {
     private static final String COOLINGSTATE = "cooling_state";
     private static final String INTENDEDBOILERTEMP = "intended_boiler_temperature";
     private static final String FLAMESTATE = "flame_state";
-
-    private static final String FAILED_BURNER_STARTS = "failed_burner_starts";
-    private static final String BURNER_STARTS = "burner_starts";
-    private static final String BURNER_OP_TIME = "burner_operation_time";
-    private static final String DHW_BURNER_OP_TIME = "domestic_hot_water_burner_operation_time";
-    private static final String FAILED_BURNER_IGNITIONS = "failed_burner_flame_ignitions";
-
     private static final String INTENDEDHEATINGSTATE = "intended_central_heating_state";
     private static final String MODULATIONLEVEL = "modulation_level";
     private static final String OTAPPLICATIONFAULTCODE = "open_therm_application_specific_fault_code";
@@ -71,29 +67,6 @@ public class Logs extends PlugwiseHACollection<Log> {
 
     public Optional<Boolean> getFlameState() {
         return this.getLog(FLAMESTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
-    }
-
-    public Optional<Double> getBurnerFailedStarts() {
-        return this.getLog(FAILED_BURNER_STARTS).map(logEntry -> logEntry.getMeasurementAsDouble())
-                .orElse(Optional.empty());
-    }
-
-    public Optional<Double> getBurnerStarts() {
-        return this.getLog(BURNER_STARTS).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
-    }
-
-    public Optional<Double> getBurnerOpTime() {
-        return this.getLog(BURNER_OP_TIME).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
-    }
-
-    public Optional<Double> getBurnerDHWOPTime() {
-        return this.getLog(DHW_BURNER_OP_TIME).map(logEntry -> logEntry.getMeasurementAsDouble())
-                .orElse(Optional.empty());
-    }
-
-    public Optional<Double> getBurnerFailedIgnitions() {
-        return this.getLog(FAILED_BURNER_IGNITIONS).map(logEntry -> logEntry.getMeasurementAsDouble())
-                .orElse(Optional.empty());
     }
 
     public Optional<Boolean> getIntendedHeatingState() {
@@ -211,16 +184,16 @@ public class Logs extends PlugwiseHACollection<Log> {
         return this.getLog(POWER_USAGE).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
     }
 
-    public Optional<Log> getLog(String logItem) {
+    public Optional<PointLog> getLog(String logItem) {
         return Optional.ofNullable(this.get(logItem));
     }
 
     @Override
-    public void merge(Map<String, Log> logsToMerge) {
+    public void merge(Map<String, PointLog> logsToMerge) {
         if (logsToMerge != null) {
-            for (Log logToMerge : logsToMerge.values()) {
+            for (PointLog logToMerge : logsToMerge.values()) {
                 String type = logToMerge.getType();
-                Log originalLog = this.get(type);
+                PointLog originalLog = this.get(type);
 
                 if (originalLog == null || originalLog.isOlderThan(logToMerge)) {
                     this.put(type, logToMerge);

@@ -18,6 +18,8 @@ import java.util.Optional;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
+import ch.qos.logback.classic.Logger;
+
 /**
  * The {@link Appliance} class is an object model class that
  * mirrors the XML structure provided by the Plugwise Home Automation
@@ -43,7 +45,10 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
     private ZigBeeNode zigbeeNode;
 
     @XStreamImplicit(itemFieldName = "point_log", keyFieldName = "type")
-    private Logs pointLogs;
+    private PointLogs pointLogs;
+
+    @XStreamImplicit(itemFieldName = "cumulative_log", keyFieldName = "type")
+    private CumulativeLogs cumulativeLogs;
 
     @XStreamImplicit(itemFieldName = "actuator_functionality", keyFieldName = "type")
     private ActuatorFunctionalities actuatorFunctionalities;
@@ -78,11 +83,18 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
         return module;
     }
 
-    public Logs getPointLogs() {
+    public PointLogs getPointLogs() {
         if (pointLogs == null) {
-            pointLogs = new Logs();
+            pointLogs = new PointLogs();
         }
         return pointLogs;
+    }
+
+    public CumulativeLogs getCumulativeLogs() {
+        if (cumulativeLogs == null) {
+            cumulativeLogs = new CumulativeLogs();
+        }
+        return cumulativeLogs;
     }
 
     public ActuatorFunctionalities getActuatorFunctionalities() {
@@ -169,23 +181,23 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
     }
 
     public Optional<Double> getBurnerFailedStarts() {
-        return this.pointLogs.getBurnerFailedStarts();
+        return this.cumulativeLogs.getBurnerFailedStarts();
     }
 
     public Optional<Double> getBurnerStarts() {
-        return this.pointLogs.getBurnerStarts();
+        return this.cumulativeLogs.getBurnerStarts();
     }
 
     public Optional<Double> getBurnerOpTime() {
-        return this.pointLogs.getBurnerOpTime();
+        return this.cumulativeLogs.getBurnerOpTime();
     }
 
     public Optional<Double> getBurnerDHWOPTime() {
-        return this.pointLogs.getBurnerDHWOPTime();
+        return this.cumulativeLogs.getBurnerDHWOPTime();
     }
 
     public Optional<Double> getBurnerFailedIgnitions() {
-        return this.pointLogs.getBurnerFailedIgnitions();
+        return this.cumulativeLogs.getBurnerFailedIgnitions();
     }
 
     public Optional<Boolean> getIntendedHeatingState() {

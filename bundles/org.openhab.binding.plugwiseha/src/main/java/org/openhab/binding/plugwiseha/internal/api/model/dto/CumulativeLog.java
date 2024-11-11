@@ -18,20 +18,16 @@ import java.util.Optional;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * @author B. van Wetten - Initial contribution
- * @author Leo Siepel - finish initial contribution
+ * @author Leo Siepel - Initial contribution
  */
-@XStreamAlias("point_log")
-public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log> {
+@XStreamAlias("cumulative_log")
+public class CumulativeLog extends PlugwiseBaseModel implements PlugwiseComparableDate<CumulativeLog> {
 
     private String type;
 
     private String unit;
 
     private String measurement;
-
-    @XStreamAlias("measurement_date")
-    private ZonedDateTime measurementDate;
 
     @XStreamAlias("updated_date")
     private ZonedDateTime updatedDate;
@@ -79,22 +75,18 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
         return Optional.ofNullable(unit);
     }
 
-    public ZonedDateTime getMeasurementDate() {
-        return measurementDate;
-    }
-
     @Override
     public ZonedDateTime getUpdatedDate() {
         return updatedDate;
     }
 
     @Override
-    public int compareDateWith(Log compareTo) {
+    public int compareDateWith(CumulativeLog compareTo) {
         if (compareTo == null) {
             return -1;
         }
-        ZonedDateTime compareToDate = compareTo.getMeasurementDate();
-        ZonedDateTime compareFromDate = this.getMeasurementDate();
+        ZonedDateTime compareToDate = compareTo.getUpdatedDate();
+        ZonedDateTime compareFromDate = this.getUpdatedDate();
         if (compareFromDate == null) {
             return -1;
         } else if (compareToDate == null) {
@@ -105,12 +97,12 @@ public class Log extends PlugwiseBaseModel implements PlugwiseComparableDate<Log
     }
 
     @Override
-    public boolean isNewerThan(Log hasModifiedDate) {
+    public boolean isNewerThan(CumulativeLog hasModifiedDate) {
         return compareDateWith(hasModifiedDate) > 0;
     }
 
     @Override
-    public boolean isOlderThan(Log hasModifiedDate) {
+    public boolean isOlderThan(CumulativeLog hasModifiedDate) {
         return compareDateWith(hasModifiedDate) < 0;
     }
 }

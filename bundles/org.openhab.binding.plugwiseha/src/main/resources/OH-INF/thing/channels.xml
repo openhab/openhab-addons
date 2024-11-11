@@ -145,7 +145,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Total operation time</description>
-        <tags>
+		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
@@ -156,7 +156,7 @@
 		<item-type>Number:Time</item-type>
 		<label>DHW Operation Time</label>
 		<description>Total operation time for domostic hot water</description>
-        <tags>
+		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
