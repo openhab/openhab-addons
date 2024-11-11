@@ -107,7 +107,7 @@ public class PlugwiseHAController {
      * @throws PlugwiseHAException
      */
     public void refresh() throws PlugwiseHAException {
-        this.getUpdatedDomainObjects();
+        domainObjects = this.getUpdatedDomainObjects();
     }
 
     // Public API methods
@@ -136,8 +136,8 @@ public class PlugwiseHAController {
 
             DomainObjects domainObjects = executeRequest(request);
             this.gatewayUpdateDateTime = ZonedDateTime.parse(request.getServerDateTime(), PlugwiseHAController.FORMAT);
-
-            return mergeDomainObjects(domainObjects).getGatewayInfo();
+            domainObjects = mergeDomainObjects(domainObjects);
+            return domainObjects.getGatewayInfo();
         }
     }
 
@@ -241,12 +241,12 @@ public class PlugwiseHAController {
     }
 
     /**
-     * Gets all objects from the remote service resulting in a call to the remote service.
+     * Gets and caches all objects from the remote service resulting in a call to the remote service.
      * 
-     * @return DomainObjects may be null
+     * @return up to date DomainObjects may be null
      * @throws PlugwiseHAException
      */
-    public synchronized @Nullable DomainObjects getDomainObjects() throws PlugwiseHAException {
+    public synchronized @Nullable DomainObjects getAndMergeDomainObjects() throws PlugwiseHAException {
         PlugwiseHAControllerRequest<DomainObjects> request;
 
         request = newRequest(DomainObjects.class, this.domainObjectsTransformer);
@@ -267,18 +267,19 @@ public class PlugwiseHAController {
         ZonedDateTime localGatewayFullUpdateDateTime = this.gatewayFullUpdateDateTime;
 
         if (localGatewayUpdateDateTime == null || localGatewayFullUpdateDateTime == null) {
-            return getDomainObjects();
+            return getAndMergeDomainObjects();
         } else if (localGatewayUpdateDateTime.isBefore(ZonedDateTime.now().minusSeconds(maxAgeSecondsRefresh))) {
-            return getUpdatedDomainObjects(localGatewayUpdateDateTime.toEpochSecond());
+            return getUpdatedAndMergeDomainObjects(localGatewayUpdateDateTime.toEpochSecond());
         } else if (localGatewayFullUpdateDateTime
                 .isBefore(ZonedDateTime.now().minusMinutes(MAX_AGE_MINUTES_FULL_REFRESH))) {
-            return getDomainObjects();
+            return getAndMergeDomainObjects();
         } else {
             return null;
         }
     }
 
-    private synchronized @Nullable DomainObjects getUpdatedDomainObjects(Long since) throws PlugwiseHAException {
+    private synchronized @Nullable DomainObjects getUpdatedAndMergeDomainObjects(Long since)
+            throws PlugwiseHAException {
         PlugwiseHAControllerRequest<DomainObjects> request;
 
         request = newRequest(DomainObjects.class, this.domainObjectsTransformer);
@@ -470,7 +471,7 @@ public class PlugwiseHAController {
             if (locations != null) {
                 localDomainObjects.mergeLocations(locations);
             }
-            return this.domainObjects = localDomainObjects;
+            return localDomainObjects;
         } else {
             return new DomainObjects();
         }
