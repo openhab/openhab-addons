@@ -18,8 +18,6 @@ import java.util.Optional;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-import ch.qos.logback.classic.Logger;
-
 /**
  * The {@link Appliance} class is an object model class that
  * mirrors the XML structure provided by the Plugwise Home Automation
