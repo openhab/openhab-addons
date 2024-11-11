@@ -96,9 +96,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
             }
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Raw Type {}", config.solarmanLoggerMode);
-        }
+        logger.debug("Raw Type {}", config.solarmanLoggerMode);
 
         SolarmanProtocol solarmanProtocol = SolarmanProtocolFactory.createSolarmanProtocol(config);
 
