@@ -145,7 +145,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Total operation time</description>
-
 		<state readOnly="true"/>
 	</channel-type>
 
