@@ -38,7 +38,11 @@ The needed Bridge can be found in the **Modbus Binding** and have to be added ma
 - **Port** - Port of modbus on your heatpump (normally 502) 
 - **Device ID** - ID on modbus, 40 is default for Kermi (see [Device IDs](#device-ids))
 
-1. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Slave (Bridge)_. Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000. If it's too fast, you may experience errors in openhab or your x-center ! (Reboot if x-center stops responding on network access). You can enable "PV Modulation" if you want to read the values (default: disabled)
+1. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Slave (Bridge)_.
+Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000.
+If it's too fast, you may experience errors in openHAB or your x-center!
+Reboot if x-center stops responding on network access.
+You can enable "PV Modulation" if you want to read the values (default: disabled)
 
 Details on Configurations explained below.
 
@@ -212,11 +216,11 @@ Number:Time               Heatpump_CompressorWorkhours                       "Co
 ## Persistence
 
 You can / should persist some items you want to track, maybe you track your power consumption with another device (PV-System or 'smart' electricity meter), so you can compare these values.
-As these values are long-running ones, maybe you should invest a little amount of time using influx as persistance (additionally to your existing).
-Influx DB is the best storage for long terms and uses very small space for its data. Please read the documentation for better understanding how it works.
 
-Simple: Install influxDB (>2.x) on a system within your network and enter your configuration settings in openhab using the influxdb-binding.
-As you do not track that mass of data you can use a raspberry pi with and SSD attaches to it (do NOT use an SD-card as database-storage).
+Suggestion / Optional:  
+As these (power & temperature) values are long-running ones, maybe you should invest a little amount of time using influxDB as persistence (additionally to your existing default persistence in openHAB).
+InfluxDB is a good storage-solution for long terms and uses very small space for its data. Please read the documentation for better understanding how it works.
+
 
 ### Visualization
 
