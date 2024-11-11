@@ -59,7 +59,7 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | planner-restricted-reason      | String               | R | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL) |
 | planner-external-reason        | String               | R | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation |
 | setting-cutting-height         | Number               | R | Prescaled cutting height, Range: 1-9                                                                           |
-| setting-headlight-mode         | String               | R | Headlight Mode (ALWAYS_ON,  ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                       |
+| setting-headlight-mode         | String               | R | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                        |
 | stat-cutting-blade-usage-time  | Number:Time          | R | The time since the last reset of the cutting blade usage counter                                               |
 | stat-number-of-charging-cycles | Number               | R | Number of charging cycles                                                                                      |
 | stat-number-of-collisions      | Number               | R | The total number of collisions                                                                                 |
@@ -110,8 +110,8 @@ These channels hold the different Stayout Zone configurations. Right now a maxim
 
 | channel    | type     | access mode | description  | advanced |
 |------------|----------|-------------|--------------|----------|
-| dirty             | Switch | R   | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true |
-| zone\<x\>-id      | Number | R   | Id of the Stayout zone                                                                                                             | false |
+| dirty             | Switch | R   | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true  |
+| zone\<x\>-id      | String | R   | Id of the Stayout zone                                                                                                             | false |
 | zone\<x\>-name    | String | R   | The name of the Stayout zone                                                                                                       | false |
 | zone\<x\>-enabled | Switch | R/W | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | false |
 
@@ -141,7 +141,7 @@ These channels hold the different Work Area configurations. Right now a maximum 
 | pause                       | Switch   | W | Pause the Automower®                                     |
 | park                        | Number   | W | Park the Automower® for a duration                       |
 | park_until_next_schedule    | Switch   | W | Park the Automower® until next schedule                  |
-| park_until_further_notice   | Switch   | W | Park the Automower® until further notice.                |
+| park_until_further_notice   | Switch   | W | Park the Automower® until further notice                 |
 | confirm_error               | Switch   | W | Confirm current non fatal error                          |
 
 ## Actions
@@ -157,10 +157,10 @@ The following actions are available for `automower` things:
 | park                   | `duration (int)` | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
 | resumeSchedule         | -                | Resumes the schedule for the Automower®                                                         |
 | confirmError           | -                | Confirm current non fatal error                                                                 |
-| setSettings            | `byte cuttingHeight, String headlightMode`            | Update Automower® settings                                 |
-| setWorkArea            | `long workAreaId, boolean enable, byte cuttingHeight` | Update work area settings                                  |
-| setStayOutZone         | `String zoneId, boolean enable`                       | Enable or disable stay-out zone                            |
-| setCalendarTask        | `Long workAreaId, short[] start, short[] duration, boolean[] monday, boolean[] tuesday, boolean[] wednesday, boolean[] thursday, boolean[] friday, boolean[] saturday, boolean[] sunday`                           | Update calendar task settings                                                                   |
+| setSettings            | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                  |
+| setWorkArea            | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                   |
+| setStayOutZone         | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone             |
+| setCalendarTask        | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings |
 
 ## Full Example
 

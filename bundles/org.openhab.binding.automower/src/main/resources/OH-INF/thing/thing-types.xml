@@ -286,7 +286,7 @@
 			<channel id="zone09-id" typeId="zoneIdType"/>
 			<channel id="zone09-name" typeId="zoneNameType"/>
 			<channel id="zone09-enabled" typeId="zoneEnabledType"/>
-			<channel id="zone19-id" typeId="zoneIdType"/>
+			<channel id="zone10-id" typeId="zoneIdType"/>
 			<channel id="zone10-name" typeId="zoneNameType"/>
 			<channel id="zone10-enabled" typeId="zoneEnabledType"/>
 
