@@ -533,7 +533,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
         logger.debug("Update channel {} with {}", channelId, tempoValue);
-        updateState(channelId, new DecimalType(tempoValue));
+        updateState(groupId + "#" + channelId, new DecimalType(tempoValue));
     }
 
     protected void updateState(String groupId, String channelID, State state) {
