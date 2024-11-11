@@ -321,9 +321,9 @@ public class LinkyHandler extends BaseThingHandler {
         boolean connectedBefore = isConnected();
 
         updateEnergyData();
-        // updatePowerData();
+        updatePowerData();
         updateTempoTimeSeries();
-        // updateLoadCurveData();
+        updateLoadCurveData();
 
         if (!connectedBefore && isConnected()) {
             disconnect();
@@ -516,7 +516,7 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-        // updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
@@ -708,10 +708,7 @@ public class LinkyHandler extends BaseThingHandler {
             logger.debug("Refreshing channel {}", channelUID.getId());
             boolean connectedBefore = isConnected();
 
-            updateEnergyData();
-            // updatePowerData();
-            updateTempoTimeSeries();
-            // updateLoadCurveData();
+            updateData();
 
             if (!connectedBefore && isConnected()) {
                 disconnect();
