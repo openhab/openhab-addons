@@ -248,7 +248,7 @@ public class SiteApi {
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
                 .timeout(GET_FORECAST_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        logger.trace("Requesting using Poll ID {} URL: \"{}\"", pollId, url);
+        logger.trace("Requesting using Poll ID \"{}\" URL: \"{}\"", pollId, url);
 
         try {
             apiAuth.addAuthentication(request).send(listener);
