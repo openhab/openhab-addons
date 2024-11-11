@@ -409,21 +409,6 @@ public class LinkyHandler extends BaseThingHandler {
         });
     }
 
-    /*
-     * private void setCurrentAndPrevious(Aggregate periods, String currentChannel, String previousChannel) {
-     * double currentValue = 0.0;
-     * double previousValue = 0.0;
-     * if (!periods.datas.isEmpty()) {
-     * currentValue = periods.datas.get(periods.datas.size() - 1);
-     * if (periods.datas.size() > 1) {
-     * previousValue = periods.datas.get(periods.datas.size() - 2);
-     * }
-     * }
-     * updateKwhChannel(currentChannel, currentValue);
-     * updateKwhChannel(previousChannel, previousValue);
-     * }
-     */
-
     /**
      * Request new daily/weekly data and updates channels
      */

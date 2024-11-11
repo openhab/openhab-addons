@@ -24,10 +24,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -183,7 +186,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Step 2: send SSO SAMLRequest");
             ContentResponse result = httpClient.POST(el.attr("action"))
                     .content(enedisApi.getFormContent("SAMLRequest", samlInput.attr("value"))).send();
-            if (result.getStatus() != 302) {
+            if (result.getStatus() != HttpStatus.FOUND_302) {
                 throw new LinkyException("Connection failed step 2");
             }
 
@@ -202,7 +205,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
             result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
-            if (result.getStatus() != 200) {
+            if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
 
@@ -216,11 +219,11 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
 
             authData.callbacks.get(1).input.get(0).value = lcConfig.password;
             logger.debug("Step 4: auth2 - send the auth data");
-            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
+            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
-            if (result.getStatus() != 200) {
+            if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
             }
 
@@ -241,7 +244,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Step 6: post the SAMLresponse to finish the authentication");
             result = httpClient.POST(el.attr("action"))
                     .content(enedisApi.getFormContent("SAMLResponse", samlInput.attr("value"))).send();
-            if (result.getStatus() != 302) {
+            if (result.getStatus() != HttpStatus.FOUND_302) {
                 throw new LinkyException("Connection failed step 6");
             }
 
