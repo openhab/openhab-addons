@@ -66,5 +66,4 @@ public class UsagePoint {
 
         return result;
     }
-
 }

@@ -32,5 +32,4 @@ public class ResponseIdentity {
         @SerializedName("natural_person")
         public Identity naturalPerson;
     }
-
 }
