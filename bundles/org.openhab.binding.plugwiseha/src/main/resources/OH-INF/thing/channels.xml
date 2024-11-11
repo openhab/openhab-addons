@@ -188,11 +188,11 @@
 	</channel-type>
 
 	<channel-type id="modulationLevel">
-		<item-type>Number</item-type>
+		<item-type>Number:DimensionLess</item-type>
 		<label>Modulelation Level</label>
 		<description>Gets the modulation level of this boiler</description>
 		<category>heating</category>
-		<state readOnly="true" pattern="%.0f"/>
+		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="otAppFaultCode">
