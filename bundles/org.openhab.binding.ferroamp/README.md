@@ -4,6 +4,8 @@ The Ferroamp binding is used to get live data from Ferroamp EnergyHub
 
 The Ferroamp binding is compatible with EnergyHub Wall and EnergyHub XL, and connects to your local EnergyHub via LAN.
 Data and commands are received/sent using MQTT where the user connects to the MQTT broker residing on the EnergyHub.
+The communication with the broker might take some minute to establish, so Please just be patient. The Thing will be
+in state INITIALIZATION during this time and ONLINE once connection is established.
 
 *note* Contact Ferroamp support to enable MQTT in the EnergyHub and to get the Username and Password:
 
@@ -209,11 +211,7 @@ Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUser
 ```
 
 ```java
-Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=false, ssoS0=true ]
-```
-
-```java
-Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=true, ssoS0=true, eso=true ]
+Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=true, eso=true ]
 ```
 
 
@@ -226,20 +224,21 @@ String Ferroamp "RequestCharge" <energy> { channel="ferroamp:energyhub:myenergyh
 
 ## Rules
 
-Ex. Set Charging with 5000W with cron trigger:
+Ex. Rule name: Set Charge Level.
+Set charging level to 5000W when item RequestCharge is updated.
 
 ```yaml
+configuration: {}
 triggers:
-   id: "1"
+  - id: "1"
     configuration:
-      cronExpression: 0 0/2 * * * ? *
-    type: timer.GenericCronTrigger
+      itemName: EnergyHub_RequestCharge
+    type: core.ItemStateUpdateTrigger
 conditions: []
 actions:
-   inputs: {}
-    id: "2"
+  - id: "2"
     configuration:
-      type: application/vnd.openhab.dsl.rule
-      script: ChargingWith5000W.sendCommand("5000")
-    type: script.ScriptAction
+      itemName: EnergyHub_RequestCharge
+      command: "5000"
+    type: core.ItemCommandAction
 ```

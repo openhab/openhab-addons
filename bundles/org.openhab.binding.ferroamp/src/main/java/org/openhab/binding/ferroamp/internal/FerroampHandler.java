@@ -68,16 +68,16 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         if (FerroampBindingConstants.CHANNEL_REQUESTCHARGE.equals(channelUID.getId())) {
             String requestCmdJsonCharge = "{\"" + "transId" + "\":\"" + transId
                     + "\",\"cmd\":{\"name\":\"charge\",\"arg\":\"" + valueConfiguration + "\"}}";
-            FerroampMqttCommunication.sendMQTT(requestCmdJsonCharge, ferroampConfig);
+            FerroampMqttCommunication.sendPublishedTopic(requestCmdJsonCharge, ferroampConfig);
         }
         if (FerroampBindingConstants.CHANNEL_REQUESTDISCHARGE.equals(channelUID.getId())) {
             String requestCmdJsonDisCharge = "{\"" + "transId" + "\":\"" + transId
                     + "\",\"cmd\":{\"name\":\"discharge\",\"arg\":\"" + valueConfiguration + "\"}}";
-            FerroampMqttCommunication.sendMQTT(requestCmdJsonDisCharge, ferroampConfig);
+            FerroampMqttCommunication.sendPublishedTopic(requestCmdJsonDisCharge, ferroampConfig);
         }
         if (FerroampBindingConstants.CHANNEL_AUTO.equals(channelUID.getId())) {
             String requestCmdJsonAuto = "{\"" + "transId" + "\":\"" + transId + "\",\"cmd\":{\"name\":\"auto\"}}";
-            FerroampMqttCommunication.sendMQTT(requestCmdJsonAuto, ferroampConfig);
+            FerroampMqttCommunication.sendPublishedTopic(requestCmdJsonAuto, ferroampConfig);
         }
     }
 
@@ -95,26 +95,26 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         final MqttBrokerConnection ferroampConnection = new MqttBrokerConnection(ferroampConfig.hostName,
                 FerroampBindingConstants.BROKER_PORT, false, false, ferroampConfig.userName);
 
-        scheduler.execute(() -> {
-            try {
-                startMqttConnection();
-            } catch (InterruptedException e) {
-                logger.debug("Faulty startMqttConnection()");
-            }
-        });
-
         scheduler.scheduleWithFixedDelay(this::pollTask, 60, refreshInterval, TimeUnit.SECONDS);
         this.setFerroampConnection(ferroampConnection);
     }
 
     private void pollTask() {
+        try {
+            startMqttConnection();
+        } catch (InterruptedException e) {
+            logger.debug("Problems with startMqttConnection()");
+        }
         if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Problem connection to MqttBroker");
-        } else {
+            // } else {
+        }
+        if (getFerroampConnection().connectionState().toString().equals("CONNECTED")) {
             try {
                 channelUpdate();
                 updateStatus(ThingStatus.ONLINE);
+
             } catch (RuntimeException scheduleWithFixedDelayException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
@@ -124,15 +124,15 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
     }
 
     private void startMqttConnection() throws InterruptedException {
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            logger.debug("Connection to MqttBroker disturbed during startup of MqttConnection");
-        }
-        ferroampMqttCommunication.getMQTT("ehubTopic", ferroampConfig);
-        ferroampMqttCommunication.getMQTT("ssoTopic", ferroampConfig);
-        ferroampMqttCommunication.getMQTT("esoTopic", ferroampConfig);
-        ferroampMqttCommunication.getMQTT("esmTopic", ferroampConfig);
+        MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
+
+        localSubscribeConnection.start();
+        localSubscribeConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
+
+        ferroampMqttCommunication.getSubscribedTopic("ehubTopic", ferroampConfig);
+        ferroampMqttCommunication.getSubscribedTopic("ssoTopic", ferroampConfig);
+        ferroampMqttCommunication.getSubscribedTopic("esoTopic", ferroampConfig);
+        ferroampMqttCommunication.getSubscribedTopic("esmTopic", ferroampConfig);
     }
 
     private void channelUpdate() {

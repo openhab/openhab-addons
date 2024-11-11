@@ -60,7 +60,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
     }
 
     // Handles request topic
-    static void sendMQTT(String payload, FerroampConfiguration ferroampConfig) {
+    static void sendPublishedTopic(String payload, FerroampConfiguration ferroampConfig) {
 
         MqttBrokerConnection localConfigurationConnection = FerroampHandler.getFerroampConnection();
 
@@ -70,12 +70,12 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
     }
 
     // Handles respective topic type
-    void getMQTT(String topic, FerroampConfiguration ferroampConfig) {
+    void getSubscribedTopic(String topic, FerroampConfiguration ferroampConfig) {
 
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
 
-        localSubscribeConnection.start();
-        localSubscribeConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
+        // localSubscribeConnection.start();
+        // localSubscribeConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
 
         if ("ehubTopic".equals(topic)) {
             localSubscribeConnection.subscribe(FerroampBindingConstants.EHUB_TOPIC, this);
