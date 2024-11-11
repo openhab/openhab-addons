@@ -124,43 +124,43 @@
 		<item-type>Number</item-type>
 		<label>Burner Starts Failed</label>
 		<description>Total count of failed burner starts</description>
-		<state readOnly="true"/>
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="burnerStarts">
 		<item-type>Number</item-type>
 		<label>Burner Starts</label>
 		<description>Total count of burner starts</description>
-		<state readOnly="true"/>
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="burnerIgnitionsFailed">
 		<item-type>Number</item-type>
 		<label>Burner Ignitions Failed</label>
 		<description>Total count of failed burner ignitions</description>
-		<state readOnly="true"/>
+		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="burnerOpTime">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Operation Time</label>
 		<description>Total operation time</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="burnerDHWOpTime">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>DHW Operation Time</label>
 		<description>Total operation time for domostic hot water</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="intendedHeatingState">
