@@ -21,7 +21,7 @@
 		<config-description>
 			<parameter name="refresh" type="integer" min="1000" unit="ms">
 				<label>Refresh Interval</label>
-				<description>Refresh Rate of Xcenter values in Milliseconds</description>
+				<description>Refresh Rate of X-Center values in Milliseconds</description>
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>

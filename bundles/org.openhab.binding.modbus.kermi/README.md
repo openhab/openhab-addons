@@ -1,9 +1,11 @@
 # Kermi Heat pump
 
-Integrates the X-Center Device (x-center pro) of Kermi Heat pump.
+Integrates the X-Center Device (X-Center Pro) of Kermi Heat pump.
 Kermi X-Center & other attached devices (in progress) are integrated into the Modbus Binding.
 
 This binding was tested and developed with Kermi x-change dynamic pro heat pump (build 2023).
+
+Hint: This binding _may_ also work with devices from "Bösch" in Austria, which is a sub-brand of Kermi, they are nearly identically.
 
 ## Prerequisite
 
@@ -40,8 +42,8 @@ The needed Bridge can be found in the **Modbus Binding** and have to be added ma
 
 1. Create _Kermi Heat Pump X-Center_ and attach it to the previous installed _Modbus TCP Slave (Bridge)_.
 Configuration requires an appropriate Data Refresh Interval with more than 2000 Milliseconds, default is 5000.
-If it's too fast, you may experience errors in openHAB or your x-center!
-Reboot if x-center stops responding on network access.
+If it's too fast, you may experience errors in openHAB or your X-Center!
+Reboot if X-Center stops responding on network access.
 You can enable "PV Modulation" if you want to read the values (default: disabled)
 
 Details on Configurations explained below.
@@ -60,7 +62,7 @@ Select as Bridge your previously created Modbus TCP Slave.
 
 | Parameter | Type    | Description                                                    |
 |-----------|---------|----------------------------------------------------------------|
-| refresh   | integer | Refresh Rate of x-center values in Milliseconds (default:5000) |
+| refresh   | integer | Refresh Rate of X-Center values in Milliseconds (default:5000) |
 | pvEnabled | boolean | Read PV-Modulation (default:false)                             |
 
 
@@ -70,7 +72,7 @@ Select as Bridge a separate (second) Modbus TCP Slave.
 
 | Parameter | Type    | Description                                                        |
 |-----------|---------|--------------------------------------------------------------------|
-| host      | text    | IP Address or reachable hostname of your device (same as x-center) |
+| host      | text    | IP Address or reachable hostname of your device (same as X-Center) |
 | port      | integer | TCP Port of your Kermi device Modbus Settings. Default is 502      |
 | deviceId  | integer | Modbus ID of your Kermi device Modbus Settings. Default is 50      |
 
@@ -180,7 +182,7 @@ Bridge modbus:tcp:device "Kermi X-Center Modbus TCP" [ host="xcenter", port=502,
 ### Items
 
 ```java
-Number    XCenter_Global_State_Id                 "XCenter Global State ID"            (kermi)      { channel="modbus:tcp:device:heatpump:state#global-state-id" }
+Number    XCenter_Global_State_Id                 "X-Center Global State ID"            (kermi)      { channel="modbus:tcp:device:heatpump:state#global-state-id" }
 
 Number:Temperature        Heatpump_FlowTemperature       "Flow Temperature" (kermi,persist) { channel="modbus:tcp:device:heatpump:charging-circuit#flow-temperature" }
 Number:Temperature        Heatpump_ReturnTemperature     "Return Temperature" (kermi,persist) { channel="modbus:tcp:device:heatpump:charging-circuit#return-temperature" }
