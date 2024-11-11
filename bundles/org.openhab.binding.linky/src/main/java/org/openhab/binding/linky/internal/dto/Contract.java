@@ -53,11 +53,13 @@ public class Contract {
         result.subscribedPower = prmDetail.situationContractuelleDtos[0].structureTarifaire().puissanceSouscrite()
                 .valeur();
         result.lastActivationDate = "";
-        result.distributionTariff = "";
+        result.distributionTariff = prmDetail.situationContractuelleDtos[0].structureTarifaire().grilleFournisseur()
+                .calendrier().libelle();
         result.offpeakHours = "";
         result.contractStatus = prmDetail.situationContractuelleDtos[0].informationsContractuelles().etatContractuel()
                 .code();
-        result.contractType = "";
+        result.contractType = prmDetail.situationContractuelleDtos[0].informationsContractuelles().contrat()
+                .typeContrat().libelle();
         result.lastDistributionTariffChangeDate = "";
 
         return result;

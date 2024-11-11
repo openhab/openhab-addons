@@ -194,6 +194,9 @@ public class EnedisHttpApi {
     public Identity getIdentity(LinkyHandler handler, String prmId) throws LinkyException {
         String identityUrl = linkyBridgeHandler.getIdentityUrl().formatted(prmId);
         ResponseIdentity customerIdReponse = getData(handler, identityUrl, ResponseIdentity.class);
+        String name = customerIdReponse.identity.naturalPerson.lastname;
+        customerIdReponse.identity.naturalPerson.firstname = name.split(" ")[0];
+        customerIdReponse.identity.naturalPerson.lastname = name.split(" ")[1];
         return customerIdReponse.identity.naturalPerson;
     }
 

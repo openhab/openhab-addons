@@ -49,18 +49,18 @@ public class UsagePoint {
         public String country;
     }
 
-    public static UsagePoint convertFromPrmDetail(PrmDetail prmDetail) {
+    public static UsagePoint convertFromPrmDetail(PrmInfo prmInfo, PrmDetail prmDetail) {
         UsagePoint result = new UsagePoint();
 
-        result.usagePointId = "";
-        result.usagePointStatus = "";
+        result.usagePointId = prmInfo.idPrm;
+        result.usagePointStatus = prmDetail.syntheseContractuelleDto.niveauOuvertureServices().libelle();
         result.meterType = prmDetail.situationComptageDto.dispositifComptage().typeComptage().code();
         result.usagePointAddresses = result.new AddressInfo();
 
         result.usagePointAddresses.street = prmDetail.adresse.ligne4();
         result.usagePointAddresses.locality = prmDetail.adresse.ligne6();
-        result.usagePointAddresses.city = prmDetail.adresse.ligne6();
-        result.usagePointAddresses.postalCode = prmDetail.adresse.ligne6();
+        result.usagePointAddresses.city = prmDetail.adresse.ligne6().split(" ")[1];
+        result.usagePointAddresses.postalCode = prmDetail.adresse.ligne6().split(" ")[0];
         result.usagePointAddresses.inseeCode = "";
         result.usagePointAddresses.country = "";
 

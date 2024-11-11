@@ -235,7 +235,7 @@ public class LinkyHandler extends BaseThingHandler {
                     Identity identity = Identity.convertFromUserInfo(userInfo);
                     Contact contact = Contact.convertFromUserInfo(userInfo);
                     Contract contract = Contract.convertFromPrmDetail(details);
-                    UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(details);
+                    UsagePoint usagePoint = UsagePoint.convertFromPrmDetail(prmInfo, details);
 
                     updateMetaData(identity, contact, contract, usagePoint);
 
