@@ -35,6 +35,13 @@ public class Logs extends PlugwiseHACollection<Log> {
     private static final String COOLINGSTATE = "cooling_state";
     private static final String INTENDEDBOILERTEMP = "intended_boiler_temperature";
     private static final String FLAMESTATE = "flame_state";
+
+    private static final String FAILED_BURNER_STARTS = "failed_burner_starts";
+    private static final String BURNER_STARTS = "burner_starts";
+    private static final String BURNER_OP_TIME = "burner_operation_time";
+    private static final String DHW_BURNER_OP_TIME = "domestic_hot_water_burner_operation_time";
+    private static final String FAILED_BURNER_IGNITIONS = "failed_burner_flame_ignitions";
+
     private static final String INTENDEDHEATINGSTATE = "intended_central_heating_state";
     private static final String MODULATIONLEVEL = "modulation_level";
     private static final String OTAPPLICATIONFAULTCODE = "open_therm_application_specific_fault_code";
@@ -64,6 +71,29 @@ public class Logs extends PlugwiseHACollection<Log> {
 
     public Optional<Boolean> getFlameState() {
         return this.getLog(FLAMESTATE).map(logEntry -> logEntry.getMeasurementAsBoolean()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBurnerFailedStarts() {
+        return this.getLog(FAILED_BURNER_STARTS).map(logEntry -> logEntry.getMeasurementAsDouble())
+                .orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBurnerStarts() {
+        return this.getLog(BURNER_STARTS).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBurnerOpTime() {
+        return this.getLog(BURNER_OP_TIME).map(logEntry -> logEntry.getMeasurementAsDouble()).orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBurnerDHWOPTime() {
+        return this.getLog(DHW_BURNER_OP_TIME).map(logEntry -> logEntry.getMeasurementAsDouble())
+                .orElse(Optional.empty());
+    }
+
+    public Optional<Double> getBurnerFailedIgnitions() {
+        return this.getLog(FAILED_BURNER_IGNITIONS).map(logEntry -> logEntry.getMeasurementAsDouble())
+                .orElse(Optional.empty());
     }
 
     public Optional<Boolean> getIntendedHeatingState() {

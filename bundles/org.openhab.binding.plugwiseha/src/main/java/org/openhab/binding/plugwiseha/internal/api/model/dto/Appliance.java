@@ -168,6 +168,26 @@ public class Appliance extends PlugwiseBaseModel implements PlugwiseComparableDa
         return this.pointLogs.getFlameState();
     }
 
+    public Optional<Double> getBurnerFailedStarts() {
+        return this.pointLogs.getBurnerFailedStarts();
+    }
+
+    public Optional<Double> getBurnerStarts() {
+        return this.pointLogs.getBurnerStarts();
+    }
+
+    public Optional<Double> getBurnerOpTime() {
+        return this.pointLogs.getBurnerOpTime();
+    }
+
+    public Optional<Double> getBurnerDHWOPTime() {
+        return this.pointLogs.getBurnerDHWOPTime();
+    }
+
+    public Optional<Double> getBurnerFailedIgnitions() {
+        return this.pointLogs.getBurnerFailedIgnitions();
+    }
+
     public Optional<Boolean> getIntendedHeatingState() {
         return this.pointLogs.getIntendedHeatingState();
     }
