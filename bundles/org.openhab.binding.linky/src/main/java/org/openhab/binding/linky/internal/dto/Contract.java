@@ -62,5 +62,4 @@ public class Contract {
 
         return result;
     }
-
 }
