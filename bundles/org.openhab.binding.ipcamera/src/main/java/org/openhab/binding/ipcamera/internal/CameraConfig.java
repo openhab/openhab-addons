@@ -29,6 +29,7 @@ public class CameraConfig {
     private String password = "";
     public boolean useToken = true;
     private int onvifMediaProfile;
+    private int onvifEventServiceType;
     private int pollTime;
     private String ffmpegInput = "";
     private String snapshotUrl = "";
@@ -52,6 +53,10 @@ public class CameraConfig {
 
     public int getOnvifMediaProfile() {
         return onvifMediaProfile;
+    }
+
+    public int getOnvifEventServiceType() {
+        return onvifEventServiceType;
     }
 
     public String getFfmpegInputOptions() {

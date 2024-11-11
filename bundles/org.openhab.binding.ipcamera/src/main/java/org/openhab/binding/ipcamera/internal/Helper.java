@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
+import java.io.ByteArrayInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -19,7 +20,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.w3c.dom.Document;
 
 /**
  * The {@link Helper} class has static functions that help the IpCamera binding not need as many external libs.
@@ -103,6 +108,13 @@ public class Helper {
             }
         }
         return result;
+    }
+
+    public static Document loadXMLFromString(String xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(xml.getBytes());
+        return builder.parse(inputStream);
     }
 
     /**

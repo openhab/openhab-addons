@@ -61,7 +61,6 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.ReolinkHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
-import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
@@ -1577,12 +1576,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 checkCameraConnection();
                 break;
             case ONVIF_THING:
-                onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
-                if (onvifCamera.pullMessageRequests.intValue() == 0) {
-                    logger.info("The alarm stream was not running for ONVIF camera {}, re-starting it now",
-                            cameraConfig.getIp());
-                    onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
-                }
+                onvifCamera.checkAndRenewEventSubscription();
                 break;
             case INSTAR_THING:
                 checkCameraConnection();
@@ -1609,12 +1603,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
                 } else {
-                    onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
-                    if (onvifCamera.pullMessageRequests.intValue() == 0) {
-                        logger.debug("The alarm stream was not running for Reolink camera {}, re-starting it now",
-                                cameraConfig.getIp());
-                        onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
-                    }
+                    onvifCamera.checkAndRenewEventSubscription();
                 }
                 break;
             case DAHUA_THING:
