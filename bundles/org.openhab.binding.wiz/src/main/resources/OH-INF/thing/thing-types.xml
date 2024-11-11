@@ -143,6 +143,7 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<description>Speed of the fan, in arbitrary steps</description>
+		<category>Fan</category>
 		<state min="0" max="6" pattern="%.0f"/>
 	</channel-type>
 
