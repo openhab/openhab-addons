@@ -58,7 +58,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="solarmanLoggerMode" type="text" required="false">
-				<label>RAW or V5 Modbus</label>
+				<label>Logger Mode</label>
 				<description>Use RAW Modbus for LAN Stick LSE-3 and V5 NODBUS for most Wifi Sticks. If your Wifi stick uses Raw
 					Modbus choose RAW. If you do not use this advanced option, V5 MODBUS will be the default.</description>
 				<options>
