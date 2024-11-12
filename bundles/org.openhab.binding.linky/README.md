@@ -83,7 +83,7 @@ In case you are running openHAB inside Docker, the binding will work only if you
 ### Thing
 
 ```java
-Thing linky:linky:local "Compteur Linky" [ username="example@domaine.fr", password="******" ]
+Thing linky:linky:local "Compteur Linky" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
 ```
 
 ### Items

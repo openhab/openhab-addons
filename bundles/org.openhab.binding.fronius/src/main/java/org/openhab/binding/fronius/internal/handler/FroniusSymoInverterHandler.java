@@ -107,59 +107,69 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         return batteryControl;
     }
 
-    public void resetBatteryControl() {
+    public boolean resetBatteryControl() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.reset();
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to reset battery control", e);
             }
         }
+        return false;
     }
 
-    public void holdBatteryCharge() {
+    public boolean holdBatteryCharge() {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.holdBatteryCharge();
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to hold battery charge", e);
             }
         }
+        return false;
     }
 
-    public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) {
+    public boolean addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.addHoldBatteryChargeSchedule(from, until);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add hold battery charge schedule to battery control", e);
             }
         }
+        return false;
     }
 
-    public void forceBatteryCharging(QuantityType<Power> power) {
+    public boolean forceBatteryCharging(QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.forceBatteryCharging(power);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to set battery control to force battery charge", e);
             }
         }
+        return false;
     }
 
-    public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power) {
+    public boolean addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             try {
                 batteryControl.addForcedBatteryChargingSchedule(from, until, power);
+                return true;
             } catch (FroniusCommunicationException e) {
                 logger.warn("Failed to add forced battery charge schedule to battery control", e);
             }
         }
+        return false;
     }
 
     /**

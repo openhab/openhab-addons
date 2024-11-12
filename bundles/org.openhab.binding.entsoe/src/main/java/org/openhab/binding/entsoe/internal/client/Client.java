@@ -21,15 +21,25 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -46,27 +56,59 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class Client {
     private final Logger logger = LoggerFactory.getLogger(Client.class);
+    private final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    private final HttpClient httpClient;
+    private final String userAgent;
 
-    private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    public Client(HttpClient httpClient) {
+        this.httpClient = httpClient;
+        userAgent = "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+    }
 
-    public Map<Instant, SpotPrice> doGetRequest(Request request, int timeout, String configResolution)
-            throws EntsoeResponseException, EntsoeConfigurationException {
+    public Map<Instant, SpotPrice> doGetRequest(EntsoeRequest entsoeRequest, int timeout, String configResolution)
+            throws EntsoeResponseException, EntsoeConfigurationException, InterruptedException {
+        String url = entsoeRequest.toUrl();
+        Request request = httpClient.newRequest(url) //
+                .timeout(timeout, TimeUnit.SECONDS) //
+                .agent(userAgent) //
+                .method(HttpMethod.GET);
+
         try {
-            logger.debug("Sending GET request with parameters: {}", request);
-            String url = request.toUrl();
-            String responseText = HttpUtil.executeUrl("GET", url, timeout);
-            if (responseText == null) {
-                throw new EntsoeResponseException("Request failed");
-            }
-            logger.trace("Response: {}", responseText);
-            return parseXmlResponse(responseText, configResolution);
-        } catch (IOException e) {
-            String message = e.getMessage();
-            if (message != null && message.contains("Authentication challenge without WWW-Authenticate header")) {
+            logger.debug("Sending GET request with parameters: {}", entsoeRequest);
+
+            ContentResponse response = request.send();
+
+            int status = response.getStatus();
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                // This will currently not happen because "WWW-Authenticate" header is missing; see below.
                 throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
             }
+            if (!HttpStatus.isSuccess(status)) {
+                throw new EntsoeResponseException("The request failed with HTTP error " + status);
+            }
+
+            String responseContent = response.getContentAsString();
+            if (responseContent == null) {
+                throw new EntsoeResponseException("Request failed");
+            }
+            logger.trace("Response: {}", responseContent);
+
+            return parseXmlResponse(responseContent, configResolution);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * The service may respond with HTTP code 401 without any "WWW-Authenticate"
+                     * header, violating RFC 7235. Jetty will then throw HttpResponseException.
+                     * We need to handle this in order to attempt reauthentication.
+                     */
+                    throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
+                }
+            }
             throw new EntsoeResponseException(e);
-        } catch (ParserConfigurationException | SAXException e) {
+        } catch (IOException | TimeoutException | ParserConfigurationException | SAXException e) {
             throw new EntsoeResponseException(e);
         }
     }

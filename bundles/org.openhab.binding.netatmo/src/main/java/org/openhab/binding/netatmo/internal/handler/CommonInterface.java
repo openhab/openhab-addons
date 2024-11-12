@@ -77,7 +77,7 @@ public interface CommonInterface {
     void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
             @Nullable String thingStatusReason);
 
-    void triggerChannel(String channelID, String event);
+    void triggerChannel(String groupID, String channelID, String event);
 
     void updateThing(Thing thing);
 

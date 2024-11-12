@@ -17,7 +17,7 @@ An account must be manually added and configured.
 Controller Things are automatically discovered once an [Account Bridge](#account-bridge-thing) has be properly configured.
 
 The Controller Thing type is the primary way most users will control and monitor their irrigation system.
-This allows full control over zones, sensors and weather forecasts.
+This allows full control over zones, sensors and weather forecasts.<br>
 Changes made through this Thing type will be reflected in the Hydrawise mobile and web applications as well as in their reporting modules.
 
 Controller Things require a parent [Account Bridge](#account-bridge-thing)

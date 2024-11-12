@@ -29,7 +29,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
     public static final String SCENE_CHANNEL_ID = "scene";
-    public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
     /**
      * Configuration class for MQTT component
@@ -44,11 +43,6 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
 
         @SerializedName("payload_on")
         protected String payloadOn = "ON";
-
-        @SerializedName("json_attributes_topic")
-        protected @Nullable String jsonAttributesTopic;
-        @SerializedName("json_attributes_template")
-        protected @Nullable String jsonAttributesTemplate;
     }
 
     public Scene(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
@@ -61,13 +55,6 @@ public class Scene extends AbstractComponent<Scene.ChannelConfiguration> {
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
                 .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-
-        if (channelConfiguration.jsonAttributesTopic != null) {
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.jsonAttributesTopic, channelConfiguration.jsonAttributesTemplate)
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
-        }
 
         finalizeChannels();
     }

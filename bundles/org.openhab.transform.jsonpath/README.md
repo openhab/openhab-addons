@@ -64,4 +64,4 @@ This profile is a one-way transformation; only values from a device toward the i
 ## Further Reading
 
 - An extended [introduction](https://www.w3schools.com/js/js_json_intro.asp) can be found at W3School.
-- As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath), using an [online validator](https://jsonpath.herokuapp.com/) which also uses Jayway will give the most similar results.
+- As JsonPath transformation is based on [Jayway](https://github.com/json-path/JsonPath), using an [online validator](https://jsonpath.fly.dev/) which also uses Jayway will give the most similar results.

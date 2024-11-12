@@ -34,8 +34,8 @@ class EmotivaTransponderDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallV2() throws JAXBException {
-        EmotivaTransponderDTO dto = (EmotivaTransponderDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaTransponderResponseV2);
+        var dto = (EmotivaTransponderDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaTransponderResponseV2);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getModel(), is("XMC-1"));
         assertThat(dto.getRevision(), is("2.0"));
@@ -50,8 +50,8 @@ class EmotivaTransponderDTOTest extends AbstractDTOTestBase {
 
     @Test
     void unmarshallV3() throws JAXBException {
-        EmotivaTransponderDTO dto = (EmotivaTransponderDTO) xmlUtils
-                .unmarshallToEmotivaDTO(emotivaTransponderResponseV3);
+        var dto = (EmotivaTransponderDTO) xmlUtils.unmarshallToEmotivaDTO(emotivaTransponderResponseV3);
+
         assertThat(dto, is(notNullValue()));
         assertThat(dto.getModel(), is("XMC-2"));
         assertThat(dto.getRevision(), is("3.0"));

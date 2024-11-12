@@ -54,6 +54,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_LIGHT_STATUS = "Light.GetStatus";
     public static final String SHELLYRPC_METHOD_LIGHT_SET = "Light.Set";
     public static final String SHELLYRPC_METHOD_LIGHT_SETCONFIG = "Light.SetConfig";
+    public static final String SHELLYRPC_METHOD_RGBW_STATUS = "RGBW.GetStatus";
+    public static final String SHELLYRPC_METHOD_RGBW_SET = "RGBW.Set";
     public static final String SHELLYRPC_METHOD_LED_SETCONFIG = "WD_UI.SetConfig";
     public static final String SHELLYRPC_METHOD_WIFIGETCONG = "Wifi.GetConfig";
     public static final String SHELLYRPC_METHOD_WIFISETCONG = "Wifi.SetConfig";
@@ -499,6 +501,9 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("light:0")
             public Shelly2GetConfigLight light0;
 
+            @SerializedName("rgbw:0")
+            public Shelly2GetConfigLight rgbw0;
+
             @SerializedName("smoke:0")
             public Shelly2ConfigSmoke smoke0;
         }
@@ -580,7 +585,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("timer_started_at")
             public Double timerStartedAt;
             @SerializedName("timer_duration")
-            public Integer timerDuration;
+            public Double timerDuration;
         }
 
         public static class Shelly2DeviceStatusResult {
@@ -723,6 +728,20 @@ public class Shelly2ApiJsonDTO {
                 public Boolean mute;
             }
 
+            public static class Shelly2RGBWStatus {
+                public Integer id;
+                public String source;
+                public Boolean output;
+                public Integer[] rgb;
+                public Double brightness;
+                public Integer white;
+                public Shelly2DeviceStatusTemp temperature;
+                public Shelly2Energy aenergy;
+                public Double apower;
+                public Double voltage;
+                public Double current;
+            }
+
             public Shelly2DeviceStatusBle ble;
             public Shelly2DeviceStatusCloud cloud;
             public Shelly2DeviceStatusMqqt mqtt;
@@ -739,6 +758,9 @@ public class Shelly2ApiJsonDTO {
             public Shelly2InputStatus input3;
             @SerializedName("input:100")
             public Shelly2InputStatus input100; // Digital Input from Add-On
+
+            @SerializedName("rgbw:0")
+            public Shelly2RGBWStatus rgbw0;
 
             @SerializedName("switch:0")
             public Shelly2RelayStatus switch0;
@@ -865,7 +887,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("timer_started_at")
         public Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Integer timerDuration;
+        public Double timerDuration;
         public Double apower;
         public Double voltage;
         public Double current;
@@ -882,7 +904,7 @@ public class Shelly2ApiJsonDTO {
         @SerializedName("timer_started_at")
         public Double timerStartetAt;
         @SerializedName("timer_duration")
-        public Integer timerDuration;
+        public Double timerDuration;
         public Double apower;
         public Double voltage;
         public Double current;
@@ -965,6 +987,8 @@ public class Shelly2ApiJsonDTO {
             public Integer brightness;
             @SerializedName("toggle_after")
             public Integer toggleAfter;
+            public Integer white;
+            public Integer[] rgb;
 
             // Shelly.SetAuth
             public String user;
