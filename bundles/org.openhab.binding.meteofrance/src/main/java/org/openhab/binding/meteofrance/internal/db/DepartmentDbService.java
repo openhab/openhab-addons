@@ -73,5 +73,4 @@ public class DepartmentDbService {
         double longitude = location.getLongitude().doubleValue();
         return departments.stream().filter(dep -> dep.contains(latitude, longitude)).toList();
     }
-
 }
