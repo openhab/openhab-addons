@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.config.BaseDeviceConfiguration;
 import org.openhab.binding.dirigera.internal.exception.NoGatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.interfaces.LightListener;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -59,6 +60,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class BaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
+    private List<LightListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
 
     // to be overwritten by child class in order to route the updates to the right instance
@@ -83,11 +85,13 @@ public class BaseHandler extends BaseThingHandler {
     protected List<String> softLinks = new ArrayList<>();
     protected List<String> linkCandidateTypes = new ArrayList<>();
 
+    protected State requestedPowerState = UnDefType.UNDEF;
+    protected State currentPowerState = UnDefType.UNDEF;
     protected BaseDeviceConfiguration config;
-    protected State on = UnDefType.UNDEF;
     protected String customName = "";
     protected String deviceType = "";
     protected boolean disposed = true;
+    protected boolean online = false;
 
     public BaseHandler(Thing thing, Map<String, String> mapping) {
         super(thing);
@@ -177,12 +181,16 @@ public class BaseHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_POWER_STATE:
                         if (command instanceof OnOffType onOff) {
-                            if (!on.equals(onOff)) {
+                            logger.debug("DIRIGERA BASE_HANDLER {} OnOff command: Current / Wanted {} {}",
+                                    thing.getLabel(), currentPowerState, onOff);
+                            requestedPowerState = onOff;
+                            if (!currentPowerState.equals(onOff)) {
                                 JSONObject attributes = new JSONObject();
                                 attributes.put(targetProperty, onOff.equals(OnOffType.ON));
                                 logger.trace("DIRIGERA BASE_HANDLER {} send to API {}", thing.getLabel(), attributes);
                                 gateway().api().sendAttributes(config.id, attributes);
                             } else {
+                                requestedPowerState = UnDefType.UNDEF;
                                 logger.trace("DIRIGERA BASE_HANDLER Dismiss {} {}", thing.getLabel(), onOff);
                             }
                         }
@@ -230,9 +238,11 @@ public class BaseHandler extends BaseThingHandler {
         if (update.has(Model.REACHABLE)) {
             if (update.getBoolean(Model.REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
+                online = true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/dirigera.device.status.not-reachable");
+                online = false;
             }
         }
         if (update.has(PROPERTY_DEVICE_TYPE) && deviceType.isBlank()) {
@@ -296,8 +306,18 @@ public class BaseHandler extends BaseThingHandler {
                 }
             }
             if (attributes.has(PROPERTY_POWER_STATE)) {
-                on = OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), on);
+                currentPowerState = OnOffType.from(attributes.getBoolean(PROPERTY_POWER_STATE));
+                logger.debug("DIRIGERA BASE_HANDLER {} OnOff update {}", thing.getLabel(), currentPowerState);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), currentPowerState);
+                synchronized (powerListeners) {
+                    if (online) {
+                        boolean requested = currentPowerState.equals(requestedPowerState);
+                        powerListeners.forEach(listener -> {
+                            listener.powerChanged((OnOffType) currentPowerState, requested);
+                        });
+                        requestedPowerState = UnDefType.UNDEF;
+                    }
+                }
             }
             if (attributes.has(PROPERTY_CUSTOM_NAME) && customName.isBlank()) {
                 customName = attributes.getString(PROPERTY_CUSTOM_NAME);
@@ -316,12 +336,11 @@ public class BaseHandler extends BaseThingHandler {
             }
         }
         deviceData.put("updates", new JSONArray(updates));
-
         updateState(new ChannelUID(thing.getUID(), CHANNEL_JSON), StringType.valueOf(deviceData.toString()));
     }
 
-    protected boolean isOn() {
-        return OnOffType.ON.equals(on);
+    protected boolean isPowered() {
+        return OnOffType.ON.equals(currentPowerState) && online;
     }
 
     /**
@@ -338,6 +357,7 @@ public class BaseHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         disposed = true;
+        online = false;
         BaseHandler proxy = child;
         if (proxy != null) {
             gateway().unregisterDevice(proxy, config.id);
@@ -570,6 +590,18 @@ public class BaseHandler extends BaseThingHandler {
      */
     public boolean linksSupported() {
         return channel2PropertyMap.containsKey(CHANNEL_LINKS);
+    }
+
+    public void addPowerListener(LightListener listener) {
+        synchronized (powerListeners) {
+            powerListeners.add(listener);
+        }
+    }
+
+    public void removePowerListener(LightListener listener) {
+        synchronized (powerListeners) {
+            powerListeners.remove(listener);
+        }
     }
 
     /**

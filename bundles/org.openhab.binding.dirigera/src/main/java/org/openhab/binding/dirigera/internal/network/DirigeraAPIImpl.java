@@ -152,12 +152,12 @@ public class DirigeraAPIImpl implements DirigeraAPI {
             ContentResponse response = addAuthorizationHeader(deviceRequest).timeout(10, TimeUnit.SECONDS).send();
             responseStatus = response.getStatus();
             if (responseStatus == 200 || responseStatus == 202) {
-                logger.debug("DIRIGERA API send {} with {} {}", url, dataArray, responseStatus);
+                logger.debug("DIRIGERA API send finished {} with {} {}", url, dataArray, responseStatus);
             } else {
-                logger.info("DIRIGERA API send {} to {} failed with status {}", dataArray, url, response.getStatus());
+                logger.info("DIRIGERA API send failed {} with {} {}", url, dataArray, responseStatus);
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
+            logger.warn("DIRIGERA API send failed {} failed {} {}", url, dataArray, e.getMessage());
         }
         endCalling(url);
         return responseStatus;
