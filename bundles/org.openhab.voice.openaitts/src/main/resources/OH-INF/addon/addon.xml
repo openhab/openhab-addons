@@ -6,7 +6,7 @@
 	<type>voice</type>
 	<name>OpenAI Text-to-Speech</name>
 	<description>OpenAI TTS Service uses to perform text-to-speech in openHAB.</description>
-	<connection>none</connection>
+	<connection>cloud</connection>
 
 	<service-id>org.openhab.voice.openaitts</service-id>
 
