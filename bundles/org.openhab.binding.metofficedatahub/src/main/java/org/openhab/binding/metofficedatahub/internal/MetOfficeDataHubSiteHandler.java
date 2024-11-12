@@ -81,6 +81,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
     private @Nullable ScheduledFuture<?> dailyScheduler = null;
     private @Nullable ScheduledFuture<?> initTask = null;
+    private final static int INIT_REQ_COALESCE_DURATION_SEC = 3;
 
     private String dailyPollKey = "";
     private String hourlyPollKey = "";
@@ -120,11 +121,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
     @Override
     public void dispose() {
-        final ScheduledFuture<?> initTaskRef = initTask;
-        if (initTaskRef != null) {
-            initTaskRef.cancel(true);
-            initTask = null;
-        }
+        cancelInitTask();
         cancelDataRequiredCheck();
         cancelScheduleDailyDataPoll(true);
         hourlyForecastPollManager.dispose();
@@ -135,6 +132,8 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        dailyForecastPollManager.setDataRequired(false, false);
+        hourlyForecastPollManager.setDataRequired(false, false);
 
         config = getConfigAs(MetOfficeDataHubSiteConfiguration.class);
 
@@ -158,8 +157,8 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             }
         }
 
-        dailyPollKey = location + "_daily";
-        hourlyPollKey = location + "_hourly";
+        dailyPollKey = location + ",daily";
+        hourlyPollKey = location + ",hourly";
 
         if (config.hourlyForecastPollRate > 0) {
             hourlyForecastPollManager.setPollDuration(Duration.ofHours(config.hourlyForecastPollRate));
@@ -168,16 +167,8 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             dailyForecastPollManager.setPollDuration(Duration.ofHours(config.dailyForecastPollRate));
         }
 
-        /**
-         * Setup the initial device's status
-         */
-        initTask = scheduler.schedule(() -> {
-            MetOfficeDataHubBridgeHandler metBridge = getMetOfficeDataHubBridge();
-            if (metBridge != null) {
-                updateStatus(metBridge.getThing().getStatus());
-            }
-            checkDataRequired();
-        }, 1, TimeUnit.SECONDS);
+        // Setup the initial device's status
+        scheduleInitTask();
     }
 
     @Override
@@ -211,6 +202,25 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             return bridgeHandler;
         } else {
             return null;
+        }
+    }
+
+    private void scheduleInitTask() {
+        cancelInitTask();
+        initTask = scheduler.schedule(() -> {
+            MetOfficeDataHubBridgeHandler metBridge = getMetOfficeDataHubBridge();
+            if (metBridge != null) {
+                updateStatus(metBridge.getThing().getStatus());
+            }
+            checkDataRequired();
+        }, INIT_REQ_COALESCE_DURATION_SEC, TimeUnit.SECONDS);
+    }
+
+    private void cancelInitTask() {
+        final ScheduledFuture<?> initTaskRef = initTask;
+        if (initTaskRef != null) {
+            initTaskRef.cancel(true);
+            initTask = null;
         }
     }
 
