@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TemperatureLightHandler} basic DeviceHandler for all devices
+ * {@link TemperatureLightHandler} for lights with brightness and color temperature
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -37,11 +38,10 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
 
     // default values of "standard Ikea lamps" from json
-    // "colorTemperatureMin": 4000,
-    // "colorTemperatureMax": 2202,
     private int colorTemperatureMax = 2202;
     private int colorTemperatureMin = 4000;
     private int range = colorTemperatureMin - colorTemperatureMax;
+    private PercentType currentColorTemp = new PercentType();
 
     public TemperatureLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
@@ -53,9 +53,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
-
-            // check for settings of color temperature in attributes
             JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+            // check for settings of color temperature in attributes
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
@@ -74,8 +73,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA TEMPERATURE_LIGHT handleCommand {} {}", channelUID, command);
         super.handleCommand(channelUID, command);
+        logger.trace("DIRIGERA TEMPERATURE_LIGHT {} handleCommand {} {}", thing.getLabel(), channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
@@ -85,8 +84,13 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                         int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, kelvin);
-                        logger.trace("DIRIGERA TEMPERATURE_LIGHT send to API {}", attributes);
-                        gateway().api().sendAttributes(config.id, attributes);
+                        super.changeProperty(LightCommand.Action.TEMPERARTURE, attributes);
+                        if (!isPowered()) {
+                            // fake event for power OFF
+                            updateState(channelUID, percent);
+                        }
+                    } else if (command instanceof OnOffType onOff) {
+                        super.addOnOffCommand(OnOffType.ON.equals(onOff));
                     }
                     break;
             }
@@ -111,7 +115,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                             kelvin = Math.min(kelvin, colorTemperatureMin);
                             kelvin = Math.max(kelvin, colorTemperatureMax);
                             int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
-                            updateState(new ChannelUID(thing.getUID(), targetChannel), new PercentType(percent));
+                            currentColorTemp = new PercentType(percent);
+                            updateState(new ChannelUID(thing.getUID(), targetChannel), currentColorTemp);
                             break;
                     }
                 }

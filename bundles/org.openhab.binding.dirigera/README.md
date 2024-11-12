@@ -220,7 +220,44 @@ See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 Light devices in several variants.
 Can be light bulbs, LED stripes, remote driver and more.
+Configuration contains
 
+| Name              | Type    | Description                                                         | Default | Required |
+|-------------------|---------|---------------------------------------------------------------------|---------|----------|
+| `id`              | text    | Unique id of this device / scene                                    | N/A     | yes      |
+| `fadeTime`        | integer | Required time for fade sequnce to color or brightness               | 750     | yes      |
+| `fadeSequence`    | integer | Define sequence if several light parameters are changed at once     | 0       | yes      |
+
+`fadeTime` adjust fading time according to your device.
+Current behavior shows commands are acknowledged while device is fading  but not executed correctly.
+So they need to be executed one after another. 
+Maybe an update of the DIRIGERA gateway will change the current behavior and you can reduce them afterwards.
+
+`fadeSequence` is only for [Color Lights](#color-lights). 
+Through `hsb` channel it's possible to adapt color brightness at once.
+Again due to fading times they need to be executed in a sequence.
+You can choose between options
+
+- 0: First brightness, then color
+- 1: First color, then brightness
+
+### Lights ON OFF Behavior
+
+When light is ON each command will change the settings accordingly immediately.
+During power OFF the lights will preserve some values until next power ON.
+
+| Channel               | Type          | Behavior                                                                  |
+|-----------------------|---------------|---------------------------------------------------------------------------|
+| `power-state`         | ON            | Switch ON, apply last / stored values                                     |
+| `brightness`          | ON            | Switch ON, apply last / stored values                                     |
+| `brightness`          | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
+| `temperature`         | ON            | Switch ON, apply last / stored values                                     |
+| `temperature`         | any           | Store value, brightness stays at previous level                           |
+| `hsb`                 | ON            | Switch ON, apply last / stored values                                     |
+| `hsb`                 | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
+| `hsb`                 | x,y,0         | Store color x and saturation y, brightness stays at previous level        |
+| `hsb`                 | x,y,> 0       | Switch ON with given values                                               |
+| outside               |               | Switch ON, apply last / stored values                                     |
 
 ## Dimmable Lights
 
@@ -241,8 +278,8 @@ Light with brightness support.
 
 Channel `brightness` can receive
 
-- ON / OFF teyes
-- numbers from 0 to 100 where 0 will switch the light off
+- ON / OFF 
+- numbers from 0 to 100 as percent where 0 will switch the light OFF, any other > 0 switches light ON
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
@@ -259,7 +296,12 @@ Mappings for `startup`
 - 0 : Previous
 - 1 : On
 - 2 : Off
-- 2 : Switch
+- 3 : Switch
+
+Option 3 is offered in IKEA Smart home app to control ligths with using your normal light switch _slowly and smooth_.
+With this the light shall stay online.
+I wasn't able to reproduce this behavior at all.
+Maybe somebody has more success.
 
 See [OTA channel mappings](#ota-mappings) for over the air updates.
 
@@ -283,8 +325,8 @@ Light with color temperature support.
 
 Channel `brightness` can receive
 
-- ON / OFF teyes
-- numbers from 0 to 100 where 0 will switch the light off
+- ON / OFF 
+- numbers from 0 to 100 as percent where 0 will switch the light OFF, any other > 0 switches light ON
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.
 See [OTA channel mappings](#ota-mappings) for over the air updates.
@@ -297,7 +339,7 @@ Light with color support.
 | Channel               | Type                  | Read/Write | Description                                          | Advanced |
 |-----------------------|-----------------------|------------|------------------------------------------------------|----------|
 | `power-state`         | Switch                | RW         | Power state of light                                 |          |
-| `color`               | Color                 | RW         | Control light with color, saturation and brightness  |          |
+| `hsb`                 | Color                 | RW         | Control light with color, saturation and brightness  |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
 | `links`               | String                | RW         | Linked controllers and sensors                       |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked                       |          |
@@ -309,8 +351,8 @@ Light with color support.
 
 Channel `color` can receive
 
-- ON / OFF teyes
-- numbers from 0 to 100 where 0 will switch the light off
+- ON / OFF 
+- numbers from 0 to 100 as brightness in percent where 0 will switch the light OFF, any other > 0 switches light ON
 - triple values for hue, saturation, brightness
 
 See [sartup mappings](#startup-channel-mappings) for device startup behavior.

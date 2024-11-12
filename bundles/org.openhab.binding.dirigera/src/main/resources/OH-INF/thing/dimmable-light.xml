@@ -55,6 +55,6 @@
 			</channel>
 		</channels>
 
-		<config-description-ref uri="thing-type:dirigera:base-device"/>
+		<config-description-ref uri="thing-type:dirigera:light-device"/>
 	</thing-type>
 </thing:thing-descriptions>
