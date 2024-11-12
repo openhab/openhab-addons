@@ -81,6 +81,9 @@ For the moment, the following data types are implemented:
 
 Date and Time types used by for CWL Excellent and CWL2 are currently not supported by the ISM8 add-on.
 
+*Attention:* Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSE`).
+A change would break all existing installations and is therefore not implemented.
+
 ## Full Example
 
 ### ism8.things
