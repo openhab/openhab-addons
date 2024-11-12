@@ -136,7 +136,7 @@ public class HueSyncHandler extends BaseThingHandler {
         long interval = 0;
 
         switch (id) {
-            case POLL:
+            case POLL -> {
                 initialDelay = 0;
                 interval = this.getConfigAs(HueSyncConfiguration.class).statusUpdateInterval;
 
@@ -144,9 +144,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 task = new HueSyncUpdateTask(this.connection, this.deviceInfo.get(),
                         deviceStatus -> this.handleUpdate(deviceStatus));
-
-                break;
-            case REGISTER:
+            }
+            case REGISTER -> {
                 initialDelay = HueSyncConstants.REGISTRATION_INITIAL_DELAY;
                 interval = HueSyncConstants.REGISTRATION_INTERVAL;
 
@@ -155,8 +154,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
                 task = new HueSyncRegistrationTask(this.connection, this.deviceInfo.get(),
                         registration -> this.handleRegistration(registration));
-
-                break;
+            }
         }
 
         if (task != null) {
@@ -262,6 +260,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void checkCompatibility() throws HueSyncApiException {
         try {
+            @SuppressWarnings("null")
             HueSyncDevice deviceInformation = this.deviceInfo.orElseThrow();
 
             if (deviceInformation.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {

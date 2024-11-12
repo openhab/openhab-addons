@@ -102,7 +102,8 @@ public class HueSyncDeviceConnection {
         } else if (command instanceof StringType) {
             value = '"' + command.toString() + '"';
         } else {
-            this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
+            this.logger.error("Type [{}] not supported by this connection",
+                    (command != null) ? command.getClass().getCanonicalName() : "null");
             return;
         }
 

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.huesync.internal.factory;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -62,7 +65,7 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
         if (HueSyncConstants.THING_TYPE_UID.equals(thingTypeUID)) {
             try {
                 return new HueSyncHandler(thing, this.httpClientFactory);
-            } catch (Exception e) {
+            } catch (IOException | URISyntaxException | CertificateException e) {
                 // TODO: Implementation ...
             }
         }

@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.huesync")
 public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private Logger logger = HueSyncLogFactory.getLogger(HueSyncDiscoveryParticipant.class);
+    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDiscoveryParticipant.class);
 
     /**
      *

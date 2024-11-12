@@ -63,12 +63,12 @@ public class HueSyncConnection {
     private static final String API = "api/v1";
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
 
-    private Integer port;
-    private String host;
+    private final Integer port;
+    private final String host;
 
-    private ServiceRegistration<?> tlsProviderService;
-    private HttpClient httpClient;
-    private URI uri;
+    private final ServiceRegistration<?> tlsProviderService;
+    private final HttpClient httpClient;
+    private final URI uri;
 
     private Optional<HueSyncAuthenticationResult> authentication = Optional.empty();
 
