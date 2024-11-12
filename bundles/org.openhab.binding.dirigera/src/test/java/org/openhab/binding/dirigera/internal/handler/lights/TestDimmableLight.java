@@ -40,6 +40,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link TestDimmableLight} Tests device handler creation, initializing and refresh of channels
@@ -48,6 +50,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestDimmableLight {
+    private final Logger logger = LoggerFactory.getLogger(TestDimmableLight.class);
     String deviceId = "eb9a4367-9e23-4d37-9566-401a7ae7caf0_1";
     ThingTypeUID thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
 
@@ -75,6 +78,7 @@ class TestDimmableLight {
         // set the right id
         Map<String, Object> config = new HashMap<>();
         config.put("id", deviceId);
+        config.put("fadeTime", 0);
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
@@ -82,12 +86,14 @@ class TestDimmableLight {
         checkLightStates(callback);
 
         callback.clear();
+        logger.warn("Refresh");
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE), RefreshType.REFRESH);
+        logger.warn("Check");
         checkLightStates(callback);
     }
 
@@ -100,7 +106,8 @@ class TestDimmableLight {
         State brightnessState = callback.getState("dirigera:dimmable-light:test-device:brightness");
         assertNotNull(brightnessState);
         assertTrue(brightnessState instanceof PercentType);
-        assertEquals(100, ((PercentType) brightnessState).intValue(), "Brightness");
+        // device brightness is 100 but due to isOn=false brightness shall reflect 0
+        assertEquals(0, ((PercentType) brightnessState).intValue(), "Brightness");
 
         // test ota
         State otaStatus = callback.getState("dirigera:dimmable-light:test-device:ota-status");

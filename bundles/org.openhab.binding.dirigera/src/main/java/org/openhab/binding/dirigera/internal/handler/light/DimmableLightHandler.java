@@ -15,12 +15,10 @@ package org.openhab.binding.dirigera.internal.handler.light;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -31,19 +29,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DimmableLightHandler} basic DeviceHandler for all devices
+ * {@link DimmableLightHandler} for lights with brightness
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class DimmableLightHandler extends BaseHandler {
+public class DimmableLightHandler extends BaseLight {
     private final Logger logger = LoggerFactory.getLogger(DimmableLightHandler.class);
+
+    protected int currentBrightness = 0;
 
     public DimmableLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        // links of types which can be established towards this device
-        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
     }
 
     @Override
@@ -57,8 +55,8 @@ public class DimmableLightHandler extends BaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA DIMMABLE_LIGHT handleCommand {} {}", channelUID, command);
         super.handleCommand(channelUID, command);
+        logger.trace("DIRIGERA DIMMABLE_LIGHT {} handleCommand {} {}", thing.getLabel(), channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
@@ -66,22 +64,23 @@ public class DimmableLightHandler extends BaseHandler {
                 case CHANNEL_LIGHT_BRIGHTNESS:
                     if (command instanceof PercentType percent) {
                         int percentValue = percent.intValue();
+                        // switch on or off depending on brightness ...
                         if (percentValue > 0) {
-                            if (!isOn()) {
-                                super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
-                                        OnOffType.ON);
+                            // first change brightness to be stored for power ON ...
+                            if (Math.abs(percentValue - currentBrightness) > 1) {
+                                JSONObject brightnessAttributes = new JSONObject();
+                                brightnessAttributes.put(targetProperty, percent.intValue());
+                                super.changeProperty(LightCommand.Action.BRIGHTNESS, brightnessAttributes);
                             }
-                            JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, percent.intValue());
-                            logger.trace("DIRIGERA DIMMABLE_LIGHT send to API {}", attributes);
-                            gateway().api().sendAttributes(config.id, attributes);
+                            // .. then switch power
+                            if (!isPowered()) {
+                                super.addOnOffCommand(true);
+                            }
                         } else {
-                            super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
-                                    OnOffType.OFF);
+                            super.addOnOffCommand(false);
                         }
-                    }
-                    if (command instanceof OnOffType onOff) {
-                        super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE), command);
+                    } else if (command instanceof OnOffType onOff) {
+                        super.addOnOffCommand(OnOffType.ON.equals(onOff));
                     }
                     break;
             }
@@ -90,9 +89,8 @@ public class DimmableLightHandler extends BaseHandler {
 
     @Override
     public void handleUpdate(JSONObject update) {
-        // handle reachable flag
         super.handleUpdate(update);
-        // now device specific
+        logger.trace("DIRIGERA DIMMABLE_LIGHT {} handleUpdate {}", thing.getLabel(), update);
         if (update.has(Model.ATTRIBUTES)) {
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
@@ -102,8 +100,21 @@ public class DimmableLightHandler extends BaseHandler {
                 if (targetChannel != null) {
                     switch (targetChannel) {
                         case CHANNEL_LIGHT_BRIGHTNESS:
-                            updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                    new PercentType(attributes.getInt(key)));
+                            // set new currentBrightness as received and continue with update depending on power state
+                            currentBrightness = attributes.getInt(key);
+                        case CHANNEL_POWER_STATE:
+                            /**
+                             * Power state changed
+                             * on - report last received brightness
+                             * off - deliver brightness 0
+                             */
+                            if (isPowered()) {
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS),
+                                        new PercentType(currentBrightness));
+                            } else {
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_BRIGHTNESS),
+                                        new PercentType(0));
+                            }
                             break;
                     }
                 }

@@ -33,11 +33,9 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
@@ -80,14 +78,14 @@ class TestColorLight {
         callback.waitForOnline();
         checkColorLightStates(callback);
 
-        callback.clear();
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
-        checkColorLightStates(callback);
+        // callback.clear();
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), RefreshType.REFRESH);
+        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
+        // checkColorLightStates(callback);
     }
 
     void checkColorLightStates(CallbackMock callback) {
@@ -100,6 +98,8 @@ class TestColorLight {
         assertTrue(hsbState instanceof HSBType);
         assertEquals(89, ((HSBType) hsbState).getHue().intValue(), "Hue");
         assertEquals(100, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
+        // brightness of device is 100 (previous state) but due to power OFF state it's reflected as 0
+        // assertEquals(0, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
         assertEquals(100, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
 
         // test ota

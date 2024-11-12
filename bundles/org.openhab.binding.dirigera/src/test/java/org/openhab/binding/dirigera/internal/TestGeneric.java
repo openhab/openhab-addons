@@ -14,9 +14,13 @@ package org.openhab.binding.dirigera.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
+import org.openhab.core.library.types.HSBType;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -36,5 +40,32 @@ class TestGeneric {
         } catch (Throwable t) {
             fail();
         }
+    }
+
+    @Test
+    void hsbCloseTo() {
+        HSBType first = new HSBType("180, 100, 100");
+        HSBType second = new HSBType("177, 97, 50");
+        boolean isClose = first.closeTo(second, 0.02);
+        assertTrue(isClose);
+    }
+
+    @Test
+    void lightCommandQueueTest() {
+        ArrayList<LightCommand> lightRequestQueue = new ArrayList<>();
+        JSONObject dummy1 = new JSONObject();
+        dummy1.put("dunny1", false);
+        LightCommand brightness1 = new LightCommand(dummy1, LightCommand.Action.BRIGHTNESS);
+        lightRequestQueue.add(brightness1);
+        JSONObject dummy2 = new JSONObject();
+        dummy2.put("dunny2", true);
+        LightCommand brightness2 = new LightCommand(dummy2, LightCommand.Action.BRIGHTNESS);
+        assertTrue(lightRequestQueue.contains(brightness1));
+        assertTrue(lightRequestQueue.contains(brightness2));
+        assertTrue(brightness1.equals(brightness2));
+        JSONObject dummy3 = null;
+        assertFalse(brightness1.equals(dummy3));
+        LightCommand color = new LightCommand(dummy2, LightCommand.Action.COLOR);
+        assertFalse(lightRequestQueue.contains(color));
     }
 }

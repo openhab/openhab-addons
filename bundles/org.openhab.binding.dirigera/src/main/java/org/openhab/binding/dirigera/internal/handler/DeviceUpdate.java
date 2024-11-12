@@ -45,10 +45,14 @@ public class DeviceUpdate {
      * @param other
      * @return
      */
-    public boolean equals(DeviceUpdate other) {
-        boolean result = this.action.equals(other.action) && this.deviceId.equals(other.deviceId);
-        if (result && this.handler != null && other.handler != null) {
-            result = handler.equals(other.handler);
+    @Override
+    public boolean equals(@Nullable Object other) {
+        boolean result = false;
+        if (other instanceof DeviceUpdate update) {
+            result = this.action.equals(update.action) && this.deviceId.equals(update.deviceId);
+            if (result && this.handler != null && update.handler != null) {
+                result = handler.equals(update.handler);
+            }
         }
         return result;
     }
