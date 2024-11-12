@@ -79,6 +79,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<>();
     private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
     private final Map<String, Map<String, Object>> capabilitiesMap = new HashMap<>();
+    private final List<Map<String, VEPUpdate>> eventQueue = new ArrayList<>();
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
@@ -87,6 +88,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
     private String poiEndpoint = "/v1/vehicle/%s/route";
+    private boolean updateRunning = false;
 
     final MBWebsocket ws;
     Optional<AccountConfiguration> config = Optional.empty();
@@ -288,9 +290,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         List<String> notFoundList = new ArrayList<>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
-            if (h != null) {
-                h.distributeContent(value);
-            } else {
+            if (h == null) {
                 if (value.getFullUpdate()) {
                     vepUpdateMap.put(key, value);
                 }
@@ -298,9 +298,50 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         });
         notFoundList.forEach(vin -> {
+            map.remove(vin);
             logger.trace("No VehicleHandler available for VIN {}", vin);
         });
+        if (!map.isEmpty()) {
+            synchronized (eventQueue) {
+                eventQueue.add(map);
+                scheduler.execute(this::doDdistributeVepUpdates);
+            }
+        }
         return notFoundList.isEmpty();
+    }
+
+    public void doDdistributeVepUpdates() {
+        Map<String, VEPUpdate> map;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                map = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            map.forEach((key, value) -> {
+                VehicleHandler h = activeVehicleHandlerMap.get(key);
+                if (h != null) {
+                    h.distributeContent(value);
+                }
+            });
+        } catch (Throwable t) {
+            logger.info("Exception during update {}", t.getMessage());
+            // ensure every possible throwable is catched to ensure running queue
+        }
+        synchronized (eventQueue) {
+            updateRunning = false;
+            eventQueue.notifyAll();
+        }
     }
 
     public void commandStatusUpdate(Map<String, AppTwinCommandStatusUpdatesByPID> updatesByVinMap) {
