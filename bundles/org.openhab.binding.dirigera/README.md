@@ -255,8 +255,7 @@ During power OFF the lights will preserve some values until next power ON.
 | `temperature`         | any           | Store value, brightness stays at previous level                           |
 | `hsb`                 | ON            | Switch ON, apply last / stored values                                     |
 | `hsb`                 | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
-| `hsb`                 | x,y,0         | Store color x and saturation y, brightness stays at previous level        |
-| `hsb`                 | x,y,> 0       | Switch ON with given values                                               |
+| `hsb`                 | h,s,b         | Store color and brightness for next ON                                    |
 | outside               |               | Switch ON, apply last / stored values                                     |
 
 ## Dimmable Lights
