@@ -150,18 +150,18 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
             State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
                     ? new DecimalType(prevision.rainIntensity().ordinal())
                     : UnDefType.UNDEF;
-            long until = now.until(prevision.time(), ChronoUnit.SECONDS);
             if (currentState == null) {
                 currentState = state;
-                untilNextRun = until;
+                if (prevision.time().isAfter(now)) {
+                    untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
+                }
             }
             timeSeries.add(prevision.time().toInstant(), state);
         }
         updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
         sendTimeSeries(intensityChannelUID, timeSeries);
 
-        // ensure we don't have a non positive delay
-        untilNextRun = Math.max(untilNextRun, 300);
+        untilNextRun = untilNextRun != 0 ? untilNextRun : 300;
 
         logger.debug("Refresh rain intensity forecast in: {}s", untilNextRun);
         refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, untilNextRun, TimeUnit.SECONDS));

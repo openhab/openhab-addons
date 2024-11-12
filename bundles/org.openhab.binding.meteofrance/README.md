@@ -87,7 +87,7 @@ The information that are retrieved is available as these channels:
 | update-time  | DateTime  | Observation Timestamp    |
 | intensity    | Number    | Rain intensity level (*) |
 
-(*) Each alert level has an associated color and description:
+(*) Rain intensity values and associated descriptions:
 
 | Code | Description   |
 |------|---------------|
