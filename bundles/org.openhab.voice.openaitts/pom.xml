@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.voice.openaitts</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Voice :: OpenAI Text to Speech</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: OpenAI Text-to-Speech</name>
   <dependencies>
 
   </dependencies>
