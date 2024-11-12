@@ -13,24 +13,28 @@
 package org.openhab.binding.dirigera.internal.handler.light;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * The {@link LightUpdate} element handled in light update queue
+ * The {@link LightCommand} is holding all information to execute a new light command
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LightUpdate {
+public class LightCommand {
     public enum Action {
-        COLOR,
+        ON,
         BRIGHTNESS,
+        TEMPERARTURE,
+        COLOR,
+        OFF
     }
 
     public JSONObject request;
     public Action action;
 
-    public LightUpdate(JSONObject request, Action action) {
+    public LightCommand(JSONObject request, Action action) {
         this.request = request;
         this.action = action;
     }
@@ -41,7 +45,13 @@ public class LightUpdate {
      * @param other
      * @return
      */
-    public boolean equals(LightUpdate other) {
-        return action.equals(other.action);
+    @Override
+    public boolean equals(@Nullable Object other) {
+        return (other instanceof LightCommand command && action.equals(command.action));
+    }
+
+    @Override
+    public String toString() {
+        return this.action + ": " + this.request.toString();
     }
 }
