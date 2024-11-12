@@ -709,6 +709,11 @@ public class VehicleHandler extends BaseThingHandler {
                             block = true;
                         }
                         break;
+                    case OH_CHANNEL_ADBLUE_LEVEL:
+                        if (!Constants.COMBUSTION.equals(vehicleType)) {
+                            block = true;
+                        }
+                        break;
                     case OH_CHANNEL_COOLANT_FLUID:
                     case OH_CHANNEL_ENGINE:
                     case OH_CHANNEL_GAS_FLAP:
