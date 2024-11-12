@@ -158,13 +158,13 @@ public class HueSyncHandler extends BaseThingHandler {
         }
 
         if (task != null) {
-            logger.trace("Starting task [{}]", id);
+            logger.debug("Starting task [{}]", id);
             this.tasks.put(id, this.executeTask(task, initialDelay, interval));
         }
     }
 
     private void stopTasks() {
-        logger.trace("Stopping {} task(s): {}", this.tasks.values().size(), String.join(",", this.tasks.keySet()));
+        logger.debug("Stopping {} task(s): {}", this.tasks.values().size(), String.join(",", this.tasks.keySet()));
 
         this.tasks.values().forEach(task -> this.stopTask(task));
         this.tasks.clear();
@@ -264,10 +264,10 @@ public class HueSyncHandler extends BaseThingHandler {
             HueSyncDevice deviceInformation = this.deviceInfo.orElseThrow();
 
             if (deviceInformation.apiLevel < HueSyncConstants.MINIMAL_API_VERSION) {
-                throw new HueSyncApiException("@text/api.minimal-version", this.logger);
+                throw new HueSyncApiException("@text/api.minimal-version");
             }
         } catch (NoSuchElementException e) {
-            throw new HueSyncApiException("@text/api.communication-problem", logger);
+            throw new HueSyncApiException("@text/api.communication-problem");
         }
     }
 
@@ -304,7 +304,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
             scheduler.execute(initializeConnection());
         } catch (Exception e) {
-            this.logger.error("{}", e.getMessage());
+            this.logger.warn("{}", e.getMessage());
 
             this.updateStatus(ThingStatus.OFFLINE);
         }
@@ -336,9 +336,9 @@ public class HueSyncHandler extends BaseThingHandler {
             this.stopTasks();
             this.connection.dispose();
         } catch (Exception e) {
-            this.logger.error("{}", e.getMessage());
+            this.logger.warn("{}", e.getMessage());
         } finally {
-            this.logger.info("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
+            this.logger.debug("Thing {} ({}) disposed.", this.thing.getLabel(), this.thing.getUID());
         }
     }
 

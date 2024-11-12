@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
+import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -31,6 +32,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
 
 /**
  * The {@link HueSyncHandlerFactory} is responsible for creating things and
@@ -44,6 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
+    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandlerFactory.class);
 
     @Activate
     public HueSyncHandlerFactory(@Reference final HttpClientFactory httpClientFactory) throws Exception {
@@ -66,7 +69,8 @@ public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
             try {
                 return new HueSyncHandler(thing, this.httpClientFactory);
             } catch (IOException | URISyntaxException | CertificateException e) {
-                // TODO: Implementation ...
+                this.logger.warn("It was not possible to create a handler for {}: {}", thingTypeUID.getId(),
+                        e.getMessage());
             }
         }
 

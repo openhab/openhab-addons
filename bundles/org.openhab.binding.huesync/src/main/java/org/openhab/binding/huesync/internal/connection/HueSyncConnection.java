@@ -68,7 +68,7 @@ public class HueSyncConnection {
 
     private final ServiceRegistration<?> tlsProviderService;
     private final HttpClient httpClient;
-    private final URI uri;
+    private final URI deviceUri;
 
     private Optional<HueSyncAuthenticationResult> authentication = Optional.empty();
 
@@ -79,7 +79,7 @@ public class HueSyncConnection {
         this.host = host;
         this.port = port;
 
-        this.uri = new URI(String.format("https://%s:%s", this.host, this.port));
+        this.deviceUri = new URI(String.format("https://%s:%s", this.host, this.port));
 
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
         BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
@@ -95,7 +95,7 @@ public class HueSyncConnection {
         if (!id.isBlank() && !token.isBlank()) {
             this.registrationId = id;
 
-            this.authentication = Optional.of(new HueSyncAuthenticationResult(this.uri, token));
+            this.authentication = Optional.of(new HueSyncAuthenticationResult(this.deviceUri, token));
             this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication.get());
         }
     }
@@ -108,7 +108,7 @@ public class HueSyncConnection {
         } catch (ExecutionException e) {
             this.handleExecutionException(e);
         } catch (InterruptedException | TimeoutException e) {
-            this.logger.error("{}", e.getMessage());
+            this.logger.warn("{}", e.getMessage());
         }
 
         return null;
@@ -140,7 +140,7 @@ public class HueSyncConnection {
                     this.removeAuthentication();
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                this.logger.error("{}", e.getMessage());
+                this.logger.warn("{}", e.getMessage());
             }
         }
     }
@@ -166,28 +166,23 @@ public class HueSyncConnection {
              * 500 Internal: Internal errors like out of memory
              */
             switch (status) {
-                case HttpStatus.OK_200:
+                case HttpStatus.OK_200 -> {
                     return (type != null && (response instanceof ContentResponse))
                             ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
                             : null;
-                case HttpStatus.BAD_REQUEST_400:
-                    this.logger.trace("registration in progress: no token received yet");
-                    break;
-                case HttpStatus.UNAUTHORIZED_401:
+                }
+                case HttpStatus.BAD_REQUEST_400 -> this.logger.debug("registration in progress: no token received yet");
+                case HttpStatus.UNAUTHORIZED_401 -> {
                     this.authentication = Optional.empty();
-                    throw new HueSyncConnectionException("@text/connection.invalid-login", this.logger);
+                    throw new HueSyncConnectionException("@text/connection.invalid-login");
+                }
 
-                case HttpStatus.NOT_FOUND_404:
-                    this.logger.error("invalid device URI or API endpoint");
-                    break;
-                case HttpStatus.INTERNAL_SERVER_ERROR_500:
-                    this.logger.error("hue sync box server problem");
-                    break;
-                default:
-                    this.logger.warn("unexpected HTTP status: {}", status);
+                case HttpStatus.NOT_FOUND_404 -> this.logger.warn("invalid device URI or API endpoint");
+                case HttpStatus.INTERNAL_SERVER_ERROR_500 -> this.logger.warn("hue sync box server problem");
+                default -> this.logger.warn("unexpected HTTP status: {}", status);
             }
         } catch (HueSyncConnectionException e) {
-
+            this.logger.warn("{}", e.getMessage());
         }
         return null;
     }
@@ -233,7 +228,7 @@ public class HueSyncConnection {
     }
 
     private void handleExecutionException(ExecutionException e) {
-        this.logger.error("{}", e.getMessage());
+        this.logger.warn("{}", e.getMessage());
 
         Throwable cause = e.getCause();
         if (cause != null && cause instanceof HttpResponseException) {

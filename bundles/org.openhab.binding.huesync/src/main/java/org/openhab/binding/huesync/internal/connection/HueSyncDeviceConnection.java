@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -86,7 +87,7 @@ public class HueSyncDeviceConnection {
     }
 
     private void execute(String key, Command command) {
-        this.logger.info("Command executor: {} - {}", key, command);
+        this.logger.debug("Command executor: {} - {}", key, command);
 
         if (!this.connection.isRegistered()) {
             this.logger.warn("Device is not registered - ignoring command: {}", command);
@@ -102,8 +103,7 @@ public class HueSyncDeviceConnection {
         } else if (command instanceof StringType) {
             value = '"' + command.toString() + '"';
         } else {
-            this.logger.error("Type [{}] not supported by this connection",
-                    (command != null) ? command.getClass().getCanonicalName() : "null");
+            this.logger.warn("Type [{}] not supported by this connection", command.getClass().getCanonicalName());
             return;
         }
 
@@ -114,19 +114,18 @@ public class HueSyncDeviceConnection {
 
     // #endregion
 
-    @SuppressWarnings("null")
     public void executeCommand(Channel channel, Command command) {
         String uid = channel.getUID().getAsString();
         String commandId = channel.getUID().getId();
 
-        this.logger.trace("Channel UID: {} - Command: {}", uid, command.toFullString());
+        this.logger.debug("Channel UID: {} - Command: {}", uid, command.toFullString());
 
         if (RefreshType.REFRESH.equals(command)) {
             return;
         }
 
         if (this.deviceCommandExecutors.containsKey(commandId)) {
-            this.deviceCommandExecutors.get(commandId).accept(command);
+            Objects.requireNonNull(this.deviceCommandExecutors.get(commandId)).accept(command);
         } else {
             this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
         }

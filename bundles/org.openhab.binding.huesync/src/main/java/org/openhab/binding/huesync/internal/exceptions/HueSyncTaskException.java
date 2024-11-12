@@ -13,7 +13,6 @@
 package org.openhab.binding.huesync.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
 
 /**
  *
@@ -23,7 +22,7 @@ import org.slf4j.Logger;
 public class HueSyncTaskException extends HueSyncException {
     private static final long serialVersionUID = 0L;
 
-    public HueSyncTaskException(String message, Logger logger) {
-        super(message, logger);
+    public HueSyncTaskException(String message) {
+        super(message);
     }
 }

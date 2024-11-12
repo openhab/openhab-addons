@@ -15,7 +15,6 @@ package org.openhab.binding.huesync.internal.discovery;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -83,9 +82,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (this.autoDiscoveryEnabled) {
             ThingUID uid = getThingUID(service);
-            if (Objects.nonNull(uid)) {
+            if (uid != null) {
                 try {
-                    logger.trace("HDMI Sync Box {} discovered at {}:{}", service.getName(),
+                    logger.debug("HDMI Sync Box {} discovered at {}:{}", service.getName(),
                             service.getHostAddresses()[0], service.getPort());
 
                     Map<String, Object> properties = new HashMap<>();
@@ -96,7 +95,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                     return DiscoveryResultBuilder.create(uid).withLabel(service.getName()).withProperties(properties)
                             .build();
                 } catch (Exception e) {
-                    logger.error("Unable to query device information for {}: {}", service.getQualifiedName(),
+                    logger.debug("Unable to query device information for {}: {}", service.getQualifiedName(),
                             e.getMessage());
                 }
             }
