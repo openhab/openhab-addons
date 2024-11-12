@@ -553,7 +553,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         break;
                 }
             } catch (Throwable t) {
-                // esnure any exception is catched do to free
+                // ensure any exception is catched so endUpdate is called 100%
                 logger.info("DIRIGERA HANDLER Exception during update {}", t.getMessage());
             }
             endUpdate();
@@ -787,7 +787,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         synchronized (websocketQueue) {
             if (websocketQueueSizePeak < websocketQueue.size()) {
                 websocketQueueSizePeak = websocketQueue.size();
-                logger.warn("DIRIGERA HANDLER Websocket update queue size peak {}", websocketQueueSizePeak);
+                logger.trace("DIRIGERA HANDLER Websocket update queue size peak {}", websocketQueueSizePeak);
             }
             if (!websocketQueue.isEmpty()) {
                 json = websocketQueue.remove(0);

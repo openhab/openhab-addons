@@ -14,15 +14,11 @@ package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
-import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -35,25 +31,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ColorLightHandler} basic DeviceHandler for all devices
+ * {@link ColorLightHandler} for lights with hue, saturation and brightness
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ColorLightHandler extends BaseHandler {
+public class ColorLightHandler extends TemperatureLightHandler {
     private final Logger logger = LoggerFactory.getLogger(ColorLightHandler.class);
 
-    private List<LightUpdate> lightRequestQueue = new ArrayList<>();
-    private int colorBrightnessDelayMS = 1250;
-    private HSBType hsbCurrent;
+    private HSBType hsbStateReflection = new HSBType(); // proxy to reflect state to end user
+    private HSBType hsbDevice = new HSBType(); // strictly holding values which were received via update
 
     public ColorLightHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
-        PercentType pt = new PercentType(50);
-        hsbCurrent = new HSBType(new DecimalType(50), pt, pt);
-        // links of types which can be established towards this device
-        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
     }
 
     @Override
@@ -66,86 +57,106 @@ public class ColorLightHandler extends BaseHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("DIRIGERA LIGHT_DEVICE handle {} {} {}", channelUID, command, hsbCurrent);
-        super.handleCommand(channelUID, command);
-        String channel = channelUID.getIdWithoutGroup();
+    public void dispose() {
+        super.dispose();
+    }
 
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+        logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand {} Command {} Device {}", thing.getLabel(), channelUID,
+                command, hsbDevice);
+
+        String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
             if (command instanceof HSBType hsb) {
-                boolean colorSendToAPI = false;
-                int differenceHue = Math.abs(hsb.getHue().intValue() - hsbCurrent.getHue().intValue());
-                int saturationDifference = Math
-                        .abs(hsb.getSaturation().intValue() - hsbCurrent.getSaturation().intValue());
-                if (differenceHue > 2 || saturationDifference > 2) {
-                    JSONObject colorAttributes = new JSONObject();
-                    colorAttributes.put("colorHue", hsb.getHue().intValue());
-                    colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
-                    synchronized (lightRequestQueue) {
-                        lightRequestQueue.add(new LightUpdate(colorAttributes, LightUpdate.Action.COLOR));
-                    }
-                    scheduler.execute(this::doUpdate);
-                    colorSendToAPI = true;
+                // if (isPowered()) {
+                // int requestedBrightness = hsb.getBrightness().intValue();
+                // if (requestedBrightness == 0) {
+                // super.addOnOffCommand(false);
+                // } else {
+                // respect sequence
+                switch (lightConfig.fadeSequence) {
+                    case 0:
+                        brightnessCommand(hsb);
+                        colorCommand(hsb);
+                        break;
+                    case 1:
+                        colorCommand(hsb);
+                        brightnessCommand(hsb);
+                        break;
                 }
-                int requestedBrightness = hsb.getBrightness().intValue();
-                int currentBrightness = hsbCurrent.getBrightness().intValue();
-                if (Math.abs(requestedBrightness - currentBrightness) > 2 || requestedBrightness == 0) {
-                    if (requestedBrightness > 0) {
-                        if (!isOn()) {
-                            super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
-                                    OnOffType.ON);
-                        }
-                        JSONObject brightnessattributes = new JSONObject();
-                        brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
-                        synchronized (lightRequestQueue) {
-                            lightRequestQueue.add(new LightUpdate(brightnessattributes, LightUpdate.Action.BRIGHTNESS));
-                        }
-                        if (colorSendToAPI) {
-                            /**
-                             * IKEA lamps cannot handle consecutive calls for color and brightness due to fading
-                             * activity
-                             * So first fade to color then fade brightness
-                             */
-                            scheduler.schedule(this::doUpdate, colorBrightnessDelayMS, TimeUnit.MILLISECONDS);
-                        } else {
-                            scheduler.execute(this::doUpdate);
-                        }
-                    } else {
-                        super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE),
-                                OnOffType.OFF);
-                    }
-
-                }
+                // }
+                // } else {
+                // // store only color for next startup
+                // colorCommand(hsb);
+                // int requestedBrightness = hsb.getBrightness().intValue();
+                // if (requestedBrightness > 0) {
+                // brightnessCommand(hsb);
+                // // light shall be switched ON, first change property for startup, then switch on
+                // super.addOnOffCommand(true);
+                // } else {
+                // "fake" state update
+                hsbStateReflection = hsb;
+                updateState(channelUID, hsb);
+                // }
+                // }
             } else if (command instanceof OnOffType) {
-                super.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_POWER_STATE), command);
+                super.addOnOffCommand(OnOffType.ON.equals(command));
             } else if (command instanceof PercentType percent) {
-                HSBType newHsb = new HSBType(hsbCurrent.getHue(), hsbCurrent.getSaturation(), percent);
-                this.handleCommand(new ChannelUID(channelUID.getThingUID(), CHANNEL_LIGHT_HSB), newHsb);
+                int requestedBrightness = percent.intValue();
+                if (requestedBrightness == 0) {
+                    super.addOnOffCommand(false);
+                } else {
+                    brightnessCommand(new HSBType("0,0," + requestedBrightness));
+                    super.addOnOffCommand(true);
+                }
             } else {
-                logger.trace("DIRIGERA LIGHT_DEVICE type not known {}", command.getClass());
+                logger.trace("DIRIGERA COLOR_LIGHT type not known {}", command.getClass());
             }
         }
     }
 
-    private void doUpdate() {
-        LightUpdate request = null;
-        synchronized (lightRequestQueue) {
-            if (!lightRequestQueue.isEmpty()) {
-                request = lightRequestQueue.remove(0);
-            } else {
-                return;
-            }
-            if (lightRequestQueue.contains(request)) {
-                logger.trace("DIRIGERA LIGHT_DEVICE dismiss light request and wait for next one {}",
-                        lightRequestQueue.size());
-            }
-            if (!lightRequestQueue.isEmpty()) {
-                logger.trace("DIRIGERA LIGHT_DEVICE queue size {}", lightRequestQueue.size());
-            }
+    /**
+     * Send hue and saturation to light device in case of difference is more than 2%
+     *
+     * @param hsb as requested color
+     * @return true if color request is sent, false otherwise
+     */
+    private void colorCommand(HSBType hsb) {
+        // if (!hsb.closeTo(hsbDevice, 0.02)) {
+        /**
+         * Why is closeTo not working on target?
+         * 2024-11-09 09:28:21.191 [TRACE] [rnal.handler.light.ColorLightHandler] - DIRIGERA COLOR_LIGHT hsb too
+         * close Device 63.0,0,33 Requested 63,100,0
+         **/
+        if (!closeTo(hsb)) {
+            JSONObject colorAttributes = new JSONObject();
+            colorAttributes.put("colorHue", hsb.getHue().intValue());
+            colorAttributes.put("colorSaturation", hsb.getSaturation().intValue() / 100.0);
+            super.changeProperty(LightCommand.Action.COLOR, colorAttributes);
+        } else {
+            logger.trace("DIRIGERA COLOR_LIGHT hsb too close Device {} Requested {}", hsbDevice, hsb);
         }
-        if (request != null) {
-            gateway().api().sendAttributes(config.id, request.request);
+    }
+
+    private boolean closeTo(HSBType hsb) {
+        return (Math.abs(hsb.getHue().intValue() - hsbDevice.getHue().intValue()) < 3
+                && Math.abs(hsb.getSaturation().intValue() - hsbDevice.getSaturation().intValue()) < 3);
+    }
+
+    private void brightnessCommand(HSBType hsb) {
+        int requestedBrightness = hsb.getBrightness().intValue();
+        int currentBrightness = hsbDevice.getBrightness().intValue();
+        if (Math.abs(requestedBrightness - currentBrightness) > 1) {
+            if (requestedBrightness > 0) {
+                JSONObject brightnessattributes = new JSONObject();
+                brightnessattributes.put("lightLevel", hsb.getBrightness().intValue());
+                super.changeProperty(LightCommand.Action.BRIGHTNESS, brightnessattributes);
+            }
+        } else {
+            logger.trace("DIRIGERA COLOR_LIGHT brightness too close Device {} Requested {}", hsbDevice, hsb);
         }
     }
 
@@ -153,41 +164,68 @@ public class ColorLightHandler extends BaseHandler {
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
         if (update.has(Model.ATTRIBUTES)) {
-            boolean deliverHSB = false;
             JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
+            boolean deliverHSB = false;
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
+                    // apply and update to hsbCurrent, only in case !isOn deliver fake brightness HSBs
                     switch (targetChannel) {
                         case CHANNEL_LIGHT_HSB:
                             switch (key) {
                                 case "colorHue":
                                     double hueValue = attributes.getInt(key);
-                                    hsbCurrent = new HSBType(new DecimalType(hueValue), hsbCurrent.getSaturation(),
-                                            hsbCurrent.getBrightness());
+                                    hsbDevice = new HSBType(new DecimalType(hueValue), hsbDevice.getSaturation(),
+                                            hsbDevice.getBrightness());
+                                    hsbStateReflection = new HSBType(new DecimalType(hueValue),
+                                            hsbStateReflection.getSaturation(), hsbStateReflection.getBrightness());
                                     deliverHSB = true;
                                     break;
                                 case "colorSaturation":
                                     double saturationValue = Math.round(attributes.getDouble(key) * 100);
-                                    hsbCurrent = new HSBType(hsbCurrent.getHue(),
-                                            new PercentType((int) saturationValue), hsbCurrent.getBrightness());
+                                    hsbDevice = new HSBType(hsbDevice.getHue(), new PercentType((int) saturationValue),
+                                            hsbDevice.getBrightness());
+                                    hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
+                                            new PercentType((int) saturationValue), hsbStateReflection.getBrightness());
                                     deliverHSB = true;
                                     break;
                                 case "lightLevel":
                                     int brightnessValue = attributes.getInt(key);
-                                    hsbCurrent = new HSBType(hsbCurrent.getHue(), hsbCurrent.getSaturation(),
+                                    // device needs the right values
+                                    hsbDevice = new HSBType(hsbDevice.getHue(), hsbDevice.getSaturation(),
                                             new PercentType(brightnessValue));
+                                    // if (isPowered()) {
+                                    hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
+                                            hsbStateReflection.getSaturation(), new PercentType(brightnessValue));
+                                    // } else {
+                                    // don't update device, only reflection of 0 brightness
+                                    // hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
+                                    // hsbStateReflection.getSaturation(), new PercentType(0));
+                                    // }
                                     deliverHSB = true;
                                     break;
                             }
+                            break;
+                        case CHANNEL_POWER_STATE:
+                            // if powered reflect state from device, otherwise with brightness 0
+                            if (isPowered()) {
+                                // hsbStateReflection = new HSBType(hsbDevice.getHue(), hsbDevice.getSaturation(),
+                                // hsbDevice.getBrightness());
+                            } else {
+                                // hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
+                                // hsbStateReflection.getSaturation(), new PercentType(0));
+                            }
+                            // deliverHSB = true;
                             break;
                     }
                 }
             }
             if (deliverHSB) {
-                updateState(new ChannelUID(thing.getUID(), "hsb"), hsbCurrent);
+                // logger.warn("DIRIGERA COLOR_LIGHT {} Device {} State {}", thing.getLabel(), hsbDevice,
+                // hsbStateReflection);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), hsbStateReflection);
             }
         }
     }
