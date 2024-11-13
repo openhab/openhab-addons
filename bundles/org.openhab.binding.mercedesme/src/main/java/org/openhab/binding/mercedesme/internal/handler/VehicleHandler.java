@@ -112,6 +112,7 @@ import com.google.protobuf.Int32Value;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - Bugfix https://github.com/openhab/openhab-addons/issues/16932
+ * @author Bernd Weymann - Added adblue-channel https://community.openhab.org/t/mercedes-me-binding/136852/239
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
@@ -133,8 +134,6 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
-    private List<VEPUpdate> eventQueue = new ArrayList<>();
-    private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
     Optional<AccountHandler> accountHandler = Optional.empty();
@@ -589,40 +588,6 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
-        synchronized (eventQueue) {
-            eventQueue.add(data);
-            scheduler.execute(this::doUpdate);
-        }
-    }
-
-    public void doUpdate() {
-        VEPUpdate data;
-        synchronized (eventQueue) {
-            while (updateRunning) {
-                try {
-                    eventQueue.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (!eventQueue.isEmpty()) {
-                data = eventQueue.remove(0);
-            } else {
-                return;
-            }
-            updateRunning = true;
-        }
-        try {
-            update(data);
-        } finally {
-            synchronized (eventQueue) {
-                updateRunning = false;
-                eventQueue.notifyAll();
-            }
-        }
-    }
-
-    public void update(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
         boolean fullUpdate = data.getFullUpdate();
         /**
