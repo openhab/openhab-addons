@@ -42,34 +42,34 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 | channel    | type     | access mode | description  |
 |------------|----------|-------------|--------------|
-| name                           | String               | R | The name of the Automower®                                                                                     |
-| mode                           | String               | R | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                              |
-| activity                       | String               | R | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN) |
-| inactive-reason                | String               | R | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               |
-| state                          | String               | R | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP) |
-| work-area-id                   | Number               | R | Id of the active work area                                                                                     |
-| work-area                      | String               | R | Name of the active work area                                                                                   |
-| last-update                    | DateTime             | R | The time when the Automower® updated its states                                                                |
-| battery                        | Number:Dimensionless | R | The battery state of charge in percent                                                                         |
-| error-code                     | Number               | R | The current error code                                                                                         |
-| error-timestamp                | DateTime             | R | The timestamp when the current error occurred                                                                  |
-| error-confirmable              | Switch               | R | If the mower has an Error Code this attribute states if the error is confirmable |
-| planner-next-start             | DateTime             | R | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL |
-| planner-override-action        | String               | R | The action that overrides current planner operation                                                            |
-| planner-restricted-reason      | String               | R | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL) |
-| planner-external-reason        | String               | R | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation |
-| setting-cutting-height         | Number               | R | Prescaled cutting height, Range: 1-9                                                                           |
-| setting-headlight-mode         | String               | R | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                        |
-| stat-cutting-blade-usage-time  | Number:Time          | R | The time since the last reset of the cutting blade usage counter                                               |
-| stat-number-of-charging-cycles | Number               | R | Number of charging cycles                                                                                      |
-| stat-number-of-collisions      | Number               | R | The total number of collisions                                                                                 |
-| stat-total-charging-time       | Number:Time          | R | Total charging time                                                                                            |
-| stat-total-cutting-time        | Number:Time          | R | Total Cutting Time                                                                                             |
-| stat-total-cutting-percent     | Number:Dimensionless | R | Total cutting time in percent                                                                                  |
-| stat-total-drive-distance      | Number:Length        | R | Total driven distance                                                                                          |
-| stat-total-running-time        | Number:Time          | R | The total running time (the wheel motors have been running)                                                    |
-| stat-total-searching-time      | Number:Length        | R | The total searching time                                                                                       |
-| stat-total-searching-percent   | Number:Dimensionless | R | The total searching time in percent                                                                            |
+| name                           | String               | R   | The name of the Automower®                                                                                     |
+| mode                           | String               | R   | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                              |
+| activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN) |
+| inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               |
+| state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP) |
+| work-area-id                   | Number               | R   | Id of the active work area                                                                                     |
+| work-area                      | String               | R   | Name of the active work area                                                                                   |
+| last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                |
+| battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         |
+| error-code                     | Number               | R   | The current error code                                                                                         |
+| error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  |
+| error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable |
+| planner-next-start             | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL |
+| planner-override-action        | String               | R   | The action that overrides current planner operation                                                            |
+| planner-restricted-reason      | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL) |
+| planner-external-reason        | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation |
+| setting-cutting-height         | Number               | R/W | Prescaled cutting height, Range: 1-9                                                                           |
+| setting-headlight-mode         | String               | R/W | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                        |
+| stat-cutting-blade-usage-time  | Number:Time          | R   | The time since the last reset of the cutting blade usage counter                                               |
+| stat-number-of-charging-cycles | Number               | R   | Number of charging cycles                                                                                      |
+| stat-number-of-collisions      | Number               | R   | The total number of collisions                                                                                 |
+| stat-total-charging-time       | Number:Time          | R   | Total charging time                                                                                            |
+| stat-total-cutting-time        | Number:Time          | R   | Total Cutting Time                                                                                             |
+| stat-total-cutting-percent     | Number:Dimensionless | R   | Total cutting time in percent                                                                                  |
+| stat-total-drive-distance      | Number:Length        | R   | Total driven distance                                                                                          |
+| stat-total-running-time        | Number:Time          | R   | The total running time (the wheel motors have been running)                                                    |
+| stat-total-searching-time      | Number:Length        | R   | The total searching time                                                                                       |
+| stat-total-searching-percent   | Number:Dimensionless | R   | The total searching time in percent                                                                            |
 
 ### Calendar Tasks Channels
 

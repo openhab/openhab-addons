@@ -1094,7 +1094,7 @@ public class AutomowerHandler extends BaseThingHandler {
      * Sends WorkArea Settings to the automower
      *
      * @param workAreaId Id of WorkArea
-     * @param enable CuttingHeight of the WorkArea
+     * @param enable Work area enable or disabled
      * @param cuttingHeight CuttingHeight of the WorkArea
      */
     public void sendAutomowerWorkArea(long workAreaId, boolean enable, byte cuttingHeight) {

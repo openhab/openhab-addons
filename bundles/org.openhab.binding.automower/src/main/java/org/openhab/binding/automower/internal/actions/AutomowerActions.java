@@ -147,7 +147,7 @@ public class AutomowerActions implements ThingActions {
         ((AutomowerActions) actions).confirmError();
     }
 
-    @RuleAction(label = "@text/action-set-Settings-label", description = "@text/action-set-Settings-desc")
+    @RuleAction(label = "@text/action-set-settings-label", description = "@text/action-set-settings-desc")
     public void setSettings(
             @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight,
             @ActionInput(name = "headlight-mode", label = "@text/action-input-headlight-mode-label", description = "@text/action-input-headlight-mode-desc") String headlightMode) {
@@ -167,7 +167,7 @@ public class AutomowerActions implements ThingActions {
         ((AutomowerActions) actions).setSettings(cuttingHeight, headlightMode);
     }
 
-    @RuleAction(label = "@text/action-set-headlight-mode-label", description = "@text/action-set-headlight-mode-desc")
+    @RuleAction(label = "@text/action-set-work-area-label", description = "@text/action-set-work-area-desc")
     public void setWorkArea(
             @ActionInput(name = "workarea-id", label = "@text/action-input-workarea-id-label", description = "@text/action-input-workarea-id-desc") long workAreaId,
             @ActionInput(name = "enable", label = "@text/action-input-enable-label", description = "@text/action-input-enable-desc") boolean enable,
