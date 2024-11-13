@@ -114,11 +114,12 @@ public class PollManager {
             logger.trace("{} data poll not required", pollName);
         }
 
-        if (reconfigureIfRequired && !previousValue && dataRequired) {
-            reconfigurePolling();
-        }
         if (dataRequired) {
-            cachedPollOrLiveStart(true);
+            final boolean reconfigureRequired = reconfigureIfRequired && !previousValue;
+            if (reconfigureRequired) {
+                reconfigurePolling();
+            }
+            cachedPollOrLiveStart(!reconfigureRequired);
         }
     }
 
