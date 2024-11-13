@@ -39,7 +39,7 @@ import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
-import org.openhab.binding.radiothermostat.internal.util.RadioThermostatScheduleJson;
+import org.openhab.binding.radiothermostat.internal.util.RadioThermostatSchedule;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -83,7 +83,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private final Gson gson;
     private final RadioThermostatConnector connector;
     private final RadioThermostatDTO rthermData = new RadioThermostatDTO();
-    private @Nullable RadioThermostatScheduleJson thermostatSchedule;
+    private @Nullable RadioThermostatSchedule thermostatSchedule;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
@@ -152,7 +152,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             updateThing(editThing().withChannels(channels).build());
         }
 
-        final RadioThermostatScheduleJson localSchedule = thermostatSchedule = new RadioThermostatScheduleJson(config);
+        final RadioThermostatSchedule localSchedule = thermostatSchedule = new RadioThermostatSchedule(config);
 
         try {
             heatProgramJson = localSchedule.getHeatProgramJson();
@@ -583,7 +583,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(),
                         API_MINUTES_UNIT);
             case NEXT_SETPOINT:
-                final RadioThermostatScheduleJson localSchedule = thermostatSchedule;
+                final RadioThermostatSchedule localSchedule = thermostatSchedule;
                 if (localSchedule != null) {
                     return localSchedule.getNextSetpoint(data.getThermostatData());
                 } else {
