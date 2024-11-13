@@ -906,7 +906,9 @@ public class AutomowerHandler extends BaseThingHandler {
                 calendarTask.setFriday(friday[i]);
                 calendarTask.setSaturday(saturday[i]);
                 calendarTask.setSunday(sunday[i]);
-
+                if (workAreaId != null) {
+                    calendarTask.setWorkAreaId(workAreaId);
+                }
                 calendarTaskArray.add(calendarTask);
             }
 
@@ -943,58 +945,75 @@ public class AutomowerHandler extends BaseThingHandler {
         if (isValidResult(mowerState)) {
             List<CalendarTask> calendarTasksFiltered;
             List<CalendarTask> calendarTasksAll = mowerState.getAttributes().getCalendar().getTasks();
+            int indexFiltered = 0;
             if (mowerState.getAttributes().getCapabilities().hasWorkAreas()) {
                 // only set the Tasks of the current WorkArea
                 calendarTasksFiltered = new ArrayList<>();
+                int i = 0;
                 for (CalendarTask calendarTask : calendarTasksAll) {
                     if (calendarTask.getWorkAreaId().equals(calendarTasksAll.get(index).getWorkAreaId())) {
-                        calendarTasksFiltered.add(calendarTask);
+                        if (index == i) {
+                            // remember index and create deep copy
+                            indexFiltered = calendarTasksFiltered.size();
+
+                            CalendarTask calendarTask2 = new CalendarTask();
+                            calendarTask2.setStart(calendarTask.getStart());
+                            calendarTask2.setDuration(calendarTask.getDuration());
+                            calendarTask2.setMonday(calendarTask.getMonday());
+                            calendarTask2.setTuesday(calendarTask.getTuesday());
+                            calendarTask2.setWednesday(calendarTask.getWednesday());
+                            calendarTask2.setThursday(calendarTask.getThursday());
+                            calendarTask2.setFriday(calendarTask.getFriday());
+                            calendarTask2.setSaturday(calendarTask.getSaturday());
+                            calendarTask2.setSunday(calendarTask.getSunday());
+                            calendarTask2.setWorkAreaId(calendarTask.getWorkAreaId());
+                            calendarTasksFiltered.add(calendarTask2);
+                        } else {
+                            // no deep copy required for the lines that are not updated
+                            calendarTasksFiltered.add(calendarTask);
+                        }
                     }
+                    i++;
                 }
             } else {
+                indexFiltered = index;
                 calendarTasksFiltered = calendarTasksAll;
             }
 
-            if (calendarTasksFiltered.get(index) != null) {
-                CalendarTask calendarTask = calendarTasksAll.get(index); // possible race condition: cache is update in
-                                                                         // the background via cyclic tasks before the
-                                                                         // new request is sent out - deep clone of
-                                                                         // object required
-                                                                         // Different handling required - hasWorkAreas
-                                                                         // ON/OFF
-                if (command instanceof DecimalType cmd) {
+            CalendarTask calendarTask = calendarTasksFiltered.get(indexFiltered);
+
+            if (command instanceof DecimalType cmd) {
+                if ("start".equals(param)) {
+                    calendarTask.setStart(cmd.shortValue());
+                } else if ("duration".equals(param)) {
+                    calendarTask.setDuration(cmd.shortValue());
+                }
+            } else if (command instanceof QuantityType cmd) {
+                cmd = cmd.toUnit("min");
+                if (cmd != null) {
                     if ("start".equals(param)) {
                         calendarTask.setStart(cmd.shortValue());
                     } else if ("duration".equals(param)) {
                         calendarTask.setDuration(cmd.shortValue());
                     }
-                } else if (command instanceof QuantityType cmd) {
-                    cmd = cmd.toUnit("min");
-                    if (cmd != null) {
-                        if ("start".equals(param)) {
-                            calendarTask.setStart(cmd.shortValue());
-                        } else if ("duration".equals(param)) {
-                            calendarTask.setDuration(cmd.shortValue());
-                        }
-                    }
-                } else if (command instanceof OnOffType cmd) {
-                    boolean day = ((cmd == OnOffType.ON) ? true : false);
+                }
+            } else if (command instanceof OnOffType cmd) {
+                boolean day = ((cmd == OnOffType.ON) ? true : false);
 
-                    if ("monday".equals(param)) {
-                        calendarTask.setMonday(day);
-                    } else if ("tuesday".equals(param)) {
-                        calendarTask.setTuesday(day);
-                    } else if ("wednesday".equals(param)) {
-                        calendarTask.setWednesday(day);
-                    } else if ("thursday".equals(param)) {
-                        calendarTask.setThursday(day);
-                    } else if ("friday".equals(param)) {
-                        calendarTask.setFriday(day);
-                    } else if ("saturday".equals(param)) {
-                        calendarTask.setSaturday(day);
-                    } else if ("sunday".equals(param)) {
-                        calendarTask.setSunday(day);
-                    }
+                if ("monday".equals(param)) {
+                    calendarTask.setMonday(day);
+                } else if ("tuesday".equals(param)) {
+                    calendarTask.setTuesday(day);
+                } else if ("wednesday".equals(param)) {
+                    calendarTask.setWednesday(day);
+                } else if ("thursday".equals(param)) {
+                    calendarTask.setThursday(day);
+                } else if ("friday".equals(param)) {
+                    calendarTask.setFriday(day);
+                } else if ("saturday".equals(param)) {
+                    calendarTask.setSaturday(day);
+                } else if ("sunday".equals(param)) {
+                    calendarTask.setSunday(day);
                 }
 
                 String id = automowerId.get();
@@ -1100,11 +1119,6 @@ public class AutomowerHandler extends BaseThingHandler {
     public void sendAutomowerWorkArea(long workAreaId, boolean enable, byte cuttingHeight) {
         logger.debug("Sending WorkArea: workAreaId {}, enable {}, cuttingHeight {}", workAreaId, enable, cuttingHeight);
         if (isValidResult(mowerState)) {
-            // update local cache ...
-            WorkArea workArea = getWorkAreaById(mowerState, workAreaId);
-            workArea.setEnabled(enable);
-            workArea.setCuttingHeight(cuttingHeight);
-            // ... as well as request
             MowerWorkAreaAttributes workAreaAttributes = new MowerWorkAreaAttributes();
             workAreaAttributes.setEnable(enable);
             workAreaAttributes.setCuttingHeight(cuttingHeight);
@@ -1168,10 +1182,6 @@ public class AutomowerHandler extends BaseThingHandler {
             Headlight headlight = new Headlight();
             headlight.setHeadlightMode(headlightMode);
             settings.setHeadlight(headlight);
-
-            // update local cache ...
-            mowerState.getAttributes().getSettings().setCuttingHeight(cuttingHeight);
-            mowerState.getAttributes().getSettings().getHeadlight().setHeadlightMode(headlightMode);
 
             String id = automowerId.get();
             try {
