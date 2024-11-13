@@ -22,18 +22,18 @@ import org.openhab.binding.radiothermostat.internal.RadioThermostatConfiguration
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
 
 /**
- * The {@link RadioThermostatScheduleJson} is the class used to convert the heating and cooling schedules from user
+ * The {@link RadioThermostatSchedule} is the class used to convert the heating and cooling schedules from user
  * configuration into the json that is sent to the thermostat
  *
  * @author Michael Lobstein - Initial contribution
  */
 @NonNullByDefault
-public class RadioThermostatScheduleJson {
+public class RadioThermostatSchedule {
 
     private final ArrayList<DaySchedule> heatSchedule = new ArrayList<DaySchedule>();
     private final ArrayList<DaySchedule> coolSchedule = new ArrayList<DaySchedule>();
 
-    public RadioThermostatScheduleJson(RadioThermostatConfiguration config) {
+    public RadioThermostatSchedule(RadioThermostatConfiguration config) {
         heatSchedule.add(new DaySchedule(
                 new ArrayList<SetPeriod>(List.of(new SetPeriod(config.monMorningHeatTime, config.monMorningHeatTemp),
                         new SetPeriod(config.monDayHeatTime, config.monDayHeatTemp),
