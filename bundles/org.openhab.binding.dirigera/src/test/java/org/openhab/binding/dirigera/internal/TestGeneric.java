@@ -37,7 +37,7 @@ class TestGeneric {
                     "{\"http-error-flag\":true,\"http-error-status\":%s,\"http-error-message\":\"%s\"}", "5", null);
             JSONObject errorJSON = new JSONObject(error);
             assertFalse(errorJSON.isNull("http-error-message"));
-        } catch (Throwable t) {
+        } catch (Exception e) {
             fail();
         }
     }

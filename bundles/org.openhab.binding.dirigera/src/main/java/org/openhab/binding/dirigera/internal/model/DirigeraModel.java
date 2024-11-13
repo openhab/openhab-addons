@@ -14,6 +14,7 @@ package org.openhab.binding.dirigera.internal.model;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -37,6 +38,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,19 +70,19 @@ public class DirigeraModel implements Model {
     @Override
     public synchronized int update() {
         Instant startTime = Instant.now();
-        try {
-            JSONObject home = gateway.api().readHome();
-            if (home.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
-                int status = home.getInt(DirigeraAPI.HTTP_ERROR_STATUS);
-                logger.warn("DIRIGERA MODEL received model with error code {} - don't take it", status);
-                return status;
-            } else {
-                model = home;
-                detection();
-            }
-        } catch (Throwable t) {
-            logger.error("Excpetion during model update {}", t.getMessage());
+        JSONObject home = gateway.api().readHome();
+        // call finished with error code ...
+        if (home.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
+            int status = home.getInt(DirigeraAPI.HTTP_ERROR_STATUS);
+            logger.warn("DIRIGERA MODEL received model with error code {} - don't take it", status);
+            return status;
+        } else if (home.isEmpty()) {
+            // ... call finished with unchecked exception ...
             return 500;
+        } else {
+            // ... call finished with success
+            model = home;
+            detection();
         }
         logger.info("DIRIGERA MODEL full update {} ms", Duration.between(startTime, Instant.now()).toMillis());
         return 200;
@@ -523,16 +525,21 @@ public class DirigeraModel implements Model {
 
     private String getResourceFile(String fileName) {
         try {
-            URL url = gateway.getBundleContext().getBundle().getResource(fileName);
-            InputStream input = url.openStream();
-            try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
-                String result = scanner.hasNext() ? scanner.next() : "";
-                String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                scanner.close();
-                return resultReplaceAll;
+            Bundle myself = gateway.getBundleContext().getBundle();
+            // do this check for unit tests to avoid NullPointerException
+            if (myself != null) {
+                URL url = myself.getResource(fileName);
+                InputStream input = url.openStream();
+                // https://www.baeldung.com/java-scanner-usedelimiter
+                try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                    String result = scanner.hasNext() ? scanner.next() : "";
+                    String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
+                    scanner.close();
+                    return resultReplaceAll;
+                }
             }
-        } catch (Throwable t) {
-            logger.warn("Resource file failed {}", t.getMessage());
+        } catch (IOException e) {
+            logger.warn("DIRIGERA MODEL no template found for {}", fileName);
         }
         return "";
     }

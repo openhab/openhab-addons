@@ -97,7 +97,7 @@ public class Websocket {
             websocketClient = Optional.of(client);
             client.start();
             client.connect(this, new URI(websocketURL), request);
-        } catch (Throwable t) {
+        } catch (Exception t) {
             // catch Exceptions of start stop and declare communication error
             logger.warn("DIRIGERA WS handling exception: {}", t.getMessage());
         }

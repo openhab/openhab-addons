@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_HSB;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -71,11 +71,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
             if (command instanceof HSBType hsb) {
-                // if (isPowered()) {
-                // int requestedBrightness = hsb.getBrightness().intValue();
-                // if (requestedBrightness == 0) {
-                // super.addOnOffCommand(false);
-                // } else {
                 // respect sequence
                 switch (lightConfig.fadeSequence) {
                     case 0:
@@ -87,21 +82,8 @@ public class ColorLightHandler extends TemperatureLightHandler {
                         brightnessCommand(hsb);
                         break;
                 }
-                // }
-                // } else {
-                // // store only color for next startup
-                // colorCommand(hsb);
-                // int requestedBrightness = hsb.getBrightness().intValue();
-                // if (requestedBrightness > 0) {
-                // brightnessCommand(hsb);
-                // // light shall be switched ON, first change property for startup, then switch on
-                // super.addOnOffCommand(true);
-                // } else {
-                // "fake" state update
                 hsbStateReflection = hsb;
                 updateState(channelUID, hsb);
-                // }
-                // }
             } else if (command instanceof OnOffType) {
                 super.addOnOffCommand(OnOffType.ON.equals(command));
             } else if (command instanceof PercentType percent) {
@@ -196,28 +178,11 @@ public class ColorLightHandler extends TemperatureLightHandler {
                                     // device needs the right values
                                     hsbDevice = new HSBType(hsbDevice.getHue(), hsbDevice.getSaturation(),
                                             new PercentType(brightnessValue));
-                                    // if (isPowered()) {
                                     hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
                                             hsbStateReflection.getSaturation(), new PercentType(brightnessValue));
-                                    // } else {
-                                    // don't update device, only reflection of 0 brightness
-                                    // hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
-                                    // hsbStateReflection.getSaturation(), new PercentType(0));
-                                    // }
                                     deliverHSB = true;
                                     break;
                             }
-                            break;
-                        case CHANNEL_POWER_STATE:
-                            // if powered reflect state from device, otherwise with brightness 0
-                            if (isPowered()) {
-                                // hsbStateReflection = new HSBType(hsbDevice.getHue(), hsbDevice.getSaturation(),
-                                // hsbDevice.getBrightness());
-                            } else {
-                                // hsbStateReflection = new HSBType(hsbStateReflection.getHue(),
-                                // hsbStateReflection.getSaturation(), new PercentType(0));
-                            }
-                            // deliverHSB = true;
                             break;
                     }
                 }
