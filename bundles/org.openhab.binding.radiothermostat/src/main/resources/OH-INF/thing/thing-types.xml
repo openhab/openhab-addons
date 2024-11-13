@@ -32,10 +32,11 @@
 			<channel id="yesterday_heat_runtime" typeId="yesterday_heat_runtime"/>
 			<channel id="yesterday_cool_runtime" typeId="yesterday_cool_runtime"/>
 			<channel id="message" typeId="message"/>
+			<channel id="next_setpoint" typeId="next_setpoint"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:radiothermostat:thermostatconfig"/>
@@ -195,6 +196,13 @@
 		<item-type>String</item-type>
 		<label>Message</label>
 		<description>Use this channel to display a number in the price message area</description>
+	</channel-type>
+
+	<channel-type id="next_setpoint" advanced="true">
+		<item-type>String</item-type>
+		<label>Next Setpoint</label>
+		<description>Displays the next scheduled thermostat setpoint</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

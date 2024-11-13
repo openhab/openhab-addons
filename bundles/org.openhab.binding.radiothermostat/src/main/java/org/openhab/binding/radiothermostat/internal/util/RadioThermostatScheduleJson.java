@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.radiothermostat.internal.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.radiothermostat.internal.RadioThermostatConfiguration;
+import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
 
 /**
  * The {@link RadioThermostatScheduleJson} is the class used to convert the heating and cooling schedules from user
@@ -24,101 +29,134 @@ import org.openhab.binding.radiothermostat.internal.RadioThermostatConfiguration
  */
 @NonNullByDefault
 public class RadioThermostatScheduleJson {
-    private final @Nullable String monHeat;
-    private final @Nullable String tueHeat;
-    private final @Nullable String wedHeat;
-    private final @Nullable String thuHeat;
-    private final @Nullable String friHeat;
-    private final @Nullable String satHeat;
-    private final @Nullable String sunHeat;
 
-    private final @Nullable String monCool;
-    private final @Nullable String tueCool;
-    private final @Nullable String wedCool;
-    private final @Nullable String thuCool;
-    private final @Nullable String friCool;
-    private final @Nullable String satCool;
-    private final @Nullable String sunCool;
+    private final ArrayList<DaySchedule> heatSchedule = new ArrayList<DaySchedule>();
+    private final ArrayList<DaySchedule> coolSchedule = new ArrayList<DaySchedule>();
 
     public RadioThermostatScheduleJson(RadioThermostatConfiguration config) {
-        monHeat = getDaySchedule(config.monMorningHeatTime, config.monDayHeatTime, config.monEveningHeatTime,
-                config.monNightHeatTime, config.monMorningHeatTemp, config.monDayHeatTemp, config.monEveningHeatTemp,
-                config.monNightHeatTemp);
-        tueHeat = getDaySchedule(config.tueMorningHeatTime, config.tueDayHeatTime, config.tueEveningHeatTime,
-                config.tueNightHeatTime, config.tueMorningHeatTemp, config.tueDayHeatTemp, config.tueEveningHeatTemp,
-                config.tueNightHeatTemp);
-        wedHeat = getDaySchedule(config.wedMorningHeatTime, config.wedDayHeatTime, config.wedEveningHeatTime,
-                config.wedNightHeatTime, config.wedMorningHeatTemp, config.wedDayHeatTemp, config.wedEveningHeatTemp,
-                config.wedNightHeatTemp);
-        thuHeat = getDaySchedule(config.thuMorningHeatTime, config.thuDayHeatTime, config.thuEveningHeatTime,
-                config.thuNightHeatTime, config.thuMorningHeatTemp, config.thuDayHeatTemp, config.thuEveningHeatTemp,
-                config.thuNightHeatTemp);
-        friHeat = getDaySchedule(config.friMorningHeatTime, config.friDayHeatTime, config.friEveningHeatTime,
-                config.friNightHeatTime, config.friMorningHeatTemp, config.friDayHeatTemp, config.friEveningHeatTemp,
-                config.friNightHeatTemp);
-        satHeat = getDaySchedule(config.satMorningHeatTime, config.satDayHeatTime, config.satEveningHeatTime,
-                config.satNightHeatTime, config.satMorningHeatTemp, config.satDayHeatTemp, config.satEveningHeatTemp,
-                config.satNightHeatTemp);
-        sunHeat = getDaySchedule(config.sunMorningHeatTime, config.sunDayHeatTime, config.sunEveningHeatTime,
-                config.sunNightHeatTime, config.sunMorningHeatTemp, config.sunDayHeatTemp, config.sunEveningHeatTemp,
-                config.sunNightHeatTemp);
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.monMorningHeatTime, config.monMorningHeatTemp),
+                        new SetPeriod(config.monDayHeatTime, config.monDayHeatTemp),
+                        new SetPeriod(config.monEveningHeatTime, config.monEveningHeatTemp),
+                        new SetPeriod(config.monNightHeatTime, config.monNightHeatTemp)))));
 
-        monCool = getDaySchedule(config.monMorningCoolTime, config.monDayCoolTime, config.monEveningCoolTime,
-                config.monNightCoolTime, config.monMorningCoolTemp, config.monDayCoolTemp, config.monEveningCoolTemp,
-                config.monNightCoolTemp);
-        tueCool = getDaySchedule(config.tueMorningCoolTime, config.tueDayCoolTime, config.tueEveningCoolTime,
-                config.tueNightCoolTime, config.tueMorningCoolTemp, config.tueDayCoolTemp, config.tueEveningCoolTemp,
-                config.tueNightCoolTemp);
-        wedCool = getDaySchedule(config.wedMorningCoolTime, config.wedDayCoolTime, config.wedEveningCoolTime,
-                config.wedNightCoolTime, config.wedMorningCoolTemp, config.wedDayCoolTemp, config.wedEveningCoolTemp,
-                config.wedNightCoolTemp);
-        thuCool = getDaySchedule(config.thuMorningCoolTime, config.thuDayCoolTime, config.thuEveningCoolTime,
-                config.thuNightCoolTime, config.thuMorningCoolTemp, config.thuDayCoolTemp, config.thuEveningCoolTemp,
-                config.thuNightCoolTemp);
-        friCool = getDaySchedule(config.friMorningCoolTime, config.friDayCoolTime, config.friEveningCoolTime,
-                config.friNightCoolTime, config.friMorningCoolTemp, config.friDayCoolTemp, config.friEveningCoolTemp,
-                config.friNightCoolTemp);
-        satCool = getDaySchedule(config.satMorningCoolTime, config.satDayCoolTime, config.satEveningCoolTime,
-                config.satNightCoolTime, config.satMorningCoolTemp, config.satDayCoolTemp, config.satEveningCoolTemp,
-                config.satNightCoolTemp);
-        sunCool = getDaySchedule(config.sunMorningCoolTime, config.sunDayCoolTime, config.sunEveningCoolTime,
-                config.sunNightCoolTime, config.sunMorningCoolTemp, config.sunDayCoolTemp, config.sunEveningCoolTemp,
-                config.sunNightCoolTemp);
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.tueMorningHeatTime, config.tueMorningHeatTemp),
+                        new SetPeriod(config.tueDayHeatTime, config.tueDayHeatTemp),
+                        new SetPeriod(config.tueEveningHeatTime, config.tueEveningHeatTemp),
+                        new SetPeriod(config.tueNightHeatTime, config.tueNightHeatTemp)))));
+
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.wedMorningHeatTime, config.wedMorningHeatTemp),
+                        new SetPeriod(config.wedDayHeatTime, config.wedDayHeatTemp),
+                        new SetPeriod(config.wedEveningHeatTime, config.wedEveningHeatTemp),
+                        new SetPeriod(config.wedNightHeatTime, config.wedNightHeatTemp)))));
+
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.thuMorningHeatTime, config.thuMorningHeatTemp),
+                        new SetPeriod(config.thuDayHeatTime, config.thuDayHeatTemp),
+                        new SetPeriod(config.thuEveningHeatTime, config.thuEveningHeatTemp),
+                        new SetPeriod(config.thuNightHeatTime, config.thuNightHeatTemp)))));
+
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.friMorningHeatTime, config.friMorningHeatTemp),
+                        new SetPeriod(config.friDayHeatTime, config.friDayHeatTemp),
+                        new SetPeriod(config.friEveningHeatTime, config.friEveningHeatTemp),
+                        new SetPeriod(config.friNightHeatTime, config.friNightHeatTemp)))));
+
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.satMorningHeatTime, config.satMorningHeatTemp),
+                        new SetPeriod(config.satDayHeatTime, config.satDayHeatTemp),
+                        new SetPeriod(config.satEveningHeatTime, config.satEveningHeatTemp),
+                        new SetPeriod(config.satNightHeatTime, config.satNightHeatTemp)))));
+
+        heatSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.sunMorningHeatTime, config.sunMorningHeatTemp),
+                        new SetPeriod(config.sunDayHeatTime, config.sunDayHeatTemp),
+                        new SetPeriod(config.sunEveningHeatTime, config.sunEveningHeatTemp),
+                        new SetPeriod(config.sunNightHeatTime, config.sunNightHeatTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.monMorningCoolTime, config.monMorningCoolTemp),
+                        new SetPeriod(config.monDayCoolTime, config.monDayCoolTemp),
+                        new SetPeriod(config.monEveningCoolTime, config.monEveningCoolTemp),
+                        new SetPeriod(config.monNightCoolTime, config.monNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.tueMorningCoolTime, config.tueMorningCoolTemp),
+                        new SetPeriod(config.tueDayCoolTime, config.tueDayCoolTemp),
+                        new SetPeriod(config.tueEveningCoolTime, config.tueEveningCoolTemp),
+                        new SetPeriod(config.tueNightCoolTime, config.tueNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.wedMorningCoolTime, config.wedMorningCoolTemp),
+                        new SetPeriod(config.wedDayCoolTime, config.wedDayCoolTemp),
+                        new SetPeriod(config.wedEveningCoolTime, config.wedEveningCoolTemp),
+                        new SetPeriod(config.wedNightCoolTime, config.wedNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.thuMorningCoolTime, config.thuMorningCoolTemp),
+                        new SetPeriod(config.thuDayCoolTime, config.thuDayCoolTemp),
+                        new SetPeriod(config.thuEveningCoolTime, config.thuEveningCoolTemp),
+                        new SetPeriod(config.thuNightCoolTime, config.thuNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.friMorningCoolTime, config.friMorningCoolTemp),
+                        new SetPeriod(config.friDayCoolTime, config.friDayCoolTemp),
+                        new SetPeriod(config.friEveningCoolTime, config.friEveningCoolTemp),
+                        new SetPeriod(config.friNightCoolTime, config.friNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.satMorningCoolTime, config.satMorningCoolTemp),
+                        new SetPeriod(config.satDayCoolTime, config.satDayCoolTemp),
+                        new SetPeriod(config.satEveningCoolTime, config.satEveningCoolTemp),
+                        new SetPeriod(config.satNightCoolTime, config.satNightCoolTemp)))));
+
+        coolSchedule.add(new DaySchedule(
+                new ArrayList<SetPeriod>(List.of(new SetPeriod(config.sunMorningCoolTime, config.sunMorningCoolTemp),
+                        new SetPeriod(config.sunDayCoolTime, config.sunDayCoolTemp),
+                        new SetPeriod(config.sunEveningCoolTime, config.sunEveningCoolTemp),
+                        new SetPeriod(config.sunNightCoolTime, config.sunNightCoolTemp)))));
     }
 
     public String getHeatProgramJson() throws IllegalStateException {
-        return getProgramJson(monHeat, tueHeat, wedHeat, thuHeat, friHeat, satHeat, sunHeat);
+        return getProgramJson(heatSchedule);
     }
 
     public String getCoolProgramJson() throws IllegalStateException {
-        return getProgramJson(monCool, tueCool, wedCool, thuCool, friCool, satCool, sunCool);
+        return getProgramJson(coolSchedule);
     }
 
-    private String getProgramJson(@Nullable String mon, @Nullable String tue, @Nullable String wed,
-            @Nullable String thu, @Nullable String fri, @Nullable String sat, @Nullable String sun)
-            throws IllegalStateException {
+    private String getProgramJson(ArrayList<DaySchedule> schedule) throws IllegalStateException {
         // all were null, bypass
-        if (mon == null && tue == null && wed == null && thu == null && fri == null && sat == null && sun == null) {
+        if (schedule.stream().allMatch(day -> day.isAnyNull())) {
             return "";
         }
 
         // some were null, the schedule is invalid
-        if (mon == null || tue == null || wed == null || thu == null || fri == null || sat == null || sun == null) {
+        if (schedule.stream().anyMatch(day -> day.isAnyNull())) {
             throw new IllegalStateException();
         }
 
-        return "{\"0\":" + mon + ",\"1\":" + tue + ",\"2\":" + wed + ",\"3\":" + thu + ",\"4\":" + fri + ",\"5\":" + sat
-                + ",\"6\":" + sun + "}";
+        final StringBuilder json = new StringBuilder("{");
+        IntStream.range(0, 7).forEach(i -> {
+            json.append("\"" + i + "\":" + getDaySchedule(schedule.get(i)));
+            if (i < 6) {
+                json.append(",");
+            }
+        });
+        json.append("}");
+
+        return json.toString();
     }
 
-    private @Nullable String getDaySchedule(@Nullable String morningTime, @Nullable String dayTime,
-            @Nullable String eveningTime, @Nullable String nightTime, @Nullable Integer morningTemp,
-            @Nullable Integer dayTemp, @Nullable Integer eveningTemp, @Nullable Integer nightTemp) {
-        // if any null, this day schedule is not valid
-        if (morningTime == null || dayTime == null || eveningTime == null || nightTime == null || morningTemp == null
-                || dayTemp == null || eveningTemp == null || nightTemp == null) {
+    private @Nullable String getDaySchedule(DaySchedule day) {
+        // if any of the time or temp fields are null, this day schedule is not valid
+        if (day.isAnyNull()) {
             return null;
         }
+
+        final ArrayList<SetPeriod> setPeriods = day.getSchedule();
 
         final int morningMin;
         final int dayMin;
@@ -126,10 +164,10 @@ public class RadioThermostatScheduleJson {
         final int nightMin;
 
         try {
-            morningMin = parseMinutes(morningTime);
-            dayMin = parseMinutes(dayTime);
-            eveningMin = parseMinutes(eveningTime);
-            nightMin = parseMinutes(nightTime);
+            morningMin = setPeriods.get(0).getMinutes();
+            dayMin = setPeriods.get(1).getMinutes();
+            eveningMin = setPeriods.get(2).getMinutes();
+            nightMin = setPeriods.get(3).getMinutes();
         } catch (NumberFormatException nfe) {
             // if any of the times could not be parsed into minutes, the schedule is invalid
             return null;
@@ -140,13 +178,117 @@ public class RadioThermostatScheduleJson {
             return null;
         }
 
-        return "[" + morningMin + "," + morningTemp + "," + dayMin + "," + dayTemp + "," + eveningMin + ","
-                + eveningTemp + "," + nightMin + "," + nightTemp + "]";
+        return "[" + morningMin + "," + setPeriods.get(0).getTemp() + "," + dayMin + "," + setPeriods.get(1).getTemp()
+                + "," + eveningMin + "," + setPeriods.get(2).getTemp() + "," + nightMin + ","
+                + setPeriods.get(3).getTemp() + "]";
     }
 
-    private int parseMinutes(String timeStr) {
-        final String[] hourMin = timeStr.split(":");
+    public class DaySchedule {
+        private final ArrayList<SetPeriod> schedule;
 
-        return Integer.parseInt(hourMin[0]) * 60 + Integer.parseInt(hourMin[1]);
+        public DaySchedule(ArrayList<SetPeriod> schedule) {
+            this.schedule = schedule;
+        }
+
+        public ArrayList<SetPeriod> getSchedule() {
+            return schedule;
+        }
+
+        public boolean isAnyNull() {
+            return schedule.stream().anyMatch(itm -> itm.getTime() == null || itm.getTemp() == null);
+        }
+    }
+
+    public class SetPeriod {
+        private final @Nullable String time;
+        private final @Nullable Integer temp;
+
+        public SetPeriod(@Nullable String time, @Nullable Integer temp) {
+            this.time = time;
+            this.temp = temp;
+        }
+
+        public @Nullable String getTime() {
+            final String timeLocal = time;
+
+            if (timeLocal != null) {
+                final String[] hourMin = timeLocal.split(":");
+                final int hour = Integer.parseInt(hourMin[0]);
+                if (hour == 0) {
+                    return "12:" + hourMin[1] + " AM";
+                } else if (hour <= 12) {
+                    return hour + ":" + hourMin[1] + (hour < 12 ? " AM" : " PM");
+                } else {
+                    return (hour - 12) + ":" + hourMin[1] + " PM";
+                }
+            }
+            return timeLocal;
+        }
+
+        public @Nullable Integer getTemp() {
+            return temp;
+        }
+
+        public int getMinutes() {
+            final String timeLocal = time;
+            final String[] hourMin = timeLocal != null ? timeLocal.split(":") : new String[] { "" };
+            return Integer.parseInt(hourMin[0]) * 60 + Integer.parseInt(hourMin[1]);
+        }
+    }
+
+    public String getNextSetpoint(RadioThermostatTstatDTO thermostatData) {
+        final ArrayList<DaySchedule> schedule;
+
+        if (thermostatData.getMode().equals(1)) {
+            schedule = heatSchedule;
+        } else if (thermostatData.getMode().equals(2)) {
+            schedule = coolSchedule;
+        } else {
+            return "";
+        }
+
+        if (thermostatData.getHold().equals(1)) {
+            return "HOLD";
+        }
+
+        final DaySchedule daySched = schedule.get(thermostatData.getTime().getDayOfWeek().intValue());
+        int nextPeriod = 0;
+
+        try {
+            for (int i = 0; i <= 3; i++) {
+                if (thermostatData.getTime().getRuntime().intValue() >= daySched.getSchedule().get(i).getMinutes()) {
+                    if (i == 3) {
+                        nextPeriod = -1;
+                        break;
+                    } else {
+                        nextPeriod = i + 1;
+                    }
+                }
+            }
+        } catch (NumberFormatException e) {
+            return "";
+        }
+
+        final SetPeriod nextSetpoint;
+
+        if (nextPeriod == -1) {
+            int nextDay = thermostatData.getTime().getDayOfWeek().intValue() + 1;
+            if (nextDay == 7) {
+                nextDay = 0;
+            }
+
+            nextSetpoint = schedule.get(nextDay).getSchedule().get(0);
+        } else {
+            nextSetpoint = daySched.getSchedule().get(nextPeriod);
+        }
+
+        final Integer temp = nextSetpoint.getTemp();
+        final String time = nextSetpoint.getTime();
+
+        if (temp != null && time != null) {
+            return temp + " °F at " + time;
+        } else {
+            return "";
+        }
     }
 }

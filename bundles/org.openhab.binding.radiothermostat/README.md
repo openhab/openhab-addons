@@ -1,6 +1,6 @@
-# RadioThermostat Binding
+# Radio Thermostat Binding
 
-This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
+This binding connects Radio Thermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
 Thermostats using a Z-Wave module are not supported but can be used via the openHAB ZWave binding.
 
 The binding retrieves and periodically updates all basic system information from the thermostat.
@@ -96,6 +96,7 @@ The thermostat information that is retrieved is available as these channels:
 | yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                               |
 | yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                               |
 | message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed         |
+| next_setpoint          | String (Read Only)   | Displays the next scheduled thermostat setpoint (°F and time) in the heating or cooling schedule                                        |
 
 ## Full Example
 
@@ -165,6 +166,7 @@ Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          
 Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
+String Therm_Next_Setpoint      "Next Setpoint: [%s]"                           { channel="radiothermostat:rtherm:mytherm1:next_setpoint" }
 
 Number Therm_Day                "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
 Number Therm_Hour               "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
@@ -201,6 +203,7 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_FanStatus icon="flow"
         Text item=Therm_Override icon="smoke"
         Switch item=Therm_Hold icon="smoke"
+        Text item=Therm_Next_Setpoint icon="temperature"
 
         // Example of overriding the thermostat's temperature reading
         Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]
