@@ -134,6 +134,8 @@ public class VehicleHandler extends BaseThingHandler {
     private JSONObject chargeGroupValueStorage = new JSONObject();
     private Map<String, State> hvacGroupValueStorage = new HashMap<>();
     private String vehicleType = NOT_SET;
+    private List<VEPUpdate> eventQueue = new ArrayList<>();
+    private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
     Optional<AccountHandler> accountHandler = Optional.empty();
@@ -588,6 +590,40 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void distributeContent(VEPUpdate data) {
+        synchronized (eventQueue) {
+            eventQueue.add(data);
+            scheduler.execute(this::doUpdate);
+        }
+    }
+
+    public void doUpdate() {
+        VEPUpdate data;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                data = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            update(data);
+        } finally {
+            synchronized (eventQueue) {
+                updateRunning = false;
+                eventQueue.notifyAll();
+            }
+        }
+    }
+
+    public void update(VEPUpdate data) {
         updateStatus(ThingStatus.ONLINE);
         boolean fullUpdate = data.getFullUpdate();
         /**
