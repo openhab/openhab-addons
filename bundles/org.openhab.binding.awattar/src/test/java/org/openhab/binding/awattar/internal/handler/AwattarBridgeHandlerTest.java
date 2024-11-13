@@ -150,9 +150,17 @@ public class AwattarBridgeHandlerTest extends JavaTest {
     }
 
     @Test
-    void testContainsPrizeFor() {
+    void testContainsPriceForTimestamp() {
+        assertThat(bridgeHandler.containsPriceFor(new TimeRange(1618503200000L, 1718316000000L)), is(false));
+        assertThat(bridgeHandler.containsPriceFor(new TimeRange(1618503200000L, 1718503200000L)), is(false));
+        assertThat(bridgeHandler.containsPriceFor(new TimeRange(1718503200000L, 1718575200000L)), is(true));
+    }
+
+    @Test
+    void testContainsPriceForRange() {
         assertThat(bridgeHandler.containsPriceFor(1618503200000L), is(false));
         assertThat(bridgeHandler.containsPriceFor(1718503200000L), is(true));
+        assertThat(bridgeHandler.containsPriceFor(1718575200000L), is(false));
         assertThat(bridgeHandler.containsPriceFor(1818503200000L), is(false));
     }
 

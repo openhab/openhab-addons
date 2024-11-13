@@ -48,6 +48,7 @@ public record TimeRange(long start, long end) implements Comparable<TimeRange> {
      * @param o the object to be compared
      * @return the result of {@link Long#compare(long, long)} for the {@link #start} timestamps
      */
+    @Override
     public int compareTo(TimeRange o) {
         return Long.compare(start, o.start);
     }

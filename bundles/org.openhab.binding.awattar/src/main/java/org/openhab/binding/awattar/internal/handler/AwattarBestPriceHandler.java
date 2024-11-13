@@ -142,7 +142,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         }
         AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
         TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
-        if (!(bridgeHandler.containsPriceFor(timerange.start()) && bridgeHandler.containsPriceFor(timerange.end()))) {
+        if (!(bridgeHandler.containsPriceFor(timerange))) {
             updateState(channelUID, state);
             return;
         }
