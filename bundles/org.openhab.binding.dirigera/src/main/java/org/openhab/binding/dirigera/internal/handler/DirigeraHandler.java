@@ -552,11 +552,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                         doUpdateLinks();
                         break;
                 }
-            } catch (Throwable t) {
-                // ensure any exception is catched so endUpdate is called 100%
-                logger.info("DIRIGERA HANDLER Exception during update {}", t.getMessage());
+            } finally {
+                endUpdate();
             }
-            endUpdate();
         }
         if (deviceModificationQueue.isEmpty() && !Instant.MIN.equals(peakRecognitionTime)) {
             logger.trace("DIRIGERA HANDLER Peak to zero time {} ms",

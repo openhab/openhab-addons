@@ -48,10 +48,12 @@ public class DeviceUpdate {
     @Override
     public boolean equals(@Nullable Object other) {
         boolean result = false;
-        if (other instanceof DeviceUpdate update) {
-            result = this.action.equals(update.action) && this.deviceId.equals(update.deviceId);
-            if (result && this.handler != null && update.handler != null) {
-                result = handler.equals(update.handler);
+        if (other instanceof DeviceUpdate otherDeviceUpdate) {
+            result = this.action.equals(otherDeviceUpdate.action) && this.deviceId.equals(otherDeviceUpdate.deviceId);
+            BaseHandler thisProxyHandler = this.handler;
+            BaseHandler otherProxyHandler = otherDeviceUpdate.handler;
+            if (result && thisProxyHandler != null && otherProxyHandler != null) {
+                result = thisProxyHandler.equals(otherProxyHandler);
             }
         }
         return result;
