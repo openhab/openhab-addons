@@ -28,7 +28,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class SceneRequestParam extends StateRequestParam {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int sceneId;
 
     public SceneRequestParam(int sceneId) {

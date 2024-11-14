@@ -28,9 +28,9 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class PulseRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int delta;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int duration;
 
     public PulseRequestParam(int delta, int duration) {

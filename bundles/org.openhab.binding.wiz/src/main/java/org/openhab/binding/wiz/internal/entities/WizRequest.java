@@ -26,16 +26,16 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class WizRequest {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int id;
 
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private WizMethodType method;
 
     @Expose(serialize = false, deserialize = false)
     private String methodName;
 
-    @Expose(serialize = true, deserialize = false)
+    @Expose(deserialize = false)
     private @Nullable Param params;
 
     /**

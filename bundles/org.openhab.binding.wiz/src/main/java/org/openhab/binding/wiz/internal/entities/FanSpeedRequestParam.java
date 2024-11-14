@@ -23,7 +23,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class FanSpeedRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int fanSpeed; // 0-6
 
     public FanSpeedRequestParam(int fanSpeed) {

@@ -31,15 +31,15 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class ColorRequestParam extends DimmingRequestParam {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int r; // red 0-255
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int g; // green 0-255
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int b; // blue 0-255
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int w; // warm white LED's 0-255
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int c; // cool white LED's 0-255
     @Expose(serialize = false, deserialize = false)
     private WizColorConverter colorConverter = new WizColorConverter();

@@ -31,7 +31,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class DimmingRequestParam extends StateRequestParam {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int dimming;
 
     public DimmingRequestParam(int dimming) {

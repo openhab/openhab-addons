@@ -31,12 +31,12 @@ import com.google.gson.annotations.Expose;
 @NonNullByDefault
 public class FirstBeatResponseParam {
     // The MAC address the response is coming from
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String mac = "";
     // Home ID of the bulb
-    @Expose(serialize = false, deserialize = true)
+    @Expose(serialize = false)
     public int homeId;
     // Firmware version of the bulb
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String fwVersion = LAST_KNOWN_FIRMWARE_VERSION;
 }

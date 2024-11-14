@@ -37,38 +37,38 @@ import com.google.gson.annotations.Expose;
 @NonNullByDefault
 public class SystemConfigResult {
     // The MAC address the response is coming from
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String mac = "";
     // Home ID of the bulb
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int homeId;
     // The ID of room the bulb is assigned to
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int roomId;
     // Not sure what the home lock is
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public boolean homeLock;
     // Also not sure about the pairing lock
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public boolean pairingLock;
     // Obviously a type ID
     // The value is 0 for both BR30 and A19 full color bulbs
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int typeId;
     // The module name
     // The value is "ESP01_SHRGB1C_31" for both BR30 and A19 full color bulbs
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String moduleName = EXPECTED_MODULE_NAME;
     // Firmware version of the bulb
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String fwVersion = LAST_KNOWN_FIRMWARE_VERSION;
     // The ID of group the bulb is assigned to
     // I don't know how to group bulbs, all of mine return 0
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int groupId;
     // Not sure what the numbers mean
     // For a full color A19 I get [33,1]
     // For a full coloer BR30 I get [37,1]
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int[] drvConf = {};
 }

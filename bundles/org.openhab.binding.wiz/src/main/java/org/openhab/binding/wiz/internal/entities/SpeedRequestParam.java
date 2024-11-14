@@ -31,7 +31,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class SpeedRequestParam extends SceneRequestParam {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int speed;
 
     public SpeedRequestParam(int sceneId, int speed) {

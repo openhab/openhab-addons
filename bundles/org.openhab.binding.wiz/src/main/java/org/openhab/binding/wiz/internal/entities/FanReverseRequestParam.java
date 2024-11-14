@@ -23,7 +23,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class FanReverseRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int fanRevrs; // true = 1, false = 0
 
     public FanReverseRequestParam(int reverse) {

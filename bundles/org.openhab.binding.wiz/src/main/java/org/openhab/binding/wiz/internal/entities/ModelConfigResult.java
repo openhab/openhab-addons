@@ -64,6 +64,6 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class ModelConfigResult {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int[] cctRange = {};
 }

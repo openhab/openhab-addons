@@ -28,7 +28,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class ColorTemperatureRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int temp;
 
     public ColorTemperatureRequestParam(int temp) {

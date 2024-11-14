@@ -24,7 +24,7 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class StateRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private boolean state; // true = ON, false = OFF
 
     public StateRequestParam(boolean state) {

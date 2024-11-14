@@ -32,15 +32,15 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class RegistrationRequestParam implements Param {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private String phoneIp;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private boolean register;
     // NOTE: We are NOT exposing the Home id for serialization because it's not
     // necessary and it's a PITA to find it
-    @Expose(serialize = false, deserialize = true)
+    @Expose(serialize = false)
     private int homeId;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private String phoneMac;
 
     public RegistrationRequestParam(String phoneIp, boolean register, int homeId, String phoneMac) {

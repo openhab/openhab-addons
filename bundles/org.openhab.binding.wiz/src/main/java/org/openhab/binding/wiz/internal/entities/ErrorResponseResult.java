@@ -31,8 +31,8 @@ import com.google.gson.annotations.Expose;
  */
 @NonNullByDefault
 public class ErrorResponseResult {
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int code;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public @Nullable String message;
 }

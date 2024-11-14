@@ -30,41 +30,41 @@ import com.google.gson.annotations.Expose;
 public class WizResponse {
 
     // The IP address we're coming from
-    @Expose(serialize = false, deserialize = true)
+    @Expose(deserialize = true)
     private String wizResponseIpAddress = "";
 
     // Increasing numeric value.
     // Bulb doesn't seem to care if it receives the same id multiple time
     // or commands with lower numbers after higher ones.
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private int id;
     // Not sure what env is - value always seems to be "pro"
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private @Nullable String env;
 
     // An error response
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private @Nullable ErrorResponseResult methodError;
 
     // The method being used - see the enum for details
     // We're setting this to "unknown"
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private WizMethodType method = WizMethodType.UnknownMethod;
 
     // The MAC address the response is coming from
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private String mac = "";
 
     // Whether or not a command succeeded (if the response is from a command)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private boolean success = false;
 
     // The system configuration result, if present
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private @Nullable SystemConfigResult systemConfigResult;
 
     // The modeul configuration result, if present
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private @Nullable ModelConfigResult modelConfigResult;
 
     // The parameters or result of a command/response
@@ -72,7 +72,7 @@ public class WizResponse {
     // "params" is retuned with an unsolicited sync/heartbeat. The result returned
     // from a get method is generally identical to the params returned in the
     // heartbeat.
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     private @Nullable WizSyncState params;
 
     /**

@@ -31,7 +31,7 @@ import com.google.gson.annotations.Expose;
 @NonNullByDefault
 public class WizSyncState {
     // The MAC address the response is coming from
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public String mac = "";
 
     // The current color mode of the bulb
@@ -46,7 +46,7 @@ public class WizSyncState {
      */
     // Not sure exactly what this means, seems to be a boolean
     // I believe the bulb communicates with the WiZ servers via MQTT
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int mqttCd;
 
     /*
@@ -54,53 +54,53 @@ public class WizSyncState {
      */
 
     // The bulb's WiFi signal strength
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int rssi;
     // The overall state of the bulb - on/off
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public boolean state;
     // The numeric identifier for a preset lighting mode
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int sceneId;
     // Unknown - not seen by SRGD
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public boolean play;
     // The speed of color changes in dynamic lighting modes
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int speed;
     // Strength of the red channel (0-255)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int r;
     // Strength of the green channel (0-255)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int g;
     // Strength of the blue channel (0-255)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int b;
     // Intensity of the cool white channel (0-255)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int c;
     // Intensity of the warm white channel (0-255)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int w;
     // Dimming percent (10-100)
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int dimming;
     // Color temperature - sent in place of r/g/b/c/w
     // If temperatures are sent, color LED's are not in use
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int temp;
     // Indicates if the light mode is applied following a pre-set "rhythm"
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int schdPsetId;
 
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int fanState;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int fanSpeed;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int fanMode;
-    @Expose(serialize = true, deserialize = true)
+    @Expose
     public int fanRevrs;
 
     public WizColorMode getColorMode() {
