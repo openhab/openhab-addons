@@ -311,8 +311,9 @@ public class WizHandler extends BaseThingHandler {
     }
 
     private void handleFanOnOffCommand(OnOffType onOff) {
-        setPilotCommand(new FanStateRequestParam(onOff == OnOffType.ON));
-        mostRecentState.fanState = onOff == OnOffType.ON;
+        int value = onOff == OnOffType.ON ? 1 : 0;
+        setPilotCommand(new FanStateRequestParam(value));
+        mostRecentState.fanState = value;
     }
 
     private void handleFanSpeedCommand(DecimalType speed) {
@@ -321,13 +322,15 @@ public class WizHandler extends BaseThingHandler {
     }
 
     private void handleFanReverseCommand(OnOffType onOff) {
-        setPilotCommand(new FanReverseRequestParam(onOff == OnOffType.ON));
-        mostRecentState.fanRevrs = onOff == OnOffType.ON;
+        int value = onOff == OnOffType.ON ? 1 : 0;
+        setPilotCommand(new FanReverseRequestParam(value));
+        mostRecentState.fanRevrs = value;
     }
 
     private void handleFanModeCommand(OnOffType onOff) {
-        setPilotCommand(new FanModeRequestParam(onOff == OnOffType.ON));
-        mostRecentState.fanMode = onOff == OnOffType.ON;
+        int value = onOff == OnOffType.ON ? 1 : 0;
+        setPilotCommand(new FanModeRequestParam(value));
+        mostRecentState.fanMode = value;
     }
 
     private void handleIncreaseDecreaseCommand(boolean isIncrease) {
@@ -632,10 +635,10 @@ public class WizHandler extends BaseThingHandler {
      * @param receivedParam The received {@link WizSyncState}
      */
     private void updateFanStatesFromParams(final WizSyncState receivedParam) {
-        updateFanState(CHANNEL_STATE, OnOffType.from(receivedParam.fanState));
+        updateFanState(CHANNEL_STATE, receivedParam.fanState == 0 ? OnOffType.OFF : OnOffType.ON);
         updateFanState(CHANNEL_SPEED, new DecimalType(receivedParam.fanSpeed));
-        updateFanState(CHANNEL_REVERSE, OnOffType.from(receivedParam.fanRevrs));
-        updateFanState(CHANNEL_MODE, OnOffType.from(receivedParam.fanMode));
+        updateFanState(CHANNEL_REVERSE, receivedParam.fanRevrs == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateFanState(CHANNEL_MODE, receivedParam.fanMode == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
     /**

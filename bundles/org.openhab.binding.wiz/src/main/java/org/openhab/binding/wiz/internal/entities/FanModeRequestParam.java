@@ -24,17 +24,17 @@ import com.google.gson.annotations.Expose;
 @NonNullByDefault
 public class FanModeRequestParam implements Param {
     @Expose(serialize = true, deserialize = true)
-    private boolean fanMode; // true = 1, false = 0
+    private int fanMode; // true = 1, false = 0
 
-    public FanModeRequestParam(boolean fanMode) {
+    public FanModeRequestParam(int fanMode) {
         this.fanMode = fanMode;
     }
 
-    public boolean getFanMode() {
+    public int getFanMode() {
         return fanMode;
     }
 
-    public void setFanMode(boolean fanMode) {
+    public void setFanMode(int fanMode) {
         this.fanMode = fanMode;
     }
 }

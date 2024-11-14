@@ -95,13 +95,13 @@ public class WizSyncState {
     public int schdPsetId;
 
     @Expose(serialize = true, deserialize = true)
-    public boolean fanState;
+    public int fanState;
     @Expose(serialize = true, deserialize = true)
     public int fanSpeed;
     @Expose(serialize = true, deserialize = true)
-    public boolean fanMode;
+    public int fanMode;
     @Expose(serialize = true, deserialize = true)
-    public boolean fanRevrs;
+    public int fanRevrs;
 
     public WizColorMode getColorMode() {
         if (r != 0 || g != 0 || b != 0) {
