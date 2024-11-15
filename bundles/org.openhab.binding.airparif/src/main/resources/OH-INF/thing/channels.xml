@@ -126,7 +126,7 @@
 	<channel-type id="urticaceae-level">
 		<item-type>Number</item-type>
 		<label>Urticacea</label>
-		<category>oh:airparif:urticacea</category>
+		<category>oh:airparif:urticaceae</category>
 		<state readOnly="true">
 			<options>
 				<option value="0">None</option>
@@ -291,17 +291,23 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="ppb-value">
-        <item-type unitHint="ppb">Number:Dimensionless</item-type>
-        <label>Measure</label>
-        <state readOnly="true" pattern="%.0f %unit%"/>
-    </channel-type>
-    
-    <channel-type id="mpc-value">
-        <item-type unitHint="µg/m³">Number:Density</item-type>
-        <label>Measure</label>
-        <state readOnly="true" pattern="%.0f %unit%"/>
-    </channel-type>
+	<channel-type id="ppb-value">
+		<item-type unitHint="ppb">Number:Dimensionless</item-type>
+		<label>Measure</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ndx-value">
+		<item-type>Number</item-type>
+		<label>Measure</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mpc-value">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Measure</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
 
 
 </thing:thing-descriptions>

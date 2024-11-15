@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.airparif.internal.api;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -29,6 +31,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Scope;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -74,6 +79,10 @@ public class AirParifDto {
         public String dayDescription() {
             return bulletin.fr;
         }
+
+        public boolean isToday() {
+            return previsionDate.equals(LocalDate.now());
+        }
     }
 
     public record DailyEpisode(//
@@ -106,28 +115,51 @@ public class AirParifDto {
         private static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
 
         public List<Pollens> data = List.of();
+        private @Nullable Set<ZonedDateTime> validities;
+        private @Nullable ZonedDateTime beginValidity;
+        private @Nullable ZonedDateTime endValidity;
 
         public Optional<Pollens> getData() {
             return Optional.ofNullable(data.isEmpty() ? null : data.get(0));
         }
 
         private Set<ZonedDateTime> getValidities() {
-            Set<ZonedDateTime> result = new TreeSet<>();
-            getData().ifPresent(pollens -> {
-                Matcher matcher = PATTERN.matcher(pollens.periode);
-                while (matcher.find()) {
-                    result.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
-                }
-            });
-            return result;
+            Set<ZonedDateTime> local;
+            if (validities != null) {
+                local = validities;
+            } else {
+                local = new TreeSet<>();
+                getData().ifPresent(pollens -> {
+                    Matcher matcher = PATTERN.matcher(pollens.periode);
+                    while (matcher.find()) {
+                        local.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
+                    }
+                });
+                validities = local;
+            }
+
+            return local;
         }
 
         public Optional<ZonedDateTime> getBeginValidity() {
-            return Optional.ofNullable(getValidities().iterator().next());
+            if (beginValidity == null) {
+                beginValidity = getValidities().iterator().next();
+            }
+            return Optional.ofNullable(beginValidity);
         }
 
         public Optional<ZonedDateTime> getEndValidity() {
-            return Optional.ofNullable(getValidities().stream().reduce((prev, next) -> next).orElse(null));
+            if (endValidity == null) {
+                endValidity = getValidities().stream().reduce((prev, next) -> next).orElse(null);
+            }
+            return Optional.ofNullable(endValidity);
+        }
+
+        public Duration getValidityDuration() {
+            return Objects.requireNonNull(getEndValidity().map(end -> {
+                Duration duration = Duration.between(ZonedDateTime.now().withZoneSameInstant(end.getZone()), end);
+                return duration.isNegative() ? Duration.ZERO : duration;
+            }).orElse(Duration.ZERO));
         }
 
         public Optional<String> getComment() {
@@ -150,17 +182,25 @@ public class AirParifDto {
         }
     }
 
-    public record Result(//
+    public record Concentration(//
             @SerializedName("polluant") Pollutant pollutant, //
             ZonedDateTime date, //
             @SerializedName("valeurs") double[] values, //
-            Message message) {
+            @Nullable Message message) {
+
+        public State getMessage() {
+            return message != null ? new StringType(message.fr()) : UnDefType.NULL;
+        }
+
+        public double getValue() {
+            return values[0];
+        }
     }
 
     public record Route(//
             @SerializedName("dateRequise") ZonedDateTime requestedDate, //
             double[][] longlats, //
-            @SerializedName("resultats") Result[] results, //
+            @SerializedName("resultats") List<Concentration> concentrations, //
             @Nullable Message[] messages) {
 
     }
