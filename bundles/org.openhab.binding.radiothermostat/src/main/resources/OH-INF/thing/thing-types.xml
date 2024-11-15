@@ -205,7 +205,7 @@
 		<description>Displays the next scheduled thermostat set point temperature</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true"/>
@@ -217,7 +217,7 @@
 		<description>Displays the next scheduled thermostat set point time</description>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>

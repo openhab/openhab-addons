@@ -168,7 +168,7 @@ Number Therm_FanStatus            "Fan Status [MAP(radiotherm.map):%s_fstus]"   
 Number Therm_Override             "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold                 "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 Number:Temperature Therm_NextTemp "Next Set Temp [%d %unit%]" <temperature>       { channel="radiothermostat:rtherm:mytherm1:next_temp" }
-String Therm_NextTime             "Next Set Time [%s]" <time>                     { channel="radiothermostat:rtherm:mytherm1:next_time" }
+DateTime Therm_NextTime           "Next Set Time [%1$tl:%1$tM %1$tp]" <time>      { channel="radiothermostat:rtherm:mytherm1:next_time" }
 
 Number Therm_Day                  "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
 Number Therm_Hour                 "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
