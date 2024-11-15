@@ -7,5 +7,15 @@
 	<name>MideaAC Binding</name>
 	<description>This is the binding for MideaAC.</description>
 	<connection>local</connection>
-
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_mideaair._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
 </addon:addon>

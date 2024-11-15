@@ -23,28 +23,64 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MideaACConfiguration {
 
+    /**
+     * IP Address
+     */
     public String ipAddress = "";
 
+    /**
+     * IP Port
+     */
     public int ipPort = 6444;
 
+    /**
+     * Device ID
+     */
     public String deviceId = "0";
 
+    /**
+     * Cloud Account email
+     */
     public String email = "";
 
+    /**
+     * Cloud Account Password
+     */
     public String password = "";
 
+    /**
+     * Cloud Provider
+     */
     public String cloud = "";
 
+    /**
+     * Token
+     */
     public String token = "";
 
+    /**
+     * Key
+     */
     public String key = "";
 
+    /**
+     * Poll Frequency
+     */
     public int pollingTime = 60;
 
+    /**
+     * Socket Timeout
+     */
     public int timeout = 4;
 
+    /**
+     * Prompt tone from indoor unit with a Set Command
+     */
     public boolean promptTone = false;
 
+    /**
+     * AC Version
+     */
     public int version = 0;
 
     /**
