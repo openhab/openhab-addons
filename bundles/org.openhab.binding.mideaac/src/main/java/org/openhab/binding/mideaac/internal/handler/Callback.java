@@ -21,10 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface Callback {
-/**
- * Updates channels with the response
- * 
- * @param response Byte response from the device used to update channels
- */
+    /**
+     * Updates channels with the response
+     * 
+     * @param response Byte response from the device used to update channels
+     */
     void updateChannels(Response response);
 }
