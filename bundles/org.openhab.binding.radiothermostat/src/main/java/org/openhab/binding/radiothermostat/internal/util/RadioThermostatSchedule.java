@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.radiothermostat.internal.util;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -208,21 +209,24 @@ public class RadioThermostatSchedule {
             this.temp = temp;
         }
 
-        public @Nullable String getTime() {
+        public @Nullable ZonedDateTime getTime() {
             final String timeLocal = time;
 
             if (timeLocal != null) {
                 final String[] hourMin = timeLocal.split(":");
-                final int hour = Integer.parseInt(hourMin[0]);
-                if (hour == 0) {
-                    return "12:" + hourMin[1] + " AM";
-                } else if (hour <= 12) {
-                    return hour + ":" + hourMin[1] + (hour < 12 ? " AM" : " PM");
-                } else {
-                    return (hour - 12) + ":" + hourMin[1] + " PM";
+
+                // get a zdt with the hour and minute of the next set point
+                final ZonedDateTime nextSetTime = ZonedDateTime.now().withHour(Integer.parseInt(hourMin[0]))
+                        .withMinute(Integer.parseInt(hourMin[1])).withSecond(0).withNano(0);
+
+                // if the next set point occurs tomorrow, add one day to the zdt
+                if (nextSetTime.isBefore(ZonedDateTime.now())) {
+                    return nextSetTime.plusDays(1);
                 }
+                return nextSetTime;
+
             }
-            return timeLocal;
+            return null;
         }
 
         public @Nullable Integer getTemp() {
@@ -236,7 +240,21 @@ public class RadioThermostatSchedule {
         }
     }
 
-    public String getNextSetpoint(RadioThermostatTstatDTO thermostatData) {
+    public @Nullable Integer getNextTemp(RadioThermostatTstatDTO thermostatData) {
+        final SetPeriod nextPeriod = getNextSetpoint(thermostatData);
+        return nextPeriod != null ? nextPeriod.getTemp() : null;
+    }
+
+    public @Nullable ZonedDateTime getNextTime(RadioThermostatTstatDTO thermostatData) {
+        final SetPeriod nextPeriod = getNextSetpoint(thermostatData);
+        return nextPeriod != null ? nextPeriod.getTime() : null;
+    }
+
+    private @Nullable SetPeriod getNextSetpoint(RadioThermostatTstatDTO thermostatData) {
+        if (thermostatData.getHold().equals(1)) {
+            return null;
+        }
+
         final ArrayList<DaySchedule> schedule;
 
         if (thermostatData.getMode().equals(1)) {
@@ -244,11 +262,7 @@ public class RadioThermostatSchedule {
         } else if (thermostatData.getMode().equals(2)) {
             schedule = coolSchedule;
         } else {
-            return "";
-        }
-
-        if (thermostatData.getHold().equals(1)) {
-            return "HOLD";
+            return null;
         }
 
         final DaySchedule daySched = schedule.get(thermostatData.getTime().getDayOfWeek().intValue());
@@ -266,10 +280,8 @@ public class RadioThermostatSchedule {
                 }
             }
         } catch (NumberFormatException e) {
-            return "";
+            return null;
         }
-
-        final SetPeriod nextSetpoint;
 
         if (nextPeriod == -1) {
             int nextDay = thermostatData.getTime().getDayOfWeek().intValue() + 1;
@@ -277,18 +289,8 @@ public class RadioThermostatSchedule {
                 nextDay = 0;
             }
 
-            nextSetpoint = schedule.get(nextDay).getSchedule().get(0);
-        } else {
-            nextSetpoint = daySched.getSchedule().get(nextPeriod);
+            return schedule.get(nextDay).getSchedule().get(0);
         }
-
-        final Integer temp = nextSetpoint.getTemp();
-        final String time = nextSetpoint.getTime();
-
-        if (temp != null && time != null) {
-            return temp + " °F at " + time;
-        } else {
-            return "";
-        }
+        return daySched.getSchedule().get(nextPeriod);
     }
 }

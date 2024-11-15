@@ -360,7 +360,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         updateChannel(SET_POINT, rthermData);
                         rthermData.getThermostatData().setHold(0);
                         updateChannel(HOLD, rthermData);
-                        updateChannel(NEXT_SETPOINT, rthermData);
+                        updateChannel(NEXT_TEMP, rthermData);
+                        updateChannel(NEXT_TIME, rthermData);
                         rthermData.getThermostatData().setProgramMode(-1);
                         updateChannel(PROGRAM_MODE, rthermData);
 
@@ -385,7 +386,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         rthermData.getThermostatData().setHold(0);
                         connector.sendCommand("hold", "0", DEFAULT_RESOURCE);
                     }
-                    updateChannel(NEXT_SETPOINT, rthermData);
+                    updateChannel(NEXT_TEMP, rthermData);
+                    updateChannel(NEXT_TIME, rthermData);
                     break;
                 case SET_POINT:
                     String cmdKey;
@@ -483,7 +485,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         if (isLinked(channelId)) {
             Object value;
             try {
-                value = getValue(channelId, rthermData);
+                value = getValue(channelId, rthermData, thermostatSchedule);
             } catch (Exception e) {
                 logger.debug("Error setting {} value", channelId.toUpperCase());
                 return;
@@ -525,7 +527,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
      */
-    public @Nullable Object getValue(String channelId, RadioThermostatDTO data) {
+    public static @Nullable Object getValue(String channelId, RadioThermostatDTO data,
+            @Nullable RadioThermostatSchedule thermostatSchedule) {
         switch (channelId) {
             case TEMPERATURE:
                 if (data.getThermostatData().getTemperature() != null) {
@@ -582,13 +585,22 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case YESTERDAY_COOL_RUNTIME:
                 return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(),
                         API_MINUTES_UNIT);
-            case NEXT_SETPOINT:
-                final RadioThermostatSchedule localSchedule = thermostatSchedule;
-                if (localSchedule != null) {
-                    return localSchedule.getNextSetpoint(data.getThermostatData());
-                } else {
-                    return BLANK;
+            case NEXT_TEMP:
+                if (thermostatSchedule != null) {
+                    final Integer nextTemp = thermostatSchedule.getNextTemp(data.getThermostatData());
+                    if (nextTemp != null) {
+                        return new QuantityType<>(nextTemp, API_TEMPERATURE_UNIT);
+                    }
                 }
+                return null;
+            case NEXT_TIME:
+                if (thermostatSchedule != null) {
+                    final ZonedDateTime nextTime = thermostatSchedule.getNextTime(data.getThermostatData());
+                    if (nextTime != null) {
+                        return nextTime;
+                    }
+                }
+                return null;
         }
         return null;
     }

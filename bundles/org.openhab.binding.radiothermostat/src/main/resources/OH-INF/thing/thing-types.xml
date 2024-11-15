@@ -32,7 +32,8 @@
 			<channel id="yesterday_heat_runtime" typeId="yesterday_heat_runtime"/>
 			<channel id="yesterday_cool_runtime" typeId="yesterday_cool_runtime"/>
 			<channel id="message" typeId="message"/>
-			<channel id="next_setpoint" typeId="next_setpoint"/>
+			<channel id="next_temp" typeId="next_temp"/>
+			<channel id="next_time" typeId="next_time"/>
 		</channels>
 
 		<properties>
@@ -198,10 +199,27 @@
 		<description>Use this channel to display a number in the price message area</description>
 	</channel-type>
 
-	<channel-type id="next_setpoint" advanced="true">
-		<item-type>String</item-type>
-		<label>Next Setpoint</label>
-		<description>Displays the next scheduled thermostat setpoint</description>
+	<channel-type id="next_temp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Next Set Temp</label>
+		<description>Displays the next scheduled thermostat set point temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="next_time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Next Set Time</label>
+		<description>Displays the next scheduled thermostat set point time</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
