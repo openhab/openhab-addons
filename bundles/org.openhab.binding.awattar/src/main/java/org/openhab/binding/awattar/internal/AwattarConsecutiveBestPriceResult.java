@@ -76,8 +76,8 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
     }
 
     @Override
-    public boolean isActive() {
-        return contains(Instant.now().toEpochMilli());
+    public boolean isActive(Instant now) {
+        return contains(now.toEpochMilli());
     }
 
     public boolean contains(long timestamp) {

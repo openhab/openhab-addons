@@ -23,7 +23,6 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getCalendarForHou
 import static org.openhab.binding.awattar.internal.AwattarUtil.getDuration;
 import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMinute;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -163,7 +162,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         long diff;
         switch (channelId) {
             case CHANNEL_ACTIVE:
-                state = OnOffType.from(result.isActive());
+                state = OnOffType.from(result.isActive(getNow(zoneId).toInstant()));
                 break;
             case CHANNEL_START:
                 state = new DateTimeType(Instant.ofEpochMilli(result.getStart()));
@@ -172,7 +171,7 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 state = new DateTimeType(Instant.ofEpochMilli(result.getEnd()));
                 break;
             case CHANNEL_COUNTDOWN:
-                diff = result.getStart() - Instant.now().toEpochMilli();
+                diff = result.getStart() - getNow(zoneId).toInstant().toEpochMilli();
                 if (diff >= 0) {
                     state = getDuration(diff);
                 } else {
@@ -180,8 +179,8 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_REMAINING:
-                if (result.isActive()) {
-                    diff = result.getEnd() - Instant.now().toEpochMilli();
+                if (result.isActive(getNow(zoneId).toInstant())) {
+                    diff = result.getEnd() - getNow(zoneId).toInstant().toEpochMilli();
                     state = getDuration(diff);
                 } else {
                     state = QuantityType.valueOf(0, Units.MINUTE);
@@ -216,20 +215,49 @@ public class AwattarBestPriceHandler extends BaseThingHandler {
         return result;
     }
 
+    /**
+     * Returns the time range for the given start hour and duration.
+     *
+     * @param start the start hour (0-23)
+     * @param duration the duration in hours
+     * @param zoneId the time zone to use
+     * @return the range
+     */
     protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
-        ZonedDateTime startCal = getCalendarForHour(start, zoneId);
-        ZonedDateTime endCal = startCal.plusHours(duration);
-        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        ZonedDateTime startTime = getStarTime(start, zoneId);
+        ZonedDateTime endTime = startTime.plusHours(duration);
+        ZonedDateTime now = getNow(zoneId);
         if (now.getHour() < start) {
             // we are before the range, so we might be still within the last range
-            startCal = startCal.minusDays(1);
-            endCal = endCal.minusDays(1);
+            startTime = startTime.minusDays(1);
+            endTime = endTime.minusDays(1);
         }
-        if (endCal.toInstant().toEpochMilli() < Instant.now().toEpochMilli()) {
+        if (endTime.toInstant().toEpochMilli() < now.toInstant().toEpochMilli()) {
             // span is in the past, add one day
-            startCal = startCal.plusDays(1);
-            endCal = endCal.plusDays(1);
+            startTime = startTime.plusDays(1);
+            endTime = endTime.plusDays(1);
         }
-        return new TimeRange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
+        return new TimeRange(startTime.toInstant().toEpochMilli(), endTime.toInstant().toEpochMilli());
+    }
+
+    /**
+     * Returns the start time for the given hour.
+     *
+     * @param start the hour. Must be between 0 and 23.
+     * @param zoneId the time zone
+     * @return the start time
+     */
+    protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+        return getCalendarForHour(start, zoneId);
+    }
+
+    /**
+     * Returns the current time.
+     *
+     * @param zoneId the time zone
+     * @return the current time
+     */
+    protected ZonedDateTime getNow(ZoneId zoneId) {
+        return ZonedDateTime.now(zoneId);
     }
 }

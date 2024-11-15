@@ -64,8 +64,8 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     }
 
     @Override
-    public boolean isActive() {
-        return members.stream().anyMatch(x -> x.timerange().contains(Instant.now().toEpochMilli()));
+    public boolean isActive(Instant now) {
+        return members.stream().anyMatch(x -> x.timerange().contains(now.toEpochMilli()));
     }
 
     @Override
@@ -73,16 +73,9 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
         return String.format("NonConsecutiveBestpriceResult with %s", members.toString());
     }
 
-    private void sort() {
-        if (!sorted) {
-            members.sort(Comparator.comparingLong(p -> p.timerange().start()));
-        }
-    }
-
     @Override
     public String getHours() {
         boolean second = false;
-        sort();
         StringBuilder res = new StringBuilder();
 
         for (AwattarPrice price : members) {

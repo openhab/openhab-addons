@@ -20,14 +20,18 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_ACTIVE;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_COUNTDOWN;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_END;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_HOURS;
+import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_REMAINING;
 import static org.openhab.binding.awattar.internal.AwattarBindingConstants.CHANNEL_START;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +62,8 @@ import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
@@ -166,31 +172,98 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
     public static Stream<Arguments> testBestpriceHandler() {
         return Stream.of( //
-                Arguments.of(1, true, CHANNEL_START, new DateTimeType("2024-06-15T14:00:00.000+0200")),
-                Arguments.of(1, true, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
-                Arguments.of(1, true, CHANNEL_HOURS, new StringType("14")),
-                Arguments.of(1, false, CHANNEL_START, new DateTimeType("2024-06-15T14:00:00.000+0200")),
-                Arguments.of(1, false, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
-                Arguments.of(1, false, CHANNEL_HOURS, new StringType("14")),
-                Arguments.of(2, true, CHANNEL_START, new DateTimeType("2024-06-15T13:00:00.000+0200")),
-                Arguments.of(2, true, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
-                Arguments.of(2, true, CHANNEL_HOURS, new StringType("13,14")),
-                Arguments.of(2, false, CHANNEL_START, new DateTimeType("2024-06-15T13:00:00.000+0200")),
-                Arguments.of(2, false, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
-                Arguments.of(2, false, CHANNEL_HOURS, new StringType("13,14")));
+                Arguments.of(24, 1, true, CHANNEL_START, new DateTimeType("2024-06-15T14:00:00.000+0200")),
+                Arguments.of(24, 1, true, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
+                Arguments.of(24, 1, true, CHANNEL_HOURS, new StringType("14")),
+                Arguments.of(24, 1, false, CHANNEL_START, new DateTimeType("2024-06-15T14:00:00.000+0200")),
+                Arguments.of(24, 1, false, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
+                Arguments.of(24, 1, false, CHANNEL_HOURS, new StringType("14")),
+                Arguments.of(24, 2, true, CHANNEL_START, new DateTimeType("2024-06-15T13:00:00.000+0200")),
+                Arguments.of(24, 2, true, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
+                Arguments.of(24, 2, true, CHANNEL_HOURS, new StringType("13,14")),
+                Arguments.of(24, 2, false, CHANNEL_START, new DateTimeType("2024-06-15T13:00:00.000+0200")),
+                Arguments.of(24, 2, false, CHANNEL_END, new DateTimeType("2024-06-15T15:00:00.000+0200")),
+                Arguments.of(24, 2, false, CHANNEL_HOURS, new StringType("13,14")),
+                Arguments.of(34, 4, false, CHANNEL_START, new DateTimeType("2024-06-15T12:00:00.000+0200")),
+                Arguments.of(34, 4, false, CHANNEL_END, new DateTimeType("2024-06-15T16:00:00.000+0200")),
+                Arguments.of(34, 4, false, CHANNEL_HOURS, new StringType("12,13,14,15")),
+                Arguments.of(34, 8, false, CHANNEL_START, new DateTimeType("2024-06-15T12:00:00.000+0200")),
+                Arguments.of(34, 8, false, CHANNEL_END, new DateTimeType("2024-06-16T16:00:00.000+0200")),
+                Arguments.of(34, 8, false, CHANNEL_HOURS, new StringType("12,13,14,15,16,13,14,15")));
     }
 
     @ParameterizedTest
     @MethodSource
-    void testBestpriceHandler(int length, boolean consecutive, String channelId, State expectedState) {
+    void testBestpriceHandler(int rangeDuration, int length, boolean consecutive, String channelId,
+            State expectedState) {
         ThingUID bestPriceUid = new ThingUID(AwattarBindingConstants.THING_TYPE_BESTPRICE, "foo");
-        Map<String, Object> config = Map.of("length", length, "consecutive", consecutive);
+        Map<String, Object> config = Map.of("rangeDuration", rangeDuration, "length", length, "consecutive",
+                consecutive);
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
         AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
-            @Override
-            protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
-                return new TimeRange(1718402400000L, 1718488800000L);
+            protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+                return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
+            }
+
+            protected ZonedDateTime getNow(ZoneId zoneId) {
+                return ZonedDateTime.of(2024, 6, 15, 12, 0, 0, 0, zoneId);
+            }
+        };
+
+        handler.setCallback(bestPriceCallbackMock);
+
+        ChannelUID channelUID = new ChannelUID(bestPriceUid, channelId);
+        handler.refreshChannel(channelUID);
+        verify(bestPriceCallbackMock).stateUpdated(channelUID, expectedState);
+    }
+
+    public static Stream<Arguments> testBestpriceHandler_channels() {
+        return Stream.of( //
+                Arguments.of(12, 0, 24, 1, true, CHANNEL_HOURS, new StringType("14")),
+                Arguments.of(12, 0, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(false)),
+                Arguments.of(12, 0, 24, 1, true, CHANNEL_COUNTDOWN, new QuantityType<>("120 min")),
+                Arguments.of(12, 0, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("0 min")),
+
+                Arguments.of(13, 59, 24, 1, true, CHANNEL_COUNTDOWN, new QuantityType<>("1 min")),
+                Arguments.of(13, 59, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("0 min")),
+                Arguments.of(13, 59, 24, 1, false, CHANNEL_ACTIVE, OnOffType.from(false)),
+                Arguments.of(13, 59, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(false)),
+
+                Arguments.of(14, 01, 24, 1, true, CHANNEL_COUNTDOWN, new QuantityType<>("0 min")),
+                Arguments.of(14, 01, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("59 min")),
+                Arguments.of(14, 01, 24, 1, false, CHANNEL_ACTIVE, OnOffType.from(true)),
+                Arguments.of(14, 01, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(true)),
+
+                Arguments.of(14, 59, 24, 1, true, CHANNEL_COUNTDOWN, new QuantityType<>("0 min")),
+                Arguments.of(14, 59, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("1 min")),
+                Arguments.of(14, 59, 24, 1, false, CHANNEL_ACTIVE, OnOffType.from(true)),
+                Arguments.of(14, 59, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(true)),
+
+                Arguments.of(15, 00, 24, 1, true, CHANNEL_COUNTDOWN, new QuantityType<>("0 min")),
+                Arguments.of(15, 00, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("0 min")),
+                Arguments.of(15, 00, 24, 1, false, CHANNEL_ACTIVE, OnOffType.from(false)),
+                Arguments.of(15, 00, 24, 1, true, CHANNEL_ACTIVE, OnOffType.from(false)),
+
+                Arguments.of(12, 0, 24, 1, true, CHANNEL_REMAINING, new QuantityType<>("0 min")));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testBestpriceHandler_channels(int currentHour, int currentMinute, int rangeDuration, int length,
+            boolean consecutive, String channelId, State expectedState) {
+        ThingUID bestPriceUid = new ThingUID(AwattarBindingConstants.THING_TYPE_BESTPRICE, "foo");
+        Map<String, Object> config = Map.of("rangeDuration", rangeDuration, "length", length, "consecutive",
+                consecutive);
+        when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
+
+        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
+            protected ZonedDateTime getStarTime(int start, ZoneId zoneId) {
+                return ZonedDateTime.of(2024, 6, 15, 0, 0, 0, 0, zoneId);
+            }
+
+            protected ZonedDateTime getNow(ZoneId zoneId) {
+                return ZonedDateTime.of(2024, 6, 15, currentHour, currentMinute, 0, 0, zoneId);
             }
         };
 
