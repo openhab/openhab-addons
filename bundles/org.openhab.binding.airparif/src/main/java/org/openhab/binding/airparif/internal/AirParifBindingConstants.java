@@ -45,6 +45,8 @@ public class AirParifBindingConstants {
     public static final String CHANNEL_COMMENT = "comment";
     public static final String CHANNEL_MESSAGE = "message";
     public static final String CHANNEL_TOMORROW = "tomorrow";
+    public static final String CHANNEL_TIMESTAMP = "timestamp";
+    public static final String CHANNEL_VALUE = "value";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE,
             LOCATION_THING_TYPE);

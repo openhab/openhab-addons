@@ -13,10 +13,12 @@
 
 		<channel-groups>
 			<channel-group id="pollens" typeId="bridge-pollens"/>
-            <channel-group id="aq-bulletin" typeId="air-quality-bulletin">
-            	<label>Today's Air Quality Bulletin</label></channel-group>
-            <channel-group id="aq-bulletin-tomorrow" typeId="air-quality-bulletin">
-            	<label>Tomorrow's Air Quality Bulletin</label></channel-group>			
+			<channel-group id="aq-bulletin" typeId="air-quality-bulletin">
+				<label>Today's Air Quality Bulletin</label>
+			</channel-group>
+			<channel-group id="aq-bulletin-tomorrow" typeId="air-quality-bulletin">
+				<label>Tomorrow's Air Quality Bulletin</label>
+			</channel-group>
 			<channel-group id="daily" typeId="daily"/>
 		</channel-groups>
 

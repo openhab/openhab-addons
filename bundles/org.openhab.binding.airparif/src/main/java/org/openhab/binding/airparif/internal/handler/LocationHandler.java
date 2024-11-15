@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.airparif.internal.handler;
 
-import static org.openhab.binding.airparif.internal.AirParifBindingConstants.GROUP_POLLENS;
+import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
 
+import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,8 +27,11 @@ import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,11 +48,13 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class LocationHandler extends BaseThingHandler {
+public class LocationHandler extends BaseThingHandler implements HandlerUtils {
 
     private final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
+    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
     private @Nullable LocationConfiguration config;
+    private Map<Pollen, PollenAlertLevel> myPollens = Map.of();
 
     public LocationHandler(Thing thing) {
         super(thing);
@@ -55,46 +64,85 @@ public class LocationHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(LocationConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
+        schedule("Local Air Quality", this::getConcentrations, Duration.ofSeconds(2));
+    }
 
-        scheduler.execute(this::getConcentrations);
+    @Override
+    public void dispose() {
+        logger.debug("Disposing the AirParif bridge handler.");
+        cleanJobs();
     }
 
     public void setPollens(PollensResponse pollens) {
         LocationConfiguration local = config;
         if (local != null) {
-            Map<Pollen, PollenAlertLevel> alerts = pollens.getDepartment(local.department);
-            alerts.forEach((pollen, level) -> {
-                updateState(GROUP_POLLENS + "#" + pollen.name().toLowerCase(), new DecimalType(level.ordinal()));
-            });
+            updatePollenChannels(pollens.getDepartment(local.department));
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
+    private void updatePollenChannels(Map<Pollen, PollenAlertLevel> pollens) {
+        ChannelGroupUID pollensUID = new ChannelGroupUID(thing.getUID(), GROUP_POLLENS);
+        myPollens = pollens;
+        pollens.forEach((pollen, level) -> updateState(new ChannelUID(pollensUID, pollen.name().toLowerCase()),
+                new DecimalType(level.ordinal())));
+    }
+
     private void getConcentrations() {
-        AirParifBridgeHandler apiHandler = getApiBridgeHandler();
+        AirParifBridgeHandler apiHandler = getBridgeHandler(AirParifBridgeHandler.class);
         LocationConfiguration local = config;
+        long delay = 3600;
         if (apiHandler != null && local != null) {
+            if (myPollens.isEmpty()) {
+                updatePollenChannels(apiHandler.requestPollens(local.department));
+            }
+
             Route route = apiHandler.getConcentrations(local.location);
+            if (route != null) {
+                route.concentrations().forEach(concentration -> {
+                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(),
+                            concentration.pollutant().name().toLowerCase());
+                    updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP), new DateTimeType(concentration.date()));
+                    updateState(new ChannelUID(groupUID, CHANNEL_MESSAGE), concentration.getMessage());
+                    updateState(new ChannelUID(groupUID, CHANNEL_VALUE),
+                            new QuantityType<>(concentration.getValue(), concentration.pollutant().unit));
+
+                });
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            delay = 10;
         }
+        schedule("Local Air Quality", this::getConcentrations, Duration.ofSeconds(delay));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-
     }
 
-    private @Nullable AirParifBridgeHandler getApiBridgeHandler() {
-        Bridge bridge = this.getBridge();
-        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            if (bridge.getHandler() instanceof AirParifBridgeHandler airParifBridgeHandler) {
-                return airParifBridgeHandler;
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-        return null;
+    @Override
+    public @Nullable Bridge getBridge() {
+        return super.getBridge();
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
+
+    @Override
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    public Map<String, ScheduledFuture<?>> getJobs() {
+        return jobs;
     }
 }
