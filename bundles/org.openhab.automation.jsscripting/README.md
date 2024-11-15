@@ -548,7 +548,7 @@ The following example shows how to create a `TimeSeries`:
 ```javascript
 var timeSeries = new items.TimeSeries('ADD'); // Create a new TimeSeries with policy ADD
 timeSeries.add(time.toZDT('2024-01-01T14:53'), Quantity('5 m')).add(time.toZDT().minusMinutes(2), Quantity('0 m')).add(time.toZDT().plusMinutes(5), Quantity('5 m'));
-console.log(ts); // Let's have a look at the TimeSeries
+console.log(timeSeries); // Let's have a look at the TimeSeries
 items.getItem('MyDistanceItem').persistence.persist(timeSeries, 'influxdb'); // Persist the TimeSeries for the Item 'MyDistanceItem' using the InfluxDB persistence service
 ```
 
