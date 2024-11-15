@@ -128,9 +128,10 @@ public class MBWebsocket {
             accountHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/mercedesme.account.status.websocket-failure");
             logger.warn("Websocket handling exception: {}", t.getMessage());
-        }
-        synchronized (this) {
-            running = false;
+        } finally {
+            synchronized (this) {
+                running = false;
+            }
         }
     }
 
@@ -199,7 +200,8 @@ public class MBWebsocket {
     public void onBytes(InputStream is) {
         try {
             byte[] array = is.readAllBytes();
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
+            is.close();
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(array);
             if (pm.hasVepUpdates()) {
                 boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
                 if (distributed) {
@@ -238,6 +240,7 @@ public class MBWebsocket {
             // don't report thing status errors here.
             // Sometimes messages cannot be decoded which doesn't effect the overall functionality
             logger.trace("IOException {}", e.getMessage());
+            e.printStackTrace();
         } catch (Error err) {
             logger.trace("Error caught {}", err.getMessage());
         }
