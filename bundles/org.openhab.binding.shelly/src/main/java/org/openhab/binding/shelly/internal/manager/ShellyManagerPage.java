@@ -345,7 +345,6 @@ public class ShellyManagerPage {
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                         break;
                     default:
-                        value = getTimestamp(dateTimeState);
                         value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                 }
             } else {

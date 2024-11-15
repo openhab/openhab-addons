@@ -304,15 +304,11 @@ public class ShellyUtils {
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
             ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
             int delta = zdt.getOffset().getTotalSeconds();
-            return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
+            return new DateTimeType(Instant.ofEpochSecond(timestamp - delta));
         } catch (DateTimeException e) {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
-    }
-
-    public static String getTimestamp(DateTimeType dt) {
-        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
     }
 
     public static String convertTimestamp(long ts) {
