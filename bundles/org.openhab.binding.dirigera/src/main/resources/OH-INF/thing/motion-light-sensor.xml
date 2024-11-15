@@ -13,7 +13,7 @@
 		<description>Sensor detecting motion events and measures light level</description>
 
 		<channels>
-			<channel id="detection" typeId="switch-ro">
+			<channel id="motion" typeId="system.motion">
 				<label>Detection Flag</label>
 				<description>Flag if detection happened.</description>
 			</channel>
