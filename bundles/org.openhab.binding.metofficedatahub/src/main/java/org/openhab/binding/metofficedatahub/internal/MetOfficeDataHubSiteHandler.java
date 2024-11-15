@@ -166,23 +166,12 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             dailyForecastPollManager.setPollDuration(Duration.ofHours(config.dailyForecastPollRate));
         }
 
-        // Setup the initial device's status
-        cancelInitTask();
-        initTask = scheduler.schedule(() -> {
-            MetOfficeDataHubBridgeHandler metBridge = getMetOfficeDataHubBridge();
-            if (metBridge != null) {
-                updateStatus(metBridge.getThing().getStatus());
-            }
-
-            checkDataRequired();
-        }, 200, TimeUnit.MILLISECONDS);
+        scheduleInitTask();
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
         super.channelLinked(channelUID);
-
-        scheduleDataRequiredCheck();
 
         handleCommand(channelUID, RefreshType.REFRESH);
     }
@@ -210,6 +199,22 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         } else {
             return null;
         }
+    }
+
+    protected boolean requiresPoll() {
+        return hourlyForecastPollManager.getIsDataRequired() || dailyForecastPollManager.getIsDataRequired();
+    }
+
+    protected void scheduleInitTask() {
+        cancelInitTask();
+        initTask = scheduler.schedule(() -> {
+            MetOfficeDataHubBridgeHandler metBridge = getMetOfficeDataHubBridge();
+            if (metBridge != null) {
+                updateStatus(metBridge.getThing().getStatus());
+            }
+
+            checkDataRequired();
+        }, 200, TimeUnit.MILLISECONDS);
     }
 
     private void cancelInitTask() {
@@ -329,7 +334,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
 
             final SiteApiTimeSeries data = props.getTimeSeries(dataIdx);
 
-            updateState(channelPrefix + SITE_TIMESTAMP, new DateTimeType(data.getTime()).toLocaleZone());
+            updateState(channelPrefix + SITE_TIMESTAMP, getDateTimeTypeState(data.getTime()));
 
             updateState(channelPrefix + SITE_DAILY_MIDDAY_WIND_SPEED_10M,
                     getQuantityTypeState(data.getMidday10MWindSpeed(), Units.METRE_PER_SECOND));
@@ -486,7 +491,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             final String channelPrefix = MetOfficeDataHubSiteHandler.calculatePrefix(GROUP_PREFIX_HOURS_FORECAST,
                     hrOffset);
 
-            updateState(channelPrefix + SITE_TIMESTAMP, new DateTimeType(data.getTime()).toLocaleZone());
+            updateState(channelPrefix + SITE_TIMESTAMP, getDateTimeTypeState(data.getTime()));
 
             updateState(channelPrefix + SITE_HOURLY_FORECAST_SCREEN_TEMPERATURE,
                     getQuantityTypeState(data.getScreenTemperature(), SIUnits.CELSIUS));
@@ -566,6 +571,10 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         }
         strBldr.append(GROUP_PREFIX_TO_ITEM);
         return strBldr.toString();
+    }
+
+    protected State getDateTimeTypeState(@Nullable String value) {
+        return (value == null) ? UnDefType.UNDEF : new DateTimeType(value).toLocaleZone();
     }
 
     protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {

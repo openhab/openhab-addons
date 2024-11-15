@@ -31,6 +31,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -143,5 +144,12 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
     @Override
     public void processConnected() {
         updateStatus(ThingStatus.ONLINE);
+        for (Thing thing : getThing().getThings()) {
+            if (thing instanceof MetOfficeDataHubSiteHandler siteHandler) {
+                if (!siteHandler.requiresPoll()) {
+                    siteHandler.scheduleInitTask();
+                }
+            }
+        }
     }
 }
