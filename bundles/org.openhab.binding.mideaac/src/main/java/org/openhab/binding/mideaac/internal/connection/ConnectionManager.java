@@ -140,6 +140,7 @@ public class ConnectionManager {
                 }
                 retry = false;
                 try {
+                    socket.close();
                     socket = new Socket();
                     socket.setSoTimeout(timeout * 1000);
                     socket.connect(new InetSocketAddress(ipAddress, ipPort), timeout * 1000);
