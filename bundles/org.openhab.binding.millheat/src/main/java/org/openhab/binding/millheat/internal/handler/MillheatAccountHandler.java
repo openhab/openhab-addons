@@ -420,7 +420,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         try {
             switch (property) {
                 case SetHolidayParameterRequest.PROP_START: {
-                    long epoch = ((DateTimeType) command).getZonedDateTime().toEpochSecond();
+                    long epoch = ((DateTimeType) command).getInstant().getEpochSecond();
                     SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(), home.getTimezone(),
                             SetHolidayParameterRequest.PROP_START, epoch);
                     if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
@@ -429,7 +429,7 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                     break;
                 }
                 case SetHolidayParameterRequest.PROP_END: {
-                    long epoch = ((DateTimeType) command).getZonedDateTime().toEpochSecond();
+                    long epoch = ((DateTimeType) command).getInstant().getEpochSecond();
                     SetHolidayParameterRequest req = new SetHolidayParameterRequest(home.getId(), home.getTimezone(),
                             SetHolidayParameterRequest.PROP_END, epoch);
                     if (sendLoggedInRequest(req, SetHolidayParameterResponse.class).isSuccess()) {
