@@ -203,12 +203,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             server = Optional.empty();
             Utils.removePort(config.get().callbackPort);
         }
-        ws.interrupt();
         scheduledFuture.ifPresent(schedule -> {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
             }
         });
+        ws.interrupt();
     }
 
     /**

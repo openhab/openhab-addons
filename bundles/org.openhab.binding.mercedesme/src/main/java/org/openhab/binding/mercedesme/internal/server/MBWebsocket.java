@@ -169,10 +169,6 @@ public class MBWebsocket {
         }
     }
 
-    public boolean isRunning() {
-        return running;
-    }
-
     public void interrupt() {
         synchronized (this) {
             runTill = Instant.MIN;
@@ -202,6 +198,7 @@ public class MBWebsocket {
     @OnWebSocketMessage
     public void onBytes(InputStream is) {
         try {
+            byte[] array = is.readAllBytes();
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(is);
             if (pm.hasVepUpdates()) {
                 boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
