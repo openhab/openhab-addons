@@ -14,6 +14,7 @@ package org.openhab.binding.ferroamp.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -105,12 +106,15 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         } catch (InterruptedException e) {
             logger.debug("Problems with startMqttConnection()");
         }
-        if (getFerroampConnection().connectionState().toString().equals("DISCONNECTED")) {
+
+        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null");
+        if (ferroampConnection.connectionState().toString().equals("DISCONNECTED")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug("Problem connection to MqttBroker");
-            // } else {
         }
-        if (getFerroampConnection().connectionState().toString().equals("CONNECTED")) {
+
+        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null");
+        if (ferroampConnection.connectionState().toString().equals("CONNECTED")) {
             try {
                 channelUpdate();
                 updateStatus(ThingStatus.ONLINE);
@@ -125,6 +129,9 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     private void startMqttConnection() throws InterruptedException {
         MqttBrokerConnection localSubscribeConnection = FerroampHandler.getFerroampConnection();
+
+        Objects.requireNonNull(localSubscribeConnection,
+                "MqttBrokerConnection localSubscribeConnection cannot be null");
 
         localSubscribeConnection.start();
         localSubscribeConnection.setCredentials(ferroampConfig.userName, ferroampConfig.password);
@@ -226,6 +233,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
 
     public @Nullable static MqttBrokerConnection getFerroampConnection() {
         try {
+
             return ferroampConnection;
         } catch (Exception e) {
             logger.debug("Connection to MqttBroker disturbed during startup of MqttConnection");
