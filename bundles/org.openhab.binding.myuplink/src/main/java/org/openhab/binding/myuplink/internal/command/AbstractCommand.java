@@ -226,7 +226,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         if (processFailureResponse == ProcessFailureResponse.YES) {
             processResult(jsonObject);
         } else {
-            logger.info("command failed, url: {} - code: {} - result: {}", getURL(),
+            logger.warn("command failed, url: {} - code: {} - result: {}", getURL(),
                     getCommunicationStatus().getHttpCode(), jsonObject.toString());
         }
 
