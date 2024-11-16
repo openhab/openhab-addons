@@ -298,6 +298,7 @@ public class IpObserverHandler extends BaseThingHandler {
         createChannelHandler(WEEKLY_RAIN, QuantityType.class, ImperialUnits.INCH, "weeklyrainin");
         createChannelHandler(MONTHLY_RAIN, QuantityType.class, ImperialUnits.INCH, "monthlyrainin");
         createChannelHandler(YEARLY_RAIN, QuantityType.class, ImperialUnits.INCH, "yearlyrainin");
+        createChannelHandler(TOTAL_RAIN, QuantityType.class, ImperialUnits.INCH, "totalrainin");
         createChannelHandler(UV_INDEX, DecimalType.class, SIUnits.CELSIUS, "UV");
         createChannelHandler(WIND_AVERAGE_SPEED, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windspeedmph");
         createChannelHandler(WIND_GUST, QuantityType.class, ImperialUnits.MILES_PER_HOUR, "windgustmph");
