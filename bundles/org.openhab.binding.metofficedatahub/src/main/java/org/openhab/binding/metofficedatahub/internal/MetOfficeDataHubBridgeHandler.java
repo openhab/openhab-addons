@@ -135,7 +135,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
             }
         }
         if (message == null || message.isBlank()) {
-            message = "?";
+            message = getLocalizedText("bridge.error.site-specific.communication-failure.unknown");
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 getLocalizedText("bridge.error.site-specific.communication-failure", message));
