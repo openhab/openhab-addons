@@ -59,11 +59,13 @@ See [DateTime](#date-time) section for more information.
 |-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
 | resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
 | refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 150             | yes      | no       |
+| guessActuals    | boolean | Guess actual forecast values instead of placing an API call              | true            | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
-If you have 10 free calls per day, each plane needs 1 call per update a refresh interval of 150 minutes will result in 10 calls per day.
+If you have 10 free calls per day, each plane needs 1 / 2 calls per update a refresh interval of 150 minutes will result in 10 calls per day.
+See `guessActuals` for further information.
 
 With `refreshInterval = 0` the forecast data will not be updated by binding.
 This gives the user the possibility to define an own update strategy in rules.
@@ -71,6 +73,10 @@ See [manual update rule example](#solcast-manual-update) to update Solcast forec
 
 - after startup
 - every 2 hours only during daytime using [Astro Binding](https://www.openhab.org/addons/bindings/astro/)
+
+With boolean configuration `guessActuals` `true` the binding will take over the previous forecast data and use them as _actual values_.
+This will spare one API call.
+If set to `false` the 2 API calls are placed as in the previous versions.
 
 ## Solcast Channels
 
