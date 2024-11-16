@@ -81,6 +81,25 @@ class VehicleHandlerTest {
         return instances;
     }
 
+    public static Map<String, Object> createCombustion() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_COMB);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.COMBUSTION));
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vh.accountHandler = Optional.of(ahm);
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        Map<String, Object> instances = new HashMap<>();
+        instances.put(ThingCallbackListener.class.getCanonicalName(), updateListener);
+        instances.put(VehicleHandler.class.getCanonicalName(), vh);
+        instances.put(AccountHandlerMock.class.getCanonicalName(), ahm);
+        return instances;
+    }
+
     @Test
     public void testBEVFullUpdateNoCapacities() {
         Thing thingMock = mock(Thing.class);
@@ -615,5 +634,22 @@ class VehicleHandlerTest {
         assertEquals("60 %", updateListener.getResponse("test::bev:eco#constant").toFullString(), "Eco Constant");
         assertEquals("10.2 km", updateListener.getResponse("test::bev:eco#bonus").toFullString(), "Eco Bonus");
         assertEquals(ECOSCORE_UPDATE_COUNT, updateListener.getUpdatesForGroup("eco"), "ECO Update Count");
+    }
+
+    @Test
+    public void testAdBlue() {
+        Map<String, Object> instances = createCombustion();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Combustion.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vHandler.distributeContent(update);
+
+        assertEquals("29 %", updateListener.getResponse("test::combustion:range#adblue-level").toFullString(),
+                "AdBlue Tank Level");
     }
 }
