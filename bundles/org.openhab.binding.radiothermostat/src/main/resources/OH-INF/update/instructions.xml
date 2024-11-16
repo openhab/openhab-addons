@@ -11,4 +11,15 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="radiothermostat:rtherm">
+		<instruction-set targetVersion="2">
+			<add-channel id="next_temp">
+				<type>radiothermostat:next_temp</type>
+			</add-channel>
+			<add-channel id="next_time">
+				<type>radiothermostat:next_time</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

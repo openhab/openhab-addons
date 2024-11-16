@@ -39,7 +39,7 @@ import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatHumidityDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatRuntimeDTO;
 import org.openhab.binding.radiothermostat.internal.dto.RadioThermostatTstatDTO;
-import org.openhab.binding.radiothermostat.internal.util.RadioThermostatScheduleJson;
+import org.openhab.binding.radiothermostat.internal.util.RadioThermostatSchedule;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -83,6 +83,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private final Gson gson;
     private final RadioThermostatConnector connector;
     private final RadioThermostatDTO rthermData = new RadioThermostatDTO();
+    private @Nullable RadioThermostatSchedule thermostatSchedule;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
@@ -151,10 +152,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             updateThing(editThing().withChannels(channels).build());
         }
 
-        final RadioThermostatScheduleJson thermostatSchedule = new RadioThermostatScheduleJson(config);
+        final RadioThermostatSchedule localSchedule = thermostatSchedule = new RadioThermostatSchedule(config);
 
         try {
-            heatProgramJson = thermostatSchedule.getHeatProgramJson();
+            heatProgramJson = localSchedule.getHeatProgramJson();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-heating-program");
@@ -162,7 +163,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         }
 
         try {
-            coolProgramJson = thermostatSchedule.getCoolProgramJson();
+            coolProgramJson = localSchedule.getCoolProgramJson();
         } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-cooling-program");
@@ -359,6 +360,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         updateChannel(SET_POINT, rthermData);
                         rthermData.getThermostatData().setHold(0);
                         updateChannel(HOLD, rthermData);
+                        updateChannel(NEXT_TEMP, rthermData);
+                        updateChannel(NEXT_TIME, rthermData);
                         rthermData.getThermostatData().setProgramMode(-1);
                         updateChannel(PROGRAM_MODE, rthermData);
 
@@ -383,6 +386,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         rthermData.getThermostatData().setHold(0);
                         connector.sendCommand("hold", "0", DEFAULT_RESOURCE);
                     }
+                    updateChannel(NEXT_TEMP, rthermData);
+                    updateChannel(NEXT_TIME, rthermData);
                     break;
                 case SET_POINT:
                     String cmdKey;
@@ -404,7 +409,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     if (cmdInt != -1) {
                         QuantityType<?> remoteTemp = ((QuantityType<Temperature>) command)
                                 .toUnit(ImperialUnits.FAHRENHEIT);
-                        connector.sendCommand("rem_temp", String.valueOf(remoteTemp.intValue()), REMOTE_TEMP_RESOURCE);
+                        if (remoteTemp != null) {
+                            connector.sendCommand("rem_temp", String.valueOf(remoteTemp.intValue()),
+                                    REMOTE_TEMP_RESOURCE);
+                        }
                     } else {
                         connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
                     }
@@ -477,7 +485,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         if (isLinked(channelId)) {
             Object value;
             try {
-                value = getValue(channelId, rthermData);
+                value = getValue(channelId, rthermData, thermostatSchedule);
             } catch (Exception e) {
                 logger.debug("Error setting {} value", channelId.toUpperCase());
                 return;
@@ -519,7 +527,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * @param data the RadioThermostat dto
      * @return the value to be set in the state
      */
-    public static @Nullable Object getValue(String channelId, RadioThermostatDTO data) {
+    public static @Nullable Object getValue(String channelId, RadioThermostatDTO data,
+            @Nullable RadioThermostatSchedule thermostatSchedule) {
         switch (channelId) {
             case TEMPERATURE:
                 if (data.getThermostatData().getTemperature() != null) {
@@ -576,6 +585,22 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             case YESTERDAY_COOL_RUNTIME:
                 return new QuantityType<>(data.getRuntime().getYesterday().getCoolTime().getRuntime(),
                         API_MINUTES_UNIT);
+            case NEXT_TEMP:
+                if (thermostatSchedule != null) {
+                    final Integer nextTemp = thermostatSchedule.getNextTemp(data.getThermostatData());
+                    if (nextTemp != null) {
+                        return new QuantityType<>(nextTemp, API_TEMPERATURE_UNIT);
+                    }
+                }
+                return null;
+            case NEXT_TIME:
+                if (thermostatSchedule != null) {
+                    final ZonedDateTime nextTime = thermostatSchedule.getNextTime(data.getThermostatData());
+                    if (nextTime != null) {
+                        return nextTime;
+                    }
+                }
+                return null;
         }
         return null;
     }
