@@ -148,4 +148,12 @@ public class Utils {
         }
         return null;
     }
+
+    public static ZonedDateTime getZdtFromUTC(Instant utc) {
+        return utc.atZone(timeZoneProvider.getTimeZone());
+    }
+
+    public static Instant now() {
+        return Instant.now(clock);
+    }
 }

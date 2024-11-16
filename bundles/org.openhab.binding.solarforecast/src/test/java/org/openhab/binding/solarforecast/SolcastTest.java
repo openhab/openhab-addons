@@ -365,7 +365,7 @@ class SolcastTest {
                 "Estimation");
 
         // access in past shall be rejected
-        Instant past = Instant.now(Utils.getClock()).minus(5, ChronoUnit.MINUTES);
+        Instant past = Utils.now().minus(5, ChronoUnit.MINUTES);
         try {
             scfo.getPower(past, SolarForecast.OPTIMISTIC);
             fail();
@@ -393,7 +393,7 @@ class SolcastTest {
             assertEquals("Solcast doesn't support argument rubbish", e.getMessage(), "Rubbish argument");
         }
         try {
-            scfo.getPower(Instant.now(Utils.getClock()).plus(8, ChronoUnit.DAYS));
+            scfo.getPower(Utils.now().plus(8, ChronoUnit.DAYS));
             fail("Exception expected");
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
@@ -482,7 +482,7 @@ class SolcastTest {
         List<QuantityType<?>> estimateL = new ArrayList<>();
         assertEquals(302, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
+            assertTrue(entry.timestamp().isAfter(Utils.now()));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -497,7 +497,7 @@ class SolcastTest {
         List<QuantityType<?>> estimate10 = new ArrayList<>();
         assertEquals(302, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
+            assertTrue(entry.timestamp().isAfter(Utils.now()));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -512,7 +512,7 @@ class SolcastTest {
         List<QuantityType<?>> estimate90 = new ArrayList<>();
         assertEquals(302, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
-            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
+            assertTrue(entry.timestamp().isAfter(Utils.now()));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());

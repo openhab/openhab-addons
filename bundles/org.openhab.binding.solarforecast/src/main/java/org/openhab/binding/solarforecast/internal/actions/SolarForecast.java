@@ -112,4 +112,11 @@ public interface SolarForecast {
      * @return unique String to identify solar plane
      */
     String getIdentifier();
+
+    /**
+     * Forecast creation
+     *
+     * @return Instant of the forecast creation
+     */
+    Instant getCreationInstant();
 }

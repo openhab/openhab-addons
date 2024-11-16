@@ -4,13 +4,25 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="solarforecast:sc-plane">
-
 		<instruction-set targetVersion="1">
-			<add-channel id="rcount" groupIds="raw">
-				<type>solarforecast:count</type>
+			<add-channel id="api-count" groupIds="update">
+				<type>solarforecast:api-count</type>
+			</add-channel>
+			<add-channel id="latest-update" groupIds="update">
+				<type>solarforecast:latest-update</type>
 			</add-channel>
 		</instruction-set>
+	</thing-type>
 
+	<thing-type uid="solarforecast:sc-site">
+		<instruction-set targetVersion="1">
+			<add-channel id="api-count" groupIds="update">
+				<type>solarforecast:api-count</type>
+			</add-channel>
+			<add-channel id="latest-update" groupIds="update">
+				<type>solarforecast:latest-update</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

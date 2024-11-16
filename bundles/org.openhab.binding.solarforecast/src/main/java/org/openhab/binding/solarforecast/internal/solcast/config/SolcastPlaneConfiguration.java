@@ -24,6 +24,7 @@ import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 public class SolcastPlaneConfiguration {
     public String resourceId = SolarForecastBindingConstants.EMPTY;
     public long refreshInterval = 150;
+    public boolean guessActuals = true;
 
     @Override
     public String toString() {

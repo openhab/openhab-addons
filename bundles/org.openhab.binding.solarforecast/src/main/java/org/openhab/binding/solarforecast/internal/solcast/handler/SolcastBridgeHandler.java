@@ -37,6 +37,8 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastBridgeConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -133,11 +135,23 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
 
         // try to catch ForecastException in case of missing data
         try {
-            // get forecasts for all planes
+            // get forecasts & counter for all planes
+            int apiCounter = 0;
             List<SolcastObject> forecastList = new ArrayList<>();
+            Instant latestUpdate = Instant.MIN;
             for (Iterator<SolcastPlaneHandler> planeIterator = planes.iterator(); planeIterator.hasNext();) {
-                forecastList.add(planeIterator.next().fetchData());
+                SolcastPlaneHandler nextPlane = planeIterator.next();
+                SolcastObject forecast = nextPlane.fetchData();
+                forecastList.add(forecast);
+                apiCounter += nextPlane.getCount();
+                if (latestUpdate.isBefore(forecast.getCreationInstant())) {
+                    latestUpdate = forecast.getCreationInstant();
+                }
             }
+            updateState(CHANNEL_API_COUNT, new DecimalType(apiCounter));
+            ZonedDateTime creation = Utils.getZdtFromUTC(latestUpdate);
+            updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_LATEST_UPDATE,
+                    new DateTimeType(creation));
 
             // loop on all modes
             MODES.forEach(mode -> {
