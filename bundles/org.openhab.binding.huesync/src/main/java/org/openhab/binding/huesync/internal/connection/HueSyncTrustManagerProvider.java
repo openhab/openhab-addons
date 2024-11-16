@@ -32,7 +32,7 @@ public class HueSyncTrustManagerProvider implements TlsTrustManagerProvider {
     private final String host;
     private final Integer port;
 
-    private X509ExtendedTrustManager trustManager;
+    private final X509ExtendedTrustManager trustManager;
 
     public HueSyncTrustManagerProvider(String host, Integer port) throws IOException, CertificateException {
         this.trustManager = PEMTrustManager.getInstanceFromServer("https://" + host);

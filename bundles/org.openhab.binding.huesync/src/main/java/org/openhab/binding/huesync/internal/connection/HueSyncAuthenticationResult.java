@@ -26,8 +26,8 @@ import org.eclipse.jetty.http.HttpHeader;
  */
 @NonNullByDefault
 public class HueSyncAuthenticationResult implements Result {
-    private String token;
-    private URI uri;
+    private final String token;
+    private final URI uri;
 
     public HueSyncAuthenticationResult(URI uri, String token) {
         this.uri = uri;

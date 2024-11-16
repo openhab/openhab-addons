@@ -34,10 +34,10 @@ public class HueSyncUpdateTask implements Runnable {
     private final HueSyncDeviceConnection connection;
     private final HueSyncDevice deviceInfo;
 
-    private final Consumer<@Nullable HueSyncUpdateTaskResultDto> action;
+    private final Consumer<@Nullable HueSyncUpdateTaskResult> action;
 
     public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
-            Consumer<@Nullable HueSyncUpdateTaskResultDto> action) {
+            Consumer<@Nullable HueSyncUpdateTaskResult> action) {
         this.connection = connection;
         this.deviceInfo = deviceInfo;
 
@@ -54,7 +54,7 @@ public class HueSyncUpdateTask implements Runnable {
                 this.action.accept(null);
             }
 
-            HueSyncUpdateTaskResultDto updateInfo = new HueSyncUpdateTaskResultDto();
+            HueSyncUpdateTaskResult updateInfo = new HueSyncUpdateTaskResult();
 
             updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
             updateInfo.hdmiStatus = this.connection.getHdmiInfo();

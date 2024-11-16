@@ -38,7 +38,7 @@ import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
-import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResultDto;
+import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResult;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -174,9 +174,9 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void handleUpdate(@Nullable HueSyncUpdateTaskResultDto dto) {
+    private void handleUpdate(@Nullable HueSyncUpdateTaskResult dto) {
         try {
-            HueSyncUpdateTaskResultDto update = Optional.ofNullable(dto).get();
+            HueSyncUpdateTaskResult update = Optional.ofNullable(dto).get();
 
             try {
                 this.updateFirmwareInformation(Optional.ofNullable(update.deviceStatus).get());
