@@ -77,7 +77,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
             } else if (unit.isCompatible(tech.units.indriya.unit.Units.WATT)) {
                 convertedType = quantityCommand.toUnit(MetricPrefix.KILO(tech.units.indriya.unit.Units.WATT));
             } else {
-                logger.info("automatic conversion of unit '{}' to myUplink expected unit not supported.",
+                logger.warn("automatic conversion of unit '{}' to myUplink expected unit not supported.",
                         unit.getName());
                 convertedType = quantityCommand;
             }
