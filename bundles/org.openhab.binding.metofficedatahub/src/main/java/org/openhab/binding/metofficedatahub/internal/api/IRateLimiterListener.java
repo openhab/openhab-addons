@@ -22,5 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface IRateLimiterListener {
+
+    /**
+     * This is invoked to notify implementations of this interface, that the given rate limiter
+     * has been updated, with new counts.
+     *
+     * @param requestLimiter is a reference to the rate limiter that has been updated.
+     */
     void processRateLimiterUpdated(final RequestLimiter requestLimiter);
 }

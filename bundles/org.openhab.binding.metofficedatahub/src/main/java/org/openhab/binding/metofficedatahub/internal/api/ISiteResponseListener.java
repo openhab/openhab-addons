@@ -22,7 +22,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface ISiteResponseListener {
+
+    /**
+     * This is invoked to notify implementations of this interface, new daily response data has been received.
+     * It is at the implementations discretion whether the data is of interest based on the pollId, which is set
+     * from when the original poll was requested.
+     *
+     * @param content is the daily response JSON content returned for a site API request.
+     * @param pollId is the ID associated to the request this was requested with.
+     */
     void processDailyResponse(final String content, final String pollId);
 
+    /**
+     * This is invoked to notify implementations of this interface, new hourly response data has been received.
+     * It is at the implementations discretion whether the data is of interest based on the pollId, which is set
+     * from when the original poll was requested.
+     *
+     * @param content is the hourly response JSON content returned for a site API request.
+     * @param pollId is the ID associated to the request this was requested with.
+     */
     void processHourlyResponse(final String content, final String pollId);
 }

@@ -23,9 +23,25 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public interface IConnectionStatusListener {
+
+    /**
+     * This is invoked to notify implementations of this interface, whether the connection has been
+     * successfully authenticated or given a response indicating an authentication failure, or that
+     * the authentication data is not in a valid format.
+     *
+     * @param authenticated is true when the authentication was validated and successful used.
+     */
     void processAuthenticationResult(final boolean authenticated);
 
-    void processCommunicationFailure(final @Nullable Throwable e);
+    /**
+     * This is invoked to notify implementations of this interface, upon a failure of communications.
+     *
+     * @param t is instance of the Throwable that was raised/thrown when the communications failed to process.
+     */
+    void processCommunicationFailure(final @Nullable Throwable t);
 
+    /**
+     * This is invoked to notify implementations of this interface, when connectivity has been successful.
+     */
     void processConnected();
 }
