@@ -39,13 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
-import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
-import com.daimler.mbcarkit.proto.VehicleEvents;
-import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
-import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
-import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
@@ -158,7 +151,7 @@ public class MBWebsocket {
         return false;
     }
 
-    private void sendAcknowledgeMessage(ClientMessage message) {
+    public void sendAcknowledgeMessage(ClientMessage message) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             message.writeTo(baos);
@@ -201,48 +194,9 @@ public class MBWebsocket {
         try {
             byte[] array = is.readAllBytes();
             is.close();
-            PushMessage pm = VehicleEvents.PushMessage.parseFrom(array);
-            if (pm.hasVepUpdates()) {
-                boolean distributed = accountHandler.distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
-                if (distributed) {
-                    AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                            .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                    ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
-                    sendAcknowledgeMessage(cm);
-                }
-            } else if (pm.hasAssignedVehicles()) {
-                for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
-                    String vin = pm.getAssignedVehicles().getVins(0);
-                    accountHandler.discovery(vin);
-                }
-                AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
-                AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
-                accountHandler.commandStatusUpdate(csubv.getUpdatesByVinMap());
-                AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
-                        .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
-                        .build();
-                sendAcknowledgeMessage(cm);
-            } else if (pm.hasApptwinPendingCommandRequest()) {
-                AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
-                if (!pending.getAllFields().isEmpty()) {
-                    logger.trace("Pending Command {}", pending.getAllFields());
-                }
-            } else if (pm.hasDebugMessage()) {
-                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
-            } else {
-                logger.trace("MB Message: {} not handled", pm.getAllFields());
-            }
+            accountHandler.onMessage(array);
         } catch (IOException e) {
-            // don't report thing status errors here.
-            // Sometimes messages cannot be decoded which doesn't effect the overall functionality
-            logger.trace("IOException {}", e.getMessage());
-            e.printStackTrace();
-        } catch (Error err) {
-            logger.trace("Error caught {}", err.getMessage());
+            logger.trace("IOException reading input stream {}", e.getMessage());
         }
     }
 

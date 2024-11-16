@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mercedesme.internal.handler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +58,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
+import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
+import com.daimler.mbcarkit.proto.VehicleEvents;
+import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
@@ -83,6 +91,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
     private Optional<ScheduledFuture<?>> scheduledFuture = Optional.empty();
+    private List<byte[]> eventQueue = new ArrayList<>();
+    private boolean updateRunning = false;
 
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
@@ -281,6 +291,91 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (activeVehicleHandlerMap.containsKey(vin)) {
                 activeVehicleHandlerMap.get(vin).setCommandCapabilities(storage.get(vin + COMMAND_APPENDIX));
             }
+        }
+    }
+
+    /**
+     * functions for websocket handling
+     *
+     * @param data
+     */
+
+    public void onMessage(byte[] data) {
+        synchronized (eventQueue) {
+            eventQueue.add(data);
+            scheduler.execute(this::doUpdate);
+        }
+    }
+
+    public void doUpdate() {
+        byte[] data;
+        synchronized (eventQueue) {
+            while (updateRunning) {
+                try {
+                    eventQueue.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            if (!eventQueue.isEmpty()) {
+                data = eventQueue.remove(0);
+            } else {
+                return;
+            }
+            updateRunning = true;
+        }
+        try {
+            handleMessage(data);
+        } finally {
+            synchronized (eventQueue) {
+                updateRunning = false;
+                eventQueue.notifyAll();
+            }
+        }
+    }
+
+    private void handleMessage(byte[] array) {
+        try {
+            PushMessage pm = VehicleEvents.PushMessage.parseFrom(array);
+            if (pm.hasVepUpdates()) {
+                boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+                logger.trace("Distributed VEPUpdate {}", distributed);
+                if (distributed) {
+                    AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
+                            .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
+                    ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
+                    ws.sendAcknowledgeMessage(cm);
+                }
+            } else if (pm.hasAssignedVehicles()) {
+                for (int i = 0; i < pm.getAssignedVehicles().getVinsCount(); i++) {
+                    String vin = pm.getAssignedVehicles().getVins(0);
+                    discovery(vin);
+                }
+                AcknowledgeAssignedVehicles ack = AcknowledgeAssignedVehicles.newBuilder().build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeAssignedVehicles(ack).build();
+                ws.sendAcknowledgeMessage(cm);
+            } else if (pm.hasApptwinCommandStatusUpdatesByVin()) {
+                AppTwinCommandStatusUpdatesByVIN csubv = pm.getApptwinCommandStatusUpdatesByVin();
+                commandStatusUpdate(csubv.getUpdatesByVinMap());
+                AcknowledgeAppTwinCommandStatusUpdatesByVIN ack = AcknowledgeAppTwinCommandStatusUpdatesByVIN
+                        .newBuilder().setSequenceNumber(csubv.getSequenceNumber()).build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeApptwinCommandStatusUpdateByVin(ack)
+                        .build();
+                ws.sendAcknowledgeMessage(cm);
+            } else if (pm.hasApptwinPendingCommandRequest()) {
+                AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
+                if (!pending.getAllFields().isEmpty()) {
+                    logger.trace("Pending Command {}", pending.getAllFields());
+                }
+            } else if (pm.hasDebugMessage()) {
+                logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
+            } else {
+                logger.trace("MB Message: {} not handled", pm.getAllFields());
+            }
+        } catch (IOException e) {
+            logger.trace("IOException decoding message {}", e.getMessage());
+        } catch (Error err) {
+            logger.trace("Error caught {}", err.getMessage());
         }
     }
 
