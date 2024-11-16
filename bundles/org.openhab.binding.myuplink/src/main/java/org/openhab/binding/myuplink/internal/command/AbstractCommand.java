@@ -160,7 +160,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
                 communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
             }
         } else {
-            logger.info("[{}] Request failed", getClass().getSimpleName());
+            logger.warn("[{}] Request failed", getClass().getSimpleName());
         }
         if (response != null && response.getStatus() > 0) {
             communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
