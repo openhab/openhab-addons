@@ -18,7 +18,7 @@ import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -322,7 +322,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             return;
         }
 
-        final String startOfHour = MetOfficeDataHubSiteHandler.getStartOfDay();
+        final String startOfHour = MetOfficeDataHubSiteHandler.getDataTsAtLastChronoUnit(ChronoUnit.DAYS);
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
 
         for (int dayOffset = 0; dayOffset <= 6; ++dayOffset) {
@@ -480,7 +480,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             return;
         }
 
-        final String startOfHour = MetOfficeDataHubSiteHandler.getLastHour();
+        final String startOfHour = MetOfficeDataHubSiteHandler.getDataTsAtLastChronoUnit(ChronoUnit.HOURS);
         final int forecastForthisHour = props.getHourlyTimeSeriesPositionForCurrentHour(startOfHour);
 
         for (int hrOffset = 0; hrOffset <= 24; ++hrOffset) {
@@ -543,18 +543,8 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
         }
     }
 
-    public static String getLastHour() {
-        long timeRoundedToLastHour = System.currentTimeMillis();
-        timeRoundedToLastHour -= timeRoundedToLastHour % 3600000;
-        final Instant instant = new Date(timeRoundedToLastHour).toInstant();
-        return instant.toString().substring(0, 16) + "Z";
-    }
-
-    public static String getStartOfDay() {
-        long timeRoundedToDayStart = System.currentTimeMillis();
-        timeRoundedToDayStart -= timeRoundedToDayStart % 86400000;
-        final Instant instant = new Date(timeRoundedToDayStart).toInstant();
-        return instant.toString().substring(0, 16) + "Z";
+    public static String getDataTsAtLastChronoUnit(final ChronoUnit unit) {
+        return Instant.now().truncatedTo(unit).toString().substring(0, 16) + "Z";
     }
 
     // Helpers for updating channels support
