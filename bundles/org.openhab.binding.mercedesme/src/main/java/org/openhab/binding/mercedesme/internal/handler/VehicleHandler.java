@@ -112,6 +112,7 @@ import com.google.protobuf.Int32Value;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - Bugfix https://github.com/openhab/openhab-addons/issues/16932
+ * @author Bernd Weymann - Added adblue-channel https://community.openhab.org/t/mercedes-me-binding/136852/239
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
@@ -706,6 +707,11 @@ public class VehicleHandler extends BaseThingHandler {
                                 updateChannel(tankOpen);
                             }
                         } else {
+                            block = true;
+                        }
+                        break;
+                    case OH_CHANNEL_ADBLUE_LEVEL:
+                        if (!Constants.COMBUSTION.equals(vehicleType)) {
                             block = true;
                         }
                         break;
