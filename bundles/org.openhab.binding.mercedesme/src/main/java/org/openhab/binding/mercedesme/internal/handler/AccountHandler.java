@@ -324,7 +324,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } else {
             if (!capabilitiesMap.containsKey(vin)) {
                 // only report new discovery if capabilities aren't discovered yet
-                discoveryService.vehicleDiscovered(this, vin, getCapabilities(vin));
+                Map<String, Object> discoveryProperties = getCapabilities(vin);
+                discoveryProperties.put("vin", vin);
+                discoveryService.vehicleDiscovered(this, vin, discoveryProperties);
             }
         }
     }
