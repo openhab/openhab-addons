@@ -14,10 +14,10 @@
 			<description>Data refresh rate of forecast data in minutes, zero for manual updates.</description>
 			<default>150</default>
 		</parameter>
-        <parameter name="guessActuals" type="boolean" required="true">
-            <label>Guess Actual Values</label>
-            <description>Guess actual forecast values instead of placing an API call</description>
-            <default>true</default>
-        </parameter>
+		<parameter name="guessActuals" type="boolean" required="true">
+			<label>Guess Actual Values</label>
+			<description>Guess actual forecast values instead of placing an API call</description>
+			<default>true</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>
