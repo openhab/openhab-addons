@@ -46,7 +46,6 @@ import org.openhab.binding.nest.internal.sdm.dto.SDMTraits.SDMResolution;
 import org.openhab.binding.nest.internal.sdm.exception.FailedSendingSDMDataException;
 import org.openhab.binding.nest.internal.sdm.exception.InvalidSDMAccessTokenException;
 import org.openhab.binding.nest.internal.sdm.listener.SDMEventListener;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -75,11 +74,9 @@ public abstract class SDMBaseHandler extends BaseThingHandler implements SDMIden
     protected String deviceId = "";
     protected @Nullable ZonedDateTime lastRefreshDateTime;
     protected @Nullable ScheduledFuture<?> refreshJob;
-    protected final TimeZoneProvider timeZoneProvider;
 
-    public SDMBaseHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public SDMBaseHandler(Thing thing) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
