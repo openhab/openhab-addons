@@ -90,7 +90,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     private Optional<AuthServer> server = Optional.empty();
     private Optional<AuthService> authService = Optional.empty();
-    private Optional<ScheduledFuture<?>> scheduledFuture = Optional.empty();
+    private Optional<ScheduledFuture<?>> refreshScheduler = Optional.empty();
     private List<byte[]> eventQueue = new ArrayList<>();
     private boolean updateRunning = false;
 
@@ -138,13 +138,13 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                         textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
             } else {
-                scheduledFuture = Optional.of(scheduler.scheduleWithFixedDelay(this::update, 0,
+                refreshScheduler = Optional.of(scheduler.scheduleWithFixedDelay(this::refresh, 0,
                         config.get().refreshInterval, TimeUnit.MINUTES));
             }
         }
     }
 
-    public void update() {
+    public void refresh() {
         if (server.isPresent()) {
             if (!Constants.NOT_SET.equals(authService.get().getToken())) {
                 ws.run();
@@ -213,7 +213,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             server = Optional.empty();
             Utils.removePort(config.get().callbackPort);
         }
-        scheduledFuture.ifPresent(schedule -> {
+        refreshScheduler.ifPresent(schedule -> {
             if (!schedule.isCancelled()) {
                 schedule.cancel(true);
             }
@@ -227,7 +227,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
         if (!Constants.NOT_SET.equals(tokenResponse.getAccessToken())) {
-            scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
+            scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
         } else if (server.isEmpty()) {
             // server not running - fix first
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
@@ -272,7 +272,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         activeVehicleHandlerMap.put(vin, handler);
         VEPUpdate updateForVin = vepUpdateMap.get(vin);
         if (updateForVin != null) {
-            handler.distributeContent(updateForVin);
+            handler.enqueueUpdate(updateForVin);
         }
     }
 
@@ -296,18 +296,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
 
     /**
      * functions for websocket handling
-     *
-     * @param data
      */
 
-    public void onMessage(byte[] data) {
+    public void enqueueMessage(byte[] data) {
         synchronized (eventQueue) {
             eventQueue.add(data);
-            scheduler.execute(this::doUpdate);
+            scheduler.execute(this::scheduleMessage);
         }
     }
 
-    public void doUpdate() {
+    private void scheduleMessage() {
         byte[] data;
         synchronized (eventQueue) {
             while (updateRunning) {
@@ -384,7 +382,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
-                h.distributeContent(value);
+                h.enqueueUpdate(value);
             } else {
                 if (value.getFullUpdate()) {
                     vepUpdateMap.put(key, value);
@@ -525,7 +523,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         if (cm != null) {
             ws.setCommand(cm);
         }
-        scheduler.schedule(this::update, 2, TimeUnit.SECONDS);
+        scheduler.schedule(this::refresh, 2, TimeUnit.SECONDS);
     }
 
     public void keepAlive(boolean b) {

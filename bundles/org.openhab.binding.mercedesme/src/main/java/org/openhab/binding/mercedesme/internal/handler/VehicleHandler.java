@@ -589,14 +589,14 @@ public class VehicleHandler extends BaseThingHandler {
         });
     }
 
-    public void distributeContent(VEPUpdate data) {
+    public void enqueueUpdate(VEPUpdate update) {
         synchronized (eventQueue) {
-            eventQueue.add(data);
-            scheduler.execute(this::doUpdate);
+            eventQueue.add(update);
+            scheduler.execute(this::scheduleUpdate);
         }
     }
 
-    public void doUpdate() {
+    private void scheduleUpdate() {
         VEPUpdate data;
         synchronized (eventQueue) {
             while (updateRunning) {
@@ -614,7 +614,7 @@ public class VehicleHandler extends BaseThingHandler {
             updateRunning = true;
         }
         try {
-            update(data);
+            handleUpdate(data);
         } finally {
             synchronized (eventQueue) {
                 updateRunning = false;
@@ -623,13 +623,13 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    public void update(VEPUpdate data) {
+    public void handleUpdate(VEPUpdate update) {
         updateStatus(ThingStatus.ONLINE);
-        boolean fullUpdate = data.getFullUpdate();
+        boolean fullUpdate = update.getFullUpdate();
         /**
          * Deliver proto update
          */
-        String newProto = Utils.proto2Json(data, thing.getThingTypeUID());
+        String newProto = Utils.proto2Json(update, thing.getThingTypeUID());
         String combinedProto = newProto;
         ChannelUID protoUpdateChannelUID = new ChannelUID(thing.getUID(), GROUP_VEHICLE, OH_CHANNEL_PROTO_UPDATE);
         ChannelStateMap oldProtoMap = eventStorage.get(protoUpdateChannelUID.getId());
@@ -645,7 +645,7 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(combinedProto));
         updateChannel(dataUpdateMap);
 
-        Map<String, VehicleAttributeStatus> atts = data.getAttributesMap();
+        Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
         /**
          * handle "simple" values
          */

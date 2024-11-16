@@ -194,7 +194,7 @@ public class MBWebsocket {
         try {
             byte[] array = is.readAllBytes();
             is.close();
-            accountHandler.onMessage(array);
+            accountHandler.enqueueMessage(array);
         } catch (IOException e) {
             logger.trace("IOException reading input stream {}", e.getMessage());
         }
