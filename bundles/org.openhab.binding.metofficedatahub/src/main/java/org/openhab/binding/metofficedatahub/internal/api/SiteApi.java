@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
@@ -54,10 +55,10 @@ public class SiteApi {
 
     private final Logger logger = LoggerFactory.getLogger(SiteApi.class);
 
-    // Utilised for sending communciations
-    private final HttpClientFactory httpClientFactory;
+    // Utilised for sending communications
+    private final HttpClient httpClient;
 
-    // Utilised for persistance of rate limiter data between reboots
+    // Utilised for persistence of rate limiter data between reboots
     private final ScheduledExecutorService scheduler;
 
     private final SiteApiAuthentication apiAuth;
@@ -75,7 +76,7 @@ public class SiteApi {
             @Reference LocaleProvider localeProvider, @Reference TimeZoneProvider timeZoneProvider,
             @Reference ScheduledExecutorService scheduler) {
         this.usageId = usageId;
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.apiAuth = new SiteApiAuthentication();
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
@@ -244,7 +245,7 @@ public class SiteApi {
                 .replace(GET_FORECAST_KEY_LATITUDE, location.getLatitude().toString())
                 .replace(GET_FORECAST_KEY_LONGITUDE, location.getLongitude().toString());
 
-        final Request request = httpClientFactory.getCommonHttpClient().newRequest(url).method(HttpMethod.GET)
+        final Request request = httpClient.newRequest(url).method(HttpMethod.GET)
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_TYPE.toString())
                 .timeout(GET_FORECAST_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
