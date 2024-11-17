@@ -44,12 +44,12 @@ public enum Protocol {
     }
 
     public GatewayQueryService getGatewayQueryService(FineOffsetGatewayConfiguration config,
-            @Nullable ThingStatusListener thingStatusListener, ConversionContext conversionContext) {
-        return queryServiceFactory.newInstance(config, thingStatusListener, conversionContext);
+            @Nullable ThingStatusListener thingStatusListener) {
+        return queryServiceFactory.newInstance(config, thingStatusListener);
     }
 
     private interface GatewayQueryServiceFactory {
         GatewayQueryService newInstance(FineOffsetGatewayConfiguration config,
-                @Nullable ThingStatusListener thingStatusListener, ConversionContext conversionContext);
+                @Nullable ThingStatusListener thingStatusListener);
     }
 }
