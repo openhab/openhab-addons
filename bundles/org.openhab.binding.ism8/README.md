@@ -172,10 +172,10 @@ Number:VolumetricFlowRate ISM_LueftungDurchsatzZuluft "CWL Luftdurchsatz Zuluft 
 Number:VolumetricFlowRate ISM_LueftungDurchsatzAbluft "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
 Switch ISM_LueftungFilterwarnung                      "CWL Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
 
-Contact ISM_SolarStoerung                             "Solar Störung"                          { channel="ism8:device:heater:DpId135" }
+Switch ISM_SolarStoerung                              "Solar Störung"                          { channel="ism8:device:heater:DpId135" }
 Number:Temperature ISM_SolarWassertemperatur          "Solar Wassertemperatur [%.1f °C]"       { channel="ism8:device:heater:DpId136" }
 Number:Temperature ISM_SolarKollektortemperatur       "Solar Kollektortemperatur [%.1f °C]"    { channel="ism8:device:heater:DpId137" }
-Contact ISM_SolarStatusPumpe                          "Solar Status Pumpe"                     { channel="ism8:device:heater:DpId141" }
+Switch ISM_SolarStatusPumpe                           "Solar Status Pumpe"                     { channel="ism8:device:heater:DpId141" }
 
 Switch ISM_HeizungChaStoerung                         "CHA Störung"                            { channel="ism8:device:heater:DpId176" }
 Number ISM_HeizungChaBetriebsart                      "Betriebsart [MAP(HVACContrMode.map):%s]"{ channel="ism8:device:heater:DpId177" }
