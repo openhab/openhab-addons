@@ -196,6 +196,9 @@ public class MBWebsocket {
             is.close();
             accountHandler.enqueueMessage(array);
             /**
+             * https://community.openhab.org/t/mercedes-me/136866/12
+             * Release Websocket thread as early as possible to avoid execeptions
+             *
              * 1. Websocket thread responsible for reading stream in bytes and enqueue for AccountHandler.
              * 2. AccountHamdler thread responsible for encoding proto message. In case of update enqueue proto message
              * at VehicleHandöer
