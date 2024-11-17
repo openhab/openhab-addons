@@ -7,6 +7,7 @@ It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10
 ## Discovery
 
 To discover clients, you must first configure a server (bridge).
+Servers will be discovered automatically, or can be added manually.
 After that, device discovery will detect controllable clients.
 
 ## Thing Types
