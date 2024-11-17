@@ -195,6 +195,12 @@ public class MBWebsocket {
             byte[] array = is.readAllBytes();
             is.close();
             accountHandler.enqueueMessage(array);
+            /**
+             * 1. Websocket thread responsible for reading stream in bytes and enqueue for AccountHandler.
+             * 2. AccountHamdler thread responsible for encoding proto message. In case of update enqueue proto message
+             * at VehicleHandöer
+             * 3. VehicleHandler responsible to update channels
+             */
         } catch (IOException e) {
             logger.trace("IOException reading input stream {}", e.getMessage());
         }

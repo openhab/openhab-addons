@@ -219,6 +219,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             }
         });
         ws.interrupt();
+        eventQueue.clear();
     }
 
     /**
@@ -313,6 +314,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                     eventQueue.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    eventQueue.clear();
+                    return;
                 }
             }
             if (!eventQueue.isEmpty()) {

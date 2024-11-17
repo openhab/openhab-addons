@@ -181,9 +181,11 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        //
         accountHandler.ifPresent(ah -> {
             ah.unregisterVin(config.get().vin);
         });
+        eventQueue.clear();
         super.dispose();
     }
 
@@ -604,6 +606,8 @@ public class VehicleHandler extends BaseThingHandler {
                     eventQueue.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    eventQueue.clear();
+                    return;
                 }
             }
             if (!eventQueue.isEmpty()) {
