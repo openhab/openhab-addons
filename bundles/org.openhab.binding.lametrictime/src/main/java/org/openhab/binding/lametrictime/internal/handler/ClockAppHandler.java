@@ -15,6 +15,7 @@ package org.openhab.binding.lametrictime.internal.handler;
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
 
 import java.time.LocalTime;
+import java.time.ZoneId;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,7 +54,7 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_SET_ALARM: {
-                    LocalTime time = ((DateTimeType) command).getZonedDateTime().toLocalTime();
+                    LocalTime time = ((DateTimeType) command).getZonedDateTime(ZoneId.systemDefault()).toLocalTime();
                     getDevice().doAction(getWidget(), CoreApps.clock().setAlarm(true, time, null));
                     updateActiveAppOnDevice();
                     break;
