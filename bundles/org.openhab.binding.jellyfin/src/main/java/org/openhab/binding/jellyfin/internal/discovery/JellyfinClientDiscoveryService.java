@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jellyfin.sdk.api.client.exception.ApiClientException;
-import org.jellyfin.sdk.api.client.exception.InvalidStatusException;
-import org.jellyfin.sdk.model.api.SessionInfo;
 import org.openhab.binding.jellyfin.internal.handler.JellyfinServerHandler;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
