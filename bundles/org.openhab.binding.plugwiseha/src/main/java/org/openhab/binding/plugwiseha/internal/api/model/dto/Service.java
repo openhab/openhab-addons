@@ -20,11 +20,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("service")
 public class Service extends PlugwiseBaseModel {
 
-    @SuppressWarnings("unused")
     @XStreamAlias("log_type")
     private String logType;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("point_log")
     private String pointLogId;
 }

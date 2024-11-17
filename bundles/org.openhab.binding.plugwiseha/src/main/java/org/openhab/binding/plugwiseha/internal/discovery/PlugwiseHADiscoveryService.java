@@ -99,7 +99,7 @@ public class PlugwiseHADiscoveryService extends AbstractThingHandlerDiscoverySer
         PlugwiseHAController controller = thingHandler.getController();
 
         if (controller != null) {
-            DomainObjects domainObjects = controller.getDomainObjects();
+            DomainObjects domainObjects = controller.getAndMergeDomainObjects();
 
             if (domainObjects != null) {
                 for (Location location : domainObjects.getLocations().values()) {

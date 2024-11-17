@@ -30,7 +30,6 @@ public class DomainObjects {
     @XStreamImplicit(itemFieldName = "location", keyFieldName = "id")
     private Locations locations = new Locations();
 
-    @SuppressWarnings("unused")
     @XStreamImplicit(itemFieldName = "module", keyFieldName = "id")
     private Modules modules = new Modules();
 
@@ -47,7 +46,9 @@ public class DomainObjects {
     }
 
     public Appliances mergeAppliances(Appliances updatedAppliances) {
-        if (updatedAppliances != null) {
+        if (appliances == null) {
+            this.appliances = updatedAppliances;
+        } else if (updatedAppliances != null) {
             this.appliances.merge(updatedAppliances);
         }
 
@@ -55,7 +56,9 @@ public class DomainObjects {
     }
 
     public Locations mergeLocations(Locations updatedLocations) {
-        if (updatedLocations != null) {
+        if (locations == null) {
+            this.locations = updatedLocations;
+        } else if (updatedLocations != null) {
             this.locations.merge(updatedLocations);
         }
 

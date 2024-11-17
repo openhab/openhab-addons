@@ -38,10 +38,7 @@ public class DateTimeConverter extends AbstractSingleValueConverter {
 
     @Override
     public boolean canConvert(@Nullable @SuppressWarnings("rawtypes") Class type) {
-        if (type == null) {
-            return false;
-        }
-        return ZonedDateTime.class.isAssignableFrom(type);
+        return (type == null) ? false : ZonedDateTime.class.isAssignableFrom(type);
     }
 
     @Override

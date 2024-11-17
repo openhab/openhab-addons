@@ -30,7 +30,6 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("module")
 public class Module extends PlugwiseBaseModel implements PlugwiseComparableDate<Module> {
 
-    @SuppressWarnings("unused")
     @XStreamImplicit(itemFieldName = "service", keyFieldName = "id")
     private Services services;
 
