@@ -120,8 +120,10 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void processAuthenticationResult(boolean authenticated) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                getLocalizedText("bridge.error.site-specific.auth-issue"));
+        if (!authenticated) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    getLocalizedText("bridge.error.site-specific.auth-issue"));
+        }
     }
 
     @Override
