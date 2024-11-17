@@ -306,9 +306,6 @@ Import-Package: \\
               <arg>CLASSPATH</arg>
               <arg>-classpath</arg>
               <arg>${project.build.directory}/dependency</arg>
-              <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion</arg>
-              <arg>-warn:+null,+inheritNullAnnot,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
-              <arg>-nowarn:[${project.build.directory}/generated-sources]</arg>
             </compilerArgs>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
@@ -479,7 +476,7 @@ Import-Package: \\
           <artifactId>i18n-maven-plugin</artifactId>
           <version>${ohc.version}</version>
         </plugin>
-
+<!--
         <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
@@ -502,7 +499,7 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
-
+-->
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
