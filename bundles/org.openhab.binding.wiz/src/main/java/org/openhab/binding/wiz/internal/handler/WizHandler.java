@@ -228,8 +228,8 @@ public class WizHandler extends BaseThingHandler {
                 }
                 break;
             case CHANNEL_MODE:
-                if (command instanceof OnOffType onOffCommand) {
-                    handleFanModeCommand(onOffCommand);
+                if (command instanceof DecimalType decimalCommand) {
+                    handleFanModeCommand(decimalCommand);
                 }
                 break;
             case CHANNEL_SPEED:
@@ -327,10 +327,9 @@ public class WizHandler extends BaseThingHandler {
         mostRecentState.fanRevrs = value;
     }
 
-    private void handleFanModeCommand(OnOffType onOff) {
-        int value = onOff == OnOffType.ON ? 1 : 0;
-        setPilotCommand(new FanModeRequestParam(value));
-        mostRecentState.fanMode = value;
+    private void handleFanModeCommand(DecimalType mode) {
+        setPilotCommand(new FanModeRequestParam(mode.intValue()));
+        mostRecentState.fanMode = mode.intValue();
     }
 
     private void handleIncreaseDecreaseCommand(boolean isIncrease) {
@@ -638,7 +637,7 @@ public class WizHandler extends BaseThingHandler {
         updateFanState(CHANNEL_STATE, receivedParam.fanState == 0 ? OnOffType.OFF : OnOffType.ON);
         updateFanState(CHANNEL_SPEED, new DecimalType(receivedParam.fanSpeed));
         updateFanState(CHANNEL_REVERSE, receivedParam.fanRevrs == 0 ? OnOffType.OFF : OnOffType.ON);
-        updateFanState(CHANNEL_MODE, receivedParam.fanMode == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateFanState(CHANNEL_MODE, new DecimalType(receivedParam.fanMode));
     }
 
     /**

@@ -94,7 +94,7 @@
 		<tags>
 			<tag>Lighting</tag>
 		</tags>
-		<state pattern="String" readOnly="false">
+		<state>
 			<options>
 				<option value="1">Ocean</option>
 				<option value="2">Romance</option>
@@ -161,12 +161,12 @@
 	</channel-type>
 
 	<channel-type id="fan-mode">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Mode</label>
 		<state>
 			<options>
-				<option value="OFF">Normal</option>
-				<option value="ON">Breeze</option>
+				<option value="1">Normal</option>
+				<option value="2">Breeze</option>
 			</options>
 		</state>
 	</channel-type>
