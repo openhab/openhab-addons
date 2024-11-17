@@ -70,6 +70,8 @@
 			<channel id="speed" typeId="fan-speed"/>
 			<channel id="reverse" typeId="fan-reverse"/>
 			<channel id="mode" typeId="fan-mode"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="last-update" typeId="last-update"/>
 		</channels>
 		<config-description-ref uri="thing-type:wiz:device"/>
 	</thing-type>
