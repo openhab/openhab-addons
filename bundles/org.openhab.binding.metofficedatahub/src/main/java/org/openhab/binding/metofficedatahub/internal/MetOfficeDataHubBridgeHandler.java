@@ -123,6 +123,8 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
         if (!authenticated) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     getLocalizedText("bridge.error.site-specific.auth-issue"));
+        } else {
+            processConnected();
         }
     }
 
