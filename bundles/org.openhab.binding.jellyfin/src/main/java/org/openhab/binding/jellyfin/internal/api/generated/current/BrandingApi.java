@@ -1,0 +1,285 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.jellyfin.internal.api.generated.current;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.function.Consumer;
+
+import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
+import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
+import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BrandingOptions;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
+public class BrandingApi {
+    private final HttpClient memberVarHttpClient;
+    private final ObjectMapper memberVarObjectMapper;
+    private final String memberVarBaseUri;
+    private final Consumer<HttpRequest.Builder> memberVarInterceptor;
+    private final Duration memberVarReadTimeout;
+    private final Consumer<HttpResponse<InputStream>> memberVarResponseInterceptor;
+    private final Consumer<HttpResponse<String>> memberVarAsyncResponseInterceptor;
+
+    public BrandingApi() {
+        this(Configuration.getDefaultApiClient());
+    }
+
+    public BrandingApi(ApiClient apiClient) {
+        memberVarHttpClient = apiClient.getHttpClient();
+        memberVarObjectMapper = apiClient.getObjectMapper();
+        memberVarBaseUri = apiClient.getBaseUri();
+        memberVarInterceptor = apiClient.getRequestInterceptor();
+        memberVarReadTimeout = apiClient.getReadTimeout();
+        memberVarResponseInterceptor = apiClient.getResponseInterceptor();
+        memberVarAsyncResponseInterceptor = apiClient.getAsyncResponseInterceptor();
+    }
+
+    protected ApiException getApiException(String operationId, HttpResponse<InputStream> response) throws IOException {
+        String body = response.body() == null ? null : new String(response.body().readAllBytes());
+        String message = formatExceptionMessage(operationId, response.statusCode(), body);
+        return new ApiException(response.statusCode(), message, response.headers(), body);
+    }
+
+    private String formatExceptionMessage(String operationId, int statusCode, String body) {
+        if (body == null || body.isEmpty()) {
+            body = "[no body]";
+        }
+        return operationId + " call failed with: " + statusCode + " - " + body;
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    public String getBrandingCss() throws ApiException {
+        ApiResponse<String> localVarResponse = getBrandingCssWithHttpInfo();
+        return localVarResponse.getData();
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<String> getBrandingCssWithHttpInfo() throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingCssRequestBuilder();
+        try {
+            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+            if (memberVarResponseInterceptor != null) {
+                memberVarResponseInterceptor.accept(localVarResponse);
+            }
+            try {
+                if (localVarResponse.statusCode() / 100 != 2) {
+                    throw getApiException("getBrandingCss", localVarResponse);
+                }
+                if (localVarResponse.body() == null) {
+                    return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                            null);
+                }
+
+                String responseBody = new String(localVarResponse.body().readAllBytes());
+                localVarResponse.body().close();
+
+                return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                        responseBody.isBlank() ? null
+                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
+                                }));
+            } finally {
+            }
+        } catch (IOException e) {
+            throw new ApiException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(e);
+        }
+    }
+
+    private HttpRequest.Builder getBrandingCssRequestBuilder() throws ApiException {
+
+        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+        String localVarPath = "/Branding/Css";
+
+        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+        localVarRequestBuilder.header("Accept",
+                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+        if (memberVarReadTimeout != null) {
+            localVarRequestBuilder.timeout(memberVarReadTimeout);
+        }
+        if (memberVarInterceptor != null) {
+            memberVarInterceptor.accept(localVarRequestBuilder);
+        }
+        return localVarRequestBuilder;
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    public String getBrandingCss2() throws ApiException {
+        ApiResponse<String> localVarResponse = getBrandingCss2WithHttpInfo();
+        return localVarResponse.getData();
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<String> getBrandingCss2WithHttpInfo() throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingCss2RequestBuilder();
+        try {
+            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+            if (memberVarResponseInterceptor != null) {
+                memberVarResponseInterceptor.accept(localVarResponse);
+            }
+            try {
+                if (localVarResponse.statusCode() / 100 != 2) {
+                    throw getApiException("getBrandingCss2", localVarResponse);
+                }
+                if (localVarResponse.body() == null) {
+                    return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                            null);
+                }
+
+                String responseBody = new String(localVarResponse.body().readAllBytes());
+                localVarResponse.body().close();
+
+                return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                        responseBody.isBlank() ? null
+                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
+                                }));
+            } finally {
+            }
+        } catch (IOException e) {
+            throw new ApiException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(e);
+        }
+    }
+
+    private HttpRequest.Builder getBrandingCss2RequestBuilder() throws ApiException {
+
+        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+        String localVarPath = "/Branding/Css.css";
+
+        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+        localVarRequestBuilder.header("Accept",
+                "text/css, application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+        if (memberVarReadTimeout != null) {
+            localVarRequestBuilder.timeout(memberVarReadTimeout);
+        }
+        if (memberVarInterceptor != null) {
+            memberVarInterceptor.accept(localVarRequestBuilder);
+        }
+        return localVarRequestBuilder;
+    }
+
+    /**
+     * Gets branding configuration.
+     * 
+     * @return BrandingOptions
+     * @throws ApiException if fails to make API call
+     */
+    public BrandingOptions getBrandingOptions() throws ApiException {
+        ApiResponse<BrandingOptions> localVarResponse = getBrandingOptionsWithHttpInfo();
+        return localVarResponse.getData();
+    }
+
+    /**
+     * Gets branding configuration.
+     * 
+     * @return ApiResponse&lt;BrandingOptions&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BrandingOptions> getBrandingOptionsWithHttpInfo() throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingOptionsRequestBuilder();
+        try {
+            HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofInputStream());
+            if (memberVarResponseInterceptor != null) {
+                memberVarResponseInterceptor.accept(localVarResponse);
+            }
+            try {
+                if (localVarResponse.statusCode() / 100 != 2) {
+                    throw getApiException("getBrandingOptions", localVarResponse);
+                }
+                if (localVarResponse.body() == null) {
+                    return new ApiResponse<BrandingOptions>(localVarResponse.statusCode(),
+                            localVarResponse.headers().map(), null);
+                }
+
+                String responseBody = new String(localVarResponse.body().readAllBytes());
+                localVarResponse.body().close();
+
+                return new ApiResponse<BrandingOptions>(localVarResponse.statusCode(), localVarResponse.headers().map(),
+                        responseBody.isBlank() ? null
+                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BrandingOptions>() {
+                                }));
+            } finally {
+            }
+        } catch (IOException e) {
+            throw new ApiException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ApiException(e);
+        }
+    }
+
+    private HttpRequest.Builder getBrandingOptionsRequestBuilder() throws ApiException {
+
+        HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
+
+        String localVarPath = "/Branding/Configuration";
+
+        localVarRequestBuilder.uri(URI.create(memberVarBaseUri + localVarPath));
+
+        localVarRequestBuilder.header("Accept",
+                "application/json, application/json; profile=CamelCase, application/json; profile=PascalCase");
+
+        localVarRequestBuilder.method("GET", HttpRequest.BodyPublishers.noBody());
+        if (memberVarReadTimeout != null) {
+            localVarRequestBuilder.timeout(memberVarReadTimeout);
+        }
+        if (memberVarInterceptor != null) {
+            memberVarInterceptor.accept(localVarRequestBuilder);
+        }
+        return localVarRequestBuilder;
+    }
+}
