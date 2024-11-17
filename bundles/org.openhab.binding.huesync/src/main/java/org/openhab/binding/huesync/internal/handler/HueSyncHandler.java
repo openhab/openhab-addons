@@ -39,7 +39,6 @@ import org.openhab.binding.huesync.internal.exceptions.HueSyncApiException;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncRegistrationTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTask;
 import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResult;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -54,6 +53,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncHandler} is responsible for handling commands, which are sent to one of the
@@ -68,7 +68,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private static final String PROPERTY_API_VERSION = "apiVersion";
 
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncHandler.class);
 
     Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
 

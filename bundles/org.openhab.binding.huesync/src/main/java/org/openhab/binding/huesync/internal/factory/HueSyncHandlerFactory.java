@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,6 +32,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncHandlerFactory} is responsible for creating things and
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 public class HueSyncHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncHandlerFactory.class);
 
     @Activate
     public HueSyncHandlerFactory(@Reference final HttpClientFactory httpClientFactory) throws Exception {

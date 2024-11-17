@@ -35,12 +35,12 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -61,7 +61,7 @@ public class HueSyncConnection {
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
     private static final String API = "api/v1";
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncConnection.class);
 
     private final Integer port;
     private final String host;

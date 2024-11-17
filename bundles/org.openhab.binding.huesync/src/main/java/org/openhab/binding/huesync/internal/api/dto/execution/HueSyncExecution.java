@@ -18,9 +18,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.huesync.internal.handler.HueSyncHandler;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @NonNullByDefault
 public class HueSyncExecution {
-    private static final Logger logger = HueSyncLogFactory.getLogger(HueSyncHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(HueSyncExecution.class);
 
     public static final List<String> KNOWN_MODES = Collections
             .unmodifiableList(Arrays.asList("powersave", "passthrough", "video", "game", "music"));

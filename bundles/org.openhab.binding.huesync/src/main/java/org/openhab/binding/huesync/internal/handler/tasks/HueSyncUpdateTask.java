@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Task to handle device information update.
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class HueSyncUpdateTask implements Runnable {
 
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncUpdateTask.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncUpdateTask.class);
 
     private final HueSyncDeviceConnection connection;
     private final HueSyncDevice deviceInfo;

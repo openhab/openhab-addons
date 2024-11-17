@@ -22,7 +22,6 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -36,6 +35,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueSyncDiscoveryParticipant} is responsible for discovering
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 @NonNullByDefault
 @Component(service = MDNSDiscoveryParticipant.class, configurationPid = "mdnsdiscovery.huesync")
 public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncDiscoveryParticipant.class);
 
     /**
      *

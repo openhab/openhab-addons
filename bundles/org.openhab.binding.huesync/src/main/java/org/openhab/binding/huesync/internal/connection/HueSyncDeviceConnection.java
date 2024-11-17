@@ -34,7 +34,6 @@ import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistra
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequest;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
-import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -42,6 +41,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -52,7 +52,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
-    private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
+    private final Logger logger = LoggerFactory.getLogger(HueSyncDeviceConnection.class);
 
     private final HueSyncConnection connection;
 
