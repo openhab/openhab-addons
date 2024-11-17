@@ -97,12 +97,22 @@ Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
         Type temperature-r  : DpId008 "Außentemperatur"              [id=8, type="9.001"]
         Type switch-r       : DpId009 "Status Flamme"                [id=9, type="1.001"]
         Type pressure-r     : DpId013 "Anlagendruck"                 [id=13, type="9.006"]
+        Type temperature-r  : DpId197 "Abgastemperatur"              [id=197, type="9.001"]
+
         Type switch-r       : DpId053 "Störung Systemmodul"          [id=53, type="1.001"]
         Type temperature-r  : DpId054 "Außentemperatur Systemmodul"  [id=54, type="9.001"]
+        Type switch-rw      : DpId194 "1x Warmwasser"                [id=194, type="1.001"]
+
         Type temperature-rw : DpId056 "Sollwert Warmwasser"          [id=56, type="9.001"]
         Type mode-rw        : DpId057 "Betriebsart Heizkreis"        [id=57, type="20.102"]
         Type mode-rw        : DpId058 "Betriebsart Warmwasser"       [id=58, type="20.103"]
         Type temperature-rw : DpId065 "Sollwertverschiebung"         [id=65, type="9.002"]
+
+        Type switch-r       : DpId135 "Solar Störung"                [id=135, type="1.001"]
+        Type temperature-r  : DpId136 "Solar Wassertemperatur"       [id=136, type="9.001"]
+        Type temperature-r  : DpId137 "Solar Kollektortemperatur"    [id=137, type="9.001"]
+        Type switch-r       : DpId141 "Solar Status Pumpe"           [id=141, type="1.001"]
+
         Type switch-rw      : DpId148 "CWL Störung"                  [id=148, type="1.001"]
         Type mode-rw        : DpId149 "CWL Betriebsart"              [id=149, type="20.102"]
         Type percentage-r   : DpId163 "CWL Lüftungsstufe"            [id=163, type="5.001"]
@@ -111,70 +121,144 @@ Thing ism8:device:heater "Wolf Heizung"         [portNumber=12004]
         Type flowrate-r     : DpId166 "CWL Luftdurchsatz Zuluft"     [id=166, type="13.002"]
         Type flowrate-r     : DpId167 "CWL Luftdurchsatz Abluft"     [id=167, type="13.002"]
         Type switch-r       : DpId192 "CWL Filterwarnung"            [id=192, type="1.001"]
+
+        Type switch-r       : DpId176 "CHA Störung"                  [id=176, type="1.001"]
+        Type mode-r         : DpId177 "CHA Betriebsart"              [id=177, type="20.105"]
+        Type power-r        : DpId178 "CHA Heizleistung"             [id=178, type="9.024"]
+        Type power-r        : DpId179 "CHA Kühlleistung"             [id=179, type="9.024"]
+        Type temperature-r  : DpId180 "CHA Kesseltemperatur"         [id=180, type="9.001"]
+        Type temperature-r  : DpId181 "CHA Sammlertemperatur"        [id=181, type="9.001"]
+        Type temperature-r  : DpId182 "CHA Rücklauftemperatur"       [id=182, type="9.001"]
+        Type temperature-r  : DpId183 "CHA Warmwassertemperatur"     [id=183, type="9.001"]
+        Type temperature-r  : DpId184 "CHA Aussentemperatur"         [id=184, type="9.001"]
+        Type switch-r       : DpId185 "CHA Status Heizkreispumpe"    [id=185, type="1.001"]
+        Type switch-r       : DpId186 "CHA Status Zubringerpumpe"    [id=186, type="1.001"]
+        Type switch-r       : DpId187 "CHA 3-Wege-Ventil HZ/WW"      [id=187, type="1.009"]
+        Type switch-r       : DpId188 "CHA 3-Wege-Ventil HZ/K"       [id=188, type="1.009"]
+        Type switch-r       : DpId189 "CHA Status E-Heizung"         [id=189, type="1.001"]
+        Type pressure-r     : DpId190 "CHA Anlagendruck"             [id=190, type="9.006"]
+        Type power-r        : DpId191 "CHA Leistung"                 [id=191, type="9.024"]
     }
 ```
 
 ### ism8.items
 
 ```java
-Switch ISM_HeizungStoerung              "Störung Heizgerät"                      { channel="ism8:device:heater:DpId001" }
-Number ISM_HeizungBetriebsart           "Betriebsart"                            { channel="ism8:device:heater:DpId002" }
-Number ISM_HeizungBrennerleistung       "Brennerleistung [%.1f %%]"              { channel="ism8:device:heater:DpId003" }
-Number ISM_HeizungKesseltemperatur      "Kesseltemperatur [%.1f °C]"             { channel="ism8:device:heater:DpId004" }
-Number ISM_HeizungRuecklauftemperatur   "Rücklauftemperatur [%.1f °C]"           { channel="ism8:device:heater:DpId006" }
-Number ISM_HeizungWarmwassertemperatur  "Warmwassertemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId007" }
-Number ISM_HeizungAussentemperatur      "Außentemperatur [%.1f °C]"              { channel="ism8:device:heater:DpId008" }
-Switch ISM_HeizungStatusFlamme          "Status Flamme"                          { channel="ism8:device:heater:DpId009" }
-Number ISM_HeizungAnlagendruck          "Anlagendruck [%.2f bar]"                { channel="ism8:device:heater:DpId013" }
-Switch ISM_HeizungSysStoerung           "Störung Systemmodul"                    { channel="ism8:device:heater:DpId053" }
-Number ISM_HeizungSysAussentemperatur   "Außentemperatur Systemmodul [%.1f °C]"  { channel="ism8:device:heater:DpId054" }
-Number ISM_HeizungSollwertWarmwasser    "Sollwert Warmwasser [%.1f °C]"          { channel="ism8:device:heater:DpId056" }
-Number ISM_HeizungBetriebsartHeizkreis  "Betriebsart Heizkreis"                  { channel="ism8:device:heater:DpId057" }
-Number ISM_HeizungBetriebsartWarmwasser "Betriebsart Warmwasser"                 { channel="ism8:device:heater:DpId058" }
-Number ISM_HeizungSollwertverschiebung  "Sollwertverschiebung [%.1f °C]"         { channel="ism8:device:heater:DpId065" }
-Switch ISM_LueftungStoerung             "CWL Störung"                            { channel="ism8:device:heater:DpId148" }
-Number ISM_LueftungBetriebsart          "CWL Betriebsart"                        { channel="ism8:device:heater:DpId149" }
-Number ISM_LueftungLueftungsstufe       "CWL Lüftungsstufe [%.1f %%]"            { channel="ism8:device:heater:DpId163" }
-Number ISM_LueftungAblufttemperatur     "CWL Ablufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId164" }
-Number ISM_LueftungZulufttemperatur     "CWL Zulufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId165" }
-Number ISM_LueftungLuftdurchsatzZuluft  "CWL Luftdurchsatz Zuluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId166" }
-Number ISM_LueftungLuftdurchsatzAbluft  "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
-Switch ISM_LueftungFilterwarnung        "CWL Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
+Switch ISM_HeizungStoerung                            "Störung Heizgerät"                      { channel="ism8:device:heater:DpId001" }
+Number ISM_HeizungBetriebsart                         "Betriebsart"                            { channel="ism8:device:heater:DpId002" }
+Number ISM_HeizungBrennerleistung                     "Brennerleistung [%.1f %%]"              { channel="ism8:device:heater:DpId003" }
+Number:Temperature ISM_HeizungKesseltemperatur        "Kesseltemperatur [%.1f °C]"             { channel="ism8:device:heater:DpId004" }
+Number:Temperature ISM_HeizungRuecklauftemperatur     "Rücklauftemperatur [%.1f °C]"           { channel="ism8:device:heater:DpId006" }
+Number:Temperature ISM_HeizungWarmwassertemperatur    "Warmwassertemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId007" }
+Number:Temperature ISM_HeizungAussentemperatur        "Außentemperatur [%.1f °C]"              { channel="ism8:device:heater:DpId008" }
+Switch ISM_HeizungStatusFlamme                        "Status Flamme"                          { channel="ism8:device:heater:DpId009" }
+Number:Pressure ISM_HeizungAnlagendruck               "Anlagendruck [%.2f bar]"                { channel="ism8:device:heater:DpId013" }
+Number:Temperature ISM_HeizungAbgastemperatur         "Abgastemperatur [%.1f °C]"              { channel="ism8:device:heater:DpId197" }
+
+Switch ISM_HeizungSysStoerung                         "Störung Systemmodul"                    { channel="ism8:device:heater:DpId053" }
+Number:Temperature ISM_HeizungSysAussentemperatur     "Außentemperatur Systemmodul [%.1f °C]"  { channel="ism8:device:heater:DpId054" }
+Switch ISM_HeizungSys1xWarmwasser                     "1x Warmwasser"                          { channel="ism8:device:heater:DpId194" }
+
+Number:Temperature ISM_HeizungSollwertWarmwasser      "Sollwert Warmwasser [%.1f °C]"          { channel="ism8:device:heater:DpId056" }
+Number ISM_HeizungBetriebsartHeizkreis                "Betriebsart Heizkreis"                  { channel="ism8:device:heater:DpId057" }
+Number ISM_HeizungBetriebsartWarmwasser               "Betriebsart Warmwasser"                 { channel="ism8:device:heater:DpId058" }
+Number:Temperature ISM_HeizungSollwertverschiebung    "Sollwertverschiebung [%.1f K]"          { channel="ism8:device:heater:DpId065" }
+Switch ISM_LueftungStoerung                           "CWL Störung"                            { channel="ism8:device:heater:DpId148" }
+Number ISM_LueftungBetriebsart                        "CWL Betriebsart"                        { channel="ism8:device:heater:DpId149" }
+Number ISM_LueftungLueftungsstufe                     "CWL Lüftungsstufe [%.1f %%]"            { channel="ism8:device:heater:DpId163" }
+Number:Temperature ISM_LueftungAblufttemperatur       "CWL Ablufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId164" }
+Number:Temperature ISM_LueftungZulufttemperatur       "CWL Zulufttemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId165" }
+Number:VolumetricFlowRate ISM_LueftungDurchsatzZuluft "CWL Luftdurchsatz Zuluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId166" }
+Number:VolumetricFlowRate ISM_LueftungDurchsatzAbluft "CWL Luftdurchsatz Abluft [%.1f m³/h]"   { channel="ism8:device:heater:DpId167" }
+Switch ISM_LueftungFilterwarnung                      "CWL Filterwarnung"                      { channel="ism8:device:heater:DpId192" }
+
+Contact ISM_SolarStoerung                             "Solar Störung"                          { channel="ism8:device:heater:DpId135" }
+Number:Temperature ISM_SolarWassertemperatur          "Solar Wassertemperatur [%.1f °C]"       { channel="ism8:device:heater:DpId136" }
+Number:Temperature ISM_SolarKollektortemperatur       "Solar Kollektortemperatur [%.1f °C]"    { channel="ism8:device:heater:DpId137" }
+Contact ISM_SolarStatusPumpe                          "Solar Status Pumpe"                     { channel="ism8:device:heater:DpId141" }
+
+Switch ISM_HeizungChaStoerung                         "CHA Störung"                            { channel="ism8:device:heater:DpId176" }
+Number ISM_HeizungChaBetriebsart                      "Betriebsart [MAP(HVACContrMode.map):%s]"{ channel="ism8:device:heater:DpId177" }
+Number:Power ISM_HeizungChaLeistungsaufnahme          "CHA Leistungsaufnahme [%.1f kW]"        { channel="ism8:device:heater:DpId191" }
+Number:Power ISM_HeizungChaHeizleistung               "CHA Heizleistung [%.1f kW]"             { channel="ism8:device:heater:DpId178" }
+Number:Power ISM_HeizungChaKuehlleistung              "CHA Kühlleistung [%.1f kW]"             { channel="ism8:device:heater:DpId179" }
+Number:Temperature ISM_HeizungChaKesseltemperatur     "CHA Kesseltemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId180" }
+Number:Temperature ISM_HeizungChaKesselsolltemperatur "CHA KesselSOLLtemperatur [%.1f °C]"     { channel="ism8:device:heater:DpId364" }
+Number:Temperature ISM_HeizungChaSammlertemperatur    "CHA Sammlertemperatur [%.1f °C]"        { channel="ism8:device:heater:DpId181" }
+Number:Temperature ISM_HeizungChaRuecklauftemperatur  "CHA Rücklauftemperatur [%.1f °C]"       { channel="ism8:device:heater:DpId182" }
+Number:Temperature ISM_HeizungChaWarmwassertemperatur "CHA Warmwassertemperatur [%.1f °C]"     { channel="ism8:device:heater:DpId183" }
+Number:Temperature ISM_HeizungChaAussentemperatur     "CHA Aussentemperatur [%.1f °C]"         { channel="ism8:device:heater:DpId184" }
+Switch ISM_HeizungChaStatusHKPumpe                    "CHA Status HK Pumpe"                    { channel="ism8:device:heater:DpId185" }
+Switch ISM_HeizungChaStatusZPumpe                     "CHA Status Zubringer Pumpe"             { channel="ism8:device:heater:DpId186" }
+Switch ISM_HeizungChaStatusVentilHZWW                 "CHA Status Ventil HZ/WW"                { channel="ism8:device:heater:DpId187" }
+Switch ISM_HeizungChaStatusVentilHZK                  "CHA Status Ventil HZ/K"                 { channel="ism8:device:heater:DpId188" }
+Switch ISM_HeizungChaStatusEHeizung                   "CHA Status E-Heizung"                   { channel="ism8:device:heater:DpId189" }
+Number:Pressure ISM_HeizungChaAnlagendruck            "CHA Anlagendruck [%.2f bar]"            { channel="ism8:device:heater:DpId190" }
 ```
 
-### demo.sitemap
+### ism8.sitemap
 
 ```perl
-Frame label="Heizung"
+sitemap ism8 label="Wolf ism8"
 {
-    Text item=ISM_HeizungSysStoerung                icon="siren"
-    Text item=ISM_HeizungStoerung                   icon="siren"
-    Text item=ISM_HeizungAussentemperatur           icon="temperature"
-    Text item=ISM_HeizungBetriebsart                icon="radiator"          label="Modus [MAP(HVACContrMode.map):%s]"
-    Text item=ISM_HeizungAnlagendruck               icon="pressure"
-    Text item=ISM_HeizungBrennerleistung            icon="chart"
-    Selection item=ISM_HeizungBetriebsartHeizkreis  icon="radiator"          mappings=[0="Auto", 1="Komfort", 2="Stand By", 3="Eco", 4="Frost Schutz"]
-    Text item=ISM_HeizungStatusFlamme               icon="fire"
-    Text item=ISM_HeizungKesseltemperatur           icon="temperature"
-    Text item=ISM_HeizungRuecklauftemperatur        icon="temperature_cold"
-    Setpoint item=ISM_HeizungSollwertverschiebung   icon="radiator"          minValue=-5 maxValue=5 step=1
-}
-Frame label="Wasser"
-{
-    Text item=ISM_HeizungWarmwassertemperatur       icon="temperature_hot"
-    Setpoint item=ISM_HeizungSollwertWarmwasser     icon="temperature"       minValue=40 maxValue=60 step=1
-    Selection item=ISM_HeizungBetriebsartWarmwasser icon="faucet"            mappings=[0="Auto", 1="Legionellen Schutz", 2="Normal", 3="Eco", 4="Frost Schutz"]
-}
-Frame label="Lüftung"
-{
-    Text item=ISM_LueftungStoerung                  icon="siren"
-    Selection item=ISM_LueftungBetriebsart          icon="fan"                mappings=[0="Auto", 1="Minimum", 2="Reduziert", 3="Normal", 4="Intensiv"]
-    Text item=ISM_LueftungLueftungsstufe            icon="qualityofservice"
-    Text item=ISM_LueftungFilterwarnung             icon="siren"
-    Text item=ISM_LueftungAblufttemperatur          icon="temperature_hot"
-    Text item=ISM_LueftungZulufttemperatur          icon="temperature_cold"
-    Text item=ISM_LueftungLuftdurchsatzZuluft       icon="flow"
-    Text item=ISM_LueftungLuftdurchsatzAbluft       icon="flow"
+    Frame label="Heizung"
+    {
+        Text item=ISM_HeizungSysStoerung                icon="siren"
+        Text item=ISM_HeizungStoerung                   icon="siren"
+        Text item=ISM_HeizungAussentemperatur           icon="temperature"
+        Text item=ISM_HeizungBetriebsart                icon="radiator"          label="Modus [MAP(HVACContrMode.map):%s]"
+        Text item=ISM_HeizungAnlagendruck               icon="pressure"
+        Text item=ISM_HeizungBrennerleistung            icon="chart"
+        Selection item=ISM_HeizungBetriebsartHeizkreis  icon="radiator"          mappings=[0="Auto", 1="Komfort", 2="Stand By", 3="Eco", 4="Frost Schutz"]
+        Text item=ISM_HeizungStatusFlamme               icon="fire"
+        Text item=ISM_HeizungKesseltemperatur           icon="temperature"
+        Text item=ISM_HeizungRuecklauftemperatur        icon="temperature_cold"
+        Text item=ISM_HeizungAbgastemperatur            icon="temperature"
+        Setpoint item=ISM_HeizungSollwertverschiebung   icon="radiator"          minValue=-5 maxValue=5 step=1
+    }
+    Frame label="Wasser"
+    {
+        Text item=ISM_HeizungWarmwassertemperatur       icon="temperature_hot"
+        Setpoint item=ISM_HeizungSollwertWarmwasser     icon="temperature"       minValue=40 maxValue=60 step=1
+        Selection item=ISM_HeizungBetriebsartWarmwasser icon="faucet"            mappings=[0="Auto", 1="Legionellen Schutz", 2="Normal", 3="Eco", 4="Frost Schutz"]
+        Switch item=ISM_HeizungSys1xWarmwasser
+    }
+    Frame label="Solar"
+    {
+    Text item=ISM_SolarStoerung                      icon="siren"
+    Text item=ISM_SolarWassertemperatur              icon="cistern"
+    Text item=ISM_SolarKollektortemperatur           icon="solarplant"
+    Text item=ISM_SolarStatusPumpe                   icon="switch"
+    }
+    Frame label="Lüftung"
+    {
+        Text item=ISM_LueftungStoerung                  icon="siren"
+        Selection item=ISM_LueftungBetriebsart          icon="fan"                mappings=[0="Auto", 1="Minimum", 2="Reduziert", 3="Normal", 4="Intensiv"]
+        Text item=ISM_LueftungLueftungsstufe            icon="qualityofservice"
+        Text item=ISM_LueftungFilterwarnung             icon="siren"
+        Text item=ISM_LueftungAblufttemperatur          icon="temperature_hot"
+        Text item=ISM_LueftungZulufttemperatur          icon="temperature_cold"
+        Text item=ISM_LueftungDurchsatzZuluft           icon="flow"
+        Text item=ISM_LueftungDurchsatzAbluft           icon="flow"
+    }
+    Frame label="Wärmepumpe" {
+        Text item=ISM_HeizungChaStoerung                icon="siren"
+        Text item=ISM_HeizungChaBetriebsart             icon="radiator"
+        Text item=ISM_HeizungChaLeistungsaufnahme       icon="energy"
+        Text item=ISM_HeizungChaHeizleistung            icon="fire"
+        Text item=ISM_HeizungChaKuehlleistung           icon="fan"
+        Text item=ISM_HeizungChaKesseltemperatur        icon="temperature"
+        Text item=ISM_HeizungChaKesselsolltemperatur    icon="temperature"
+        Text item=ISM_HeizungChaRuecklauftemperatur     icon="temperature_cold"
+        Text item=ISM_HeizungChaWarmwassertemperatur    icon="temperature"
+        Text item=ISM_HeizungChaAussentemperatur        icon="temperature"
+        Text item=ISM_HeizungChaStatusHKPumpe           icon="siren"
+        Text item=ISM_HeizungChaStatusZPumpe            icon="siren"
+        Text item=ISM_HeizungChaStatusVentilHZWW        icon="siren"
+        Text item=ISM_HeizungChaStatusVentilHZK         icon="siren"
+        Text item=ISM_HeizungChaStatusEHeizung          icon="siren"
+        Text item=ISM_HeizungChaAnlagendruck            icon="pressure"
+    }
 }
 ```
 
