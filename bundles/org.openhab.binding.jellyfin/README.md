@@ -1,45 +1,60 @@
 # Jellyfin Binding
 
 This is the binding for [Jellyfin](https://jellyfin.org), the volunteer built media solution that puts you in control of your media.
-This binding allows you to connect to Jellyfin clients that supports remote control, it's built on top of the official Jellyfin Kotlin SDK.
-It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10.8.13`.
+This binding allows you to interact with Jellyfin clients that supports remote control.
+It is compatible and tested with Jellyfin servers from version `10.10.7`.
+Earlier versions use a different API and are not supported.
+
+## Binding - Configuration
+
+Parameters to fine-tune server discovery.
+For most users the default configuration will work.
+
+| Parameter | Description                                        | Value      |
+| --------- | -------------------------------------------------- | ---------- |
+| Port      | Port used to query servers on local network(s)     | 0 - 65535  |
+| Timeout   | Maximum amount of time to wait for a response [ms] | 500 - 5000 |
 
 ## Discovery
 
-To discover clients, you must first configure a server (bridge).
-After that, device discovery will detect controllable clients.
+Servers can be discovered using a local network broadcast.
+This discovery needs to be triggered manually and is designed for local networks.
+Broadcasts typically do not traverse subnets or VLANs without specific network configurations.
+If your Jellyfin servers are on different subnets, auto-discovery will likely not work.
+In this case you need to configure the server manually using its IP address or hostname.
+
+Once a Jellyfin server bridge has been added, clients will be detected automatically.
 
 ## Thing Types
 
 | ThingTypeID     | Description                           |
-|-----------------|---------------------------------------|
+| --------------- | ------------------------------------- |
 | server (bridge) | Jellyfin server instance              |
 | client          | Jellyfin controllable client instance |
 
 ## Authentication
 
-To allow the server thing to go online, you must provide valid credentials (`userId` and `token`) for the user that the biding will use to interact with the server.
+To allow the server thing to go online, you must provide a valid access token for the user that the binding will use to interact with the server.
 Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
-In order to assist you with this process the binding expose a simple login form you can access on `<local openHAB server url>/jellyfin/<server thing id>` (example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
+In order to assist you with this process the binding exposes a simple login form you can access on `<local openHAB server url>/jellyfin/<server thing id>` (example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
 
 ## Server Thing Configuration
 
-| Config                    | Type    | Description                                                                                  |
-|---------------------------|---------|----------------------------------------------------------------------------------------------|
-| hostname                  | Text    | Hostname or IP address of the server (required)                                              |
-| port                      | Integer | Port of the server (required)                                                                |
-| ssl                       | Boolean | Connect through https (required)                                                             |
-| path                      | Text    | Base path of the server                                                                      |
-| refreshSeconds            | Integer | Interval to pull devices state from the server                                               |
-| clientActiveWithInSeconds | Integer | Amount of seconds allowed since the last client activity to assert it's online (0 disabled)  |
-| userId                    | Text    | The user id                                                                                  |
-| token                     | Text    | The user access token                                                                        |
+| Config                    | Type    | Description                                                                                 |
+| ------------------------- | ------- | ------------------------------------------------------------------------------------------- |
+| hostname                  | Text    | Hostname or IP address of the server (required)                                             |
+| port                      | Integer | Port of the server (required)                                                               |
+| ssl                       | Boolean | Connect through https (required)                                                            |
+| path                      | Text    | Base path of the server                                                                     |
+| refreshSeconds            | Integer | Interval to pull devices state from the server                                              |
+| clientActiveWithInSeconds | Integer | Amount of seconds allowed since the last client activity to assert it's online (0 disabled) |
+| token                     | Text    | The user access token                                                                       |
 
 ## Channels
 
 | channel                    | Type   | Description                                                                                                     |
-|----------------------------|--------|-----------------------------------------------------------------------------------------------------------------|
+| -------------------------- | ------ | --------------------------------------------------------------------------------------------------------------- |
 | send-notification          | String | Display message in client                                                                                       |
 | media-control              | Player | Control media playback                                                                                          |
 | playing-item-id            | String | Id of the item currently playing (readonly)                                                                     |
