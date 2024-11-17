@@ -24,15 +24,12 @@ public class ActuatorFunctionalityThermostat extends ActuatorFunctionality {
     @SuppressWarnings("unused")
     private Double setpoint;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("preheating_allowed")
     private Boolean preheatingAllowed;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("cooling_allowed")
     private Boolean coolingAllowed;
 
-    @SuppressWarnings("unused")
     @XStreamAlias("regulation_control")
     private String regulationControl;
 
