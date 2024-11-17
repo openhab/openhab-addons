@@ -75,7 +75,7 @@ public final class Ism8DomainMap {
         } else if (value instanceof Boolean b) {
             // DecimalType is compatible with Switch and Contact items, OH mapping is 0-off-closed and 1-on-open;
             // note that this is opposite to definition of KNX DPT 1.009
-            return ((boolean) value) ? DecimalType.valueOf("1") : DecimalType.valueOf("0");
+            return b ? DecimalType.valueOf("1") : DecimalType.valueOf("0");
         } else if (value instanceof Byte) {
             return new QuantityType<Dimensionless>((byte) value, Units.ONE);
         } else if (value instanceof Integer) {
