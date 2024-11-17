@@ -1,0 +1,14 @@
+{
+  "library": "native",
+  "developerOrganization": "openHAB project",
+  "developerOrganizationUrl": "https://www.openhab.org",
+  "dateLibrary": "java8",
+  "documentationProvider": "none",
+  "ignoreAnyOfInEnum": true,
+  "hideGenerationTimestamp": true,
+  "generateBuilders": true,
+  "openApiNullable": true,
+  "developerName": "Patrik Gfeller",
+  "developerEmail": "patrik.gfeller@gmail.com",
+  "templateDir": "src/main/java/org/openhab/binding/jellyfin/internal/api/templates"
+}
