@@ -38,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.action.DynamicsActions;
 import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.api.dto.clip2.ColorTemperature;
 import org.openhab.binding.hue.internal.api.dto.clip2.ColorXy;
 import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
@@ -945,6 +946,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             case LIGHT:
                 if (fullUpdate) {
                     updateEffectChannel(resource);
+                    updateColorTemperatureAbsoluteChannel(resource);
                 }
                 updateState(CHANNEL_2_COLOR_TEMP_PERCENT, resource.getColorTemperaturePercentState(), fullUpdate);
                 updateState(CHANNEL_2_COLOR_TEMP_ABSOLUTE, resource.getColorTemperatureAbsoluteState(), fullUpdate);
@@ -1111,6 +1113,24 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (!stateOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
+        }
+    }
+
+    /**
+     * Process the incoming Resource to initialize the colour temperature absolute channel's state description based on
+     * the minimum and maximum values supported by the lamp's Mirek schema.
+     *
+     * @param resource a Resource possibly containing a color temperature element and respective Mirek schema element.
+     */
+    private void updateColorTemperatureAbsoluteChannel(Resource resource) {
+        ColorTemperature colorTemperature = resource.getColorTemperature();
+        if (colorTemperature != null) {
+            MirekSchema mirekSchema = colorTemperature.getMirekSchema();
+            if (mirekSchema != null) {
+                stateDescriptionProvider.setMinMaxKelvin(new ChannelUID(thing.getUID(), CHANNEL_2_COLOR_TEMP_ABSOLUTE),
+                        1000000 / mirekSchema.getMirekMaximum(), 1000000 / mirekSchema.getMirekMinimum());
+                logger.debug("{} -> updateColorTempAbsChannel() done", resource.getId());
+            }
         }
     }
 

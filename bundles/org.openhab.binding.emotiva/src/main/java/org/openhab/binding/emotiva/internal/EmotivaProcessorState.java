@@ -20,6 +20,7 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlComman
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.band_fm;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaControlCommands.channel_1;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class EmotivaProcessorState {
     private EnumMap<EmotivaControlCommands, String> sourcesMainZone;
     private EnumMap<EmotivaControlCommands, String> sourcesZone2;
     private final EnumMap<EmotivaSubscriptionTags, String> modes;
+    private Instant lastSeen = Instant.EPOCH;
 
     private EnumMap<EmotivaControlCommands, String> tunerChannels = new EnumMap<>(
             Map.ofEntries(Map.entry(channel_1, channel_1.getLabel()),
@@ -145,5 +147,13 @@ public class EmotivaProcessorState {
 
     public void removeChannel(String channel) {
         channelStateMap.remove(channel);
+    }
+
+    public void updateLastSeen(Instant instant) {
+        lastSeen = instant;
+    }
+
+    public Instant getLastSeen() {
+        return lastSeen;
     }
 }

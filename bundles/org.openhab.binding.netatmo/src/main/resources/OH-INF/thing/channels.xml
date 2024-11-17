@@ -135,7 +135,8 @@
 		<label>Setpoint Duration</label>
 		<description>Default duration of manual setpoint changes.</description>
 		<category>Time</category>
-		<state pattern="%d %unit%" min="5" max="720" step="5"/>
+		<state pattern="%d %unit%" min="5" max="720" step="5" readOnly="true"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="floodlight-mode">

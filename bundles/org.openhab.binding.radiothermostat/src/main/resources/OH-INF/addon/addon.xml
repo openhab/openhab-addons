@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Radio Thermostat Binding</name>
-	<description>Controls the RadioThermostat model CT30, CT50 or CT80 via the built-in WIFI module</description>
+	<description>Controls the Radio Thermostat model CT30, CT50 or CT80 via the built-in WIFI module</description>
 	<connection>local</connection>
 
 	<discovery-methods>

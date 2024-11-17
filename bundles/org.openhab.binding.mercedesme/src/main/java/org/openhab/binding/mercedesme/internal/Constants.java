@@ -115,6 +115,7 @@ public class Constants {
     public static final String MB_KEY_DOORSTATUSFRONTLEFT = "doorstatusfrontleft";
     public static final String MB_KEY_DOORSTATUSFRONTRIGHT = "doorstatusfrontright";
     public static final String MB_KEY_TANKLEVELPERCENT = "tanklevelpercent";
+    public static final String MB_KEY_ADBLUELEVELPERCENT = "tankLevelAdBlue";
     public static final String MB_KEY_SOC = "soc";
     public static final String MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP = "tirePressMeasTimestamp";
     public static final String MB_KEY_ENDOFCHARGETIME = "endofchargetime";
@@ -201,6 +202,7 @@ public class Constants {
     public static final String OH_CHANNEL_COUPLER_AC = "coupler-ac";
     public static final String OH_CHANNEL_CHARGE_FLAP = "charge-flap";
     public static final String OH_CHANNEL_FUEL_LEVEL = "fuel-level";
+    public static final String OH_CHANNEL_ADBLUE_LEVEL = "adblue-level";
     public static final String OH_CHANNEL_RANGE_HYBRID = "range-hybrid";
     public static final String OH_CHANNEL_RANGE_FUEL = "range-fuel";
     public static final String OH_CHANNEL_RANGE_ELECTRIC = "range-electric";

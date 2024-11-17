@@ -65,6 +65,11 @@ public abstract class AbstractChannelConfiguration {
      */
     protected @Nullable List<Availability> availability;
 
+    @SerializedName("json_attributes_template")
+    protected @Nullable String jsonAttributesTemplate;
+    @SerializedName("json_attributes_topic")
+    protected @Nullable String jsonAttributesTopic;
+
     @SerializedName(value = "~")
     protected String parentTopic = "";
 
@@ -195,6 +200,16 @@ public abstract class AbstractChannelConfiguration {
 
     public AvailabilityMode getAvailabilityMode() {
         return availabilityMode;
+    }
+
+    @Nullable
+    public String getJsonAttributesTemplate() {
+        return jsonAttributesTemplate;
+    }
+
+    @Nullable
+    public String getJsonAttributesTopic() {
+        return jsonAttributesTopic;
     }
 
     /**

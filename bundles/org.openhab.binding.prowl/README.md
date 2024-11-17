@@ -10,7 +10,8 @@ The binding does not require any manual configuration on the binding level.
 
 ## Thing Configuration
 
-This binding has only one thing called _Broker_. If you want to use this binding, just add a broker instance and configure the API key, which you can generate on the Prowl website.
+This binding has only one thing called _Broker_.
+If you want to use this binding, just add a broker instance and configure the API key, which you can generate on the Prowl website.
 You can also modify the _application_ property, which identifies the originator of these push messages.
 If you want to have specific refresh time for the remaining free push messages channel, you can edit the _refresh_ property.
 Anyway beware - every check consumes one free push message you can send in an hour.

@@ -132,22 +132,8 @@ The controller thing has the following parameters:
 **Important note on the topic of IPV6 ip addresses:**
 
 With firmware version 8.5.2 or newer, panels may change between being OFFLINE and ONLINE.
-This is due to the fact that if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices.
-It is therefore recommended to disable IPv6 on the openHAB server.
-
-This can e.g. be achieved on openHABian the following way:
-
-```shell
-sudo nano /etc/sysctl.conf`
-```
-
-Add the following at the bottom of the file:
-
-```ini
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-```
+This is because if they are discovered with IPv6 addresses, the binding is not able to correctly send API requests to the devices which leads to an unstable behaviour.
+To avoid this, the binding will only discover devices based on their IPv4 address.
 
 Reboot your server after the change.
 

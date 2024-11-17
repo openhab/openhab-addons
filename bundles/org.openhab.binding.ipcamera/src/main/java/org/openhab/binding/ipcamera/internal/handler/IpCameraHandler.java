@@ -61,7 +61,6 @@ import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProv
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.ReolinkHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
-import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection.RequestType;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.library.types.DecimalType;
@@ -1393,6 +1392,16 @@ public class IpCameraHandler extends BaseThingHandler {
                 handle.cameraOnline(getThing().getUID().getId());
             }
         }
+        if (thing.getThingTypeUID().getId().equals(REOLINK_THING) && cameraConfig.useToken
+                && authenticationJob == null) {
+            logger.debug("Token thread for REOLINK was stopped, restarting it now.");
+            authenticationJob = threadPool.scheduleWithFixedDelay(this::getReolinkToken, 0, 45, TimeUnit.MINUTES);
+        }
+        // Ask camera and update openHAB controls to match cameras settings
+        List<org.openhab.core.thing.Channel> channels = thing.getChannels();
+        for (org.openhab.core.thing.Channel channel : channels) {
+            this.handleCommand(channel.getUID(), RefreshType.REFRESH);
+        }
     }
 
     void snapshotIsFfmpeg() {
@@ -1567,12 +1576,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 checkCameraConnection();
                 break;
             case ONVIF_THING:
-                onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
-                if (onvifCamera.pullMessageRequests.intValue() == 0) {
-                    logger.info("The alarm stream was not running for ONVIF camera {}, re-starting it now",
-                            cameraConfig.getIp());
-                    onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
-                }
+                onvifCamera.checkAndRenewEventSubscription();
                 break;
             case INSTAR_THING:
                 checkCameraConnection();
@@ -1599,12 +1603,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     sendHttpGET("/api.cgi?cmd=GetAiState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
                     sendHttpGET("/api.cgi?cmd=GetMdState&channel=" + cameraConfig.getNvrChannel() + reolinkAuth);
                 } else {
-                    onvifCamera.sendOnvifRequest(RequestType.Renew, onvifCamera.subscriptionXAddr);
-                    if (onvifCamera.pullMessageRequests.intValue() == 0) {
-                        logger.debug("The alarm stream was not running for Reolink camera {}, re-starting it now",
-                                cameraConfig.getIp());
-                        onvifCamera.sendOnvifRequest(RequestType.PullMessages, onvifCamera.subscriptionXAddr);
-                    }
+                    onvifCamera.checkAndRenewEventSubscription();
                 }
                 break;
             case DAHUA_THING:
@@ -1752,6 +1751,10 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (mjpegUri.isEmpty()) {
                     mjpegUri = "rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
                             + (cameraConfig.getNvrChannel() + 1) + "_sub";
+                }
+                if (cameraConfig.getAlarmInputUrl().isEmpty()) {
+                    cameraConfig.setAlarmInputUrl("rtsp://" + cameraConfig.getIp() + ":554/h264Preview_0"
+                            + (cameraConfig.getNvrChannel() + 1) + "_sub");
                 }
                 break;
         }

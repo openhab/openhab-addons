@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.radiothermostat</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: RadioThermostat Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Radio Thermostat Binding</name>
 
 </project>
