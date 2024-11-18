@@ -207,7 +207,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
             logger.debug("The color map is {}", map.toString());
             iconProvider.setColorMap(map);
         } catch (AirParifException e) {
-            logger.warn("Error reading ColorMap: {]", e.getMessage());
+            logger.warn("Error reading ColorMap: {}", e.getMessage());
         }
 
         ThingUID thingUID = thing.getUID();
