@@ -255,6 +255,9 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device</label>
 		<description>Smart home device connected to Alexa</description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text" required="true">
@@ -269,6 +272,9 @@
 		</supported-bridge-type-refs>
 		<label>Smart Home Device Group</label>
 		<description>Group of smart home devices in your amazon account</description>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text" required="true">
