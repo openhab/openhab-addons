@@ -90,12 +90,15 @@ import org.slf4j.LoggerFactory;
 public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerUtils {
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    private static final String AQ_JOB = "Air Quality Bulletin";
+    private static final String POLLENS_JOB = "Pollens Update";
+    private static final String EPISODE_JOB = "Episode";
 
     private final Logger logger = LoggerFactory.getLogger(AirParifBridgeHandler.class);
+    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
     private final AirParifDeserializer deserializer;
     private final AirParifIconProvider iconProvider;
     private final HttpClient httpClient;
-    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
     private BridgeConfiguration config = new BridgeConfiguration();
     private @Nullable PollensResponse pollens;
@@ -173,7 +176,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("The AirParif bridge does not handles commands");
+        logger.debug("The AirParif bridge does not handle commands");
     }
 
     private void initiateConnexion() {
@@ -209,11 +212,10 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
 
         ThingUID thingUID = thing.getUID();
 
-        schedule("Pollens Update", () -> updatePollens(new ChannelGroupUID(thingUID, GROUP_POLLENS)),
-                Duration.ofSeconds(1));
-        schedule("Air Quality Bulletin", () -> updateDailyAQBulletin(new ChannelGroupUID(thingUID, GROUP_AQ_BULLETIN),
+        schedule(POLLENS_JOB, () -> updatePollens(new ChannelGroupUID(thingUID, GROUP_POLLENS)), Duration.ofSeconds(1));
+        schedule(AQ_JOB, () -> updateDailyAQBulletin(new ChannelGroupUID(thingUID, GROUP_AQ_BULLETIN),
                 new ChannelGroupUID(thingUID, GROUP_AQ_BULLETIN_TOMORROW)), Duration.ofSeconds(2));
-        schedule("Episode", () -> updateEpisode(new ChannelGroupUID(thingUID, GROUP_DAILY)), Duration.ofSeconds(3));
+        schedule(EPISODE_JOB, () -> updateEpisode(new ChannelGroupUID(thingUID, GROUP_DAILY)), Duration.ofSeconds(3));
     }
 
     private void updatePollens(ChannelGroupUID pollensGroupUID) {
@@ -235,7 +237,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         long delay = localPollens.getValidityDuration().getSeconds();
         // if delay is null, update in 3600 seconds
         delay += delay == 0 ? 3600 : 60;
-        schedule("Pollens Update", () -> updatePollens(pollensGroupUID), Duration.ofSeconds(delay));
+        schedule(POLLENS_JOB, () -> updatePollens(pollensGroupUID), Duration.ofSeconds(delay));
 
         // Send pollens information to childs
         getThing().getThings().stream().map(Thing::getHandler).filter(LocationHandler.class::isInstance)
@@ -269,7 +271,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
 
         ZonedDateTime tomorrowMorning = ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1);
         logger.debug("Rescheduling daily air quality bulletin job tomorrow morning");
-        schedule("Air Quality Bulletin", () -> updateDailyAQBulletin(todayGroupUID, tomorrowGroupUID),
+        schedule(AQ_JOB, () -> updateDailyAQBulletin(todayGroupUID, tomorrowGroupUID),
                 Duration.between(ZonedDateTime.now(), tomorrowMorning));
     }
 
@@ -292,7 +294,8 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         // });
 
         ZonedDateTime tomorrowMorning = ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1);
-        schedule("Episode", () -> updateEpisode(dailyGroupUID), Duration.between(ZonedDateTime.now(), tomorrowMorning));
+        schedule(EPISODE_JOB, () -> updateEpisode(dailyGroupUID),
+                Duration.between(ZonedDateTime.now(), tomorrowMorning));
     }
 
     public @Nullable Route getConcentrations(String location) {

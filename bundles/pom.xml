@@ -48,6 +48,7 @@
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
     <module>org.openhab.binding.airgradient</module>
+    <module>org.openhab.binding.airparif</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
