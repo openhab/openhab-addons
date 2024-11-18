@@ -13,6 +13,7 @@
 package org.openhab.binding.airparif.internal.api;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -41,5 +42,10 @@ public enum PollenAlertLevel {
     PollenAlertLevel(int riskLevel, String color) {
         this.riskLevel = riskLevel;
         this.color = color;
+    }
+
+    public static PollenAlertLevel valueOf(int ordinal) {
+        return Objects
+                .requireNonNull(AS_SET.stream().filter(pal -> pal.riskLevel == ordinal).findFirst().orElse(UNKNOWN));
     }
 }

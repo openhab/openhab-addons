@@ -124,11 +124,11 @@ public class AirParifDto {
         }
 
         private Set<ZonedDateTime> getValidities() {
-            Set<ZonedDateTime> local;
+            final Set<ZonedDateTime> local;
             if (validities != null) {
                 local = validities;
             } else {
-                local = new TreeSet<>();
+                local = new TreeSet<ZonedDateTime>();
                 getData().ifPresent(pollens -> {
                     Matcher matcher = PATTERN.matcher(pollens.periode);
                     while (matcher.find()) {
