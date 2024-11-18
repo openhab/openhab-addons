@@ -317,4 +317,14 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="dirigera:gateway">
+		<instruction-set targetVersion="1">
+			<add-channel id="location">
+				<type>system.location</type>
+				<label>Home Location</label>
+				<description>Location in lat.,lon. coordinates</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

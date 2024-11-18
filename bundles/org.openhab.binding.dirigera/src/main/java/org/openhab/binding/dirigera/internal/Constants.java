@@ -128,9 +128,6 @@ public class Constants {
     public static final String DEVICE_TYPE_SOUND_CONTROLLER = "soundController";
     public static final String DEVICE_TYPE_SHORTCUT_CONTROLLER = "shortcutController";
 
-    // Gateway channels
-    public static final String CHANNEL_STATISTICS = "statistics";
-
     // Generic channels
     public static final String CHANNEL_CUSTOM_NAME = "custom-name";
     public static final String CHANNEL_LINKS = "links";
@@ -144,9 +141,11 @@ public class Constants {
     public static final String CHANNEL_JSON = "json";
 
     // Gateway channels
+    public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
     public static final String CHANNEL_PAIRING = "pairing";
+    public static final String CHANNEL_STATISTICS = "statistics";
 
     // Light channels
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "brightness";
