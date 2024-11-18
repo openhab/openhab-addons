@@ -55,10 +55,12 @@ import org.openhab.binding.dirigera.internal.model.DirigeraModel;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -94,6 +96,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final DirigeraDiscoveryManager discoveryManager;
     private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timeZoneProvider;
+    private final LocationProvider locationProvider;
     private final BundleContext bundleContext;
 
     private Optional<Websocket> websocket = Optional.empty();
@@ -122,10 +125,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     public DirigeraHandler(Bridge bridge, HttpClient insecureClient, Storage<String> bindingStorage,
             DirigeraDiscoveryManager discoveryManager, TimeZoneProvider timeZoneProvider,
-            DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
+            LocationProvider locationProvider, DirigeraCommandProvider commandProvider, BundleContext bundleContext) {
         super(bridge);
         this.discoveryManager = discoveryManager;
         this.timeZoneProvider = timeZoneProvider;
+        this.locationProvider = locationProvider;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
@@ -150,6 +154,29 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             JSONObject permissionAttributes = new JSONObject();
             permissionAttributes.put(PROPERTY_PERMIT_JOIN, OnOffType.ON.equals(command));
             api().sendAttributes(config.id, permissionAttributes);
+        } else if (CHANNEL_LOCATION.equals(channel)) {
+            PointType coordinatesPoint = null;
+            if (command instanceof PointType point) {
+                coordinatesPoint = point;
+            } else if (command instanceof StringType string) {
+                if (string.toFullString().isBlank()) {
+                    String nullCoordinates = model().getTemplate(Model.TEMPLATE_NULL_COORDINATES);
+                    api().sendPatch(config.id, new JSONObject(nullCoordinates));
+                } else {
+                    try {
+                        coordinatesPoint = new PointType(string.toFullString());
+                    } catch (IllegalArgumentException exception) {
+                        logger.info("DIRIGERA HANDLER wrong home location format {} : {}", string,
+                                exception.getMessage());
+                    }
+                }
+            }
+            if (coordinatesPoint != null) {
+                String coordinatesTemplate = model().getTemplate(Model.TEMPLATE_COORDINATES);
+                String coordinates = String.format(coordinatesTemplate, coordinatesPoint.getLatitude().toFullString(),
+                        coordinatesPoint.getLongitude().toFullString());
+                api().sendPatch(config.id, new JSONObject(coordinates));
+            }
         }
     }
 
@@ -894,18 +921,17 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_PAIRING),
                         OnOffType.from(attributes.getBoolean(PROPERTY_PERMIT_JOIN)));
             }
-            if (attributes.has(PROPERTY_OTA_STATUS)) {
-                String otaStatusString = attributes.getString(PROPERTY_OTA_STATUS);
-                if (OTA_STATUS_MAP.containsKey(otaStatusString)) {
-                    Integer otaStatus = OTA_STATUS_MAP.get(otaStatusString);
-                    if (otaStatus != null) {
-                        updateState(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), new DecimalType(otaStatus));
-                    } else {
-                        logger.warn("Cannot decode ota status {}", otaStatusString);
-                    }
+            if (!attributes.isNull("coordinates")) {
+                JSONObject coordinates = attributes.getJSONObject("coordinates");
+                if (coordinates.has("latitude") && coordinates.has("longitude")) {
+                    PointType homeLocation = new PointType(
+                            coordinates.getDouble("latitude") + "," + coordinates.getDouble("longitude"));
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), homeLocation);
                 } else {
-                    logger.warn("Cannot decode ota status {}", otaStatusString);
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), UnDefType.UNDEF);
                 }
+            } else {
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), UnDefType.UNDEF);
             }
             if (attributes.has(PROPERTY_OTA_STATE)) {
                 String otaStateString = attributes.getString(PROPERTY_OTA_STATE);

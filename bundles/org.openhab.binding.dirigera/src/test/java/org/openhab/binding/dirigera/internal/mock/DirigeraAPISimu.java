@@ -47,9 +47,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
     private final Logger logger = LoggerFactory.getLogger(DirigeraAPISimu.class);
+    private static JSONObject model = new JSONObject();
+
     public static String fileName = "src/test/resources/home/home.json";
     public static Map<String, String> patchMap = new HashMap<>();
-    private static JSONObject model = new JSONObject();
     public static List<String> scenesAdded = new ArrayList<>();
     public static List<String> scenesDeleted = new ArrayList<>();
 
