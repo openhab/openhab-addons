@@ -142,8 +142,7 @@ public class JpaHistoricItem implements HistoricItem {
         } else if (item instanceof RollershutterItem) {
             state = PercentType.valueOf(pItem.getValue());
         } else if (item instanceof DateTimeItem) {
-            state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(pItem.getValue())),
-                    ZoneId.systemDefault()));
+            state = new DateTimeType(Instant.ofEpochMilli(Long.parseLong(pItem.getValue())));
         } else if (item instanceof LocationItem) {
             PointType pType = null;
             String[] comps = pItem.getValue().split(";");
