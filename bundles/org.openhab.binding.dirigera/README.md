@@ -192,11 +192,10 @@ Window or door blind.
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
 | `blind-state`         | Number                | RW         | State if blind is moving up, down or stopped     |          |
-| `target-level`        | Dimmer                | RW         | Target blind level                               |          |
-| `current-level`       | Dimmer                | R          | Current blind level                              |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering blind              |          |
-| `links`               | String                | RW         | Linked controllers and sensors               |          |
-| `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
+| `blind-level`         | Dimmer                | RW         | Current blind level                              |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |          |
+| `links`               | String                | RW         | Linked controllers and sensors                   |          |
+| `link-candidates`     | String                | RW         | Candidates which can be linked                   |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
@@ -248,14 +247,14 @@ During power OFF the lights will preserve some values until next power ON.
 
 | Channel               | Type          | Behavior                                                                  |
 |-----------------------|---------------|---------------------------------------------------------------------------|
-| `power-state`         | ON            | Switch ON, apply last / stored values                                     |
+| `power`               | ON            | Switch ON, apply last / stored values                                     |
 | `brightness`          | ON            | Switch ON, apply last / stored values                                     |
 | `brightness`          | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
-| `temperature`         | ON            | Switch ON, apply last / stored values                                     |
-| `temperature`         | any           | Store value, brightness stays at previous level                           |
-| `hsb`                 | ON            | Switch ON, apply last / stored values                                     |
-| `hsb`                 | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
-| `hsb`                 | h,s,b         | Store color and brightness for next ON                                    |
+| `color-temperature`   | ON            | Switch ON, apply last / stored values                                     |
+| `color-temperature`   | any           | Store value, brightness stays at previous level                           |
+| `color`               | ON            | Switch ON, apply last / stored values                                     |
+| `color`               | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
+| `color`               | h,s,b         | Store color and brightness for next ON                                    |
 | outside               |               | Switch ON, apply last / stored values                                     |
 
 ## Dimmable Lights
@@ -308,19 +307,19 @@ See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 Light with color temperature support.
 
-| Channel               | Type                  | Read/Write | Description                                      | Advanced |
-|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of light                             |          |
-| `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
-| `temperature`         | Dimmer                | RW         | Control temperature of light from cold to warm   |          |
-| `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
-| `links`               | String                | RW         | Linked controllers and sensors                   |          |
-| `link-candidates`     | String                | RW         | Candidates which can be linked                   |          |
-| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
-| `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
-| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
-| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
-| `json`                | String                | R          | JSON structure and updates of this device        |    X     |
+| Channel               | Type                  | Read/Write | Description                                          | Advanced |
+|-----------------------|-----------------------|------------|------------------------------------------------------|----------|
+| `power-state`         | Switch                | RW         | Power state of light                                 |          |
+| `brightness`          | Dimmer                | RW         | Control brightness of light                          |          |
+| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
+| `links`               | String                | RW         | Linked controllers and sensors                       |          |
+| `link-candidates`     | String                | RW         | Candidates which can be linked                       |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                      |          |
+| `ota-status`          | Number                | R          | Over-the-air overall status                          |    X     |
+| `ota-state`           | Number                | R          | Over-the-air current state                           |    X     |
+| `ota-progress`        | Number                | R          | Over-the-air current progress                        |    X     |
+| `json`                | String                | R          | JSON structure and updates of this device            |    X     |
 
 Channel `brightness` can receive
 
@@ -337,8 +336,10 @@ Light with color support.
 
 | Channel               | Type                  | Read/Write | Description                                          | Advanced |
 |-----------------------|-----------------------|------------|------------------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of light                                 |          |
-| `hsb`                 | Color                 | RW         | Control light with color, saturation and brightness  |          |
+| `power`               | Switch                | RW         | Power state of light                                 |          |
+| `brightness`          | Dimmer                | RW         | Brightness of light in percent                       |          |
+| `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
+| `color`               | Color                 | RW         | Color of light with hue, saturation and brightness   |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
 | `links`               | String                | RW         | Linked controllers and sensors                       |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked                       |          |
@@ -368,7 +369,7 @@ Simple plug with control of power state and startup behavior.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of plug                          |          |
+| `power`               | Switch                | RW         | Power state of plug                          |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff          |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
@@ -388,7 +389,7 @@ Power plug with control of power state, startup behavior, hardware on/off button
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of plug                          |          |
+| `power`               | Switch                | RW         | Power state of plug                          |          |
 | `child-lock`          | Switch                | RW         | Child lock for button on plug                |          |
 | `disable-light`       | Switch                | RW         | Disable status light on plug                 |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff          |          |
@@ -410,14 +411,14 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 
 | Channel               | Type                      | Read/Write | Description                                  | Advanced |
 |-----------------------|---------------------------|------------|----------------------------------------------|----------|
-| `power-state`         | Switch                    | RW         | Power state of plug                          |          |
+| `power`               | Switch                    | RW         | Power state of plug                          |          |
 | `child-lock`          | Switch                    | RW         | Child lock for button on plug                |          |
 | `disable-light`       | Switch                    | RW         | Disable status light on plug                 |          |
-| `power`               | Number:Power              | R          | Electric power delivered by plug             |          |
+| `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |          |
 | `energy-total`        | Number:Energy             | R          | Total energy consumption                     |          |
 | `energy-reset`        | Number:Energy             | R          | Energy consumption since last rese           |          |
-| `ampere`              | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
-| `voltage`             | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
+| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
+| `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
 | `startup`             | Number                    | RW         | Startup behavior after power cutoff          |          |
 | `links`               | String                    | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                    | RW         | Candidates which can be linked               |          |
@@ -442,9 +443,9 @@ Sensor detecting motion events.
 
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `detection`           | Switch                | R          | Flag if detection happened                       |          |
+| `motion`              | Switch                | R          | Motion detected by the device                    |          |
 | `active-duration`     | Number:Time           | RW         | Keep connected devices active for this duration  |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor         |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |          |
 | `schedule`            | Number                | RW         | Schedule when the sensor shall be active         |          |
 | `schedule-start`      | DateTime              | RW         | Start time of sensor activity                    |          |
 | `schedule-end`        | DateTime              | RW         | End time of sensor activity                      |          |
@@ -485,8 +486,8 @@ Sensor to detect water leaks.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `detection`           | Switch                | R          | Flag if detection happened                   |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `leak`                | Switch                | R          | Water leak detected                          |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
@@ -502,7 +503,7 @@ Sensor tracking if windows or doors are open
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `contact`             | Contact               | R          | State if door or window is open or closed    |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `json`                | String                | R          | JSON structure and updates of this device    |    X     |
 
@@ -535,7 +536,7 @@ Shortcut controller with one button.
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
 | `button1`             | trigger               |            | Trigger of first button                      |          |
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
 | `ota-status`          | Number                | R          | Over-the-air overall status                  |    X     |
 | `ota-state`           | Number                | R          | Over-the-air current state                   |    X     |
@@ -548,7 +549,7 @@ See [OTA channel mappings](#ota-mappings) for over the air updates.
 
 Triggers for `button1`
 
-- PRESSED
+- SHORT_PRESSED
 - DOUBLE_PRESSED
 - LONG_PRESSED
 
@@ -568,7 +569,7 @@ Controller to handle light attributes.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `light-preset`        | String                | RW         | Light presets for different times of the day |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
@@ -603,7 +604,7 @@ Controller to open and close blinds.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
@@ -621,7 +622,7 @@ Controller for speakers.
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `battery-level`       | Number:Dimensionless  | R          | State of the battery powering the sensor     |          |
+| `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |
 | `custom-name`         | String                | RW         | Name given from IKEA home smart              |          |
@@ -639,13 +640,13 @@ Speaker with player activities.
  
 | Channel               | Type                  | Read/Write | Description                                  | Advanced |
 |-----------------------|-----------------------|------------|----------------------------------------------|----------|
-| `player`              | Player                | RW         | Player Control                               |          |
+| `media-control`       | Player                | RW         | Media control  play, pause, next, previous   |          |
 | `volume`              | Dimmer                | RW         | Handle volume in percent                     |          |
 | `mute`                | Switch                | R(W)       | Mute current audio without stop playing      |          |
 | `shuffle`             | Switch                | RW         | Control shuffle mode                         |          |
 | `crossfade`           | Switch                | RW         | Cross fading between tracks                  |          |
 | `repeat`              | Number                | RW         | Over-the-air overall status                  |          |
-| `track`               | String                | R          | Current playing track                        |          |
+| `media-title`         | String                | R          | Title of a played media file                 |          |
 | `image`               | RawType               | R          | Current playing track image                  |          |
 | `links`               | String                | RW         | Linked controllers and sensors               |          |
 | `link-candidates`     | String                | RW         | Candidates which can be linked               |          |

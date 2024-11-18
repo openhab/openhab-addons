@@ -13,13 +13,13 @@
 		<description>Light with brightness support</description>
 
 		<channels>
-			<channel id="power-state" typeId="switch">
+			<channel id="power" typeId="system.power">
 				<label>Light Powered</label>
 				<description>Power state of light</description>
 			</channel>
-			<channel id="brightness" typeId="dimmer">
-				<label>Light Brightness</label>
-				<description>Control brightness of light</description>
+			<channel id="brightness" typeId="system.brightness">
+				<label>Brightness</label>
+				<description>Brightness of light in percent</description>
 			</channel>
 			<channel id="links" typeId="text-veto">
 				<label>Links</label>
@@ -54,6 +54,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:light-device"/>
 	</thing-type>
