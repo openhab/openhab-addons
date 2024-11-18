@@ -17,6 +17,8 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -537,6 +539,9 @@ public class DirigeraModel implements Model {
                     scanner.close();
                     return resultReplaceAll;
                 }
+            } else {
+                // only unit testing
+                return Files.readString(Paths.get("src/main/resources" + fileName));
             }
         } catch (IOException e) {
             logger.warn("DIRIGERA MODEL no template found for {}", fileName);

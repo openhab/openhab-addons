@@ -13,9 +13,9 @@
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
 			</channel>
-			<channel id="statistics" typeId="text">
-				<label>Gateway Statistics</label>
-				<description>Several statistics about gateway activities</description>
+			<channel id="location" typeId="system.location">
+				<label>Home Location</label>
+				<description>Location in lat.,lon. coordinates</description>
 			</channel>
 			<channel id="sunrise" typeId="datetime">
 				<label>Sunrise</label>
@@ -41,11 +41,19 @@
 				<label>OTA Progress</label>
 				<description>Over-the-air update progress</description>
 			</channel>
+			<channel id="statistics" typeId="text">
+				<label>Gateway Statistics</label>
+				<description>Several statistics about gateway activities</description>
+			</channel>
 			<channel id="json" typeId="json">
 				<label>Device JSON</label>
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:gateway"/>
 	</bridge-type>

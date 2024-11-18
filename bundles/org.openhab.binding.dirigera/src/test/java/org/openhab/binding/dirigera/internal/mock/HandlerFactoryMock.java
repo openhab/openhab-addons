@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.DirigeraHandlerFactory;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
@@ -33,7 +34,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 public class HandlerFactoryMock extends DirigeraHandlerFactory {
     public HandlerFactoryMock(StorageService storageService) {
         super(storageService, mock(NetworkAddressService.class), new DiscoveryMangerMock(), DirigeraBridgeProvider.TZP,
-                mock(DirigeraCommandProvider.class));
+                mock(LocationProvider.class), mock(DirigeraCommandProvider.class));
     }
 
     @Override
