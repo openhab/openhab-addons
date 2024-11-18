@@ -98,7 +98,7 @@ class TestDimmableLight {
     }
 
     void checkLightStates(CallbackMock callback) {
-        State onOffState = callback.getState("dirigera:dimmable-light:test-device:power-state");
+        State onOffState = callback.getState("dirigera:dimmable-light:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power State");

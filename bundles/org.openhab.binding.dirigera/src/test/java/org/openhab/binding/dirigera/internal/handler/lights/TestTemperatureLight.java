@@ -92,12 +92,12 @@ class TestTemperatureLight {
     }
 
     void checkLightStates(CallbackMock callback) {
-        State onOffState = callback.getState("dirigera:temperature-light:test-device:power-state");
+        State onOffState = callback.getState("dirigera:temperature-light:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.ON.equals((onOffState)), "On");
 
-        State temperatureState = callback.getState("dirigera:temperature-light:test-device:temperature");
+        State temperatureState = callback.getState("dirigera:temperature-light:test-device:color-temperature");
         assertNotNull(temperatureState);
         assertTrue(temperatureState instanceof PercentType);
         assertEquals(0, ((PercentType) temperatureState).intValue(), "Temperature");

@@ -161,7 +161,7 @@ public class BaseShortcutController extends BaseHandler {
                         String pattern = "";
                         switch (channelPattern[2]) {
                             case SINGLE_PRESS:
-                                pattern = "PRESSED";
+                                pattern = "SHORT_PRESSED";
                                 break;
                             case DOUBLE_PRESS:
                                 pattern = "DOUBLE_PRESSED";

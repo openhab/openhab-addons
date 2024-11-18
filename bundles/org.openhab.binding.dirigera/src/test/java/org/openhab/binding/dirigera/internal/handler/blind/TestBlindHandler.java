@@ -16,25 +16,23 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
-import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
+import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -48,34 +46,32 @@ class TestBlindHandler {
     String deviceId = "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1";
     ThingTypeUID thingTypeUID = THING_TYPE_BLIND;
 
+    private static BlindHandler handler = mock(BlindHandler.class);
+    private static CallbackMock callback = mock(CallbackMock.class);
+    private static Thing thing = mock(Thing.class);
+
     @Test
     void testHandlerCreation() {
-        HandlerFactoryMock hfm = new HandlerFactoryMock(mock(StorageService.class));
-        assertTrue(hfm.supportsThingType(thingTypeUID));
-        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
-        ThingHandler th = hfm.createHandler(thing);
-        assertNotNull(th);
-        assertTrue(th instanceof BlindHandler);
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
+                false, List.of());
+        ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
+        assertTrue(factoryHandler instanceof BlindHandler);
+        handler = (BlindHandler) factoryHandler;
+        thing = handler.getThing();
+        ThingHandlerCallback proxyCallback = handler.getCallback();
+        assertNotNull(proxyCallback);
+        assertTrue(proxyCallback instanceof CallbackMock);
+        callback = (CallbackMock) proxyCallback;
+        handler.initialize();
+        callback.waitForOnline();
     }
 
     @Test
     void testInitialization() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
-                false, List.of());
-        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
-        thing.setBridgeUID(hubBridge.getBridgeUID());
-        BlindHandler handler = new BlindHandler(thing, BLINDS_MAP);
-        CallbackMock callback = new CallbackMock();
-        callback.setBridge(hubBridge);
-        handler.setCallback(callback);
-
-        // set the right id
-        Map<String, Object> config = new HashMap<>();
-        config.put("id", deviceId);
-        handler.handleConfigurationUpdate(config);
-
-        handler.initialize();
-        callback.waitForOnline();
+        testHandlerCreation();
+        assertNotNull(handler);
+        assertNotNull(thing);
+        assertNotNull(callback);
         checkBlindStates(callback);
 
         callback.clear();
@@ -84,9 +80,18 @@ class TestBlindHandler {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_STATE), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_CURRENT_LEVEL), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_TARGET_LEVEL), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BLIND_LEVEL), RefreshType.REFRESH);
         checkBlindStates(callback);
+    }
+
+    @Test
+    void testCommands() {
+        testHandlerCreation();
+        // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
+        handler.handleCommand(new ChannelUID(thing.getUID(), "blind-level"), new PercentType(20));
+        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"blindsTargetLevel\":20}}", patch, "Target Blind Level");
     }
 
     void checkBlindStates(CallbackMock callback) {
@@ -95,15 +100,10 @@ class TestBlindHandler {
         assertTrue(decimalState instanceof DecimalType);
         assertEquals(0, ((DecimalType) decimalState).intValue(), "Blind State");
 
-        State currentLevelState = callback.getState("dirigera:blind:test-device:current");
+        State currentLevelState = callback.getState("dirigera:blind:test-device:blind-level");
         assertNotNull(currentLevelState);
         assertTrue(currentLevelState instanceof PercentType);
-        assertEquals(60, ((PercentType) currentLevelState).intValue(), "Current Level");
-
-        State targetLevelState = callback.getState("dirigera:blind:test-device:current");
-        assertNotNull(targetLevelState);
-        assertTrue(targetLevelState instanceof PercentType);
-        assertEquals(60, ((PercentType) targetLevelState).intValue(), "Target Level");
+        assertEquals(60, ((PercentType) currentLevelState).intValue(), "Blind Level");
 
         State batteryState = callback.getState("dirigera:blind:test-device:battery-level");
         assertNotNull(batteryState);

@@ -61,7 +61,7 @@ class TestMotionSensor {
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DETECTION), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_MOTION_DETECTION), RefreshType.REFRESH);
         checkMotionStates(callback);
 
         // check commands
@@ -79,7 +79,7 @@ class TestMotionSensor {
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
         assertEquals(20, ((QuantityType<?>) batteryState).intValue(), "Battery level");
-        State onOffState = callback.getState("dirigera:motion-sensor:test-device:detection");
+        State onOffState = callback.getState("dirigera:motion-sensor:test-device:motion");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Motion detected");

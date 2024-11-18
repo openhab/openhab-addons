@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_DETECTION;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LEAK_DETECTION;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -67,7 +67,7 @@ public class WaterSensorHandler extends BaseHandler {
                 String key = attributesIterator.next();
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
-                    if (CHANNEL_DETECTION.equals(targetChannel)) {
+                    if (CHANNEL_LEAK_DETECTION.equals(targetChannel)) {
                         updateState(new ChannelUID(thing.getUID(), targetChannel),
                                 OnOffType.from(attributes.getBoolean(key)));
                     }
