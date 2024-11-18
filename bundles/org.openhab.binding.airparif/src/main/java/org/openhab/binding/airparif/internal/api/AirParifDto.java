@@ -115,7 +115,6 @@ public class AirParifDto {
         private static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
 
         public List<Pollens> data = List.of();
-        private @Nullable Set<ZonedDateTime> validities;
         private @Nullable ZonedDateTime beginValidity;
         private @Nullable ZonedDateTime endValidity;
 
@@ -124,21 +123,15 @@ public class AirParifDto {
         }
 
         private Set<ZonedDateTime> getValidities() {
-            final Set<ZonedDateTime> local;
-            if (validities != null) {
-                local = validities;
-            } else {
-                local = new TreeSet<ZonedDateTime>();
-                getData().ifPresent(pollens -> {
-                    Matcher matcher = PATTERN.matcher(pollens.periode);
-                    while (matcher.find()) {
-                        local.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
-                    }
-                });
-                validities = local;
-            }
+            Set<ZonedDateTime> validities = new TreeSet<>();
+            getData().ifPresent(pollens -> {
+                Matcher matcher = PATTERN.matcher(pollens.periode);
+                while (matcher.find()) {
+                    validities.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE));
+                }
+            });
 
-            return local;
+            return validities;
         }
 
         public Optional<ZonedDateTime> getBeginValidity() {
