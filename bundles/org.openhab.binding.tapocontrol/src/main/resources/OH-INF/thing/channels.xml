@@ -61,11 +61,11 @@
 
 	<!-- Color Temperature -->
 	<channel-type id="colorTemperature">
-		<item-type>Number</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2200K to 6500K.</description>
 		<category>LightBulb</category>
-		<state min="2200" max="6500" pattern="%d K"/>
+		<state step="100" min="2200" max="6500" pattern="%.0f K"/>
 	</channel-type>
 
 	<!-- SENSOR CHANNEL TYPES -->
