@@ -13,9 +13,9 @@
 		<description>Power plug with electricity measurements</description>
 
 		<channels>
-			<channel id="power-state" typeId="switch">
+			<channel id="power" typeId="system.power">
 				<label>Plug Powered</label>
-				<description>Turn plug on or off </description>
+				<description>Power state of plug </description>
 			</channel>
 			<channel id="disable-light" typeId="switch">
 				<label>Disable Status Light</label>
@@ -25,23 +25,23 @@
 				<label>Child Lock</label>
 				<description>Child lock for button on plug</description>
 			</channel>
-			<channel id="power" typeId="power">
-				<label>Plug Power</label>
+			<channel id="electric-power" typeId="system.electric-power">
+				<label>Electric Power</label>
 				<description>Electric power delivered by plug</description>
 			</channel>
-			<channel id="energy-total" typeId="energy">
+			<channel id="energy-total" typeId="system.electric-energy">
 				<label>Total Energy</label>
 				<description>Total energy consumption</description>
 			</channel>
-			<channel id="energy-reset" typeId="energy">
+			<channel id="energy-reset" typeId="system.electric-energy">
 				<label>Energy since Reset</label>
 				<description>Energy consumption since last reset</description>
 			</channel>
-			<channel id="ampere" typeId="ampere">
-				<label>Plug Ampere</label>
+			<channel id="electric-current" typeId="system.electric-current">
+				<label>Plug Current</label>
 				<description>Electric current measured by plug</description>
 			</channel>
-			<channel id="voltage" typeId="volts">
+			<channel id="electric-voltage" typeId="system.electric-voltage">
 				<label>Plug Voltage</label>
 				<description>Electric potential of plug</description>
 			</channel>
@@ -78,6 +78,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

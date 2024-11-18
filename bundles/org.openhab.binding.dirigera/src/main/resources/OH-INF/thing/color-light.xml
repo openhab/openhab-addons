@@ -13,13 +13,21 @@
 		<description>Light with color support</description>
 
 		<channels>
-			<channel id="power-state" typeId="switch">
+			<channel id="power" typeId="system.power">
 				<label>Light Powered</label>
 				<description>Power state of light</description>
 			</channel>
-			<channel id="hsb" typeId="color">
-				<label>Hue Saturation Brightness</label>
-				<description>Control light with color, saturation and brightness</description>
+			<channel id="brightness" typeId="system.brightness">
+				<label>Brightness</label>
+				<description>Brightness of light in percent</description>
+			</channel>
+			<channel id="color-temperature" typeId="system.color-temperature">
+				<label>Color Temperature</label>
+				<description>Color temperature from cold (0 %) to warm (100 %)</description>
+			</channel>
+			<channel id="color" typeId="system.color">
+				<label>Color</label>
+				<description>Color of light with hue, saturation and brightness</description>
 			</channel>
 			<channel id="startup" typeId="startup">
 				<label>Startup Behavior</label>
@@ -54,6 +62,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:color-light"/>
 	</thing-type>

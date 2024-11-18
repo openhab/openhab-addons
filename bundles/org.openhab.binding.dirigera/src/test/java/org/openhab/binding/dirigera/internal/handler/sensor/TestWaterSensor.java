@@ -62,7 +62,7 @@ class TestWaterSensor {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DETECTION), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LEAK_DETECTION), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         checkWaterSensorStates(callback);
     }
@@ -83,7 +83,7 @@ class TestWaterSensor {
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
-        State onOffState = callback.getState("dirigera:water-sensor:test-device:detection");
+        State onOffState = callback.getState("dirigera:water-sensor:test-device:leak");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Off");

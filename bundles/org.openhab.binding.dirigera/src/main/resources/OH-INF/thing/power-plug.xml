@@ -13,9 +13,9 @@
 		<description>Power plug with control of power state, startup behavior, hardware on/off button and status light</description>
 
 		<channels>
-			<channel id="power-state" typeId="switch">
+			<channel id="power" typeId="system.power">
 				<label>Plug Powered</label>
-				<description>Turn plug on or off </description>
+				<description>Power state of plug </description>
 			</channel>
 			<channel id="disable-light" typeId="switch">
 				<label>Disable Status Light</label>
@@ -58,6 +58,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

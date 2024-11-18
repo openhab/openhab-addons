@@ -155,7 +155,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 if (targetChannel != null) {
                     // apply and update to hsbCurrent, only in case !isOn deliver fake brightness HSBs
                     switch (targetChannel) {
-                        case CHANNEL_LIGHT_HSB:
+                        case CHANNEL_LIGHT_COLOR:
                             switch (key) {
                                 case "colorHue":
                                     double hueValue = attributes.getInt(key);
@@ -190,7 +190,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
             if (deliverHSB) {
                 // logger.warn("DIRIGERA COLOR_LIGHT {} Device {} State {}", thing.getLabel(), hsbDevice,
                 // hsbStateReflection);
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), hsbStateReflection);
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), hsbStateReflection);
             }
         }
     }

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="dirigera:air-quality">
+		<instruction-set targetVersion="1">
+			<remove-channel id="temperature">
+			</remove-channel>
+			<remove-channel id="humidity">
+			</remove-channel>
+			<add-channel id="indoor-temperature">
+				<type>system.indoor-temperature</type>
+				<label>Indoor Temperature</label>
+				<description>Current indoor temperature.</description>
+			</add-channel>
+			<add-channel id="atmospheric-humidity">
+				<type>system.atmospheric-humidity</type>
+				<label>Atmospheric Humidity</label>
+				<description>Atmospheric humidity in percent.</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:blind">
+		<instruction-set targetVersion="1">
+			<remove-channel id="current">
+			</remove-channel>
+			<remove-channel id="target">
+			</remove-channel>
+			<add-channel id="blind-level">
+				<type>dimmer</type>
+				<label>Blind Level</label>
+				<description>Current blind level</description>
+			</add-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:blind-controller">
+		<instruction-set targetVersion="1">
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:color-light">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<remove-channel id="hsb">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+			</add-channel>
+			<add-channel id="brightness">
+				<type>system.brightness</type>
+				<label>Light Brightness</label>
+				<description>Brightness of light in percent</description>
+			</add-channel>
+			<add-channel id="color-temperature">
+				<type>system.color-temperature</type>
+				<label>Light Temperature</label>
+				<description>Color temperature from cold (0 %) to warm (100 %)</description>
+			</add-channel>
+			<add-channel id="color">
+				<type>system.color</type>
+				<label>Color</label>
+				<description>Color of a bulb with hue, saturation and brightness</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:contact-sensor">
+		<instruction-set targetVersion="1">
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:dimmable-light">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+			</add-channel>
+			<update-channel id="brightness">
+				<type>system.brightness</type>
+				<label>Light Brightness</label>
+				<description>Brightness of light in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:double-shortcut">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>system.button</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>system.button</type>
+			</update-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:light-controller">
+		<instruction-set targetVersion="1">
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:motion-light">
+		<instruction-set targetVersion="1">
+			<remove-channel id="detection">
+			</remove-channel>
+			<add-channel id="motion">
+				<type>system.motion</type>
+				<label>Motion Detected</label>
+				<description>Motion detected by the device</description>
+			</add-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:motion-sensor">
+		<instruction-set targetVersion="1">
+			<remove-channel id="detection">
+			</remove-channel>
+			<add-channel id="motion">
+				<type>system.motion</type>
+				<label>Motion Detected</label>
+				<description>Motion detected by the device</description>
+			</add-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:power-plug">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Plug Powered</label>
+				<description>Power state of plug </description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:simple-plug">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Plug Powered</label>
+				<description>Power state of plug </description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:single-shortcut">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>system.button</type>
+			</update-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:smart-plug">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<remove-channel id="power">
+			</remove-channel>
+			<remove-channel id="ampere">
+			</remove-channel>
+			<remove-channel id="voltage">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Plug Powered</label>
+				<description>Power state of plug </description>
+			</add-channel>
+			<add-channel id="electric-power">
+				<type>system.electric-power</type>
+				<label>Electric Power</label>
+				<description>Electric power delivered by plug</description>
+			</add-channel>
+			<update-channel id="energy-total">
+				<type>system.electric-energy</type>
+			</update-channel>
+			<update-channel id="energy-reset">
+				<type>system.electric-energy</type>
+			</update-channel>
+			<add-channel id="electric-current">
+				<type>system.electric-current</type>
+				<label>Plug Current</label>
+				<description>Electric current measured by plug</description>
+			</add-channel>
+			<add-channel id="electric-voltage">
+				<type>system.electric-voltage</type>
+				<label>Plug Voltage</label>
+				<description>Electric potential of plug</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:sound-controller">
+		<instruction-set targetVersion="1">
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:speaker">
+		<instruction-set targetVersion="1">
+			<remove-channel id="player">
+			</remove-channel>
+			<remove-channel id="track">
+			</remove-channel>
+			<add-channel id="media-control">
+				<type>system.media-control</type>
+				<label>Media Control</label>
+				<description>Media control with play, pause, next, previous</description>
+			</add-channel>
+			<update-channel id="volume">
+				<type>system.volume</type>
+			</update-channel>
+			<update-channel id="mute">
+				<type>system.mute</type>
+			</update-channel>
+			<add-channel id="media-title">
+				<type>system.media-title</type>
+				<label>Media Title</label>
+				<description>Title of a played media file</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:temperature-light">
+		<instruction-set targetVersion="1">
+			<remove-channel id="power-state">
+			</remove-channel>
+			<add-channel id="power">
+				<type>system.power</type>
+				<label>Light Powered</label>
+				<description>Power state of light</description>
+			</add-channel>
+			<update-channel id="brightness">
+				<type>system.brightness</type>
+				<label>Light Brightness</label>
+				<description>Brightness of light in percent</description>
+			</update-channel>
+			<add-channel id="color-temperature">
+				<type>system.color-temperature</type>
+				<label>Light Temperature</label>
+				<description>Color temperature from cold (0 %) to warm (100 %)</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="dirigera:water-sensor">
+		<instruction-set targetVersion="1">
+			<remove-channel id="detection">
+			</remove-channel>
+			<add-channel id="leak">
+				<type>dirigera:switch-ro</type>
+				<label>Leak Detection</label>
+				<description>Water leak detection</description>
+			</add-channel>
+			<update-channel id="battery-level">
+				<type>system.battery-level</type>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

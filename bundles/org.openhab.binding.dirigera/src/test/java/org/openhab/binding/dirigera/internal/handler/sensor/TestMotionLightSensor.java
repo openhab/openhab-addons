@@ -60,7 +60,7 @@ class TestMotionLightSensor {
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ILLUMINANCE), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_DETECTION), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_MOTION_DETECTION), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), RefreshType.REFRESH);
         checkMotionLightStates(callback);
@@ -72,7 +72,7 @@ class TestMotionLightSensor {
         assertTrue(batteryState instanceof QuantityType);
         assertTrue(((QuantityType<?>) batteryState).getUnit().equals(Units.PERCENT));
         assertEquals(85, ((QuantityType<?>) batteryState).intValue(), "Battery level");
-        State onOffState = callback.getState("dirigera:motion-light-sensor:test-device:detection");
+        State onOffState = callback.getState("dirigera:motion-light-sensor:test-device:motion");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Off");

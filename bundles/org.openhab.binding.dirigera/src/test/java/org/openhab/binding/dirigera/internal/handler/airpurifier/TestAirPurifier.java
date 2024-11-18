@@ -62,6 +62,8 @@ class TestAirPurifier {
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         callback = (CallbackMock) proxyCallback;
+        handler.initialize();
+        callback.waitForOnline();
     }
 
     @Test
