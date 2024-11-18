@@ -78,6 +78,7 @@ Let's start pairing
 | Channel         | Type      | Read/Write | Description                                  | Advanced |
 |-----------------|-----------|------------|----------------------------------------------|----------|
 | `pairing`       | Switch    | RW         | Sets DIRIGERA hub into pairing mode          |          |
+| `location`      | Location  | R(W)       | Location in lat.,lon. coordinates            |          |
 | `sunrise`       | DateTime  | R          | Date and time of next sunrise                |          |
 | `sunset`        | DateTime  | R          | Date and time of next sunset                 |          |
 | `statistics`    | String    | R          | Several statistics about gateway activities  |          |
@@ -85,6 +86,9 @@ Let's start pairing
 | `ota-state`     | Number    | R          | Over-the-air current state                   |    X     |
 | `ota-progress`  | Number    | R          | Over-the-air current progress                |    X     |
 | `json`          | String    | R          | JSON structure and updates of this device    |    X     |
+
+Channel `location` isn't writeable yet.
+See [Gateway Limitations](#gateway-limitations) for further infomration.
 
 ### OTA Mappings
 
@@ -711,12 +715,18 @@ In this case it's possible not all links are shown in the UI, but the present on
 
 ## Known Limitatios
 
+### Gateway Limitations
+
+Gateway channel `location` is reflecting the state correctly but isn't writeable.
+The Model says it `canReceive` command `coordinates` but in fact sending responds `http status 400`.
+Channel will stay in this binding hoping a DIRIGERA software update will resolve this issue.
+
 ### Speaker Limitations
 
-Speaker channel `mute` is relfecting the state correctly but isn't writeable.
-The Model is reflecting the device `canReceive` command `isMuted` but in fact sending the command is answering with http status 400.
+Speaker channel `mute` is reflecting the state correctly but isn't writeable.
+The Model says it `canReceive` command `isMuted` but in fact sending responds `http status 400`.
 If mute is performed on Sonos App the channel is updating correctly, but sending the command fails!
-
+Channel will stay in this binding hoping a DIRIGERA software update will resolve this issue.
 
 ## Full Example
 
