@@ -14,6 +14,7 @@ package org.openhab.binding.tacmi.internal.schema;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -298,7 +299,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                         val = String.format(Locale.US, "%.2f", qt.floatValue());
                     } else if (command instanceof DateTimeType dtt) {
                         // time is transferred as minutes since midnight...
-                        var zdt = dtt.getZonedDateTime();
+                        var zdt = dtt.getZonedDateTime(ZoneId.systemDefault());
                         val = Integer.toString(zdt.getHour() * 60 + zdt.getMinute());
                     } else {
                         val = command.format("%.2f");
