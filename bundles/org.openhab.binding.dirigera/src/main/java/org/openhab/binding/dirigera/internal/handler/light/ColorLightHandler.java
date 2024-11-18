@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_HSB;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_COLOR;
 
 import java.util.Iterator;
 import java.util.Map;
