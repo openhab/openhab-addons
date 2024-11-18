@@ -112,7 +112,7 @@ It should be possible to add any of these, especially the ones using a pull mech
 
 You can now visualize the results in Grafana. Micrometer provides a public [Grafana dashboard here](https://grafana.com/grafana/dashboards/4701).
 I adapted it a little bit to include the openHAB metrics.
-You can download it here [Dashboard](doc/dashboard.json).
+You can download it here [Dashboard](./doc/dashboard.json).
 This has been tested with Prometheus - for other monitoring systems adaptions to the dashboard might be necessary.
 
 Here are some screenshots:
