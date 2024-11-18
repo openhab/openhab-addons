@@ -49,12 +49,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LocationHandler extends BaseThingHandler implements HandlerUtils {
+    private static final String AQ_JOB = "Local Air Quality";
 
     private final Logger logger = LoggerFactory.getLogger(LocationHandler.class);
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
 
-    private @Nullable LocationConfiguration config;
     private Map<Pollen, PollenAlertLevel> myPollens = Map.of();
+    private @Nullable LocationConfiguration config;
 
     public LocationHandler(Thing thing) {
         super(thing);
@@ -64,7 +65,7 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
     public void initialize() {
         config = getConfigAs(LocationConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        schedule("Local Air Quality", this::getConcentrations, Duration.ofSeconds(2));
+        schedule(AQ_JOB, this::getConcentrations, Duration.ofSeconds(2));
     }
 
     @Override
@@ -113,12 +114,12 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
         } else {
             delay = 10;
         }
-        schedule("Local Air Quality", this::getConcentrations, Duration.ofSeconds(delay));
+        schedule(AQ_JOB, this::getConcentrations, Duration.ofSeconds(delay));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        logger.debug("This thing does not handle commands");
     }
 
     @Override
