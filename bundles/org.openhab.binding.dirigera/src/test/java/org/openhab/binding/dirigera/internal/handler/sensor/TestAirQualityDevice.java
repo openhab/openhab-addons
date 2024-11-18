@@ -95,12 +95,13 @@ class TestAirQualityDevice {
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
-        State temperatureState = callback.getState("dirigera:air-quality:test-device:temperature");
+        State temperatureState = callback.getState("dirigera:air-quality:test-device:indoor-temperature");
         assertNotNull(temperatureState);
         assertTrue(temperatureState instanceof QuantityType);
         assertTrue(((QuantityType<?>) temperatureState).getUnit().equals(SIUnits.CELSIUS));
         assertEquals(20, ((QuantityType<?>) temperatureState).intValue(), "Temperature");
-        State humidityState = callback.getState("dirigera:air-quality:test-device:humidity");
+
+        State humidityState = callback.getState("dirigera:air-quality:test-device:atmospheric-humidity");
         assertNotNull(humidityState);
         assertTrue(humidityState instanceof QuantityType);
         assertTrue(((QuantityType<?>) humidityState).getUnit().equals(Units.PERCENT));

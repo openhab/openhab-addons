@@ -82,11 +82,10 @@ public class BlindHandler extends BaseHandler {
                                     channel);
                         }
                         break;
-                    case CHANNEL_BLIND_CURRENT_LEVEL:
-                    case CHANNEL_BLIND_TARGET_LEVEL:
+                    case CHANNEL_BLIND_LEVEL:
                         if (command instanceof PercentType percent) {
                             JSONObject attributes = new JSONObject();
-                            attributes.put(targetProperty, percent.intValue());
+                            attributes.put("blindsTargetLevel", percent.intValue());
                             gateway().api().sendAttributes(config.id, attributes);
                         } else {
                             logger.trace("DIRIGERA BLIND_DEVICE command {} doesn't fit to channel {}", command,
@@ -120,8 +119,7 @@ public class BlindHandler extends BaseHandler {
                                 logger.warn("DIRIGERA BLIND_DEVICE Blind state unknown {}", blindState);
                             }
                             break;
-                        case CHANNEL_BLIND_CURRENT_LEVEL:
-                        case CHANNEL_BLIND_TARGET_LEVEL:
+                        case CHANNEL_BLIND_LEVEL:
                             updateState(new ChannelUID(thing.getUID(), targetChannel),
                                     new PercentType(attributes.getInt(key)));
                             break;

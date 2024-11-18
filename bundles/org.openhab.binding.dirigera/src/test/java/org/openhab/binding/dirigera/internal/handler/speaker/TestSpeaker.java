@@ -91,7 +91,7 @@ class TestSpeaker {
         assertNotNull(volumeState);
         assertTrue(volumeState instanceof PercentType);
         assertEquals(16, ((PercentType) volumeState).intValue(), "Volume");
-        State trackState = callback.getState("dirigera:speaker:test-device:track");
+        State trackState = callback.getState("dirigera:speaker:test-device:media-title");
         assertNotNull(trackState);
         assertTrue(trackState instanceof StringType);
         assertTrue(((StringType) trackState).toFullString().startsWith("The Anjunadeep Edition"));

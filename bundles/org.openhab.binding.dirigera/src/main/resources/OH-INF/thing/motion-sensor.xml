@@ -13,13 +13,17 @@
 		<description>Sensor detecting motion events</description>
 
 		<channels>
-			<channel id="detection" typeId="switch-ro">
+			<channel id="motion" typeId="system.motion">
 				<label>Detection Flag</label>
 				<description>Flag if detection happened</description>
 			</channel>
 			<channel id="active-duration" typeId="duration">
 				<label>Active Duration</label>
 				<description>Keep connected devices active for this duration</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="schedule" typeId="sensor-schedule">
 				<label>Activity Schedule</label>
@@ -45,10 +49,6 @@
 				<label>Link Candidates</label>
 				<description>Candidates which can be linked</description>
 			</channel>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the sensor</description>
-			</channel>
 			<channel id="ota-status" typeId="ota-status">
 				<label>OTA Status</label>
 				<description>Over-the-air overall status</description>
@@ -70,6 +70,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

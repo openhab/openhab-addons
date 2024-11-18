@@ -13,13 +13,13 @@
 		<description>Air measure for temperature, humidity and particles</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature">
-				<label>Temperature</label>
-				<description>Air Temperature</description>
+			<channel id="indoor-temperature" typeId="system.indoor-temperature">
+				<label>Indoor Temperature</label>
+				<description>Current indoor temperature.</description>
 			</channel>
-			<channel id="humidity" typeId="humidity">
-				<label>Humidity</label>
-				<description>Air Humidity</description>
+			<channel id="atmospheric-humidity" typeId="system.atmospheric-humidity">
+				<label>Atmospheric Humidity</label>
+				<description>Atmospheric humidity in percent.</description>
 			</channel>
 			<channel id="particulate-matter" typeId="pm25">
 				<label>Particulate Matter</label>
@@ -50,6 +50,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

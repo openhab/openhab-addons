@@ -135,7 +135,7 @@ public class Constants {
     public static final String CHANNEL_CUSTOM_NAME = "custom-name";
     public static final String CHANNEL_LINKS = "links";
     public static final String CHANNEL_LINK_CANDIDATES = "link-candidates";
-    public static final String CHANNEL_POWER_STATE = "power-state";
+    public static final String CHANNEL_POWER_STATE = "power";
     public static final String CHANNEL_STARTUP_BEHAVIOR = "startup";
     public static final String CHANNEL_BATTERY_LEVEL = "battery-level";
     public static final String CHANNEL_OTA_STATUS = "ota-status";
@@ -149,13 +149,14 @@ public class Constants {
     public static final String CHANNEL_PAIRING = "pairing";
 
     // Light channels
-    public static final String CHANNEL_LIGHT_HSB = "hsb";
     public static final String CHANNEL_LIGHT_BRIGHTNESS = "brightness";
-    public static final String CHANNEL_LIGHT_TEMPERATURE = "temperature";
+    public static final String CHANNEL_LIGHT_TEMPERATURE = "color-temperature";
+    public static final String CHANNEL_LIGHT_COLOR = "color";
     public static final String CHANNEL_LIGHT_PRESET = "light-preset";
 
     // Sensor channels
-    public static final String CHANNEL_DETECTION = "detection";
+    public static final String CHANNEL_MOTION_DETECTION = "motion";
+    public static final String CHANNEL_LEAK_DETECTION = "leak";
     public static final String CHANNEL_ILLUMINANCE = "illuminance";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_ACTIVE_DURATION = "active-duration";
@@ -164,19 +165,19 @@ public class Constants {
     public static final String CHANNEL_SCHEDULE_END = "schedule-end";
 
     // Plug channels
-    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_POWER = "electric-power";
     public static final String CHANNEL_ENERGY_TOTAL = "energy-total";
     public static final String CHANNEL_ENERGY_RESET = "energy-reset";
-    public static final String CHANNEL_CURRENT = "ampere";
-    public static final String CHANNEL_POTENTIAL = "voltage";
+    public static final String CHANNEL_CURRENT = "electric-current";
+    public static final String CHANNEL_POTENTIAL = "electric-voltage";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
     public static final String CHANNEL_DISABLE_STATUS_LIGHT = "disable-light";
 
     // Speaker channels
-    public static final String CHANNEL_PLAYER = "player";
+    public static final String CHANNEL_PLAYER = "media-control";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_MUTE = "mute";
-    public static final String CHANNEL_TRACK = "track";
+    public static final String CHANNEL_TRACK = "media-title";
     public static final String CHANNEL_PLAY_MODES = "modes";
     public static final String CHANNEL_SHUFFLE = "shuffle";
     public static final String CHANNEL_REPEAT = "repeat";
@@ -188,8 +189,8 @@ public class Constants {
     public static final String CHANNEL_LAST_TRIGGER = "last-trigger";
 
     // Air quality channels
-    public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_TEMPERATURE = "indoor-temperature";
+    public static final String CHANNEL_HUMIDITY = "atmospheric-humidity";
     public static final String CHANNEL_PARTICULATE_MATTER = "particulate-matter";
     public static final String CHANNEL_VOC_INDEX = "voc-index";
 
@@ -204,8 +205,7 @@ public class Constants {
     public static final String CHANNEL_PURIFIER_FILTER_ALARM = "filter-alarm";
 
     // Blinds channels
-    public static final String CHANNEL_BLIND_CURRENT_LEVEL = "current";
-    public static final String CHANNEL_BLIND_TARGET_LEVEL = "target";
+    public static final String CHANNEL_BLIND_LEVEL = "blind-level";
     public static final String CHANNEL_BLIND_STATE = "blind-state";
 
     // Shortcut channels
@@ -283,18 +283,18 @@ public class Constants {
 
     public static final Map<String, String> BLINDS_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "blindsState", CHANNEL_BLIND_STATE, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel",
-            CHANNEL_BLIND_CURRENT_LEVEL, "blindsTargetLevel", CHANNEL_BLIND_TARGET_LEVEL, PROPERTY_OTA_STATUS,
-            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS,
-            PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates", CHANNEL_LINK_CANDIDATES);
+            CHANNEL_BLIND_LEVEL, PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE,
+            PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates",
+            CHANNEL_LINK_CANDIDATES);
 
     public static final Map<String, String> COLOR_LIGHT_MAP = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
         {
             put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
             put(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE);
-            put("lightLevel", CHANNEL_LIGHT_HSB);
-            put("colorHue", CHANNEL_LIGHT_HSB);
-            put("colorSaturation", CHANNEL_LIGHT_HSB);
+            put("lightLevel", CHANNEL_LIGHT_COLOR);
+            put("colorHue", CHANNEL_LIGHT_COLOR);
+            put("colorSaturation", CHANNEL_LIGHT_COLOR);
             put("colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
             put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
             put(PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS);
@@ -321,7 +321,7 @@ public class Constants {
         {
             put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
             put("batteryPercentage", CHANNEL_BATTERY_LEVEL);
-            put("isDetected", CHANNEL_DETECTION);
+            put("isDetected", CHANNEL_MOTION_DETECTION);
             put("illuminance", CHANNEL_ILLUMINANCE);
             put("sensorConfig", CHANNEL_ACTIVE_DURATION);
             put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
@@ -334,7 +334,7 @@ public class Constants {
     };
 
     public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_DETECTION, "sensorConfig",
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "sensorConfig",
             CHANNEL_ACTIVE_DURATION, PROPERTY_REMOTE_LINKS, CHANNEL_LINKS, "candidates", CHANNEL_LINK_CANDIDATES,
             "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end",
             CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
@@ -409,8 +409,9 @@ public class Constants {
     };
 
     public static final Map<String, String> WATER_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_DETECTION, PROPERTY_OTA_STATUS,
-            CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS, CHANNEL_OTA_PROGRESS);
+            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_LEAK_DETECTION,
+            PROPERTY_OTA_STATUS, CHANNEL_OTA_STATUS, PROPERTY_OTA_STATE, CHANNEL_OTA_STATE, PROPERTY_OTA_PROGRESS,
+            CHANNEL_OTA_PROGRESS);
 
     public static Map<Integer, String> reverseStateMapping(Map<String, Integer> mapping) {
         Map<Integer, String> reverseMap = new HashMap<>();

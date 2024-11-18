@@ -13,17 +13,17 @@
 		<description>Shortcut controller with two buttons</description>
 
 		<channels>
-			<channel id="button1" typeId="button-trigger">
+			<channel id="button1" typeId="system.button">
 				<label>Button 1 Trigger</label>
 				<description>Trigger of first button</description>
 			</channel>
-			<channel id="button2" typeId="button-trigger">
+			<channel id="button2" typeId="system.button">
 				<label>Button 2 Trigger</label>
 				<description>Trigger of second button</description>
 			</channel>
 			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the controller</description>
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
@@ -46,6 +46,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

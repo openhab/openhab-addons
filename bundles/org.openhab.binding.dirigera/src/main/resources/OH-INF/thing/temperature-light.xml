@@ -13,17 +13,17 @@
 		<description>Light with color temperature support</description>
 
 		<channels>
-			<channel id="power-state" typeId="switch">
+			<channel id="power" typeId="system.power">
 				<label>Light Powered</label>
 				<description>Power state of light</description>
 			</channel>
-			<channel id="brightness" typeId="dimmer">
+			<channel id="brightness" typeId="system.brightness">
 				<label>Light Brightness</label>
-				<description>Control brightness of light</description>
+				<description>Brightness of light in percent</description>
 			</channel>
-			<channel id="temperature" typeId="dimmer">
-				<label>Light Temperature</label>
-				<description>Control temperature of light from cold to warm</description>
+			<channel id="color-temperature" typeId="system.color-temperature">
+				<label>Color Temperature</label>
+				<description>Color temperature from cold (0 %) to warm (100 %)</description>
 			</channel>
 			<channel id="startup" typeId="startup">
 				<label>Startup Behavior</label>
@@ -58,6 +58,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:color-light"/>
 	</thing-type>
