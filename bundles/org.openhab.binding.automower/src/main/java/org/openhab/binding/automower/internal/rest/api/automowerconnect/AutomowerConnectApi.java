@@ -33,6 +33,8 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerWorkAreaRequest;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -43,6 +45,9 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
+
+    private final Logger logger = LoggerFactory.getLogger(AutomowerConnectApi.class);
+
     public AutomowerConnectApi(HttpClient httpClient) {
         super(httpClient);
     }
@@ -74,6 +79,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + id + "/actions");
         request.method(HttpMethod.POST);
 
+        logger.trace("sendCommand: {}", gson.toJson(command));
         request.content(new StringContentProvider(gson.toJson(command)));
 
         ContentResponse response = executeRequest(appKey, token, request);
@@ -92,6 +98,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.POST);
 
+        logger.trace("sendCalendar: {}", gson.toJson(calendar));
         request.content(new StringContentProvider(gson.toJson(calendar)));
 
         ContentResponse response = executeRequest(appKey, token, request);
@@ -106,6 +113,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.POST);
 
+        logger.trace("sendSettings: {}", gson.toJson(settings));
         request.content(new StringContentProvider(gson.toJson(settings)));
 
         ContentResponse response = executeRequest(appKey, token, request);
@@ -124,6 +132,18 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         checkForError(response, response.getStatus());
     }
 
+    public void sendResetCuttingBladeUsageTime(String appKey, String token, String id)
+            throws AutomowerCommunicationException {
+        String url;
+        url = getBaseUrl() + "/mowers/" + id + "/statistics/resetCuttingBladeUsageTime";
+        final Request request = getHttpClient().newRequest(url);
+        request.method(HttpMethod.POST);
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
     public void sendStayOutZone(String appKey, String token, String id, String zoneId,
             MowerStayOutZoneRequest zoneRequest) throws AutomowerCommunicationException {
         String url;
@@ -131,6 +151,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.PATCH);
 
+        logger.trace("sendStayOutZone: {}", gson.toJson(zoneRequest));
         request.content(new StringContentProvider(gson.toJson(zoneRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);
@@ -145,6 +166,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.PATCH);
 
+        logger.trace("sendWorkArea: {}", gson.toJson(workAreaRequest));
         request.content(new StringContentProvider(gson.toJson(workAreaRequest)));
 
         ContentResponse response = executeRequest(appKey, token, request);

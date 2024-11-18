@@ -63,6 +63,7 @@
 			<channel id="setting-cutting-height" typeId="settingCuttingHeightType"/>
 			<channel id="setting-headlight-mode" typeId="settingHeadlightModeType"/>
 			<channel id="stat-cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
+			<channel id="stat-down-time" typeId="statDownTimeType"/>
 			<channel id="stat-number-of-charging-cycles" typeId="statNumberOfChargingCyclesType"/>
 			<channel id="stat-number-of-collisions" typeId="statNumberOfCollisionsType"/>
 			<channel id="stat-total-charging-time" typeId="statTotalChargingTimeType"/>
@@ -72,6 +73,7 @@
 			<channel id="stat-total-running-time" typeId="statTotalRunningTimeType"/>
 			<channel id="stat-total-searching-time" typeId="statTotalSearchingTimeType"/>
 			<channel id="stat-total-searching-percent" typeId="statTotalSearchingPercentType"/>
+			<channel id="stat-up-time" typeId="statUpTimeType"/>
 
 			<!-- Calendar Tasks -->
 			<channel id="calendartasks01-start" typeId="calendarTasksStartType"/>
@@ -201,7 +203,6 @@
 			<channel id="park" typeId="park"/>
 			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
 			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
-			<channel id="confirm_error" typeId="confirmError"/>
 
 			<!-- Positions -->
 			<channel id="last-position" typeId="lastPositionType"/>
@@ -497,7 +498,6 @@
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>The error code at the time of last update</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorTimestampType">
@@ -571,7 +571,14 @@
 		<item-type>Number:Time</item-type>
 		<label>Cutting Blade Usage Time</label>
 		<description>The time since the last reset of the cutting blade usage counter</description>
-		<state readOnly="true" pattern="%.1f h"/>
+		<state pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statDownTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Down Time</label>
+		<description>The time the mower has been disconnected from the cloud</description>
+		<state readOnly="true" pattern="%1$tHh:%1$tMm:%1$tSs"/>
 	</channel-type>
 
 	<channel-type id="statNumberOfChargingCyclesType">
@@ -637,6 +644,13 @@
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
+	<channel-type id="statUpTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Up Time</label>
+		<description>The time the mower has been connected to the cloud</description>
+		<state readOnly="true" pattern="%1$tHh:%1$tMm:%1$tSs"/>
+	</channel-type>
+
 	<channel-type id="lastPositionType" advanced="false">
 		<item-type>Location</item-type>
 		<label>Last GPS Position</label>
@@ -656,13 +670,13 @@
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start Time</label>
 		<description>Start time relative to midnight</description>
-		<state pattern="%d min"/>
+		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="calendarTasksDurationType">
 		<item-type unitHint="min">Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration time</description>
-		<state pattern="%d min"/>
+		<state pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="calendarTasksMondayType">
 		<item-type>Switch</item-type>
@@ -813,11 +827,5 @@
 		<item-type>Switch</item-type>
 		<label>Park and Pause the Schedule</label>
 		<description>Park and pause the mower schedule until manual resume</description>
-	</channel-type>
-
-	<channel-type id="confirmError">
-		<item-type>Switch</item-type>
-		<label>Confirm Error</label>
-		<description>Confirm current non fatal error</description>
 	</channel-type>
 </thing:thing-descriptions>

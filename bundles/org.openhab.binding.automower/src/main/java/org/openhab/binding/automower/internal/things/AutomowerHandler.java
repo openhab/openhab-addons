@@ -225,11 +225,16 @@ public class AutomowerHandler extends BaseThingHandler {
             if (command instanceof StringType cmd) {
                 sendAutomowerSettingsHeadlightMode(cmd.toString());
             }
-        } else if (channelUID.getId().equals(CHANNEL_COMMAND_CONFIRM_ERROR)) {
-            if (command instanceof OnOffType cmd) {
-                if (cmd == OnOffType.ON) {
+        } else if (channelUID.getId().equals(CHANNEL_STATUS_ERROR_CODE)) {
+            if (command instanceof DecimalType cmd) {
+                if (cmd.equals(new DecimalType(0))) {
                     sendAutomowerConfirmError();
-                    updateState(CHANNEL_COMMAND_CONFIRM_ERROR, OnOffType.OFF);
+                }
+            }
+        } else if (channelUID.getId().equals(CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME)) {
+            if (command instanceof DecimalType cmd) {
+                if (cmd.equals(new DecimalType(0))) {
+                    sendAutomowerResetCuttingBladeUsageTime();
                 }
             }
 >>>>>>> added sendAutomowerStayOutZones
@@ -862,6 +867,7 @@ public class AutomowerHandler extends BaseThingHandler {
 
     /**
      * Reset the cutting blade usage time
+<<<<<<< HEAD
 =======
      * Sends a CalendarTask to the automower
      *
@@ -870,6 +876,9 @@ public class AutomowerHandler extends BaseThingHandler {
 >>>>>>> implemented sendAutomowerSettings
      */
 <<<<<<< HEAD
+=======
+     */
+>>>>>>> API release 2024-10-14 (https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=releases)
     public void sendAutomowerResetCuttingBladeUsageTime() {
         logger.debug("Sending ResetCuttingBladeUsageTime");
         String id = automowerId.get();
@@ -879,6 +888,27 @@ public class AutomowerHandler extends BaseThingHandler {
                 automowerBridge.sendAutomowerResetCuttingBladeUsageTime(id);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+<<<<<<< HEAD
+=======
+            }
+        } catch (AutomowerCommunicationException e) {
+            logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id, e.getMessage());
+        }
+        updateAutomowerState();
+    }
+
+    private String restrictedState(RestrictedReason reason) {
+        return "RESTRICTED_" + reason.name();
+    }
+
+    private @Nullable WorkArea getWorkAreaById(@Nullable Mower mower, long workAreaId) {
+        if (mower != null) {
+            List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
+            for (WorkArea workArea : workAreas) {
+                if (workArea.getWorkAreaId() == workAreaId) {
+                    return workArea;
+                }
+>>>>>>> API release 2024-10-14 (https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=releases)
             }
         } catch (AutomowerCommunicationException e) {
             logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id, e.getMessage());
@@ -1676,6 +1706,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 updateState(CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, new QuantityType<>(0, Units.PERCENT));
             }
 <<<<<<< HEAD
+<<<<<<< HEAD
             updateState(CHANNEL_STATISTIC_UP_TIME,
                     new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
 
@@ -1755,6 +1786,10 @@ public class AutomowerHandler extends BaseThingHandler {
                     }
                 }
             }
+=======
+            updateState(CHANNEL_STATISTIC_UP_TIME,
+                    new QuantityType<>(mower.getAttributes().getStatistics().getUpTime(), Units.SECOND));
+>>>>>>> API release 2024-10-14 (https://developer.husqvarnagroup.cloud/apis/automower-connect-api?tab=releases)
 
             i = 0;
             if (capabilities.hasWorkAreas()) {

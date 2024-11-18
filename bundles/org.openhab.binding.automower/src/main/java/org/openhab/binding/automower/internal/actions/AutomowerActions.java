@@ -147,6 +147,20 @@ public class AutomowerActions implements ThingActions {
         ((AutomowerActions) actions).confirmError();
     }
 
+    @RuleAction(label = "@text/action-reset-cutting-blade-usage-time-label", description = "@text/action-reset-cutting-blade-usage-time-desc")
+    public void resetCuttingBladeUsageTime() {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerResetCuttingBladeUsageTime();
+        }
+    }
+
+    public static void resetCuttingBladeUsageTime(ThingActions actions) {
+        ((AutomowerActions) actions).resetCuttingBladeUsageTime();
+    }
+
     @RuleAction(label = "@text/action-set-settings-label", description = "@text/action-set-settings-desc")
     public void setSettings(
             @ActionInput(name = "cutting-height", label = "@text/action-input-cutting-height-label", description = "@text/action-input-cutting-height-desc") byte cuttingHeight,

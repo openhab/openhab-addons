@@ -174,6 +174,16 @@ public class AutomowerBridge {
     }
 
     /**
+     * Reset the cutting blade usage time
+     *
+     * @param id The id of the mower
+     * @throws AutomowerCommunicationException In case the query cannot be executed successfully
+     */
+    public void sendAutomowerResetCuttingBladeUsageTime(String id) throws AutomowerCommunicationException {
+        automowerApi.sendResetCuttingBladeUsageTime(appKey, authenticate().getAccessToken(), id);
+    }
+
+    /**
      * Enable or disable stay out zone
      *
      * @param id The id of the mower

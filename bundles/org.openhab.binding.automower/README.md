@@ -24,7 +24,7 @@ Once the bridge is created and configured, openHAB will automatically discover a
 - pollingInterval (optional): How often the bridge state should be queried in seconds. Default is 1h (3600s)
 
 Keep in mind that the status of the bridge should not be queried too often.
-According to the Husqvarna documentation not more than 10000 requests per month and application key are allowed.
+According to the Husqvarna documentation not more than 10000 requests per month / 1 request per second and application key are allowed.
 With the default value of 1h this would mean ~720 requests per month for the bridge state
 
 `automower:`
@@ -33,7 +33,7 @@ With the default value of 1h this would mean ~720 requests per month for the bri
 - pollingInterval (optional): How often the current Automower® state should be polled in seconds. Default is 10min (600s)
 
 Keep in mind that the status of the Automower® should not be queried too often.
-According to the Husqvarna documentation, no more than 10000 requests per month and application key are allowed.
+According to the Husqvarna documentation not more than 10000 requests per month / 1 request per second and application key are allowed.
 With the default value of 10min this would mean ~4300 requests per month per single Automower®
 
 ## Channels
@@ -51,16 +51,17 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | work-area                      | String               | R   | Name of the active work area                                                                                   |
 | last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                |
 | battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         |
-| error-code                     | Number               | R   | The current error code                                                                                         |
+| error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    |
 | error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  |
-| error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable |
+| error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable                               |
 | planner-next-start             | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL |
 | planner-override-action        | String               | R   | The action that overrides current planner operation                                                            |
 | planner-restricted-reason      | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL) |
 | planner-external-reason        | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation |
 | setting-cutting-height         | Number               | R/W | Prescaled cutting height, Range: 1-9                                                                           |
 | setting-headlight-mode         | String               | R/W | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                        |
-| stat-cutting-blade-usage-time  | Number:Time          | R   | The time since the last reset of the cutting blade usage counter                                               |
+| stat-cutting-blade-usage-time  | Number:Time          | R/W | The time since the last reset of the cutting blade usage counter. `sendCommand(0)` to reset                    |
+| stat-down-time                 | Number:Time          | R   | The time the mower has been disconnected from the cloud                                                        |
 | stat-number-of-charging-cycles | Number               | R   | Number of charging cycles                                                                                      |
 | stat-number-of-collisions      | Number               | R   | The total number of collisions                                                                                 |
 | stat-total-charging-time       | Number:Time          | R   | Total charging time                                                                                            |
@@ -70,6 +71,7 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 | stat-total-running-time        | Number:Time          | R   | The total running time (the wheel motors have been running)                                                    |
 | stat-total-searching-time      | Number:Length        | R   | The total searching time                                                                                       |
 | stat-total-searching-percent   | Number:Dimensionless | R   | The total searching time in percent                                                                            |
+| stat-up-time                   | Number:Time          | R   | The time the mower has been connected to the cloud                                                             |
 
 ### Calendar Tasks Channels
 
@@ -134,33 +136,33 @@ These channels hold the different Work Area configurations. Right now a maximum 
 
 ### Command Channels
 
-| channel                     | type     | access mode | description                                                                                                                                                                 |
-|-----------------------------|----------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| start                       | Number   | W | Starts the Automower® for a duration                     |
-| resume_schedule             | Switch   | W | Resumes the Automower® schedule                          |
-| pause                       | Switch   | W | Pause the Automower®                                     |
-| park                        | Number   | W | Park the Automower® for a duration                       |
-| park_until_next_schedule    | Switch   | W | Park the Automower® until next schedule                  |
-| park_until_further_notice   | Switch   | W | Park the Automower® until further notice                 |
-| confirm_error               | Switch   | W | Confirm current non fatal error                          |
+| channel                   | type     | access mode | description                                    |
+|---------------------------|----------|-------------|------------------------------------------------|
+| start                     | Number   | W | Starts the Automower® for a duration                     |
+| resume_schedule           | Switch   | W | Resumes the Automower® schedule                          |
+| pause                     | Switch   | W | Pause the Automower®                                     |
+| park                      | Number   | W | Park the Automower® for a duration                       |
+| park_until_next_schedule  | Switch   | W | Park the Automower® until next schedule                  |
+| park_until_further_notice | Switch   | W | Park the Automower® until further notice                 |
 
 ## Actions
 
 The following actions are available for `automower` things:
 
-| action name            | arguments        | description                                                                                     |
-|------------------------|------------------|-------------------------------------------------------------------------------------------------|
-| start                  | `duration (int)` | Starts the Automower® for the given duration (minutes), overriding the schedule                 |
-| pause                  | -                | Pauses the Automower® wherever it is currently located                                          |
-| parkUntilNextSchedule  | -                | Parks the Automower®, fully charges it and starts afterwards according to the schedule          |
-| parkUntilFurtherNotice | -                | Parks the Automower® until it is started again by the start action or the schedule gets resumed |
-| park                   | `duration (int)` | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
-| resumeSchedule         | -                | Resumes the schedule for the Automower®                                                         |
-| confirmError           | -                | Confirm current non fatal error                                                                 |
-| setSettings            | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                  |
-| setWorkArea            | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                   |
-| setStayOutZone         | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone             |
-| setCalendarTask        | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings |
+| action name                | arguments        | description                                                                                     |
+|----------------------------|------------------|-------------------------------------------------------------------------------------------------|
+| start                      | `duration (int)` | Starts the Automower® for the given duration (minutes), overriding the schedule                 |
+| pause                      | -                | Pauses the Automower® wherever it is currently located                                          |
+| parkUntilNextSchedule      | -                | Parks the Automower®, fully charges it and starts afterwards according to the schedule          |
+| parkUntilFurtherNotice     | -                | Parks the Automower® until it is started again by the start action or the schedule gets resumed |
+| park                       | `duration (int)` | Parks the Automower® for the given duration (minutes), overriding the schedule                  |
+| resumeSchedule             | -                | Resumes the schedule for the Automower®                                                         |
+| confirmError               | -                | Confirm current non fatal error                                                                 |
+| resetCuttingBladeUsageTime | -                | Reset the cutting blade usage time                                                              |
+| setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                      | Update Automower® settings                  |
+| setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`      | Update work area settings                   |
+| setStayOutZone             | `String zoneId`<br/>`boolean enable`                                 | Enable or disable stay-out zone             |
+| setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support work areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings |
 
 ## Full Example
 

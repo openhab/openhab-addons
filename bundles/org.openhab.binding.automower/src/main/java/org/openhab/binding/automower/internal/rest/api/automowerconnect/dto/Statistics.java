@@ -17,6 +17,7 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  */
 public class Statistics {
     private long cuttingBladeUsageTime;
+    private long downTime;
     private int numberOfChargingCycles;
     private int numberOfCollisions;
     private long totalChargingTime;
@@ -24,6 +25,7 @@ public class Statistics {
     private long totalDriveDistance; // docu states totalDrivenDistance which does not work
     private long totalRunningTime;
     private long totalSearchingTime;
+    private long upTime;
 
     public long getCuttingBladeUsageTime() {
         return cuttingBladeUsageTime;
@@ -31,6 +33,14 @@ public class Statistics {
 
     public void setCuttingBladeUsageTime(long cuttingBladeUsageTime) {
         this.cuttingBladeUsageTime = cuttingBladeUsageTime;
+    }
+
+    public long getDownTime() {
+        return downTime;
+    }
+
+    public void setDownTime(long downTime) {
+        this.downTime = downTime;
     }
 
     public int getNumberOfChargingCycles() {
@@ -87,5 +97,13 @@ public class Statistics {
 
     public void setTotalSearchingTime(long totalSearchingTime) {
         this.totalSearchingTime = totalSearchingTime;
+    }
+
+    public long getUpTime() {
+        return upTime;
+    }
+
+    public void setUpTime(long upTime) {
+        this.upTime = upTime;
     }
 }

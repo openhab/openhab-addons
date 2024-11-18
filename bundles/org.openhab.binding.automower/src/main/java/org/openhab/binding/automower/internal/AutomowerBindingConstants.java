@@ -69,6 +69,7 @@ public class AutomowerBindingConstants {
                                                      // this in a future release
     public static final String CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME = GROUP_STATISTIC
             + "stat-cutting-blade-usage-time";
+    public static final String CHANNEL_STATISTIC_DOWN_TIME = GROUP_STATISTIC + "stat-down-time";
     public static final String CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES = GROUP_STATISTIC
             + "stat-number-of-charging-cycles";
     public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATISTIC + "stat-number-of-collisions";
@@ -80,6 +81,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATISTIC + "stat-total-searching-time";
     public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATISTIC
             + "stat-total-searching-percent";
+    public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "stat-up-time";
 
     // Calendar Task Channels ids
     public static final String GROUP_CALENDARTASKS = ""; // no channel group in use at the moment, we'll possibly
@@ -234,7 +236,6 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_COMMAND_PARK = GROUP_COMMANDS + "park";
     public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMANDS + "park_until_next_schedule";
     public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMANDS + "park_until_further_notice";
-    public static final String CHANNEL_COMMAND_CONFIRM_ERROR = GROUP_COMMANDS + "confirm_error";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
