@@ -236,6 +236,10 @@ public class AutomowerHandler extends BaseThingHandler {
                 if (cmd.equals(new DecimalType(0))) {
                     sendAutomowerResetCuttingBladeUsageTime();
                 }
+            } else if (command instanceof QuantityType cmd) {
+                if (cmd.toBigDecimal().intValue() == 0) {
+                    sendAutomowerResetCuttingBladeUsageTime();
+                }
             }
 >>>>>>> added sendAutomowerStayOutZones
         } else {
