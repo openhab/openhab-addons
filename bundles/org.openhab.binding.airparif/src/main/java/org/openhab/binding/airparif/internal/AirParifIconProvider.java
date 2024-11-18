@@ -101,8 +101,7 @@ public class AirParifIconProvider implements IconProvider {
             if (POLLEN_ICONS.contains(category) && state != null) {
                 try {
                     int ordinal = Integer.valueOf(state);
-                    PollenAlertLevel alertLevel = PollenAlertLevel.AS_SET.stream()
-                            .filter(pal -> pal.riskLevel == ordinal).findFirst().orElse(PollenAlertLevel.UNKNOWN);
+                    PollenAlertLevel alertLevel = PollenAlertLevel.valueOf(ordinal);
                     result = result.replaceAll(NEUTRAL_COLOR, alertLevel.color);
                 } catch (NumberFormatException ignore) {
                 }
