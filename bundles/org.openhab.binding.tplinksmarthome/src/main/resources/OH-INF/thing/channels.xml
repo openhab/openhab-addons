@@ -21,27 +21,27 @@
 
 	<!-- Absolute Temperature Channel -->
 	<channel-type id="colorTemperatureAbs1" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2700K to 6500K.</description>
 		<category>ColorLight</category>
-		<state min="2700" max="6500" pattern="%d K"/>
+		<state step="100" min="2700" max="6500" pattern="%.0f K"/>
 	</channel-type>
 
 	<channel-type id="colorTemperatureAbs2" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2500K to 9000K.</description>
 		<category>ColorLight</category>
-		<state min="2500" max="9000" pattern="%d K"/>
+		<state step="100" min="2500" max="9000" pattern="%.0f K"/>
 	</channel-type>
 
 	<channel-type id="colorTemperatureAbs3" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="K">Number:Temperature</item-type>
 		<label>Color Temperature</label>
 		<description>This channel supports adjusting the color temperature from 2500K to 6500K.</description>
 		<category>ColorLight</category>
-		<state min="2500" max="6500" pattern="%d K"/>
+		<state step="100" min="2500" max="6500" pattern="%.0f K"/>
 	</channel-type>
 
 	<!-- Energy Channel types -->
