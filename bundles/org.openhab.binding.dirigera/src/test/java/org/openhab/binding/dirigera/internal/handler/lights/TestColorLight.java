@@ -33,9 +33,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
@@ -78,22 +80,22 @@ class TestColorLight {
         callback.waitForOnline();
         checkColorLightStates(callback);
 
-        // callback.clear();
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_HSB), RefreshType.REFRESH);
-        // handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
-        // checkColorLightStates(callback);
+        callback.clear();
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_PROGRESS), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_STARTUP_BEHAVIOR), RefreshType.REFRESH);
+        checkColorLightStates(callback);
     }
 
     void checkColorLightStates(CallbackMock callback) {
-        State onOffState = callback.getState("dirigera:color-light:test-device:power-state");
+        State onOffState = callback.getState("dirigera:color-light:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power State");
-        State hsbState = callback.getState("dirigera:color-light:test-device:hsb");
+        State hsbState = callback.getState("dirigera:color-light:test-device:color");
         assertNotNull(hsbState);
         assertTrue(hsbState instanceof HSBType);
         assertEquals(89, ((HSBType) hsbState).getHue().intValue(), "Hue");

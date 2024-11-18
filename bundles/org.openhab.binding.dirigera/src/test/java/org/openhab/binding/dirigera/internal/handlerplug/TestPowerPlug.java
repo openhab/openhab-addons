@@ -111,7 +111,7 @@ class TestPowerPlug {
         assertNotNull(childlockState);
         assertTrue(childlockState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock Off");
-        State onOffState = callback.getState("dirigera:power-plug:test-device:power-state");
+        State onOffState = callback.getState("dirigera:power-plug:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((onOffState)), "Power Off");

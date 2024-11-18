@@ -125,7 +125,7 @@ class TestDoubleShortcutController {
         JSONObject second = sequence.getJSONObject(1).getJSONObject("data");
         second.put(PROPERTY_DEVICE_ID, sceneId);
         handler.handleUpdate(second);
-        assertEquals("PRESSED", callback.triggerMap.get("dirigera:double-shortcut:test-device:button1"),
+        assertEquals("SHORT_PRESSED", callback.triggerMap.get("dirigera:double-shortcut:test-device:button1"),
                 "Pressed trigger sent");
     }
 

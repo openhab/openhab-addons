@@ -116,23 +116,23 @@ class TestSmartPlug {
         assertNotNull(childlockState);
         assertTrue(childlockState instanceof OnOffType);
         assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock Off");
-        State onOffState = callback.getState("dirigera:smart-plug:test-device:power-state");
+        State onOffState = callback.getState("dirigera:smart-plug:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
         assertTrue(OnOffType.ON.equals((onOffState)), "Power On");
 
         // Measurement channels
-        State ampereState = callback.getState("dirigera:smart-plug:test-device:ampere");
+        State ampereState = callback.getState("dirigera:smart-plug:test-device:electric-current");
         assertNotNull(ampereState);
         assertTrue(ampereState instanceof QuantityType);
         assertTrue(((QuantityType<?>) ampereState).getUnit().equals(Units.AMPERE));
         assertEquals(0, ((QuantityType<?>) ampereState).intValue(), "Ampere");
-        State voltState = callback.getState("dirigera:smart-plug:test-device:voltage");
+        State voltState = callback.getState("dirigera:smart-plug:test-device:electric-voltage");
         assertNotNull(voltState);
         assertTrue(voltState instanceof QuantityType);
         assertTrue(((QuantityType<?>) voltState).getUnit().equals(Units.VOLT));
         assertEquals(236, ((QuantityType<?>) voltState).intValue(), "Volt");
-        State powerState = callback.getState("dirigera:smart-plug:test-device:power");
+        State powerState = callback.getState("dirigera:smart-plug:test-device:electric-power");
         assertNotNull(powerState);
         assertTrue(powerState instanceof QuantityType);
         assertTrue(((QuantityType<?>) powerState).getUnit().equals(Units.WATT));

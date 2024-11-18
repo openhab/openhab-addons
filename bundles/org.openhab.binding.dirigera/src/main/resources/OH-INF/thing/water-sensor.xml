@@ -13,13 +13,13 @@
 		<description>Sensor to detect water leaks</description>
 
 		<channels>
-			<channel id="detection" typeId="switch-ro">
-				<label>Detection Flag</label>
-				<description>Flag if detection happened</description>
+			<channel id="leak" typeId="switch-ro">
+				<label>Leak Detection</label>
+				<description>Water leak detection</description>
 			</channel>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the sensor</description>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
@@ -42,6 +42,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

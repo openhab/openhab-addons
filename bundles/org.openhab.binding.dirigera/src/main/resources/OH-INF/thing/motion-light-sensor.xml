@@ -14,8 +14,8 @@
 
 		<channels>
 			<channel id="motion" typeId="system.motion">
-				<label>Detection Flag</label>
-				<description>Flag if detection happened.</description>
+				<label>Motion Detected</label>
+				<description>Motion detected by the device</description>
 			</channel>
 			<channel id="active-duration" typeId="duration">
 				<label>Active Duration</label>
@@ -24,6 +24,10 @@
 			<channel id="illuminance" typeId="illuminance">
 				<label>Illuminance</label>
 				<description>Illuminance in Lux </description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="schedule" typeId="sensor-schedule">
 				<label>Activity Schedule</label>
@@ -49,10 +53,6 @@
 				<label>Link Candidates</label>
 				<description>Candidates which can be linked</description>
 			</channel>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the sensor</description>
-			</channel>
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
@@ -62,6 +62,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

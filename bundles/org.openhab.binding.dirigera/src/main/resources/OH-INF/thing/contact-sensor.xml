@@ -17,9 +17,9 @@
 				<label>Contact State</label>
 				<description>State if door or window is open or closed</description>
 			</channel>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering the sensor</description>
+			<channel id="battery-level" typeId="system.system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="custom-name" typeId="text">
 				<label>Custom Name</label>
@@ -30,6 +30,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

@@ -17,17 +17,13 @@
 				<label>Blind State</label>
 				<description>State if blind is moving up, down or stopped</description>
 			</channel>
-			<channel id="current" typeId="dimmer">
-				<label>Current Level</label>
+			<channel id="blind-level" typeId="dimmer">
+				<label>Blind Level</label>
 				<description>Current blind level</description>
 			</channel>
-			<channel id="target" typeId="dimmer">
-				<label>Target Level</label>
-				<description>Target blind level</description>
-			</channel>
-			<channel id="battery-level" typeId="percent">
-				<label>Battery Level</label>
-				<description>State of the battery powering blind</description>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Charge Level</label>
+				<description>Battery charge level in percent</description>
 			</channel>
 			<channel id="links" typeId="text-veto">
 				<label>Links</label>
@@ -58,6 +54,10 @@
 				<description>JSON structure and updates of this device</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>
