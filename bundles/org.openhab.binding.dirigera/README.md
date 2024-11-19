@@ -20,6 +20,7 @@ Refer to below sections which devices are supported and are covered by `things` 
 | `air-quality`         | Air measure for temperature, humidity and particles        | no           | [Sensors](#air-quality-sensor)            | VINDSTYRKA                                |
 | `blind`               | Window or door blind                                       | no           | [Blinds](#blinds)                         | PRAKTLYSING ,KADRILJ ,FRYKTUR, TREDANSEN  |
 | `blind-controller`    | Controller to open and close blinds                        | no           | [Controller](#blind-controller)           | TRÅDFRI                                   |
+| `switch-light`        | Light with switch ON, OFF capability                       | no           | [Lights](#switch-lights)                  | TRÅDFRI                                   |
 | `dimmable-light`      | Light with brightness support                              | no           | [Lights](#dimmable-lights)                | TRÅDFRI                                   |
 | `temperature-light`   | Light with color temperature support                       | personally   | [Lights](#temperature-lights)             | TRÅDFRI, FLOALT                           |
 | `color-light`         | Light with color support                                   | personally   | [Lights](#color-lights)                   | TRÅDFRI, ORMANÅS                          |
@@ -133,7 +134,7 @@ The trace cotains a json object at the end which is needed to implememnt a corre
 
 Each device has 'json' channel which is reflecting the structural data of a device. 
 If you see wrong, missing or too much channels this data is needed to adapt implementation.
-This channel is only for development purposes.
+This channel is only for development purposes and **will be deleted in release version!**
 
 | Channel   | Type   | Read/Write | Description                                  | Advanced |
 |-----------|--------|------------|----------------------------------------------|----------|
@@ -260,6 +261,26 @@ During power OFF the lights will preserve some values until next power ON.
 | `color`               | value > 0     | Switch ON, apply this brighness, apply last / stored values               |
 | `color`               | h,s,b         | Store color and brightness for next ON                                    |
 | outside               |               | Switch ON, apply last / stored values                                     |
+
+## Switch Lights
+
+Light with switch ON, OFF capability
+
+| Channel               | Type                  | Read/Write | Description                                      | Advanced |
+|-----------------------|-----------------------|------------|--------------------------------------------------|----------|
+| `power`               | Switch                | RW         | Power state of light                             |          |
+| `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
+| `links`               | String                | RW         | Linked controllers and sensors                   |          |
+| `link-candidates`     | String                | RW         | Candidates which can be linked                   |          |
+| `custom-name`         | String                | RW         | Name given from IKEA home smart                  |          |
+| `ota-status`          | Number                | R          | Over-the-air overall status                      |    X     |
+| `ota-state`           | Number                | R          | Over-the-air current state                       |    X     |
+| `ota-progress`        | Number                | R          | Over-the-air current progress                    |    X     |
+| `json`                | String                | R          | JSON structure and updates of this device        |    X     |
+
+See [sartup mappings](#startup-channel-mappings) for device startup behavior.
+See [OTA channel mappings](#ota-mappings) for over the air updates.
+See section [Links and Candidates](#links-and-candidates) how to handle channels `links` and `link-candidates`.
 
 ## Dimmable Lights
 
@@ -420,7 +441,7 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 | `disable-light`       | Switch                    | RW         | Disable status light on plug                 |          |
 | `electric-power`      | Number:Power              | R          | Electric power delivered by plug             |          |
 | `energy-total`        | Number:Energy             | R          | Total energy consumption                     |          |
-| `energy-reset`        | Number:Energy             | R          | Energy consumption since last rese           |          |
+| `energy-reset`        | Number:Energy             | RW         | Energy consumption since last rese           |          |
 | `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |          | 
 | `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |          |
 | `startup`             | Number                    | RW         | Startup behavior after power cutoff          |          |

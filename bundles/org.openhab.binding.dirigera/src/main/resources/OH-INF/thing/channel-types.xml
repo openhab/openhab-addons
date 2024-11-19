@@ -13,6 +13,16 @@
 		<label>Simple Text</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
+    <channel-type id="electric-energy">
+        <item-type>unitHint="kW/h" Number:Energy</item-type>
+        <label>Energy</label>
+        <command>
+            <options>
+                <option value="Reset">0</option>
+            </options>
+        </command>
+        <state pattern="%.3f %unit%"/>
+    </channel-type>
 	<channel-type id="light-preset">
 		<item-type>String</item-type>
 		<label>Light Preset</label>
