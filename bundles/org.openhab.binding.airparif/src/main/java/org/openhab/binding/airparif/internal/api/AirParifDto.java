@@ -27,10 +27,13 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Scope;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -63,6 +66,22 @@ public class AirParifDto {
             Pollutant pollutant, //
             int min, //
             int max) {
+
+        private State getQuantity(int value) {
+            Unit<?> unit = pollutant.unit;
+            if (unit != null) {
+                return new QuantityType<>(value, unit);
+            }
+            return UnDefType.NULL;
+        }
+
+        public State getMin() {
+            return getQuantity(min);
+        }
+
+        public State getMax() {
+            return getQuantity(max);
+        }
     }
 
     public record PollutantEpisode(//
@@ -185,8 +204,17 @@ public class AirParifDto {
             return message != null ? new StringType(message.fr()) : UnDefType.NULL;
         }
 
+        public State getQuantity() {
+            Unit<?> unit = pollutant.unit;
+            return unit != null ? new QuantityType<>(getValue(), unit) : UnDefType.NULL;
+        }
+
         public double getValue() {
             return values[0];
+        }
+
+        public int getAlertLevel() {
+            return pollutant.getAppreciation(getValue()).ordinal();
         }
     }
 

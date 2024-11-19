@@ -41,14 +41,12 @@ import org.osgi.service.component.annotations.Reference;
 public class AirParifHandlerFactory extends BaseThingHandlerFactory {
     private final AirParifDeserializer deserializer;
     private final HttpClient httpClient;
-    private final AirParifIconProvider iconProvider;
 
     @Activate
     public AirParifHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference AirParifDeserializer deserializer, final @Reference AirParifIconProvider iconProvider) {
+            final @Reference AirParifDeserializer deserializer) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.deserializer = deserializer;
-        this.iconProvider = iconProvider;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class AirParifHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         return APIBRIDGE_THING_TYPE.equals(thingTypeUID)
-                ? new AirParifBridgeHandler((Bridge) thing, httpClient, deserializer, iconProvider)
+                ? new AirParifBridgeHandler((Bridge) thing, httpClient, deserializer)
                 : LOCATION_THING_TYPE.equals(thingTypeUID) ? new LocationHandler(thing) : null;
     }
 }

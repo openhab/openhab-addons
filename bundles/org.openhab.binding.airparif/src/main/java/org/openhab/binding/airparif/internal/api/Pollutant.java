@@ -17,6 +17,8 @@ import java.util.EnumSet;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.airparif.internal.api.AirParifApi.Appreciation;
 import org.openhab.core.library.unit.Units;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,29 +30,37 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public enum Pollutant {
+    // Concentration thresholds per pollutant are available here:
+    // https://www.airparif.fr/sites/default/files/pdf/guide_calcul_nouvel_indice_fedeAtmo_14122020.pdf
+
     @SerializedName("pm25")
-    PM25(Units.MICROGRAM_PER_CUBICMETRE),
+    PM25(Units.MICROGRAM_PER_CUBICMETRE, new int[] { 10, 20, 25, 50, 75 }),
 
     @SerializedName("pm10")
-    PM10(Units.MICROGRAM_PER_CUBICMETRE),
+    PM10(Units.MICROGRAM_PER_CUBICMETRE, new int[] { 20, 40, 50, 100, 150 }),
 
     @SerializedName("no2")
-    NO2(Units.PARTS_PER_BILLION),
+    NO2(Units.MICROGRAM_PER_CUBICMETRE, new int[] { 40, 90, 120, 230, 340 }),
 
     @SerializedName("o3")
-    O3(Units.PARTS_PER_BILLION),
+    O3(Units.MICROGRAM_PER_CUBICMETRE, new int[] { 50, 100, 130, 240, 380 }),
+
+    @SerializedName("so2")
+    SO2(Units.MICROGRAM_PER_CUBICMETRE, new int[] { 100, 200, 350, 500, 750 }),
 
     @SerializedName("indice")
-    INDICE(Units.PERCENT),
+    INDICE(null, new int[] {}),
 
-    UNKNOWN(Units.PERCENT);
+    UNKNOWN(null, new int[] {});
 
     public static final EnumSet<Pollutant> AS_SET = EnumSet.allOf(Pollutant.class);
 
-    public final Unit<?> unit;
+    public final @Nullable Unit<?> unit;
+    private final int[] thresholds;
 
-    Pollutant(Unit<?> unit) {
+    Pollutant(@Nullable Unit<?> unit, int[] thresholds) {
         this.unit = unit;
+        this.thresholds = thresholds;
     }
 
     public static Pollutant safeValueOf(String searched) {
@@ -59,5 +69,22 @@ public enum Pollutant {
         } catch (IllegalArgumentException e) {
             return Pollutant.UNKNOWN;
         }
+    }
+
+    public boolean hasUnit() {
+        return unit != null;
+    }
+
+    public Appreciation getAppreciation(double concentration) {
+        if (thresholds.length == 0) {
+            return Appreciation.UNKNOWN;
+        }
+
+        for (int i = 0; i < thresholds.length; i++) {
+            if (concentration <= thresholds[i]) {
+                return Appreciation.values()[i];
+            }
+        }
+        return Appreciation.EXTREMELY_BAD;
     }
 }

@@ -29,19 +29,19 @@
 				<label>Message</label>
 				<description>General message for the air quality bulletin</description>
 			</channel>
-			<channel id="no2-min" typeId="ppb-value">
+			<channel id="no2-min" typeId="mpc-value">
 				<label>NO2 Min</label>
 				<description>Minimum level of NO2 concentation</description>
 			</channel>
-			<channel id="no2-max" typeId="ppb-value">
+			<channel id="no2-max" typeId="mpc-value">
 				<label>NO2 Max</label>
 				<description>Maximum level of NO2 concentation</description>
 			</channel>
-			<channel id="o3-min" typeId="ppb-value">
+			<channel id="o3-min" typeId="mpc-value">
 				<label>O3 Min</label>
 				<description>Minimum level of O3 concentation</description>
 			</channel>
-			<channel id="o3-max" typeId="ppb-value">
+			<channel id="o3-max" typeId="mpc-value">
 				<label>O3 Max</label>
 				<description>Maximum level of O3 concentation</description>
 			</channel>
@@ -71,31 +71,13 @@
 				<label>Message</label>
 				<description>Polllutant concentration alert message</description>
 			</channel>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Timestamp</label>
-				<description>Timestamp of the measure</description>
-			</channel>
 			<channel id="value" typeId="mpc-value">
 				<label>Concentration</label>
 				<description>Concentration of the given pollutant</description>
 			</channel>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="pollutant-ppb">
-		<label>Pollutant Concentration Information</label>
-		<channels>
-			<channel id="message" typeId="comment">
-				<label>Message</label>
-				<description>Polllutant concentration alert message</description>
-			</channel>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Timestamp</label>
-				<description>Timestamp of the measure</description>
-			</channel>
-			<channel id="value" typeId="ppb-value">
-				<label>Concentration</label>
-				<description>Concentration of the given pollutant</description>
+			<channel id="alert" typeId="appreciation">
+				<label>Alert Level</label>
+				<description>Alert Level associated to pollutant concentration</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -111,9 +93,9 @@
 				<label>Timestamp</label>
 				<description>Timestamp of the evaluation</description>
 			</channel>
-			<channel id="value" typeId="ndx-value">
-				<label>Value</label>
-				<description>Value of the global Index</description>
+			<channel id="alert" typeId="appreciation">
+				<label>Alert Level</label>
+				<description>Alert Level associated to highest pollutant concentration</description>
 			</channel>
 		</channels>
 	</channel-group-type>
