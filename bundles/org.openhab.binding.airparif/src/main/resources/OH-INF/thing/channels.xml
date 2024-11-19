@@ -291,12 +291,6 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ppb-value">
-		<item-type unitHint="ppb">Number:Dimensionless</item-type>
-		<label>Measure</label>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
 	<channel-type id="ndx-value">
 		<item-type>Number</item-type>
 		<label>Measure</label>
@@ -307,6 +301,22 @@
 		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Measure</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="appreciation">
+		<item-type>Number</item-type>
+		<label>Air Quality</label>
+		<category>oh:airparif:aq</category>
+		<state readOnly="true">
+			<options>
+				<option value="0">Good</option>
+				<option value="1">Average</option>
+				<option value="2">Degrated</option>
+				<option value="3">Bad</option>
+				<option value="4">Very Bad</option>
+				<option value="5">Extremely Bad</option>
+			</options>
+		</state>
 	</channel-type>
 
 

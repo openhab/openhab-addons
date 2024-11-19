@@ -62,7 +62,7 @@ public class AirParifApi {
         AVERAGE("Moyen"),
         DEGRATED("Dégradé"),
         BAD("Mauvais"),
-        REALLY_BAD("Très Mauvais"),
+        VERY_BAD("Très Mauvais"),
         EXTREMELY_BAD("Extrêmement Mauvais"),
         UNKNOWN("");
 

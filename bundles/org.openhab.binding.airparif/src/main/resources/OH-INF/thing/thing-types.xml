@@ -15,10 +15,10 @@
 		<channel-groups>
 			<channel-group id="pollens" typeId="dept-pollens"/>
 			<channel-group id="indice" typeId="pollutant-ndx"/>
-			<channel-group id="o3" typeId="pollutant-ppb">
+			<channel-group id="o3" typeId="pollutant-mpc">
 				<label>Ozone Concentration Information</label>
 			</channel-group>
-			<channel-group id="no2" typeId="pollutant-ppb">
+			<channel-group id="no2" typeId="pollutant-mpc">
 				<label>NO2 Concentration Information</label>
 			</channel-group>
 			<channel-group id="pm25" typeId="pollutant-mpc">

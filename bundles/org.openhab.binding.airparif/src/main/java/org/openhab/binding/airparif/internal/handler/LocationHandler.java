@@ -15,6 +15,7 @@ package org.openhab.binding.airparif.internal.handler;
 import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
 
 import java.time.Duration;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,13 +24,14 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
+import org.openhab.binding.airparif.internal.api.AirParifDto.Concentration;
 import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
+import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -100,14 +102,22 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
 
             Route route = apiHandler.getConcentrations(local.location);
             if (route != null) {
-                route.concentrations().forEach(concentration -> {
-                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(),
-                            concentration.pollutant().name().toLowerCase());
-                    updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP), new DateTimeType(concentration.date()));
-                    updateState(new ChannelUID(groupUID, CHANNEL_MESSAGE), concentration.getMessage());
-                    updateState(new ChannelUID(groupUID, CHANNEL_VALUE),
-                            new QuantityType<>(concentration.getValue(), concentration.pollutant().unit));
+                int maxAlert = route.concentrations().stream().filter(conc -> conc.pollutant().hasUnit())
+                        .map(Concentration::getAlertLevel).max(Comparator.comparing(Integer::valueOf)).get();
 
+                route.concentrations().stream().forEach(concentration -> {
+                    Pollutant pollutant = concentration.pollutant();
+                    ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), pollutant.name().toLowerCase());
+                    updateState(new ChannelUID(groupUID, CHANNEL_MESSAGE), concentration.getMessage());
+                    if (!pollutant.hasUnit()) {
+                        updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP),
+                                new DateTimeType(concentration.date()));
+                        updateState(new ChannelUID(groupUID, CHANNEL_ALERT), new DecimalType(maxAlert));
+                    } else {
+                        updateState(new ChannelUID(groupUID, CHANNEL_VALUE), concentration.getQuantity());
+                        updateState(new ChannelUID(groupUID, CHANNEL_ALERT),
+                                new DecimalType(concentration.getAlertLevel()));
+                    }
                 });
                 updateStatus(ThingStatus.ONLINE);
             }

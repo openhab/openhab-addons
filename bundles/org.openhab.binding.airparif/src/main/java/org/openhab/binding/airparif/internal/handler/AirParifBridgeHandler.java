@@ -48,7 +48,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.airparif.internal.AirParifException;
-import org.openhab.binding.airparif.internal.AirParifIconProvider;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Bulletin;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Episode;
@@ -57,13 +56,11 @@ import org.openhab.binding.airparif.internal.api.AirParifDto.KeyInfo;
 import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Version;
-import org.openhab.binding.airparif.internal.api.ColorMap;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.BridgeConfiguration;
 import org.openhab.binding.airparif.internal.deserialization.AirParifDeserializer;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -97,17 +94,14 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     private final Logger logger = LoggerFactory.getLogger(AirParifBridgeHandler.class);
     private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
     private final AirParifDeserializer deserializer;
-    private final AirParifIconProvider iconProvider;
     private final HttpClient httpClient;
 
     private BridgeConfiguration config = new BridgeConfiguration();
     private @Nullable PollensResponse pollens;
 
-    public AirParifBridgeHandler(Bridge bridge, HttpClient httpClient, AirParifDeserializer deserializer,
-            AirParifIconProvider iconProvider) {
+    public AirParifBridgeHandler(Bridge bridge, HttpClient httpClient, AirParifDeserializer deserializer) {
         super(bridge);
         this.deserializer = deserializer;
-        this.iconProvider = iconProvider;
         this.httpClient = httpClient;
     }
 
@@ -202,14 +196,6 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         logger.info("The api key is valid until {}", keyInfo.expiration().toString());
         updateStatus(ThingStatus.ONLINE);
 
-        try {
-            ColorMap map = executeUri(PREV_COLORS_URI, ColorMap.class);
-            logger.debug("The color map is {}", map.toString());
-            iconProvider.setColorMap(map);
-        } catch (AirParifException e) {
-            logger.warn("Error reading ColorMap: {}", e.getMessage());
-        }
-
         ThingUID thingUID = thing.getUID();
 
         schedule(POLLENS_JOB, () -> updatePollens(new ChannelGroupUID(thingUID, GROUP_POLLENS)), Duration.ofSeconds(1));
@@ -257,15 +243,15 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         Set.of(bulletin.today(), bulletin.tomorrow()).stream().forEach(aq -> {
             ChannelGroupUID groupUID = aq.isToday() ? todayGroupUID : tomorrowGroupUID;
             updateState(new ChannelUID(groupUID, CHANNEL_COMMENT),
-                    !aq.available() ? UnDefType.UNDEF : new StringType(aq.bulletin().fr()));
+                    !aq.available() ? UnDefType.NULL : new StringType(aq.bulletin().fr()));
 
             aq.concentrations().forEach(measure -> {
                 Pollutant pollutant = measure.pollutant();
                 String cName = pollutant.name().toLowerCase() + "-";
                 updateState(new ChannelUID(groupUID, cName + "min"),
-                        aq.available() ? new QuantityType<>(measure.min(), pollutant.unit) : UnDefType.UNDEF);
+                        aq.available() ? measure.getMin() : UnDefType.NULL);
                 updateState(new ChannelUID(groupUID, cName + "max"),
-                        aq.available() ? new QuantityType<>(measure.max(), pollutant.unit) : UnDefType.UNDEF);
+                        aq.available() ? measure.getMax() : UnDefType.NULL);
             });
         });
 

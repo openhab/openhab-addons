@@ -26,7 +26,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
-import org.openhab.binding.airparif.internal.api.ColorMap;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
@@ -50,15 +49,14 @@ import org.slf4j.LoggerFactory;
 public class AirParifIconProvider implements IconProvider {
     private static final String NEUTRAL_COLOR = "#3d3c3c";
     private static final String DEFAULT_LABEL = "Air Parif Icons";
+    private static final String AQ_ICON = "aq";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating air quality levels provided by AirParif";
-    private static final List<String> ICONS = List.of("average", "bad", "degrated", "extremely-bad", "good", "pollen");
     private static final List<String> POLLEN_ICONS = Pollen.AS_SET.stream().map(Pollen::name).map(String::toLowerCase)
             .toList();
 
     private final Logger logger = LoggerFactory.getLogger(AirParifIconProvider.class);
     private final TranslationProvider i18nProvider;
     private final Bundle bundle;
-    private @Nullable ColorMap colorMap;
 
     @Activate
     public AirParifIconProvider(final BundleContext context, final @Reference TranslationProvider i18nProvider) {
@@ -87,24 +85,31 @@ public class AirParifIconProvider implements IconProvider {
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
         return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID)
-                && (ICONS.contains(category) || POLLEN_ICONS.contains(category)) ? 0 : null;
+                && (category.equals(AQ_ICON) || POLLEN_ICONS.contains(category)) ? 0 : null;
     }
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        URL iconResource = bundle.getEntry("icon/%s.svg".formatted(category));
+        int ordinal = -1;
+        try {
+            ordinal = state != null ? Integer.valueOf(state) : -1;
+        } catch (NumberFormatException ignore) {
+        }
+
+        String iconName = "icon/%s.svg".formatted(category);
+        if (category.equals(AQ_ICON) && ordinal != -1) {
+            iconName = iconName.replace(".", "-%d.".formatted(ordinal));
+        }
+
+        URL iconResource = bundle.getEntry(iconName);
 
         String result;
         try (InputStream stream = iconResource.openStream()) {
             result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 
-            if (POLLEN_ICONS.contains(category) && state != null) {
-                try {
-                    int ordinal = Integer.valueOf(state);
-                    PollenAlertLevel alertLevel = PollenAlertLevel.valueOf(ordinal);
-                    result = result.replaceAll(NEUTRAL_COLOR, alertLevel.color);
-                } catch (NumberFormatException ignore) {
-                }
+            if (POLLEN_ICONS.contains(category)) {
+                PollenAlertLevel alertLevel = PollenAlertLevel.valueOf(ordinal);
+                result = result.replaceAll(NEUTRAL_COLOR, alertLevel.color);
             }
         } catch (IOException e) {
             logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
@@ -112,9 +117,5 @@ public class AirParifIconProvider implements IconProvider {
         }
 
         return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes());
-    }
-
-    public void setColorMap(ColorMap map) {
-        this.colorMap = map;
     }
 }
