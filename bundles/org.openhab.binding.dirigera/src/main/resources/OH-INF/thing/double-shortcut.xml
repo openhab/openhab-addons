@@ -21,7 +21,7 @@
 				<label>Button 2 Trigger</label>
 				<description>Trigger of second button</description>
 			</channel>
-			<channel id="battery-level" typeId="percent">
+			<channel id="battery-level" typeId="system.battery-level">
 				<label>Battery Charge Level</label>
 				<description>Battery charge level in percent</description>
 			</channel>

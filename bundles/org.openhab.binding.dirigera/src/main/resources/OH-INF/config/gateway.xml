@@ -6,8 +6,8 @@
 
 	<config-description uri="thing-type:dirigera:gateway">
 		<parameter name="ipAddress" type="text" required="true">
-			<label>DIRIGERA IP Address</label>
-			<description>DIRIGERA IP Address</description>
+			<label>IP Address</label>
+			<description>Gateway IP Address</description>
 		</parameter>
 		<parameter name="id" type="text">
 			<label>Device Id</label>
