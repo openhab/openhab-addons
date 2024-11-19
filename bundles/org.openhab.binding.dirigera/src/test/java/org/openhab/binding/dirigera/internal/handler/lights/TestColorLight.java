@@ -101,8 +101,8 @@ class TestColorLight {
         assertEquals(89, ((HSBType) hsbState).getHue().intValue(), "Hue");
         assertEquals(100, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
         // brightness of device is 100 (previous state) but due to power OFF state it's reflected as 0
-        // assertEquals(0, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
-        assertEquals(100, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
+        assertEquals(0, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
+        // assertEquals(100, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
 
         // test ota
         State otaStatus = callback.getState("dirigera:color-light:test-device:ota-status");

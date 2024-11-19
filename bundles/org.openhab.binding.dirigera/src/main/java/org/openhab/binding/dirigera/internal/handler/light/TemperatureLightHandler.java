@@ -74,14 +74,15 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        logger.trace("DIRIGERA TEMPERATURE_LIGHT {} handleCommand {} {}", thing.getLabel(), channelUID, command);
+        logger.trace("DIRIGERA TEMPERATURE_LIGHT {} handleCommand {} {} {}", thing.getLabel(), channelUID, command,
+                command.getClass());
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         if (targetProperty != null) {
             switch (channel) {
                 case CHANNEL_LIGHT_TEMPERATURE:
                     if (command instanceof PercentType percent) {
-                        int kelvin = Math.round(colorTemperatureMin - (range * percent.intValue() / 100));
+                        int kelvin = getKelvin(percent.intValue());
                         JSONObject attributes = new JSONObject();
                         attributes.put(targetProperty, kelvin);
                         super.changeProperty(LightCommand.Action.TEMPERARTURE, attributes);
@@ -114,7 +115,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                             // keep it in range with min/max
                             kelvin = Math.min(kelvin, colorTemperatureMin);
                             kelvin = Math.max(kelvin, colorTemperatureMax);
-                            int percent = Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
+                            int percent = getPercent(kelvin);
                             currentColorTemp = new PercentType(percent);
                             updateState(new ChannelUID(thing.getUID(), targetChannel), currentColorTemp);
                             break;
@@ -122,5 +123,13 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 }
             }
         }
+    }
+
+    protected int getKelvin(int percent) {
+        return Math.round(colorTemperatureMin - (range * percent / 100));
+    }
+
+    protected int getPercent(int kelvin) {
+        return Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range));
     }
 }

@@ -71,6 +71,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.StringUtils;
@@ -135,6 +136,15 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         this.commandProvider = commandProvider;
         this.bundleContext = bundleContext;
         config = new DirigeraConfiguration();
+
+        List<CommandOption> locationOptions = new ArrayList<>();
+        locationOptions.add(new CommandOption("", "Remove location"));
+        PointType location = locationProvider.getLocation();
+        if (location != null) {
+            locationOptions.add(new CommandOption(location.toFullString(), "Home location"));
+        }
+        commandProvider.setCommandOptions(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), locationOptions);
+
         /**
          * structural changes like adding, removing devices and update links needs to be done in a sequential way.
          * Pressure during startup is causing java.util.ConcurrentModificationException
