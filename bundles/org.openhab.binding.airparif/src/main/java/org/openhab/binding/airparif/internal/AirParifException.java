@@ -15,7 +15,7 @@ package org.openhab.binding.airparif.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * An exception that occurred while communicating with Air Parif API server or related processes.
+ * An exception that occurred while communicating with AirParif API server or related processes.
  *
  * @author Gaël L'hopital - Initial contribution
  */
