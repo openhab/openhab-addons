@@ -47,7 +47,7 @@ Import-Package: \
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	si-units;version='[2.1.0,2.1.1)',\
 	si.uom.si-quantity;version='[2.1.0,2.1.1)',\
-	xstream;version='[1.4.20,1.4.21)',\
+	xstream;version='[1.4.21,1.4.22)',\
 	net.bytebuddy.byte-buddy;version='[1.12.19,1.12.20)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.12.19,1.12.20)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
