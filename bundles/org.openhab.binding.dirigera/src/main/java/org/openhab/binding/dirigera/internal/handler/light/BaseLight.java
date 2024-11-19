@@ -133,7 +133,9 @@ public class BaseLight extends BaseHandler implements LightListener {
                     // thing.getLabel(), Duration.between(Instant.now(), readyForNextCommand).toMillis(),
                     // executingCommand);
                 } catch (InterruptedException e) {
+                    lightRequestQueue.clear();
                     Thread.interrupted();
+                    return;
                 }
             }
 

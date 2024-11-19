@@ -13,9 +13,9 @@
 				<label>Custom Name</label>
 				<description>Name given from IKEA home smart</description>
 			</channel>
-			<channel id="location" typeId="system.location">
+			<channel id="location" typeId="text">
 				<label>Home Location</label>
-				<description>Location in lat.,lon. coordinates</description>
+				<description>Location in latitude, longitude coordinates</description>
 			</channel>
 			<channel id="sunrise" typeId="datetime">
 				<label>Sunrise</label>
