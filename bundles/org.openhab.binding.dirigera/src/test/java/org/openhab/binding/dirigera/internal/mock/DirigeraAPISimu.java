@@ -97,7 +97,10 @@ public class DirigeraAPISimu implements DirigeraAPI {
     @Override
     public int sendPatch(String id, JSONObject attributes) {
         logger.warn("send patch {}", attributes);
-        patchMap.put(id, attributes.toString());
+        synchronized (patchMap) {
+            patchMap.put(id, attributes.toString());
+            patchMap.notifyAll();
+        }
         return 200;
     }
 
@@ -141,5 +144,17 @@ public class DirigeraAPISimu implements DirigeraAPI {
     public void deleteScene(String uuid) {
         logger.warn("deleteScene {}", uuid);
         scenesDeleted.add(uuid);
+    }
+
+    public static void waitForPatch() {
+        synchronized (patchMap) {
+            if (patchMap.isEmpty()) {
+                try {
+                    patchMap.wait(5000);
+                } catch (InterruptedException e) {
+                    fail();
+                }
+            }
+        }
     }
 }
