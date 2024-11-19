@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.AirParifException;
 import org.openhab.binding.airparif.internal.api.AirParifDto.PollutantConcentration;
-import org.openhab.binding.airparif.internal.api.ColorMap;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.service.component.annotations.Activate;
@@ -47,7 +46,6 @@ public class AirParifDeserializer {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
                 .registerTypeAdapter(PollenAlertLevel.class, new PollenAlertLevelDeserializer())
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
-                .registerTypeAdapter(ColorMap.class, new ColorMapDeserializer())
                 .registerTypeAdapter(PollutantConcentration.class, new PollutantConcentrationDeserializer())
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate

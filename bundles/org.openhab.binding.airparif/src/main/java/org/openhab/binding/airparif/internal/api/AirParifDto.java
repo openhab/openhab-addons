@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Scope;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
@@ -207,6 +208,10 @@ public class AirParifDto {
         public State getQuantity() {
             Unit<?> unit = pollutant.unit;
             return unit != null ? new QuantityType<>(getValue(), unit) : UnDefType.NULL;
+        }
+
+        public State getDate() {
+            return new DateTimeType(date);
         }
 
         public double getValue() {
