@@ -208,6 +208,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             return;
         }
 
+        logger.debug("SenseEnergyMonitorHandler: heartbeat");
         try {
             senseDiscoveredDevices = getApi().getDevices(id);
         } catch (InterruptedException | TimeoutException | ExecutionException | SenseEnergyApiException e) {
@@ -316,9 +317,16 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             }
 
             if (channelGroup.equals(CHANNEL_GROUP_DEVICES)) {
-                Channel channel = Objects.requireNonNull(getThing().getChannel(channelUID));
+                Channel channel = getThing().getChannel(channelUID);
+
+                if (channel == null) {
+                    logger.debug("Channel does not exist: {}", channelUID);
+                    return;
+                }
+
                 String senseID = channel.getProperties().get(CHANNEL_PROPERTY_ID);
                 if (senseID == null) {
+                    logger.debug("Channel does not have a senseID property: {}", channelUID);
                     return;
                 }
 
@@ -578,11 +586,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         logger.debug("onWebSocketClose ({}), {}", statusCode, reason);
-        try {
-            webSocket.restart(getApi().getAccessToken());
-        } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
-            handleApiException(e);
-        }
+        // will restart on heartbeat
     }
 
     @Override

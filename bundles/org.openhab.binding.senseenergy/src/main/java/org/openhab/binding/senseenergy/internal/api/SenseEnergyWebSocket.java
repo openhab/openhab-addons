@@ -74,6 +74,7 @@ public class SenseEnergyWebSocket implements WebSocketListener {
             throws InterruptedException, ExecutionException, IOException, URISyntaxException {
         logger.debug("Re-starting Sense Energy WebSocket");
 
+        this.stop();
         String url = String.format(WSSURL, monitorId, accessToken);
         session = (WebSocketSession) client.connect(this, new URI(url)).get();
     }
