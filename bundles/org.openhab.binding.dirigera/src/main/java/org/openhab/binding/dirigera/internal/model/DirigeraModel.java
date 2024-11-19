@@ -425,8 +425,7 @@ public class DirigeraModel implements Model {
                         } else if (capabilityList.contains("lightLevel")) {
                             return THING_TYPE_DIMMABLE_LIGHT;
                         } else if (capabilityList.contains("isOn")) {
-                            // [TODO] Switchable light needed
-                            return THING_TYPE_DIMMABLE_LIGHT;
+                            return THING_TYPE_SWITCH_LIGHT;
                         } else {
                             logger.warn("DIRIGERA MODEL cannot identify light {}", data);
                         }
