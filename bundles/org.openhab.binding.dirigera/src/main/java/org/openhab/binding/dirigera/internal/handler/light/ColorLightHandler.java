@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_COLOR;
+import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -68,8 +68,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 command, hsbDevice);
 
         String channel = channelUID.getIdWithoutGroup();
-        String targetProperty = channel2PropertyMap.get(channel);
-        if (targetProperty != null) {
+        if (CHANNEL_LIGHT_COLOR.equals(channel)) {
             if (command instanceof HSBType hsb) {
                 // respect sequence
                 switch (lightConfig.fadeSequence) {
@@ -96,6 +95,17 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 }
             } else {
                 logger.trace("DIRIGERA COLOR_LIGHT type not known {}", command.getClass());
+            }
+        }
+        if (CHANNEL_LIGHT_TEMPERATURE.equals(channel)) {
+            if (command instanceof PercentType percent) {
+                int kelvin = super.getKelvin(percent.intValue());
+                HSBType colorTemp = TempToRgb.getTemperatureOpt1(kelvin);
+                HSBType colorTempAdaption = new HSBType(colorTemp.getHue(), colorTemp.getSaturation(),
+                        hsbDevice.getBrightness());
+                logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand temperature adaption {}", thing.getLabel(),
+                        colorTempAdaption);
+                colorCommand(colorTempAdaption);
             }
         }
     }

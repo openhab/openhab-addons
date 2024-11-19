@@ -13,13 +13,13 @@
 		<description>Air measure for temperature, humidity and particles</description>
 
 		<channels>
-			<channel id="indoor-temperature" typeId="system.indoor-temperature">
-				<label>Indoor Temperature</label>
-				<description>Current indoor temperature.</description>
+			<channel id="temperature" typeId="system.indoor-temperature">
+				<label>Temperature</label>
+				<description>Current indoor temperature</description>
 			</channel>
-			<channel id="atmospheric-humidity" typeId="system.atmospheric-humidity">
-				<label>Atmospheric Humidity</label>
-				<description>Atmospheric humidity in percent.</description>
+			<channel id="humidity" typeId="system.atmospheric-humidity">
+				<label>Humidity</label>
+				<description>Atmospheric humidity in percent</description>
 			</channel>
 			<channel id="particulate-matter" typeId="pm25">
 				<label>Particulate Matter</label>
