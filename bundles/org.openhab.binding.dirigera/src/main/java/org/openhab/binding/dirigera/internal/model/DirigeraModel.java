@@ -124,7 +124,6 @@ public class DirigeraModel implements Model {
             });
         } else {
             logger.debug("DIRIGERA MODEL discovery disabled");
-
         }
     }
 
@@ -410,16 +409,29 @@ public class DirigeraModel implements Model {
                 case DEVICE_TYPE_GATEWAY:
                     return THING_TYPE_GATEWAY;
                 case DEVICE_TYPE_LIGHT:
-                    if (attributes.has(ATTRIBUTE_COLOR_MODE)) {
-                        String colorMode = attributes.getString(ATTRIBUTE_COLOR_MODE);
-                        switch (colorMode) {
-                            case "color":
-                                return THING_TYPE_COLOR_LIGHT;
-                            case "temperature":
-                                return THING_TYPE_TEMPERATURE_LIGHT;
+                    if (data.has(CAPABILITIES)) {
+                        JSONObject capabilities = data.getJSONObject(CAPABILITIES);
+                        List<String> capabilityList = new ArrayList<>();
+                        if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
+                            JSONArray receiveProperties = capabilities.getJSONArray(PROPERTY_CAN_RECEIVE);
+                            receiveProperties.forEach(capability -> {
+                                capabilityList.add(capability.toString());
+                            });
+                        }
+                        if (capabilityList.contains("colorHue")) {
+                            return THING_TYPE_COLOR_LIGHT;
+                        } else if (capabilityList.contains("colorTemperature")) {
+                            return THING_TYPE_TEMPERATURE_LIGHT;
+                        } else if (capabilityList.contains("lightLevel")) {
+                            return THING_TYPE_DIMMABLE_LIGHT;
+                        } else if (capabilityList.contains("isOn")) {
+                            // [TODO] Switchable light needed
+                            return THING_TYPE_DIMMABLE_LIGHT;
+                        } else {
+                            logger.warn("DIRIGERA MODEL cannot identify light {}", data);
                         }
                     } else {
-                        return THING_TYPE_DIMMABLE_LIGHT;
+                        logger.warn("DIRIGERA MODEL cannot identify light {}", data);
                     }
                     break;
                 case DEVICE_TYPE_MOTION_SENSOR:
