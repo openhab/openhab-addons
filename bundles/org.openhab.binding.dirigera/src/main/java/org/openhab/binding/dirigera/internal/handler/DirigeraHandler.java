@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -341,7 +342,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     private void updateProperties() {
         Map<String, Object> propertiesMap = model().getPropertiesFor(config.id);
-        Map<String, String> currentProperties = editProperties();
+        TreeMap<String, String> currentProperties = new TreeMap<>(editProperties());
         propertiesMap.forEach((key, value) -> {
             currentProperties.put(key, value.toString());
         });

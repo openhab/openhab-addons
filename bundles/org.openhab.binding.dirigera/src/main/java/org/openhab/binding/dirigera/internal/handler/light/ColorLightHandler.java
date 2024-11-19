@@ -99,13 +99,18 @@ public class ColorLightHandler extends TemperatureLightHandler {
         }
         if (CHANNEL_LIGHT_TEMPERATURE.equals(channel)) {
             if (command instanceof PercentType percent) {
-                int kelvin = super.getKelvin(percent.intValue());
-                HSBType colorTemp = TempToRgb.getTemperatureOpt1(kelvin);
-                HSBType colorTempAdaption = new HSBType(colorTemp.getHue(), colorTemp.getSaturation(),
-                        hsbDevice.getBrightness());
-                logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand temperature adaption {}", thing.getLabel(),
-                        colorTempAdaption);
-                colorCommand(colorTempAdaption);
+                if (!receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY)) {
+                    int kelvin = super.getKelvin(percent.intValue());
+                    HSBType colorTemp = getHSBTemperature(kelvin);
+                    HSBType colorTempAdaption = new HSBType(colorTemp.getHue(), colorTemp.getSaturation(),
+                            hsbDevice.getBrightness());
+                    logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand temperature adaption {}", thing.getLabel(),
+                            colorTempAdaption);
+                    colorCommand(colorTempAdaption);
+                } else {
+                    logger.trace("DIRIGERA COLOR_LIGHT {} handleCommand to be executed by temperature light {}",
+                            thing.getLabel(), command);
+                }
             }
         }
     }
@@ -203,5 +208,72 @@ public class ColorLightHandler extends TemperatureLightHandler {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), hsbStateReflection);
             }
         }
+    }
+
+    /**
+     * Simulate color-temperature if color light doesn't have the "canReceive" "colorTemperature" capability
+     * https://www.npmjs.com/package/color-temperature?activeTab=code
+     *
+     * @param kelvin
+     * @return color temperature as HSBType
+     */
+    public static HSBType getHSBTemperature(long kelvin) {
+        double temperature = kelvin / 100.0;
+        double red;
+        double green;
+        double blue;
+
+        /* Calculate red */
+        if (temperature <= 66.0) {
+            red = 255;
+        } else {
+            red = temperature - 60.0;
+            red = 329.698727446 * Math.pow(red, -0.1332047592);
+            if (red < 0) {
+                red = 0;
+            }
+            if (red > 255) {
+                red = 255;
+            }
+        }
+        /* Calculate green */
+        if (temperature <= 66.0) {
+            green = temperature;
+            green = 99.4708025861 * Math.log(green) - 161.1195681661;
+            if (green < 0) {
+                green = 0;
+            }
+            if (green > 255) {
+                green = 255;
+            }
+        } else {
+            green = temperature - 60.0;
+            green = 288.1221695283 * Math.pow(green, -0.0755148492);
+            if (green < 0) {
+                green = 0;
+            }
+            if (green > 255) {
+                green = 255;
+            }
+        }
+
+        /* Calculate blue */
+        if (temperature >= 66.0) {
+            blue = 255;
+        } else {
+            if (temperature <= 19.0) {
+                blue = 0;
+            } else {
+                blue = temperature - 10;
+                blue = 138.5177312231 * Math.log(blue) - 305.0447927307;
+                if (blue < 0) {
+                    blue = 0;
+                }
+                if (blue > 255) {
+                    blue = 255;
+                }
+            }
+        }
+        return HSBType.fromRGB((int) Math.round(red), (int) Math.round(green), (int) Math.round(blue));
     }
 }

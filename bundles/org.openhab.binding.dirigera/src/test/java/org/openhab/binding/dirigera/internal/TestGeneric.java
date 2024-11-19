@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * {@link TestGeneric} some basic tests
@@ -67,5 +69,17 @@ class TestGeneric {
         assertFalse(brightness1.equals(dummy3));
         LightCommand color = new LightCommand(dummy2, LightCommand.Action.COLOR);
         assertFalse(lightRequestQueue.contains(color));
+    }
+
+    @Test
+    void testKelvinToHSB() {
+        for (int i = 1000; i < 6000; i += 100) {
+            HSBType color = ColorLightHandler.getHSBTemperature(i);
+            int[] rgb = ColorUtil.hsbToRgb(color);
+            System.out.println(i + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+            int hue = color.getHue().intValue();
+            int sat = color.getSaturation().intValue();
+            // System.out.println(i + ": " + hue + "," + sat + "," + color.getBrightness().intValue());
+        }
     }
 }
