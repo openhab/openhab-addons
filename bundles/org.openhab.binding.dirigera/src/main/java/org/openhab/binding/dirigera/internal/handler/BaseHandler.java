@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -85,6 +86,12 @@ public class BaseHandler extends BaseThingHandler {
     protected List<String> softLinks = new ArrayList<>();
     protected List<String> linkCandidateTypes = new ArrayList<>();
 
+    /**
+     * Lists for canReceive and can Send capabilities
+     */
+    protected List<String> receiveCapabilities = new ArrayList<>();
+    protected List<String> sendCapabilities = new ArrayList<>();
+
     protected State requestedPowerState = UnDefType.UNDEF;
     protected State currentPowerState = UnDefType.UNDEF;
     protected BaseDeviceConfiguration config;
@@ -146,6 +153,31 @@ public class BaseHandler extends BaseThingHandler {
             if (proxy != null) {
                 gateway().registerDevice(proxy, config.id);
             }
+
+            // fill canSend and canReceive capabilities
+            Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
+            Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
+            if (canReceiveCapabilities instanceof JSONArray jsonArray) {
+                jsonArray.forEach(capability -> {
+                    if (!receiveCapabilities.contains(capability.toString())) {
+                        receiveCapabilities.add(capability.toString());
+                    }
+                });
+            }
+            Object canSendCapabilities = modelProperties.get(Model.PROPERTY_CAN_SEND);
+            if (canSendCapabilities instanceof JSONArray jsonArray) {
+                jsonArray.forEach(capability -> {
+                    if (!sendCapabilities.contains(capability.toString())) {
+                        sendCapabilities.add(capability.toString());
+                    }
+                });
+            }
+
+            TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
+            modelProperties.forEach((key, value) -> {
+                handlerProperties.put(key, value.toString());
+            });
+            updateProperties(handlerProperties);
         }
     }
 

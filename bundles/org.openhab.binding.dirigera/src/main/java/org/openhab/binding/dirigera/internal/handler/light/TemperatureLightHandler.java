@@ -16,6 +16,7 @@ import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_TEMP
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class TemperatureLightHandler extends DimmableLightHandler {
     private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
 
-    // default values of "standard Ikea lamps" from json
+    // default values of "standard IKEA lamps" from json
     private int colorTemperatureMax = 2202;
     private int colorTemperatureMin = 4000;
     private int range = colorTemperatureMin - colorTemperatureMax;
@@ -55,15 +56,19 @@ public class TemperatureLightHandler extends DimmableLightHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
             // check for settings of color temperature in attributes
+            TreeMap<String, String> properties = new TreeMap<>(editProperties());
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
                 if ("colorTemperatureMin".equals(key)) {
                     colorTemperatureMin = attributes.getInt(key);
+                    properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin));
                 } else if ("colorTemperatureMax".equals(key)) {
                     colorTemperatureMax = attributes.getInt(key);
+                    properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax));
                 }
             }
+            updateProperties(properties);
             range = colorTemperatureMin - colorTemperatureMax;
             logger.debug("DIRIGERA TEMPERATURE_LIGHT Temperature range from {} to {}", colorTemperatureMin,
                     colorTemperatureMax);
@@ -82,13 +87,22 @@ public class TemperatureLightHandler extends DimmableLightHandler {
             switch (channel) {
                 case CHANNEL_LIGHT_TEMPERATURE:
                     if (command instanceof PercentType percent) {
-                        int kelvin = getKelvin(percent.intValue());
-                        JSONObject attributes = new JSONObject();
-                        attributes.put(targetProperty, kelvin);
-                        super.changeProperty(LightCommand.Action.TEMPERARTURE, attributes);
-                        if (!isPowered()) {
-                            // fake event for power OFF
-                            updateState(channelUID, percent);
+                        /*
+                         * some color lights which inherit this temperature light don't have the temperature capability.
+                         * As workaround child class ColorLightHandler is handling color temperature
+                         */
+                        if (receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY)) {
+                            int kelvin = getKelvin(percent.intValue());
+                            JSONObject attributes = new JSONObject();
+                            attributes.put(targetProperty, kelvin);
+                            super.changeProperty(LightCommand.Action.TEMPERARTURE, attributes);
+                            if (!isPowered()) {
+                                // fake event for power OFF
+                                updateState(channelUID, percent);
+                            }
+                        } else {
+                            logger.trace("DIRIGERA TEMPERATURE_LIGHT {} doesn't have temperature capability {}",
+                                    thing.getLabel(), receiveCapabilities);
                         }
                     } else if (command instanceof OnOffType onOff) {
                         super.addOnOffCommand(OnOffType.ON.equals(onOff));
