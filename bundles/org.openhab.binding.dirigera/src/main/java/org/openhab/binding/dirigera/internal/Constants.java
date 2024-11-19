@@ -188,8 +188,8 @@ public class Constants {
     public static final String CHANNEL_LAST_TRIGGER = "last-trigger";
 
     // Air quality channels
-    public static final String CHANNEL_TEMPERATURE = "indoor-temperature";
-    public static final String CHANNEL_HUMIDITY = "atmospheric-humidity";
+    public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_PARTICULATE_MATTER = "particulate-matter";
     public static final String CHANNEL_VOC_INDEX = "voc-index";
 
@@ -291,7 +291,7 @@ public class Constants {
         {
             put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
             put(PROPERTY_POWER_STATE, CHANNEL_POWER_STATE);
-            put("lightLevel", CHANNEL_LIGHT_COLOR);
+            put("lightLevel", CHANNEL_LIGHT_BRIGHTNESS);
             put("colorHue", CHANNEL_LIGHT_COLOR);
             put("colorSaturation", CHANNEL_LIGHT_COLOR);
             put("colorTemperature", CHANNEL_LIGHT_TEMPERATURE);
