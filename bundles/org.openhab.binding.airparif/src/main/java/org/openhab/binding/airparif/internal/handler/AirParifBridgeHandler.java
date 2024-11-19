@@ -278,10 +278,6 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
         updateState(new ChannelUID(dailyGroupUID, CHANNEL_MESSAGE), new StringType(episode.message().fr()));
         updateState(new ChannelUID(dailyGroupUID, CHANNEL_TOMORROW), new StringType(episode.message().fr()));
 
-        // Set.of(episode.today(), episode.tomorrow()).stream().forEach(aq -> {
-
-        // });
-
         ZonedDateTime tomorrowMorning = ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1);
         schedule(EPISODE_JOB, () -> updateEpisode(dailyGroupUID),
                 Duration.between(ZonedDateTime.now(), tomorrowMorning));

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AirParifIconProvider implements IconProvider {
     private static final String NEUTRAL_COLOR = "#3d3c3c";
-    private static final String DEFAULT_LABEL = "Air Parif Icons";
+    private static final String DEFAULT_LABEL = "AirParif Icons";
     private static final String AQ_ICON = "aq";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating air quality levels provided by AirParif";
     private static final List<String> POLLEN_ICONS = Pollen.AS_SET.stream().map(Pollen::name).map(String::toLowerCase)

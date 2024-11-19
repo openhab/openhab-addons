@@ -36,7 +36,6 @@ public class AirParifApi {
     public static final URI EPISODES_URI = AIRPARIF_BUILDER.clone().path("episodes").path("en-cours-et-prevus").build();
 
     private static final UriBuilder INDICES_BUILDER = AIRPARIF_BUILDER.clone().path("indices").path("prevision");
-    public static final URI PREV_COLORS_URI = INDICES_BUILDER.clone().path("couleurs").build();
     public static final URI PREV_BULLETIN_URI = INDICES_BUILDER.clone().path("bulletin").build();
 
     private static final UriBuilder POLLENS_BUILDER = AIRPARIF_BUILDER.clone().path("pollens");
@@ -44,6 +43,7 @@ public class AirParifApi {
 
     // Poor interest, only returns highest risk level for the dept.
     // public static final UriBuilder POLLENS_DEPT_BUILDER = POLLENS_BUILDER.clone().path("departement");
+    // public static final URI PREV_COLORS_URI = INDICES_BUILDER.clone().path("couleurs").build();
 
     public enum Scope {
         @SerializedName("Cartes et résultats Hor'Air")
