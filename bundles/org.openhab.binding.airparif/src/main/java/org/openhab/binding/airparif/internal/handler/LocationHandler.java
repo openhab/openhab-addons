@@ -30,7 +30,6 @@ import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
 import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelGroupUID;
@@ -110,8 +109,7 @@ public class LocationHandler extends BaseThingHandler implements HandlerUtils {
                     ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), pollutant.name().toLowerCase());
                     updateState(new ChannelUID(groupUID, CHANNEL_MESSAGE), concentration.getMessage());
                     if (!pollutant.hasUnit()) {
-                        updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP),
-                                new DateTimeType(concentration.date()));
+                        updateState(new ChannelUID(groupUID, CHANNEL_TIMESTAMP), concentration.getDate());
                         updateState(new ChannelUID(groupUID, CHANNEL_ALERT), new DecimalType(maxAlert));
                     } else {
                         updateState(new ChannelUID(groupUID, CHANNEL_VALUE), concentration.getQuantity());
