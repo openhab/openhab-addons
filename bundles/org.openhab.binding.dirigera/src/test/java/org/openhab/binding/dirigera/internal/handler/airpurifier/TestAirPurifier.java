@@ -91,7 +91,6 @@ class TestAirPurifier {
     @Test
     void testCommands() {
         testHandlerCreation();
-        // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
         handler.handleCommand(new ChannelUID(thing.getUID(), "fan-mode"), new DecimalType(4));
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
