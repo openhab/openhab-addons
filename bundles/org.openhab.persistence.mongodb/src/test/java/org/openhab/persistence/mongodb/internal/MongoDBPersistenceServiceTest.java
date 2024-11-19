@@ -699,8 +699,9 @@ public class MongoDBPersistenceServiceTest {
 
             if (item instanceof DateTimeItem) {
                 // verify just the date part
-                assertEquals(((DateTimeType) item.getState()).getZonedDateTime().toLocalDate(),
-                        ((DateTimeType) result.iterator().next().getState()).getZonedDateTime().toLocalDate());
+                assertEquals(((DateTimeType) item.getState()).getInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                        ((DateTimeType) result.iterator().next().getState()).getInstant().atZone(ZoneId.systemDefault())
+                                .toLocalDate());
             } else {
                 VerificationHelper.verifyQueryResult(result, item.getState());
             }
