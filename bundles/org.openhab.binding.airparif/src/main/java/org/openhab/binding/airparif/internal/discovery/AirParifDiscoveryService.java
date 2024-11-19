@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.airparif.internal.discovery;
 
-import static org.openhab.binding.airparif.internal.AirParifBindingConstants.*;
+import static org.openhab.binding.airparif.internal.AirParifBindingConstants.LOCATION_THING_TYPE;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.airparif.internal.config.LocationConfiguration;
@@ -43,13 +44,12 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AirParifDiscoveryService.class);
-    private final DepartmentDbService dbService;
+    private final DepartmentDbService dbService = new DepartmentDbService();
 
     private @NonNullByDefault({}) LocationProvider locationProvider;
 
     public AirParifDiscoveryService() {
-        super(AirParifBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
-        dbService = new DepartmentDbService();
+        super(AirParifBridgeHandler.class, Set.of(LOCATION_THING_TYPE), DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Reference(unbind = "-")
@@ -77,7 +77,7 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
         if (!candidates.isEmpty()) {
             candidates.forEach(dep -> thingDiscovered(
                     DiscoveryResultBuilder.create(new ThingUID(LOCATION_THING_TYPE, bridgeUID, dep.id()))//
-                            .withLabel("Location Report: %s".formatted(dep.name())) //
+                            .withLabel("Air Quality Report: %s".formatted(dep.name())) //
                             .withProperty(LocationConfiguration.DEPARTMENT, dep.id()) //
                             .withProperty(LocationConfiguration.LOCATION, serverLocation.toFullString())//
                             .withRepresentationProperty(LocationConfiguration.DEPARTMENT) //

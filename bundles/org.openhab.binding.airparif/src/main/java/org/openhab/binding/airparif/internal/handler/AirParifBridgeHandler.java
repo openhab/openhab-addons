@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -60,6 +61,7 @@ import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.BridgeConfiguration;
 import org.openhab.binding.airparif.internal.deserialization.AirParifDeserializer;
+import org.openhab.binding.airparif.internal.discovery.AirParifDiscoveryService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -70,6 +72,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -329,5 +332,10 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     @Override
     public Map<String, ScheduledFuture<?>> getJobs() {
         return jobs;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(AirParifDiscoveryService.class);
     }
 }
