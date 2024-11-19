@@ -267,7 +267,7 @@ Light with brightness support.
 
 | Channel               | Type                  | Read/Write | Description                                      | Advanced |
 |-----------------------|-----------------------|------------|--------------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of light                             |          |
+| `power`               | Switch                | RW         | Power state of light                             |          |
 | `brightness`          | Dimmer                | RW         | Control brightness of light                      |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff              |          |
 | `links`               | String                | RW         | Linked controllers and sensors                   |          |
@@ -313,7 +313,7 @@ Light with color temperature support.
 
 | Channel               | Type                  | Read/Write | Description                                          | Advanced |
 |-----------------------|-----------------------|------------|------------------------------------------------------|----------|
-| `power-state`         | Switch                | RW         | Power state of light                                 |          |
+| `power`               | Switch                | RW         | Power state of light                                 |          |
 | `brightness`          | Dimmer                | RW         | Control brightness of light                          |          |
 | `color-temperature`   | Dimmer                | RW         | Color temperature from cold (0 %) to warm (100 %)    |          |
 | `startup`             | Number                | RW         | Startup behavior after power cutoff                  |          |
@@ -744,21 +744,21 @@ Bridge dirigera:gateway:myhome                      "My wonderful Home"         
 ```java
 Switch                      Table_Lamp_Power_State      { channel="dirigera:temperature-light:myhome:living-room-bulb:power-state" }
 Dimmer                      Table_Lamp_Brightness       { channel="dirigera:temperature-light:myhome:living-room-bulb:brightness" }
-Dimmer                      Table_Lamp_Temperature      { channel="dirigera:temperature-light:myhome:living-room-bulb:temperature" }
+Dimmer                      Table_Lamp_Temperature      { channel="dirigera:temperature-light:myhome:living-room-bulb:color-temperature" }
 Number                      Table_Lamp_Startup          { channel="dirigera:temperature-light:myhome:living-room-bulb:startup" }
 Number                      Table_Lamp_OTA_Status       { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-status" }
 Number                      Table_Lamp_OTA_State        { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-state" }
 Number                      Table_Lamp_OTA_Progress     { channel="dirigera:temperature-light:myhome:living-room-bulb:ota-progress" }
 String                      Table_Lamp_JSON             { channel="dirigera:temperature-light:myhome:living-room-bulb:json" }
 
-Switch                      Dishwasher_Power_State      { channel="dirigera:smart-plug:myhome:dishwasher:power-state" }
+Switch                      Dishwasher_Power_State      { channel="dirigera:smart-plug:myhome:dishwasher:power" }
 Switch                      Dishwasher_Child_lock       { channel="dirigera:smart-plug:myhome:dishwasher:child-lock" }
 Switch                      Dishwasher_Disable_Light    { channel="dirigera:smart-plug:myhome:dishwasher:disable-light" }
-Number:Power                Dishwasher_Power            { channel="dirigera:smart-plug:myhome:dishwasher:power" }
+Number:Power                Dishwasher_Power            { channel="dirigera:smart-plug:myhome:dishwasher:electric-power" }
 Number:Energy               Dishwasher_Energy_Total     { channel="dirigera:smart-plug:myhome:dishwasher:energy-total" }
 Number:Energy               Dishwasher_Energy_Reset     { channel="dirigera:smart-plug:myhome:dishwasher:energy-reset" }
-Number:ElectricCurrent      Dishwasher_Ampere           { channel="dirigera:smart-plug:myhome:dishwasher:ampere" }
-Number:ElectricPotential    Dishwasher_Voltage          { channel="dirigera:smart-plug:myhome:dishwasher:voltage" }
+Number:ElectricCurrent      Dishwasher_Ampere           { channel="dirigera:smart-plug:myhome:dishwasher:electric-current" }
+Number:ElectricPotential    Dishwasher_Voltage          { channel="dirigera:smart-plug:myhome:dishwasher:electric-potential" }
 Number                      Dishwasher_Startup          { channel="dirigera:smart-plug:myhome:dishwasher:startup" }
 Number                      Dishwasher_OTA_Status       { channel="dirigera:smart-plug:myhome:dishwasher:ota-status" }
 Number                      Dishwasher_OTA_State        { channel="dirigera:smart-plug:myhome:dishwasher:ota-state" }
