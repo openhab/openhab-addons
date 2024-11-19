@@ -31,11 +31,16 @@ public interface Model {
 
     public static final String REACHABLE = "isReachable";
     public static final String ATTRIBUTES = "attributes";
+    public static final String CAPABILITIES = "capabilities";
+    public static final String PROPERTY_CAN_RECEIVE = "canReceive";
+    public static final String PROPERTY_CAN_SEND = "canSend";
     public static final String SCENES = "scenes";
     public static final String CUSTOM_NAME = "customName";
     public static final String DEVICE_MODEL = "model";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PROPERTY_RELATION_ID = "relationId";
+
+    public static final String COLOR_TEMPERATURE_CAPABILITY = "colorTemperature";
 
     public static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
     public static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";

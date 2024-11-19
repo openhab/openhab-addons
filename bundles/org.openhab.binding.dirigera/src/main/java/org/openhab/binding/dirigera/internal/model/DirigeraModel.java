@@ -310,6 +310,7 @@ public class DirigeraModel implements Model {
     public synchronized Map<String, Object> getPropertiesFor(String id) {
         final Map<String, Object> properties = new HashMap<>();
         JSONObject deviceObject = getAllFor(id, PROPERTY_DEVICES);
+        // get manufacturer, model and version data
         if (deviceObject.has(ATTRIBUTES)) {
             JSONObject attributes = deviceObject.getJSONObject(ATTRIBUTES);
             THING_PROPERTIES.forEach(property -> {
@@ -318,7 +319,19 @@ public class DirigeraModel implements Model {
                 }
             });
         }
+        // put id in as representation property
         properties.put(PROPERTY_DEVICE_ID, id);
+        // add capabilities
+        if (deviceObject.has(CAPABILITIES)) {
+            JSONObject capabilities = deviceObject.getJSONObject(CAPABILITIES);
+            if (capabilities.has(PROPERTY_CAN_RECEIVE)) {
+                properties.put(PROPERTY_CAN_RECEIVE, capabilities.getJSONArray(PROPERTY_CAN_RECEIVE));
+            }
+            if (capabilities.has(PROPERTY_CAN_SEND)) {
+                properties.put(PROPERTY_CAN_SEND, capabilities.getJSONArray(PROPERTY_CAN_SEND));
+            }
+        }
+
         return properties;
     }
 
