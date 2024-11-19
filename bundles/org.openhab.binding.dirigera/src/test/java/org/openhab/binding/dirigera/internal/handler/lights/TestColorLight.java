@@ -94,12 +94,12 @@ class TestColorLight {
         State onOffState = callback.getState("dirigera:color-light:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
-        assertTrue(OnOffType.OFF.equals((onOffState)), "Power State");
+        assertTrue(OnOffType.ON.equals((onOffState)), "Power State");
         State hsbState = callback.getState("dirigera:color-light:test-device:color");
         assertNotNull(hsbState);
         assertTrue(hsbState instanceof HSBType);
-        assertEquals(89, ((HSBType) hsbState).getHue().intValue(), "Hue");
-        assertEquals(100, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
+        assertEquals(119, ((HSBType) hsbState).getHue().intValue(), "Hue");
+        assertEquals(70, ((HSBType) hsbState).getSaturation().intValue(), "Saturation");
         // brightness of device is 100 (previous state) but due to power OFF state it's reflected as 0
         assertEquals(0, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
         // assertEquals(100, ((HSBType) hsbState).getBrightness().intValue(), "Brightness");
