@@ -16,25 +16,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
-import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
+import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -48,33 +47,32 @@ class TestSmartPlug {
     String deviceId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SMART_PLUG;
 
+    private static SmartPlugHandler handler = mock(SmartPlugHandler.class);
+    private static CallbackMock callback = mock(CallbackMock.class);
+    private static Thing thing = mock(Thing.class);
+
     @Test
     void testHandlerCreation() {
-        HandlerFactoryMock hfm = new HandlerFactoryMock(mock(StorageService.class));
-        assertTrue(hfm.supportsThingType(thingTypeUID));
-        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
-        ThingHandler th = hfm.createHandler(thing);
-        assertNotNull(th);
-        assertTrue(th instanceof SmartPlugHandler);
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
+                false, List.of());
+        ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
+        assertTrue(factoryHandler instanceof SmartPlugHandler);
+        handler = (SmartPlugHandler) factoryHandler;
+        thing = handler.getThing();
+        ThingHandlerCallback proxyCallback = handler.getCallback();
+        assertNotNull(proxyCallback);
+        assertTrue(proxyCallback instanceof CallbackMock);
+        callback = (CallbackMock) proxyCallback;
+        handler.initialize();
+        callback.waitForOnline();
     }
 
     @Test
     void testInitialization() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
-        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
-        thing.setBridgeUID(hubBridge.getBridgeUID());
-        SmartPlugHandler handler = new SmartPlugHandler(thing, SMART_PLUG_MAP);
-        CallbackMock callback = new CallbackMock();
-        callback.setBridge(hubBridge);
-        handler.setCallback(callback);
-
-        // set the right id
-        Map<String, Object> config = new HashMap<>();
-        config.put("id", deviceId);
-        handler.handleConfigurationUpdate(config);
-
-        handler.initialize();
-        callback.waitForOnline();
+        testHandlerCreation();
+        assertNotNull(handler);
+        assertNotNull(thing);
+        assertNotNull(callback);
         checkSmartPlugStates(callback);
 
         callback.clear();
@@ -91,6 +89,20 @@ class TestSmartPlug {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTAL), RefreshType.REFRESH);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET), RefreshType.REFRESH);
         checkSmartPlugStates(callback);
+    }
+
+    @Test
+    void testCommands() {
+        DirigeraAPISimu.patchMap.clear();
+        testHandlerCreation();
+        assertNotNull(handler);
+        assertNotNull(thing);
+        assertNotNull(callback);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET), new DecimalType(0));
+        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        assertNotNull(patch);
+        assertEquals("{\"attributes\":{\"energyConsumedAtLastReset\":0}}", patch, "Reset Power");
+        DirigeraAPISimu.patchMap.clear();
     }
 
     void checkSmartPlugStates(CallbackMock callback) {

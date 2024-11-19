@@ -34,6 +34,9 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class SmartPlugHandler extends PowerPlugHandler {
 
+    private double totalEnergy = -1;
+    private double resetEnergy = -1;
+
     public SmartPlugHandler(Thing thing, Map<String, String> mapping) {
         super(thing, mapping);
         super.setChildHandler(this);
@@ -48,6 +51,12 @@ public class SmartPlugHandler extends PowerPlugHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
+        String channel = channelUID.getIdWithoutGroup();
+        switch (channel) {
+            case CHANNEL_ENERGY_RESET:
+                JSONObject reset = new JSONObject("{\"energyConsumedAtLastReset\": 0}");
+                gateway().api().sendAttributes(config.id, reset);
+        }
     }
 
     @Override
@@ -76,9 +85,21 @@ public class SmartPlugHandler extends PowerPlugHandler {
                                     QuantityType.valueOf(attributes.getDouble(key), Units.VOLT));
                             break;
                         case CHANNEL_ENERGY_TOTAL:
+                            totalEnergy = attributes.getDouble(key);
+                            updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_TOTAL),
+                                    QuantityType.valueOf(totalEnergy, Units.KILOWATT_HOUR));
+                            if (totalEnergy >= 0 && resetEnergy >= 0) {
+                                double diff = totalEnergy - resetEnergy;
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET),
+                                        QuantityType.valueOf(diff, Units.KILOWATT_HOUR));
+                            }
                         case CHANNEL_ENERGY_RESET:
-                            updateState(new ChannelUID(thing.getUID(), targetChannel),
-                                    QuantityType.valueOf(attributes.getDouble(key), Units.KILOWATT_HOUR));
+                            resetEnergy = attributes.getDouble(key);
+                            if (totalEnergy >= 0 && resetEnergy >= 0) {
+                                double diff = totalEnergy - resetEnergy;
+                                updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET),
+                                        QuantityType.valueOf(diff, Units.KILOWATT_HOUR));
+                            }
                     }
                 }
             }
