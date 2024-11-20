@@ -38,7 +38,7 @@
 
 	<channel-group-type id="device-firmware">
 		<label>Firmware</label>
-		<description>Information about the installed device firmaware and available updates.</description>
+		<description>Information about the installed device firmware and available updates.</description>
 		<category>text</category>
 		<channels>
 			<channel id="firmware" typeId="device-info-firmware"></channel>
@@ -76,7 +76,7 @@
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>
 			<channel id="sync-active" typeId="execution-sync-active"></channel>
-			<channel id="hdmi-active" typeId="executioin-hdmi-active"></channel>
+			<channel id="hdmi-active" typeId="execution-hdmi-active"></channel>
 			<channel id="hdmi-source" typeId="execution-hdmi-source"></channel>
 			<channel id="brightness" typeId="execution-brightness"></channel>
 		</channels>

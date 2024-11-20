@@ -154,7 +154,7 @@
 		<category>switch</category>
 	</channel-type>
 
-	<channel-type id="executioin-hdmi-active">
+	<channel-type id="execution-hdmi-active">
 		<item-type>Switch</item-type>
 		<label>HDMI Active</label>
 		<description>

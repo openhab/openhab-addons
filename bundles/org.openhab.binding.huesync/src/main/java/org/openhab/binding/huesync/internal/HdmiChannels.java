@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.huesync.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * 
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class HdmiChannels {
     public String NAME;
     public String TYPE;
