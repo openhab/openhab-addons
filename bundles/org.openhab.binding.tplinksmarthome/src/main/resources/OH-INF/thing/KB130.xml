@@ -16,6 +16,10 @@
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>deviceId</representation-property>
 
 		<config-description-ref uri="thing-type:tplinksmarthome:device-bulb"/>
