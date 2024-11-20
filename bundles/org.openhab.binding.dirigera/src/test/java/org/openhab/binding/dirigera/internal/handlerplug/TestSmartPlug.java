@@ -24,6 +24,7 @@ import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -98,7 +99,8 @@ class TestSmartPlug {
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET), new DecimalType(0));
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET_DATE), new DateTimeType());
+        DirigeraAPISimu.waitForPatch();
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"energyConsumedAtLastReset\":0}}", patch, "Reset Power");

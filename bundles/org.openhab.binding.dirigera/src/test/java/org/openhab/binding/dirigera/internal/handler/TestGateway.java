@@ -97,7 +97,7 @@ class TestGateway {
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), StringType.EMPTY);
         String patch = DirigeraAPISimu.patchMap.get(deviceId);
         assertNotNull(patch);
-        assertEquals("{\"attributes\":{\"coordinates\":null}}", patch, "Empty Coordinates");
+        assertEquals("{\"attributes\":{\"coordinates\":{}}}", patch, "Empty Coordinates");
         DirigeraAPISimu.patchMap.clear();
 
         // set new location with valid coordinates

@@ -139,7 +139,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         config = new DirigeraConfiguration();
 
         List<CommandOption> locationOptions = new ArrayList<>();
-        locationOptions.add(new CommandOption("", "Remove location"));
+        // not working right now
+        // locationOptions.add(new CommandOption("", "Remove location"));
         PointType location = locationProvider.getLocation();
         if (location != null) {
             locationOptions.add(new CommandOption(location.toFullString(), "Home location"));
@@ -156,6 +157,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("DIRIGERA HANDLER command {} : {} {}", channelUID, command.toFullString(), command.getClass());
         String channel = channelUID.getIdWithoutGroup();
         if (command instanceof RefreshType) {
             JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
@@ -172,7 +174,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             } else if (command instanceof StringType string) {
                 if (string.toFullString().isBlank()) {
                     String nullCoordinates = model().getTemplate(Model.TEMPLATE_NULL_COORDINATES);
-                    api().sendPatch(config.id, new JSONObject(nullCoordinates));
+                    JSONObject patchCoordinates = new JSONObject(nullCoordinates);
+                    logger.info("DIRIGERA HANDLER send null coordinates {}", patchCoordinates);
+                    api().sendPatch(config.id, patchCoordinates);
                 } else {
                     try {
                         coordinatesPoint = new PointType(string.toFullString());
@@ -183,9 +187,11 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 }
             }
             if (coordinatesPoint != null) {
+                logger.info("DIRIGERA HANDLER send point coordinates {}", coordinatesPoint);
                 String coordinatesTemplate = model().getTemplate(Model.TEMPLATE_COORDINATES);
                 String coordinates = String.format(coordinatesTemplate, coordinatesPoint.getLatitude().toFullString(),
                         coordinatesPoint.getLongitude().toFullString());
+                logger.info("DIRIGERA HANDLER send coordinates {}", coordinates);
                 api().sendPatch(config.id, new JSONObject(coordinates));
             }
         }
@@ -310,7 +316,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             logger.info("DIRIGERA HANDLER start websocket");
             websocket = Optional.of(new Websocket(this, httpClient));
             websocket.get().start();
-            heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 1, 1, TimeUnit.MINUTES));
+            heartbeat = Optional.of(scheduler.scheduleWithFixedDelay(this::heartbeat, 5, 5, TimeUnit.MINUTES));
 
             // update latest model data
             JSONObject values = model().getAllFor(config.id, PROPERTY_DEVICES);
@@ -447,6 +453,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 ws.start();
                 websocket = Optional.of(ws);
             });
+            handleUpdate(gatewayInfo);
         }
     }
 
