@@ -168,6 +168,7 @@ public class Constants {
     public static final String CHANNEL_POWER = "electric-power";
     public static final String CHANNEL_ENERGY_TOTAL = "energy-total";
     public static final String CHANNEL_ENERGY_RESET = "energy-reset";
+    public static final String CHANNEL_ENERGY_RESET_DATE = "reset-date";
     public static final String CHANNEL_CURRENT = "electric-current";
     public static final String CHANNEL_POTENTIAL = "electric-voltage";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
@@ -358,6 +359,7 @@ public class Constants {
             put("currentAmps", CHANNEL_CURRENT);
             put("totalEnergyConsumed", CHANNEL_ENERGY_TOTAL);
             put("energyConsumedAtLastReset", CHANNEL_ENERGY_RESET);
+            put("timeOfLastEnergyReset", CHANNEL_ENERGY_RESET_DATE);
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
             put(PROPERTY_REMOTE_LINKS, CHANNEL_LINKS);
