@@ -175,7 +175,7 @@ class TestModel {
     }
 
     @Test
-    void testReolvedRelations() {
+    void testResolvedRelations() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/device-added/home-before.json", true, List.of());
         Gateway gateway = (Gateway) hubBridge.getHandler();
@@ -238,7 +238,7 @@ class TestModel {
     }
 
     @Test
-    void testSCeneCreated() {
+    void testSceneCreated() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/scene-created/home-before.json", true, List.of());
         Gateway gateway = (Gateway) hubBridge.getHandler();

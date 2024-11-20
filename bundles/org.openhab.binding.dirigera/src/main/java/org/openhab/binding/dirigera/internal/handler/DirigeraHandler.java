@@ -99,7 +99,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
     private final DirigeraDiscoveryManager discoveryManager;
     private final DirigeraCommandProvider commandProvider;
     private final TimeZoneProvider timeZoneProvider;
-    private final LocationProvider locationProvider;
     private final BundleContext bundleContext;
 
     private Optional<Websocket> websocket = Optional.empty();
@@ -132,7 +131,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         super(bridge);
         this.discoveryManager = discoveryManager;
         this.timeZoneProvider = timeZoneProvider;
-        this.locationProvider = locationProvider;
         this.httpClient = insecureClient;
         this.storage = bindingStorage;
         this.commandProvider = commandProvider;
