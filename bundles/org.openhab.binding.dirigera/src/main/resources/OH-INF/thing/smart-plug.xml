@@ -33,9 +33,13 @@
 				<label>Total Energy</label>
 				<description>Total energy consumption</description>
 			</channel>
-			<channel id="energy-reset" typeId="electric-energy">
+			<channel id="energy-reset" typeId="system.electric-energy">
 				<label>Energy since Reset</label>
 				<description>Energy consumption since last reset</description>
+			</channel>
+			<channel id="reset-date" typeId="datetime-reset">
+				<label>Reset Date Time</label>
+				<description>Datetime of last reset</description>
 			</channel>
 			<channel id="electric-current" typeId="system.electric-current">
 				<label>Plug Current</label>

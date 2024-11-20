@@ -13,16 +13,6 @@
 		<label>Simple Text</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-    <channel-type id="electric-energy">
-        <item-type>unitHint="kW/h" Number:Energy</item-type>
-        <label>Energy</label>
-        <command>
-            <options>
-                <option value="Reset">0</option>
-            </options>
-        </command>
-        <state pattern="%.3f %unit%"/>
-    </channel-type>
 	<channel-type id="light-preset">
 		<item-type>String</item-type>
 		<label>Light Preset</label>
@@ -167,6 +157,17 @@
 		<label>Date Time</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM"/>
 	</channel-type>
+	<channel-type id="datetime-reset">
+		<item-type>DateTime</item-type>
+		<label>Date Time</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM"/>
+		<command>
+			<options>
+				<option value="0">Reset now</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
 	<channel-type id="scene-trigger">
 		<item-type>Number</item-type>
 		<label>Scene Trigger</label>
@@ -179,12 +180,12 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="pm25">
-		<item-type>unitHint="µm/m³" Number:Density</item-type>
+		<item-type unitHint="µm/m³">Number:Density</item-type>
 		<label>Particulate Matter category 2.5</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voc">
-		<item-type>unitHint="mg/m³" Number:Density</item-type>
+		<item-type unitHint="mg/m³">Number:Density</item-type>
 		<label>VOC Index</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
@@ -281,7 +282,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="ota-percent" advanced="true">
-		<item-type>unitHint="%" Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Percent Number</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>

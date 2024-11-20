@@ -21,7 +21,7 @@
 				<label>Volume Control</label>
 				<description>Control volume in percent</description>
 			</channel>
-			<channel id="mute" typeId="system.system">
+			<channel id="mute" typeId="system.mute">
 				<label>Mute Control</label>
 				<description>Mute current audio without stop playing</description>
 			</channel>

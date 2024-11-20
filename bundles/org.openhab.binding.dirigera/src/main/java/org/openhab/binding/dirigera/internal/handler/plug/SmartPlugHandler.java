@@ -14,17 +14,22 @@ package org.openhab.binding.dirigera.internal.handler.plug;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SmartPlugHandler} basic DeviceHandler for all devices
@@ -33,6 +38,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class SmartPlugHandler extends PowerPlugHandler {
+    private final Logger logger = LoggerFactory.getLogger(SmartPlugHandler.class);
 
     private double totalEnergy = -1;
     private double resetEnergy = -1;
@@ -50,13 +56,20 @@ public class SmartPlugHandler extends PowerPlugHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("SMART_PLUG {} : {} {}", channelUID, command, command.getClass());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         switch (channel) {
-            case CHANNEL_ENERGY_RESET:
-                JSONObject reset = new JSONObject("{\"energyConsumedAtLastReset\": 0}");
-                gateway().api().sendAttributes(config.id, reset);
+            case CHANNEL_ENERGY_RESET_DATE:
+                if (command instanceof DateTimeType) {
+                    scheduler.schedule(this::energyReset, 250, TimeUnit.MILLISECONDS);
+                }
         }
+    }
+
+    private void energyReset() {
+        JSONObject reset = new JSONObject("{\"energyConsumedAtLastReset\": 0}");
+        gateway().api().sendAttributes(config.id, reset);
     }
 
     @Override
@@ -93,6 +106,7 @@ public class SmartPlugHandler extends PowerPlugHandler {
                                 updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET),
                                         QuantityType.valueOf(diff, Units.KILOWATT_HOUR));
                             }
+                            break;
                         case CHANNEL_ENERGY_RESET:
                             resetEnergy = attributes.getDouble(key);
                             if (totalEnergy >= 0 && resetEnergy >= 0) {
@@ -100,6 +114,13 @@ public class SmartPlugHandler extends PowerPlugHandler {
                                 updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET),
                                         QuantityType.valueOf(diff, Units.KILOWATT_HOUR));
                             }
+                            break;
+                        case CHANNEL_ENERGY_RESET_DATE:
+                            String dateTime = attributes.getString(key);
+                            Instant restTime = Instant.parse(dateTime);
+                            updateState(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET_DATE),
+                                    new DateTimeType(restTime.atZone(gateway().getTimeZoneProvider().getTimeZone())));
+                            break;
                     }
                 }
             }
