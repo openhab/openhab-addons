@@ -170,7 +170,7 @@ public class HueSyncDeviceConnection {
                     return registration;
                 }
             } catch (JsonProcessingException e) {
-                this.logger.error("{}", e.getMessage());
+                this.logger.warn("{}", e.getMessage());
             }
         }
         return null;
