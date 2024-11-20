@@ -39,7 +39,7 @@
 			</parameter>
 			<parameter name="department" type="text" required="true">
 				<label>Department</label>
-				<description>Name of the department</description>
+				<description>Code of the department</description>
 				<options>
 					<option value="75">Paris</option>
 					<option value="77">Seine et Marne</option>
