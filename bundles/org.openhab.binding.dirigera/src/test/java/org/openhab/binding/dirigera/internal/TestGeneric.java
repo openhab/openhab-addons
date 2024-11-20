@@ -13,14 +13,27 @@
 package org.openhab.binding.dirigera.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.LightCommand;
+import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
+import org.openhab.binding.dirigera.internal.interfaces.Gateway;
+import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.util.ColorUtil;
 
@@ -76,10 +89,43 @@ class TestGeneric {
         for (int i = 1000; i < 6000; i += 100) {
             HSBType color = ColorLightHandler.getHSBTemperature(i);
             int[] rgb = ColorUtil.hsbToRgb(color);
-            System.out.println(i + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-            int hue = color.getHue().intValue();
-            int sat = color.getSaturation().intValue();
+            // System.out.println(i + ": " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+            // int hue = color.getHue().intValue();
+            // int sat = color.getSaturation().intValue();
             // System.out.println(i + ": " + hue + "," + sat + "," + color.getBrightness().intValue());
         }
+    }
+
+    @Test
+    void testApiJsonException() {
+        HttpClient httpMock = mock(HttpClient.class);
+        Request requestMock = mock(Request.class);
+        when(httpMock.isRunning()).thenReturn(true);
+        when(httpMock.getSslContextFactory()).thenReturn(new SslContextFactory.Client(true));
+        when(httpMock.newRequest(anyString())).thenReturn(requestMock);
+        when(requestMock.timeout(10, TimeUnit.SECONDS)).thenReturn(requestMock);
+        when(requestMock.header(HttpHeader.AUTHORIZATION, "Bearer 1234")).thenReturn(requestMock);
+
+        ContentResponse response = mock(ContentResponse.class);
+        when(response.getStatus()).thenReturn(200);
+        // response will force a JSON format exception in API implementation
+        when(response.getContentAsString()).thenReturn("{\"rubbish\":true,butNoJson:\"false\",]}");
+
+        try {
+            when(requestMock.send()).thenReturn(response);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            fail();
+        }
+
+        Gateway gateway = mock(Gateway.class);
+        when(gateway.getToken()).thenReturn("1234");
+        DirigeraAPIImpl api = new DirigeraAPIImpl(httpMock, gateway);
+        JSONObject apiResponse = api.readDevice("abc");
+        assertNotNull(apiResponse);
+        // test completeness and status of error message
+        assertTrue(apiResponse.has(DirigeraAPI.HTTP_ERROR_FLAG));
+        assertTrue(apiResponse.has(DirigeraAPI.HTTP_ERROR_STATUS));
+        assertEquals(500, apiResponse.getInt(DirigeraAPI.HTTP_ERROR_STATUS));
+        assertTrue(apiResponse.has(DirigeraAPI.HTTP_ERROR_MESSAGE));
     }
 }

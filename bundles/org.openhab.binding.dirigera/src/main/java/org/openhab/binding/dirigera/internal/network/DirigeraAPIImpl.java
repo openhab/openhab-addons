@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
@@ -82,9 +83,9 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 statusObject = getErrorJson(responseStatus, response.getReason());
             }
             return statusObject;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("DIRIGERA Exception calling  {}", url);
-            statusObject = getErrorJson(-1, e.getMessage());
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
+            logger.warn("DIRIGERA Exception calling {}", url);
+            statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
         } finally {
             endCalling();
@@ -106,9 +107,9 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 statusObject = getErrorJson(responseStatus, response.getReason());
             }
             return statusObject;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
             logger.warn("DIRIGERA Exception calling  {}", url);
-            statusObject = getErrorJson(-1, e.getMessage());
+            statusObject = getErrorJson(500, e.getMessage());
             return statusObject;
         } finally {
             endCalling();
@@ -209,7 +210,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                 statusObject = getErrorJson(responseStatus, response.getReason());
             }
             return statusObject;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
             logger.warn("DIRIGERA Exception calling  {}", url);
             statusObject = getErrorJson(-1, e.getMessage());
             return statusObject;
@@ -249,7 +250,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                         logger.info("DIRIGERA API send {} to {} failed with status {}", payload, url,
                                 response.getStatus());
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (InterruptedException | TimeoutException | ExecutionException | JSONException e) {
                     logger.warn("DIRIGERA API call to {} failed {}", url, e.getMessage());
                 }
                 logger.info("DIRIGERA API createScene failed {} retries remaining", retryCounter);
@@ -305,6 +306,8 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                     this.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    // abort execution
+                    return;
                 }
             }
             calling = true;
