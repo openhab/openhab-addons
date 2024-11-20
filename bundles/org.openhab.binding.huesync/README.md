@@ -94,10 +94,6 @@ Information about a HDMI input  connection.
 
 ## Configuration
 
-### Binding
-
-The binding does not require configuration.
-
 ### Thing(s)
 
 | Name                 | Type    | Description                       | Default | Required | Advanced |
