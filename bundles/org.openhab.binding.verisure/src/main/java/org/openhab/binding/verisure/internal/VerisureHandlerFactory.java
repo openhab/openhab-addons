@@ -69,7 +69,7 @@ public class VerisureHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private final Logger logger = LoggerFactory.getLogger(VerisureHandlerFactory.class);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public VerisureHandlerFactory(@Reference HttpClientFactory httpClientFactory) {

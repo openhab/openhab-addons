@@ -360,10 +360,16 @@ public class VerisureSession {
 
     private int checkSessionStatus() throws ExecutionException, InterruptedException, TimeoutException {
         String url = START_GRAPHQL;
-        String queryQLAccountInstallations = "[{\"operationName\":\"AccountInstallations\",\"variables\":{\"email\":\""
-                + userName
-                + "\"},\"query\":\"query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}]";
-
+        String queryQLAccountInstallations = """
+                [{
+                    "operationName": "AccountInstallations",
+                    "variables": {
+                        "email": "%s"
+                    },
+                    "query": "query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n"
+                }]
+                """
+                .formatted(userName);
         return postVerisureAPI(url, queryQLAccountInstallations);
     }
 
@@ -539,9 +545,16 @@ public class VerisureSession {
 
     private boolean getInstallations() {
         String url = START_GRAPHQL;
-        String queryQLAccountInstallations = "[{\"operationName\":\"AccountInstallations\",\"variables\":{\"email\":\""
-                + userName
-                + "\"},\"query\":\"query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}]";
+        String queryQLAccountInstallations = """
+                [{
+                    "operationName": "AccountInstallations",
+                    "variables": {
+                        "email": "%s"
+                    },
+                    "query": "query AccountInstallations($email: String!) {\\n  account(email: $email) {\\n    owainstallations {\\n      giid\\n      alias\\n      type\\n      subsidiary\\n      dealerId\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n"
+                }]
+                """
+                .formatted(userName);
         try {
             VerisureInstallationsDTO installations = postJSONVerisureAPI(url, queryQLAccountInstallations,
                     VerisureInstallationsDTO.class);
@@ -600,7 +613,6 @@ public class VerisureSession {
                 store.get(authUri).forEach(cookie -> {
                     store.remove(authUri, cookie);
                 });
-                httpClient.setFollowRedirects(false);
 
                 String url = AUTH_LOGIN;
                 int httpStatusCode = postVerisureAPI(url, "empty");
@@ -624,7 +636,7 @@ public class VerisureSession {
                         .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
                         .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd")
                         .header(HttpHeader.CONNECTION, "keep-alive")
-                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login");
+                        .header(HttpHeader.REFERER, "https://mypages.verisure.com/login").followRedirects(false);
 
                 ContentResponse response = request.send();
                 String content = response.getContentAsString();
