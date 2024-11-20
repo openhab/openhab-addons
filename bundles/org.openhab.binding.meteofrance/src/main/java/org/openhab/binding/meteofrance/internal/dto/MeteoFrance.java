@@ -55,8 +55,8 @@ public class MeteoFrance {
             Periods periods) { // périodes concernées par la Vigilance
 
         public Optional<TextBlocItem> getBlocItem(Domain searched) {
-            return textBlocItems != null ? textBlocItems.stream().filter(ti -> ti.validFor(searched)).findFirst()
-                    : Optional.empty();
+            List<TextBlocItem> local = textBlocItems;
+            return local != null ? local.stream().filter(ti -> ti.validFor(searched)).findFirst() : Optional.empty();
         }
 
         public Optional<Period> getPeriod(Term term) {
