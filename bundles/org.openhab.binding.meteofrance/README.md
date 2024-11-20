@@ -151,8 +151,6 @@ Image      MA_icon_avalanche          "Avalanche"                 <oh:meteofranc
 DateTime   MA_ObservationTS           "Timestamp [%1$tH:%1$tM]"   <time>                              (gMeteoAlert)   {channel="meteofrance:department:yvelines:observation-time"}
 
 Number     Intensite_Pluie          "Intensité Pluie"            <oh:meteofrance:intensity>           (gMeteoAlert)  {channel="meteofrance:rain-forecast:yvelines:intensity" }
-
-
 ```
 
 jdbc.persist:
