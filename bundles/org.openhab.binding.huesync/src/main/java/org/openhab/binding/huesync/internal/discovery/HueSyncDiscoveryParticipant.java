@@ -138,7 +138,6 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
                         autoDiscoveryPropertyValue, value);
                 this.autoDiscoveryEnabled = value;
             }
-
         }
     }
 }
