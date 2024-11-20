@@ -57,7 +57,7 @@ public class HueSyncRegistrationTask implements Runnable {
             HueSyncRegistration registration = this.connection.registerDevice(id);
 
             if (registration != null) {
-                this.logger.info("API token for {} received", this.deviceInfo.name);
+                this.logger.debug("API token for {} received", this.deviceInfo.name);
 
                 this.action.accept(registration);
             }
