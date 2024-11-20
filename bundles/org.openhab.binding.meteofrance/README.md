@@ -41,7 +41,7 @@ The `rain-forecast` thing has this configuration parameters:
 |-----------|--------------------------------------------------------------|
 | location  | Geo coordinates to be considered by the service.             |
 
-## Channels
+## Channels for `vigilance`
 
 The information that are retrieved is available as these channels:
 
@@ -78,6 +78,24 @@ The information that are retrieved is available as these channels:
 | 2    | Orange | Be "very vigilant" in the concerned areas |
 | 3    | Red    | Absolute vigilance required               |
 
+## Channels for `rain-forecast`
+
+The information that are retrieved is available as these channels:
+
+| Channel ID   | Item Type | Description              |
+|--------------|-----------|--------------------------|
+| update-time  | DateTime  | Observation Timestamp    |
+| intensity    | Number    | Rain intensity level (*) |
+
+(*) Rain intensity values and associated descriptions:
+
+| Code | Description   |
+|------|---------------|
+| 0    | Dry Weather   |
+| 1    | Light Rain    |
+| 2    | Moderate Rain |
+| 3    | Heavy Rain    |
+
 ## Provided icon set
 
 This binding has its own IconProvider and makes available the following list of icons
@@ -101,7 +119,10 @@ This binding has its own IconProvider and makes available the following list of 
 meteoalert.things:
 
 ```java
-Thing meteofrance:department:yvelines @ "MyCity" [department="78", refresh=12]
+Bridge meteofrance:api:local "Portail Météo-France" [ apikey="ey......FIjG1MIC9lmG5t6HygPAPg=="] {
+    vigilance yvelines "Vigilance Météo" [ department="78" ]
+    rain-forecast yvelines [ location="48.764207,2.05948" ]
+}
 ```
 
 meteoalert.items:
@@ -128,5 +149,18 @@ Image      MA_icon_orage              "Orage"                     <oh:meteofranc
 Image      MA_icon_avalanche          "Avalanche"                 <oh:meteofrance:avalanches>         (gMeteoAlert)   {channel="meteofrance:department:yvelines:avalanches-icon"}
     
 DateTime   MA_ObservationTS           "Timestamp [%1$tH:%1$tM]"   <time>                              (gMeteoAlert)   {channel="meteofrance:department:yvelines:observation-time"}
+
+Number     Intensite_Pluie          "Intensité Pluie"            <oh:meteofrance:intensity>           (gMeteoAlert)  {channel="meteofrance:rain-forecast:yvelines:intensity" }
+```
+
+jdbc.persist:
+
+```java
+
+Items {
+   * : strategy = everyChange
+   Intensite_Pluie : strategy = forecast
+}
+
 
 ```
