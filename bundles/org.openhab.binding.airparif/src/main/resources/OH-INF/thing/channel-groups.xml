@@ -8,16 +8,16 @@
 		<label>Pollen information for the region</label>
 		<channels>
 			<channel id="comment" typeId="comment">
-				<label>Begin Validity</label>
-				<description>Current bulletin validity start</description>
+				<label>Situation</label>
+				<description>Current pollens situation</description>
 			</channel>
 			<channel id="begin-validity" typeId="timestamp">
 				<label>Begin Validity</label>
-				<description>Current bulletin validity start</description>
+				<description>Bulletin validity start</description>
 			</channel>
 			<channel id="end-validity" typeId="timestamp">
 				<label>End Validity</label>
-				<description>Current bulletin validity ending</description>
+				<description>Bulletin validity end</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -105,11 +105,11 @@
 		<channels>
 			<channel id="message" typeId="comment">
 				<label>Message</label>
-				<description>Current bulletin validity start</description>
+				<description>Today's daily general information</description>
 			</channel>
 			<channel id="tomorrow" typeId="comment">
 				<label>Tomorrow</label>
-				<description>Current bulletin validity start</description>
+				<description>Tomorrow's daily general information</description>
 			</channel>
 		</channels>
 	</channel-group-type>
