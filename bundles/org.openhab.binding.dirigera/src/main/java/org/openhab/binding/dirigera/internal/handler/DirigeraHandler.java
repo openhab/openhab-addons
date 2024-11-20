@@ -43,6 +43,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
 import org.openhab.binding.dirigera.internal.config.DirigeraConfiguration;
@@ -424,7 +425,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
         JSONObject gatewayInfo = api().readDevice(config.id);
         if (gatewayInfo.has(DirigeraAPI.HTTP_ERROR_FLAG)) {
             String message = gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_STATUS) + " - "
-                    + gatewayInfo.getInt(DirigeraAPI.HTTP_ERROR_MESSAGE);
+                    + gatewayInfo.getString(DirigeraAPI.HTTP_ERROR_MESSAGE);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/dirigera.gateway.status.comm-error" + " [\"" + message + "\"]");
         } else {
@@ -839,10 +840,19 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
             }
         }
         if (!json.isBlank()) {
-            JSONObject update = new JSONObject(json);
-            JSONObject data = update.getJSONObject("data");
-            String targetId = data.getString("id");
+            JSONObject update;
+            JSONObject data;
+            String targetId;
+            try {
+                update = new JSONObject(json);
+                data = update.getJSONObject("data");
+                targetId = data.getString("id");
+            } catch (JSONException exception) {
+                logger.info("DIRIGERA HANDLER cannot decode update {} {}", exception.getMessage(), json);
+                return;
+            }
             // First update device
+
             String type = update.getString(PROPERTY_TYPE);
             switch (type) {
                 case EVENT_TYPE_SCENE_CREATED:
@@ -973,8 +983,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway {
                 String sunRiseString = attributes.getString("nextSunRise");
                 if (sunRiseString != null) {
                     sunriseInstant = Instant.parse(sunRiseString);
-                    logger.debug("SunriseTest at Zone {} {}", timeZoneProvider.getTimeZone(),
-                            sunriseInstant.atZone(timeZoneProvider.getTimeZone()));
                     updateState(new ChannelUID(thing.getUID(), CHANNEL_SUNRISE),
                             new DateTimeType(sunriseInstant.atZone(timeZoneProvider.getTimeZone())));
                 }
