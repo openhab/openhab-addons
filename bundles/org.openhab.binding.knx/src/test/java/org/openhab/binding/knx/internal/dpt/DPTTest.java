@@ -201,13 +201,13 @@ class DPTTest {
     @Test
     void testToDPT10ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("Wed, 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "10.001"));
+        assertEquals("Wed, 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "10.001"));
     }
 
     @Test
     void testToDPT11ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("2019-06-12", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "11.001"));
+        assertEquals("2019-06-12", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "11.001"));
     }
 
     @Test
@@ -337,7 +337,7 @@ class DPTTest {
     @Test
     void testToDPT19ValueFromQuantityType() {
         // DateTimeType, not QuantityType
-        assertEquals("2019-06-12 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00Z"), "19.001"));
+        assertEquals("2019-06-12 17:30:00", ValueEncoder.encode(new DateTimeType("2019-06-12T17:30:00"), "19.001"));
         // special: clock fault
         assertNull(ValueDecoder.decode("19.001", new byte[] { (byte) (2019 - 1900), 1, 15, 17, 30, 0, (byte) 0x80, 0 },
                 DateTimeType.class));
