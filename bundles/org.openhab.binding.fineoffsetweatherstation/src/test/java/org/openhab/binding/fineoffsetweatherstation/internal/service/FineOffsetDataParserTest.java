@@ -24,6 +24,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.domain.ConversionCo
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.DebugDetails;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.Protocol;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -101,7 +102,10 @@ class FineOffsetDataParserTest {
         List<MeasuredValue> data = new FineOffsetDataParser(Protocol.DEFAULT).getMeasuredValues(bytes,
                 new ConversionContext(ZoneOffset.UTC), debugDetails);
         Assertions.assertThat(data)
-                .extracting(MeasuredValue::getChannelId, measuredValue -> measuredValue.getState().toString())
+                .extracting(MeasuredValue::getChannelId,
+                        measuredValue -> measuredValue.getState() instanceof DateTimeType dateTimeState
+                                ? dateTimeState.getInstant().toString()
+                                : measuredValue.getState().toString())
                 .containsExactly(new Tuple("temperature-indoor", "20.2 °C"), new Tuple("humidity-indoor", "62 %"),
                         new Tuple("pressure-absolute", "996.4 hPa"), new Tuple("pressure-relative", "996.4 hPa"),
                         new Tuple("temperature-outdoor", "12.2 °C"), new Tuple("humidity-outdoor", "76 %"),
@@ -110,8 +114,7 @@ class FineOffsetDataParserTest {
                         new Tuple("irradiation-uv", "0 mW/m²"), new Tuple("uv-index", "0"),
                         new Tuple("temperature-channel-1", "13.4 °C"), new Tuple("humidity-channel-1", "85 %"),
                         new Tuple("water-leak-channel-1", "OFF"), new Tuple("water-leak-channel-3", "OFF"),
-                        new Tuple("lightning-counter", "6"),
-                        new Tuple("lightning-time", "2023-11-07T15:42:41.000+0000"),
+                        new Tuple("lightning-counter", "6"), new Tuple("lightning-time", "2023-11-07T15:42:41Z"),
                         new Tuple("lightning-distance", "27 km"), new Tuple("wind-max-day", "3.8 m/s"),
                         new Tuple("temperature-external-channel-1", "13.6 °C"),
                         new Tuple("sensor-co2-temperature", "20.6 °C"), new Tuple("sensor-co2-humidity", "63 %"),
