@@ -61,7 +61,6 @@ public class HueSyncUpdateTask implements Runnable {
             updateInfo.execution = this.connection.getExecutionInfo();
 
             this.action.accept(updateInfo);
-
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
             this.action.accept(null);
