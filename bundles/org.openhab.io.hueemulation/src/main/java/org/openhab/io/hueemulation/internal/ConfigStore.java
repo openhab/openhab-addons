@@ -326,7 +326,7 @@ public class ConfigStore {
         // Format: AA:BB:CC:DD:EE:FF:00:11-XX
         // Content: Device MAC + unique endpoint id
         // Example: 00:17:88:01:00:bd:c7:b9-0b
-        // Using the item's hueID for every three octects ensures both the MAC and
+        // Using the item's hueID for every three octets ensures both the MAC and
         // endpoint are unique for each item which seems important for Alexa discovery.
         String unique;
 
@@ -334,9 +334,9 @@ public class ConfigStore {
             final String id = String.format("%06x", Integer.valueOf(hueId));
             final StringBuilder sb = new StringBuilder(26);
 
-            sb.append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":").append(id, 0, 2)
-                    .append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":").append(id, 0, 2).append(":")
-                    .append(id, 2, 4).append("-").append(id, 4, 6);
+            sb.append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append("-").append(id, 4, 6);
 
             unique = sb.toString();
         } catch (final NumberFormatException | IllegalFormatException e) {
