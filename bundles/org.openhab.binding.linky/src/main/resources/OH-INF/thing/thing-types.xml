@@ -21,6 +21,11 @@
 				<label>clientSecret</label>
 				<description>Your Enedis clientSecret</description>
 			</parameter>
+			<parameter name="isSandbox" type="boolean" required="false">
+				<label>isSandbox</label>
+				<description>To test on the sandbox environment</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</bridge-type>

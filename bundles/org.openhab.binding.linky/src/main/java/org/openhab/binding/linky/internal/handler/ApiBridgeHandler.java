@@ -83,6 +83,8 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     public abstract String getClientSecret();
 
+    public abstract boolean getIsSandbox();
+
     private void registerServlet() {
         try {
             if (servlet == null) {
