@@ -39,26 +39,23 @@ import com.google.gson.Gson;
 public class EnedisBridgeHandler extends ApiBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EnedisBridgeHandler.class);
 
-    // private static final String BASE_URL = "https://gw.ext.prod-sandbox.api.enedis.fr/";
-    // public static final String ENEDIS_ACCOUNT_URL = "gw.ext.prod-sandbox.api.enedis.fr";
-    private static final String BASE_URL = "https://gw.ext.prod.api.enedis.fr/";
-    public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
+    private static final String BASE_URL_PREPROD = "https://gw.ext.prod-sandbox.api.enedis.fr/";
+    private static final String ENEDIS_ACCOUNT_URL_PREPROD = "gw.ext.prod-sandbox.api.enedis.fr";
 
-    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
-    private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity?usage_point_id=%s";
-    private static final String CONTACT_URL = BASE_URL + "customers_cd/v5/contact_data?usage_point_id=%s";
-    private static final String ADDRESS_URL = BASE_URL + "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
+    private static final String BASE_URL_PROD = "https://gw.ext.prod.api.enedis.fr/";
+    private static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
 
-    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
-            + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
-    private static final String MEASURE_MAX_POWER_URL = BASE_URL
-            + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
-    private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
-            + "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
+    private static final String CONTRACT_URL = "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
+    private static final String IDENTITY_URL = "customers_i/v5/identity?usage_point_id=%s";
+    private static final String CONTACT_URL = "customers_cd/v5/contact_data?usage_point_id=%s";
+    private static final String ADDRESS_URL = "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
 
-    public static final String ENEDIS_AUTHORIZE_URL = ENEDIS_ACCOUNT_URL
-            + "dataconnect/v1/oauth2/authorize?duration=P36M";
-    public static final String ENEDIS_API_TOKEN_URL = BASE_URL + "oauth2/v3/token";
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_MAX_POWER_URL = "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
+    private static final String LOAD_CURVE_CONSUMPTION_URL = "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
+
+    public static final String ENEDIS_AUTHORIZE_URL = "dataconnect/v1/oauth2/authorize?duration=P36M";
+    public static final String ENEDIS_API_TOKEN_URL = "oauth2/v3/token";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -74,10 +71,18 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void initialize() {
-        tokenUrl = EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
-        authorizeUrl = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+        tokenUrl = getBaseUrl() + EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
+        authorizeUrl = getAccountUrl() + EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
 
         super.initialize();
+    }
+
+    public String getAccountUrl() {
+        if (getIsSandbox()) {
+            return ENEDIS_ACCOUNT_URL_PREPROD;
+        } else {
+            return ENEDIS_ACCOUNT_URL_PROD;
+        }
     }
 
     @Override
@@ -96,6 +101,15 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
             return lcConfig.clientSecret;
         }
         return "";
+    }
+
+    @Override
+    public boolean getIsSandbox() {
+        LinkyConfiguration lcConfig = config;
+        if (lcConfig != null) {
+            return lcConfig.isSandbox;
+        }
+        return false;
     }
 
     @Override
@@ -130,42 +144,46 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getBaseUrl() {
-        return BASE_URL;
+        if (getIsSandbox()) {
+            return BASE_URL_PREPROD;
+        } else {
+            return BASE_URL_PROD;
+        }
     }
 
     @Override
     public String getContactUrl() {
-        return CONTACT_URL;
+        return getBaseUrl() + CONTACT_URL;
     }
 
     @Override
     public String getContractUrl() {
-        return CONTRACT_URL;
+        return getBaseUrl() + CONTRACT_URL;
     }
 
     @Override
     public String getIdentityUrl() {
-        return IDENTITY_URL;
+        return getBaseUrl() + IDENTITY_URL;
     }
 
     @Override
     public String getAddressUrl() {
-        return ADDRESS_URL;
+        return getBaseUrl() + ADDRESS_URL;
     }
 
     @Override
     public String getDailyConsumptionUrl() {
-        return MEASURE_DAILY_CONSUMPTION_URL;
+        return getBaseUrl() + MEASURE_DAILY_CONSUMPTION_URL;
     }
 
     @Override
     public String getMaxPowerUrl() {
-        return MEASURE_MAX_POWER_URL;
+        return getBaseUrl() + MEASURE_MAX_POWER_URL;
     }
 
     @Override
     public String getLoadCurveUrl() {
-        return LOAD_CURVE_CONSUMPTION_URL;
+        return getBaseUrl() + LOAD_CURVE_CONSUMPTION_URL;
     }
 
     @Override

@@ -98,6 +98,11 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     public String getClientSecret() {
         return "";
     }
+    
+    @Override
+    public boolean getIsSandbox() {
+        return false;
+    }
 
     @Override
     public String formatAuthorizationUrl(String redirectUri) {

@@ -29,6 +29,7 @@ public class LinkyConfiguration {
     public String prmId = "";
     public String clientId = "";
     public String clientSecret = "";
+    public boolean isSandbox = false;
 
     public String username = "";
     public String password = "";
