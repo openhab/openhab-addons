@@ -579,11 +579,6 @@
 		<label>Color Temperature Name</label>
 		<description>Color Temperature Name</description>
 	</channel-type>
-	<channel-type id="colorTemperatureInKelvin">
-		<item-type>Number</item-type>
-		<label>Color Temperature In Kelvin</label>
-		<description>Color Temperature In Kelvin</description>
-	</channel-type>
 	<!-- Alexa.PercentageController -->
 	<channel-type id="percentage">
 		<item-type>Dimmer</item-type>
