@@ -237,7 +237,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     sendAutomowerResetCuttingBladeUsageTime();
                 }
             } else if (command instanceof QuantityType cmd) {
-                if (cmd.toBigDecimal().intValue() == 0) {
+                if (cmd.intValue() == 0) {
                     sendAutomowerResetCuttingBladeUsageTime();
                 }
             }
@@ -905,6 +905,10 @@ public class AutomowerHandler extends BaseThingHandler {
         return "RESTRICTED_" + reason.name();
     }
 
+    private @Nullable String getErrorMessage(int errorCode) {
+        return ERROR.get(errorCode);
+    }
+
     private @Nullable WorkArea getWorkAreaById(@Nullable Mower mower, long workAreaId) {
         if (mower != null) {
             List<WorkArea> workAreas = mower.getAttributes().getWorkAreas();
@@ -962,6 +966,7 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
+<<<<<<< HEAD
     /**
      * Sends a CalendarTask to the automower
      *
@@ -975,6 +980,29 @@ public class AutomowerHandler extends BaseThingHandler {
         String param = channelIDSplit[1];
         logger.debug("Sending CalendarTask '{}', index '{}', param '{}', command '{}'", channelID, index, param,
                 command.toString());
+=======
+            updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
+                    toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
+            updateState(CHANNEL_STATUS_BATTERY,
+                    new QuantityType<>(mower.getAttributes().getBattery().getBatteryPercent(), Units.PERCENT));
+
+            int errorCode = mower.getAttributes().getMower().getErrorCode();
+            updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(errorCode));
+            String errorMessage = getErrorMessage(errorCode);
+            if (errorMessage != null) {
+                updateState(CHANNEL_STATUS_ERROR_MESSAGE, new StringType(errorMessage));
+            } else {
+                updateState(CHANNEL_STATUS_ERROR_MESSAGE, UnDefType.NULL);
+            }
+
+            long errorCodeTimestamp = mower.getAttributes().getMower().getErrorCodeTimestamp();
+            if (errorCodeTimestamp == 0L) {
+                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP, UnDefType.NULL);
+            } else {
+                updateState(CHANNEL_STATUS_ERROR_TIMESTAMP,
+                        new DateTimeType(toZonedDateTime(errorCodeTimestamp, mowerZoneId)));
+            }
+>>>>>>> added error message
 
         if (isValidResult(mowerState)) {
             List<CalendarTask> calendarTasksFiltered;
