@@ -6,7 +6,7 @@
 	<thing-type uid="tplinksmarthome:kb130">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -14,7 +14,7 @@
 	<thing-type uid="tplinksmarthome:kl120">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs1</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -22,7 +22,7 @@
 	<thing-type uid="tplinksmarthome:kl125">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs3</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -30,7 +30,7 @@
 	<thing-type uid="tplinksmarthome:kl130">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -38,7 +38,7 @@
 	<thing-type uid="tplinksmarthome:kl135">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs3</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -46,7 +46,7 @@
 	<thing-type uid="tplinksmarthome:kl400">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -54,7 +54,7 @@
 	<thing-type uid="tplinksmarthome:kl430">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -62,7 +62,7 @@
 	<thing-type uid="tplinksmarthome:lb120">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs1</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -70,7 +70,7 @@
 	<thing-type uid="tplinksmarthome:lb130">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -78,7 +78,7 @@
 	<thing-type uid="tplinksmarthome:lb230">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperatureAbs">
-				<type>tplinksmarthome:colorTemperatureAbs2</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>

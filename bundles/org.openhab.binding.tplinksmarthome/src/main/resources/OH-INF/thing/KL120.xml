@@ -12,7 +12,7 @@
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>
-			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs1"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="power" typeId="power"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
