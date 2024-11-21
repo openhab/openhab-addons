@@ -6,7 +6,7 @@
 	<thing-type uid="tapocontrol:L530">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperature">
-				<type>tapocontrol:colorTemperature</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -14,7 +14,7 @@
 	<thing-type uid="tapocontrol:L630">
 		<instruction-set targetVersion="1">
 			<update-channel id="colorTemperature">
-				<type>tapocontrol:colorTemperature</type>
+				<type>system:color-temperature-abs</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
