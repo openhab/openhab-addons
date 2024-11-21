@@ -14,7 +14,9 @@ package org.openhab.binding.linky.internal.api;
 
 import java.net.HttpCookie;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -160,7 +162,13 @@ public class EnedisHttpApi {
         if (prms.length < 1) {
             throw new LinkyException("Invalid prms data received");
         }
-        return prms[0];
+
+        Optional<PrmInfo> result = Arrays.stream(prms).filter(x -> x.idPrm.equals(prmId)).findFirst();
+        if (result.isPresent()) {
+            return result.get();
+        }
+
+        throw new LinkyException(("PRM with id : %s does not exist").formatted(prmId));
     }
 
     public PrmDetail getPrmDetails(LinkyHandler handler, String internId, String prmId) throws LinkyException {
