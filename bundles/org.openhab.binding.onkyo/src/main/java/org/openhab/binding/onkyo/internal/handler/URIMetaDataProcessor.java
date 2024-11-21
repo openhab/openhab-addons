@@ -67,7 +67,7 @@ public class URIMetaDataProcessor extends PooledXmlProcessor {
 
                 return documentToString(document);
             } catch (Exception e) {
-                logger.info("Unable to build metadata for {}: {}", url, e.getMessage());
+                logger.warn("Unable to build metadata for {}: {}", url, e.getMessage());
             }
         }
 
