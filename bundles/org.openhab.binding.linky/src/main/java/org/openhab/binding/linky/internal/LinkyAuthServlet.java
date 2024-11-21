@@ -146,7 +146,7 @@ public class LinkyAuthServlet extends HttpServlet {
         } else if (servletBaseUrl.contains("myelectricaldata")) {
             template = myelectricaldataStep1;
         } else {
-            template = enedisStep1;
+            template = index;
         }
 
         // for some unknown reason, getRequestURL return a malformed URL mixing http:// and port 443
