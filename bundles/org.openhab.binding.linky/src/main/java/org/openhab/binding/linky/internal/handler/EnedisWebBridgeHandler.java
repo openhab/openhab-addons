@@ -72,7 +72,7 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
     private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = BASE_URL + "/mes-prms/api/private/v2/personnes/%s/prms";
+    private static final String PRM_INFO_URL = BASE_URL + "/mes-prms-part/api/private/v2/personnes/%s/prms";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "undefined/prms/%s/donnees-energie?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
