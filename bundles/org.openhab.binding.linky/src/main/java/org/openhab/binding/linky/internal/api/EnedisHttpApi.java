@@ -203,8 +203,11 @@ public class EnedisHttpApi {
         String identityUrl = linkyBridgeHandler.getIdentityUrl().formatted(prmId);
         ResponseIdentity customerIdReponse = getData(handler, identityUrl, ResponseIdentity.class);
         String name = customerIdReponse.identity.naturalPerson.lastname;
-        customerIdReponse.identity.naturalPerson.firstname = name.split(" ")[0];
-        customerIdReponse.identity.naturalPerson.lastname = name.split(" ")[1];
+        String[] nameParts = name.split(" ");
+        if (nameParts.length > 1) {
+            customerIdReponse.identity.naturalPerson.firstname = name.split(" ")[0];
+            customerIdReponse.identity.naturalPerson.lastname = name.split(" ")[1];
+        }
         return customerIdReponse.identity.naturalPerson;
     }
 
