@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openhab.binding.onkyo.internal.OnkyoBindingConstants;
+import org.openhab.core.audio.AudioStream;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.StringType;
@@ -35,7 +36,9 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
 
     private final Logger logger = LoggerFactory.getLogger(OnkyoUpnpHandler.class);
 
-    private UpnpIOService service;
+    private final UpnpIOService service;
+
+    private final URIMetaDataProcessor uriMetaDataProcessor = new URIMetaDataProcessor();
 
     public OnkyoUpnpHandler(Thing thing, UpnpIOService upnpIOService) {
         super(thing);
@@ -45,7 +48,7 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
     protected void handlePlayUri(Command command) {
         if (command instanceof StringType) {
             try {
-                playMedia(command.toString());
+                playMedia(command.toString(), null);
 
             } catch (IllegalStateException e) {
                 logger.warn("Cannot play URI ({})", e.getMessage());
@@ -53,7 +56,7 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
         }
     }
 
-    public void playMedia(String url) {
+    public void playMedia(String url, AudioStream audioStream) {
         stop();
         removeAllTracksFromQueue();
 
@@ -61,7 +64,7 @@ public abstract class OnkyoUpnpHandler extends BaseThingHandler implements UpnpI
             url = "x-file-cifs:" + url;
         }
 
-        setCurrentURI(url, "");
+        setCurrentURI(url, uriMetaDataProcessor.generate(url, audioStream));
 
         play();
     }
