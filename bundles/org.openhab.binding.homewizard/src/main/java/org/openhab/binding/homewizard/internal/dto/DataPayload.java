@@ -58,13 +58,13 @@ public class DataPayload {
     private int longPowerFailCount;
 
     @SerializedName("active_voltage_v")
-    private int activeVoltage;
+    private double activeVoltage;
     @SerializedName("active_voltage_l1_v")
-    private int activeVoltageL1;
+    private double activeVoltageL1;
     @SerializedName("active_voltage_l2_v")
-    private int activeVoltageL2;
+    private double activeVoltageL2;
     @SerializedName("active_voltage_l3_v")
-    private int activeVoltageL3;
+    private double activeVoltageL3;
 
     @SerializedName("active_current_a")
     private double activeCurrent;
@@ -176,7 +176,7 @@ public class DataPayload {
      * @return current active voltage
      */
     public int getActiveVoltage() {
-        return activeVoltage;
+        return (int) activeVoltage;
     }
 
     /**
@@ -185,7 +185,7 @@ public class DataPayload {
      * @return active voltage on phase 1
      */
     public int getActiveVoltageL1() {
-        return activeVoltageL1;
+        return (int) activeVoltageL1;
     }
 
     /**
@@ -194,7 +194,7 @@ public class DataPayload {
      * @return active voltage on phase 2
      */
     public int getActiveVoltageL2() {
-        return activeVoltageL2;
+        return (int) activeVoltageL2;
     }
 
     /**
@@ -203,7 +203,7 @@ public class DataPayload {
      * @return active voltage on phase 3
      */
     public int getActiveVoltageL3() {
-        return activeVoltageL3;
+        return (int) activeVoltageL3;
     }
 
     /**
