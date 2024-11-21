@@ -123,6 +123,7 @@ public class LightThingHandler extends DeconzBaseThingHandler {
 
                 // minimum and maximum are inverted due to mired/kelvin conversion!
                 StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                        .withStep(BigDecimal.valueOf(100)).withPattern("%.0f K")
                         .withMinimum(new BigDecimal(miredToKelvin(ctMax)))
                         .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build();
                 stateDescriptionProvider.setDescriptionFragment(
