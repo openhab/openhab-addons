@@ -122,8 +122,6 @@ public class ConfigStore {
 
     private int highestAssignedHueID = 1;
 
-    private String hueIDPrefix = "";
-
     public ConfigStore() {
         scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     }
@@ -236,8 +234,6 @@ public class ConfigStore {
             ds.config.bridgeid = ds.config.bridgeid.substring(0, 12);
         }
 
-        hueIDPrefix = getHueIDPrefixFromUUID(config.uuid);
-
         if (config.permanentV1bridge) {
             ds.config.makeV1bridge();
         }
@@ -261,31 +257,6 @@ public class ConfigStore {
         } else {
             return hostAddress;
         }
-    }
-
-    /**
-     * Get the prefix used to create a unique id
-     *
-     * @param uuid The uuid
-     * @return The prefix in the format of AA:BB:CC:DD:EE:FF:00:11 if uuid is a valid UUID, otherwise uuid is returned.
-     */
-    private String getHueIDPrefixFromUUID(final String uuid) {
-        // Hue API example of a unique id is AA:BB:CC:DD:EE:FF:00:11-XX
-        // 00:11-XX is generated from the item.
-        String prefix = uuid;
-        try {
-            // Generate prefix if uuid is a randomly generated UUID
-            if (UUID.fromString(uuid).version() == 4) {
-                final StringBuilder sb = new StringBuilder(17);
-                sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
-                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13);
-                prefix = sb.toString().toUpperCase();
-            }
-        } catch (final IllegalArgumentException e) {
-            // uuid is not a valid UUID
-        }
-
-        return prefix;
     }
 
     @Deactivate
@@ -351,17 +322,26 @@ public class ConfigStore {
      * @return The unique id
      */
     public String getHueUniqueId(final String hueId) {
+        // From the Hue API:
+        // Format: AA:BB:CC:DD:EE:FF:00:11-XX
+        // Content: Device MAC + unique endpoint id
+        // Example: 00:17:88:01:00:bd:c7:b9-0b
+        // Using the item's hueID for every three octets ensures both the MAC and
+        // endpoint are unique for each item which seems important for Alexa discovery.
         String unique;
 
         try {
-            final String id = String.format("%06X", Integer.valueOf(hueId));
+            final String id = String.format("%06x", Integer.valueOf(hueId));
             final StringBuilder sb = new StringBuilder(26);
-            sb.append(hueIDPrefix).append(":").append(id, 0, 2).append(":").append(id, 2, 4).append("-").append(id, 4,
-                    6);
+
+            sb.append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append("-").append(id, 4, 6);
+
             unique = sb.toString();
         } catch (final NumberFormatException | IllegalFormatException e) {
             // Use the hueId as is
-            unique = hueIDPrefix + "-" + hueId;
+            unique = hueId;
         }
 
         return unique;

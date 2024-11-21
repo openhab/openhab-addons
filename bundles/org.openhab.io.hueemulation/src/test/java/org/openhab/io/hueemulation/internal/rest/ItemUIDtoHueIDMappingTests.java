@@ -133,7 +133,7 @@ public class ItemUIDtoHueIDMappingTests {
         HueLightEntry device = cs.ds.lights.get(hueID);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-        assertThat(device.uniqueid, CoreMatchers.is("A6:68:DC:9B:71:72:00:00-FF"));
+        assertThat(device.uniqueid, CoreMatchers.is("00:00:ff:00:00:ff:00:00-ff"));
 
         item = new SwitchItem("switch2");
         item.setCategory("Light");
@@ -146,6 +146,6 @@ public class ItemUIDtoHueIDMappingTests {
         device = cs.ds.lights.get(hueID);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
-        assertThat(device.uniqueid, CoreMatchers.is("A6:68:DC:9B:71:72:03:E8-00"));
+        assertThat(device.uniqueid, CoreMatchers.is("03:e8:00:03:e8:00:03:e8-00"));
     }
 }
