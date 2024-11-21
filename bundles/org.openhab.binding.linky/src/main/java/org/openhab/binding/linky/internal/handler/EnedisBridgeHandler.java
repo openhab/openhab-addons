@@ -43,7 +43,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     private static final String ENEDIS_ACCOUNT_URL_PREPROD = "gw.ext.prod-sandbox.api.enedis.fr";
 
     private static final String BASE_URL_PROD = "https://gw.ext.prod.api.enedis.fr/";
-    private static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
+    public static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
 
     private static final String CONTRACT_URL = "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
     private static final String IDENTITY_URL = "customers_i/v5/identity?usage_point_id=%s";

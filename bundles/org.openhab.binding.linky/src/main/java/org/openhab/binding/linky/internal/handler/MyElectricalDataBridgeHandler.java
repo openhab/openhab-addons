@@ -57,7 +57,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     // List of Linky services related urls, information
     public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
-    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = EnedisBridgeHandler.ENEDIS_ACCOUNT_URL_PROD
+            + EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
     public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
             + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
 
@@ -98,7 +99,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     public String getClientSecret() {
         return "";
     }
-    
+
     @Override
     public boolean getIsSandbox() {
         return false;
