@@ -40,7 +40,6 @@ The following configuration parameters are available.
 | eso             | boolean | Has the system an Eso unit connected?                 | N/A     | no       | no       |
 | esm             | boolean | Has the system an Esm unit connected?                 | N/A     | no       | no       |
 
-
 ## Channels
 
 | Channel Type ID                       | Item Type                  | Read/Write | Label                                    | Description                                                                                          |
@@ -76,7 +75,7 @@ The following configuration parameters are available.
 | inverter-load-active-current-l1       | Number:ElectricCurrent     | R          | Inverter Load Active Current L1          |                                                                                                      |
 | inverter-load-active-current-l2       | Number:ElectricCurrent     | R          | Inverter Load Active Current L2          |                                                                                                      |
 | inverter-load-active-current-l3       | Number:ElectricCurrent     | R          | Inverter Load Active Current L3          |                                                                                                      |
-| apparent-power                        | Number:Energy              | R          | Apparent Power                           | Apparent power                                                                                       |
+| apparent-power                        | Number:Power               | R          | Apparent Power                           | Apparent power                                                                                       |
 | grid-power-active-l1                  | Number:Power               | R          | Grid Power Active L1                     | Grid power, active                                                                                   |
 | grid-power-active-l2                  | Number:Power               | R          | Grid Power Active L2                     | Grid power, active                                                                                   |
 | grid-power-active-l3                  | Number:Power               | R          | Grid Power Active L3                     | Grid power, active                                                                                   |
@@ -107,9 +106,9 @@ The following configuration parameters are available.
 | inverter-energy-produced-l1           | Number:Energy              | R          | Inverter Energy Produced L1              |                                                                                                      |
 | inverter-energy-produced-l2           | Number:Energy              | R          | Inverter Energy Produced L2              |                                                                                                      |
 | inverter-energy-produced-l3           | Number:Energy              | R          | Inverter Energy Produced L3              |                                                                                                      |
-| inverter-energy-consumed-l1           | Number:ElectricCurrent     | R          | Inverter Energy Consumed L1              |                                                                                                      |
-| inverter-energy-consumed-l2           | Number:ElectricCurrent     | R          | Inverter Energy Consumed L2              |                                                                                                      |
-| inverter-energy-consumed-l3           | Number:ElectricCurrent     | R          | Inverter Energy Consumed L3              |                                                                                                      |
+| inverter-energy-consumed-l1           | Number:Energy              | R          | Inverter Energy Consumed L1              |                                                                                                      |
+| inverter-energy-consumed-l2           | Number:Energy              | R          | Inverter Energy Consumed L2              |                                                                                                      |
+| inverter-energy-consumed-l3           | Number:Energy              | R          | Inverter Energy Consumed L3              |                                                                                                      |
 | load-energy-produced-l1               | Number:Energy              | R          | Load Energy Produced L1                  |                                                                                                      |
 | load-energy-produced-l2               | Number:Energy              | R          | Load Energy Produced L2                  |                                                                                                      |
 | load-energy-produced-l3               | Number:Energy              | R          | Load Energy Produced L3                  |                                                                                                      |
@@ -127,8 +126,8 @@ The following configuration parameters are available.
 | timestamp                             | DateTime                   | R          | Time Stamp                               | Time stamp when message was published                                                                |
 | battery-energy-produced               | Number:Energy              | R          | Battery Energy Produced                  | Only sent when system has batteries                                                                  |
 | battery-energy-consumed               | Number:Energy              | R          | Battery Energy Consumed                  | Only sent when system has batteries                                                                  |
-| soc                                   | Number:Dimensionless       | R          | System State of Check                    | State of the system                                                                                  |
-| soh                                   | Number:Dimensionless       | R          | System State of Health                   |                                                                                                      |
+| soc                                   | Number:Percentage          | R          | System State of Check                    | State of the system                                                                                  |
+| soh                                   | Number:Percentage          | R          | System State of Health                   |                                                                                                      |
 | power-battery                         | Number:Power               | R          | Battery Power                            | Only sent when system has batteries                                                                  |
 | total-capacity-batteries              | Number:Energy              | R          | Total Capacity Batteries                 | Total rated capacity of all batteries                                                                |
 
@@ -177,7 +176,7 @@ The following configuration parameters are available.
 | eso-current-battery                   | Number:ElectricCurrent     | R          | Eso Current on Battery Side              | Measured on battery side                                                                             |
 | eso-battery-energy-produced           | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged                                               |
 | eso-battery-energy-consumed           | Number:Energy              | R          | Eso Battery Energy Consumed              | Total energy consumed by ESO, i.e total energy discharged                                            |
-| eso-soc                               | Number:Dimensionless       | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
+| eso-soc                               | Number:Percentage          | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
 | eso-relay-status                      | Contact                    | R          | Eso Relay Status                         | 0 = relay closed, 1 = relay open                                                                     |
 | eso-temperature                       | Number:Temperature         | R          | Eso Temperature on PCB                   | Measured inside ESO                                                                                  |
 | eso-fault-code                        | String                     | R          | Eso FaultCode                            | See section 4.1.3.1 in Ferroamp-External-API-specifikation                                           |
@@ -187,8 +186,8 @@ The following configuration parameters are available.
 
 
 | esm-id                                | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports      |
-| esm-soh                               | Number:Dimensionless       | R          | Esm System State of Health               | State of Health for ESM                                                                              |
-| esm-soc                               | Number:Dimensionless       | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
+| esm-soh                               | Number:Percentage          | R          | Esm System State of Health               | State of Health for ESM                                                                              |
+| esm-soc                               | Number:Percentage          | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
 | esm-total-capacity                    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of all batteries                                                                      |
 | esm-power-battery                     | Number:Power               | R          | Esm Rated Power of Battery               | Rated power of battery                                                                               |
 | esm-status                            | String                     | R          | Esm Status                               | Dependent on battery manufacturer                                                                    |
@@ -213,7 +212,6 @@ Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUser
 ```java
 Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=true, eso=true ]
 ```
-
 
 ## `demo.items` Example
 

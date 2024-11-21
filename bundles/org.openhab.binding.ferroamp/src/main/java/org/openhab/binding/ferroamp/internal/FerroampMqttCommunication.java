@@ -37,13 +37,13 @@ import com.google.gson.JsonObject;
 
 public class FerroampMqttCommunication implements MqttMessageSubscriber {
 
-    static String[] ehubChannelsUpdateValues;
-    static String[] ssoS1ChannelsUpdateValues;
-    static String[] ssoS2ChannelsUpdateValues;
-    static String[] ssoS3ChannelsUpdateValues;
-    static String[] ssoS4ChannelsUpdateValues;
-    static String[] esoChannelsUpdateValues;
-    static String[] esmChannelsUpdateValues;
+    static String[] ehubChannelsUpdateValues = new String[0];
+    static String[] ssoS1ChannelsUpdateValues = new String[0];
+    static String[] ssoS2ChannelsUpdateValues = new String[0];
+    static String[] ssoS3ChannelsUpdateValues = new String[0];
+    static String[] ssoS4ChannelsUpdateValues = new String[0];
+    static String[] esoChannelsUpdateValues = new String[0];
+    static String[] esmChannelsUpdateValues = new String[0];
 
     static boolean isSsoChecked = false;
     static String ssoS1IdCheck = "";
@@ -128,6 +128,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         jsonElementsStringTemp = jsonElementsObject.get(EhubJsonElements.getJsonElementsEhub().get(0)).toString();
         GetGeneralValues gridfreq = checkNullGeneralValues(
                 gson.fromJson(jsonElementsStringTemp, GetGeneralValues.class));
+
         ehubChannelPostsValue[0] = gridfreq.getVal();
 
         // iace

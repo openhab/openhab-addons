@@ -101,8 +101,8 @@ public class FerroampChannelConfiguration {
                 FerroampBindingConstants.CHANNEL_INVERTERLOADACTIVECURRENTL2, Units.AMPERE));
         channelConfigurationEhub.add(new FerroampChannelConfiguration(
                 FerroampBindingConstants.CHANNEL_INVERTERLOADACTIVECURRENTL3, Units.AMPERE));
-        channelConfigurationEhub.add(
-                new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_APPARENTPOWER, Units.VOLT_AMPERE));
+        channelConfigurationEhub
+                .add(new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_APPARENTPOWER, Units.WATT));
         channelConfigurationEhub.add(
                 new FerroampChannelConfiguration(FerroampBindingConstants.CHANNEL_GRIDPOWERACTIVEL1, Units.AMPERE));
         channelConfigurationEhub.add(

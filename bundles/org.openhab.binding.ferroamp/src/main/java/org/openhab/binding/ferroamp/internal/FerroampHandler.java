@@ -113,7 +113,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             logger.debug("Problem connection to MqttBroker");
         }
 
-        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null");
+        Objects.requireNonNull(ferroampConnection, "MqttBrokerConnection ferroampConnection cannot be null, ");
         if (ferroampConnection.connectionState().toString().equals("CONNECTED")) {
             try {
                 channelUpdate();

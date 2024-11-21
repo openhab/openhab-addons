@@ -102,7 +102,7 @@
 			<channel id="inverter-load-active-current-l3" typeId="electric-current">
 				<label>Inverter Load Active Current L3</label>
 			</channel>
-			<channel id="apparent-power" typeId="energy">
+			<channel id="apparent-power" typeId="power">
 				<label>Apparent Power</label>
 			</channel>
 			<channel id="grid-power-active-l1" typeId="power">
