@@ -71,7 +71,7 @@ public class EnedisHttpApi {
     private static final String USER_INFO_CONTRACT_URL = URL_APPS_LINCS + "/mon-compte-client/api/private/v1/userinfos";
     private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
     private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms/api/private/v2/personnes/%s/prms";
+    private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms-part/api/private/v2/personnes/%s/prms";
     private static final String MEASURE_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
     private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
