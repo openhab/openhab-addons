@@ -30,7 +30,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,12 +44,6 @@ import org.osgi.service.component.annotations.Reference;
 public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) TPLinkIpAddressService ipAddressService;
-    private final TPLinkStateDescriptionProvider stateDescriptionProvider;
-
-    @Activate
-    public TPLinkSmartHomeHandlerFactory(final @Reference TPLinkStateDescriptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
 
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
@@ -96,7 +89,7 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
             default:
                 return null;
         }
-        return new SmartHomeHandler(thing, device, type, ipAddressService, stateDescriptionProvider);
+        return new SmartHomeHandler(thing, device, type, ipAddressService);
     }
 
     @Reference
