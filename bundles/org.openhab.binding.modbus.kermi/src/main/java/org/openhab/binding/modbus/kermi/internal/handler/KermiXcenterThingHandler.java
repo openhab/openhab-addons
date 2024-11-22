@@ -243,22 +243,22 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             // very slow requests
             ModbusReadRequestBlueprint workHoursRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, WORK_HOURS_REG_START, WORK_HOURS_REG_SIZE, 3);
-            workHourPoller = localComms.registerRegularPoll(workHoursRequest, SLOW_POLL_REFRESH_TIME_MS, 0,
-                    this::handleWorkHoursResult, this::handleWorkHoursFailure);
+            workHourPoller = localComms.registerRegularPoll(workHoursRequest, SLOW_POLL_REFRESH_TIME_MS,
+                    WARMUP_TIME_LONG, this::handleWorkHoursResult, this::handleWorkHoursFailure);
 
             pollTasks.add(workHourPoller);
 
             // register low speed state & alarm poller
             ModbusReadRequestBlueprint alarmRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ALARM_REG_START, ALARM_REG_SIZE, 3);
-            alarmPoller = localComms.registerRegularPoll(alarmRequest, STATE_POLL_REFRESH_TIME_MS, 0,
+            alarmPoller = localComms.registerRegularPoll(alarmRequest, STATE_POLL_REFRESH_TIME_MS, WARMUP_TIME_LONG,
                     this::handleAlarmResult, this::handleAlarmFailure);
 
             pollTasks.add(alarmPoller);
 
             ModbusReadRequestBlueprint stateRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, STATE_REG_START, STATE_REG_SIZE, 3);
-            statePoller = localComms.registerRegularPoll(stateRequest, STATE_POLL_REFRESH_TIME_MS, 0,
+            statePoller = localComms.registerRegularPoll(stateRequest, STATE_POLL_REFRESH_TIME_MS, WARMUP_TIME_LONG,
                     this::handleStateResult, this::handleStateFailure);
 
             pollTasks.add(statePoller);
@@ -267,22 +267,22 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             ModbusReadRequestBlueprint chargingcircuitRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, CHARGING_CIRCUIT_REG_START,
                     CHARGING_CIRCUIT_REG_SIZE, 3);
-            chargingCircuitPoller = localComms.registerRegularPoll(chargingcircuitRequest, localConfig.refresh, 0,
-                    this::handleChargingCircuitResult, this::handleChargingCircuitFailure);
+            chargingCircuitPoller = localComms.registerRegularPoll(chargingcircuitRequest, localConfig.refresh,
+                    WARMUP_TIME_SHORT, this::handleChargingCircuitResult, this::handleChargingCircuitFailure);
 
             pollTasks.add(chargingCircuitPoller);
 
             ModbusReadRequestBlueprint energySourceRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, ENERGY_SOURCE_REG_START, ENERGY_SOURCE_REG_SIZE, 3);
-            energySourcePoller = localComms.registerRegularPoll(energySourceRequest, localConfig.refresh, 0,
-                    this::handleEnergySourceResult, this::handleEnergySourceFailure);
+            energySourcePoller = localComms.registerRegularPoll(energySourceRequest, localConfig.refresh,
+                    WARMUP_TIME_SHORT, this::handleEnergySourceResult, this::handleEnergySourceFailure);
 
             pollTasks.add(energySourcePoller);
 
             ModbusReadRequestBlueprint powerRequest = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, POWER_REG_START, POWER_REG_SIZE, 3);
-            powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, 0, this::handlePowerResult,
-                    this::handlePowerFailure);
+            powerPoller = localComms.registerRegularPoll(powerRequest, localConfig.refresh, WARMUP_TIME_SHORT,
+                    this::handlePowerResult, this::handlePowerFailure);
 
             pollTasks.add(powerPoller);
 
@@ -290,8 +290,8 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
                 ModbusReadRequestBlueprint pvRequest = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, PV_MODULATION_REG_START, PV_MODULATION_REG_SIZE,
                         3);
-                pvPoller = localComms.registerRegularPoll(pvRequest, localConfig.refresh, 0, this::handlePvResult,
-                        this::handlePvFailure);
+                pvPoller = localComms.registerRegularPoll(pvRequest, localConfig.refresh, WARMUP_TIME_SHORT,
+                        this::handlePvResult, this::handlePvFailure);
 
                 pollTasks.add(pvPoller);
             }

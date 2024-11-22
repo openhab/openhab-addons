@@ -23,6 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KermiModbusConstans {
+
+    public static final int WARMUP_TIME_LONG = 1500;
+    public static final int WARMUP_TIME_SHORT = 500;
+
     // "String" registers at the beginning shall be read with very low frequency - 1 hour
     public static final int SLOW_POLL_REFRESH_TIME_MS = 60 * 60 * 1000;
 
