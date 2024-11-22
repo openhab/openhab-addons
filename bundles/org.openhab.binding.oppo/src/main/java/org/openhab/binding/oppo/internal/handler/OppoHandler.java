@@ -60,7 +60,6 @@ import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,8 +113,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Constructor
      */
     public OppoHandler(Thing thing, OppoStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager, @Reference TranslationProvider translationProvider,
-            @Reference LocaleProvider localeProvider) {
+            SerialPortManager serialPortManager, TranslationProvider translationProvider,
+            LocaleProvider localeProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
