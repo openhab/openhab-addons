@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Jochen Leopold - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = LightActions.class)
-@ThingActionsScope(name = "hue")
+@ThingActionsScope(name = "hue-light")
 @NonNullByDefault
 public class LightActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(LightActions.class);
