@@ -87,8 +87,6 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     // #region private
-
-    @SuppressWarnings("null")
     private Runnable initializeConnection() {
         return () -> {
             this.deviceInfo = Optional.ofNullable(this.connection.getDeviceInfo());
