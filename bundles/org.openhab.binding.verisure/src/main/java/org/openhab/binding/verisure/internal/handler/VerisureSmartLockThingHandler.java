@@ -154,7 +154,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
             if (smartLock != null) {
                 BigDecimal installationId = smartLock.getSiteId();
                 try {
-                    String csrf = session.getCsrfToken(installationId);
+                    String csrf = session.getCsrfToken();
                     StringBuilder sb = new StringBuilder(deviceId);
                     sb.insert(4, "+");
                     String data;
@@ -213,7 +213,7 @@ public class VerisureSmartLockThingHandler extends VerisureThingHandler<Verisure
                         }
                         BigDecimal installationId = smartLocks.getSiteId();
                         try {
-                            String csrf = session.getCsrfToken(installationId);
+                            String csrf = session.getCsrfToken();
                             String url = SMARTLOCK_VOLUME_COMMAND;
                             String data = "keypad.volume=MEDIUM&keypad.beepOnKeypress=true&_keypad.beepOnKeypress=on&siren.volume=MEDIUM&voiceDevice.volume=MEDIUM&doorLock.volume="
                                     + volume + "&doorLock.voiceLevel=" + voiceLevel
