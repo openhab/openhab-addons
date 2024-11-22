@@ -7,17 +7,16 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
 - [hueSync Binding](#huesync-binding)
   - [Supported Things](#supported-things)
   - [Discovery](#discovery)
+  - [Configuration](#configuration)
+    - [Thing(s)](#things)
   - [Channels](#channels)
     - [Firmware Information](#firmware-information)
     - [HDMI connections \[in|out\]](#hdmi-connections-inout)
     - [Commands](#commands)
-  - [Configuration](#configuration)
-    - [Binding](#binding)
-    - [Thing(s)](#things)
-    - [Example Configuration](#example-configuration)
-      - [huesyncbox.things](#huesyncboxthings)
-      - [huesyncbox.items](#huesyncboxitems)
-      - [example.sitemap](#examplesitemap)
+  - [Example Configuration](#example-configuration)
+    - [huesyncbox.things](#huesyncboxthings)
+    - [huesyncbox.items](#huesyncboxitems)
+    - [example.sitemap](#examplesitemap)
 
 ## Supported Things
 
@@ -61,6 +60,18 @@ To complete the registration you just press the "coupling" button on the sync bo
 
 For special use cases it is possible to configure the id and token manually in the **advanced configuration** settings section.
 
+## Configuration
+
+### Thing(s)
+
+| Name                 | Type    | Description                       | Default | Required | Advanced |
+| -------------------- | ------- | --------------------------------- | ------- | -------- | -------- |
+| host                 | text    | IP address of the device          | N/A     | yes      | no       |
+| port                 | integer | Port of the HDMI Sync Box.        | 443     | yes      | yes      |
+| registrationId       | text    | Application Registration Id       | N/A     | no       | yes      |
+| apiAccessToken       | text    | API Access Token                  | N/A     | no       | yes      |
+| statusUpdateInterval | integer | Status Update Interval in seconds | 10      | yes      | yes      |
+
 ## Channels
 
 ### Firmware Information
@@ -92,21 +103,9 @@ Information about a HDMI input  connection.
 | sync-active | Switch               | R/W        | <details><summary>Synchronization</summary><p><b>OFF</b> in case of powersave or passthrough mode, and <b>ON</b> in case of video, game or music mode. When changed from OFF to ON, it will start syncing in last used mode for current source. When changed from ON to OFF, will set passthrough mode.</p></details> |
 | brightness  | Number:Dimensionless | R/W        | <details><summary>Brightness</summary><p><ul><li>0 = max reduction</li><li>100 = no brightness reduction/boost compared to input</li><li>200 = max boost</li></ul></p></details>                                                                                                                                      |
 
-## Configuration
+## Example Configuration
 
-### Thing(s)
-
-| Name                 | Type    | Description                       | Default | Required | Advanced |
-| -------------------- | ------- | --------------------------------- | ------- | -------- | -------- |
-| host                 | text    | IP address of the device          | N/A     | yes      | no       |
-| port                 | integer | Port of the HDMI Sync Box.        | 443     | yes      | yes      |
-| registrationId       | text    | Application Registration Id       | N/A     | no       | yes      |
-| apiAccessToken       | text    | API Access Token                  | N/A     | no       | yes      |
-| statusUpdateInterval | integer | Status Update Interval in seconds | 10      | yes      | yes      |
-
-### Example Configuration
-
-#### huesyncbox.things
+### huesyncbox.things
 
 ```java
 Thing huesync:box:LivingRoom "Philips Hue HDMI Sync Box, LivingRoom" [
@@ -119,7 +118,7 @@ Thing huesync:box:LivingRoom "Philips Hue HDMI Sync Box, LivingRoom" [
 ]
 ```
 
-#### huesyncbox.items
+### huesyncbox.items
 
 Both item and sitemap configuration example use the `iconify` support for the `firmware` as well as `input1` and `input2`.
 Those icons loaded if needed from the internet and not suited for a pure offline setup.
@@ -174,7 +173,7 @@ Dimmer    huesync_brightness               "Brightness"              <slider>   
 
 ```
 
-#### example.sitemap
+### example.sitemap
 
 ```java
 sitemap demo label="Hue Sync Box" {
@@ -218,4 +217,4 @@ sitemap demo label="Hue Sync Box" {
   Text item=hdmi_connection_status_input4   
   Text item=last_sync_mode_input4
  }
-`
+```
