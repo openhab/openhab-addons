@@ -242,10 +242,7 @@ public class VerisureSession {
         CookieStore originalCookieStore = httpClient.getCookieStore();
         httpClient.setCookieStore(new HttpCookieStore.Empty());
 
-        ContentResponse response = httpClient.newRequest(LOGIN).method(HttpMethod.GET)
-                .header(HttpHeader.HOST, "mypages.verisure.com").header(HttpHeader.CONNECTION, "keep-alive")
-                .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd").header(HttpHeader.ACCEPT, "*/*").send();
+        ContentResponse response = httpClient.newRequest(LOGIN).method(HttpMethod.GET).send();
         html = response.getContentAsString();
         logger.trace("url: {} html: {}", LOGIN, html);
 
@@ -449,8 +446,7 @@ public class VerisureSession {
             }
         } else {
             if (url.contains(LOGON_SUF)) {
-                request.header(HttpHeader.ACCEPT, "*/*")
-                        .header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
+                request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded")
                         .header(HttpHeader.REFERER, "https://mypages.verisure.com/login")
                         .header("x-vs-refresh", vsRefresh);
             }
@@ -634,8 +630,6 @@ public class VerisureSession {
                 Request request = httpClient.newRequest(url).method(HttpMethod.GET).header(HttpHeader.ACCEPT,
                         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
                         .header(HttpHeader.ACCEPT_LANGUAGE, "sv-SE,sv;q=0.9,en-US;q=0.8,en;q=0.7")
-                        .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate, br, zstd")
-                        .header(HttpHeader.CONNECTION, "keep-alive")
                         .header(HttpHeader.REFERER, "https://mypages.verisure.com/login").followRedirects(false);
 
                 ContentResponse response = request.send();
