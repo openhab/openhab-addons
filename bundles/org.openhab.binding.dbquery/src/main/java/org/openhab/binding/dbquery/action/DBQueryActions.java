@@ -26,6 +26,7 @@ import org.openhab.binding.dbquery.internal.domain.QueryResult;
 import org.openhab.binding.dbquery.internal.domain.ResultRow;
 import org.openhab.binding.dbquery.internal.error.UnnexpectedCondition;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -49,8 +50,10 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     @RuleAction(label = "Execute query", description = "Execute query synchronously (use with care)")
-    public ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters,
-            int timeoutInSeconds) {
+    public @ActionOutput(label = "Result", type = "org.openhab.binding.dbquery.action.ActionQueryResult") ActionQueryResult executeQuery(
+            @ActionInput(name = "query") String query,
+            @ActionInput(name = "parameters") Map<String, @Nullable Object> parameters,
+            @ActionInput(name = "timeoutInSeconds") int timeoutInSeconds) {
         logger.debug("executeQuery from action {} params={}", query, parameters);
         var currentDatabaseBridgeHandler = databaseBridgeHandler;
         if (currentDatabaseBridgeHandler != null) {
@@ -91,7 +94,7 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     @RuleAction(label = "Get last query result", description = "Get last result from a query")
-    public ActionQueryResult getLastQueryResult() {
+    public @ActionOutput(label = "Result", type = "org.openhab.binding.dbquery.action.ActionQueryResult") ActionQueryResult getLastQueryResult() {
         var currentQueryHandler = queryHandler;
         if (currentQueryHandler != null) {
             return queryResult2ActionQueryResult(queryHandler.getLastQueryResult());
@@ -99,6 +102,19 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
             logger.warn("getLastQueryResult ignored as queryHandler is null");
             return new ActionQueryResult(false, null);
         }
+    }
+
+    public static ActionQueryResult executeQuery(ThingActions actions, String query,
+            Map<String, @Nullable Object> parameters, int timeoutInSeconds) {
+        return ((DBQueryActions) actions).executeQuery(query, parameters, timeoutInSeconds);
+    }
+
+    public static void setQueryParameters(ThingActions actions, Map<String, @Nullable Object> parameters) {
+        ((DBQueryActions) actions).setQueryParameters(parameters);
+    }
+
+    public static ActionQueryResult getLastQueryResult(ThingActions actions) {
+        return ((DBQueryActions) actions).getLastQueryResult();
     }
 
     @Override
