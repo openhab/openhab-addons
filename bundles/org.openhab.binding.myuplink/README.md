@@ -41,10 +41,7 @@ If manual configuration is preferred you need to specify configuration as below.
 | deviceId                | yes      | The id of the heatpump that will be represented by this thing. Can be retrieved via API call or autodiscovery.         |
 | systemId                | no       | The systemId of the heatpump. Only needed for "SmartHomeMode". Can be retrieved via API call or autodiscovery.         |
 
-
 ## Channels
-
-
 
 The binding only supports channels which are explicitely exposed by the myUplink API.
 
