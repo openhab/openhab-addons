@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = CallActions.class)
-@ThingActionsScope(name = "freeboxos")
+@ThingActionsScope(name = "freeboxos-call")
 @NonNullByDefault
 public class CallActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CallActions.class);

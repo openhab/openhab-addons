@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = ActivePlayerActions.class)
-@ThingActionsScope(name = "freeboxos")
+@ThingActionsScope(name = "freeboxos-activeplayer")
 @NonNullByDefault
 public class ActivePlayerActions extends PlayerActions {
     private final Logger logger = LoggerFactory.getLogger(ActivePlayerActions.class);
