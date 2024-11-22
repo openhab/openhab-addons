@@ -133,6 +133,14 @@ The list of all possible channels is as follows:
 | rac                           | Number:Power              | Reactive 'power' (var).                              | yes      |
 | erac-today                    | Number:Energy             | Reactive 'energy' today (kvarh).                     | yes      |
 | erac-total                    | Number:Energy             | Total reactive 'energy' (kvarh).                     | yes      |
+| charge-va                     | Number:Power              | Charging reactive power.                             | yes      |
+| bat-discharge-va              | Number:Power              | Battery discharging reactive power.                  | yes      |
+| bat-discharge-watt            | Number:Power              | Battery discharging power.                           | yes      |
+| bat-discharge-energy-today    | Number:Energy             | Battery discharge energy today.                      | yes      |
+| bat-discharge-energy-total    | Number:Energy             | Total battery discharge energy.                      | yes      |
+| inverter-current              | Number:ElectricCurrent    | Inverter current.                                    | yes      |
+| inverter-fan-speed            | Number:Dimensionless      | Inverter fan speed percent.                          | yes      |
+| inverter-time                 | Datetime                  | Inverter clock time.                                 | yes      |
 
 ## Rule Actions
 

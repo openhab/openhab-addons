@@ -105,6 +105,7 @@ public class GrowattTest {
     void testGrottValuesAccessibility() throws FileNotFoundException, IOException {
         testGrottValuesAccessibility("simple");
         testGrottValuesAccessibility("sph");
+        testGrottValuesAccessibility("spf");
     }
 
     /**
@@ -236,6 +237,7 @@ public class GrowattTest {
     void testJsonFieldsMappedToDto() throws FileNotFoundException, IOException {
         testJsonFieldsMappedToDto("simple");
         testJsonFieldsMappedToDto("sph");
+        testJsonFieldsMappedToDto("spf");
     }
 
     /**

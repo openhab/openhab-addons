@@ -13,7 +13,13 @@
 package org.openhab.binding.growatt.internal.dto;
 
 import java.lang.reflect.Type;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +40,7 @@ public class GrottDevice {
     // @formatter:on
 
     private @Nullable @SerializedName("device") String deviceId;
+    private @Nullable @SerializedName("time") String timeStamp;
     private @Nullable GrottValues values;
 
     public String getDeviceId() {
@@ -43,5 +50,14 @@ public class GrottDevice {
 
     public @Nullable GrottValues getValues() {
         return values;
+    }
+
+    public @Nullable Instant getTimeStamp() {
+        try {
+            return ZonedDateTime.of(LocalDateTime.parse(Objects.requireNonNull(timeStamp)), ZoneId.systemDefault())
+                    .toInstant();
+        } catch (NullPointerException | DateTimeException e) {
+        }
+        return null;
     }
 }
