@@ -233,6 +233,12 @@ public class TelegramHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
                         return;
+                    case 429:
+                        cancelThingOnlineStatusJob();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Too Many Requests, temporary delaying");
+                        delayThingOnlineStatus();
+                        return;
                     case 502:
                         cancelThingOnlineStatusJob();
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
