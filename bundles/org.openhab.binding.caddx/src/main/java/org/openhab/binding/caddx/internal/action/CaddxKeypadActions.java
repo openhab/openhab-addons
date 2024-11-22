@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = CaddxKeypadActions.class)
-@ThingActionsScope(name = "caddx")
+@ThingActionsScope(name = "caddx-keypad")
 @NonNullByDefault
 public class CaddxKeypadActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxKeypadActions.class);

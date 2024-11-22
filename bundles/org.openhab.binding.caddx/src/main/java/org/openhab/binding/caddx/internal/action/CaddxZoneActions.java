@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
-@ThingActionsScope(name = "caddx")
+@ThingActionsScope(name = "caddx-zone")
 @NonNullByDefault
 public class CaddxZoneActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxZoneActions.class);

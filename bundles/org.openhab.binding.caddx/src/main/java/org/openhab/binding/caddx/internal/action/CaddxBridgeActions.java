@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = CaddxBridgeActions.class)
-@ThingActionsScope(name = "caddx")
+@ThingActionsScope(name = "caddx-bridge")
 @NonNullByDefault
 public class CaddxBridgeActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxBridgeActions.class);

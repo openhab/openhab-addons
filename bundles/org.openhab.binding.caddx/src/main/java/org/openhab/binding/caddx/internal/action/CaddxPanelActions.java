@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @author Georgios Moutsos - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = CaddxPanelActions.class)
-@ThingActionsScope(name = "caddx")
+@ThingActionsScope(name = "caddx-panel")
 @NonNullByDefault
 public class CaddxPanelActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxPanelActions.class);

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Georgios Moutsos - Initial contribution
  */
-@ThingActionsScope(name = "caddx")
+@ThingActionsScope(name = "caddx-partition")
 @NonNullByDefault
 public class CaddxPartitionActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(CaddxPartitionActions.class);
