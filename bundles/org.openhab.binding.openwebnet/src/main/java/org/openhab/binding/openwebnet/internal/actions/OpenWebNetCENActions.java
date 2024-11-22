@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Component(scope = ServiceScope.PROTOTYPE, service = OpenWebNetCENActions.class)
-@ThingActionsScope(name = "openwebnet")
+@ThingActionsScope(name = "openwebnet-cen")
 @NonNullByDefault
 public class OpenWebNetCENActions implements ThingActions {
 

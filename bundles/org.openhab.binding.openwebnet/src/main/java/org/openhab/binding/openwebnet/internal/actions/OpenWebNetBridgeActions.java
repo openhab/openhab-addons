@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  */
 
-@ThingActionsScope(name = "openwebnet")
+@ThingActionsScope(name = "openwebnet-bridge")
 @NonNullByDefault
 public class OpenWebNetBridgeActions implements ThingActions {
 
