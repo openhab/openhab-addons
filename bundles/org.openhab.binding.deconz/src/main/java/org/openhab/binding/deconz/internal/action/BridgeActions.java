@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = BridgeActions.class)
-@ThingActionsScope(name = "deconz")
+@ThingActionsScope(name = "deconz-bridge")
 @NonNullByDefault
 public class BridgeActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(BridgeActions.class);

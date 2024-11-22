@@ -47,7 +47,7 @@ import com.google.gson.reflect.TypeToken;
  * @author Jan N. Klug - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = GroupActions.class)
-@ThingActionsScope(name = "deconz")
+@ThingActionsScope(name = "deconz-group")
 @NonNullByDefault
 public class GroupActions implements ThingActions {
     private static final String NEW_SCENE_ID_OUTPUT = "newSceneId";
