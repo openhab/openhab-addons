@@ -40,57 +40,68 @@ With the default value of 10min this would mean ~4300 requests per month per sin
 
 ### Status Channels
 
-| channel    | type     | access mode | description  | advanced |
-|------------|----------|-------------|--------------|----------|
-| name                           | String               | R   | The name of the Automower®                                                                                     | false |
-| mode                           | String               | R   | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                              | false |
-| activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                                                                                                                                             | false |
-| inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               | false |
-| state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)                                                                                                                                | false |
-| work-area-id                   | Number               | R   | Id of the active work area                                                                                     | true  |
-| work-area                      | String               | R   | Name of the active work area                                                                                   | false |
-| last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                | false |
-| battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
-| error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
-| error-message                  | String               | R   | The current error message                                                                                      | false |
-| error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
-| error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable                               | true  |
-| planner-next-start             | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL                                                                                                                 | false |
-| planner-override-action        | String               | R   | The action that overrides current planner operation                                                            | true  |
-| planner-restricted-reason      | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                            | false |
-| planner-external-reason        | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
-| setting-cutting-height         | Number               | R/W | Prescaled cutting height, Range: 1-9                                                                           | false |
-| setting-headlight-mode         | String               | R/W | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT)                                        | false |
-| stat-cutting-blade-usage-time  | Number:Time          | R/W | The time since the last reset of the cutting blade usage counter. `sendCommand(0)` to reset                    | false |
-| stat-down-time                 | Number:Time          | R   | The time the mower has been disconnected from the cloud                                                        | true  |
-| stat-number-of-charging-cycles | Number               | R   | Number of charging cycles                                                                                      | false |
-| stat-number-of-collisions      | Number               | R   | The total number of collisions                                                                                 | false |
-| stat-total-charging-time       | Number:Time          | R   | Total charging time                                                                                            | false |
-| stat-total-cutting-time        | Number:Time          | R   | Total Cutting Time                                                                                             | false |
-| stat-total-cutting-percent     | Number:Dimensionless | R   | Total cutting time in percent                                                                                  | false |
-| stat-total-drive-distance      | Number:Length        | R   | Total driven distance                                                                                          | false |
-| stat-total-running-time        | Number:Time          | R   | The total running time (the wheel motors have been running)                                                    | false |
-| stat-total-searching-time      | Number:Length        | R   | The total searching time                                                                                       | false |
-| stat-total-searching-percent   | Number:Dimensionless | R   | The total searching time in percent                                                                            | false |
-| stat-up-time                   | Number:Time          | R   | The time the mower has been connected to the cloud                                                             | true  |
+| channel                               | type         | access mode | description                                                                                                 | advanced |
+|---------------------------------------|----------------------|-----|----------------------------------------------------------------------------------------------------------------|-------|
+| status#name                           | String               | R   | The name of the Automower®                                                                                     | false |
+| status#mode                           | String               | R   | The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                              | false |
+| status#activity                       | String               | R   | The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                                                                                                                                                    | false |
+| status#inactive-reason                | String               | R   | The current reason for being inactive (NONE, PLANNING, SEARCHING_FOR_SATELLITES)                               | false |
+| status#state                          | String               | R   | The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED_NONE, RESTRICTED_WEEK_SCHEDULE, RESTRICTED_PARK_OVERRIDE, RESTRICTED_SENSOR, RESTRICTED_DAILY_LIMIT, RESTRICTED_FOTA, RESTRICTED_FROST, RESTRICTED_ALL_WORK_AREAS_COMPLETED, RESTRICTED_EXTERNAL, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)                                                                                                                                       | false |
+| status#work-area-id                   | Number               | R   | Id of the active work area                                                                                     | true  |
+| status#work-area                      | String               | R   | Name of the active work area                                                                                   | false |
+| status#last-update                    | DateTime             | R   | The time when the Automower® updated its states                                                                | false |
+| status#battery                        | Number:Dimensionless | R   | The battery state of charge in percent                                                                         | false |
+| status#error-code                     | Number               | R/W | The current error code. `sendCommand(0)` to confirm current non fatal error                                    | true  |
+| status#error-message                  | String               | R   | The current error message                                                                                      | false |
+| status#error-timestamp                | DateTime             | R   | The timestamp when the current error occurred                                                                  | false |
+| status#error-confirmable              | Switch               | R   | If the mower has an Error Code this attribute states if the error is confirmable                               | true  |
+| status#planner-next-start             | DateTime             | R   | The time for the next auto start. If the mower is charging then the value is the estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL                                                                                                               | false |
+| status#planner-override-action        | String               | R   | The action that overrides current planner operation                                                            | true  |
+| status#planner-restricted-reason      | String               | R   | A reason that restrics current planner operation (NONE, WEEK_SCHEDULE, PARK_OVERRIDE, SENSOR, DAILY_LIMIT, FOTA, FROST, ALL_WORK_AREAS_COMPLETED, EXTERNAL)                                                                                                                                                   | false |
+| status#planner-external-reason        | String               | R   | An external reason set by i.e. IFTTT, Google Assistant or Amazon Alexa that restrics current planner operation | true  |
+
+
+### Settings Channels
+
+| channel                | type   | access mode | description                                                             | advanced |
+|------------------------|--------|-------------|-------------------------------------------------------------------------|----------|
+| setting#cutting-height | Number | R/W         | Prescaled cutting height, Range: 1-9                                    | false    |
+| setting#headlight-mode | String | R/W         | Headlight Mode (ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT) | false    |
+
+### Statistics Channels
+
+| channel                             | type                 | access mode | description                                                                                 | advanced |
+|-------------------------------------|----------------------|-------------|---------------------------------------------------------------------------------------------|----------|
+| statistic#cutting-blade-usage-time  | Number:Time          | R/W         | The time since the last reset of the cutting blade usage counter. `sendCommand(0)` to reset | false    |
+| statistic#down-time                 | Number:Time          | R           | The time the mower has been disconnected from the cloud                                     | true     |
+| statistic#number-of-charging-cycles | Number               | R           | Number of charging cycles                                                                   | false    |
+| statistic#number-of-collisions      | Number               | R           | The total number of collisions                                                              | false    |
+| statistic#total-charging-time       | Number:Time          | R           | Total charging time                                                                         | false    |
+| statistic#total-cutting-time        | Number:Time          | R           | Total Cutting Time                                                                          | false    |
+| statistic#total-cutting-percent     | Number:Dimensionless | R           | Total cutting time in percent                                                               | false    |
+| statistic#total-drive-distance      | Number:Length        | R           | Total driven distance                                                                       | false    |
+| statistic#total-running-time        | Number:Time          | R           | The total running time (the wheel motors have been running)                                 | false    |
+| statistic#total-searching-time      | Number:Length        | R           | The total searching time                                                                    | false    |
+| statistic#total-searching-percent   | Number:Dimensionless | R           | The total searching time in percent                                                         | false    |
+| statistic#up-time                   | Number:Time          | R           | The time the mower has been connected to the cloud                                          | true     |
 
 ### Calendar Tasks Channels
 
 These channels hold the different Calendar Task configurations. Right now a maximum of 10 Calendar Tasks are supported by the binding.
 
-| channel    | type     | access mode | description  | advanced |
-|------------|----------|-------------|--------------|----------|
-| calendartasks\<x\>-start      | Number:Time | R/W | Start time relative to midnight               | true  |
-| calendartasks\<x\>-duration   | Number:Time | R/W | Duration time                                 | true  |
-| calendartasks\<x\>-monday     | Switch      | R/W | Enabled on Mondays                            | true  |
-| calendartasks\<x\>-tuesday    | Switch      | R/W | Enabled on Tuesdays                           | true  |
-| calendartasks\<x\>-wednesday  | Switch      | R/W | Enabled on Wednesdays                         | true  |
-| calendartasks\<x\>-thursday   | Switch      | R/W | Enabled on Thursdays                          | true  |
-| calendartasks\<x\>-friday     | Switch      | R/W | Enabled on Fridays                            | true  |
-| calendartasks\<x\>-saturday   | Switch      | R/W | Enabled on Saturdays                          | true  |
-| calendartasks\<x\>-sunday     | Switch      | R/W | Enabled on Sundays                            | true  |
-| calendartasks\<x\>-workAreaId | Number      | R   | Work Area Id mapped to this calendar          | true  |
-| calendartasks\<x\>-workArea   | String      | R   | Name of the Work Area mapped to this calendar | true  |
+| channel                       | type        | access mode | description                                   | advanced |
+|-------------------------------|-------------|-------------|-----------------------------------------------|----------|
+| calendartask#\<x\>-start      | Number:Time | R/W         | Start time relative to midnight               | true     |
+| calendartask#\<x\>-duration   | Number:Time | R/W         | Duration time                                 | true     |
+| calendartask#\<x\>-monday     | Switch      | R/W         | Enabled on Mondays                            | true     |
+| calendartask#\<x\>-tuesday    | Switch      | R/W         | Enabled on Tuesdays                           | true     |
+| calendartask#\<x\>-wednesday  | Switch      | R/W         | Enabled on Wednesdays                         | true     |
+| calendartask#\<x\>-thursday   | Switch      | R/W         | Enabled on Thursdays                          | true     |
+| calendartask#\<x\>-friday     | Switch      | R/W         | Enabled on Fridays                            | true     |
+| calendartask#\<x\>-saturday   | Switch      | R/W         | Enabled on Saturdays                          | true     |
+| calendartask#\<x\>-sunday     | Switch      | R/W         | Enabled on Sundays                            | true     |
+| calendartask#\<x\>-workAreaId | Number      | R           | Work Area Id mapped to this calendar          | true     |
+| calendartask#\<x\>-workArea   | String      | R           | Name of the Work Area mapped to this calendar | true     |
 
 \<x\> ... 01-10
 
@@ -100,10 +111,10 @@ These channels hold the last 50 GPS positions recorded by the Automower®, thus 
 Position 01 is the latest recorded position, the other positions are pushed back, thus removing the previous position 50 from the list because it is replaced by the previous position 49.
 Channel `last-position` is always identical with channel `position01` and thus provides more convenient access if only the latest GPS information is required by the user.
 
-| channel    | type     | access mode | description  | advanced |
-|------------|----------|-------------|--------------|----------|
-| last-position | Location | R | Last GPS Position (identical with positions#position01) | false |
-| position\<x\> | Location | R | GPS Position \<x\>                                      | true  |
+| channel          | type     | access mode | description                                             | advanced |
+|------------------|----------|-------------|---------------------------------------------------------|----------|
+| position#last    | Location | R           | Last GPS Position (identical with positions#position01) | false    |
+| position#\<x\>   | Location | R           | GPS Position \<x\>                                      | true     |
 
 \<x\> ... 01-50
 
@@ -111,12 +122,12 @@ Channel `last-position` is always identical with channel `position01` and thus p
 
 These channels hold the different Stayout Zone configurations. Right now a maximum of 10 Stayout Zones are supported by the binding.
 
-| channel    | type     | access mode | description  | advanced |
-|------------|----------|-------------|--------------|----------|
-| dirty             | Switch | R   | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true  |
-| zone\<x\>-id      | String | R   | Id of the Stayout zone                                                                                                             | true  |
-| zone\<x\>-name    | String | R   | The name of the Stayout zone                                                                                                       | true  |
-| zone\<x\>-enabled | Switch | R/W | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true  |
+| channel                   | type   | access mode | description                                                                                                                        | advanced |
+|---------------------------|--------|-------------|------------------------------------------------------------------------------------------------------------------------------------|----------|
+| stayoutzone#dirty         | Switch | R           | If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable or disable a stay-out zone | true     |
+| stayoutzone#\<x\>-id      | String | R           | Id of the Stayout zone                                                                                                             | true     |
+| stayoutzone#\<x\>-name    | String | R           | The name of the Stayout zone                                                                                                       | true     |
+| stayoutzone#\<x\>-enabled | Switch | R/W         | If the Stayout zone is enabled, the Automower® will not access the zone                                                            | true     |
 
 \<x\> ... 01-10
 
@@ -124,27 +135,27 @@ These channels hold the different Stayout Zone configurations. Right now a maxim
 
 These channels hold the different Work Area configurations. Right now a maximum of 10 Work Areas are supported by the binding.
 
-| channel    | type     | access mode | description  | advanced |
-|------------|----------|-------------|--------------|----------|
-| workarea\<x\>-id                  | Number                | R   | Id of the Work Area                                                                                | false |
-| workarea\<x\>-name                | String                | R   | Name of the work area                                                                              | false |
-| workarea\<x\>-cutting-height      | Number:Dimensionless  | R/W | Cutting height in percent. 0-100                                                                   | false |
-| workarea\<x\>-enabled             | Switch                | R/W | If the work area is enabled or disabled                                                            | false |
-| workarea\<x\>-progress            | Number                | R   | The progress on a work area. EPOS mowers and systematic mowing work areas only                     | true  |
-| workarea\<x\>-last-time-completed | DateTime              | R   | Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only | true  |
+| channel                            | type                  | access mode | description                                                                                        | advanced |
+|------------------------------------|-----------------------|-------------|----------------------------------------------------------------------------------------------------|----------|
+| workarea#\<x\>-id                  | Number                | R           | Id of the Work Area                                                                                | false    |
+| workarea#\<x\>-name                | String                | R           | Name of the work area                                                                              | false    |
+| workarea#\<x\>-cutting-height      | Number:Dimensionless  | R/W         | Cutting height in percent. 0-100                                                                   | false    |
+| workarea#\<x\>-enabled             | Switch                | R/W         | If the work area is enabled or disabled                                                            | false    |
+| workarea#\<x\>-progress            | Number                | R           | The progress on a work area. EPOS mowers and systematic mowing work areas only                     | true     |
+| workarea#\<x\>-last-time-completed | DateTime              | R           | Timestamp when the work area was last completed. EPOS mowers and systematic mowing work areas only | true     |
 
 \<x\> ... 01-10
 
 ### Command Channels
 
-| channel                   | type     | access mode | description                                    | advanced |
-|---------------------------|----------|-------------|------------------------------------------------|----------|
-| start                     | Number   | W | Starts the Automower® for a duration                     | false    |
-| resume_schedule           | Switch   | W | Resumes the Automower® schedule                          | false    |
-| pause                     | Switch   | W | Pause the Automower®                                     | false    |
-| park                      | Number   | W | Park the Automower® for a duration                       | false    |
-| park_until_next_schedule  | Switch   | W | Park the Automower® until next schedule                  | false    |
-| park_until_further_notice | Switch   | W | Park the Automower® until further notice                 | false    |
+| channel                           | type     | access mode | description                              | advanced |
+|-----------------------------------|----------|-------------|------------------------------------------|----------|
+| command#start                     | Number   | W           | Starts the Automower® for a duration     | false    |
+| command#resume_schedule           | Switch   | W           | Resumes the Automower® schedule          | false    |
+| command#pause                     | Switch   | W           | Pause the Automower®                     | false    |
+| command#park                      | Number   | W           | Park the Automower® for a duration       | false    |
+| command#park_until_next_schedule  | Switch   | W           | Park the Automower® until next schedule  | false    |
+| command#park_until_further_notice | Switch   | W           | Park the Automower® until further notice | false    |
 
 ## Actions
 
@@ -171,7 +182,7 @@ The following actions are available for `automower` things:
 
 ```java
 Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", userName="<your_username>", password="<your_password>" ] {
-    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>", pollingInterval=3600] {
+    Thing automower myAutomower [ mowerId="<your_id_received_from_discovery>", pollingInterval=3600 ] {
     }
 }
 ```
@@ -179,25 +190,24 @@ Bridge automower:bridge:mybridge [ appKey="<your_private_application_key>", user
 ### automower.items
 
 ```java
-String      Automower_Mode                          "Mode [%s]"                             { channel="automower:automower:mybridge:myAutomower:mode" }
-String      Automower_Activity                      "Activity [%s]"                         { channel="automower:automower:mybridge:myAutomower:activity" }
-String      Automower_State                         "State [%s]"                            { channel="automower:automower:mybridge:myAutomower:state" }
-DateTime    Automower_Last_Update                   "Last Update"                           { channel="automower:automower:mybridge:myAutomower:last-update" }
-Number      Automower_Battery                       "Battery [%d %%]"                       { channel="automower:automower:mybridge:myAutomower:battery" }
-Number      Automower_Error_Code                    "Error Code [%d]"                       { channel="automower:automower:mybridge:myAutomower:error-code" }
-DateTime    Automower_Error_Time                    "Error Time"                            { channel="automower:automower:mybridge:myAutomower:error-timestamp" }
-String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:planner-override-action" }
-DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:planner-next-start" }
-String      Automower_Calendar_Tasks                "Planned Tasks [%s]"                    { channel="automower:automower:mybridge:myAutomower:calendar-tasks" }
+String      Automower_Mode                          "Mode [%s]"                             { channel="automower:automower:mybridge:myAutomower:status#mode" }
+String      Automower_Activity                      "Activity [%s]"                         { channel="automower:automower:mybridge:myAutomower:status#activity" }
+String      Automower_State                         "State [%s]"                            { channel="automower:automower:mybridge:myAutomower:status#state" }
+DateTime    Automower_Last_Update                   "Last Update"                           { channel="automower:automower:mybridge:myAutomower:status#last-update" }
+Number      Automower_Battery                       "Battery [%d %%]"                       { channel="automower:automower:mybridge:myAutomower:status#battery" }
+Number      Automower_Error_Code                    "Error Code [%d]"                       { channel="automower:automower:mybridge:myAutomower:status#error-code" }
+DateTime    Automower_Error_Time                    "Error Time"                            { channel="automower:automower:mybridge:myAutomower:status#error-timestamp" }
+String      Automower_Override_Action               "Override Action [%s]"                  { channel="automower:automower:mybridge:myAutomower:status#planner-override-action" }
+DateTime    Automower_Next_Start_Time               "Next Start Time"                       { channel="automower:automower:mybridge:myAutomower:status#planner-next-start" }
 
-Number      Automower_Command_Start                 "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:start" }
-Switch      Automower_Command_Resume                "Resume the schedule"                   { channel="automower:automower:mybridge:myAutomower:resume_schedule" }
-Switch      Automower_Command_Pause                 "Pause the automower"                   { channel="automower:automower:mybridge:myAutomower:pause" }
-Number      Automower_Command_Park                  "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:park" }
-Switch      Automower_Command_Park_Next_Schedule    "Park until next schedule"              { channel="automower:automower:mybridge:myAutomower:park_until_next_schedule" }
-Switch      Automower_Command_Park_Notice           "Park until further notice"             { channel="automower:automower:mybridge:myAutomower:park_until_further_notice" }
+Number      Automower_Command_Start                 "Start mowing for duration [%d min]"    { channel="automower:automower:mybridge:myAutomower:command#start" }
+Switch      Automower_Command_Resume                "Resume the schedule"                   { channel="automower:automower:mybridge:myAutomower:command#resume_schedule" }
+Switch      Automower_Command_Pause                 "Pause the automower"                   { channel="automower:automower:mybridge:myAutomower:command#pause" }
+Number      Automower_Command_Park                  "Park for duration [%d min]"            { channel="automower:automower:mybridge:myAutomower:command#park" }
+Switch      Automower_Command_Park_Next_Schedule    "Park until next schedule"              { channel="automower:automower:mybridge:myAutomower:command#park_until_next_schedule" }
+Switch      Automower_Command_Park_Notice           "Park until further notice"             { channel="automower:automower:mybridge:myAutomower:command#park_until_further_notice" }
 
-Location    Automower_Last_Position                 "Last Position"                         { channel="automower:automower:mybridge:myAutomower:last-position" }
+Location    Automower_Last_Position                 "Last Position"                         { channel="automower:automower:mybridge:myAutomower:position#last-position" }
 ```
 
 ### automower.sitemap
@@ -229,6 +239,10 @@ rule "AutomowerParkUntilFurtherNotice"
 when
     Item Some_Item changed to ON
 then
+    // via command item
+    Automower_Command_Park_Notice.sendCommand(ON)
+    
+    // alternative via actions
     val mowerActions = getActions("automower", "automower:automower:mybridge:myAutomower")
     mowerActions.parkUntilFurtherNotice()
 end

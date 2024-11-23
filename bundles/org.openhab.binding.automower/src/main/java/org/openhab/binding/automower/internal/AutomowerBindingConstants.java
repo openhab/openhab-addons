@@ -37,8 +37,8 @@ public class AutomowerBindingConstants {
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
 
     // List of all status Channel ids
-    public static final String GROUP_STATUS = ""; // no channel group in use at the moment, we'll possibly introduce
-                                                  // this in a future release
+    public static final String GROUP_STATUS = "status#";
+
     public static final String CHANNEL_STATUS_NAME = GROUP_STATUS + "name";
     public static final String CHANNEL_STATUS_MODE = GROUP_STATUS + "mode";
     public static final String CHANNEL_STATUS_ACTIVITY = GROUP_STATUS + "activity";
@@ -52,193 +52,155 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_ERROR_MESSAGE = GROUP_STATUS + "error-message";
     public static final String CHANNEL_STATUS_ERROR_TIMESTAMP = GROUP_STATUS + "error-timestamp";
     public static final String CHANNEL_STATUS_ERROR_CONFIRMABLE = GROUP_STATUS + "error-confirmable";
-
-    // List of all planner Channel ids
-    public static final String GROUP_PLANNER = ""; // no channel group in use at the moment, we'll possibly introduce
-                                                   // this in a future release
-    public static final String CHANNEL_PLANNER_NEXT_START = GROUP_PLANNER + "planner-next-start";
-    public static final String CHANNEL_PLANNER_OVERRIDE_ACTION = GROUP_PLANNER + "planner-override-action";
-    public static final String CHANNEL_PLANNER_RESTRICTED_REASON = GROUP_PLANNER + "planner-restricted-reason";
-    public static final String CHANNEL_PLANNER_EXTERNAL_REASON = GROUP_PLANNER + "planner-external-reason";
+    public static final String CHANNEL_STATUS_NEXT_START = GROUP_STATUS + "next-start";
+    public static final String CHANNEL_STATUS_OVERRIDE_ACTION = GROUP_STATUS + "override-action";
+    public static final String CHANNEL_STATUS_RESTRICTED_REASON = GROUP_STATUS + "restricted-reason";
+    public static final String CHANNEL_STATUS_EXTERNAL_REASON = GROUP_STATUS + "external-reason";
 
     // List of all setting Channel ids
-    public static final String GROUP_SETTING = ""; // no channel group in use at the moment, we'll possibly introduce
-                                                   // this in a future release
-    public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_SETTING + "setting-cutting-height";
-    public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_SETTING + "setting-headlight-mode";
+    public static final String GROUP_SETTING = "setting#";
+
+    public static final String CHANNEL_SETTING_CUTTING_HEIGHT = GROUP_SETTING + "cutting-height";
+    public static final String CHANNEL_SETTING_HEADLIGHT_MODE = GROUP_SETTING + "headlight-mode";
 
     // List of all setting Channel ids
-    public static final String GROUP_STATISTIC = ""; // no channel group in use at the moment, we'll possibly introduce
-                                                     // this in a future release
+    public static final String GROUP_STATISTIC = "statistic#";
+
     public static final String CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME = GROUP_STATISTIC
-            + "stat-cutting-blade-usage-time";
-    public static final String CHANNEL_STATISTIC_DOWN_TIME = GROUP_STATISTIC + "stat-down-time";
+            + "cutting-blade-usage-time";
+    public static final String CHANNEL_STATISTIC_DOWN_TIME = GROUP_STATISTIC + "down-time";
     public static final String CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES = GROUP_STATISTIC
-            + "stat-number-of-charging-cycles";
-    public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATISTIC + "stat-number-of-collisions";
-    public static final String CHANNEL_STATISTIC_TOTAL_CHARGING_TIME = GROUP_STATISTIC + "stat-total-charging-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_TIME = GROUP_STATISTIC + "stat-total-cutting-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT = GROUP_STATISTIC + "stat-total-cutting-percent";
-    public static final String CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE = GROUP_STATISTIC + "stat-total-drive-distance";
-    public static final String CHANNEL_STATISTIC_TOTAL_RUNNING_TIME = GROUP_STATISTIC + "stat-total-running-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATISTIC + "stat-total-searching-time";
-    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATISTIC
-            + "stat-total-searching-percent";
-    public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "stat-up-time";
+            + "number-of-charging-cycles";
+    public static final String CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS = GROUP_STATISTIC + "number-of-collisions";
+    public static final String CHANNEL_STATISTIC_TOTAL_CHARGING_TIME = GROUP_STATISTIC + "total-charging-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_TIME = GROUP_STATISTIC + "total-cutting-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT = GROUP_STATISTIC + "total-cutting-percent";
+    public static final String CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE = GROUP_STATISTIC + "total-drive-distance";
+    public static final String CHANNEL_STATISTIC_TOTAL_RUNNING_TIME = GROUP_STATISTIC + "total-running-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME = GROUP_STATISTIC + "total-searching-time";
+    public static final String CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT = GROUP_STATISTIC + "total-searching-percent";
+    public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "up-time";
 
     // Calendar Task Channels ids
-    public static final String GROUP_CALENDARTASKS = ""; // no channel group in use at the moment, we'll possibly
-                                                         // introduce this in a future release
+    public static final String GROUP_CALENDARTASK = "calendartask#";
+
     public static final ArrayList<String> CHANNEL_CALENDARTASKS = new ArrayList<>(List.of(
-            GROUP_CALENDARTASKS + "calendartasks01-start", GROUP_CALENDARTASKS + "calendartasks01-duration",
-            GROUP_CALENDARTASKS + "calendartasks01-monday", GROUP_CALENDARTASKS + "calendartasks01-tuesday",
-            GROUP_CALENDARTASKS + "calendartasks01-wednesday", GROUP_CALENDARTASKS + "calendartasks01-thursday",
-            GROUP_CALENDARTASKS + "calendartasks01-friday", GROUP_CALENDARTASKS + "calendartasks01-saturday",
-            GROUP_CALENDARTASKS + "calendartasks01-sunday", GROUP_CALENDARTASKS + "calendartasks01-workAreaId",
-            GROUP_CALENDARTASKS + "calendartasks01-workArea", GROUP_CALENDARTASKS + "calendartasks02-start",
-            GROUP_CALENDARTASKS + "calendartasks02-duration", GROUP_CALENDARTASKS + "calendartasks02-monday",
-            GROUP_CALENDARTASKS + "calendartasks02-tuesday", GROUP_CALENDARTASKS + "calendartasks02-wednesday",
-            GROUP_CALENDARTASKS + "calendartasks02-thursday", GROUP_CALENDARTASKS + "calendartasks02-friday",
-            GROUP_CALENDARTASKS + "calendartasks02-saturday", GROUP_CALENDARTASKS + "calendartasks02-sunday",
-            GROUP_CALENDARTASKS + "calendartasks02-workAreaId", GROUP_CALENDARTASKS + "calendartasks02-workArea",
-            GROUP_CALENDARTASKS + "calendartasks03-start", GROUP_CALENDARTASKS + "calendartasks03-duration",
-            GROUP_CALENDARTASKS + "calendartasks03-monday", GROUP_CALENDARTASKS + "calendartasks03-tuesday",
-            GROUP_CALENDARTASKS + "calendartasks03-wednesday", GROUP_CALENDARTASKS + "calendartasks03-thursday",
-            GROUP_CALENDARTASKS + "calendartasks03-friday", GROUP_CALENDARTASKS + "calendartasks03-saturday",
-            GROUP_CALENDARTASKS + "calendartasks03-sunday", GROUP_CALENDARTASKS + "calendartasks03-workAreaId",
-            GROUP_CALENDARTASKS + "calendartasks03-workArea", GROUP_CALENDARTASKS + "calendartasks04-start",
-            GROUP_CALENDARTASKS + "calendartasks04-duration", GROUP_CALENDARTASKS + "calendartasks04-monday",
-            GROUP_CALENDARTASKS + "calendartasks04-tuesday", GROUP_CALENDARTASKS + "calendartasks04-wednesday",
-            GROUP_CALENDARTASKS + "calendartasks04-thursday", GROUP_CALENDARTASKS + "calendartasks04-friday",
-            GROUP_CALENDARTASKS + "calendartasks04-saturday", GROUP_CALENDARTASKS + "calendartasks04-sunday",
-            GROUP_CALENDARTASKS + "calendartasks04-workAreaId", GROUP_CALENDARTASKS + "calendartasks04-workArea",
-            GROUP_CALENDARTASKS + "calendartasks05-start", GROUP_CALENDARTASKS + "calendartasks05-duration",
-            GROUP_CALENDARTASKS + "calendartasks05-monday", GROUP_CALENDARTASKS + "calendartasks05-tuesday",
-            GROUP_CALENDARTASKS + "calendartasks05-wednesday", GROUP_CALENDARTASKS + "calendartasks05-thursday",
-            GROUP_CALENDARTASKS + "calendartasks05-friday", GROUP_CALENDARTASKS + "calendartasks05-saturday",
-            GROUP_CALENDARTASKS + "calendartasks05-sunday", GROUP_CALENDARTASKS + "calendartasks05-workAreaId",
-            GROUP_CALENDARTASKS + "calendartasks05-workArea", GROUP_CALENDARTASKS + "calendartasks06-start",
-            GROUP_CALENDARTASKS + "calendartasks06-duration", GROUP_CALENDARTASKS + "calendartasks06-monday",
-            GROUP_CALENDARTASKS + "calendartasks06-tuesday", GROUP_CALENDARTASKS + "calendartasks06-wednesday",
-            GROUP_CALENDARTASKS + "calendartasks06-thursday", GROUP_CALENDARTASKS + "calendartasks06-friday",
-            GROUP_CALENDARTASKS + "calendartasks06-saturday", GROUP_CALENDARTASKS + "calendartasks06-sunday",
-            GROUP_CALENDARTASKS + "calendartasks06-workAreaId", GROUP_CALENDARTASKS + "calendartasks06-workArea",
-            GROUP_CALENDARTASKS + "calendartasks07-start", GROUP_CALENDARTASKS + "calendartasks07-duration",
-            GROUP_CALENDARTASKS + "calendartasks07-monday", GROUP_CALENDARTASKS + "calendartasks07-tuesday",
-            GROUP_CALENDARTASKS + "calendartasks07-wednesday", GROUP_CALENDARTASKS + "calendartasks07-thursday",
-            GROUP_CALENDARTASKS + "calendartasks07-friday", GROUP_CALENDARTASKS + "calendartasks07-saturday",
-            GROUP_CALENDARTASKS + "calendartasks07-sunday", GROUP_CALENDARTASKS + "calendartasks07-workAreaId",
-            GROUP_CALENDARTASKS + "calendartasks07-workArea", GROUP_CALENDARTASKS + "calendartasks08-start",
-            GROUP_CALENDARTASKS + "calendartasks08-duration", GROUP_CALENDARTASKS + "calendartasks08-monday",
-            GROUP_CALENDARTASKS + "calendartasks08-tuesday", GROUP_CALENDARTASKS + "calendartasks08-wednesday",
-            GROUP_CALENDARTASKS + "calendartasks08-thursday", GROUP_CALENDARTASKS + "calendartasks08-friday",
-            GROUP_CALENDARTASKS + "calendartasks08-saturday", GROUP_CALENDARTASKS + "calendartasks08-sunday",
-            GROUP_CALENDARTASKS + "calendartasks08-workAreaId", GROUP_CALENDARTASKS + "calendartasks08-workArea",
-            GROUP_CALENDARTASKS + "calendartasks09-start", GROUP_CALENDARTASKS + "calendartasks09-duration",
-            GROUP_CALENDARTASKS + "calendartasks09-monday", GROUP_CALENDARTASKS + "calendartasks09-tuesday",
-            GROUP_CALENDARTASKS + "calendartasks09-wednesday", GROUP_CALENDARTASKS + "calendartasks09-thursday",
-            GROUP_CALENDARTASKS + "calendartasks09-friday", GROUP_CALENDARTASKS + "calendartasks09-saturday",
-            GROUP_CALENDARTASKS + "calendartasks09-sunday", GROUP_CALENDARTASKS + "calendartasks09-workAreaId",
-            GROUP_CALENDARTASKS + "calendartasks09-workArea", GROUP_CALENDARTASKS + "calendartasks10-start",
-            GROUP_CALENDARTASKS + "calendartasks10-duration", GROUP_CALENDARTASKS + "calendartasks10-monday",
-            GROUP_CALENDARTASKS + "calendartasks10-tuesday", GROUP_CALENDARTASKS + "calendartasks10-wednesday",
-            GROUP_CALENDARTASKS + "calendartasks10-thursday", GROUP_CALENDARTASKS + "calendartasks10-friday",
-            GROUP_CALENDARTASKS + "calendartasks10-saturday", GROUP_CALENDARTASKS + "calendartasks10-sunday",
-            GROUP_CALENDARTASKS + "calendartasks10-workAreaId", GROUP_CALENDARTASKS + "calendartasks10-workArea"));
+            GROUP_CALENDARTASK + "01-start", GROUP_CALENDARTASK + "01-duration", GROUP_CALENDARTASK + "01-monday",
+            GROUP_CALENDARTASK + "01-tuesday", GROUP_CALENDARTASK + "01-wednesday", GROUP_CALENDARTASK + "01-thursday",
+            GROUP_CALENDARTASK + "01-friday", GROUP_CALENDARTASK + "01-saturday", GROUP_CALENDARTASK + "01-sunday",
+            GROUP_CALENDARTASK + "01-workAreaId", GROUP_CALENDARTASK + "01-workArea", GROUP_CALENDARTASK + "02-start",
+            GROUP_CALENDARTASK + "02-duration", GROUP_CALENDARTASK + "02-monday", GROUP_CALENDARTASK + "02-tuesday",
+            GROUP_CALENDARTASK + "02-wednesday", GROUP_CALENDARTASK + "02-thursday", GROUP_CALENDARTASK + "02-friday",
+            GROUP_CALENDARTASK + "02-saturday", GROUP_CALENDARTASK + "02-sunday", GROUP_CALENDARTASK + "02-workAreaId",
+            GROUP_CALENDARTASK + "02-workArea", GROUP_CALENDARTASK + "03-start", GROUP_CALENDARTASK + "03-duration",
+            GROUP_CALENDARTASK + "03-monday", GROUP_CALENDARTASK + "03-tuesday", GROUP_CALENDARTASK + "03-wednesday",
+            GROUP_CALENDARTASK + "03-thursday", GROUP_CALENDARTASK + "03-friday", GROUP_CALENDARTASK + "03-saturday",
+            GROUP_CALENDARTASK + "03-sunday", GROUP_CALENDARTASK + "03-workAreaId", GROUP_CALENDARTASK + "03-workArea",
+            GROUP_CALENDARTASK + "04-start", GROUP_CALENDARTASK + "04-duration", GROUP_CALENDARTASK + "04-monday",
+            GROUP_CALENDARTASK + "04-tuesday", GROUP_CALENDARTASK + "04-wednesday", GROUP_CALENDARTASK + "04-thursday",
+            GROUP_CALENDARTASK + "04-friday", GROUP_CALENDARTASK + "04-saturday", GROUP_CALENDARTASK + "04-sunday",
+            GROUP_CALENDARTASK + "04-workAreaId", GROUP_CALENDARTASK + "04-workArea", GROUP_CALENDARTASK + "05-start",
+            GROUP_CALENDARTASK + "05-duration", GROUP_CALENDARTASK + "05-monday", GROUP_CALENDARTASK + "05-tuesday",
+            GROUP_CALENDARTASK + "05-wednesday", GROUP_CALENDARTASK + "05-thursday", GROUP_CALENDARTASK + "05-friday",
+            GROUP_CALENDARTASK + "05-saturday", GROUP_CALENDARTASK + "05-sunday", GROUP_CALENDARTASK + "05-workAreaId",
+            GROUP_CALENDARTASK + "05-workArea", GROUP_CALENDARTASK + "06-start", GROUP_CALENDARTASK + "06-duration",
+            GROUP_CALENDARTASK + "06-monday", GROUP_CALENDARTASK + "06-tuesday", GROUP_CALENDARTASK + "06-wednesday",
+            GROUP_CALENDARTASK + "06-thursday", GROUP_CALENDARTASK + "06-friday", GROUP_CALENDARTASK + "06-saturday",
+            GROUP_CALENDARTASK + "06-sunday", GROUP_CALENDARTASK + "06-workAreaId", GROUP_CALENDARTASK + "06-workArea",
+            GROUP_CALENDARTASK + "07-start", GROUP_CALENDARTASK + "07-duration", GROUP_CALENDARTASK + "07-monday",
+            GROUP_CALENDARTASK + "07-tuesday", GROUP_CALENDARTASK + "07-wednesday", GROUP_CALENDARTASK + "07-thursday",
+            GROUP_CALENDARTASK + "07-friday", GROUP_CALENDARTASK + "07-saturday", GROUP_CALENDARTASK + "07-sunday",
+            GROUP_CALENDARTASK + "07-workAreaId", GROUP_CALENDARTASK + "07-workArea", GROUP_CALENDARTASK + "08-start",
+            GROUP_CALENDARTASK + "08-duration", GROUP_CALENDARTASK + "08-monday", GROUP_CALENDARTASK + "08-tuesday",
+            GROUP_CALENDARTASK + "08-wednesday", GROUP_CALENDARTASK + "08-thursday", GROUP_CALENDARTASK + "08-friday",
+            GROUP_CALENDARTASK + "08-saturday", GROUP_CALENDARTASK + "08-sunday", GROUP_CALENDARTASK + "08-workAreaId",
+            GROUP_CALENDARTASK + "08-workArea", GROUP_CALENDARTASK + "09-start", GROUP_CALENDARTASK + "09-duration",
+            GROUP_CALENDARTASK + "09-monday", GROUP_CALENDARTASK + "09-tuesday", GROUP_CALENDARTASK + "09-wednesday",
+            GROUP_CALENDARTASK + "09-thursday", GROUP_CALENDARTASK + "09-friday", GROUP_CALENDARTASK + "09-saturday",
+            GROUP_CALENDARTASK + "09-sunday", GROUP_CALENDARTASK + "09-workAreaId", GROUP_CALENDARTASK + "09-workArea",
+            GROUP_CALENDARTASK + "10-start", GROUP_CALENDARTASK + "10-duration", GROUP_CALENDARTASK + "10-monday",
+            GROUP_CALENDARTASK + "10-tuesday", GROUP_CALENDARTASK + "10-wednesday", GROUP_CALENDARTASK + "10-thursday",
+            GROUP_CALENDARTASK + "10-friday", GROUP_CALENDARTASK + "10-saturday", GROUP_CALENDARTASK + "10-sunday",
+            GROUP_CALENDARTASK + "10-workAreaId", GROUP_CALENDARTASK + "10-workArea"));
 
     // Position Channels ids
-    public static final String GROUP_POSITIONS = ""; // no channel group in use at the moment, we'll possibly
-                                                     // introduce this in a future release
-    public static final String LAST_POSITION = GROUP_POSITIONS + "last-position";
+    public static final String GROUP_POSITION = "position#";
+
+    public static final String LAST_POSITION = GROUP_POSITION + "last";
     public static final ArrayList<String> CHANNEL_POSITIONS = new ArrayList<>(
-            List.of(GROUP_POSITIONS + "position01", GROUP_POSITIONS + "position02", GROUP_POSITIONS + "position03",
-                    GROUP_POSITIONS + "position04", GROUP_POSITIONS + "position05", GROUP_POSITIONS + "position06",
-                    GROUP_POSITIONS + "position07", GROUP_POSITIONS + "position08", GROUP_POSITIONS + "position09",
-                    GROUP_POSITIONS + "position10", GROUP_POSITIONS + "position11", GROUP_POSITIONS + "position12",
-                    GROUP_POSITIONS + "position13", GROUP_POSITIONS + "position14", GROUP_POSITIONS + "position15",
-                    GROUP_POSITIONS + "position16", GROUP_POSITIONS + "position17", GROUP_POSITIONS + "position18",
-                    GROUP_POSITIONS + "position19", GROUP_POSITIONS + "position20", GROUP_POSITIONS + "position21",
-                    GROUP_POSITIONS + "position22", GROUP_POSITIONS + "position23", GROUP_POSITIONS + "position24",
-                    GROUP_POSITIONS + "position25", GROUP_POSITIONS + "position26", GROUP_POSITIONS + "position27",
-                    GROUP_POSITIONS + "position28", GROUP_POSITIONS + "position29", GROUP_POSITIONS + "position30",
-                    GROUP_POSITIONS + "position31", GROUP_POSITIONS + "position32", GROUP_POSITIONS + "position33",
-                    GROUP_POSITIONS + "position34", GROUP_POSITIONS + "position35", GROUP_POSITIONS + "position36",
-                    GROUP_POSITIONS + "position37", GROUP_POSITIONS + "position38", GROUP_POSITIONS + "position39",
-                    GROUP_POSITIONS + "position40", GROUP_POSITIONS + "position41", GROUP_POSITIONS + "position42",
-                    GROUP_POSITIONS + "position43", GROUP_POSITIONS + "position44", GROUP_POSITIONS + "position45",
-                    GROUP_POSITIONS + "position46", GROUP_POSITIONS + "position47", GROUP_POSITIONS + "position48",
-                    GROUP_POSITIONS + "position49", GROUP_POSITIONS + "position50"));
+            List.of(GROUP_POSITION + "01", GROUP_POSITION + "02", GROUP_POSITION + "03", GROUP_POSITION + "04",
+                    GROUP_POSITION + "05", GROUP_POSITION + "06", GROUP_POSITION + "07", GROUP_POSITION + "08",
+                    GROUP_POSITION + "09", GROUP_POSITION + "10", GROUP_POSITION + "11", GROUP_POSITION + "12",
+                    GROUP_POSITION + "13", GROUP_POSITION + "14", GROUP_POSITION + "15", GROUP_POSITION + "16",
+                    GROUP_POSITION + "17", GROUP_POSITION + "18", GROUP_POSITION + "19", GROUP_POSITION + "20",
+                    GROUP_POSITION + "21", GROUP_POSITION + "22", GROUP_POSITION + "23", GROUP_POSITION + "24",
+                    GROUP_POSITION + "25", GROUP_POSITION + "26", GROUP_POSITION + "27", GROUP_POSITION + "28",
+                    GROUP_POSITION + "29", GROUP_POSITION + "30", GROUP_POSITION + "31", GROUP_POSITION + "32",
+                    GROUP_POSITION + "33", GROUP_POSITION + "34", GROUP_POSITION + "35", GROUP_POSITION + "36",
+                    GROUP_POSITION + "37", GROUP_POSITION + "38", GROUP_POSITION + "39", GROUP_POSITION + "40",
+                    GROUP_POSITION + "41", GROUP_POSITION + "42", GROUP_POSITION + "43", GROUP_POSITION + "44",
+                    GROUP_POSITION + "45", GROUP_POSITION + "46", GROUP_POSITION + "47", GROUP_POSITION + "48",
+                    GROUP_POSITION + "49", GROUP_POSITION + "50"));
 
     // Stayout Zones Channels ids
-    public static final String GROUP_STAYOUTZONES = ""; // no channel group in use at the moment, we'll possibly
-                                                        // introduce this in a future release
-    public static final String CHANNEL_STAYOUTZONES_DIRTY = GROUP_STAYOUTZONES + "dirty";
-    public static final ArrayList<String> CHANNEL_STAYOUTZONES = new ArrayList<>(List.of(
-            GROUP_STAYOUTZONES + "zone01-id", GROUP_STAYOUTZONES + "zone01-name", GROUP_STAYOUTZONES + "zone01-enabled",
-            GROUP_STAYOUTZONES + "zone02-id", GROUP_STAYOUTZONES + "zone02-name", GROUP_STAYOUTZONES + "zone02-enabled",
-            GROUP_STAYOUTZONES + "zone03-id", GROUP_STAYOUTZONES + "zone03-name", GROUP_STAYOUTZONES + "zone03-enabled",
-            GROUP_STAYOUTZONES + "zone04-id", GROUP_STAYOUTZONES + "zone04-name", GROUP_STAYOUTZONES + "zone04-enabled",
-            GROUP_STAYOUTZONES + "zone05-id", GROUP_STAYOUTZONES + "zone05-name", GROUP_STAYOUTZONES + "zone05-enabled",
-            GROUP_STAYOUTZONES + "zone06-id", GROUP_STAYOUTZONES + "zone06-name", GROUP_STAYOUTZONES + "zone06-enabled",
-            GROUP_STAYOUTZONES + "zone07-id", GROUP_STAYOUTZONES + "zone07-name", GROUP_STAYOUTZONES + "zone07-enabled",
-            GROUP_STAYOUTZONES + "zone08-id", GROUP_STAYOUTZONES + "zone08-name", GROUP_STAYOUTZONES + "zone08-enabled",
-            GROUP_STAYOUTZONES + "zone09-id", GROUP_STAYOUTZONES + "zone09-name", GROUP_STAYOUTZONES + "zone09-enabled",
-            GROUP_STAYOUTZONES + "zone10-id", GROUP_STAYOUTZONES + "zone10-name",
-            GROUP_STAYOUTZONES + "zone10-enabled"));
+    public static final String GROUP_STAYOUTZONE = "stayoutzone#";
+
+    public static final String CHANNEL_STAYOUTZONES_DIRTY = GROUP_STAYOUTZONE + "dirty";
+    public static final ArrayList<String> CHANNEL_STAYOUTZONES = new ArrayList<>(
+            List.of(GROUP_STAYOUTZONE + "01-id", GROUP_STAYOUTZONE + "01-name", GROUP_STAYOUTZONE + "01-enabled",
+                    GROUP_STAYOUTZONE + "02-id", GROUP_STAYOUTZONE + "02-name", GROUP_STAYOUTZONE + "02-enabled",
+                    GROUP_STAYOUTZONE + "03-id", GROUP_STAYOUTZONE + "03-name", GROUP_STAYOUTZONE + "03-enabled",
+                    GROUP_STAYOUTZONE + "04-id", GROUP_STAYOUTZONE + "04-name", GROUP_STAYOUTZONE + "04-enabled",
+                    GROUP_STAYOUTZONE + "05-id", GROUP_STAYOUTZONE + "05-name", GROUP_STAYOUTZONE + "05-enabled",
+                    GROUP_STAYOUTZONE + "06-id", GROUP_STAYOUTZONE + "06-name", GROUP_STAYOUTZONE + "06-enabled",
+                    GROUP_STAYOUTZONE + "07-id", GROUP_STAYOUTZONE + "07-name", GROUP_STAYOUTZONE + "07-enabled",
+                    GROUP_STAYOUTZONE + "08-id", GROUP_STAYOUTZONE + "08-name", GROUP_STAYOUTZONE + "08-enabled",
+                    GROUP_STAYOUTZONE + "09-id", GROUP_STAYOUTZONE + "09-name", GROUP_STAYOUTZONE + "09-enabled",
+                    GROUP_STAYOUTZONE + "10-id", GROUP_STAYOUTZONE + "10-name", GROUP_STAYOUTZONE + "10-enabled"));
 
     // Work Areas Channels ids
-    public static final String GROUP_WORKAREAS = ""; // no channel group in use at the moment, we'll possibly
-                                                     // introduce this in a future release
-    public static final ArrayList<String> CHANNEL_WORKAREAS = new ArrayList<>(
-            List.of(GROUP_WORKAREAS + "workarea01-id", GROUP_WORKAREAS + "workarea01-name",
-                    GROUP_WORKAREAS + "workarea01-cutting-height", GROUP_WORKAREAS + "workarea01-enabled",
-                    GROUP_WORKAREAS + "workarea01-progress", GROUP_WORKAREAS + "workarea01-last-time-completed",
+    public static final String GROUP_WORKAREA = "workarea#";
 
-                    GROUP_WORKAREAS + "workarea02-id", GROUP_WORKAREAS + "workarea02-name",
-                    GROUP_WORKAREAS + "workarea02-cutting-height", GROUP_WORKAREAS + "workarea02-enabled",
-                    GROUP_WORKAREAS + "workarea02-progress", GROUP_WORKAREAS + "workarea02-last-time-completed",
+    public static final ArrayList<String> CHANNEL_WORKAREAS = new ArrayList<>(List.of(GROUP_WORKAREA + "01-id",
+            GROUP_WORKAREA + "01-name", GROUP_WORKAREA + "01-cutting-height", GROUP_WORKAREA + "01-enabled",
+            GROUP_WORKAREA + "01-progress", GROUP_WORKAREA + "01-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea03-id", GROUP_WORKAREAS + "workarea03-name",
-                    GROUP_WORKAREAS + "workarea03-cutting-height", GROUP_WORKAREAS + "workarea03-enabled",
-                    GROUP_WORKAREAS + "workarea03-progress", GROUP_WORKAREAS + "workarea03-last-time-completed",
+            GROUP_WORKAREA + "02-id", GROUP_WORKAREA + "02-name", GROUP_WORKAREA + "02-cutting-height",
+            GROUP_WORKAREA + "02-enabled", GROUP_WORKAREA + "02-progress", GROUP_WORKAREA + "02-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea04-id", GROUP_WORKAREAS + "workarea04-name",
-                    GROUP_WORKAREAS + "workarea04-cutting-height", GROUP_WORKAREAS + "workarea04-enabled",
-                    GROUP_WORKAREAS + "workarea04-progress", GROUP_WORKAREAS + "workarea04-last-time-completed",
+            GROUP_WORKAREA + "03-id", GROUP_WORKAREA + "03-name", GROUP_WORKAREA + "03-cutting-height",
+            GROUP_WORKAREA + "03-enabled", GROUP_WORKAREA + "03-progress", GROUP_WORKAREA + "03-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea05-id", GROUP_WORKAREAS + "workarea05-name",
-                    GROUP_WORKAREAS + "workarea05-cutting-height", GROUP_WORKAREAS + "workarea05-enabled",
-                    GROUP_WORKAREAS + "workarea05-progress", GROUP_WORKAREAS + "workarea05-last-time-completed",
+            GROUP_WORKAREA + "04-id", GROUP_WORKAREA + "04-name", GROUP_WORKAREA + "04-cutting-height",
+            GROUP_WORKAREA + "04-enabled", GROUP_WORKAREA + "04-progress", GROUP_WORKAREA + "04-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea06-id", GROUP_WORKAREAS + "workarea06-name",
-                    GROUP_WORKAREAS + "workarea06-cutting-height", GROUP_WORKAREAS + "workarea06-enabled",
-                    GROUP_WORKAREAS + "workarea06-progress", GROUP_WORKAREAS + "workarea06-last-time-completed",
+            GROUP_WORKAREA + "05-id", GROUP_WORKAREA + "05-name", GROUP_WORKAREA + "05-cutting-height",
+            GROUP_WORKAREA + "05-enabled", GROUP_WORKAREA + "05-progress", GROUP_WORKAREA + "05-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea07-id", GROUP_WORKAREAS + "workarea07-name",
-                    GROUP_WORKAREAS + "workarea07-cutting-height", GROUP_WORKAREAS + "workarea07-enabled",
-                    GROUP_WORKAREAS + "workarea07-progress", GROUP_WORKAREAS + "workarea07-last-time-completed",
+            GROUP_WORKAREA + "06-id", GROUP_WORKAREA + "06-name", GROUP_WORKAREA + "06-cutting-height",
+            GROUP_WORKAREA + "06-enabled", GROUP_WORKAREA + "06-progress", GROUP_WORKAREA + "06-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea08-id", GROUP_WORKAREAS + "workarea08-name",
-                    GROUP_WORKAREAS + "workarea08-cutting-height", GROUP_WORKAREAS + "workarea08-enabled",
-                    GROUP_WORKAREAS + "workarea08-progress", GROUP_WORKAREAS + "workarea08-last-time-completed",
+            GROUP_WORKAREA + "07-id", GROUP_WORKAREA + "07-name", GROUP_WORKAREA + "07-cutting-height",
+            GROUP_WORKAREA + "07-enabled", GROUP_WORKAREA + "07-progress", GROUP_WORKAREA + "07-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea09-id", GROUP_WORKAREAS + "workarea09-name",
-                    GROUP_WORKAREAS + "workarea09-cutting-height", GROUP_WORKAREAS + "workarea09-enabled",
-                    GROUP_WORKAREAS + "workarea09-progress", GROUP_WORKAREAS + "workarea09-last-time-completed",
+            GROUP_WORKAREA + "08-id", GROUP_WORKAREA + "08-name", GROUP_WORKAREA + "08-cutting-height",
+            GROUP_WORKAREA + "08-enabled", GROUP_WORKAREA + "08-progress", GROUP_WORKAREA + "08-last-time-completed",
 
-                    GROUP_WORKAREAS + "workarea10-id", GROUP_WORKAREAS + "workarea10-name",
-                    GROUP_WORKAREAS + "workarea10-cutting-height", GROUP_WORKAREAS + "workarea10-enabled",
-                    GROUP_WORKAREAS + "workarea10-progress", GROUP_WORKAREAS + "workarea10-last-time-completed"));
+            GROUP_WORKAREA + "09-id", GROUP_WORKAREA + "09-name", GROUP_WORKAREA + "09-cutting-height",
+            GROUP_WORKAREA + "09-enabled", GROUP_WORKAREA + "09-progress", GROUP_WORKAREA + "09-last-time-completed",
+
+            GROUP_WORKAREA + "10-id", GROUP_WORKAREA + "10-name", GROUP_WORKAREA + "10-cutting-height",
+            GROUP_WORKAREA + "10-enabled", GROUP_WORKAREA + "10-progress", GROUP_WORKAREA + "10-last-time-completed"));
 
     // Command Channel ids
-    public static final String GROUP_COMMANDS = ""; // no channel group in use at the moment, we'll possibly introduce
-                                                    // this in a future release
-    public static final String CHANNEL_COMMAND_START = GROUP_COMMANDS + "start";
-    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMANDS + "resume_schedule";
-    public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMANDS + "pause";
-    public static final String CHANNEL_COMMAND_PARK = GROUP_COMMANDS + "park";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMANDS + "park_until_next_schedule";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMANDS + "park_until_further_notice";
+    public static final String GROUP_COMMAND = "command#";
+
+    public static final String CHANNEL_COMMAND_START = GROUP_COMMAND + "start";
+    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume_schedule";
+    public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMAND + "pause";
+    public static final String CHANNEL_COMMAND_PARK = GROUP_COMMAND + "park";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMAND + "park_until_next_schedule";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMAND + "park_until_further_notice";
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
@@ -331,7 +293,7 @@ public class AutomowerBindingConstants {
             put(75, "Connection changed");
             put(76, "Connection NOT changed");
             put(77, "Com board not available");
-            put(78, "Slipped - Mower has Slipped.Situation not solved with moving pattern");
+            put(78, "Slipped - Mower has Slipped. Situation not solved with moving pattern");
             put(79, "Invalid battery combination - Invalid combination of different battery types.");
             put(80, "Cutting system imbalance Warning");
             put(81, "Safety function faulty");

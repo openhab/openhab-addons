@@ -194,7 +194,7 @@ public class AutomowerHandler extends BaseThingHandler {
 =======
         } else if (CHANNEL_STAYOUTZONES.contains(channelUID.getId())) {
             String[] channelIDSplit = channelUID.getId().split("-");
-            int index = Integer.parseInt(channelIDSplit[0].substring("zone".length())) - 1;
+            int index = Integer.parseInt(channelIDSplit[0].substring(GROUP_STAYOUTZONE.length())) - 1;
             if ("enabled".equals(channelIDSplit[0])) {
                 if (command instanceof OnOffType cmd) {
                     sendAutomowerStayOutZone(index, ((cmd == OnOffType.ON) ? true : false));
@@ -202,7 +202,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
         } else if (CHANNEL_WORKAREAS.contains(channelUID.getId())) {
             String[] channelIDSplit = channelUID.getId().split("-");
-            int index = Integer.parseInt(channelIDSplit[0].substring("workarea".length())) - 1;
+            int index = Integer.parseInt(channelIDSplit[0].substring(GROUP_WORKAREA.length())) - 1;
             if ("enabled".equals(channelIDSplit[0])) {
                 if (command instanceof OnOffType cmd) {
                     sendAutomowerWorkAreaEnable(index, ((cmd == OnOffType.ON) ? true : false));
@@ -243,6 +243,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 >>>>>>> added sendAutomowerStayOutZones
         } else {
+<<<<<<< HEAD
             String groupId = channelUID.getGroupId();
             String channelId = channelUID.getIdWithoutGroup();
             if ((groupId != null) && (channelId != null)) {
@@ -326,6 +327,15 @@ public class AutomowerHandler extends BaseThingHandler {
                     });
                 }
             }
+=======
+            AutomowerCommand.fromChannelUID(channelUID).ifPresent(commandName -> {
+                logger.debug("Sending command '{}'", commandName);
+                getCommandValue(command).ifPresentOrElse(duration -> sendAutomowerCommand(commandName, duration),
+                        () -> sendAutomowerCommand(commandName));
+
+                updateState(channelUID, OnOffType.OFF);
+            });
+>>>>>>> static channels + channel groups
         }
     }
 
@@ -1018,6 +1028,7 @@ public class AutomowerHandler extends BaseThingHandler {
                             // remember index and create deep copy
                             indexFiltered = calendarTasksFiltered.size();
 
+<<<<<<< HEAD
                             CalendarTask calendarTask2 = new CalendarTask();
                             calendarTask2.setStart(calendarTask.getStart());
                             calendarTask2.setDuration(calendarTask.getDuration());
@@ -1043,6 +1054,30 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             CalendarTask calendarTask = calendarTasksFiltered.get(indexFiltered);
+=======
+            long nextStartTimestamp = mower.getAttributes().getPlanner().getNextStartTimestamp();
+            // If next start timestamp is 0 it means the mower should start now, so using current timestamp
+            if (nextStartTimestamp == 0L) {
+                updateState(CHANNEL_STATUS_NEXT_START, UnDefType.NULL);
+            } else {
+                updateState(CHANNEL_STATUS_NEXT_START,
+                        new DateTimeType(toZonedDateTime(nextStartTimestamp, mowerZoneId)));
+            }
+            updateState(CHANNEL_STATUS_OVERRIDE_ACTION,
+                    new StringType(mower.getAttributes().getPlanner().getOverride().getAction().name()));
+            RestrictedReason restrictedReason = mower.getAttributes().getPlanner().getRestrictedReason();
+            if (restrictedReason != null) {
+                updateState(CHANNEL_STATUS_RESTRICTED_REASON, new StringType(restrictedReason.name()));
+            } else {
+                updateState(CHANNEL_STATUS_RESTRICTED_REASON, UnDefType.NULL);
+            }
+
+            updateState(CHANNEL_STATUS_EXTERNAL_REASON,
+                    new DecimalType(mower.getAttributes().getPlanner().getExternalReason()));
+
+            updateState(CHANNEL_SETTING_CUTTING_HEIGHT,
+                    new DecimalType(mower.getAttributes().getSettings().getCuttingHeight()));
+>>>>>>> static channels + channel groups
 
             if (command instanceof DecimalType cmd) {
                 if ("start".equals(param)) {
