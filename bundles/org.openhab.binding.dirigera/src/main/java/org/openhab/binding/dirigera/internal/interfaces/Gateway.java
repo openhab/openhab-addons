@@ -125,6 +125,14 @@ public interface Gateway {
     public boolean isKnownDevice(String deviceId);
 
     /**
+     * Update websocket connected statues.
+     *
+     * @param boolean connected
+     * @param reason as String
+     */
+    public void websocketConnected(boolean connected, String reason);
+
+    /**
      * Update from websocket regarding changed data.
      *
      * This function is handled asynchronous.
