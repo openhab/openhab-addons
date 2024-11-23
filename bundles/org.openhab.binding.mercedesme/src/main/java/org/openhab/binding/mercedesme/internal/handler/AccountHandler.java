@@ -376,7 +376,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } catch (IOException e) {
             logger.trace("IOException decoding message {}", e.getMessage());
         } catch (Error err) {
-            logger.trace("Error caught {}", err.getMessage());
+            logger.debug("Error caught {}", err.getMessage());
         }
     }
 

@@ -205,7 +205,7 @@ public class MBWebsocket {
              * 3. VehicleHandler responsible to update channels
              */
         } catch (IOException e) {
-            logger.trace("IOException reading input stream {}", e.getMessage());
+            logger.debug("IOException reading input stream {}", e.getMessage());
         }
     }
 
